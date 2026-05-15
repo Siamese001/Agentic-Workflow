@@ -2,7 +2,7 @@
 Stress tests for pre_run_gate.py interactive / stdin-blocking command detection.
 
 Constitutional §27: pagers, editors, live watchers, tail -f, bare REPLs, and -i
-flags hang Cascade's turn forever because the terminal cannot send keystrokes.
+flags hang Cursor Agent's turn forever because the terminal cannot send keystrokes.
 This suite is the regression net — every category, every separator, every
 shell variant, plus an exhaustive false-positive panel.
 

@@ -3,7 +3,7 @@
 check_precedent_receipt.py — W2.1 precedent-receipt parity gate.
 
 Reconciles author_gate_precedent.json sidecar `match_count` against the
-`precedent_seen` column written by the capture hook. Detects Cascade
+`precedent_seen` column written by the capture hook. Detects Cursor Agent
 ignoring the sidecar silently (the scenario the W2 injection rule prevents).
 
 Rule:

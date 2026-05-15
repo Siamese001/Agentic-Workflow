@@ -9,6 +9,11 @@ from __future__ import annotations
 from pathlib import Path
 
 try:
+    from tools.generate.materialized_views.sqlite_helpers import validate_sqlite_path
+except ImportError:  # pragma: no cover — standalone ``python -m materialized_views`` layout
+    from materialized_views.sqlite_helpers import validate_sqlite_path
+
+try:
     from tools.generate.materialized_views.phase_a_path_authority import materialize_phase_a
     from tools.generate.materialized_views.phase_b_capability_tool_task import materialize_phase_b
     from tools.generate.materialized_views.phase_c_trace_drift_debt import materialize_phase_c
@@ -24,15 +29,6 @@ except ImportError:
     from materialized_views.phase_f_hotspot_coverage import materialize_phase_f
 
 
-def _validate_sqlite_path(sqlite_path: Path) -> Path:
-    sqlite_path = sqlite_path.expanduser().resolve()
-    if not sqlite_path.exists():
-        raise FileNotFoundError(f"ADG SQLite not found: {sqlite_path}")
-    if not sqlite_path.is_file():
-        raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
-    return sqlite_path
-
-
 def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
     """Refresh all 42 ADG materialized view tables. Idempotent.
 
@@ -46,7 +42,7 @@ def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
     Returns:
         dict mapping every materialized table name to its post-refresh row count.
     """
-    sqlite_path = _validate_sqlite_path(sqlite_path)
+    sqlite_path = validate_sqlite_path(sqlite_path)
     all_counts: dict[str, int] = {}
 
     counts_a = materialize_phase_a(sqlite_path)

@@ -9,7 +9,9 @@ Called by generate_full_adg.py after artifact write and before Redis ingest.
 
 from __future__ import annotations
 
+import shutil
 import sqlite3
+import tempfile
 from pathlib import Path
 
 
@@ -617,164 +619,179 @@ FROM v_p0_l0_raw_execution
 """
 
 
-def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
-    """Create infrastructure wiring violation views in the ADG SQLite.
+def materialize_infra_views(sqlite_path: Path, *, scratch: bool = False) -> dict[str, int]:
+    """Create infrastructure wiring violation views on the ADG SQLite (or a scratch copy).
+
+    When ``scratch`` is False (default), materializes directly on ``sqlite_path``
+    (``generate_full_adg`` / unit tests expect views persisted on the target DB).
+
+    When ``scratch`` is True, copies ``sqlite_path`` to a temp file first. Used by
+    ``infra_wiring_scan`` so CI does not rewrite canonical ``adg_indexed_*.sqlite``
+    bytes (DSSE / gate 3B4).
 
     Returns a dict of view_name -> row_count for each view.
     """
-    # First, discover the actual adg_name values for raw infra nodes
-    conn = sqlite3.connect(str(_validate_sqlite_path(sqlite_path)), timeout=30)
-    conn.execute("PRAGMA journal_mode=WAL")
-    cursor = conn.cursor()
+    src = _validate_sqlite_path(sqlite_path)
+    if scratch:
+        with tempfile.TemporaryDirectory(dir=str(src.parent)) as tdir:
+            work_db = Path(tdir) / "infra_wiring_scratch.sqlite"
+            shutil.copy2(src, work_db)
+            return _materialize_infra_views_mutating(work_db)
+    return _materialize_infra_views_mutating(src)
 
-    # Find ADG node names for raw infra packages (they use ADG::Symbol:: prefix)
-    infra_adg_names = []
-    for pkg in _RAW_INFRA_PACKAGES:
+
+def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
+    conn = sqlite3.connect(str(work_db), timeout=30)
+    try:
+        conn.execute("PRAGMA journal_mode=WAL")
+        cursor = conn.cursor()
+        # Find ADG node names for raw infra packages (they use ADG::Symbol:: prefix)
+        infra_adg_names = []
+        for pkg in _RAW_INFRA_PACKAGES:
+            cursor.execute(
+                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+                (f"ADG::Symbol::{pkg}",),
+            )
+            rows = cursor.fetchall()
+            for (name,) in rows:
+                infra_adg_names.append(name)
+            
+        # HTTP-specific subset for v_p1_raw_http_outside_seam
+        _http_pkg_set = {"aiohttp", "httpx", "requests"}
+        http_adg_names = [n for n in infra_adg_names if any(n == f"ADG::Symbol::{p}" for p in _http_pkg_set)]
+        http_in = ", ".join(f"'{n}'" for n in http_adg_names) if http_adg_names else "'__none__'"
+            
+        # Find ADG node names for provider SDKs
+        provider_adg_names = []
+        for pkg in _PROVIDER_SDKS:
+            cursor.execute(
+                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+                (f"ADG::Symbol::{pkg}",),
+            )
+            rows = cursor.fetchall()
+            for (name,) in rows:
+                provider_adg_names.append(name)
+            
+        # Drop existing views (idempotent recreation) — order matters for dependencies
+        for vname in (  # tqdm: small fixed tuple of view names, no bar needed
+            "v_infra_violations_summary",  # depends on P0 views, drop first
+            "v_p0_apps_direct_infra",
+            "v_p0_provider_bypass",
+            "v_p0_write_bypass_uwg",
+            "v_p0_l1_direct_infra",
+            "v_p0_l6_mutation",
+            "v_p0_l0_raw_execution",
+            "v_p1_zero_caller_infra",
+            "v_p1_not_on_spine",
+            "v_p1_ad_hoc_imports",
+            "v_p1_mis_layered_infra",
+            "v_p1_raw_http_outside_seam",
+            "v_p2_mixed_usage",
+            "v_p2_duplicated_adapters",
+            "v_p2_dormant_ambiguous",
+            "v_p3_isolated_experimental",
+        ):
+            cursor.execute(f"DROP VIEW IF EXISTS {vname}")
+            
+        # Build parameterized SQL for IN clauses
+        infra_in = ", ".join(f"'{n}'" for n in infra_adg_names) if infra_adg_names else "'__none__'"
+        provider_in = ", ".join(f"'{n}'" for n in provider_adg_names) if provider_adg_names else "'__none__'"
+        adapter_paths_clause = _build_adapter_path_clause()
+        process_boundary_clause = _build_process_boundary_clause()
+            
+        # Materialize t_infra_importers: the set of resolved_path values that import raw infra.
+        # This is used by P0-3 (write bypass) and P0-5 (L6 mutation) to scope those views to
+        # files that actually touch raw infra packages, excluding plain filesystem I/O.
+        # Using a real table (not a VIEW) so it can be JOINed efficiently without correlated subqueries.
+        cursor.execute("DROP TABLE IF EXISTS t_infra_importers")
         cursor.execute(
-            "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
-            (f"ADG::Symbol::{pkg}",),
+            """
+            CREATE TABLE t_infra_importers AS
+            SELECT DISTINCT n_src.resolved_path
+            FROM edges e
+            JOIN nodes n_src ON e.src_id = n_src.id
+            JOIN nodes n_dst ON e.dst_id = n_dst.id
+            WHERE e.relation_type = 'imports'
+              AND n_dst.adg_name IN ({infra_adg_names})
+              AND n_src.resolved_path NOT IN {adapter_paths}
+        """.format(infra_adg_names=infra_in, adapter_paths=adapter_paths_clause)
         )
-        rows = cursor.fetchall()
-        for (name,) in rows:
-            infra_adg_names.append(name)
-
-    # HTTP-specific subset for v_p1_raw_http_outside_seam
-    _http_pkg_set = {"aiohttp", "httpx", "requests"}
-    http_adg_names = [n for n in infra_adg_names if any(n == f"ADG::Symbol::{p}" for p in _http_pkg_set)]
-    http_in = ", ".join(f"'{n}'" for n in http_adg_names) if http_adg_names else "'__none__'"
-
-    # Find ADG node names for provider SDKs
-    provider_adg_names = []
-    for pkg in _PROVIDER_SDKS:
         cursor.execute(
-            "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
-            (f"ADG::Symbol::{pkg}",),
+            "CREATE INDEX IF NOT EXISTS idx_t_infra_importers_path ON t_infra_importers(resolved_path)"
         )
-        rows = cursor.fetchall()
-        for (name,) in rows:
-            provider_adg_names.append(name)
-
-    # Drop existing views (idempotent recreation) — order matters for dependencies
-    for vname in (  # tqdm: small fixed tuple of view names, no bar needed
-        "v_infra_violations_summary",  # depends on P0 views, drop first
-        "v_p0_apps_direct_infra",
-        "v_p0_provider_bypass",
-        "v_p0_write_bypass_uwg",
-        "v_p0_l1_direct_infra",
-        "v_p0_l6_mutation",
-        "v_p0_l0_raw_execution",
-        "v_p1_zero_caller_infra",
-        "v_p1_not_on_spine",
-        "v_p1_ad_hoc_imports",
-        "v_p1_mis_layered_infra",
-        "v_p1_raw_http_outside_seam",
-        "v_p2_mixed_usage",
-        "v_p2_duplicated_adapters",
-        "v_p2_dormant_ambiguous",
-        "v_p3_isolated_experimental",
-    ):
-        cursor.execute(f"DROP VIEW IF EXISTS {vname}")
-
-    # Build parameterized SQL for IN clauses
-    infra_in = ", ".join(f"'{n}'" for n in infra_adg_names) if infra_adg_names else "'__none__'"
-    provider_in = ", ".join(f"'{n}'" for n in provider_adg_names) if provider_adg_names else "'__none__'"
-    adapter_paths_clause = _build_adapter_path_clause()
-    process_boundary_clause = _build_process_boundary_clause()
-
-    # Materialize t_infra_importers: the set of resolved_path values that import raw infra.
-    # This is used by P0-3 (write bypass) and P0-5 (L6 mutation) to scope those views to
-    # files that actually touch raw infra packages, excluding plain filesystem I/O.
-    # Using a real table (not a VIEW) so it can be JOINed efficiently without correlated subqueries.
-    cursor.execute("DROP TABLE IF EXISTS t_infra_importers")
-    cursor.execute(
-        """
-        CREATE TABLE t_infra_importers AS
-        SELECT DISTINCT n_src.resolved_path
-        FROM edges e
-        JOIN nodes n_src ON e.src_id = n_src.id
-        JOIN nodes n_dst ON e.dst_id = n_dst.id
-        WHERE e.relation_type = 'imports'
-          AND n_dst.adg_name IN ({infra_adg_names})
-          AND n_src.resolved_path NOT IN {adapter_paths}
-    """.format(infra_adg_names=infra_in, adapter_paths=adapter_paths_clause)
-    )
-    cursor.execute(
-        "CREATE INDEX IF NOT EXISTS idx_t_infra_importers_path ON t_infra_importers(resolved_path)"
-    )
-
-    # Create all views with actual node names
-    # P0 views
-    sanctioned_app_clause = _build_sanctioned_app_clause()
-    cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in, sanctioned_app_paths=sanctioned_app_clause))
-    cursor.execute(_VIEW_P0_PROVIDER_BYPASS.format(provider_adg_names=provider_in))
-    cursor.execute(_VIEW_P0_WRITE_BYPASS_UWG.format(infra_adg_names=infra_in))
-    cursor.execute(_VIEW_P0_L1_DIRECT_INFRA.format(infra_adg_names=infra_in))
-    cursor.execute(_VIEW_P0_L6_MUTATION.format(infra_adg_names=infra_in))
-    cursor.execute(_VIEW_P0_L0_RAW_EXECUTION.format(infra_adg_names=infra_in))
-    # P1 views
-    cursor.execute(
-        _VIEW_P1_ZERO_CALLER_INFRA.format(
-            adapter_paths=adapter_paths_clause, process_boundary_paths=process_boundary_clause
+            
+        # Create all views with actual node names
+        # P0 views
+        sanctioned_app_clause = _build_sanctioned_app_clause()
+        cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in, sanctioned_app_paths=sanctioned_app_clause))
+        cursor.execute(_VIEW_P0_PROVIDER_BYPASS.format(provider_adg_names=provider_in))
+        cursor.execute(_VIEW_P0_WRITE_BYPASS_UWG.format(infra_adg_names=infra_in))
+        cursor.execute(_VIEW_P0_L1_DIRECT_INFRA.format(infra_adg_names=infra_in))
+        cursor.execute(_VIEW_P0_L6_MUTATION.format(infra_adg_names=infra_in))
+        cursor.execute(_VIEW_P0_L0_RAW_EXECUTION.format(infra_adg_names=infra_in))
+        # P1 views
+        cursor.execute(
+            _VIEW_P1_ZERO_CALLER_INFRA.format(
+                adapter_paths=adapter_paths_clause, process_boundary_paths=process_boundary_clause
+            )
         )
-    )
-    cursor.execute(
-        _VIEW_P1_NOT_ON_SPINE.format(
-            adapter_paths=adapter_paths_clause, process_boundary_paths=process_boundary_clause
+        cursor.execute(
+            _VIEW_P1_NOT_ON_SPINE.format(
+                adapter_paths=adapter_paths_clause, process_boundary_paths=process_boundary_clause
+            )
         )
-    )
-    cursor.execute(_VIEW_P1_AD_HOC_IMPORTS.format(infra_adg_names=infra_in))
-    cursor.execute(_VIEW_P1_MIS_LAYERED_INFRA)
-    cursor.execute(_VIEW_P1_RAW_HTTP_OUTSIDE_SEAM.format(http_adg_names=http_in))
-    # P2 views
-    cursor.execute(
-        _VIEW_P2_MIXED_USAGE.format(
-            adapter_paths=adapter_paths_clause,
-            infra_adg_names=infra_in,
+        cursor.execute(_VIEW_P1_AD_HOC_IMPORTS.format(infra_adg_names=infra_in))
+        cursor.execute(_VIEW_P1_MIS_LAYERED_INFRA)
+        cursor.execute(_VIEW_P1_RAW_HTTP_OUTSIDE_SEAM.format(http_adg_names=http_in))
+        # P2 views
+        cursor.execute(
+            _VIEW_P2_MIXED_USAGE.format(
+                adapter_paths=adapter_paths_clause,
+                infra_adg_names=infra_in,
+            )
         )
-    )
-    cursor.execute(
-        _VIEW_P2_DUPLICATED_ADAPTERS.format(
-            adapter_paths=adapter_paths_clause,
-            infra_adg_names=infra_in,
+        cursor.execute(
+            _VIEW_P2_DUPLICATED_ADAPTERS.format(
+                adapter_paths=adapter_paths_clause,
+                infra_adg_names=infra_in,
+            )
         )
-    )
-    cursor.execute(_VIEW_P2_DORMANT_AMBIGUOUS.format(adapter_paths=adapter_paths_clause))
-    # P3 view
-    cursor.execute(_VIEW_P3_ISOLATED_EXPERIMENTAL)
-    # Summary view (must be last — depends on P0 views)
-    cursor.execute(_VIEW_INFRA_VIOLATIONS_SUMMARY)
+        cursor.execute(_VIEW_P2_DORMANT_AMBIGUOUS.format(adapter_paths=adapter_paths_clause))
+        # P3 view
+        cursor.execute(_VIEW_P3_ISOLATED_EXPERIMENTAL)
+        # Summary view (must be last — depends on P0 views)
+        cursor.execute(_VIEW_INFRA_VIOLATIONS_SUMMARY)
+            
+        conn.commit()
+            
+        # Query row counts for all views
+        _ALL_VIEW_NAMES = (
+            "v_p0_apps_direct_infra",
+            "v_p0_provider_bypass",
+            "v_p0_write_bypass_uwg",
+            "v_p0_l1_direct_infra",
+            "v_p0_l6_mutation",
+            "v_p0_l0_raw_execution",
+            "v_p1_zero_caller_infra",
+            "v_p1_not_on_spine",
+            "v_p1_ad_hoc_imports",
+            "v_p1_mis_layered_infra",
+            "v_p1_raw_http_outside_seam",
+            "v_p2_mixed_usage",
+            "v_p2_duplicated_adapters",
+            "v_p2_dormant_ambiguous",
+            "v_p3_isolated_experimental",
+            "v_infra_violations_summary",
+        )
+        counts: dict[str, int] = {}
+        for vname in _ALL_VIEW_NAMES:
+            cursor.execute(f"SELECT COUNT(*) FROM {vname}")
+            (count,) = cursor.fetchone()
+            counts[vname] = count
 
-    conn.commit()
-
-    # Query row counts for all views
-    _ALL_VIEW_NAMES = (
-        "v_p0_apps_direct_infra",
-        "v_p0_provider_bypass",
-        "v_p0_write_bypass_uwg",
-        "v_p0_l1_direct_infra",
-        "v_p0_l6_mutation",
-        "v_p0_l0_raw_execution",
-        "v_p1_zero_caller_infra",
-        "v_p1_not_on_spine",
-        "v_p1_ad_hoc_imports",
-        "v_p1_mis_layered_infra",
-        "v_p1_raw_http_outside_seam",
-        "v_p2_mixed_usage",
-        "v_p2_duplicated_adapters",
-        "v_p2_dormant_ambiguous",
-        "v_p3_isolated_experimental",
-        "v_infra_violations_summary",
-    )
-    counts: dict[str, int] = {}
-    for vname in _ALL_VIEW_NAMES:
-        cursor.execute(f"SELECT COUNT(*) FROM {vname}")
-        (count,) = cursor.fetchone()
-        counts[vname] = count
-
-    conn.close()
-
-    return counts
-
+        return counts
+    finally:
+        conn.close()
 
 def enrich_and_report(sqlite_path: Path) -> None:
     """Enrich ADG SQLite with infra views and print summary."""

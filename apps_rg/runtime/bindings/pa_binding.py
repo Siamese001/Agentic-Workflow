@@ -6,8 +6,21 @@ boundary contract for apps_rg section-level prompt assembly.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+import hashlib
+import json
+from typing import Any, Mapping, Optional
+
+from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
+from agentic_core.runtime.contracts.compiled_prompt_artifact import (
+    CompiledPromptArtifact,
+    PromptBlock,
+)
+from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
+from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
+from agentic_core.runtime.contracts.origin import Origin
+from agentic_core.runtime.contracts.route_contract import RouteContract
 
 __all__ = [
     "PA_BOUNDARY_CERT_S3",
@@ -25,6 +38,7 @@ __all__ = [
     "build_section_prompt_artifact",
     "build_section_prompt_artifact_for_bullet",
     "pa_compose_apps_rg",
+    "pa_compose_apps_rg_section",
     "reset_pa_prompt_profile_cache",
 ]
 
@@ -34,6 +48,10 @@ APPS_RG_TARGET_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 APPS_RG_TARGET_PROVIDER: str = "vllm_local"
 
 _PA_PROFILE_CACHE: dict[str, Any] = {}
+
+_PROVIDER_MODEL_REGISTRY: dict[str, tuple[str, str]] = {
+    "apps_rg::provider_model::resume_generation::v1": (APPS_RG_TARGET_MODEL, APPS_RG_TARGET_PROVIDER),
+}
 
 
 @dataclass(frozen=True)
@@ -181,7 +199,159 @@ def _build_user_instruction(
     )
 
 
+def _sha256_hex64(payload: str) -> str:
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _resolve_provider_targets(route: RouteContract) -> tuple[str, str, tuple[str, ...]]:
+    """Return (model, provider, extra_gate_verdict_refs)."""
+    ref = (route.provider_model_requirement_ref or "").strip()
+    if ref and ref in _PROVIDER_MODEL_REGISTRY:
+        m, p = _PROVIDER_MODEL_REGISTRY[ref]
+        return m, p, ()
+    return (
+        APPS_RG_TARGET_MODEL,
+        APPS_RG_TARGET_PROVIDER,
+        ("PA_TEMPORARY_COMPATIBILITY_FALLBACK=provider_model_requirement_ref",),
+    )
+
+
+def _compose_ag2_user_instruction(plan: L1PlanContract, vr: ValidatedRequest) -> str:
+    qs = dict(plan.query_spec or {})
+    tgt = qs.get("target") if isinstance(qs.get("target"), dict) else {}
+    company = str(tgt.get("company", "") or "")
+    role = str(tgt.get("role", "") or "")
+    level = str(tgt.get("level", "") or plan.target_level or "")
+    sup = dict(plan.support_expectation or {})
+    lines = [
+        f"Target company: {company}",
+        f"Target role: {role}",
+        f"Target level: {level}",
+    ]
+    if sup.get("per_bullet_required"):
+        lines.append("Provenance: evidence_anchor required per bullet.")
+    if sup.get("source_quote_required"):
+        lines.append("Provenance: source_quote required for factual claims.")
+    if sup.get("fact_checked_required"):
+        lines.append("Quality: fact-checked narrative required.")
+    out = dict(plan.output_expectation or {})
+    fmts = out.get("formats")
+    if fmts:
+        lines.append(f"Output formats: {', '.join(str(x) for x in fmts)}.")
+    return "\n".join(lines)
+
+
 def pa_compose_apps_rg(
+    route: RouteContract,
+    plan: L1PlanContract,
+    fec: FinalEvidenceContract,
+    validated_request: ValidatedRequest,
+) -> CompiledPromptArtifact:
+    """AG-2 runtime PA — consumes RouteContract + L1 projections + C0 FEC + U0 VR."""
+    profile = _load_pa_prompt_profile(None)
+    preamble = _build_system_preamble(profile)
+    route_hint = (
+        f"[L0 route_family={route.route_family} execution_form={route.execution_form} "
+        f"route_id={route.route_id}]"
+    )
+    system_text = f"{preamble}\n\n{route_hint}"
+    user_text = _compose_ag2_user_instruction(plan, validated_request)
+
+    blocks = (
+        PromptBlock(role="system", content=system_text, block_index=0, origin=Origin.SYSTEM_INTERNAL),
+        PromptBlock(role="user", content=user_text, block_index=1, origin=Origin.USER_INTENT),
+    )
+
+    slot_lineage_map = {
+        "system_block_0": "PA-authored|SYSTEM_INTERNAL",
+        "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS",
+    }
+
+    style_key = json.dumps(profile, sort_keys=True, default=str)
+    plan_key = json.dumps(
+        {
+            "task_spec": dict(plan.task_spec or {}),
+            "query_spec": dict(plan.query_spec or {}),
+            "support_expectation": dict(plan.support_expectation or {}),
+            "output_expectation": dict(plan.output_expectation or {}),
+        },
+        sort_keys=True,
+        default=str,
+    )
+    app_payload = dict(getattr(validated_request, "app_payload", None) or {})
+    app_key = json.dumps(app_payload, sort_keys=True, default=str)
+    route_key = json.dumps(
+        {
+            "route_id": route.route_id,
+            "route_family": route.route_family,
+            "execution_form": route.execution_form,
+            "provider_model_requirement_ref": route.provider_model_requirement_ref,
+        },
+        sort_keys=True,
+    )
+    ev_digest = str(getattr(fec, "final_evidence_digest", "") or getattr(fec, "compilation_hash", "") or "")
+
+    component_hash_map = {
+        "style_profile": _sha256_hex64(style_key),
+        "evidence": _sha256_hex64(ev_digest),
+        "l1_plan": _sha256_hex64(plan_key),
+        "app_payload": _sha256_hex64(app_key),
+        "route": _sha256_hex64(route_key),
+    }
+
+    rk = plan.replay_key or getattr(validated_request, "replay_key", "") or ""
+    replay_manifest_ref = f"replay_key:{rk}" if rk else f"reflection:{validated_request.request_id}"
+
+    per_input: dict[str, str] = {}
+    if isinstance(plan.query_spec, Mapping):
+        jh = plan.query_spec.get("jd_hash")
+        rh = plan.query_spec.get("resume_hash")
+        if jh:
+            per_input["jd_hash"] = _sha256_hex64(str(jh))
+        if rh:
+            per_input["resume_hash"] = _sha256_hex64(str(rh))
+
+    model, provider, compat_refs = _resolve_provider_targets(route)
+    gate_refs = tuple(compat_refs)
+
+    comp_in = json.dumps(
+        {
+            "system": system_text,
+            "user": user_text,
+            "component_hash_map": component_hash_map,
+        },
+        sort_keys=True,
+    )
+    compilation_hash = _sha256_hex64(comp_in)
+
+    ts = datetime.now(timezone.utc).isoformat()
+    tenant = getattr(validated_request, "tenant_id", "") or getattr(fec, "tenant_id", "")
+
+    return CompiledPromptArtifact(
+        request_id=validated_request.request_id,
+        run_id=validated_request.run_id,
+        app_id=validated_request.app_id,
+        trace_id=validated_request.trace_id,
+        prompt_blocks=blocks,
+        system_preamble=system_text,
+        user_instruction=user_text,
+        assembly_timestamp=ts,
+        target_model=model,
+        target_provider=provider,
+        evidence_digest=ev_digest,
+        compilation_hash=compilation_hash,
+        slot_lineage_map=slot_lineage_map,
+        component_hash_map=component_hash_map,
+        replay_manifest_ref=replay_manifest_ref,
+        per_input_hash_map=per_input,
+        tenant_id=str(tenant or ""),
+        l5_certification_ref=validated_request.l5_certification_ref,
+        gate_verdict_refs=gate_refs,
+        replay_key=rk,
+    )
+
+
+def pa_compose_apps_rg_section(
     section_id: str,
     evidence_items: list[Any],
     *,
@@ -190,29 +360,7 @@ def pa_compose_apps_rg(
     generation_mode: str = "strategic_tailor",
     profile_path: Optional[str] = None,
 ) -> SectionPromptArtifact:
-    """Compose a full PA prompt artifact for apps_rg resume generation.
-
-    This is the primary entry point consumed by the core PA binding shim.
-
-    Parameters
-    ----------
-    section_id:
-        Resume section ID (e.g. "headline", "executive_summary").
-    evidence_items:
-        C0 evidence items to inject into the prompt.
-    target_company:
-        Target company name.
-    target_role:
-        Target role/title.
-    generation_mode:
-        One of "strategic_tailor", "keyword_match", "generate_scratch".
-    profile_path:
-        Optional override for the PA prompt profile YAML path.
-
-    Returns
-    -------
-    SectionPromptArtifact
-    """
+    """Compose a section-scoped PA artifact (legacy section runner / unit tests)."""
     profile = _load_pa_prompt_profile(profile_path)
     preamble = _build_system_preamble(profile)
     task_block = _build_u0_task_block(section_id, profile)

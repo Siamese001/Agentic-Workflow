@@ -9,7 +9,7 @@ via CI: every non-NULL `writer_script` value in recent rows must match
 the configured allowlist.
 
 Allowlist (authoritative):
-    - post_cascade_author_gate_capture.py
+    - post_cursor_agent_author_gate_capture.py
     - capture_author_gate.py
     - backfill_cat4_decisions.py
     - promote_author_gate_patterns.py
@@ -39,7 +39,7 @@ BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "writer_allowlist_bypass.jso
 
 ALLOWLIST = frozenset(
     {
-        "post_cascade_author_gate_capture.py",
+        "post_cursor_agent_author_gate_capture.py",
         "capture_author_gate.py",
         "backfill_cat4_decisions.py",
         "promote_author_gate_patterns.py",

@@ -411,7 +411,7 @@ def emit_pack_lifecycle_event(
         W4 routers (W4.1 NamespaceBandit, W4.2 paste-set bandit, W4.3
         promotion_decision) MUST emit both the marker AND call this
         helper in the same code path; missing either side is a §29
-        violation logged by post_cascade_router_decision_audit.py.
+        violation logged by post_cursor_agent_router_decision_audit.py.
     """
     try:
         from tools.ledgers.hook_helpers import emit_ledger_event

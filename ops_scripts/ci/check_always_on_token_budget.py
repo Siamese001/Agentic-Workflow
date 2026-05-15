@@ -4,7 +4,7 @@ Per Anthropic's "Architecture of Agentic RAG" (Apr 2026), knowledge files /
 always-on rules exceeding ~50 KB / 12,000 tokens trigger autonomous context
 compaction, where the model arbitrarily discards instructions to free space.
 
-This gate sums the bytes of every `.windsurf/rules/*.md` file with frontmatter
+This gate sums the bytes of every `.cursor/rules/*.md` file with frontmatter
 `trigger: always_on` and fails the commit if the total exceeds the threshold.
 
 Threshold:

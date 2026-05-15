@@ -21,7 +21,7 @@ Each item carries:
   source_file, source_path, section, item_id (e.g. GAP-1), title,
   blurb, source_hints (deferred/blocked/todo).
 
-Used by Cascade to drive Memory/Notion writeback for open scope.
+Used by Cursor Agent to drive Memory/Notion writeback for open scope.
 """
 
 from __future__ import annotations

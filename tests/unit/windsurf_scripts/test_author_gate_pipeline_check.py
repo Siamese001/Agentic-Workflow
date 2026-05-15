@@ -297,7 +297,7 @@ class TestEdgeCases:
         # text between the outer ```` delimiters remains but without the inner
         # fences. However the outer ```` is still there — our regex only matches ```.
         # This is a known limitation. The packet will be detected.
-        # In practice nested fenced blocks in Cascade responses are extremely rare.
+        # In practice nested fenced blocks in Cursor Agent responses are extremely rare.
         # We accept this as a known false positive.
         # Just verify it doesn't crash.
         result = decide(text)

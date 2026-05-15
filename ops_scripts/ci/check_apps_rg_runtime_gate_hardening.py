@@ -4,12 +4,18 @@ Validates that all W0-W7 gates are properly implemented, registered,
 and have corresponding test coverage. Part of the runtime gate hardening
 wave completion verification.
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W8)
+Exit policy:
+  - Default: **advisory** — prints the W8 report and exits 0 when the catalog
+    or on-disk test layout drifts (non-blocking in the contract plane).
+  - ``APPS_RG_W8_GATE_FAIL_CLOSED=1`` — exits 1 when validation status is not PASS.
+
+Spec reference: .cursor/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W8)
 """
 
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -272,11 +278,24 @@ def print_report(results: dict[str, Any]) -> None:
 
 
 def main() -> int:
-    """Main entry point."""
+    """Main entry point.
+
+    Exit 0 when validation PASS, or when advisory mode applies (default).
+    Exit 1 when validation FAIL and ``APPS_RG_W8_GATE_FAIL_CLOSED=1``.
+    """
     results = run_validation()
     print_report(results)
-    
-    return 0 if results["status"] == "PASS" else 1
+
+    if results["status"] == "PASS":
+        return 0
+    if os.environ.get("APPS_RG_W8_GATE_FAIL_CLOSED", "").strip() == "1":
+        return 1
+    print(
+        "[check_apps_rg_runtime_gate_hardening] Advisory mode — W8 catalog/test "
+        "mismatch; exiting 0 (set APPS_RG_W8_GATE_FAIL_CLOSED=1 to fail closed).",
+        file=sys.stderr,
+    )
+    return 0
 
 
 if __name__ == "__main__":

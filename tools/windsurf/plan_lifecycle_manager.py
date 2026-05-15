@@ -56,7 +56,7 @@ class LifecycleState(Enum):
 
 @dataclass(frozen=True)
 class WaveLifecycleMarker:
-    """Parsed marker from Cascade response text."""
+    """Parsed marker from Cursor Agent response text."""
     kind: str  # wave_start, wave_complete, phase_complete, plan_complete
     slug: str
     wave: Optional[int] = None

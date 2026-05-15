@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gate G-APPS-SPINE-DELEGATION — assert every apps_*/ package imports the spine.
 
-ADR-078. Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2,
+ADR-078. Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2,
 flipped to strict in W5 P5.4).
 
 The invariant: for every ``apps_*/`` top-level package, the ADG snapshot
@@ -224,7 +224,7 @@ def evaluate(
 ) -> GateResult:
     allowlist = load_allowlist(allowlist_path)
     apps = discover_apps_packages(repo_root)
-    con = sqlite3.connect(f"file:{snapshot}?mode=ro", uri=True)
+    con = sqlite3.connect(f"file:{snapshot.as_posix()}?mode=ro&immutable=1", uri=True)
     try:
         per_pkg: list[PackageResult] = []
         for pkg in apps:

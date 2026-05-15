@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-05-02
-**Deciders:** Cascade (Author-Gate, plan `token-burn-followup-f8c2d1`)
+**Deciders:** Cursor Agent (Author-Gate, plan `token-burn-followup-f8c2d1`)
 **Plan:** `.windsurf/plans/token-burn-followup-f8c2d1.md` W3 / F4
 **Predecessor data:** `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.md` W2 / P6 (MCP schema cost audit)
 **Impact Layers:** harness (`.windsurf/mcp_config.json`); no `agentic_core/` impact
@@ -73,7 +73,7 @@ Implementation: `.windsurf/mcp_config.json` — set `"disabled": true` on `files
 
 ## Re-Enablement / Retirement Criteria (30-day review)
 
-**Methodology correction (added at decision time):** disabled MCPs do not appear in Cascade's tool list, so direct tool-call counts in `turn_budget.jsonl` will always be 0 for the disabled prefixes. The retirement signal is **operator judgment** informed by:
+**Methodology correction (added at decision time):** disabled MCPs do not appear in Cursor Agent's tool list, so direct tool-call counts in `turn_budget.jsonl` will always be 0 for the disabled prefixes. The retirement signal is **operator judgment** informed by:
 
 1. **Diagnostic script:** `python tools/diagnostics/mcp_30day_retirement_review.py` (run on or after 2026-06-01) — confirms config status, days elapsed, telemetry baseline, and any anomalous calls (which should be 0).
 2. **Operator checklist** (printed by the script): During the 30-day window, did any task feel harder due to absence? Were native substitutes strictly worse? Are there pending workflows that NEED the MCP within the next 30 days?

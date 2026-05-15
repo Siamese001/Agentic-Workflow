@@ -1,7 +1,7 @@
 """check_apps_hop_pipeline_location — SSOT gate for apps_* inner-DAG layout.
 
 Enforces the canonical structure established by plan
-``.windsurf/plans/apps-hop-substrate-f7751b.md`` (Author-Gate 2026-05-01,
+``.cursor/plans/apps-hop-substrate-f7751b.md`` (Author-Gate 2026-05-01,
 architecture_choice=shared_substrate_hop_pipeline):
 
 - Inner DAG topology declared in ``apps_<name>/config/hop_pipeline.py``
@@ -296,7 +296,7 @@ def main() -> int:
     if total_violations:
         print(
             f"\n[apps_hop_pipeline_gate] {total_violations} violation(s). "
-            f"See plan .windsurf/plans/apps-hop-substrate-f7751b.md"
+            f"See plan .cursor/plans/apps-hop-substrate-f7751b.md"
         )
         return 2
     print("\n[apps_hop_pipeline_gate] all migrated apps clean.")

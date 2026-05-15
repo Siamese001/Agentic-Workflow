@@ -50,6 +50,8 @@ archives/
 # (artifacts/) because git doesn't recurse into a wholly-ignored dir,
 # which would make the ! negation below a no-op.
 artifacts/*
+!artifacts/plan_lifecycle/
+!artifacts/plan_lifecycle/*.json
 !artifacts/requirements/
 artifacts/requirements/*
 !artifacts/requirements/proof_bundles/

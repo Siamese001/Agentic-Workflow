@@ -275,7 +275,7 @@ egress_points:
     protocol: https
     module_path: .windsurf/mcp_config.json
     consumer_modules:
-      - Cascade (Windsurf IDE client - not repo source)
+      - Cursor Agent (Windsurf IDE client - not repo source)
     auth_mode: none
     env_keys: []
     retry_posture:

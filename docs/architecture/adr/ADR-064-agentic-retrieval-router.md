@@ -125,7 +125,7 @@ Adopt a **two-tier agentic router** at the L0/L1 boundary that maps each query t
 ### Non-Goals
 
 - Replacing the ADR-058 §W3.2 transform-routing rubric. ADR-064 generalizes it; the rubric remains the authoritative description for the transforms axis specifically.
-- Replacing the L0 prompt-classifier. That handles **prompt tier** (T0/T1/T2/T3) for the broader Cascade harness. ADR-064 handles **retrieval intent** for queries entering the retriever. Different concerns; both deterministic.
+- Replacing the L0 prompt-classifier. That handles **prompt tier** (T0/T1/T2/T3) for the broader Cursor Agent harness. ADR-064 handles **retrieval intent** for queries entering the retriever. Different concerns; both deterministic.
 - ML training a router. Tier 1 is rules; Tier 2 is YAML-encoded statistics. Genuine learned routing is a separate ADR if/when telemetry justifies it.
 - Cross-corpus join planning. Each plan queries N collections in parallel; result fusion is ADR-056's RRF / late-interaction work. Router does not plan joins.
 

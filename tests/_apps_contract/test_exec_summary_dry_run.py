@@ -315,8 +315,74 @@ class TestX3DispositionWithLLMJudges:
         has_decisive_failure = any(j.get("decisive_failure") for j in llm_refs)
         
         if has_decisive_failure:
-            assert x3_data["x3_code"] in ["X3_BLOCK", "X3_REVIEW"], \
-                "Decisive judge failure should block or require review"
+            assert x3_data["x3_code"] == "X3_BLOCK", \
+                "Decisive judge failure must produce X3_BLOCK"
+
+    def test_x3_soft_fail_when_judge_below_threshold_not_decisive(self):
+        """Soft MODEL_BACKED_FAIL without decisive_failure => X3_REVIEW_JUDGE_SOFT_FAIL."""
+        from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
+
+        x3 = aggregate_x3(
+            resume_display_text="Enterprise AI platform leader who delivered outcomes.",
+            claim_ledger=[{"claim_text": "c", "source_fact_ids": ["bul_unify_001"]}],
+            x2_gates=[{"gate_id": "x2_schema_valid", "pass": True}],
+            x1d_judges=[
+                {
+                    "provider_key": "gemini_pro",
+                    "evaluator_mode": "MODEL_BACKED",
+                    "provider_status": "MODEL_BACKED_PASS",
+                    "pass": True,
+                    "decisive_failure": False,
+                    "normalized_score": 1.0,
+                    "normalized_threshold": 0.8,
+                },
+                {
+                    "provider_key": "openai_chatgpt",
+                    "evaluator_mode": "MODEL_BACKED",
+                    "provider_status": "MODEL_BACKED_PASS",
+                    "pass": True,
+                    "decisive_failure": False,
+                    "normalized_score": 0.92,
+                    "normalized_threshold": 0.8,
+                },
+                {
+                    "provider_key": "anthropic_claude",
+                    "evaluator_mode": "MODEL_BACKED",
+                    "provider_status": "MODEL_BACKED_FAIL",
+                    "pass": False,
+                    "decisive_failure": False,
+                    "normalized_score": 0.72,
+                    "normalized_threshold": 0.8,
+                },
+            ],
+            runtime_generation_status="REAL_LLM",
+            product_quality_status="PASS",
+        )
+        assert x3.x3_code == "X3_REVIEW_JUDGE_SOFT_FAIL"
+        assert x3.soft_failed_judges == ["anthropic_claude"]
+        assert x3.proceed_to_runtime is False
+        assert x3.pass_ is False
+
+    def test_x3_allow_impossible_with_any_model_backed_fail(self):
+        from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
+
+        x3 = aggregate_x3(
+            resume_display_text="text",
+            claim_ledger=[{"claim_text": "c", "source_fact_ids": ["bul_unify_001"]}],
+            x2_gates=[{"gate_id": "x2_schema_valid", "pass": True}],
+            x1d_judges=[
+                {
+                    "provider_key": "anthropic_claude",
+                    "evaluator_mode": "MODEL_BACKED",
+                    "provider_status": "MODEL_BACKED_FAIL",
+                    "pass": False,
+                    "decisive_failure": False,
+                }
+            ],
+            runtime_generation_status="REAL_LLM",
+            product_quality_status="PASS",
+        )
+        assert x3.x3_code != "X3_ALLOW"
     
     def test_x3_review_judge_provider_blocked(self):
         """Test 9: X3_REVIEW_JUDGE_PROVIDER_BLOCKED if X2 passes but judges blocked."""

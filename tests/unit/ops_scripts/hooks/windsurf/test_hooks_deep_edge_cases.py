@@ -13,7 +13,7 @@ This file specifically targets branches that the existing test files do NOT cove
   - pytest full-suite regex variants (trailing slash, Windows backslash)
   - subprocess nested-paren timeout window
   - post_write_audit finding_count accuracy, ${env:} format allow-list
-  - post_cascade_cleanup per-log rotation limits (500 / 500 / 200)
+  - post_cursor_agent_cleanup per-log rotation limits (500 / 500 / 200)
   - pre_prompt_classifier field aliasing, default tier, keyword priority
 """
 
@@ -29,7 +29,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+# Cursor scripts second so `.windsurf/scripts` remains first on sys.path for hook
+# parity tests (e.g. pre_write_gate). Modules only in `.cursor/scripts` still resolve.
+sys.path.insert(0, str(_REPO_ROOT / ".cursor" / "scripts"))
+sys.path.insert(0, str(_REPO_ROOT / ".windsurf" / "scripts"))
+
+# Repo-relative .py path for pre_write_gate payloads — avoids SSOT repo-root-py
+# blocks on synthetic top-level names (constitutional §31 / _ssot_folder_check).
+_SAFE_PY_REL = "tests/unit/ops_scripts/hooks/windsurf/_pre_write_gate_payload_dummy.py"
 
 
 # ---------------------------------------------------------------------------
@@ -234,21 +242,21 @@ class TestPreWriteGatePayloadShapes:
 
     def test_edits_is_null_treated_as_empty(self):
         # null edits on a .py file → no antipatterns → allow (not a deletion block)
-        payload = {"tool_info": {"file_path": "foo.py", "edits": None}}
+        payload = {"tool_info": {"file_path": _SAFE_PY_REL, "edits": None}}
         assert self._run(json.dumps(payload)) == 0
 
     def test_edits_is_dict_treated_as_empty(self):
         # dict instead of list → normalised to [] → allow
-        payload = {"tool_info": {"file_path": "foo.py", "edits": {"old_string": "", "new_string": "x"}}}
+        payload = {"tool_info": {"file_path": _SAFE_PY_REL, "edits": {"old_string": "", "new_string": "x"}}}
         assert self._run(json.dumps(payload)) == 0
 
     def test_edits_item_is_not_dict_skipped(self):
         # list containing a non-dict item → skip that item, no crash
-        payload = {"tool_info": {"file_path": "foo.py", "edits": ["not a dict", 42]}}
+        payload = {"tool_info": {"file_path": _SAFE_PY_REL, "edits": ["not a dict", 42]}}
         assert self._run(json.dumps(payload)) == 0
 
     def test_new_string_is_null_no_crash(self):
-        payload = {"tool_info": {"file_path": "foo.py", "edits": [{"old_string": "", "new_string": None}]}}
+        payload = {"tool_info": {"file_path": _SAFE_PY_REL, "edits": [{"old_string": "", "new_string": None}]}}
         assert self._run(json.dumps(payload)) == 0
 
     def test_file_path_is_int_not_py_or_json(self):
@@ -350,7 +358,7 @@ class TestPreWriteGateMultipleViolations:
         from pre_write_gate import main
 
         payload = {
-            "tool_info": {"file_path": "module.py", "edits": [{"old_string": "", "new_string": new_string}]}
+            "tool_info": {"file_path": _SAFE_PY_REL, "edits": [{"old_string": "", "new_string": new_string}]}
         }
         stderr_cap = StringIO()
         with patch("sys.stdin", _stdin(payload)):
@@ -388,7 +396,7 @@ class TestPreWriteGateArgvFastPath:
         # The payload has a bare-except violation but argv says .md → skipped
         payload = {
             "tool_info": {
-                "file_path": "module.py",
+                "file_path": _SAFE_PY_REL,
                 "edits": [{"old_string": "", "new_string": "except:\n    pass\n"}],
             }
         }
@@ -397,7 +405,7 @@ class TestPreWriteGateArgvFastPath:
     def test_argv_txt_file_returns_0(self):
         payload = {
             "tool_info": {
-                "file_path": "module.py",
+                "file_path": _SAFE_PY_REL,
                 "edits": [{"old_string": "", "new_string": "except:\n    pass\n"}],
             }
         }
@@ -406,7 +414,7 @@ class TestPreWriteGateArgvFastPath:
     def test_argv_py_file_proceeds_to_gate(self):
         payload = {
             "tool_info": {
-                "file_path": "module.py",
+                "file_path": _SAFE_PY_REL,
                 "edits": [{"old_string": "", "new_string": "except:\n    pass\n"}],
             }
         }
@@ -463,7 +471,7 @@ class TestPreMcpGateRecoveryToolCaseSensitivity:
         _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": tool_name}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", repo_root):
+            with patch("pre_mcp_gate.repo_root", repo_root):
                 return main()
 
     def test_adg_health_lowercase_whitelisted(self, tmp_path):
@@ -503,7 +511,7 @@ class TestPreMcpGateStalenessThresholds:
         os.utime(snap, (mtime, mtime))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 return main()
 
     def test_age_60s_allowed(self, tmp_path):
@@ -529,7 +537,7 @@ class TestPreMcpGateStalenessThresholds:
         _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert _mcp_main() == 0
 
     def test_multiple_snapshots_newest_wins(self, tmp_path):
@@ -547,7 +555,7 @@ class TestPreMcpGateStalenessThresholds:
         os.utime(new_snap, (now - 300, now - 300))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert main() == 0  # newest snapshot reported, always allowed
 
 
@@ -564,7 +572,7 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-wal")).write_bytes(b"\x00" * 32)
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert main() == 0
 
     def test_nonzero_journal_with_healthy_db_allowed_for_read(self, tmp_path):
@@ -577,7 +585,7 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-journal")).write_bytes(b"\x00" * 32)
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert main() == 0
 
     def test_real_write_contention_blocks_write_tool(self, tmp_path):
@@ -593,7 +601,7 @@ class TestPreMcpGateLockDetection:
         try:
             payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_rebuild"}}
             with patch("sys.stdin", _stdin(payload)):
-                with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+                with patch("pre_mcp_gate.repo_root", tmp_path):
                     assert main() == 2
         finally:
             holder.rollback()
@@ -608,7 +616,7 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-wal")).write_text("")  # zero-byte = normal WAL mode
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert main() == 0
 
     def test_no_lock_file_allowed(self, tmp_path):
@@ -619,7 +627,7 @@ class TestPreMcpGateLockDetection:
         _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert main() == 0
 
     def test_lock_check_skipped_for_recovery_tools(self, tmp_path):
@@ -631,7 +639,7 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-wal")).write_text("")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_health"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.repo_root", tmp_path):
                 assert main() == 0  # recovery tool bypasses lock check
 
 
@@ -787,7 +795,7 @@ class TestPostRunAuditPayloadShapes:
 
         log = tmp_path / "spawned_processes.jsonl"
         with patch("sys.stdin", StringIO(raw)):
-            with patch("post_run_audit.PROCESS_LOG", log):
+            with patch("post_run_audit.process_log", log):
                 with patch("post_run_audit._get_pid_best_effort", return_value=None):
                     return main()
 
@@ -808,7 +816,7 @@ class TestPostRunAuditPayloadShapes:
         from post_run_audit import main
 
         with patch("sys.stdin", _stdin({"tool_info": "git status"})):
-            with patch("post_run_audit.PROCESS_LOG", log):
+            with patch("post_run_audit.process_log", log):
                 with patch("post_run_audit._get_pid_best_effort", return_value=None):
                     rc = main()
         assert rc == 0
@@ -833,7 +841,7 @@ class TestPostMcpAuditPayloadShapes:
         from post_mcp_audit import main
 
         with patch("sys.stdin", StringIO(raw)):
-            with patch("post_mcp_audit.AUDIT_LOG", log_path):
+            with patch("post_mcp_audit.audit_log", log_path):
                 return main()
 
     def test_list_payload_returns_0(self, tmp_path):
@@ -853,7 +861,7 @@ class TestPostMcpAuditPayloadShapes:
         from post_mcp_audit import main
 
         with patch("sys.stdin", _stdin({"tool_info": "adg_sqlite"})):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 rc = main()
         assert rc == 0
         assert not log.exists()
@@ -866,7 +874,7 @@ class TestPostMcpAuditPayloadShapes:
             "tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node", "duration_ms": 0}
         }
         with patch("sys.stdin", _stdin(payload)):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 main()
         record = json.loads(log.read_text())
         assert record["duration_ms"] == 0
@@ -883,7 +891,7 @@ class TestPostMcpAuditPayloadShapes:
             }
         }
         with patch("sys.stdin", _stdin(payload)):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 main()
         record = json.loads(log.read_text())
         assert record["duration_ms"] == 123.456
@@ -894,7 +902,7 @@ class TestPostMcpAuditPayloadShapes:
 
         payload = {"tool_info": {}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 main()
         record = json.loads(log.read_text())
         assert record["mcp_server_name"] == ""
@@ -910,24 +918,24 @@ class TestPostMcpAuditPayloadShapes:
 class TestPostWriteAuditPayloadShapes:
     """Non-dict payloads must not crash — always return 0."""
 
-    def _run(self, raw: str) -> int:
+    def _run(self, raw: str, sink: Path) -> int:
         from post_write_audit import main
 
         with patch("sys.stdin", StringIO(raw)):
-            with patch("post_write_audit.AUDIT_LOG", Path("/dev/null")):
+            with patch("post_write_audit.audit_log", sink):
                 return main()
 
-    def test_list_payload_returns_0(self):
-        assert self._run(json.dumps([{"file_path": "mcp_config.json"}])) == 0
+    def test_list_payload_returns_0(self, tmp_path):
+        assert self._run(json.dumps([{"file_path": "mcp_config.json"}]), tmp_path / "sink.jsonl") == 0
 
-    def test_string_payload_returns_0(self):
-        assert self._run(json.dumps("mcp_config.json")) == 0
+    def test_string_payload_returns_0(self, tmp_path):
+        assert self._run(json.dumps("mcp_config.json"), tmp_path / "sink.jsonl") == 0
 
-    def test_null_payload_returns_0(self):
-        assert self._run("null") == 0
+    def test_null_payload_returns_0(self, tmp_path):
+        assert self._run("null", tmp_path / "sink.jsonl") == 0
 
-    def test_tool_info_non_dict_returns_0(self):
-        assert self._run(json.dumps({"tool_info": "mcp_config.json"})) == 0
+    def test_tool_info_non_dict_returns_0(self, tmp_path):
+        assert self._run(json.dumps({"tool_info": "mcp_config.json"}), tmp_path / "sink.jsonl") == 0
 
 
 class TestPostWriteAuditEnvVarFormats:
@@ -970,7 +978,7 @@ class TestPostWriteAuditEnvVarFormats:
         mcp_file.write_text(json.dumps({"mcpServers": {}}))  # missing server entries
         payload = {"tool_info": {"file_path": str(mcp_file), "edits": []}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("post_write_audit.AUDIT_LOG", log):
+            with patch("post_write_audit.audit_log", log):
                 main()
         if log.exists():
             record = json.loads(log.read_text().strip())
@@ -980,7 +988,7 @@ class TestPostWriteAuditEnvVarFormats:
 
 
 # ============================================================================
-# post_cascade_cleanup — deep edge cases
+# post_cursor_agent_cleanup — deep edge cases
 # ============================================================================
 
 
@@ -992,7 +1000,7 @@ class TestPostCascadeCleanupRotationLimits:
         path.write_text("\n".join(f"line {i}" for i in range(n_lines)) + "\n")
 
     def test_process_log_limit_is_500(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         log = tmp_path / "spawned_processes.jsonl"
         self._make_log(log, 600)
@@ -1001,7 +1009,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 500
 
     def test_mcp_tool_log_limit_is_500(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_tool_audit.jsonl"
         self._make_log(log, 600)
@@ -1010,7 +1018,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 500
 
     def test_mcp_lint_log_limit_is_200_not_500(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 300)
@@ -1019,7 +1027,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 200, "mcp_lint_audit has a 200-line limit, not 500"
 
     def test_at_exactly_limit_no_rotation(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 200)
@@ -1028,7 +1036,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert log.read_text() == original, "At exactly limit, file must not be modified"
 
     def test_under_limit_no_rotation(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         log = tmp_path / "spawned_processes.jsonl"
         self._make_log(log, 10)
@@ -1036,7 +1044,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(log.read_text().strip().splitlines()) == 10
 
     def test_rotation_keeps_newest_lines(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 250)
@@ -1047,7 +1055,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert lines[-1] == "line 249"
 
     def test_session_summary_has_audit_line_counts_keyed_by_filename(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         summary = run_cleanup(tmp_path)
         assert "audit_line_counts" in summary
@@ -1057,18 +1065,18 @@ class TestPostCascadeCleanupRotationLimits:
         assert "mcp_lint_audit.jsonl" in counts
 
     def test_session_summary_has_timestamp(self, tmp_path):
-        from post_cascade_cleanup import run_cleanup
+        from post_cursor_agent_cleanup import run_cleanup
 
         summary = run_cleanup(tmp_path)
         assert "timestamp" in summary
         datetime.fromisoformat(summary["timestamp"].replace("Z", "+00:00"))
 
     def test_main_returns_0_even_on_oserror(self, tmp_path):
-        from post_cascade_cleanup import main, WINDSURF_DIR, SESSION_SUMMARY
+        from post_cursor_agent_cleanup import main
 
-        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path / "no_write"):
+        with patch("post_cursor_agent_cleanup.windsurf_dir", tmp_path / "no_write"):
             with patch(
-                "post_cascade_cleanup.SESSION_SUMMARY",
+                "post_cursor_agent_cleanup.session_summary",
                 tmp_path / "no_write" / "s.json",
             ):
                 with patch("pathlib.Path.mkdir", side_effect=OSError("read only")):

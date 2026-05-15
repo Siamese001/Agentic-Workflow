@@ -16,7 +16,7 @@ Bypass: ``UNRESOLVED_RATCHET_BYPASS=1``.
 
 from __future__ import annotations
 
-# W4 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md
+# W4 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md
 # §6 + agentic_core/adg/artifact/consumer_mode.py).
 # Ratchet over RISK_SIGNAL_ONLY edges — this is a hygiene signal, not a verdict.
 __adg_consumer_mode__ = "risk"

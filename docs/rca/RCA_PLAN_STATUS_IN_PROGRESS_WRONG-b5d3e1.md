@@ -79,8 +79,8 @@ grep "WAVE_START.*plan=<your-slug>" artifacts/windsurf/wave_lifecycle_capture.js
 ```
 
 **How it happens:**
-1. Cascade emits: `WAVE_START: plan=<slug> wave=1` in response
-2. `post_cascade_wave_lifecycle_capture.py` parses marker
+1. Cursor Agent emits: `WAVE_START: plan=<slug> wave=1` in response
+2. `post_cursor_agent_wave_lifecycle_capture.py` parses marker
 3. Calls `patch_for_marker(marker, current_status="Not Started")`
 4. Status flips to "In Progress"
 
@@ -98,7 +98,7 @@ grep "WAVE_START.*plan=<your-slug>" artifacts/windsurf/wave_lifecycle_capture.js
 ```
 
 **How it happens:**
-1. Cascade creates plan via `API-post-page`
+1. Cursor Agent creates plan via `API-post-page`
 2. Mistakenly sets `Status` to "In Progress" instead of "Not Started"
 3. **This is a bug** — new plans should always be "Not Started"
 
@@ -109,7 +109,7 @@ grep "WAVE_START.*plan=<your-slug>" artifacts/windsurf/wave_lifecycle_capture.js
 ### Cause 4: Retrospective plan completed in same turn, then `start` called
 
 **Evidence to check:**
-- Plan created and marked "Completed" in same Cascade turn
+- Plan created and marked "Completed" in same Cursor Agent turn
 - Then `wave_execution_state.py start` called on next turn
 
 **How it happens:**

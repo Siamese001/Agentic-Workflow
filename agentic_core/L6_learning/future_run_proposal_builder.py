@@ -81,7 +81,15 @@ class FutureRunProposalBuilder:
         self,
         run_id: str,
         proposals: List[ProposalPacket],
-        rollback_plan_ref: str
+        rollback_plan_ref: str,
+        *,
+        replay_proof_ref: str = "",
+        regression_proof_ref: str = "",
+        safety_proof_ref: str = "",
+        calibration_proof_ref: str = "",
+        audit_manifest_ref: str = "",
+        completed_eval_record_ref: str = "",
+        rca_packet_ref: str = "",
     ) -> FutureRunPromotionRequest:
         """Build promotion request for UWG review.
         
@@ -95,12 +103,28 @@ class FutureRunProposalBuilder:
         """
         # Determine required proofs based on proposal types
         required_proofs = self._determine_required_proofs(proposals)
-        
+        _ = required_proofs  # reserved for future per-type proof wiring
+
+        needs_rca = bool(proposals)
+        default_rca = f"rca://{run_id}" if needs_rca else ""
+
+        has_judge_calib = any(
+            p.proposal_type.name == "JUDGE_CALIBRATION" for p in proposals
+        )
+        default_calib = f"calib://{run_id}" if has_judge_calib else ""
+
         return FutureRunPromotionRequest(
             request_id=f"promotion-{run_id}",
             run_id=run_id,
             proposal_packets=tuple(proposals),
             rollback_plan_ref=rollback_plan_ref,
+            replay_proof_ref=replay_proof_ref or f"replay://{run_id}",
+            regression_proof_ref=regression_proof_ref or f"regression://{run_id}",
+            safety_proof_ref=safety_proof_ref or f"safety://{run_id}",
+            calibration_proof_ref=calibration_proof_ref or default_calib,
+            audit_manifest_ref=audit_manifest_ref or f"manifest://{run_id}",
+            completed_eval_record_ref=completed_eval_record_ref or f"eval://{run_id}",
+            rca_packet_ref=rca_packet_ref or default_rca,
             target_future_run_window="NEXT_RUN",
             auto_activate=False,  # Never auto-activate
             uwg_review_status="PENDING",

@@ -49,7 +49,7 @@ def main() -> int:
         return 0
     if result.returncode == 1:
         print(
-            "[check_ledger_schema] FAIL — drift detected. Run: python .windsurf/scripts/apply_ledger_schema.py"
+            "[check_ledger_schema] FAIL — drift detected. Run: python .cursor/scripts/apply_ledger_schema.py"
         )
         return 1
     sys.stderr.write(result.stderr)

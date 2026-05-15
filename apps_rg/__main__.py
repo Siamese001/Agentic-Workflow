@@ -13,7 +13,7 @@ Exit codes:
     0   — success
     1   — unhandled error
     2   — argument error
-    7   — wizard / cascade-prompts sentinel mode (missing required inputs)
+    7   — wizard / cursor-prompts sentinel mode (missing required inputs)
 """
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--dry-run", action="store_true", help="Validate inputs without calling LLM")
     p.add_argument(
-        "--cascade-prompts",
+        "--cursor-prompts",
         action="store_true",
         help="Wizard mode — write sentinel and exit 7 when inputs are missing",
     )
@@ -120,13 +120,13 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:  # noqa: C901
     """CLI entry point for apps_rg.
 
-    Returns exit code (0 = success, 7 = cascade-prompts sentinel).
+    Returns exit code (0 = success, 7 = cursor-prompts sentinel).
     """
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    # Wizard / cascade-prompts mode: if mandatory inputs are missing, write a
-    # sentinel line and exit 7 so the calling process (Cascade IDE) can prompt
+    # Wizard / cursor-prompts mode: if mandatory inputs are missing, write a
+    # sentinel line and exit 7 so the calling process (Cursor Agent IDE) can prompt
     # the user for the missing fields.
     mandatory_missing = []
     if not args.target_company:
@@ -134,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if not args.target_role:
         mandatory_missing.append("--target-role")
 
-    if mandatory_missing and args.cascade_prompts:
+    if mandatory_missing and args.cursor_prompts:
         sentinel = (
             f"CASCADE_WIZARD_SENTINEL: mandatory inputs missing: "
             f"{', '.join(mandatory_missing)}. "
@@ -173,7 +173,19 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             artifact_dir=args.artifact_dir,
         )
         status = result.get("exit_status", "unknown") if isinstance(result, dict) else "unknown"
-        print(f"apps_rg completed: exit_status={status}", flush=True)
+        authorized = (
+            bool(result.get("outcome_authorized"))
+            if isinstance(result, dict)
+            else False
+        )
+        print(
+            f"apps_rg completed: exit_status={status} outcome_authorized={authorized}",
+            flush=True,
+        )
+        if isinstance(result, dict) and result.get("artifact_dir"):
+            print(f"artifact_dir={result['artifact_dir']}", flush=True)
+        if status != "success" or not authorized:
+            return 1
         return 0
     except Exception as exc:
         print(f"ERROR: apps_rg pipeline failed: {exc}", file=sys.stderr, flush=True)

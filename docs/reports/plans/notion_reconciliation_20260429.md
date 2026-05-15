@@ -69,7 +69,7 @@ Slug doesn't exist on disk OR in archives:
 | `adg-trace-replay-eval-ratchet` | W1.1 ratchet regression — never scaffolded |
 | `adg-l5-bypass-cleanup` | W1.1 P0 L5 safety bypass |
 | `adg-seam-test-coherence-cleanup` | W1.1 P1 6 violations |
-| `post-cascade-watchdog-hardening` | hook hardening item |
+| `post-cursor-agent-watchdog-hardening` | hook hardening item |
 | `windsurf-hook-outage-2026-04-23` | RCA item |
 | `pytest-server-functional-tests` | test scaffolding |
 | `d7-anchor-tuning` | D7 gate tuning |

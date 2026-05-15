@@ -67,7 +67,7 @@ Before any Tier 3→4 transition (deletion):
 ## Enforcement
 
 - CI gate: `check_archive_lifecycle_compliance.py` (T7r tier)
-- Audit: `post_cascade_archive_audit.py` logs to `artifacts/windsurf/archive_lifecycle.jsonl`
+- Audit: `post_cursor_agent_archive_audit.py` logs to `artifacts/windsurf/archive_lifecycle.jsonl`
 - Bypass: `ARCHIVE_LIFECYCLE_BYPASS=1`
 
 ## Related

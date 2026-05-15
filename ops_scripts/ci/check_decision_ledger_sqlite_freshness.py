@@ -2,10 +2,10 @@
 """check_decision_ledger_sqlite_freshness.py — CI gate for decision-ledger health.
 
 Validates that the canonical SQLite decision ledger
-(.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite) is being
+(.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite) is being
 written to. The ledger is fed by:
 
-    Cascade response  -->  tools/capture/append_marker.py  -->  markers.jsonl
+    Cursor Agent response  -->  tools/capture/append_marker.py  -->  markers.jsonl
                             -->  tools/capture/queue_to_ledger.py  -->  SQLite
 
 If the JSONL queue has un-drained DECISION_CAPTURED markers (>1 hour old),

@@ -347,11 +347,11 @@ enforcement_type: behavioural_primary_structural_secondary
 
 | Date | Change | Author |
 |------|--------|--------|
-| 2026-03-11 | Initial architecture document created | Cascade AI |
-| 2026-03-11 | Removed AST-first gate from pre-commit (misplaced) | Cascade AI |
-| 2026-03-11 | Added mandatory pre-condition blocks to 5 Windsurf skills | Cascade AI |
-| 2026-03-11 | Tightened dedup and rollback CI gates to proxy/artifact checks | Cascade AI |
-| 2026-03-11 | Added enforcement_layer metadata to all skills | Cascade AI |
+| 2026-03-11 | Initial architecture document created | Cursor Agent AI |
+| 2026-03-11 | Removed AST-first gate from pre-commit (misplaced) | Cursor Agent AI |
+| 2026-03-11 | Added mandatory pre-condition blocks to 5 Windsurf skills | Cursor Agent AI |
+| 2026-03-11 | Tightened dedup and rollback CI gates to proxy/artifact checks | Cursor Agent AI |
+| 2026-03-11 | Added enforcement_layer metadata to all skills | Cursor Agent AI |
 
 ---
 

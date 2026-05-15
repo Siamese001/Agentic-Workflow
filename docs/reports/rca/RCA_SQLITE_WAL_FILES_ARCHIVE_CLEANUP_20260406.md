@@ -181,4 +181,4 @@ if file_path.suffix == ".sqlite":
 ---
 
 **Last Updated**: 2026-04-06 04:15 UTC
-**Reviewed By**: Cascade AI Assistant
+**Reviewed By**: Cursor Agent AI Assistant

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-check_rules_filesystem_integrity.py — CI gate for .windsurf/rules/ validation.
+check_rules_filesystem_integrity.py — CI gate for .cursor/rules/ validation.
 
 Validates:
-1. All .md files in .windsurf/rules/ have frontmatter (--- delimited)
+1. All .md files in .cursor/rules/ have frontmatter (--- delimited)
 2. No duplicate rule titles (based on first h1 heading)
 3. File names follow kebab-case convention
 4. All internal references in rules point to valid files
@@ -56,8 +56,8 @@ FRONTMATTER_RE = re.compile(r"^---\s*$", re.MULTILINE)
 # First h1 heading: # Title
 H1_RE = re.compile(r"^#\s+(.+)$", re.MULTILINE)
 
-# Internal rule references: `rule-name.md` or @.windsurf/rules/rule-name.md
-RULE_REF_RE = re.compile(r"[@`]\.windsurf/rules/([a-z0-9-]+\.md)`|([a-z0-9-]+\.md)`")
+# Internal rule references: `rule-name.md` or @.cursor/rules/rule-name.md
+RULE_REF_RE = re.compile(r"[@`]\.cursor/rules/([a-z0-9-]+\.md)`|([a-z0-9-]+\.md)`")
 
 
 def _log_event(event: dict[str, Any]) -> None:

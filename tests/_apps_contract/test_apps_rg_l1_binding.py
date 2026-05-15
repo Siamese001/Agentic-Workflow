@@ -9,6 +9,7 @@ Validates:
 from __future__ import annotations
 
 import ast
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 from typing import Any
@@ -16,10 +17,14 @@ from typing import Any
 import pytest
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
-    AppsRgIngressPayload,
     ValidatedRequest,
 )
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
+from agentic_core.L0_routing.u0_intake_validator import AuthorityValidationReceipt
+from apps_rg.runtime.bindings.u0_profile_manifest import (
+    l1_planning_profile_digest,
+    l1_planning_profile_ref,
+)
 from apps_rg.runtime.bindings.l1_binding import (
     APPS_RG_L1_CERT_REF,
     l1_plan_apps_rg,
@@ -27,6 +32,30 @@ from apps_rg.runtime.bindings.l1_binding import (
     _FULL_RESUME_GENERATION_MODES,
     _SINGLE_SECTION_MODES,
 )
+
+_L5_DEFAULT = "test:valid:w6"
+
+
+def _auth_receipt() -> AuthorityValidationReceipt:
+    return AuthorityValidationReceipt(
+        validation_timestamp=datetime.now(timezone.utc).isoformat(),
+    )
+
+
+def _profile_manifest_digest_only() -> dict[str, str]:
+    return {
+        "l1_planning_profile_ref": l1_planning_profile_ref(),
+        "l1_planning_profile_digest": l1_planning_profile_digest(allow_missing=False),
+    }
+
+
+def _ap_base(**extra: Any) -> dict[str, Any]:
+    base: dict[str, Any] = {
+        "task_spec": {"generation_mode": "strategic_tailor"},
+        "profile_manifest": _profile_manifest_digest_only(),
+    }
+    base.update(extra)
+    return base
 
 
 class TestL1BindingExports:
@@ -52,9 +81,10 @@ class TestNonAuthorityAssertion:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
-            app_payload={},
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -107,11 +137,10 @@ class TestWorkShapeHints:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-            },
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -127,11 +156,14 @@ class TestWorkShapeHints:
             request_id="r1",
             run_id="run1",
             app_id="apps_rg",
+            task_class="resume_generation",
             trace_id="t1",
             payload_digest="sha256:test",
-            app_payload={
-                "task_spec": {"generation_mode": "section_regen"},
-            },
+            authority_validation_receipt=_auth_receipt(),
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(
+                task_spec={"generation_mode": "section_regen"},
+            ),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -151,11 +183,14 @@ class TestRouteHints:
             request_id="r1",
             run_id="run1",
             app_id="apps_rg",
+            task_class="resume_generation",
             trace_id="t1",
             payload_digest="sha256:test",
-            app_payload={
-                "task_spec": {"generation_mode": "generate_scratch"},
-            },
+            authority_validation_receipt=_auth_receipt(),
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(
+                task_spec={"generation_mode": "generate_scratch"},
+            ),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -169,11 +204,14 @@ class TestRouteHints:
             request_id="r1",
             run_id="run1",
             app_id="apps_rg",
+            task_class="resume_generation",
             trace_id="t1",
             payload_digest="sha256:test",
-            app_payload={
-                "task_spec": {"generation_mode": "healing_fact_check"},
-            },
+            authority_validation_receipt=_auth_receipt(),
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(
+                task_spec={"generation_mode": "healing_fact_check"},
+            ),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -193,9 +231,11 @@ class TestPlanningPriorRefs:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
+            l5_certification_ref=_L5_DEFAULT,
             app_payload={
+                "task_spec": {"generation_mode": "strategic_tailor"},
                 "profile_manifest": {"rg_planning_profile": "custom/planning.yaml"},
             },
         )
@@ -212,14 +252,18 @@ class TestPlanningPriorRefs:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
-            app_payload={},
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload={
+                "task_spec": {"generation_mode": "strategic_tailor"},
+                "profile_manifest": {"prompt_registry_ref": "apps_rg/prompt_assembly/x.yaml"},
+            },
         )
 
         plan = l1_plan_apps_rg(validated)
 
-        assert "apps_rg/config/domain_contract/rg_planning_profile.yaml" in plan.planning_prior_refs
+        assert "apps_rg/profiles/rg_planning_profile.yaml" in plan.planning_prior_refs
 
 
 class TestImportScan:
@@ -269,9 +313,11 @@ class TestImportScan:
 
         allowed_prefixes = [
             "agentic_core.runtime.contracts",
+            "apps_rg.runtime.bindings",
             "__future__",
             "typing",
             "logging",
+            "os",
         ]
 
         imports: list[str] = []
@@ -301,13 +347,15 @@ class TestL1PlanOutput:
             request_id="r1",
             run_id="run1",
             app_id="apps_rg",
+            task_class="resume_generation",
             trace_id="t1",
             payload_digest="sha256:test123",
             tenant_id="tenant_1",
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-                "target_level": "EXECUTIVE",
-            },
+            authority_validation_receipt=_auth_receipt(),
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(
+                query_spec={"target_level": "EXECUTIVE"},
+            ),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -332,13 +380,11 @@ class TestL1PlanOutput:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-            },
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(),
         )
-
         plan = l1_plan_apps_rg(validated)
 
         assert "validate_ingress" in plan.task_plan
@@ -355,11 +401,10 @@ class TestL1PlanOutput:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-            },
+            l5_certification_ref=_L5_DEFAULT,
+            app_payload=_ap_base(),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -380,12 +425,10 @@ class TestL5CertificationRefPropagation:
             app_id="apps_rg",
             task_class="resume_generation",
             payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
+            authority_validation_receipt=_auth_receipt(),
             trace_id="t1",
             l5_certification_ref="test:valid:abc123",
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-            },
+            app_payload=_ap_base(),
         )
 
         plan = l1_plan_apps_rg(validated)
@@ -393,43 +436,35 @@ class TestL5CertificationRefPropagation:
         assert plan.l5_certification_ref == "test:valid:abc123"
 
     def test_l1_plan_fails_closed_when_l5_certification_ref_missing(self) -> None:
-        """L1PlanContract fails closed when l5_certification_ref is missing."""
-        validated = ValidatedRequest(
-            request_id="r1",
-            run_id="run1",
-            app_id="apps_rg",
-            task_class="resume_generation",
-            payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
-            trace_id="t1",
-            l5_certification_ref=None,  # Missing
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-            },
-        )
-
+        """ValidatedRequest fails closed when l5_certification_ref is missing."""
         with pytest.raises(ValueError) as exc_info:
-            l1_plan_apps_rg(validated)
+            ValidatedRequest(
+                request_id="r1",
+                run_id="run1",
+                app_id="apps_rg",
+                task_class="resume_generation",
+                payload_digest="sha256:test",
+                authority_validation_receipt=_auth_receipt(),
+                trace_id="t1",
+                l5_certification_ref=None,
+                app_payload=_ap_base(),
+            )
 
         assert "AG-W0-5=fail_closed" in str(exc_info.value)
 
     def test_l1_plan_fails_closed_when_l5_certification_ref_invalid(self) -> None:
-        """L1PlanContract fails closed when l5_certification_ref is invalid."""
-        validated = ValidatedRequest(
-            request_id="r1",
-            run_id="run1",
-            app_id="apps_rg",
-            task_class="resume_generation",
-            payload_digest="sha256:test",
-            authority_validation_receipt="auth:valid:test",
-            trace_id="t1",
-            l5_certification_ref="invalid",  # Missing colon separator
-            app_payload={
-                "task_spec": {"generation_mode": "strategic_tailor"},
-            },
-        )
-
+        """ValidatedRequest fails closed when l5_certification_ref is empty."""
         with pytest.raises(ValueError) as exc_info:
-            l1_plan_apps_rg(validated)
+            ValidatedRequest(
+                request_id="r1",
+                run_id="run1",
+                app_id="apps_rg",
+                task_class="resume_generation",
+                payload_digest="sha256:test",
+                authority_validation_receipt=_auth_receipt(),
+                trace_id="t1",
+                l5_certification_ref="",
+                app_payload=_ap_base(),
+            )
 
         assert "AG-W0-5=fail_closed" in str(exc_info.value)

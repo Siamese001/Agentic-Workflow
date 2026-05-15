@@ -36,7 +36,9 @@ from agentic_core.runtime.contracts.sealed_workflow_types import (
 # ─────────────────────────────────────────────────────────────────────────────
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_MANIFEST_PATH = _REPO_ROOT / "apps_rg/config/workflow_manifest.resume_generation.v1.yaml"
+_MANIFEST_PATH = (
+    _REPO_ROOT / "apps_rg/config/fixtures/workflow_manifest.resume_generation.v1.minimal.yaml"
+)
 _REGISTRY_PATH = _REPO_ROOT / "apps_rg/config/route_registry.yaml"
 
 
@@ -142,7 +144,7 @@ class TestL3RunnerInputValidation:
     def test_l3_runner_fails_on_manifest_digest_mismatch(self, tmp_path):
         tampered_receipt = json.dumps(
             {
-                "workflow_manifest_path": "apps_rg/config/workflow_manifest.resume_generation.v1.yaml",
+                "workflow_manifest_path": "apps_rg/config/fixtures/workflow_manifest.resume_generation.v1.minimal.yaml",
                 "manifest_digest": "deadbeef" * 8,
             },
             separators=(",", ":"),
@@ -486,7 +488,7 @@ class TestL3RunnerEndToEnd:
 
     def test_apps_rg_l0_to_l3_stubbed_path_in_test_enabled_mode(self, tmp_path):
         """Full L0→L3 path in test-enabled mode with injected stub executor."""
-        from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
+        from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
         from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 
         # Build minimal L1PlanContract

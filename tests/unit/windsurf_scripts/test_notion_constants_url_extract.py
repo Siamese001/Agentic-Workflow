@@ -2,7 +2,7 @@
 
 Tests for extract_page_id() and format_uuid() in _notion_constants.py.
 
-RCA: Cascade mis-split a 32-char hex URL ID when inserting dashes manually.
+RCA: Cursor Agent mis-split a 32-char hex URL ID when inserting dashes manually.
 Fix: canonical helpers that mirror the Notion SDK helpers.ts regex logic.
 """
 

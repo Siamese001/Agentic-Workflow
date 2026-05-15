@@ -16,7 +16,7 @@ Fail-closed: set env ``APPS_TEST_SURFACE_FAIL_CLOSED=1`` to exit 1 on any violat
              (same as default; exists for parity with other gate patterns).
 
 Plan: apps-test-surface-consolidation-11acd9-v2 W6.3.
-Rule: .windsurf/rules/apps-test-surface-taxonomy.md.
+Rule: .cursor/rules/apps-test-surface-taxonomy.md.
 """
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ def main() -> int:
             print(f"  - {v.message}", file=sys.stderr)
 
     print(
-        "\nSee .windsurf/rules/apps-test-surface-taxonomy.md for remediation.",
+        "\nSee .cursor/rules/apps-test-surface-taxonomy.md for remediation.",
         file=sys.stderr,
     )
     print(

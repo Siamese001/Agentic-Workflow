@@ -1,51 +1,38 @@
 """Compatibility shim for ADG generator migration.
 
-Deprecated: This module redirects to tools.generate.generate_full_adg.
-The ADG generator has moved from tools/adg/ to tools/generate/.
+Deprecated: use ``tools.generate.generate_full_adg`` (canonical). Accessing
+``main`` or ``generate_full_adg`` on this module emits ``DeprecationWarning``
+once per attribute resolution (importing the module alone is silent).
 
 Migration:
     OLD: from tools.adg.generate_full_adg import main
     NEW: from tools.generate.generate_full_adg import main
-
-This shim will be removed in a future release.
 """
+
+from __future__ import annotations
+
 import warnings
-from pathlib import Path
+from importlib import import_module
+from typing import Any
 
-# Emit deprecation warning on import
-warnings.warn(
-    "tools.adg.generate_full_adg is deprecated. "
-    "Use tools.generate.generate_full_adg instead. "
-    "This shim will be removed in a future release.",
-    DeprecationWarning,
-    stacklevel=2,
-)
+__all__ = ("main", "generate_full_adg")
 
-# Re-export from canonical location
-try:
-    from tools.generate.generate_full_adg import main, generate_full_adg
-    
-    __all__ = ["main", "generate_full_adg"]
-except ImportError as e:
-    # If import fails, provide helpful error message
-    import sys
-    repo_root = Path(__file__).resolve().parents[2]
-    canonical_path = repo_root / "tools" / "generate"
-    
-    if not (canonical_path / "generate_full_adg.py").exists():
-        print(
-            f"ERROR: ADG generator not found at expected location: {canonical_path}",
-            file=sys.stderr,
-        )
-        print(
-            "The ADG generator has been relocated. Please update your imports:",
-            file=sys.stderr,
-        )
-        print("  OLD: tools.adg.generate_full_adg", file=sys.stderr)
-        print("  NEW: tools.generate.generate_full_adg", file=sys.stderr)
-    
-    raise
 
-# For command-line backward compatibility
+def __getattr__(name: str) -> Any:
+    if name not in __all__:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    warnings.warn(
+        "tools.adg.generate_full_adg is deprecated. "
+        "Use tools.generate.generate_full_adg instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    mod = import_module("tools.generate.generate_full_adg")
+    return getattr(mod, name)
+
+
 if __name__ == "__main__":
+    # CLI backward compatibility — direct import avoids DeprecationWarning noise.
+    from tools.generate.generate_full_adg import main
+
     main()

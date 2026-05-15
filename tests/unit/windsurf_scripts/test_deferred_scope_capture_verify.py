@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verification test for W3: Backlog Items writeback (post_cascade_deferred_scope_capture.py).
+"""Verification test for W3: Backlog Items writeback (post_cursor_agent_deferred_scope_capture.py).
 
 Tests the three key capabilities:
 1. Marker parsing (DEFERRED_SCOPE: ...)
@@ -20,7 +20,7 @@ sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
 
 # Import the hook module components (not main() to avoid stdin issues)
-from post_cascade_deferred_scope_capture import (
+from post_cursor_agent_deferred_scope_capture import (
     _parse_marker,
     _validate_marker,
     _build_notion_payload,

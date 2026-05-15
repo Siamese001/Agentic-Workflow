@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-04-25
-- Deciders: Cascade (under Author-Gate auto-recommendation), Amit
+- Deciders: Cursor Agent (under Author-Gate auto-recommendation), Amit
 - Related ADRs: ADR-049 (v4), ADR-023 (runtime HITL), ADR-049 children
 - Spec source: `docs/reference/00_L5_Policy_Plane/Governance & Safety v5.md`
 - Implementation plan: `.windsurf/plans/l5-v5-governance-implementation-7d3a91.md`

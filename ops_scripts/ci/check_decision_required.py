@@ -3,7 +3,7 @@
 check_decision_required.py — W4.2 pre-commit gate.
 
 If a commit touches paths on the Author-Gate trigger list (derived from
-`.windsurf/schemas/author_gate_triggers.yaml`), require that a decision
+`.cursor/schemas/author_gate_triggers.yaml`), require that a decision
 row exists in the refactor_decision_ledger within --recent-hours AND
 whose `normalized_intent` or `request_summary` overlaps the changed paths.
 
@@ -39,9 +39,9 @@ BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_required_bypass.js
 # Fallback trigger paths if author_gate_triggers.yaml cannot be parsed.
 # These are the narrow set we KNOW are always gate-class (harness infra).
 _FALLBACK_TRIGGER_PATHS = (
-    ".windsurf/scripts/",
-    ".windsurf/rules/",
-    ".windsurf/skills/",
+    ".cursor/scripts/",
+    ".cursor/rules/",
+    ".cursor/skills/",
     "ops_scripts/ci/",
     "agentic_core/L5_safety/",
     "agentic_core/L0_routing/",

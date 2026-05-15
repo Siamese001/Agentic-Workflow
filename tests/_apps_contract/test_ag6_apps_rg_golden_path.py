@@ -61,7 +61,7 @@ try:
     )
     from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
     from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
-    from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
+    from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
     from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
     from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
     from agentic_core.L2_execution.apps_rg_l2_binding import l2_execute_apps_rg

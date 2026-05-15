@@ -48,7 +48,7 @@ The constitutional `T0 / T1 / T2 / T3` classification governs **developer-loop t
 
 | Example | Constitutional Tier | L5 risk_tier_band |
 |---|---|---|
-| Cascade reads a file to answer a question | T0 | LOW |
+| Cursor Agent reads a file to answer a question | T0 | LOW |
 | Agent cancels a subscription via external API | T1 (if scripted) | HIGH |
 | Multi-file architectural refactor | T3 | LOW (no runtime blast) |
 | Agent writes to `apps_*/data/*` with PII | T2 | HIGH |

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gate G-THREE-BUCKET-IMPOSSIBLE-STATES — cross-bucket invariants.
 
-Plan: ``.windsurf/plans/adg-three-graph-harness-e57cc7.md`` (W2.P3).
+Plan: ``.cursor/plans/adg-three-graph-harness-e57cc7.md`` (W2.P3).
 
 Sister gate to ``check_three_bucket_gap_thresholds.py`` (which enforces
 PERCENTAGES per defect class). This gate enforces ABSOLUTE INVARIANTS that

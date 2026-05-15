@@ -91,6 +91,11 @@ class L1PlanContract:
     # W3: advisory route hints (not route authority)
     route_hints: Mapping[str, str] = field(default_factory=dict)
 
+    # p3.2: generic work-shape / profile binding for L0 (values from app route_profiles.yaml)
+    work_shape: str = ""
+    task_shape: str = ""
+    route_profile_ref: str = ""
+
     # W3: prompt BOM refs — references to prompt bill-of-materials entries
     prompt_bom_refs: tuple[str, ...] = field(default_factory=tuple)
 

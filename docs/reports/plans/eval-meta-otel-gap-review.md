@@ -5,7 +5,7 @@
 **Snapshot at exit**: `adg_indexed_04222026_2021.sqlite`
 **Status**: W1–W4 implemented, W5 deferred (see §6), W6 published (this document)
 **ADG provenance**: `backend=sqlite`, `snapshot=adg_indexed_04222026_2021.sqlite`
-**Reviewer**: Cascade (implementation mode, 2026-04-22)
+**Reviewer**: Cursor Agent (implementation mode, 2026-04-22)
 
 ---
 

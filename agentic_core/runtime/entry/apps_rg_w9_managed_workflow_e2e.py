@@ -39,7 +39,7 @@ from agentic_core.L3_orchestration.managed_workflow_runner import (
     ManagedWorkflowRunner,
     ManagedWorkflowRunnerError,
 )
-from agentic_core.L0_routing.apps_rg_l0_binding import (
+from apps_rg.runtime.bindings.l0_binding import (
     _MANAGED_ROUTE_TEST_FLAG,
     l0_route_apps_rg,
 )

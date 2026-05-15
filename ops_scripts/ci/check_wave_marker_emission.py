@@ -9,16 +9,16 @@ Detects plan `.md` files whose Wave Structure table contains rows with
 shows no ``WAVE_COMPLETE:`` / ``PLAN_COMPLETE:`` entries for that plan slug.
 
 This catches the failure mode documented in RCA rca-wave-marker-emission-gap-
-c7d3f1: Cascade executed multiple waves but never emitted the required
+c7d3f1: Cursor Agent executed multiple waves but never emitted the required
 ``WAVE_COMPLETE:`` markers, leaving the plan table permanently stale.
 
 Algorithm
 ---------
-1. Scan ``.windsurf/plans/*.md`` for Wave Structure tables with ``🔲 TODO``
+1. Scan ``.cursor/plans/*.md`` for Wave Structure tables with ``🔲 TODO``
    rows (skips plans where ALL rows are DONE or all are TODO — only flags
    mixed state, i.e. at least one ✅ DONE row alongside at least one 🔲 TODO).
    Mixed state indicates partial completion without terminal markers.
-2. For each flagged slug, check ``artifacts/windsurf/wave_lifecycle_capture.jsonl``
+2. For each flagged slug, check ``artifacts/cursor/wave_lifecycle_capture.jsonl``
    for any entry with ``"slug": "<slug>"`` — if absent the audit log has no
    record of marker emission for this plan.
 3. Report violations as WARN (advisory). Plans where the log has at least one

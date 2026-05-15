@@ -263,7 +263,7 @@ def test_from_env_uses_create_gemini_model(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_project_tools_groups_declarations_under_single_block() -> None:
-    """PRF2.B3: Cascade tool-schema list projects to Gemini's single
+    """PRF2.B3: Cursor Agent tool-schema list projects to Gemini's single
     ``function_declarations`` block shape."""
     cascade_tools = [
         {

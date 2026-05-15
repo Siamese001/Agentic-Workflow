@@ -1,6 +1,6 @@
 """L6 ADG Layer-Tag Consistency Gate.
 
-Plan: .windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W5.
+Plan: .cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W5.
 
 Verifies that every Python module under `system_learning/` is tagged
 `layer=L6` in the latest ADG SQLite snapshot. Surfaces drift if the
@@ -17,7 +17,7 @@ Modes
 
 Output
 ------
-Writes findings to `artifacts/windsurf/l6_layer_tag_violations.json`.
+Writes findings to `artifacts/cursor/l6_layer_tag_violations.json`.
 """
 from __future__ import annotations
 

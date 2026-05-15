@@ -30,7 +30,7 @@ for r in cur.fetchall():
 print()
 
 # AST-based fallback: count bare `except Exception:` / `except:` in source tree
-# to understand the real population Cascade would encounter in W6.1.
+# to understand the real population Cursor Agent would encounter in W6.1.
 import ast
 import os
 

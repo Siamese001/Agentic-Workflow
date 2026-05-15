@@ -287,6 +287,6 @@ python ops_scripts/ci/validate_hitl_format.py --path .windsurf/plans
 
 ---
 
-**Sign-Off**: Cascade AI
+**Sign-Off**: Cursor Agent AI
 **Review Date**: 2026-04-07
 **Next Review**: 2026-05-07

@@ -97,8 +97,8 @@ These gates appear unique (no obvious ADG view covers them). They may be **legit
 | `ops_scripts/ci/check_notion_schema_mece.py` | check_notion_schema_mece.py ΓÇö CI gate for Notion Wave/Phase Convergence MECE v2. |
 | `ops_scripts/ci/check_overlay_ratchet.py` | Parametric overlay ratchet ΓÇö implements C1-C5 from RCA-2026-04-24. |
 | `ops_scripts/ci/check_pipeline_skips.py` | CI gate: check_pipeline_skips.py ΓÇö ADG pipeline skip-ledger enforcement. |
-| `ops_scripts/ci/check_post_cascade_alive.py` | check_post_cascade_alive.py ΓÇö W5.6 post_cascade hook heartbeat gate. |
-| `ops_scripts/ci/check_post_cascade_payload.py` | CI gate: every post_cascade_*.py hook must use the shared payload extractor. |
+| `ops_scripts/ci/check_post_cursor_agent_alive.py` | check_post_cursor_agent_alive.py ΓÇö W5.6 post_cascade hook heartbeat gate. |
+| `ops_scripts/ci/check_post_cursor_agent_payload.py` | CI gate: every post_cursor_agent_*.py hook must use the shared payload extractor. |
 | `ops_scripts/ci/check_precedent_receipt.py` | check_precedent_receipt.py ΓÇö W2.1 precedent-receipt parity gate. |
 | `ops_scripts/ci/check_precedent_usage_rate.py` | check_precedent_usage_rate.py ΓÇö W5.3 precedent usage-rate monitor. |
 | `ops_scripts/ci/check_prediction_binding_sla.py` | check_prediction_binding_sla.py ΓÇö W3.2 predictionΓåÆoutcome binding SLA gate. |

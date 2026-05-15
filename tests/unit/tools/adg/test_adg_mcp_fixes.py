@@ -489,7 +489,7 @@ class TestToolHandlersAutoReload:
 
 
 # ---------------------------------------------------------------------------
-# Test 6 — Silent degraded fallback detection in post_cascade_adg_audit.py
+# Test 6 — Silent degraded fallback detection in post_cursor_agent_adg_audit.py
 # ---------------------------------------------------------------------------
 
 
@@ -501,10 +501,10 @@ class TestSilentDegradedFallbackDetection:
         import sys
         from pathlib import Path
 
-        scripts_dir = str(Path(__file__).resolve().parents[4] / ".windsurf" / "scripts")
+        scripts_dir = str(Path(__file__).resolve().parents[4] / ".cursor" / "scripts")
         if scripts_dir not in sys.path:
             sys.path.insert(0, scripts_dir)
-        from post_cascade_adg_audit import detect_violations
+        from post_cursor_agent_adg_audit import detect_violations
 
         return detect_violations
 
@@ -569,6 +569,34 @@ class TestSilentDegradedFallbackDetection:
         assert violations[0]["adg_mcp_also_used"] is True
         assert violations[0]["adg_health_checked"] is True
         assert violations[0]["silent_fallback"] is False
+
+    def test_cursor_grep_without_adg_grades_critical_when_snapshot_present(self, monkeypatch):
+        """Cursor native Grep for imports with no ADG → critical when snapshot exists."""
+        detect_violations = self._get_detect_violations()
+        monkeypatch.setattr(
+            "post_cursor_agent_adg_audit._adg_snapshot_available",
+            lambda: True,
+        )
+        response = 'CallMcpTool Grep pattern="from apps_rg import" glob="*.py"'
+        violations = detect_violations(response)
+        assert violations, "expected violation for Cursor Grep dep analysis"
+        assert violations[0]["severity"] == "critical"
+
+    def test_cursor_adg_sqlite_mitigates_grep_to_warning(self, monkeypatch):
+        """adg_sqlite MCP usage alongside Grep → warning not critical."""
+        detect_violations = self._get_detect_violations()
+        monkeypatch.setattr(
+            "post_cursor_agent_adg_audit._adg_snapshot_available",
+            lambda: True,
+        )
+        response = (
+            'server: "adg_sqlite" toolName: "adg_nodes_by_file" '
+            'Grep pattern="import redis_cache" glob="**/*.py"'
+        )
+        violations = detect_violations(response)
+        assert violations, "expected supplementary grep violation"
+        assert violations[0]["severity"] == "warning"
+        assert violations[0]["adg_mcp_also_used"] is True
 
 
 # ---------------------------------------------------------------------------

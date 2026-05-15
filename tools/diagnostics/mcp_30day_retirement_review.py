@@ -7,7 +7,7 @@ with the data needed to make the retirement vs. re-enablement decision.
 
 Methodology
 -----------
-Disabled MCPs do not appear in Cascade's tool list, so direct tool-call counts
+Disabled MCPs do not appear in Cursor Agent's tool list, so direct tool-call counts
 in `turn_budget.jsonl` will always be 0 for the disabled prefixes. This is
 expected and not, on its own, evidence of unneed.
 

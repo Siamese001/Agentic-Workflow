@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Decision Date**: 2026-04-23
-- **Deciders**: Cascade (on USER directive "execute and implement and test")
+- **Deciders**: Cursor Agent (on USER directive "execute and implement and test")
 - **Supersedes**: v1 behavior of `tools/priority/deferred_scope_scorer.py` (structurally compatible — v1 inputs preserved)
 - **Related**:
   - `.windsurf/rules/deferred-scope-capture.md`
@@ -98,7 +98,7 @@ The scorer rewards operationally severe items even when structural fan-in is low
 ### Completed in this ADR (layer A)
 
 - Marker grammar (`.windsurf/rules/deferred-scope-capture.md`) documents the 5 optional v2 fields.
-- Hook parser (`.windsurf/scripts/post_cascade_deferred_scope_capture.py`) parses optional keys and forwards them to `score_deferred_scope`.
+- Hook parser (`.windsurf/scripts/post_cursor_agent_deferred_scope_capture.py`) parses optional keys and forwards them to `score_deferred_scope`.
 - Test: `tests/unit/windsurf/scripts/test_deferred_scope_capture_v2_passthrough.py` proves passthrough + fail-open on unknown values.
 
 Each of these is a single-file follow-up tracked as its own DEFERRED_SCOPE item in the next execution wave.
@@ -110,7 +110,7 @@ Each of these is a single-file follow-up tracked as its own DEFERRED_SCOPE item 
 | `tools/priority/deferred_scope_scorer.py` | Added 5 optional kwargs + 5 ScoreResult fields + 5 CLI flags; formula extended; v1 parity preserved |
 | `tests/unit/tools/priority/test_deferred_scope_scorer_v2.py` | New — 26 tests across 7 classes |
 | `.windsurf/rules/deferred-scope-capture.md` | Marker grammar extended with 5 optional v2 fields table |
-| `.windsurf/scripts/post_cascade_deferred_scope_capture.py` | Hook parses optional v2 keys and forwards to scorer |
+| `.windsurf/scripts/post_cursor_agent_deferred_scope_capture.py` | Hook parses optional v2 keys and forwards to scorer |
 | `tests/unit/windsurf/scripts/test_deferred_scope_capture_v2_passthrough.py` | New — 5 tests proving end-to-end passthrough |
 
 ## Verification

@@ -1,6 +1,6 @@
 """CI gate — Plans DB rows must have non-empty AI Summary.
 
-Constitutional rule: `.windsurf/rules/notion-plans-taxonomy.md`
+Constitutional rule: `.cursor/rules/notion-plans-taxonomy.md`
 "Mandatory AI Summary" invariant (2026-05-03).
 
 Contract
@@ -174,7 +174,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             "\nFix: patch each row with a single-sentence AI Summary (≤ 12 words) "
             "covering scope + why-it-matters.\n"
-            "See `.windsurf/rules/notion-plans-taxonomy.md` > Mandatory AI Summary."
+            "See `.cursor/rules/notion-plans-taxonomy.md` > Mandatory AI Summary."
         )
         if _fail_closed():
             return 1

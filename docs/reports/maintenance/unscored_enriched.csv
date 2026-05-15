@@ -42,7 +42,7 @@ page_id,title,inferred_layer,inferred_surface,inferred_fan_in,coverage_gap_pct,b
 33f27693-f55c-81ff-8a26-f82c5629fde6,P1–P4 table augmentation (SQLite-only new rows),L_OPS,None,1,100.0,P3,130.1,[P3] P1–P4 table augmentation (SQLite-only new rows)
 33f27693-f55c-8112-a296-dbda401f5bdd,Pre-Run Gate (HARD),L_OPS,None,1,100.0,P3,130.1,[P3] Pre-Run Gate (HARD)
 33f27693-f55c-8130-8d4b-fe2d3274f710,MCP Config Simplification,L_OPS,None,1,100.0,P3,130.1,[P3] MCP Config Simplification
-33f27693-f55c-8134-b730-d12879026c76,Post-Cascade Cleanup (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Post-Cascade Cleanup (ADVISORY)
+33f27693-f55c-8134-b730-d12879026c76,Post-Cursor-Agent Cleanup (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Post-Cursor-Agent Cleanup (ADVISORY)
 33f27693-f55c-8138-bb80-fafe491ba60d,MCP Registry SSOT,L_OPS,None,1,100.0,P3,130.1,[P3] MCP Registry SSOT
 33f27693-f55c-814a-83cc-fadf5fb2e765,Pre-MCP Gate (HARD),L_OPS,None,1,100.0,P3,130.1,[P3] Pre-MCP Gate (HARD)
 33f27693-f55c-816c-a7b4-f310ccb617f9,Post-MCP Audit (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Post-MCP Audit (ADVISORY)

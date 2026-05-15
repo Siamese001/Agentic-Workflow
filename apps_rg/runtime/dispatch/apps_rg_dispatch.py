@@ -9,9 +9,21 @@ These helpers are the thin app-side counterparts to
 """
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any
 
-__all__ = ["apps_rg_dispatch", "apps_rg_parse"]
+# Minimum keys for a well-formed apps_rg thin payload (parse + U0 reflection gates).
+APPS_RG_REQUIRED_FIELDS: tuple[str, ...] = ("target_company", "target_role")
+
+__all__ = ["APPS_RG_REQUIRED_FIELDS", "apps_rg_dispatch", "apps_rg_parse"]
+
+
+def _as_dispatch_view(raw: dict[str, Any]) -> SimpleNamespace:
+    """Normalize dict returns so callers can use ``result.exit_status``."""
+    view = dict(raw)
+    if "outcome_authorized" not in view:
+        view["outcome_authorized"] = view.get("exit_status") == "success"
+    return SimpleNamespace(**view)
 
 
 def apps_rg_parse(payload: dict[str, Any]) -> Any:
@@ -28,26 +40,57 @@ def apps_rg_parse(payload: dict[str, Any]) -> Any:
     RequestEnvelope
         A validated `agentic_core` RequestEnvelope ready for U0 validation.
     """
-    from agentic_core.runtime.contracts.apps_rg_ingress_payload import RequestEnvelope
+    from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
+        AppsRgIngressPayload,
+        RequestEnvelope,
+    )
 
-    app_id = payload.get("app_id", "apps_rg")
-    task_class = payload.get("task_class", "resume_generation")
+    app_id = str(payload.get("app_id", "apps_rg"))
+    task_class = str(payload.get("task_class", "resume_generation"))
+    user_constraints = dict(payload.get("user_constraints") or {})
+    if "generation_mode" in payload:
+        user_constraints["_generation_mode"] = str(payload["generation_mode"])
 
-    app_payload: dict[str, Any] = {
-        k: v
-        for k, v in payload.items()
-        if k not in ("app_id", "task_class")
-    }
-
-    return RequestEnvelope(
+    ingress = AppsRgIngressPayload(
         app_id=app_id,
         task_class=task_class,
-        app_payload=app_payload,
+        target_company=payload.get("target_company"),
+        target_role=payload.get("target_role"),
+        target_level=payload.get("target_level"),
+        source_resume_ref=payload.get("source_resume_ref"),
+        source_resume_text=payload.get("source_resume_text"),
+        job_description_ref=payload.get("job_description_ref"),
+        job_description_text=payload.get("job_description_text"),
+        manual_brief_path=payload.get("manual_brief_path"),
+        auto_research_internal=bool(payload.get("auto_research_internal", False)),
+        auto_research_tavily=bool(payload.get("auto_research_tavily", False)),
+        research_via=payload.get("research_via"),
+        idempotency_key=payload.get("idempotency_key"),
+        payload_digest=str(payload.get("payload_digest", "")),
+        l5_certification_ref=payload.get("l5_certification_ref") or "test:valid:w6",
+        user_constraints=user_constraints,
+        output_preferences=payload.get("output_preferences") or {},
+    )
+
+    replay_key = str(
+        payload.get("replay_key")
+        or payload.get("idempotency_key")
+        or ""
+    )
+
+    return RequestEnvelope(
+        payload=ingress,
+        request_id=str(payload.get("request_id", "")),
+        run_id=str(payload.get("run_id", "")),
+        tenant_id=str(payload.get("tenant_id", "")),
+        trace_id=str(payload.get("trace_id", "")),
+        submitted_at=str(payload.get("submitted_at", "")),
+        replay_key=replay_key,
     )
 
 
-def apps_rg_dispatch(envelope: Any) -> dict[str, Any]:
-    """Dispatch a parsed RequestEnvelope through the full apps_rg pipeline.
+def apps_rg_dispatch(envelope: Any) -> SimpleNamespace:
+    """Dispatch a parsed RequestEnvelope through the apps_rg CLI seam.
 
     Parameters
     ----------
@@ -56,29 +99,47 @@ def apps_rg_dispatch(envelope: Any) -> dict[str, Any]:
 
     Returns
     -------
-    dict
-        Pipeline result with at minimum ``exit_status`` and
-        ``execution_status`` keys.
+    SimpleNamespace
+        Pipeline view with ``exit_status``, ``execution_status``, and
+        ``outcome_authorized`` (and optional ``error``).
     """
     try:
-        from agentic_core.runtime.entry.apps_rg_dispatch import (
-            dispatch_apps_rg_run,
-        )
+        from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
 
-        app_payload = getattr(envelope, "app_payload", {}) or {}
-        return dispatch_apps_rg_run(
-            target_company=app_payload.get("target_company", ""),
-            target_role=app_payload.get("target_role", ""),
-            target_level=app_payload.get("target_level", ""),
-            jd=app_payload.get("job_description_text", ""),
-            manual_brief=app_payload.get("manual_brief_path", "") or "",
-            resume_path=app_payload.get("source_resume_path", "") or "",
-            generation_mode=app_payload.get("generation_mode", "strategic_tailor"),
-            artifact_dir=app_payload.get("output_directory", ""),
-        )
+        payload_obj = getattr(envelope, "payload", None)
+        if payload_obj is not None and hasattr(payload_obj, "target_company"):
+            p = payload_obj
+            uc = dict(getattr(p, "user_constraints", None) or {})
+            gm = str(uc.get("_generation_mode") or "strategic_tailor")
+            raw = dispatch_apps_rg_run(
+                target_company=str(p.target_company or ""),
+                target_role=str(p.target_role or ""),
+                target_level=str(p.target_level or ""),
+                jd=str(p.job_description_text or ""),
+                manual_brief=str(p.manual_brief_path or "") or "",
+                resume_path=str(p.source_resume_ref or "") or "",
+                generation_mode=gm,
+                artifact_dir="",
+            )
+
+        else:
+            app_payload = getattr(envelope, "app_payload", {}) or {}
+            raw = dispatch_apps_rg_run(
+                target_company=app_payload.get("target_company", ""),
+                target_role=app_payload.get("target_role", ""),
+                target_level=app_payload.get("target_level", ""),
+                jd=app_payload.get("job_description_text", ""),
+                manual_brief=app_payload.get("manual_brief_path", "") or "",
+                resume_path=app_payload.get("source_resume_path", "") or "",
+                generation_mode=app_payload.get("generation_mode", "strategic_tailor"),
+                artifact_dir=app_payload.get("output_directory", ""),
+            )
+        return _as_dispatch_view(raw if isinstance(raw, dict) else {"exit_status": "error"})
     except Exception as exc:
-        return {
-            "exit_status": "error",
-            "execution_status": "failed",
-            "error": str(exc),
-        }
+        return _as_dispatch_view(
+            {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "error": str(exc),
+            }
+        )

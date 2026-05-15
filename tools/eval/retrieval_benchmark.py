@@ -716,6 +716,8 @@ def run_e2e_contract_proof(
         ("Citation anchor availability", "0% (absent)", "≥P2.4 (all spans)"),
         ("Contradiction flag survival", "absent", "P3.3 (in PromptEnvelope)"),
         ("Evidence metrics at exit (X1D)", "absent", "P4.1 (grounded_replayable)"),
+        ("Live ExitControlGate.evaluate(dict)", "benchmark-only stub", "P6.3 + evaluate_and_emit"),
+        ("L6 shadow telemetry sealed metrics", "minimal ShadowEvalPacket", "telemetry.evidence_metrics_sealed"),
         ("Backward compat (retrieve)", "✓", "✓ (P5.1-3 intact)"),
         ("EvidenceBundle as runtime contract", "add-on only", "first-class (P2-P4 chain)"),
     ]

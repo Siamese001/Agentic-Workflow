@@ -3,7 +3,7 @@
 **Status**: PROPOSED | ACCEPTED | REJECTED | SUPERSEDED-BY-ADR-NNN
 **Date**: YYYY-MM-DD
 **Phase**: [Wave/Phase ID or `n/a` for cross-cutting]
-**Deciders**: [Cascade + user Author-Gate, or named reviewers]
+**Deciders**: [Cursor Agent + user Author-Gate, or named reviewers]
 **ADG Snapshot**: `artifacts/adg/adg_indexed_<ts>.sqlite` (if structural)
 
 ---

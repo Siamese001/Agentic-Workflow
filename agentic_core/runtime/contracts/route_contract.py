@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
+from agentic_core.runtime.contracts.route_gate_receipt import RouteGateReceipt
 from typing import Any, Mapping, Optional, Tuple
 
 
@@ -102,6 +103,18 @@ class RouteContract:
 
     # W4: route gate refs — G07/G08/G10/G20 placeholder refs (UNKNOWN when harness absent)
     route_gate_refs: tuple[str, ...] = field(default_factory=tuple)
+    # p3.2: typed gate receipts (parallel to route_gate_refs strings for merge/runtime proof)
+    route_gate_receipts: tuple[RouteGateReceipt, ...] = field(default_factory=tuple)
+    # p3.2: canonical spine vocabulary — next stage authority (e.g. L3 for managed workflow)
+    allowed_next_stage: frozenset[str] = field(default_factory=frozenset)
+    # p3.2: ref-based provider/model requirement (resolved downstream; never raw vendor strings)
+    provider_model_requirement_ref: str = ""
+    # p3.2: personalization drives declarative cache bypass (R1A/R1B)
+    personalization_required: bool = False
+    # p3.2: generic work-shape hints (values defined in app-owned route_profiles.yaml)
+    work_shape: str = ""
+    task_shape: str = ""
+    route_profile_ref: str = ""
     # W4: route policy ref — pointer to the route profile used
     route_policy_ref: str = ""
 

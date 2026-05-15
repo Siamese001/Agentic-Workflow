@@ -95,6 +95,9 @@ class RequestEnvelope:
     tenant_id: str = ""  # W1: identity quad — sourced from app_id at U0 ingress (D6)
     trace_id: str = ""
     submitted_at: str = ""  # ISO-8601 timestamp
+    # 00A.6 replay binding — optional envelope-level override; U0 falls back to
+    # idempotency-derived key when empty (see u0_validate_apps_rg).
+    replay_key: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,6 +139,11 @@ class ValidatedRequest:
     # ValidatedRequest without it continue to work unchanged. The U0 reflection
     # adapter is the only producer that populates this with the validated
     # AppsRgIngressContractV1 dump.
+    #
+    # p3.1 (apps-rg-l1-contract-wiring): when populated by ``u0_validate_apps_rg``,
+    # ``app_payload["profile_manifest"]`` SHOULD include ``l1_planning_profile_ref``
+    # (repo-relative path) and ``l1_planning_profile_digest`` (64-char sha256 of that
+    # file) so ``l1_plan_apps_rg`` can fail-closed on digest mismatch.
     app_payload: Mapping[str, Any] = field(default_factory=dict)
     # apps-rg-u0-reflection-live-wiring-105147 W1.P1.3: reflection receipt
     # produced by ``apps_rg_u0_adapt`` when the harness is on the live path.

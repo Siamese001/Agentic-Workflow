@@ -3,19 +3,19 @@
 check_ag_hook_wiring.py — CI gate: Author-Gate hook wiring invariant.
 
 Enforces that whenever Author-Gate audit hooks are present in
-post_cascade_response, the pre-composition reminder hook is also wired
+post_cursor_agent_response, the pre-composition reminder hook is also wired
 in pre_user_prompt with show_output=true, and that all required AG audit
 hooks are visible (show_output=true).
 
 Invariants checked:
   AG-WIRE-1: pre_user_prompt contains pre_user_prompt_author_gate_reminder.py
               with show_output=true whenever any AG audit hook is present in
-              post_cascade_response
-  AG-WIRE-2: post_cascade_author_gate_miss_detector.py must be present with
+              post_cursor_agent_response
+  AG-WIRE-2: post_cursor_agent_author_gate_miss_detector.py must be present with
               show_output=true
-  AG-WIRE-3: post_cascade_author_gate_ui_audit.py must be present with
+  AG-WIRE-3: post_cursor_agent_author_gate_ui_audit.py must be present with
               show_output=true
-  AG-WIRE-4: post_cascade_ask_user_question_packet_audit.py must be present
+  AG-WIRE-4: post_cursor_agent_ask_user_question_packet_audit.py must be present
               with show_output=true
 
 Exit codes:
@@ -48,23 +48,23 @@ VIOLATIONS_OUT = REPO_ROOT / "artifacts" / "windsurf" / "ag_hook_wiring_violatio
 BYPASS_ENV = "AG_HOOK_WIRING_BYPASS"
 FAIL_CLOSED_ENV = "AG_HOOK_WIRING_FAIL_CLOSED"
 
-# Hooks that MUST be in post_cascade_response with show_output=true
-REQUIRED_POST_CASCADE_HOOKS: list[dict[str, Any]] = [
+# Hooks that MUST be in post_cursor_agent_response with show_output=true
+REQUIRED_POST_CURSOR_AGENT_HOOKS: list[dict[str, Any]] = [
     {
         "id": "AG-WIRE-2",
-        "script": "post_cascade_author_gate_miss_detector.py",
+        "script": "post_cursor_agent_author_gate_miss_detector.py",
         "show_output": True,
         "description": "miss detector must be present and visible",
     },
     {
         "id": "AG-WIRE-3",
-        "script": "post_cascade_author_gate_ui_audit.py",
+        "script": "post_cursor_agent_author_gate_ui_audit.py",
         "show_output": True,
         "description": "UI audit must be present and visible",
     },
     {
         "id": "AG-WIRE-4",
-        "script": "post_cascade_ask_user_question_packet_audit.py",
+        "script": "post_cursor_agent_ask_user_question_packet_audit.py",
         "show_output": True,
         "description": "ask-packet audit must be present and visible",
     },
@@ -73,13 +73,13 @@ REQUIRED_POST_CASCADE_HOOKS: list[dict[str, Any]] = [
 # Hook that MUST be in pre_user_prompt with show_output=true (AG-WIRE-1)
 REQUIRED_PRE_PROMPT_HOOK = "pre_user_prompt_author_gate_reminder.py"
 
-# Any of these in post_cascade_response triggers the wiring check
+# Any of these in post_cursor_agent_response triggers the wiring check
 AG_AUDIT_TRIGGER_SCRIPTS = {
-    "post_cascade_author_gate_miss_detector.py",
-    "post_cascade_author_gate_ui_audit.py",
-    "post_cascade_author_gate_schema_audit.py",
-    "post_cascade_ask_user_question_packet_audit.py",
-    "post_cascade_author_gate_capture.py",
+    "post_cursor_agent_author_gate_miss_detector.py",
+    "post_cursor_agent_author_gate_ui_audit.py",
+    "post_cursor_agent_author_gate_schema_audit.py",
+    "post_cursor_agent_ask_user_question_packet_audit.py",
+    "post_cursor_agent_author_gate_capture.py",
 }
 
 
@@ -113,7 +113,7 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
     """
     violations: list[dict[str, Any]] = []
 
-    post_cascade = _hooks_for_event(hooks_data, "post_cascade_response")
+    post_cascade = _hooks_for_event(hooks_data, "post_cursor_agent_response")
     pre_prompt = _hooks_for_event(hooks_data, "pre_user_prompt")
 
     # Build lookup maps: script_name → hook entry
@@ -159,7 +159,7 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
         })
 
     # AG-WIRE-2/3/4: required post_cascade audit hooks must be present and visible
-    for req in REQUIRED_POST_CASCADE_HOOKS:
+    for req in REQUIRED_POST_CURSOR_AGENT_HOOKS:
         script = req["script"]
         inv_id = req["id"]
         hook = post_by_name.get(script)
@@ -168,7 +168,7 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
                 "invariant": inv_id,
                 "severity": "ERROR",
                 "message": (
-                    f"post_cascade_response does not contain {script}. "
+                    f"post_cursor_agent_response does not contain {script}. "
                     f"{req['description']}."
                 ),
             })
@@ -177,7 +177,7 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
                 "invariant": inv_id,
                 "severity": "ERROR",
                 "message": (
-                    f"{script} is present in post_cascade_response but "
+                    f"{script} is present in post_cursor_agent_response but "
                     f"show_output=false — violations will be silently swallowed. "
                     f"Set show_output=true. ({req['description']})"
                 ),

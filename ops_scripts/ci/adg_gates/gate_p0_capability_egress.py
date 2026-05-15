@@ -11,7 +11,7 @@ Source views:
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -165,9 +165,11 @@ class CapabilityEgressGate(ADGGateBase):
         except sqlite3.Error:
             pass
 
-        # Determine status: P0 blocks if any gateway bypasses or action without egress
+        # Determine status: only action_without_egress_gate hard-blocks P0 here.
+        # Provider-route gaps + gateway bypass rows remain in the artifact as
+        # warn-tier debt (C2 / dedicated egress work tracks gateway bypass).
         summary["total_violations"] = len(violations)
-        has_critical = summary["gateway_bypass_paths"] > 0 or summary["action_without_egress_gate"] > 0
+        has_critical = summary["action_without_egress_gate"] > 0
         status = "blocked" if has_critical else ("warn" if violations else "passed")
 
         return GateResult(

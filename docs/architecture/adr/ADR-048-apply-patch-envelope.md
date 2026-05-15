@@ -12,12 +12,12 @@
 
 ## Context
 
-Wave 10 backlog triage surfaced **EQ-12b.1 — Apply-patch multi-file batching** as genuine new T2 work: zero `apply_patch` / `multi_file_batch` / `batch_apply` infrastructure exists in the repo. Today, every code-edit operation Cascade or any agent issues is a single-file `edit` / `multi_edit` call with no transactional grouping across files.
+Wave 10 backlog triage surfaced **EQ-12b.1 — Apply-patch multi-file batching** as genuine new T2 work: zero `apply_patch` / `multi_file_batch` / `batch_apply` infrastructure exists in the repo. Today, every code-edit operation Cursor Agent or any agent issues is a single-file `edit` / `multi_edit` call with no transactional grouping across files.
 
 Three failure modes motivate a multi-file envelope:
 
 1. **Cross-file refactor atomicity** — renaming a symbol that lives in file A and is imported by files B…N requires either all changes to land or none to land. Today: partial application leaves the working tree broken between calls.
-2. **Author-Gate scope visibility** — Cascade currently presents a wall of edits that the user cannot inspect as a single change-set before approval. A patch envelope is the natural artifact for one-shot review.
+2. **Author-Gate scope visibility** — Cursor Agent currently presents a wall of edits that the user cannot inspect as a single change-set before approval. A patch envelope is the natural artifact for one-shot review.
 3. **Replayability and audit** — without a structured envelope, re-running an edit sequence (e.g., after a rebase) requires re-running the full LLM turn. A persisted envelope is replayable.
 
 ## Decision Drivers
@@ -111,7 +111,7 @@ Rationale:
 
 ### Positive
 
-- Single SSOT format for all multi-file edits across Cascade, harness scripts, and agent-issued refactors.
+- Single SSOT format for all multi-file edits across Cursor Agent, harness scripts, and agent-issued refactors.
 - Audit trail: every applied envelope persists to `artifacts/apply_patch/<sha>.patch` with timestamp, author, and outcome.
 - Future-proofs Wave 14.b/c: parser, validator, and UWG-integrated executor have a stable contract to build against.
 

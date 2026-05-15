@@ -21,7 +21,7 @@ Posture:
 
 Output:
 - Stdout: human-readable findings table.
-- artifacts/windsurf/apps_rg_pa_boundary_violations.jsonl — durable audit log.
+- artifacts/cursor/apps_rg_pa_boundary_violations.jsonl — durable audit log.
 
 Per constitutional §22 + ADR-083 + adg-graph-layer-enforcement.md.
 """

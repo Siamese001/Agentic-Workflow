@@ -36,10 +36,8 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-from tools.generate.materialized_views.phase_c_trace_drift_debt import (
-    _connect_sqlite,
-    _snapshot_id_expr,
-)
+from tools.generate.materialized_views.phase_c_trace_drift_debt import _snapshot_id_expr
+from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_mv as _connect_sqlite
 
 _PHASE_F_TABLES: tuple[str, ...] = ("mv_hotspot_coverage_risk",)
 

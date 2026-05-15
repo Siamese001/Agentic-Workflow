@@ -6,7 +6,7 @@ provenance rule:
 
     Every entry in config/wiring_gate_waivers.yaml MUST include one of:
       * adr:  docs/architecture/adr/ADR-NNN-*.md      (file must exist)
-      * plan: .windsurf/plans/<slug>-<6hex>.md        (file must exist)
+      * plan: .cursor/plans/<slug>-<6hex>.md        (file must exist)
 
 And must always include:
       * gate, scope, reason, owner, expires_on (pre-existing required fields)

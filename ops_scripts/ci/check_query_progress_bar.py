@@ -292,7 +292,7 @@ def main(argv: list[str] | None = None) -> int:
         print("  1. Add 'from tqdm import tqdm' and wrap the loop:")
         print("     for item in tqdm(items, desc='Processing', unit='item'):")
         print("  2. Or use ProgressReporter from tools/progress_display.py")
-        print("  3. See: .windsurf/rules/query-progress-bar.md")
+        print("  3. See: .cursor/rules/query-progress-bar.md")
         print("=" * 70)
         return 1
 

@@ -3,24 +3,24 @@
   "tier": "B",
   "verdict": "ADG_NOT_CERTIFIED",
   "strict_mode": false,
-  "timestamp": "2026-05-01T00:57:23.563561+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04302026_2050.sqlite",
+  "timestamp": "2026-05-15T17:36:48.545813+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
   "blockers": [
-    "graph-layer evidence (snapshot)"
+    "consumer mode declared"
   ],
   "sub_gates": [
     {
       "label": "triplet completeness (read-time)",
       "ok": true,
-      "details": "all 774906 edges have populated triplet",
+      "details": "all 957562 edges have populated triplet",
       "null_triplet_count": 0,
-      "total_edges": 774906
+      "total_edges": 957562
     },
     {
-      "ok": false,
-      "exit_code": 1,
+      "ok": true,
+      "exit_code": 0,
       "details": "",
-      "stdout_tail": "igest=6597afb3de49\n\nREMEDIATION:\n  1. Regenerate ADG: `python tools/generate_full_adg.py`\n  2. Verify `_enrich_infra_views` + `_materialize_adg_views` run\n     BEFORE P0/P1/dead-import gates in tools/generate/generate_full_adg.py\n     (plan adg-pipeline-e2e-5287a1 W1, commit 9fb93f698c).\n  3. See: .windsurf/rules/adg-graph-layer-enforcement.md\n\nLog: artifacts\\windsurf\\snapshot_mv_violations.jsonl\n",
+      "stdout_tail": "=========================================================\nsnapshot   : adg_indexed_05152026_1118.sqlite\nmv_*       :   69 (min 30)\nv_p*       :   15 (min 3)\ninfra      :    6 (min 1)\nbase       :   26\nprojection : pass (mode=strict)\n             adg_graph_05152026_1118.sqlite\n========================================================================\n[PASS] snapshot contains full graph-layer overlay\n",
       "label": "graph-layer evidence (snapshot)",
       "script": "ops_scripts/ci/check_snapshot_has_mvs.py",
       "contributes_to_certification": true
@@ -29,7 +29,7 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "[runtime_proof_view] snapshot=adg_indexed_04302026_2050.sqlite rows=0 violations=0 strict=True\n",
+      "stdout_tail": "[runtime_proof_view] snapshot=adg_indexed_05152026_1118.sqlite rows=3410 violations=0 strict=True\n",
       "label": "runtime proof view well-formed",
       "script": "ops_scripts/ci/check_runtime_proof_view_well_formed.py",
       "contributes_to_certification": true
@@ -44,10 +44,10 @@
       "contributes_to_certification": true
     },
     {
-      "ok": true,
-      "exit_code": 0,
+      "ok": false,
+      "exit_code": 1,
       "details": "",
-      "stdout_tail": "[INFO] consumers_scanned=144  declared=144  missing=0  invalid=0  mode_mismatch=0\n[OK] every detected ADG consumer declares __adg_consumer_mode__\n",
+      "stdout_tail": "nsumer_mode__` declaration (views_used=[])\n  [missing] tools/analysis/_w1_schema_probe.py :: missing module-level `__adg_consumer_mode__` declaration (views_used=[])\n  [missing] ops_scripts/ci/check_l6_layer_tag_consistency.py :: missing module-level `__adg_consumer_mode__` declaration (views_used=[])\n[FAIL] 8 consumer(s) violate the W4 consumer-mode contract; set CONSUMER_MODE_BYPASS=1 to bypass\n",
       "label": "consumer mode declared",
       "script": "ops_scripts/ci/check_consumer_mode_declared.py",
       "contributes_to_certification": true

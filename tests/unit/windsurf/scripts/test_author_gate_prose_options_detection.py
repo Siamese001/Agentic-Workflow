@@ -1,6 +1,6 @@
 # pylint: disable=protected-access
 """Tests for the prose_options_menu Signal 5 added to
-post_cascade_author_gate_miss_detector.py (plan author-gate-prose-options-detection-e7f2a3).
+post_cursor_agent_author_gate_miss_detector.py (plan author-gate-prose-options-detection-e7f2a3).
 
 Coverage:
     TC-1  G1.P3 verbatim Option A/B/C block       → score ≥ 2, prose_options_menu in signals
@@ -27,7 +27,7 @@ import pytest
 _SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".windsurf" / "scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from post_cascade_author_gate_miss_detector import (  # noqa: E402
+from post_cursor_agent_author_gate_miss_detector import (  # noqa: E402
     MISS_SCORE_THRESHOLD,
     _compute_miss_score,
     _has_author_gate_completion_marker,

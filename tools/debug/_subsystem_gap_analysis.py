@@ -88,7 +88,7 @@ def main() -> None:
     print(f"  Gap:                     none obvious — archiver now handles both TS formats")
 
     # ---- 2. Memory MCP ----
-    print("\n[2] MEMORY MCP  (Cascade's cross-session scratchpad)")
+    print("\n[2] MEMORY MCP  (Cursor Agent's cross-session scratchpad)")
     print("-" * 78)
     mem = Path("artifacts/memory/knowledge_graph.sqlite")
     mcp_on = _mcp_configured("memory")

@@ -21,7 +21,7 @@ statement: |
   (TODOs, FIXMEs, string constants). Silent degraded fallback (grep without an ADG health
   check + `DEGRADED_FALLBACK: reason=<...>` emission) is a severity:critical violation.
 enforcement:
-  - retroactive_audit: ops_scripts/ci/post_cascade_adg_audit.py
+  - retroactive_audit: ops_scripts/ci/post_cursor_agent_adg_audit.py
   - violation_log: artifacts/windsurf/adg_first_violations.jsonl
 rationale: |
   grep_search produces false positives (comments, dead code) and false negatives

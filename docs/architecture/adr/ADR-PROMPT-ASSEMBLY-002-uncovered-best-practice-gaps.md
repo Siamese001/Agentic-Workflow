@@ -2,7 +2,7 @@
 
 - **Status**: **Accepted** 2026-04-23
 - **Decision Date**: 2026-04-23 (approved by user same-day)
-- **Deciders**: Cascade + user (implementation mode execution of plan `prompt-assembly-best-practices-gap-b4e1c2`). Author-Gate resolution: `DECISION_CAPTURED: type=architecture_choice, selected=adopt-ADR-PA-002-and-launch-EQ1, confidence=0.90, outcome=executed`.
+- **Deciders**: Cursor Agent + user (implementation mode execution of plan `prompt-assembly-best-practices-gap-b4e1c2`). Author-Gate resolution: `DECISION_CAPTURED: type=architecture_choice, selected=adopt-ADR-PA-002-and-launch-EQ1, confidence=0.90, outcome=executed`.
 - **Impact Layers**: L0, L2, L4, L5, L_PG, L_KR, L_SHARED, L_TOOLS
 - **Plan**: `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
 - **Supersedes / complements**: `ADR-PROMPT-ASSEMBLY-001` (provider-aware

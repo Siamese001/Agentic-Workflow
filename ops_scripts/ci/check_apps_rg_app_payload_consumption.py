@@ -175,15 +175,22 @@ def check_dispatch_passes_validated_request(rec: CheckRecorder) -> None:
 
 
 def check_c0_pa_signatures(rec: CheckRecorder) -> None:
-    from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
-    from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
-    from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
+    from agentic_core.runtime.contracts.apps_rg_ingress_payload import (  # guardian: allow-layer-violation -- CI conformance gate introspects ValidatedRequest SSOT and binding callables; subprocess-free deterministic check per gate charter
+        ValidatedRequest,
+    )
+    from agentic_core.runtime.c0.apps_rg_c0_binding import (  # guardian: allow-layer-violation -- same CI gate: signature inspection of c0_retrieve_apps_rg
+        c0_retrieve_apps_rg,
+    )
+    from agentic_core.prompt_governance.apps_rg_pa_binding import (  # guardian: allow-layer-violation -- same CI gate: signature inspection of pa_compose_apps_rg
+        pa_compose_apps_rg,
+    )
 
     c0_hints = typing.get_type_hints(c0_retrieve_apps_rg)
     c0_params = [p for p in inspect.signature(c0_retrieve_apps_rg).parameters if p != "return"]
     rec.assert_(
         "c0_signature_takes_validated_request",
-        len(c0_params) == 2 and c0_hints.get(c0_params[1]) is ValidatedRequest,
+        "validated_request" in c0_params
+        and c0_hints.get("validated_request") is ValidatedRequest,
         f"params={c0_params}, hints={c0_hints}",
     )
 
@@ -214,12 +221,22 @@ def _live_thin_payload() -> dict[str, Any]:
 
 
 def check_live_path_consumption(rec: CheckRecorder) -> None:
-    from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
-    from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
-    from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
-    from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
+    from agentic_core.L0_routing.apps_rg_l0_binding import (  # guardian: allow-layer-violation -- CI live-path smoke imports shims to assert AG-2 field population; deterministic gate surface
+        l0_route_apps_rg,
+    )
+    from agentic_core.L1_cognition.apps_rg_l1_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+        l1_plan_apps_rg,
+    )
+    from agentic_core.prompt_governance.apps_rg_pa_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+        pa_compose_apps_rg,
+    )
+    from agentic_core.runtime.c0.apps_rg_c0_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+        c0_retrieve_apps_rg,
+    )
     from apps_rg.runtime.dispatch import apps_rg_parse
-    from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+    from agentic_core.runtime.entry.u0_apps_rg_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+        u0_validate_apps_rg,
+    )
 
     envelope = apps_rg_parse(_live_thin_payload())
     if envelope is None:

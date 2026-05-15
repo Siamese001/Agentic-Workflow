@@ -148,10 +148,10 @@ class TestSlotTemplateRendering:
         reg = get_template_registry()
         tmpl = jinja2.Template(reg.get_slot_template("I0"))
         rendered = tmpl.render(
-            agent_identity="Cascade",
+            agent_identity="Cursor Agent",
             mixins=["tool_first", "plan_then_act"],
         )
-        assert "Cascade" in rendered
+        assert "Cursor Agent" in rendered
         assert "tool_first" in rendered
         assert "GOVERNED" in rendered
 

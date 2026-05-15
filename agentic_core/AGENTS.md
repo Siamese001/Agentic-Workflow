@@ -132,6 +132,6 @@ Before editing any `agentic_core/` file:
 ## Related
 
 - Root `AGENTS.md` — Architecture law
-- `.windsurf/rules/agentic-core-static.md` — Always-on guidance
-- `.windsurf/rules/agentic-core-glob-lock.md` — Editing restrictions
+- `.cursor/rules/agentic-core-static.md` — Always-on guidance
+- `.cursor/rules/agentic-core-glob-lock.md` — Editing restrictions
 - `apps_lic/AGENTS.md`, `apps_rg/AGENTS.md`, etc. — App customization rules

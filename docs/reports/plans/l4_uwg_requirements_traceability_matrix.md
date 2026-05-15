@@ -640,5 +640,5 @@ type docs\reports\plans\l4_uwg_runtime_proof.json
 - **Test pass log (refreshed)**: `python -m pytest tests/l4 tests/uwg -q` → `219 passed, 1 warning` (2026-04-26 18:55 UTC-04)
 - **Runtime proof bundle**: `docs/reports/plans/l4_uwg_runtime_proof.json` (schema **v3**, regenerable; added `version_migration` section)
 - **Proof packet digest (post-00B.9 closure)**: `61197a917458c401c97a3d1820b072f375793596d439d1a5e271ff25c810d483`
-- **Matrix author**: Cascade
+- **Matrix author**: Cursor Agent
 - **Matrix last updated**: 2026-04-26 18:55 UTC-04 (00B.9 closure: 3 records + 12 tests + runtime proof section + 5 grandfather entries retired)

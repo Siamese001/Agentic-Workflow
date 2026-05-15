@@ -18,7 +18,7 @@ Between 2026-04-23T23:08 UTC and 2026-04-27T10:40 UTC, the Author-Gate
 decision ledger received zero rows despite 275 commits landing on `main`,
 including at least 3 commits with explicit `DECISION_CAPTURED:` markers in
 their messages. The outage had **five independent root causes** stacked on
-top of each other: a Windsurf post-cascade payload regression, a
+top of each other: a Windsurf post-cursor-agent payload regression, a
 constitutional §27 schema violation silently disabling the MCP playwright
 entry, a global-vs-repo config sync hook that depended on the broken
 hook chain, a capture architecture with zero redundancy, and no alerting
@@ -33,38 +33,38 @@ calibration signal in the repo.
 | 2026-04-23T23:08:42 | Last successful ledger write | `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` — row `decision_type=refactor_scope, confidence=0.94, selected=W1-W6 Author-Gate rename + meta-learning enrichment` |
 | 2026-04-24 ≈ 03:21 | 8 rows of memory-MCP data poisoning: `ProceduralPattern:EvalSpineShadowWiring` written with ISO-8601 timestamps into `REAL` column | `entities` + `observations` rows where `typeof(last_reinforced)='text'` and value is `2026-04-24T03:21:22.777406+00:00` |
 | 2026-04-24 → 2026-04-26 | Capture hook began receiving degenerate payloads (empty stdin, `text_len=16-17 marker=False stdin_empty`) — cause unknown, symptom clear | `.windsurf/state/refactor_decisions/author_gate_capture.log` — dominant entry for this window |
-| 2026-04-26T11:20:51 | Last `post_cascade_heartbeat.jsonl` write from a Windsurf-invoked hook | `artifacts/windsurf/post_cascade_heartbeat.jsonl` — final line before session-manual write at 10:04:19 next day |
-| 2026-04-26 → 2026-04-27 | ALL Windsurf hook events silently stopped firing (not just `post_cascade_response`) | `pre_run_log.jsonl`, `pre_write_log.jsonl`, `pre_user_prompt.jsonl` all MISSING from `artifacts/windsurf/` |
+| 2026-04-26T11:20:51 | Last `post_cursor_agent_heartbeat.jsonl` write from a Windsurf-invoked hook | `artifacts/windsurf/post_cursor_agent_heartbeat.jsonl` — final line before session-manual write at 10:04:19 next day |
+| 2026-04-26 → 2026-04-27 | ALL Windsurf hook events silently stopped firing (not just `post_cursor_agent_response`) | `pre_run_log.jsonl`, `pre_write_log.jsonl`, `pre_user_prompt.jsonl` all MISSING from `artifacts/windsurf/` |
 | 2026-04-27T05:45 | User initiated session; reported "restarted verify capture" | Session trace |
-| 2026-04-27T06:04 | Cascade manually invoked heartbeat script to verify it still worked | `post_cascade_heartbeat.jsonl` entry `pid=40736` (test invocation) |
-| 2026-04-27T06:09 | Cascade patched constitutional §27 violation in `.windsurf/mcp_config.json` (removed `registry` field from `io.windsurf/mcp-playwright`) | Commit `5e6dbf1b48` |
+| 2026-04-27T06:04 | Cursor Agent manually invoked heartbeat script to verify it still worked | `post_cursor_agent_heartbeat.jsonl` entry `pid=40736` (test invocation) |
+| 2026-04-27T06:09 | Cursor Agent patched constitutional §27 violation in `.windsurf/mcp_config.json` (removed `registry` field from `io.windsurf/mcp-playwright`) | Commit `5e6dbf1b48` |
 | 2026-04-27T06:20 | User restart #1 — hooks still dead; discovered `~/.codeium/windsurf/mcp_config.json` (authoritative) still had the `registry` field | Session trace; global-config inspection |
-| 2026-04-27T06:23 | Cascade manually ran `sync_mcp_config.py` to push repo fix → global | `[mcp_sync] Synced 13 servers` output |
+| 2026-04-27T06:23 | Cursor Agent manually ran `sync_mcp_config.py` to push repo fix → global | `[mcp_sync] Synced 13 servers` output |
 | 2026-04-27T06:27 | User restart #2 — hooks STILL dead despite clean global config | `20260427T062728` Windsurf log dir; zero hook-related entries in 203 KB `Windsurf.log` |
 | 2026-04-27T06:33 | Evidence gathered showing all hook events dead, not just one | `pre_run_log.jsonl` etc. missing |
-| 2026-04-27T06:36 | `.pb` encryption confirmed: first bytes `7ec6f0b2f0a43613`, zero ASCII, `count('Cascade')=0` | Byte-inspection of `~/.codeium/windsurf/cascade/8aaac255-cfea-4be7-95a5-8ed55fc5ca12.pb` |
+| 2026-04-27T06:36 | `.pb` encryption confirmed: first bytes `7ec6f0b2f0a43613`, zero ASCII, `count('Cursor Agent')=0` | Byte-inspection of `~/.codeium/windsurf/cascade/8aaac255-cfea-4be7-95a5-8ed55fc5ca12.pb` |
 | 2026-04-27T06:40 | First successful ledger write in 4 days — hook-independent pipeline verified (Option D' selected + built + dogfooded) | Commit `19dee61ef6`; ledger row `architecture_choice / hook-independent capture` |
 | 2026-04-27T07:29 | Drain accounting + freshness CI gate + rotation race fix | Commit `1224f114e3` |
 | 2026-04-27T07:45 | User directive: "I will not accept silence until there is a hardened RCA and fix and extensive testing" | This document |
 
 ## 2. Five root causes (stacked)
 
-### RC-1 · Windsurf post-cascade hook chain stopped firing
+### RC-1 · Windsurf post-cursor-agent hook chain stopped firing
 
-**Symptom**: `artifacts/windsurf/post_cascade_heartbeat.jsonl` has zero entries
-between 2026-04-26T11:20:51 and 2026-04-27T10:04:19 (Cascade-manual);
+**Symptom**: `artifacts/windsurf/post_cursor_agent_heartbeat.jsonl` has zero entries
+between 2026-04-26T11:20:51 and 2026-04-27T10:04:19 (Cursor Agent-manual);
 `pre_run_log.jsonl`, `pre_write_log.jsonl`, `pre_user_prompt.jsonl` never
 existed in this period.
 
 **Evidence**:
 - `20260427T062728/Windsurf.log` (203 KB) — zero matches for `hook`, `.windsurf/`, `rules`, `workflows`, `skill`
-- `~/.codeium/windsurf/cascade/*.pb` actively being written (Cascade alive) but no hook events
+- `~/.codeium/windsurf/cascade/*.pb` actively being written (Cursor Agent alive) but no hook events
 - `.windsurf/hooks.json` passes `check_windsurf_config_schema.py` with EXIT=0
-- Hook event name `post_cascade_response` confirmed in `docs/windsurf/llms-full.txt` line 10832
+- Hook event name `post_cursor_agent_response` confirmed in `docs/windsurf/llms-full.txt` line 10832
 
 **Root cause**: Windsurf-product-level regression. Either a silent feature
 deprecation, a cloud-dashboard override, or a build-level defect in the
-IDE. Cannot be resolved from inside Cascade.
+IDE. Cannot be resolved from inside Cursor Agent.
 
 **Contributing**: Windsurf's hook subsystem fails silently — no log entry,
 no error surface, no UI indicator, no self-attestation. Identical pattern
@@ -139,7 +139,7 @@ channel.
 ### RC-4 · Zero-redundancy capture architecture
 
 **Symptom**: Author-Gate decisions relied on a single mechanism
-(`post_cascade_response` hook → capture script → SQLite ledger). When that
+(`post_cursor_agent_response` hook → capture script → SQLite ledger). When that
 chain broke, there was no second channel, no write-through, no durable
 queue.
 
@@ -149,7 +149,7 @@ queue.
   path — just the hook
 - No session-start hook verified the ledger was receiving writes
 - No in-prose DECISION_CAPTURED marker was ever independently extracted
-  from Cascade's conversation transcripts (`post_cascade_response_with_transcript`
+  from Cursor Agent's conversation transcripts (`post_cursor_agent_response_with_transcript`
   is a separate Windsurf event that the repo never wired up)
 
 **Root cause**: Capture architecture treated Windsurf hooks as durable
@@ -178,7 +178,7 @@ ask about capture health, not because any monitoring surfaced it.
 - No weekly calibration report generator runs automatically (the template
   is at `docs/reports/calibration/` but generation is manual)
 - Session-start hook (`pre_user_prompt`) did not read ledger age
-- `post_cascade_heartbeat.jsonl` itself has no liveness verification — if
+- `post_cursor_agent_heartbeat.jsonl` itself has no liveness verification — if
   Windsurf stops invoking it, nothing notices
 
 **Root cause**: Calibration telemetry was designed as a collect-and-report
@@ -268,7 +268,7 @@ gets a test, a gate, and a monitor. Produce `docs/reports/rcas/author-gate-failu
 - Weekly cron / Scheduled Task to run `queue_to_ledger.py` + freshness
   check as belt-and-suspenders beyond hook invocation
 - Add `author-gate-capture-health` section to the session-start recall
-  so Cascade sees ledger age at turn 0
+  so Cursor Agent sees ledger age at turn 0
 
 ### Phase 5 — End-to-end verification
 - All tests pass

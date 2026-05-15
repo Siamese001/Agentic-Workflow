@@ -8,7 +8,9 @@ from typing import Tuple, Union, List
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import RouteContract
-from agentic_core.L1_cognition.package_driven_l1_binding import PackageDrivenL1Plan
+from agentic_core.L1_cognition.package_driven_l1_binding import (  # guardian: allow-layer-violation -- apps_research thin L0 binding delegates to package-driven L0; consumes L1 plan type at typed API surface
+    PackageDrivenL1Plan,
+)
 from agentic_core.L0_routing.package_driven_l0_binding import (
     l0_evaluate_routes_package_driven,
     RETTerminalPacket,

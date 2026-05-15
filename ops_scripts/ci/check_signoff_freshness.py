@@ -5,7 +5,7 @@ any assertion's `generated_at_utc` is older than its declared
 `freshness_hours` window.
 
 This implements the W2.2 freshness contract from plan
-`.windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md` §GAP-4:
+`.cursor/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md` §GAP-4:
 "per-PR regen matrix" — every PR must have fresh evidence for every
 claim_type cluster. The enforcement is not "re-emit everything every
 PR" (wasteful) but "reject stale evidence at gate time" (cheap + strict).

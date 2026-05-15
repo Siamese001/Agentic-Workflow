@@ -1,8 +1,16 @@
-# W4: Section retrieval profile
-# Declarative section-level retrieval configuration
+# W4/W6: Section retrieval — fact_vectors only (C0 evidence-only)
+# Golden dense C0 sections: executive_summary, unify_bullets, unify_narrative,
+# ibm_bullets, ibm_narrative, competencies (+ optional headline smoke).
 
-schema_version: "1.0"
+schema_version: "2.1"
 enabled: true
+
+ssot_collection_strategy:
+  primary_collection: fact_vectors
+  embedding_model_id: BAAI/bge-m3
+  embedding_dim: 1024
+  persist_path_env: CHROMA_PERSIST_DIR
+  default_persist_relative: data/cache/chromadb
 
 collection: fact_vectors
 
@@ -12,71 +20,210 @@ fact_vectors_constraints:
     - candidate_profile
     - project_evidence
 
+section_id_aliases:
+  professional_summary: executive_summary
+
 global_constraints:
-  max_total_evidence_items: 15
-  max_sections_to_query: 5
-  max_query_budget_ms: 5000
+  max_total_evidence_items: 40
+  max_sections_to_query: 8
+  max_query_budget_ms: 12000
+
+# Phase 2 sparse/exact lane — profile-driven; default off preserves dense Phase 1.
+sparse_lane_defaults:
+  sparse_enabled: false
+  sparse_top_k: 5
+  sparse_lane_id: ""
+  sparse_collection_ref: fact_vectors
+  sparse_index_ref: fact_vectors
+  lexical_query_fields: []
+  exact_match_fields: []
+  dense_sparse_merge_policy: rrf
+  sparse_unavailable_behavior: receipt_unavailable
+  sparse_empty_behavior: receipt_empty
 
 sections:
-  - section_id: professional_summary
-    display_name: Professional Summary
+  - retrieval_profile_id: apps_rg.headline.c0_profile
+    section_id: headline
+    display_name: Headline
+    dense_top_k: 3
     max_k: 3
-    source_class_allowlist:
-      - candidate_profile
     support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile]
     query_fields:
+      - resume_payload.headline
+      - jd_payload.jd_text
+    fallback_queries:
+      - "SMOKE_C0_HEADLINE_ANCHOR principal product leader measurable revenue"
+
+  - retrieval_profile_id: apps_rg.executive_summary.c0_profile
+    section_id: executive_summary
+    display_name: Executive summary
+    dense_top_k: 3
+    max_k: 3
+    support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile]
+    query_fields:
+      - resume_payload.executive_summary
       - resume_payload.summary
-      - resume_payload.professional_summary
+      - jd_payload.jd_text
     fallback_queries:
-      - "professional summary senior software engineer"
+      - "SMOKE_C0_EXEC_SUMMARY_ANCHOR concise narrative scope constraints outcomes"
 
-  - section_id: technical_skills
-    display_name: Technical Skills
-    max_k: 5
-    source_class_allowlist:
-      - candidate_profile
-      - project_evidence
-    support_target: high
-    query_fields:
+  - retrieval_profile_id: apps_rg.competencies.c0_profile
+    section_id: competencies
+    display_name: Competencies
+    sparse_enabled: false
+    sparse_lane_id: apps_rg.competencies.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.competencies
       - resume_payload.skills
-      - resume_payload.technical_skills
-    fallback_queries:
-      - "Python AWS Kubernetes machine learning"
-
-  - section_id: professional_experience
-    display_name: Professional Experience
-    max_k: 5
-    source_class_allowlist:
-      - candidate_profile
-      - project_evidence
-    support_target: high
-    query_fields:
-      - resume_payload.experience
-      - resume_payload.professional_experience
-    fallback_queries:
-      - "senior software engineer experience"
-
-  - section_id: projects
-    display_name: Projects
+      - jd_payload.jd_text
+    exact_match_fields:
+      - jd_payload.jd_text
+    dense_top_k: 3
     max_k: 3
-    source_class_allowlist:
-      - project_evidence
-    support_target: medium
+    support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile, project_evidence]
     query_fields:
-      - resume_payload.projects
+      - resume_payload.competencies
+      - resume_payload.skills
+      - jd_payload.jd_text
     fallback_queries:
-      - "significant projects contributions"
+      - "SMOKE_C0_COMPETENCIES_ANCHOR Python asyncio PostgreSQL Redis Kubernetes"
 
-  - section_id: education
-    display_name: Education
-    max_k: 2
-    source_class_allowlist:
-      - candidate_profile
-    support_target: medium
+  - retrieval_profile_id: apps_rg.unify_bullets.c0_profile
+    section_id: unify_bullets
+    display_name: Unify bullets
+    sparse_enabled: false
+    sparse_lane_id: apps_rg.unify_bullets.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.unify_bullets
+      - resume_payload.experience
+      - jd_payload.jd_text
+    dense_top_k: 3
+    max_k: 3
+    support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile]
     query_fields:
-      - resume_payload.education
+      - resume_payload.unify_bullets
+      - resume_payload.experience
+      - jd_payload.jd_text
     fallback_queries:
-      - "education degree university"
+      - "SMOKE_C0_UNIFY_BULLETS_ANCHOR quantified bullets verbs metrics ownership"
+
+  - retrieval_profile_id: apps_rg.unify_narrative.c0_profile
+    section_id: unify_narrative
+    display_name: Unify narrative
+    dense_top_k: 3
+    max_k: 3
+    support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile]
+    query_fields:
+      - resume_payload.unify_narrative
+      - resume_payload.summary
+      - jd_payload.jd_text
+    fallback_queries:
+      - "SMOKE_C0_UNIFY_NARR_ANCHOR cohesive story arc problem discovery execution"
+
+  - retrieval_profile_id: apps_rg.ibm_bullets.c0_profile
+    section_id: ibm_bullets
+    display_name: IBM bullets
+    sparse_enabled: false
+    sparse_lane_id: apps_rg.ibm_bullets.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.ibm_bullets
+      - resume_payload.experience
+      - jd_payload.jd_text
+    dense_top_k: 3
+    max_k: 3
+    support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile]
+    query_fields:
+      - resume_payload.ibm_bullets
+      - resume_payload.experience
+      - jd_payload.jd_text
+    fallback_queries:
+      - "SMOKE_C0_IBM_BULLETS_ANCHOR enterprise platform delivery metrics ownership stakeholder alignment"
+
+  - retrieval_profile_id: apps_rg.ibm_narrative.c0_profile
+    section_id: ibm_narrative
+    display_name: IBM narrative
+    dense_top_k: 3
+    max_k: 3
+    support_target: high
+    allowed_collections: [fact_vectors]
+    required_metadata_filters:
+      app: apps_rg
+    optional_metadata_filters: {}
+    freshness_profile: default
+    authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
+    graph_expansion_allowed: false
+    fallback_policy: use_fallback_queries_if_query_fields_empty
+    expected_evidence_strata: [CANONICAL]
+    source_class_allowlist: [candidate_profile]
+    query_fields:
+      - resume_payload.ibm_narrative
+      - resume_payload.summary
+      - jd_payload.jd_text
+    fallback_queries:
+      - "SMOKE_C0_IBM_NARR_ANCHOR enterprise stakeholder narrative scope outcomes verification"
 
 unavailability_behavior:
   support_status: WEAK_WITH_CAVEATS

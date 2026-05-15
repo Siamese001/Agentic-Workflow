@@ -99,7 +99,7 @@ either check fails.
 | `[pre_mcp_gate] BLOCKED: Filesystem MCP cannot start` | Gate detected node or launcher missing | Follow the check named in stderr |
 | `[filesystem_mcp_launcher] FATAL: server-filesystem not found` | Package uninstalled or wrong Node version active | Re-install under active node version; see Package Upgrade |
 | `[filesystem_mcp_launcher] Startup timeout after 15000 ms ...` | Child process hung before readiness banner or stdout/stderr wiring is broken | Run the manual launcher test; inspect stderr; verify the active Node install and global package |
-| `write_file` / `edit_file` / `move_file` blocked | Correct behavior - gate enforces native write tools | Use `write_to_file`, `edit`, or `multi_edit` native Cascade tools instead |
+| `write_file` / `edit_file` / `move_file` blocked | Correct behavior - gate enforces native write tools | Use `write_to_file`, `edit`, or `multi_edit` native Cursor Agent tools instead |
 | All filesystem reads fail after Windsurf update | Windsurf may have changed MCP spawn mechanism | Check Windsurf changelog; verify `node` resolves correctly; re-run manual launcher test |
 
 ---
@@ -167,7 +167,7 @@ When upgrading to a newer `@modelcontextprotocol/server-filesystem` release:
 ## Write Gate Policy
 
 The `pre_mcp_tool_use` hook blocks these filesystem MCP tools - they bypass the constitutional
-write gates that Cascade's native tools enforce:
+write gates that Cursor Agent's native tools enforce:
 
 | Tool | Status | Reason |
 |------|--------|--------|
@@ -176,7 +176,7 @@ write gates that Cascade's native tools enforce:
 | `move_file` | **BLOCKED** | Mutates filesystem (rename/relocate); bypasses gates |
 | All others | Allowed | Read-only or non-mutating operations |
 
-**Correct alternatives**: Use Cascade's native `write_to_file`, `edit`, or `multi_edit` tools -
+**Correct alternatives**: Use Cursor Agent's native `write_to_file`, `edit`, or `multi_edit` tools -
 these fire `pre_write_code` -> `pre_write_gate.py` -> constitutional anti-pattern and syntax checks.
 
 ---

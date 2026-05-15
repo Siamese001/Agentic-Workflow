@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-05-02
-- **Deciders**: Cascade (authoring), plan owner (approving)
+- **Deciders**: Cursor Agent (authoring), plan owner (approving)
 - **Supersedes**: none
 - **Related**: ADR-079 (L2 runtime-agent consumption of ADG graph-layer tools), plan
   `apps-e2e-spine-cert-wireup-e1c4d7`, plan `apps-e2e-two-gate-certification-d8b3a1`,

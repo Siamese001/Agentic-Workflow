@@ -36,7 +36,7 @@ REROUTE_MAP: dict[tuple[str, str], str] = {
     ("adg-l5-bypass-cleanup", "W1.1"): "adg-architectural-p0-violations-cleanup-bced9c",
     ("adg-trace-replay-eval-ratchet", "W1.1"): "adg-gap-remediation-wave-plan-ae5b42",
     ("adg-seam-test-coherence-cleanup", "W1.1"): "gap-closure-test-impl-b77a11",
-    ("post-cascade-watchdog-hardening", "W11.1"): "windsurf-maintenance-2026-q2-0f3564",
+    ("post-cursor-agent-watchdog-hardening", "W11.1"): "windsurf-maintenance-2026-q2-0f3564",
     ("windsurf-hook-outage-2026-04-23", "HOOK.WINDSURF_TICKET"): "windsurf-maintenance-2026-q2-0f3564",
     ("pytest-server-functional-tests", "W1.1"): "gap-closure-test-impl-b77a11",
     ("d7-anchor-tuning", "W7.4"): "audit-uncovered-gates-and-remediation-627368",

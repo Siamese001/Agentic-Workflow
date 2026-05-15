@@ -1,0 +1,52 @@
+# Minimal managed-workflow manifest for L3 harness + p3.2 L0 test receipts only.
+# Canonical production manifest is not checked in here; see apps_rg workflow plans.
+
+manifest_id: apps_rg_resume_generation_v1_minimal
+merge_strategy:
+  policy: concatenate
+
+nodes:
+  - node_id: profile_normalization
+    node_type: ingestion
+    tier: L2
+    depends_on: []
+    optional: false
+    selection_policy: passthrough
+    archive_policy: none
+    required_runtime_gates: []
+
+  - node_id: role_analysis
+    node_type: analysis
+    tier: L2
+    depends_on: [profile_normalization]
+    optional: false
+    selection_policy: passthrough
+    archive_policy: none
+    required_runtime_gates: []
+
+  - node_id: final_render
+    node_type: render
+    tier: L2
+    depends_on: [role_analysis]
+    optional: false
+    selection_policy: passthrough
+    archive_policy: none
+    required_runtime_gates: []
+
+  - node_id: certifications_block
+    node_type: analysis
+    tier: L2
+    depends_on: [final_render]
+    optional: true
+    selection_policy: passthrough
+    archive_policy: none
+    required_runtime_gates: []
+
+  - node_id: selected_projects_block
+    node_type: analysis
+    tier: L2
+    depends_on: [final_render]
+    optional: true
+    selection_policy: passthrough
+    archive_policy: none
+    required_runtime_gates: []

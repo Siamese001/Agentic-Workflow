@@ -1,0 +1,6 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "apps_rg_l6_learning_default",
+  "g29_required": true,
+  "notes": "Declarative L6 learning firewall profile — G29 gauntlet required before promotion."
+}

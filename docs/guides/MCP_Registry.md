@@ -67,9 +67,9 @@ explicit authority assignment.
 
 ### `filesystem` — Local Filesystem
 - **Transport**: Node binary (direct `node.exe` invocation, no npx) — `@modelcontextprotocol/server-filesystem@2026.1.14`
-- **Authority**: All local file reads; writes via gate-redirect to native Cascade tools
+- **Authority**: All local file reads; writes via gate-redirect to native Cursor Agent tools
 - **Capability (read/list/meta — allowed)**: `read_text_file`, `read_file` (deprecated), `read_media_file`, `read_multiple_files`, `list_directory`, `list_directory_with_sizes`, `directory_tree`, `search_files`, `get_file_info`, `list_allowed_directories`, `create_directory`
-- **Capability (write/mutate — BLOCKED by gate)**: `write_file`, `edit_file`, `move_file` — redirected to Cascade native tools (`write_to_file`, `edit`, `multi_edit`) which fire `pre_write_code` constitutional gates
+- **Capability (write/mutate — BLOCKED by gate)**: `write_file`, `edit_file`, `move_file` — redirected to Cursor Agent native tools (`write_to_file`, `edit`, `multi_edit`) which fire `pre_write_code` constitutional gates
 - **Scope**: Locked to repo root (`C:/Git/Agentic-Workflow`) only — enforced both by server and by gate
 - **Operator note**: `docs/guides/filesystem_mcp_operations.md`
 

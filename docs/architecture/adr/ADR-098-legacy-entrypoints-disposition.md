@@ -3,7 +3,7 @@
 **Status**: PROPOSED
 **Date**: 2026-05-06
 **Phase**: W4 of apps-l7-deferred-scope-followup-a1d9e3
-**Deciders**: Cascade
+**Deciders**: Cursor Agent
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260506T200000.sqlite`
 
 ---

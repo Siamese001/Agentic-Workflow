@@ -1043,7 +1043,7 @@ def test_warn_unresolvable_slug_emits_stderr(tmp_path: Path, capsys) -> None:
     import sys
 
     REPO_ROOT_LOCAL = Path(__file__).resolve().parents[3]
-    hook_path = REPO_ROOT_LOCAL / ".windsurf" / "scripts" / "post_cascade_wave_lifecycle_capture.py"
+    hook_path = REPO_ROOT_LOCAL / ".windsurf" / "scripts" / "post_cursor_agent_wave_lifecycle_capture.py"
     spec = importlib.util.spec_from_file_location("_wlc_warn_test", hook_path)
     mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     spec.loader.exec_module(mod)  # type: ignore[union-attr]

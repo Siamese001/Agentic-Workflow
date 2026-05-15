@@ -1,4 +1,4 @@
-"""Tests for .windsurf/scripts/post_cascade_ag_queue_drain_audit.py"""
+"""Tests for .windsurf/scripts/post_cursor_agent_ag_queue_drain_audit.py"""
 from __future__ import annotations
 
 import importlib.util
@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_SCRIPT = REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_ag_queue_drain_audit.py"
+AUDIT_SCRIPT = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_ag_queue_drain_audit.py"
 HELPER_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_author_gate_queue.py"
 
 

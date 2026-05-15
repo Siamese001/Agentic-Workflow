@@ -2,10 +2,10 @@
 
 Single source of truth used by:
   - .windsurf/skills/author-gate-packet-builder/emit_packet.py (validate before emit)
-  - .windsurf/scripts/post_cascade_author_gate_schema_audit.py (validate captured)
-  - .windsurf/scripts/post_cascade_author_gate_ui_audit.py (read routing enum)
-  - .windsurf/scripts/post_cascade_author_gate_miss_detector.py (presence check)
-  - .windsurf/scripts/post_cascade_ask_user_question_packet_audit.py (vacuum closure)
+  - .windsurf/scripts/post_cursor_agent_author_gate_schema_audit.py (validate captured)
+  - .windsurf/scripts/post_cursor_agent_author_gate_ui_audit.py (read routing enum)
+  - .windsurf/scripts/post_cursor_agent_author_gate_miss_detector.py (presence check)
+  - .windsurf/scripts/post_cursor_agent_ask_user_question_packet_audit.py (vacuum closure)
 
 Plan: author-gate-ssot-consolidation-b7c3e1 (W1.2 / W3 shared loader).
 

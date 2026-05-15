@@ -45,12 +45,12 @@ PRELUDE = """# Author-Gate Decision Packet Template — Didactic Option Shape
 > derived from `.windsurf/schemas/author_gate_packet.schema.json` (canonical
 > SSOT per plan `author-gate-ssot-consolidation-b7c3e1`).
 
-This template is loaded by Cascade when `emit_packet.py` is constructing an
+This template is loaded by Cursor Agent when `emit_packet.py` is constructing an
 `ask_user_question` packet for a **developer-loop / harness** decision point.
 
 Terminology note (do NOT conflate):
 - **Author-Gate Decision** = this template. Developer-loop / harness-side.
-  Fires when Cascade is about to write code and a trigger in
+  Fires when Cursor Agent is about to write code and a trigger in
   `author_gate_triggers.yaml` matches.
 - **Runtime Author-Gate** = v30 step [5] ESCALATE branch. Production agent
   escalates a live request to a human approver. Covered by `ADR-023`.

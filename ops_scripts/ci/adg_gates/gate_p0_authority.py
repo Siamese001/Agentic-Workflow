@@ -12,7 +12,7 @@ Source views:
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -34,6 +34,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from ops_scripts.ci.check_authority_boundary_breaches import authority_breaches_fail_adr071
 
 try:
     from tqdm import tqdm
@@ -171,6 +172,22 @@ class AuthorityBoundaryGate(ADGGateBase):
         # warning classification. Letting both gates count the same concern inflated
         # the P0 backlog by ~269 duplicate rows per run. write_sovereignty is the SSOT
         # for "writes without UWG" enforcement.
+
+        # ADR-071: thin P0 halt set — breach rows may exist under ratcheted exempt
+        # inventory (see check_authority_boundary_breaches.py). Live/future rows
+        # remain hard-blocking.
+        breach_violations = [
+            v for v in violations if v.source_view == "mv_authority_boundary_breaches"
+        ]
+        non_breach = [v for v in violations if v.source_view != "mv_authority_boundary_breaches"]
+        if breach_violations and self.conn:
+            try:
+                failed, _per_src, _reasons = authority_breaches_fail_adr071(self.conn)
+            except RuntimeError:
+                failed = True
+            if not failed:
+                summary["adr071_authority_breaches_suppressed"] = len(breach_violations)
+                violations = non_breach
 
         # Determine status
         summary["total_violations"] = len(violations)

@@ -9,7 +9,7 @@ table cannot be audit-checked. The c8b3e1 plan would have caught its own
 non-functional runtime if a DoD row had said "DoD-N: `python -m apps_rg
 --dry-run` exit 0".
 
-Scan: `.windsurf/plans/*.md` (excluding `_archive/`, `_orphan_review/`).
+Scan: `.cursor/plans/*.md` (excluding `_archive/`, `_orphan_review/`).
 Required: a `## Definition of Done` heading (case-insensitive, accepts
 `## Definition of Done` and `## Definitions of Done`) followed by content.
 
@@ -31,7 +31,9 @@ import sys
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_PLANS_DIR = _REPO_ROOT / ".windsurf" / "plans"
+# SSOT: active plans live under `.cursor/plans/` (plan-location.mdc). Only
+# top-level `*.md` is scanned — not `_archive/` trees — to cap gate cost.
+_PLANS_DIR = _REPO_ROOT / ".cursor" / "plans"
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "plan_dod_gate.json"
 
 _DOD_HEADING_RE = re.compile(
@@ -48,7 +50,7 @@ _FRONTMATTER_RE = re.compile(r"^---\n(.+?)\n---\n", re.DOTALL)
 
 
 def _scan_plan_files() -> list[Path]:
-    """Return all .md files directly under .windsurf/plans/ excluding archive subfolders."""
+    """Return all .md files directly under .cursor/plans/ excluding archive subfolders."""
     if not _PLANS_DIR.is_dir():
         return []
     return [p for p in sorted(_PLANS_DIR.glob("*.md")) if p.is_file()]

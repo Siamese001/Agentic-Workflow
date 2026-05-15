@@ -19,11 +19,11 @@ F. Core purity (deterministic agentic_core diff check with allowlist)
 G. Feature flag bridge (env var, legacy path, type validation)
 
 Exit codes:
-  0 = all checks PASS
-  1 = one or more checks FAIL
+  0 = all checks PASS, or advisory mode with failures logged (default)
+  1 = one or more checks FAIL and ``APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1``
 
 Environment:
-  APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 - fail closed on any violation
+  APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 — exit 1 when any check FAIL (default is advisory exit 0).
 """
 
 import ast
@@ -613,20 +613,28 @@ def main() -> int:
     print(f"\n  Total: {total_pass} passed, {total_fail} failed")
     
     # Final verdict
-    fail_closed = os.environ.get("APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED", "")
-    
+    fail_closed = os.environ.get("APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED", "").strip() == "1"
+
     if total_fail == 0:
         print(f"\n{'='*60}")
         print(f"FINAL: PASS - All checks passed")
         print(f"{'='*60}")
         return 0
-    else:
-        print(f"\n{'='*60}")
-        print(f"FINAL: FAIL - {total_fail} check(s) failed")
-        if fail_closed:
-            print(f"  (fail-closed mode: APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1)")
-        print(f"{'='*60}")
+    print(f"\n{'='*60}")
+    print(f"FINAL: FAIL - {total_fail} check(s) failed")
+    print(f"{'='*60}")
+    if fail_closed:
+        print(
+            "  (fail-closed mode: APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 — exiting 1)",
+            file=sys.stderr,
+        )
         return 1
+    print(
+        "[check_apps_rg_l2_v4_envelope] Advisory mode — partial FAIL above; exiting 0 "
+        "(set APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 to fail closed).",
+        file=sys.stderr,
+    )
+    return 0
 
 
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ def _make_hooks(
 ) -> dict:
     return {
         "hooks": {
-            "post_cascade_response": post_cascade or [],
+            "post_cursor_agent_response": post_cascade or [],
             "pre_user_prompt": pre_prompt or [],
         }
     }
@@ -69,10 +69,10 @@ def _full_valid_hooks() -> dict:
     """A fully compliant hooks structure — all 4 invariants satisfied."""
     return _make_hooks(
         post_cascade=[
-            _hook("post_cascade_heartbeat.py"),
-            _hook("post_cascade_author_gate_miss_detector.py", show_output=True),
-            _hook("post_cascade_author_gate_ui_audit.py", show_output=True),
-            _hook("post_cascade_ask_user_question_packet_audit.py", show_output=True),
+            _hook("post_cursor_agent_heartbeat.py"),
+            _hook("post_cursor_agent_author_gate_miss_detector.py", show_output=True),
+            _hook("post_cursor_agent_author_gate_ui_audit.py", show_output=True),
+            _hook("post_cursor_agent_ask_user_question_packet_audit.py", show_output=True),
         ],
         pre_prompt=[
             _hook("pre_prompt_classifier.py"),
@@ -94,7 +94,7 @@ class TestWire1ReminderHook:
 
     def test_fail_when_reminder_absent(self, mod):
         hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_author_gate_miss_detector.py")],
+            post_cascade=[_hook("post_cursor_agent_author_gate_miss_detector.py")],
             pre_prompt=[_hook("pre_prompt_classifier.py")],
         )
         violations = mod.evaluate(hooks)
@@ -104,7 +104,7 @@ class TestWire1ReminderHook:
 
     def test_fail_when_reminder_show_output_false(self, mod):
         hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_author_gate_miss_detector.py")],
+            post_cascade=[_hook("post_cursor_agent_author_gate_miss_detector.py")],
             pre_prompt=[
                 _hook("pre_user_prompt_author_gate_reminder.py", show_output=False),
             ],
@@ -128,8 +128,8 @@ class TestWire2MissDetector:
     def test_fail_when_absent(self, mod):
         hooks = _make_hooks(
             post_cascade=[
-                _hook("post_cascade_author_gate_ui_audit.py"),
-                _hook("post_cascade_ask_user_question_packet_audit.py"),
+                _hook("post_cursor_agent_author_gate_ui_audit.py"),
+                _hook("post_cursor_agent_ask_user_question_packet_audit.py"),
             ],
             pre_prompt=[_hook("pre_user_prompt_author_gate_reminder.py")],
         )
@@ -139,9 +139,9 @@ class TestWire2MissDetector:
     def test_fail_when_show_output_false(self, mod):
         hooks = _make_hooks(
             post_cascade=[
-                _hook("post_cascade_author_gate_miss_detector.py", show_output=False),
-                _hook("post_cascade_author_gate_ui_audit.py"),
-                _hook("post_cascade_ask_user_question_packet_audit.py"),
+                _hook("post_cursor_agent_author_gate_miss_detector.py", show_output=False),
+                _hook("post_cursor_agent_author_gate_ui_audit.py"),
+                _hook("post_cursor_agent_ask_user_question_packet_audit.py"),
             ],
             pre_prompt=[_hook("pre_user_prompt_author_gate_reminder.py")],
         )
@@ -163,8 +163,8 @@ class TestWire3UiAudit:
     def test_fail_when_absent(self, mod):
         hooks = _make_hooks(
             post_cascade=[
-                _hook("post_cascade_author_gate_miss_detector.py"),
-                _hook("post_cascade_ask_user_question_packet_audit.py"),
+                _hook("post_cursor_agent_author_gate_miss_detector.py"),
+                _hook("post_cursor_agent_ask_user_question_packet_audit.py"),
             ],
             pre_prompt=[_hook("pre_user_prompt_author_gate_reminder.py")],
         )
@@ -173,9 +173,9 @@ class TestWire3UiAudit:
     def test_fail_when_show_output_false(self, mod):
         hooks = _make_hooks(
             post_cascade=[
-                _hook("post_cascade_author_gate_miss_detector.py"),
-                _hook("post_cascade_author_gate_ui_audit.py", show_output=False),
-                _hook("post_cascade_ask_user_question_packet_audit.py"),
+                _hook("post_cursor_agent_author_gate_miss_detector.py"),
+                _hook("post_cursor_agent_author_gate_ui_audit.py", show_output=False),
+                _hook("post_cursor_agent_ask_user_question_packet_audit.py"),
             ],
             pre_prompt=[_hook("pre_user_prompt_author_gate_reminder.py")],
         )
@@ -196,8 +196,8 @@ class TestWire4AskPacketAudit:
     def test_fail_when_absent(self, mod):
         hooks = _make_hooks(
             post_cascade=[
-                _hook("post_cascade_author_gate_miss_detector.py"),
-                _hook("post_cascade_author_gate_ui_audit.py"),
+                _hook("post_cursor_agent_author_gate_miss_detector.py"),
+                _hook("post_cursor_agent_author_gate_ui_audit.py"),
             ],
             pre_prompt=[_hook("pre_user_prompt_author_gate_reminder.py")],
         )
@@ -206,9 +206,9 @@ class TestWire4AskPacketAudit:
     def test_fail_when_show_output_false(self, mod):
         hooks = _make_hooks(
             post_cascade=[
-                _hook("post_cascade_author_gate_miss_detector.py"),
-                _hook("post_cascade_author_gate_ui_audit.py"),
-                _hook("post_cascade_ask_user_question_packet_audit.py", show_output=False),
+                _hook("post_cursor_agent_author_gate_miss_detector.py"),
+                _hook("post_cursor_agent_author_gate_ui_audit.py"),
+                _hook("post_cursor_agent_ask_user_question_packet_audit.py", show_output=False),
             ],
             pre_prompt=[_hook("pre_user_prompt_author_gate_reminder.py")],
         )
@@ -224,12 +224,12 @@ class TestWire4AskPacketAudit:
 class TestNoAgHooks:
     def test_no_violations_when_no_ag_hooks_present(self, mod):
         hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_heartbeat.py")],
+            post_cascade=[_hook("post_cursor_agent_heartbeat.py")],
             pre_prompt=[_hook("pre_prompt_classifier.py")],
         )
         assert mod.evaluate(hooks) == []
 
-    def test_no_violations_when_post_cascade_empty(self, mod):
+    def test_no_violations_when_post_cursor_agent_empty(self, mod):
         hooks = _make_hooks(post_cascade=[], pre_prompt=[])
         assert mod.evaluate(hooks) == []
 
@@ -269,7 +269,7 @@ class TestMainExitCodes:
 
     def test_exits_0_advisory_on_violation(self, mod, tmp_path):
         bad_hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_author_gate_ui_audit.py")],
+            post_cascade=[_hook("post_cursor_agent_author_gate_ui_audit.py")],
             pre_prompt=[],
         )
         hooks_path = tmp_path / "hooks.json"
@@ -285,7 +285,7 @@ class TestMainExitCodes:
 
     def test_exits_1_fail_closed_on_violation(self, mod, tmp_path):
         bad_hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_author_gate_ui_audit.py")],
+            post_cascade=[_hook("post_cursor_agent_author_gate_ui_audit.py")],
             pre_prompt=[],
         )
         hooks_path = tmp_path / "hooks.json"
@@ -300,7 +300,7 @@ class TestMainExitCodes:
 
     def test_bypass_exits_0_and_skips_checks(self, mod, tmp_path):
         bad_hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_author_gate_ui_audit.py")],
+            post_cascade=[_hook("post_cursor_agent_author_gate_ui_audit.py")],
             pre_prompt=[],
         )
         hooks_path = tmp_path / "hooks.json"
@@ -337,7 +337,7 @@ class TestMainExitCodes:
 
     def test_report_written_on_violation(self, mod, tmp_path):
         bad_hooks = _make_hooks(
-            post_cascade=[_hook("post_cascade_author_gate_ui_audit.py", show_output=False)],
+            post_cascade=[_hook("post_cursor_agent_author_gate_ui_audit.py", show_output=False)],
             pre_prompt=[],
         )
         hooks_path = tmp_path / "hooks.json"

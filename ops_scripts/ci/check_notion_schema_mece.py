@@ -14,10 +14,10 @@ REQUIRED for every writer that targets WAVE_PHASE_DB_ID:
   - Writes the `Evidence` field (replaces 3 retired prose fields).
 
 Fail policy: exit 1 on any violation. Advisory lives in
-`.windsurf/rules/memory-notion-writeback.md` and the MECE v2 memory entity
+`.cursor/rules/memory-notion-writeback.md` and the MECE v2 memory entity
 `ProceduralPattern:NotionBacklogMECESchemaV2`.
 
-This gate is Python-only; scans `.windsurf/scripts/*.py` and `ops_scripts/**/*.py`
+This gate is Python-only; scans `.cursor/scripts/*.py` and `ops_scripts/**/*.py`
 for the known writer patterns.
 """
 
@@ -33,8 +33,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Listed explicitly to avoid false positives on unrelated scripts that happen
 # to mention Notion terminology.
 KNOWN_WRITERS = [
-    REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_deferred_scope_capture.py",
-    REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_next_step_capture.py",
+    REPO_ROOT / ".cursor" / "scripts" / "post_cursor_agent_deferred_scope_capture.py",
+    REPO_ROOT / ".cursor" / "scripts" / "post_cursor_agent_next_step_capture.py",
 ]
 
 RETIRED_FIELDS = {

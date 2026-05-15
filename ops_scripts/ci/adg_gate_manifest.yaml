@@ -1,6 +1,6 @@
 # ADG Three-Graph Gate Manifest — canonical SSOT for the manifest-driven runner.
 #
-# Plan: .windsurf/plans/adg-three-graph-harness-e57cc7.md
+# Plan: .cursor/plans/adg-three-graph-harness-e57cc7.md
 #
 # Schema (per gate)
 # -----------------
@@ -85,7 +85,7 @@ gates:
       min_mv: 30
       min_pview: 3
       min_infra: 1
-    output_artifact: artifacts/windsurf/snapshot_mv_violations.jsonl
+    output_artifact: artifacts/cursor/snapshot_mv_violations.jsonl
     legacy: true
     accepts_runner_flags: false
     suite: ["quick", "full"]
@@ -98,7 +98,7 @@ gates:
     enforcement_mode: strict
     assertion: "Every edge has non-NULL authority drawn from the closed enum"
     bypass_env: EDGE_AUTHORITY_BYPASS
-    output_artifact: artifacts/windsurf/edge_authority_violations.jsonl
+    output_artifact: artifacts/cursor/edge_authority_violations.jsonl
     legacy: true
     accepts_runner_flags: false
     suite: ["quick", "full"]

@@ -1,8 +1,8 @@
 """PDP — ADG-first dependency analysis decision (P6).
 
-Pure decision primitive extracted from ``post_cascade_adg_audit.py``. The
+Pure decision primitive extracted from ``post_cursor_agent_adg_audit.py``. The
 hook remains the PEP (reads stdin, writes to violation log, decides exit
-code). This module is the PDP: given observed facts about a Cascade
+code). This module is the PDP: given observed facts about a Cursor Agent
 response, produce a verdict.
 
 Constitutional §28: the fallback ladder is
@@ -41,7 +41,7 @@ class AdgFirstDecision:
 
     Attributes:
         verdict: Categorical verdict (see AdgFirstVerdict).
-        severity: String label matching the post_cascade_adg_audit log
+        severity: String label matching the post_cursor_agent_adg_audit log
             format ("info", "warning", "error", "critical").
         is_blocking: True when enforcement should exit 2 (block the
             response). False for advisory outcomes.
@@ -65,7 +65,7 @@ def classify_grep_for_deps(
     adg_snapshot_present: bool,
     bypass_set: bool,
 ) -> AdgFirstDecision:
-    """Classify a Cascade response's ADG-first compliance.
+    """Classify a Cursor Agent response's ADG-first compliance.
 
     All inputs are booleans describing observed facts. Returns a single
     decision packet. Caller (PEP) is responsible for logging and exit-code

@@ -4,7 +4,7 @@
 #   ~/.codeium/windsurf/mcp_config.json  ->  <repo>/.windsurf/mcp_config.json
 #   <repo>/AGENTS.md                     ->  <repo>/.windsurf/AGENTS.md   (with -IncludeAgentsMd)
 #
-# Eliminates repo<->global drift for Cascade. Idempotent; safe to re-run.
+# Eliminates repo<->global drift for Cursor Agent. Idempotent; safe to re-run.
 #
 # Requires: Windows Developer Mode enabled OR an elevated (Admin) shell.
 # Usage:

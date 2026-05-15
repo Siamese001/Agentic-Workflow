@@ -457,9 +457,9 @@ class TestFactVectorsSeparation:
         
         doc = chunk.to_chroma_document()
         
-        # Chroma format: {id: str, content: str, metadata: dict}
+        # Chroma ingest pipeline format: {id: str, text: str, metadata: dict}
         assert "id" in doc
-        assert "content" in doc
+        assert "text" in doc
         assert "metadata" in doc
         assert doc["metadata"]["app"] == "apps_rg"
         assert doc["metadata"]["source_class"] == "candidate_profile"

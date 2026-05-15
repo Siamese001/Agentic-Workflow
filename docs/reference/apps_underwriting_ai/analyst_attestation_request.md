@@ -13,7 +13,7 @@ This is not a production lending decision file. The attestation confirms review 
 3. Confirm each human_score is a reasonable human/SME score for that dimension.
 4. Confirm labeler aliases map to actual qualified reviewers or an approved offline compliance mapping.
 5. Confirm there is no PII, real applicant data, or live lender thresholds.
-6. Confirm labels were not authored solely by Cascade or an LLM.
+6. Confirm labels were not authored solely by Cursor Agent or an LLM.
 
 ## Required output
 
@@ -31,4 +31,4 @@ And fill all attestation fields with non-null values and true confirmations.
 
 ## Important limitation language
 
-Use honest language. If the examples are realistic/anonymized rather than production-derived, say that. Do not represent demo, synthetic, Cascade-authored, or LLM-authored labels as independent human labels.
+Use honest language. If the examples are realistic/anonymized rather than production-derived, say that. Do not represent demo, synthetic, Cursor Agent-authored, or LLM-authored labels as independent human labels.

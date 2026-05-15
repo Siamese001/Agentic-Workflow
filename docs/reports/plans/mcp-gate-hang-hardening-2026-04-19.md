@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-A rigorous MCP health sweep surfaced three compounding failure modes that made the MCP stack appear to hang from Cascade's perspective. Root-cause investigation identified:
+A rigorous MCP health sweep surfaced three compounding failure modes that made the MCP stack appear to hang from Cursor Agent's perspective. Root-cause investigation identified:
 
 1. A **5-minute synchronous ADG auto-generation** call inside `pre_mcp_gate` (the single biggest hang risk in the system).
 2. **Session-state file drift** across three hook scripts with divergent `_session_id` derivation logic.
@@ -50,7 +50,7 @@ def _auto_generate_adg(repo_root: Path) -> bool:
     )
 ```
 
-Call sites in `check_adg_gate` and `check_memory_gate` invoked this when `artifacts/adg/adg_indexed_*.sqlite` was missing. From Cascade's perspective this is a **5-minute hang** on a single MCP tool call.
+Call sites in `check_adg_gate` and `check_memory_gate` invoked this when `artifacts/adg/adg_indexed_*.sqlite` was missing. From Cursor Agent's perspective this is a **5-minute hang** on a single MCP tool call.
 
 **Fix:** `_auto_generate_adg` is now a no-op that returns False immediately with a clear stderr message directing the user to run the generator in a separate terminal.
 

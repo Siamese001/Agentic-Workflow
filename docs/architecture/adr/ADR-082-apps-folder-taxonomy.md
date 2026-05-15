@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-05-03 (re-execution; original 2026-05-02 rolled back)
-- **Deciders**: Cascade (authored), user (approved re-execution via Author-Gate option 1)
+- **Deciders**: Cursor Agent (authored), user (approved re-execution via Author-Gate option 1)
 - **Context tier**: T3 (cross-app, cross-layer)
 - **SSOT plan**: `.windsurf/plans/apps-folder-taxonomy-unification-b7d4e1.md`
 - **Sunset window**: Compat shims sunset 2026-05-17 (2-week window from re-execution).
@@ -18,7 +18,7 @@ Nine `apps_*` folders (`apps_eval`, `apps_exec`, `apps_lic`, `apps_qna`, `apps_r
 
 ## 2. Decision
 
-Canonicalize every `apps_*` tree to a fixed sub-folder grammar and enforce it with CI (gate `ops_scripts/ci/check_apps_folder_taxonomy.py`) + an always-on-trigger Cascade rule (`.windsurf/rules/apps-folder-taxonomy.md`).
+Canonicalize every `apps_*` tree to a fixed sub-folder grammar and enforce it with CI (gate `ops_scripts/ci/check_apps_folder_taxonomy.py`) + an always-on-trigger Cursor Agent rule (`.windsurf/rules/apps-folder-taxonomy.md`).
 
 ### 2.1 Mandatory sub-folders (all apps)
 
@@ -89,7 +89,7 @@ Every move phase follows the sequence documented in plan §8. Summary:
 
 ### Positive
 
-- Uniform taxonomy across 9 apps ⇒ reduced cognitive load for new developers and Cascade itself.
+- Uniform taxonomy across 9 apps ⇒ reduced cognitive load for new developers and Cursor Agent itself.
 - Constitutional §31 (SSOT folder routing) extensible to `apps_*/` via new gate `T7r` (`check_apps_folder_taxonomy.py`).
 - Documentation parity ⇒ every app has the same discoverability contract.
 - Enables deferred work: apps-e2e certification re-run over canonical layout, Fort Knox arm rerun, constitutional §32 entry.

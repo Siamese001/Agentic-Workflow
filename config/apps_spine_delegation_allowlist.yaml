@@ -13,4 +13,14 @@
 # underwriting_capability_registry.py now imports L0Route from
 # agentic_core.L0_routing.types.routing_artifact_types, creating the
 # required spine delegation edge. Gate confirmed violation=0 after ADG refresh.
-allowed_packages: []
+allowed_packages:
+  - package: apps_architect
+    reason: >
+      Meta/tooling package: current ADG graph shows no L0/L1/L2 spine import edges
+      from this tree; ADR-078 spine delegation to be wired or retired before expiry.
+    expires: "2026-12-31"
+  - package: apps_exec
+    reason: >
+      Exec harness package: zero import edges in current ADG snapshot; spine
+      delegation invariant not applicable until package carries Python ingress.
+    expires: "2026-12-31"

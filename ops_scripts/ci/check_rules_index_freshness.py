@@ -289,7 +289,7 @@ def generate_receipt(
             "rules_index": str(RULES_INDEX_PATH.relative_to(REPO_ROOT)),
         },
         "action_required": "regenerate" if drift_info["has_drift"] else None,
-        "regenerate_command": "python .windsurf/scripts/generate_rules_index.py --write" if drift_info["has_drift"] else None,
+        "regenerate_command": "python .cursor/scripts/generate_rules_index.py --write" if drift_info["has_drift"] else None,
         "advisory_note": "Drift detected but exiting 0 due to --advisory mode" if (drift_info["has_drift"] and advisory) else None,
     }
 
@@ -396,7 +396,7 @@ Examples:
         if not args.quiet:
             print("[WARN] No committed RULES_INDEX.md found")
             print(f"[INFO] Generated content: {drift_info['generated_lines']} lines")
-            print("[ACTION] Run: python .windsurf/scripts/generate_rules_index.py --write")
+            print("[ACTION] Run: python .cursor/scripts/generate_rules_index.py --write")
         
         sys.exit(1 if strict else 0)
     
@@ -470,7 +470,7 @@ Examples:
         
         if drift_info["has_drift"]:
             print(f"[ACTION] To refresh RULES_INDEX.md, run:")
-            print(f"         python .windsurf/scripts/generate_rules_index.py --write")
+            print(f"         python .cursor/scripts/generate_rules_index.py --write")
             
             if not strict and not advisory:
                 print(f"")

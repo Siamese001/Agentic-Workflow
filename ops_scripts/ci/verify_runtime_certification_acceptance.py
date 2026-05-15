@@ -1,6 +1,6 @@
 """Verifier — Acceptance legality + composition non-promotion.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``.cursor/plans/runtime-cert-hardened-w0-7e3c9a.md``
 Covers: RTC-REQ-004 (acceptance legality),
         RTC-REQ-005 (DOC_REFERENCE_ONLY cannot claim runtime),
         RTC-REQ-111 (acceptance legality CI gate),

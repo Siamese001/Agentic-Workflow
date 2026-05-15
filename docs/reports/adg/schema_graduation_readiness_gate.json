@@ -2,7 +2,7 @@
   "gate": "G-SCHEMA-GRADUATION-READINESS",
   "tier": "B",
   "advisory_mode": true,
-  "snapshot": "artifacts\\adg\\adg_indexed_04302026_2050.sqlite",
+  "snapshot": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
   "status": "ready",
   "needs_graduation": [
     "bucket",
@@ -18,5 +18,5 @@
     "authority": 0
   },
   "blockers": [],
-  "timestamp": "2026-05-01T00:57:28.690296+00:00"
+  "timestamp": "2026-05-15T18:13:01.632049+00:00"
 }

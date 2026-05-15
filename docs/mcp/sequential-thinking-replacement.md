@@ -1,7 +1,7 @@
 # Sequential Thinking MCP — Retirement & Replacement
 
 **Status**: RETIRED (2026-04-07)
-**Replacement**: Native Cascade reasoning + compositional MCP pattern
+**Replacement**: Native Cursor Agent reasoning + compositional MCP pattern
 **Workflow**: `/structured-reasoning`
 **Skill**: `.windsurf/skills/structured-reasoning/SKILL.md`
 **Rule**: `.windsurf/rules/sequential-thinking-enforcement.md`
@@ -22,11 +22,11 @@
 
 4. **`DISABLE_THOUGHT_LOGGING=true` was set** — This suppresses the only diagnostic output the server emits, making hang diagnosis impossible. The fix for "it's noisy" created "it's silent when broken."
 
-5. **Capability negotiation mismatch** — The server expects to be invoked repeatedly as a "reasoning loop" tool. In practice, Windsurf's Cascade model drives the reasoning natively; the MCP was being used as a meta-layer on top of an already-reasoning model, creating a redundant abstraction with no performance guarantee.
+5. **Capability negotiation mismatch** — The server expects to be invoked repeatedly as a "reasoning loop" tool. In practice, Windsurf's Cursor Agent model drives the reasoning natively; the MCP was being used as a meta-layer on top of an already-reasoning model, creating a redundant abstraction with no performance guarantee.
 
 **Likely findings (not fully confirmed):**
 
-6. **Bad invocation pattern** — Cascade was expected to call `mcp7_sequentialthinking` as a blocking reasoning primitive, then act on its output. This created a synchronous dependency on a process that could hang indefinitely. No timeout was configured at the Windsurf layer.
+6. **Bad invocation pattern** — Cursor Agent was expected to call `mcp7_sequentialthinking` as a blocking reasoning primitive, then act on its output. This created a synchronous dependency on a process that could hang indefinitely. No timeout was configured at the Windsurf layer.
 
 7. **Oversized tool surface** — The server exposed a single tool (`sequentialthinking`) with open-ended parameters. This made parameter validation impossible and created an opaque black box that violated the compositional principle.
 
@@ -38,7 +38,7 @@
 
 **Operationally irrelevant:**
 
-Even if the root cause is fully resolved, the architectural case for a dedicated "reasoning MCP" is weak. Cascade's native reasoning is more capable, observable, and reliable than a tool-server abstraction that adds latency and failure modes without adding capability.
+Even if the root cause is fully resolved, the architectural case for a dedicated "reasoning MCP" is weak. Cursor Agent's native reasoning is more capable, observable, and reliable than a tool-server abstraction that adds latency and failure modes without adding capability.
 
 ---
 
@@ -50,7 +50,7 @@ The replacement reproduces all Sequential Thinking behaviors using current healt
 
 | Capability | Old approach | Replacement |
 |------------|-------------|-------------|
-| Task decomposition | `sequentialthinking` tool call | `mcp13_create_task` + `mcp13_decompose_task` + native Cascade |
+| Task decomposition | `sequentialthinking` tool call | `mcp13_create_task` + `mcp13_decompose_task` + native Cursor Agent |
 | Ordered reasoning | MCP thought chain | SR_PLAN numbered steps (explicit, inspectable) |
 | Revision / self-correction | MCP internal state | SR_PLAN_v2 with explicit revision reason |
 | Branching under uncertainty | MCP branch parameter | BRANCH POINT blocks + HITL via `ask_user_question` |
@@ -289,7 +289,7 @@ The Sequential Thinking MCP was never used for:
 - Git operations (that's GitKraken MCP / `run_command`)
 
 It was used only for "structured thinking about what to do." That capability is now provided by:
-1. Cascade's native reasoning (the model itself)
+1. Cursor Agent's native reasoning (the model itself)
 2. The explicit SR_INTAKE + SR_PLAN + SR_APPROVAL protocol (the behavioral rule)
 3. Task Manager MCP for durable step tracking
 

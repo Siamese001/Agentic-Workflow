@@ -431,14 +431,31 @@ class SparseIndex:
 _sparse_index_cache: dict[str, SparseIndex] = {}
 
 
-def get_sparse_index(collection_name: str) -> SparseIndex | None:
-    """Return the SparseIndex singleton for *collection_name*, or None if not supported.
+def sparse_sidecar_exists(collection_name: str) -> bool:
+    """True when ``data/cache/sparse/<collection_name>.db`` is present on disk."""
+    name = (collection_name or "").strip()
+    if not name:
+        return False
+    return (_SPARSE_DIR / f"{name}.db").is_file()
 
-    Only collections in _SPARSE_COLLECTIONS (Phase A targets) are supported.
-    Returns None for unsupported collections so callers can degrade gracefully.
+
+def get_sparse_index(collection_name: str) -> SparseIndex | None:
+    """Return the SparseIndex singleton for *collection_name*, or None if unavailable.
+
+    Resolution order (profile-driven, app-agnostic):
+
+    1. Known canonical collections in ``_SPARSE_COLLECTIONS`` (legacy allowlist).
+    2. Any collection name whose FTS5 sidecar file exists under ``data/cache/sparse/``.
+
+    Returns None when the name is empty or no sidecar is present, so callers degrade
+    gracefully without app-specific literals in this module.
     """
-    if collection_name not in _SPARSE_COLLECTIONS:
+    name = (collection_name or "").strip()
+    if not name:
         return None
-    if collection_name not in _sparse_index_cache:
-        _sparse_index_cache[collection_name] = SparseIndex(collection_name)
-    return _sparse_index_cache[collection_name]
+    if name not in _SPARSE_COLLECTIONS and not sparse_sidecar_exists(name):
+        return None
+    if name not in _sparse_index_cache:
+        _sparse_index_cache[name] = SparseIndex(name)
+    idx = _sparse_index_cache[name]
+    return idx if idx.is_available else None

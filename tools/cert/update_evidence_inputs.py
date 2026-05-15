@@ -1,6 +1,6 @@
 """F0.4 — Update evidence-input fields (cols 37-62) for one or more reqs.
 
-This is the **only** path Cascade or operators use to populate the
+This is the **only** path Cursor Agent or operators use to populate the
 26 evidence-input fields per row going forward. Replaces direct edits
 to `signoff_status` (which is now a legacy mirror of the formula-owned
 `computed_signoff_status`).

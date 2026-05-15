@@ -138,3 +138,41 @@ def test_l6_status_is_ok_in_harness(
     are recorded via reason_codes."""
     for span_name in ("l6.ingest", "l6.evaluate"):
         assert spans_by_name[scenario][span_name]["status"] == "OK"
+
+
+# ---------------------------------------------------------------------------
+# G29 — Learning firewall identifier (p4.2 L6 hardening W4)
+# ---------------------------------------------------------------------------
+
+
+def test_g29_gate_id_is_canonical() -> None:
+    from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet
+
+    assert PromotionGauntlet.GATE_ID == "G29"
+
+
+def test_g29_result_carries_gate_id_on_gauntlet_pass() -> None:
+    from agentic_core.L6_learning import FutureRunPromotionRequest, ProposalPacket, ProposalType, ProofType
+    from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet
+
+    pkt = ProposalPacket(
+        proposal_id="p-g29",
+        run_id="run-g29",
+        proposal_type=ProposalType.CACHE_THRESHOLD,
+        required_proofs=(ProofType.REPLAY, ProofType.REGRESSION),
+    )
+    req = FutureRunPromotionRequest(
+        request_id="req-g29",
+        run_id="run-g29",
+        proposal_packets=(pkt,),
+        rollback_plan_ref="rollback://g29",
+        replay_proof_ref="replay://g29",
+        regression_proof_ref="regression://g29",
+        safety_proof_ref="safety://g29",
+        audit_manifest_ref="manifest://g29",
+        completed_eval_record_ref="eval://g29",
+        rca_packet_ref="rca://g29",
+    )
+    res = PromotionGauntlet().run_gauntlet(req)
+    assert res.gate_id == "G29"
+    assert res.passed is True

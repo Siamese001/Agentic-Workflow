@@ -5,7 +5,7 @@ Detects hardcoded NOTION/OpenAI/Anthropic API versions, base URLs, and
 data-source / page IDs in source files OUTSIDE designated SSOT modules.
 
 Allowlisted SSOT locations (configurable via SSOT_ALLOWLIST below):
-    .windsurf/scripts/_notion_constants.py        (target SSOT W3.1)
+    .cursor/scripts/_notion_constants.py        (target SSOT W3.1)
     apps_shared/config/environment_config.py
     agentic_core/L0_routing/config/path_constants.py
     agentic_core/L0_routing/config/external_apis_config.py
@@ -47,7 +47,7 @@ LITERAL_PATTERNS = (
 )
 
 SSOT_ALLOWLIST = (
-    ".windsurf/scripts/_notion_constants.py",
+    ".cursor/scripts/_notion_constants.py",
     "apps_shared/config/environment_config.py",
     "agentic_core/L0_routing/config/path_constants.py",
     "agentic_core/L0_routing/config/external_apis_config.py",

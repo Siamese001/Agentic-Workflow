@@ -39,7 +39,7 @@ def build_config(source_file: str) -> OTelServerConfig:
     #   1. OTEL_MCP_RUNTIME_ADG_DIR — explicit operator override. Lets a
     #      single otel_mcp_server.py serve traces from a different repo
     #      than where its source file lives. Required when Windsurf launches
-    #      the MCP from one workspace clone but the active Cascade session
+    #      the MCP from one workspace clone but the active Cursor Agent session
     #      writes traces to a sibling clone (precedent: 2026-04-30 apps_rg
     #      trace-visibility blackout — server ran from
     #      C:\Git\Agentic-Workflow while pipeline wrote to

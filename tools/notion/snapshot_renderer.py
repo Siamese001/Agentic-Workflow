@@ -2,7 +2,7 @@
 """
 snapshot_renderer.py — W4 of notion-backlog-schema-refactor-7c3d9e.
 
-Renders a compact "Backlog Snapshot" page on Notion that Cascade can retrieve
+Renders a compact "Backlog Snapshot" page on Notion that Cursor Agent can retrieve
 with ONE API call instead of paginating 220 rows. The page contains:
   - Band distribution counts (P0..P5, UNSCORED)
   - Top 25 open items by Impact Score (P1 + P2 only)

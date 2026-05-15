@@ -3,7 +3,7 @@
 **Status**: ACCEPTED (Part A executing; Part B deferred until post-W5 per Author-Gate decision 2026-04-21)
 **Date**: 2026-04-21
 **Phase**: P2 Burndown Wave — `p2-burndown-wave-9e4c17`
-**Deciders**: SVP Engineering (Cascade) + User (Human Approver)
+**Deciders**: SVP Engineering (Cursor Agent) + User (Human Approver)
 **Related Plan**: `.windsurf/plans/p2-burndown-wave-9e4c17.md`
 
 ---

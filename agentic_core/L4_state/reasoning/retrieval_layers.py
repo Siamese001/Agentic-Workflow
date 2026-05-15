@@ -223,7 +223,12 @@ class L2SemanticCache:
 
 
 class L3SemanticRAG:
-    """L3 Semantic RAG - vector search retrieval from ChromaDB."""
+    """L3 Semantic RAG - vector search retrieval from ChromaDB.
+
+    Evidence-shaped surfaces (``query_*_with_evidence``) feed the same C0 bundle
+    contract consumed by ``evidence_eval_bridge`` for live ``ExitControlGate`` dict
+    evaluation and L6 shadow telemetry — no alternate exit path here.
+    """
 
     def __init__(self, persist_directory: str = "data/cache/chromadb"):
         """Initialize L3 RAG with ChromaDB."""

@@ -1,0 +1,44 @@
+# apps_rg L5 governance profile bindings (GAP-008 / 00A.2 declarative posture).
+# Evidence-only refs — runtime engines resolve these via generic profile machinery.
+# Digest rows are populated at CI/runtime from file hashes where applicable.
+
+profile_version: "1.0"
+app_id: apps_rg
+task_class: resume_generation
+
+# 00A.1 Safety enforcement — policy + blueprint registry refs
+safety_enforcement:
+  policy_ref: "apps_rg/config/l0_policy.yaml"
+  blueprint_ref: "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml"
+
+# 00A.2 Authority / capability registry binding
+authority_context:
+  registry_ref: "apps_rg/config/domain_contract/runtime_customization_package.yaml"
+
+# 00A.3 Origin trust / content boundary (prompt assembly + retrieval posture)
+origin_trust:
+  prompt_boundary_ref: "apps_rg/prompt_assembly/templates/registry.v1.yaml"
+  retrieval_posture_ref: "apps_rg/config/domain_contract/c0_retrieval_profile.yaml"
+
+# 00A.4 HITL posture (inactive until human-modification workflows ship)
+hitl_posture:
+  hitl_policy_ref: "apps_rg/config/hitl_trigger_policy.yaml"
+  human_modification_enabled: false
+
+# 00A.5 Provider / egress governance (ProviderGateway profile lane)
+provider_egress:
+  provider_policy_ref: "agentic_core/runtime/providers/provider_types.py"
+  egress_certifier_lane: "apps_rg::l2::provider_gateway::v1"
+
+# 00A.6 Replay / audit certification evidence
+replay_audit:
+  replay_manifest_ref: "apps_rg/profiles/rg_planning_profile.yaml"
+  audit_manifest_ref: "apps_rg/runtime/bindings/exit_evidence_receipts.py"
+
+# 00A.7 Static governance / structure drift
+static_governance:
+  structure_blueprint_ref: "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml"
+
+# 00A.8 Runtime certification binding (layer cert ref registry)
+runtime_certification:
+  cert_route_registry_ref: "apps_rg/config/cert_route_registry.yaml"

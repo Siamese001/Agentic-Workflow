@@ -38,7 +38,7 @@ This ADR selects the architecture for the missing branch and binds it to the L5 
 
 ### 1.1 What this is not
 
-This ADR **is not** about developer-loop / IDE-side approval of Cascade code changes. That
+This ADR **is not** about developer-loop / IDE-side approval of Cursor Agent code changes. That
 concern — previously mislabeled "HITL" in `.windsurf/` — is harness enforcement in the
 Fowler taxonomy and is governed by the sibling plan. The two systems share a schema pattern
 (candidates, scores, approval, outcome, integrity) but must not share a schema, a table, a
@@ -82,7 +82,7 @@ returns the concrete adapter binding per escalation class.
 
 ### 3.4 Suspension semantics
 
-On ESCALATE_HITL: the **production run** is suspended (not Cascade, not the orchestrator
+On ESCALATE_HITL: the **production run** is suspended (not Cursor Agent, not the orchestrator
 process — the specific run keyed by `run_id` / `trace_id`). State is persisted to
 `runtime_hitl_ledger`. Resume is event-driven from adapter callback or scheduled timeout.
 

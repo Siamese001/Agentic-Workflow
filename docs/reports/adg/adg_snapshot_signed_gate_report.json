@@ -1,16 +1,14 @@
 {
   "gate": "G-ADG-SNAPSHOT-SIGNED",
   "tier": "B",
-  "timestamp": "2026-05-05T09:54:19.386591+00:00",
-  "snapshot": "artifacts\\adg\\adg_indexed_05052026_0523.sqlite",
-  "envelope_path": "artifacts\\adg\\adg_indexed_05052026_0523.sqlite.intoto.jsonl",
+  "timestamp": "2026-05-15T18:13:00.879781+00:00",
+  "snapshot": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
+  "envelope_path": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite.intoto.jsonl",
   "public_key_path": "artifacts\\adg\\keys\\ed25519_ff20fefbbf6a6425.pub",
   "verified": true,
-  "file_sha256_match": false,
+  "file_sha256_match": true,
   "content_digest_match": true,
   "strict_mode": true,
-  "violations": [
-    "snapshot file SHA-256 mismatch: attested=a7856446c6ef1453... actual=7174ae15aa410938... (snapshot may have been modified after signing)"
-  ],
-  "status": "violations"
+  "violations": [],
+  "status": "ok"
 }

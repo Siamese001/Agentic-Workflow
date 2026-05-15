@@ -138,7 +138,7 @@ Plan File values don't match any current `.md`. Plan renamed, deleted, or mistyp
 - `otel-runtime-adg-ingest-7a3f12` -- 2 row(s) in Notion
 - `p1-antipattern-burndown-8a3f2b` -- 1 row(s) in Notion
 - `p2-antipattern-burndown-ae0549` -- 7 row(s) in Notion
-- `post-cascade-watchdog-hardening` -- 2 row(s) in Notion
+- `post-cursor-agent-watchdog-hardening` -- 2 row(s) in Notion
 - `post-wave10-roadmap-a1e7f2` -- 5 row(s) in Notion
 - `prompt-reception-followups-a7b3c4` -- 15 row(s) in Notion
 - `pytest-server-functional-tests` -- 1 row(s) in Notion
@@ -263,7 +263,7 @@ Created before 2026-04-22 19:31 schema enrichment, or created without populating
 | `five-tier-governance-model-a3f7c2` | 1.5 | W1 | Todo | [P2] Post-Write Audit (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 1.6 | W1 | Todo | [P3] Post-Run Audit (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 1.7 | W1 | Todo | [P3] Post-MCP Audit (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
-| `five-tier-governance-model-a3f7c2` | 1.8 | W1 | Todo | [P3] Post-Cascade Cleanup (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
+| `five-tier-governance-model-a3f7c2` | 1.8 | W1 | Todo | [P3] Post-Cursor-Agent Cleanup (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 2.1 | W2 | Todo | [P2] Fix Rules (Policy) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 2.10 | W2 | Done | Approval & Exception Policy | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 2.2 | W2 | Todo | [P2] Policy Cleanup | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |

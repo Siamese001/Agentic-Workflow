@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-app_runtime_package_scan.py - Post-cascade response hook.
+app_runtime_package_scan.py - Post-cursor-agent response hook.
 
 Scans apps_* directories to verify runtime_customization_package requirements.
 Warns or fails when apps lack required package structure.

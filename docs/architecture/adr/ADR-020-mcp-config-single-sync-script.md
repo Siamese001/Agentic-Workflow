@@ -3,7 +3,7 @@
 **Status**: ACCEPTED  
 **Date**: 2026-04-07  
 **Phase**: Wave 2 Phase 2.7 — MCP Config Simplification  
-**Deciders**: SVP Engineering (Cascade)
+**Deciders**: SVP Engineering (Cursor Agent)
 
 ---
 

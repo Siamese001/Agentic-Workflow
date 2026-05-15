@@ -2,7 +2,7 @@
 
 - **Status**: Proposed
 - **Decision Date**: 2026-04-23
-- **Deciders**: Author-Gate Q1-Q4 resolved 2026-04-23 (user + Cascade). Confidence band 0.88-0.93.
+- **Deciders**: Author-Gate Q1-Q4 resolved 2026-04-23 (user + Cursor Agent). Confidence band 0.88-0.93.
 - **Impact Layers**: L0, L2, L4, L5, L_SHARED, L_TOOLS
 - **Plan**: `.windsurf/plans/prompt-assembly-reception-hardening-9c4e2b.md`
 - **Notion Registry**: `https://www.notion.so/Provider-aware-structured-prompt-rendering-34b27693f55c8136b834c1ce1908c144`

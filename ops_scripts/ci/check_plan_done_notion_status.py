@@ -13,7 +13,7 @@ in plan ``plan-complete-notion-status-enforcement-a7e2d1`` (W2.P1).
 
 Algorithm
 ---------
-1. Enumerate ``.windsurf/plans/*.md`` (skipping ``_archive/`` and
+1. Enumerate ``.cursor/plans/*.md`` (skipping ``_archive/`` and
    ``_orphan_review/`` subdirectories).
 2. For each plan, parse the Wave Structure table for status cells.
    A plan is "all-waves-done on disk" when:

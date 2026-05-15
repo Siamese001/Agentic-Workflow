@@ -3,7 +3,7 @@
 
 Reads ``artifacts/capture/markers.jsonl`` (written by ``append_marker.py``)
 and applies each marker to the SQLite ledger by reusing the existing
-``post_cascade_author_gate_capture`` logic. After a successful drain, the
+``post_cursor_agent_author_gate_capture`` logic. After a successful drain, the
 queue file is rotated to ``markers.<UTC-timestamp>.jsonl.processed`` so a
 subsequent run does not re-process the same rows.
 
@@ -36,7 +36,7 @@ if str(_HOOK_DIR) not in sys.path:
 
 try:
     # pylint: disable=import-error
-    from post_cascade_author_gate_capture import (  # type: ignore[import-not-found]
+    from post_cursor_agent_author_gate_capture import (  # type: ignore[import-not-found]
         _init_db,
         detect_and_capture,
     )
@@ -114,8 +114,8 @@ def drain(queue_path: Path, *, dry_run: bool = False) -> dict[str, int]:
 
             # Non-DECISION_CAPTURED markers are tracked but not forwarded to the
             # SQLite ledger by this drain. DEFERRED_SCOPE / NEXT_STEP have their
-            # own Notion pipelines (post_cascade_deferred_scope_capture.py /
-            # post_cascade_next_step_capture.py) that this drain does not yet
+            # own Notion pipelines (post_cursor_agent_deferred_scope_capture.py /
+            # post_cursor_agent_next_step_capture.py) that this drain does not yet
             # invoke. Markers remain in the rotated .processed.jsonl so the data
             # is preserved; a later drain extension can forward them.
             if mtype == "DEFERRED_SCOPE":

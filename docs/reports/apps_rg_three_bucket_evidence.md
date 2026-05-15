@@ -59,7 +59,7 @@ _no violations_
 | `AGENT_SPEC_DECLARED` | `apps_rg/config/rg_agent_specs.json` | 8 |
 | `references_mcp_server` | `tools/archive/tools_graveyard_w5.12/testing/test_new_mcp_config.py` | 8 |
 | `references_mcp_server` | `tools/analysis/_mcp_inspect.py` | 6 |
-| `references_mcp_server` | `.windsurf/scripts/post_cascade_mcp_preflight_audit.py` | 5 |
+| `references_mcp_server` | `.windsurf/scripts/post_cursor_agent_mcp_preflight_audit.py` | 5 |
 | `references_mcp_server` | `tools/archive/mcp_oneshots_w5.4/probe_mcps.py` | 5 |
 | `references_mcp_server` | `tools/archive/mcp_yaml_infra_w5.2/generate_mcp_configs.py` | 4 |
 

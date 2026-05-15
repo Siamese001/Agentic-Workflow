@@ -308,7 +308,7 @@ class TestEvaluateAndEmitAdoption:
         )
 
         with patch(
-            "agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge._run_sealed_exit_gate",
+            "agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge.ExitControlGate.evaluate",
             side_effect=RuntimeError("simulated gate failure"),
         ):
             result = evaluate_and_emit(_make_bundle(grounded=True), _make_ctx())

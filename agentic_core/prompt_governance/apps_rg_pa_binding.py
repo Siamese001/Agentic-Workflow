@@ -10,7 +10,7 @@ location directly: apps_rg.runtime.bindings.pa_binding
 from __future__ import annotations
 
 # Re-export from the new app-owned location
-from apps_rg.runtime.bindings.pa_binding import (
+from apps_rg.runtime.bindings.pa_binding import (  # guardian: allow-layer-violation -- LEGACY_SHIM TEMPORARY_THIN_ADAPTER per apps-rg-golden-state-section-generation-a4f9e1 W2D
     APPS_RG_PA_CERT_REF,
     APPS_RG_TARGET_MODEL,
     APPS_RG_TARGET_PROVIDER,

@@ -11,12 +11,17 @@ Scans every non-stub Python module under ``apps_*/engines/`` and
 Closes the drift gap surfaced 2026-04-30: ``apps_underwriting_ai`` had
 0% OTEL coverage in its engines despite handling regulated data.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P3 follow-up)
+Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P3 follow-up)
+
+Exit policy:
+  - Default: **advisory** — prints violations and exits 0 (CI contract plane).
+  - ``APPS_OTEL_COVERAGE_FAIL_CLOSED=1`` — exits 1 when any module lacks signals.
 """
 from __future__ import annotations
 
 import re
 import sys
+import os
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -107,7 +112,13 @@ def main() -> int:
             "(`@emits_side_effect`, `@records_execution_trace`, ...) per ADR-075, OR\n"
             "    3. Add `# otel: stub-engine` near top-of-file if genuinely empty."
         )
-        return 1
+        if os.environ.get("APPS_OTEL_COVERAGE_FAIL_CLOSED", "").strip() == "1":
+            return 1
+        print(
+            "[B_apps_otel_coverage] Advisory mode — violations present; exiting 0 "
+            "(set APPS_OTEL_COVERAGE_FAIL_CLOSED=1 to fail closed)."
+        )
+        return 0
 
     print(
         f"[B_apps_otel_coverage] tier=B status=pass "

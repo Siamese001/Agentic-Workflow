@@ -2,13 +2,13 @@
 """
 check_deferred_plan_guard_markers.py — CI gate: deferred-scope plan guard parity.
 
-Every .windsurf/plans/*.md file that contains "do not implement without"
+Every .cursor/plans/*.md file that contains "do not implement without"
 prose MUST also contain a matching DO_NOT_IMPLEMENT_GUARD: marker line.
 
 The marker is machine-readable and picked up by
-pre_user_prompt_deferred_plan_gate.py at the start of every Cascade turn,
+pre_user_prompt_deferred_plan_gate.py at the start of every Cursor Agent turn,
 making the execution block visible to the model rather than relying on prose
-Cascade can silently bypass.
+Cursor Agent can silently bypass.
 
 Root-cause closed: RCA 2026-05-10 — notion-test-hardening-deferred-scope-a7b4c9
 executed without Author-Gate because prose guard was invisible to hook chain.
@@ -99,7 +99,7 @@ def main() -> int:
     )
     parser.add_argument(
         "paths", nargs="*", type=Path,
-        help="Plan files to check (default: all .windsurf/plans/*.md)"
+        help="Plan files to check (default: all .cursor/plans/*.md)"
     )
     args = parser.parse_args()
 
@@ -142,7 +142,7 @@ def main() -> int:
         "\nRemediation: add a marker line to the plan file, e.g.:\n"
         "  DO_NOT_IMPLEMENT_GUARD: plan=<slug-6hex> reason=requires Author-Gate decision before execution\n\n"
         "This marker is picked up by pre_user_prompt_deferred_plan_gate.py at every\n"
-        "Cascade turn, making the block visible to the model.\n"
+        "Cursor Agent turn, making the block visible to the model.\n"
         "Bypass (rare): DEFERRED_PLAN_GUARD_BYPASS=1\n"
         "RCA: 2026-05-10 notion-test-hardening-deferred-scope-a7b4c9 executed without gate.",
         file=sys.stderr,

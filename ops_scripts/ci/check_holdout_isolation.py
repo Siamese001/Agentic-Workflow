@@ -1,12 +1,12 @@
 """CI gate: holdout corpus isolation contract.
 
-Plan: `.windsurf/plans/holdout-corpus-authoring-b5d2f6.md`.
+Plan: `.cursor/plans/holdout-corpus-authoring-b5d2f6.md`.
 Author-Gate: `dec_19dedcd1c109ebf25` (option_a_lock_in_doctrine).
 
 Enforces: every row in `apps_eval/fixtures/holdout/<app>.jsonl` MUST
 carry the `SYNTHETIC_SEED_ONLY` tag UNLESS it ALSO carries the
 `RELEASE_GATE` tag. The `RELEASE_GATE` tag may only be added by a
-human curator in a workstream isolated from Cascade per Anthropic
+human curator in a workstream isolated from Cursor Agent per Anthropic
 holdout doctrine — this gate cannot detect curator identity, but it
 DOES enforce a structural invariant: a row with neither tag is
 ambiguous and forbidden.
@@ -106,7 +106,7 @@ def check(holdout_dir: Path = HOLDOUT_DIR) -> int:
         for v in violations:
             print(f"  - {v}", file=sys.stderr)
         print(
-            "Fix: add SYNTHETIC_SEED_ONLY (Cascade-authorable scaffold) OR RELEASE_GATE "
+            "Fix: add SYNTHETIC_SEED_ONLY (Cursor-Agent-authorable scaffold) OR RELEASE_GATE "
             "(human-curator-only) tag to every row.\nDoctrine: see plan "
             "holdout-corpus-authoring-b5d2f6 + Author-Gate dec_19dedcd1c109ebf25.\n"
             "Bypass: HOLDOUT_ISOLATION_BYPASS=1 (logged).",

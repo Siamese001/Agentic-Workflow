@@ -2,7 +2,7 @@
 Hook Consolidation / Growth CI Gate
 
 Detects hook proliferation and validates hook metadata integrity.
-Parses .windsurf/hooks.json to report statistics and detect growth risks.
+Parses .cursor/hooks.json to report statistics and detect growth risks.
 
 Usage:
     python ops_scripts/ci/check_hook_consolidation.py [--advisory|--strict] [options]
@@ -196,7 +196,7 @@ def analyze_hooks(hooks_data: Dict) -> Dict:
             shim_count += 1
     
     # Detect growth risks
-    post_cascade_count = stage_counts.get("post_cascade_response", 0)
+    post_cursor_agent_count = stage_counts.get("post_cursor_agent_response", 0)
     
     return {
         "counts": {
@@ -207,7 +207,7 @@ def analyze_hooks(hooks_data: Dict) -> Dict:
             "deprecated_count": deprecated_count,
             "shim_count": shim_count,
             "stage_counts": stage_counts,
-            "post_cascade_count": post_cascade_count,
+            "post_cursor_agent_count": post_cursor_agent_count,
             "v2_metadata_implemented": len(hooks_with_v2),  # 0 = baseline not yet migrated
         },
         "duplicates": {
@@ -224,7 +224,7 @@ def analyze_hooks(hooks_data: Dict) -> Dict:
         "replacement_classification": replacement_classification,
         "growth_indicators": {
             "total_hooks": len(all_hooks),
-            "post_cascade_hooks": post_cascade_count,
+            "post_cursor_agent_hooks": post_cursor_agent_count,
             "stage_count": len(hooks_by_stage),
         },
     }
@@ -257,12 +257,12 @@ def check_thresholds(analysis: Dict, args) -> List[Dict]:
             "severity": "error",
         })
     
-    # Check max post_cascade_response hooks
-    if counts["post_cascade_count"] > args.max_post_cascade:
+    # Check max post_cursor_agent_response hooks
+    if counts["post_cursor_agent_count"] > args.max_post_cursor_agent:
         violations.append({
-            "type": "max_post_cascade_exceeded",
-            "threshold": args.max_post_cascade,
-            "actual": counts["post_cascade_count"],
+            "type": "max_post_cursor_agent_exceeded",
+            "threshold": args.max_post_cursor_agent,
+            "actual": counts["post_cursor_agent_count"],
             "severity": "warning",
         })
     
@@ -310,7 +310,7 @@ def generate_receipt(
         "thresholds": {
             "max_hooks": args.max_hooks,
             "max_lifecycle_stages": args.max_lifecycle_stages,
-            "max_post_cascade": args.max_post_cascade,
+            "max_post_cursor_agent": args.max_post_cursor_agent,
         },
         "hooks_summary": {
             "hook_entry_count": hooks_data["hook_entry_count"],
@@ -352,7 +352,7 @@ Examples:
     %(prog)s --advisory                    # Report issues but exit 0
     %(prog)s --strict                      # Exit nonzero on issues
     %(prog)s --max-hooks 65                # Custom hook threshold
-    %(prog)s --max-post-cascade 30         # Custom post-cascade threshold
+    %(prog)s --max-post-cursor-agent 30         # Custom post-cursor-agent threshold
     %(prog)s --artifact result.json        # Write JSON receipt
         """,
     )
@@ -380,10 +380,10 @@ Examples:
         help=f"Maximum allowed lifecycle stages (default: {DEFAULT_MAX_LIFECYCLE_STAGES})",
     )
     parser.add_argument(
-        "--max-post-cascade",
+        "--max-post-cursor-agent",
         type=int,
         default=DEFAULT_MAX_POST_CASCADE,
-        help=f"Maximum allowed post_cascade_response hooks (default: {DEFAULT_MAX_POST_CASCADE})",
+        help=f"Maximum allowed post_cursor_agent_response hooks (default: {DEFAULT_MAX_POST_CASCADE})",
     )
     parser.add_argument(
         "--artifact",
@@ -496,7 +496,7 @@ Examples:
         print(f"Threshold Status:")
         print(f"  Max hooks:          {hooks_data['hook_entry_count']}/{args.max_hooks} {'✓' if hooks_data['hook_entry_count'] <= args.max_hooks else '✗'}")
         print(f"  Max stages:         {hooks_data['lifecycle_stage_count']}/{args.max_lifecycle_stages} {'✓' if hooks_data['lifecycle_stage_count'] <= args.max_lifecycle_stages else '✗'}")
-        print(f"  Max post-cascade:   {analysis['counts']['post_cascade_count']}/{args.max_post_cascade} {'✓' if analysis['counts']['post_cascade_count'] <= args.max_post_cascade else '✗'}")
+        print(f"  Max post-cursor-agent:   {analysis['counts']['post_cursor_agent_count']}/{args.max_post_cursor_agent} {'✓' if analysis['counts']['post_cursor_agent_count'] <= args.max_post_cursor_agent else '✗'}")
         print(f"")
         
         # Show v2 metadata status

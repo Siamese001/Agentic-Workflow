@@ -345,7 +345,7 @@ processes:
     env_classes_used: [runtime_tunable, feature_flag]
     health_surfaces: [hook exit code + script diagnostics]
     restart_mode_if_known: IDE restart / hook file reload
-    notes: Includes pre_run_gate, pre_mcp_gate, pre_prompt_classifier, post_cascade_adg_audit.
+    notes: Includes pre_run_gate, pre_mcp_gate, pre_prompt_classifier, post_cursor_agent_adg_audit.
 
   - id: PROC-CI-GITHUB-ACTIONS
     process_name: GitHub Actions runtime posture gates

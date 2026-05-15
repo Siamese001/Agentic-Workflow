@@ -232,7 +232,7 @@ def test_md_summary_exists(proof_artifacts: Path, index: dict) -> None:
 def test_gaps_md_exists_and_marks_phases_2_to_11_as_pending(proof_artifacts: Path) -> None:
     """The CLI must write GAPS.md so callers cannot mistake Phase 1 for completion."""
     p = proof_artifacts / "GAPS.md"
-    assert p.exists(), "GAPS.md is required so Cascade cannot collapse UNKNOWN into DONE"
+    assert p.exists(), "GAPS.md is required so Cursor Agent cannot collapse UNKNOWN into DONE"
     txt = p.read_text(encoding="utf-8")
     # Must explicitly mention every undelivered phase.
     for phase in ("Phase 2", "Phase 3", "Phase 5", "Phase 6", "Phase 7", "Phase 8"):

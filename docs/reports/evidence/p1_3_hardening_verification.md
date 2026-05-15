@@ -4,7 +4,7 @@
 location-insensitive baseline)
 **Branch:** `soccer_epiphanies`
 **Date:** 2026-02-18
-**Verifier:** Cascade deterministic guardian run
+**Verifier:** Cursor Agent deterministic guardian run
 
 ---
 

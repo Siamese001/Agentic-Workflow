@@ -2,7 +2,7 @@
 
 **RCA ID**: RCA-RGGOV-8  
 **Date**: 2026-05-15  
-**Author**: Cascade (W5, plan `chroma-graphrag-core-wiring-gaps-b3f7a1`)  
+**Author**: Cursor Agent (W5, plan `chroma-graphrag-core-wiring-gaps-b3f7a1`)  
 **Status**: CLOSED — Decision: KEEP_QUARANTINED_DEPRECATED  
 **Owner**: apps_rg governance (plan author gate AG-RGGOV-8)
 

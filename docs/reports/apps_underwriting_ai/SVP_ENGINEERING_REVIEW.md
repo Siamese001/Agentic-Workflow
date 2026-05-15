@@ -2,7 +2,7 @@
 ## apps_underwriting_ai - Open Scope Hardening Fix
 
 **Review Date:** March 29, 2026  
-**Engineering Lead:** Cascade AI  
+**Engineering Lead:** Cursor Agent AI  
 **Review Scope:** End-to-End Testing, Code Quality, Production Readiness  
 **Status:** ✅ HARDENING COMPLETE - Critical Issues Resolved
 

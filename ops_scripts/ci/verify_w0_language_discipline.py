@@ -1,6 +1,6 @@
 """Verifier — W0 closure check #3: forbidden-language audit.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``.cursor/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 W0 is the verifier foundation only. It MUST NOT use language that overclaims:
 

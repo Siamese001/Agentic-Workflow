@@ -23,7 +23,7 @@ This repo has all three substrates but they are not unified:
 
 - **Documents / RAG**: `agentic_core/knowledge/retrieval/*` (rich: C0.1
   plan, hybrid recall, parent-child hydration, evidence contract).
-- **Memory**: `memory` MCP (Cascade-side cross-session graph) and
+- **Memory**: `memory` MCP (Cursor Agent-side cross-session graph) and
   `agentic_core/L4_state/memory/*` (runtime semantic cache, canonical
   store). These are not addressable through the C0 pipeline.
 - **Tools / skills**: `.windsurf/mcp_config.json` + per-app registries.
@@ -53,7 +53,7 @@ Normative requirements:
      full-context + caching is cheaper and better.
    - Document retrieval (existing C0.1–C0.5 pipeline).
    - Memory retrieval (new adapter over `L4_state/memory/*` and
-     Cascade-side `memory` MCP where appropriate).
+     Cursor Agent-side `memory` MCP where appropriate).
    - Tool/skill retrieval (new `tool_selector.py`, ADR-045-adjacent, over
      MCP Registry and `L4_state/cache/tool_embedding_cache.py`).
    - Compaction + tool-result clearing for long-horizon loops.

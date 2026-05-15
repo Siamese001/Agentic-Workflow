@@ -9,7 +9,7 @@
 
 Two facts combine to create the bypass:
 
-1. **`pre_write_code` only fires for Cascade native write tools** (`write_to_file`, `edit`, `multi_edit`). It does not fire when an MCP server writes a file directly.
+1. **`pre_write_code` only fires for Cursor Agent native write tools** (`write_to_file`, `edit`, `multi_edit`). It does not fire when an MCP server writes a file directly.
 
 2. **`pre_mcp_gate.py` had a deliberate fail-open for all non-ADG servers**: line 124 returned `0` immediately for any server other than `adg_sqlite` — including `filesystem`. The infrastructure to intercept MCP calls already existed (`pre_mcp_tool_use` hook → `pre_mcp_gate.py`), but it was not checking filesystem write tools.
 
@@ -26,7 +26,7 @@ if server_name != ADG_SERVER_NAME:
 Recent `.py` files written on 2026-04-08 via filesystem MCP without gate interception:
 - `tests/unit/ops_scripts/hooks/windsurf/test_hooks_deep_edge_cases.py` (11:44 AM)
 - `tests/unit/ops_scripts/hooks/windsurf/test_enforcement_gaps.py` (11:33 AM)
-- `tests/unit/ops_scripts/hooks/windsurf/test_post_cascade_cleanup.py` (11:25 AM)
+- `tests/unit/ops_scripts/hooks/windsurf/test_post_cursor_agent_cleanup.py` (11:25 AM)
 - `tests/unit/ops_scripts/hooks/windsurf/test_post_mcp_audit.py` (11:25 AM)
 
 ## Fix Implemented
@@ -46,7 +46,7 @@ def check_filesystem_write_gate(tool_name: str) -> int:
     if tool_name in FILESYSTEM_WRITE_TOOLS:
         return _exit_block(
             f"filesystem MCP tool '{tool_name}' is blocked — "
-            "use Cascade's native write_to_file / edit / multi_edit tools instead."
+            "use Cursor Agent's native write_to_file / edit / multi_edit tools instead."
         )
     return 0
 ```
@@ -63,7 +63,7 @@ if server_name == FILESYSTEM_SERVER_NAME:
 - All read tools (`read_text_file`, `list_directory`, etc.) → **allowed** (exit 0)
 - ADG gate logic unchanged
 
-Cascade is redirected to native write tools which fire `pre_write_code` → `pre_write_gate.py` → constitutional anti-pattern and syntax checks.
+Cursor Agent is redirected to native write tools which fire `pre_write_code` → `pre_write_gate.py` → constitutional anti-pattern and syntax checks.
 
 ## Verification
 

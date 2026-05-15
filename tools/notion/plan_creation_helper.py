@@ -38,6 +38,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
+
 # Notion API constants
 _NOTION_BASE = "https://api.notion.com/v1"
 _NOTION_API_VERSION = "2025-09-03"
@@ -70,8 +72,8 @@ class CreationResult:
 
 
 def _notion_token() -> str | None:
-    """Get Notion token from environment."""
-    return os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
+    """Get Notion token from environment (canonical ``NOTION_TOKEN``; alias in notion_bearer_token)."""
+    return get_notion_bearer_token_or_none()
 
 
 def _validate_slug(slug: str) -> None:
@@ -164,7 +166,7 @@ def _call_notion_api(payload: dict) -> dict:
     token = _notion_token()
     if not token:
         raise PlanCreationError(
-            "NOTION_TOKEN or NOTION_API_KEY environment variable required"
+            "NOTION_TOKEN environment variable required (NOTION_API_KEY accepted as legacy alias)"
         )
     
     url = f"{_NOTION_BASE}/pages"
@@ -212,7 +214,7 @@ def create_plan_in_notion(
         slug: Plan slug (kebab-case-6hex, e.g., 'my-plan-abc123')
         summary: Human-readable summary (prose)
         ai_summary: Bullet-style AI summary (high-signal format)
-        plan_file_path: Optional override. Default: .windsurf/plans/{slug}.md
+        plan_file_path: Optional override. Default: .cursor/plans/{slug}.md
         force_status: "Completed" for retrospective plans only. Default "Not Started".
     
     Returns:
@@ -263,7 +265,7 @@ def create_plan_in_notion(
         raise
     
     # Build default path if not provided
-    effective_path = plan_file_path or f".windsurf/plans/{slug}.md"
+    effective_path = plan_file_path or f".cursor/plans/{slug}.md"
     
     # Phase 1.3: Build payload
     payload = _build_payload(

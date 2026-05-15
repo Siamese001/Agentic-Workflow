@@ -90,15 +90,15 @@ _EXEMPTIONS: dict[str, str] = {
     "tests/unit/": "test_fixture",
     "docs/": "documentation_example",
     "docs/reports/": "documentation_example",
-    ".windsurf/plans/": "plan_documentation",
-    ".windsurf/plans/_archive/": "archived_documentation",
-    # Note: .windsurf/workflows/ and .windsurf/skills/ are ACTIVE surfaces - NOT exempt
+    ".cursor/plans/": "plan_documentation",
+    ".cursor/plans/_archive/": "archived_documentation",
+    # Note: .cursor/workflows/ and .cursor/skills/ are ACTIVE surfaces - NOT exempt
 }
 
 # Active surfaces that must comply
 _ACTIVE_SURFACES = {
-    ".windsurf/skills/structured-reasoning/SKILL.md",
-    ".windsurf/workflows/author-gate-decision-gate.md",
+    ".cursor/skills/structured-reasoning/SKILL.md",
+    ".cursor/workflows/author-gate-decision-gate.md",
     # Note: antipattern-author-gate.md is AUTHOR_GATE path, uses AG pipeline
 }
 

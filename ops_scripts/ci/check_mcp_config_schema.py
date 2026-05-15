@@ -2,7 +2,7 @@
 """
 MCP Config Schema Validation Gate (MCP-SCHEMA)
 
-Validates that .windsurf/mcp_config.json conforms to the canonical schema:
+Validates `.cursor/mcp.json` (Cursor SSOT) and `.windsurf/mcp_config.json` (mirror):
 - Required servers present: GitKraken, adg_sqlite, memory, notion, otel_mcp, pytest_mcp, redis, vector_db
 - Each server has required fields: command, args (array)
 - Optional fields valid: env (object), disabled (boolean), url (for remote)
@@ -19,8 +19,10 @@ Environment:
 
 Output:
     artifacts/ci/mcp_config_schema.json
+    artifacts/ci/mcp_config_schema_cursor.json
+    artifacts/ci/mcp_config_schema_windsurf.json
 
-Rule: .windsurf/rules/windsurf-config-lookup.md + constitutional §27
+Rule: `.cursor/rules/mcp-config-ssot.mdc` + constitutional §27
 """
 
 from __future__ import annotations
@@ -28,57 +30,33 @@ from __future__ import annotations
 import json
 import os
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+_CI_DIR = Path(__file__).resolve().parent
+if str(_CI_DIR) not in sys.path:
+    sys.path.insert(0, str(_CI_DIR))
+
+from _mcp_ci_common import (  # noqa: E402
+    CURSOR_MCP_PATH,
+    CURSOR_REQUIRED_SERVERS,
+    MCP_PROFILES,
+    OPTIONAL_SERVERS,
+    VALID_SERVER_KEYS,
+    VALID_TOP_KEYS,
+    WINDSURF_MCP_PATH,
+    WINDSURF_REQUIRED_SERVERS,
+    profile_config_path,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = REPO_ROOT / ".windsurf" / "mcp_config.json"
+CONFIG_PATH = WINDSURF_MCP_PATH
 ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "mcp_config_schema.json"
+ARTIFACT_DIR = REPO_ROOT / "artifacts" / "ci"
 
-# Required MCP servers per AGENTS.md Quick Reference (must be present and enabled)
-REQUIRED_SERVERS: frozenset[str] = frozenset({
-    "GitKraken",
-    "adg_sqlite",
-    "memory",
-    "notion",
-    "otel_mcp",
-    "pytest_mcp",
-    "redis",
-    "vector_db",
-    "io.windsurf/mcp-playwright",
-    "deepwiki",
-    "context7",
-    "tavily",
-})
-
-# Servers that can be disabled (shadow-disabled or intentionally off)
-OPTIONAL_SERVERS: frozenset[str] = frozenset({
-    "filesystem",  # shadow-disabled per ADR-095
-    "task_manager",  # shadow-disabled per ADR-095
-})
-
-# Valid top-level keys in mcp_config.json (constitutional §27)
-VALID_TOP_KEYS: frozenset[str] = frozenset({
-    "_note",
-    "mcpServers",
-    "_bootstrap_env",
-})
-
-# Valid per-server keys
-VALID_SERVER_KEYS: frozenset[str] = frozenset({
-    "command",
-    "args",
-    "env",
-    "disabled",
-    "url",
-    "_note",
-    "_comment",
-    "_startup",
-    "_shadow_disable",
-    "_tuning_note",
-    "_auth",
-})
+# Backward-compatible alias for tests and Windsurf-only callers.
+REQUIRED_SERVERS = WINDSURF_REQUIRED_SERVERS
 
 
 @dataclass(frozen=True)
@@ -89,20 +67,21 @@ class Violation:
     path: str = ""  # JSON path to violation
 
 
-def load_config() -> tuple[dict[str, Any] | None, list[Violation]]:
-    """Load and parse mcp_config.json. Returns (data, parse_errors)."""
+def load_config(config_path: Path | None = None) -> tuple[dict[str, Any] | None, list[Violation]]:
+    """Load and parse an MCP config file. Returns (data, parse_errors)."""
+    path = config_path if config_path is not None else CONFIG_PATH
     errors: list[Violation] = []
     
-    if not CONFIG_PATH.exists():
+    if not path.exists():
         errors.append(Violation(
             severity="ERROR",
             code="CONFIG_MISSING",
-            message=f"mcp_config.json not found at {CONFIG_PATH}",
+            message=f"MCP config not found at {path}",
         ))
         return None, errors
     
     try:
-        with CONFIG_PATH.open("r", encoding="utf-8") as f:
+        with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError as exc:
         errors.append(Violation(
@@ -139,12 +118,15 @@ def check_top_level_keys(data: dict[str, Any]) -> list[Violation]:
     return violations
 
 
-def check_required_servers(servers: dict[str, Any]) -> list[Violation]:
+def check_required_servers(
+    servers: dict[str, Any],
+    required_servers: frozenset[str] = REQUIRED_SERVERS,
+) -> list[Violation]:
     """Verify all required servers are present."""
     violations: list[Violation] = []
     present_servers = set(servers.keys())
     
-    missing = REQUIRED_SERVERS - present_servers
+    missing = required_servers - present_servers
     for server in sorted(missing):
         violations.append(Violation(
             severity="ERROR",
@@ -156,7 +138,11 @@ def check_required_servers(servers: dict[str, Any]) -> list[Violation]:
     return violations
 
 
-def check_server_structure(name: str, config: Any) -> list[Violation]:
+def check_server_structure(
+    name: str,
+    config: Any,
+    required_servers: frozenset[str] = REQUIRED_SERVERS,
+) -> list[Violation]:
     """Validate a single server's configuration structure."""
     violations: list[Violation] = []
     path_prefix = f".mcpServers.{name}"
@@ -240,7 +226,7 @@ def check_server_structure(name: str, config: Any) -> list[Violation]:
         ))
     
     # Warn if required server is disabled
-    if name in REQUIRED_SERVERS and disabled is True:
+    if name in required_servers and disabled is True:
         violations.append(Violation(
             severity="WARNING",
             code="REQUIRED_SERVER_DISABLED",
@@ -251,11 +237,18 @@ def check_server_structure(name: str, config: Any) -> list[Violation]:
     return violations
 
 
-def evaluate() -> dict[str, Any]:
-    """Run full schema validation. Returns report dict."""
+def evaluate(
+    config_path: Path | None = None,
+    required_servers: frozenset[str] | None = None,
+    profile: str = "windsurf",
+) -> dict[str, Any]:
+    """Run full schema validation for one editor profile. Returns report dict."""
+    path = config_path if config_path is not None else CONFIG_PATH
+    required = required_servers if required_servers is not None else REQUIRED_SERVERS
     report: dict[str, Any] = {
         "checked_at": "",
-        "config_path": str(CONFIG_PATH),
+        "profile": profile,
+        "config_path": str(path),
         "valid": False,
         "errors": [],
         "warnings": [],
@@ -264,7 +257,7 @@ def evaluate() -> dict[str, Any]:
         "required_missing": [],
     }
     
-    data, parse_errors = load_config()
+    data, parse_errors = load_config(path)
     
     if parse_errors:
         for v in parse_errors:
@@ -292,10 +285,10 @@ def evaluate() -> dict[str, Any]:
         ))
     else:
         report["server_count"] = len(servers)
-        all_violations.extend(check_required_servers(servers))
+        all_violations.extend(check_required_servers(servers, required))
         
         for name, config in servers.items():
-            all_violations.extend(check_server_structure(name, config))
+            all_violations.extend(check_server_structure(name, config, required))
     
     # Build report
     for v in all_violations:
@@ -308,8 +301,8 @@ def evaluate() -> dict[str, Any]:
     # Track required server presence
     if isinstance(servers, dict):
         present = set(servers.keys())
-        report["required_present"] = sorted(REQUIRED_SERVERS & present)
-        report["required_missing"] = sorted(REQUIRED_SERVERS - present)
+        report["required_present"] = sorted(required & present)
+        report["required_missing"] = sorted(required - present)
     
     report["valid"] = len(report["errors"]) == 0
     
@@ -323,10 +316,30 @@ def write_report(report: dict[str, Any]) -> None:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
 
+def evaluate_all_profiles() -> dict[str, dict[str, Any]]:
+    reports: dict[str, dict[str, Any]] = {}
+    for profile, required in MCP_PROFILES.items():
+        reports[profile] = evaluate(
+            profile_config_path(profile, CONFIG_PATH),
+            required,
+            profile=profile,
+        )
+        artifact = ARTIFACT_DIR / f"mcp_config_schema_{profile}.json"
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text(json.dumps(reports[profile], indent=2), encoding="utf-8")
+    return reports
+
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
     
     parser = argparse.ArgumentParser(description="MCP Config Schema Validation")
+    parser.add_argument(
+        "--profile",
+        choices=("cursor", "windsurf", "all"),
+        default="windsurf",
+        help="Which editor MCP config to validate (default: windsurf; CI uses --profile all)",
+    )
     parser.add_argument("--fail-closed", action="store_true", help="Exit 1 on violations")
     parser.add_argument("--json", action="store_true", help="Output JSON to stdout")
     args = parser.parse_args(argv)
@@ -338,45 +351,55 @@ def main(argv: list[str] | None = None) -> int:
     
     fail_closed = args.fail_closed or (os.environ.get("MCP_CONFIG_SCHEMA_FAIL_CLOSED") == "1")
     
-    report = evaluate()
-    write_report(report)
-    
-    error_count = len(report["errors"])
-    warning_count = len(report["warnings"])
+    if args.profile == "all":
+        reports = evaluate_all_profiles()
+        write_report(reports["windsurf"])
+        combined_errors = sum(len(r["errors"]) for r in reports.values())
+        combined_warnings = sum(len(r["warnings"]) for r in reports.values())
+    else:
+        required = MCP_PROFILES[args.profile]
+        reports = {
+            args.profile: evaluate(
+                profile_config_path(args.profile, CONFIG_PATH),
+                required,
+                profile=args.profile,
+            ),
+        }
+        write_report(reports[args.profile])
+        combined_errors = len(reports[args.profile]["errors"])
+        combined_warnings = len(reports[args.profile]["warnings"])
     
     if args.json:
-        print(json.dumps(report, indent=2))
+        if args.profile == "all":
+            print(json.dumps(reports, indent=2))
+        else:
+            print(json.dumps(reports[args.profile], indent=2))
         return 0
     
-    # Summary output
     print("=== MCP Config Schema Validation ===")
-    print(f"Config: {report['config_path']}")
-    print(f"Servers: {report['server_count']}")
-    print(f"Required present: {len(report['required_present'])}/{len(REQUIRED_SERVERS)}")
+    exit_code = 0
+    for profile, report in reports.items():
+        required = MCP_PROFILES[profile]
+        print(f"\n--- {profile} ---")
+        print(f"Config: {report['config_path']}")
+        print(f"Servers: {report['server_count']}")
+        print(f"Required present: {len(report['required_present'])}/{len(required)}")
+        if report["errors"]:
+            print(f"❌ ERRORS: {len(report['errors'])}")
+            for err in report["errors"]:
+                print(f"  [{err['code']}] {err['message']}")
+            exit_code = 1
+        elif report["warnings"]:
+            print(f"⚠️  WARNINGS: {len(report['warnings'])}")
+            for warn in report["warnings"]:
+                print(f"  [{warn['code']}] {warn['message']}")
+            print("✅ Schema valid with warnings")
+        else:
+            print("✅ Schema valid")
     
-    if report["required_present"]:
-        print(f"  ✓ {', '.join(report['required_present'][:5])}{'...' if len(report['required_present']) > 5 else ''}")
-    
-    if report["errors"]:
-        print(f"\n❌ ERRORS: {error_count}")
-        for e in report["errors"]:
-            print(f"  [{e['code']}] {e['message']}")
-            if e.get("path"):
-                print(f"    Path: {e['path']}")
-    
-    if report["warnings"]:
-        print(f"\n⚠️  WARNINGS: {warning_count}")
-        for w in report["warnings"]:
-            print(f"  [{w['code']}] {w['message']}")
-    
-    if not report["errors"] and not report["warnings"]:
-        print("\n✅ Schema valid — all required servers present and properly configured")
-    elif not report["errors"]:
-        print("\n✅ Schema valid with warnings")
-    
-    if fail_closed and error_count > 0:
+    if fail_closed and (combined_errors > 0 or exit_code != 0):
         return 1
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

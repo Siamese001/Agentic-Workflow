@@ -1,6 +1,6 @@
 """CI gate NP4 — Plans DB freshness vs on-disk plan files.
 
-Detects drift between on-disk plan files (`.windsurf/plans/*.md`) and their
+Detects drift between on-disk plan files (`.cursor/plans/*.md`) and their
 Notion Plans DB row's ``last_edited_time``. If a plan file has been edited
 recently but the Notion row hasn't been touched within ``--threshold-hours``
 (default 168 = 7 days) of the file's mtime, the row is flagged as stale.
@@ -8,7 +8,7 @@ recently but the Notion row hasn't been touched within ``--threshold-hours``
 This is the backstop for the wave-lifecycle auto-sync chain (see plan
 ``notion-wave-lifecycle-autosync-f4a2b8``). When the chain is healthy, every
 ``WAVE_COMPLETE:`` / ``PLAN_COMPLETE:`` marker triggers a Notion patch via
-``post_cascade_wave_lifecycle_capture.py`` or ``wave_execution_state.py``,
+``post_cursor_agent_wave_lifecycle_capture.py`` or ``wave_execution_state.py``,
 keeping the row fresh. Drift surfacing here means the chain failed somewhere.
 
 Modes
@@ -23,7 +23,7 @@ Modes
 SSOT
 ----
 - Plans DB data source: ``ac53d31b-3068-4039-9ebe-856c12caab32``
-- On-disk plans dir: ``.windsurf/plans/``
+- On-disk plans dir: ``.cursor/plans/``
 - Active-statuses (filtered set): ``In Progress``, ``Not Started``
 
 Out of scope

@@ -29,6 +29,16 @@ from apps_rg.runtime.bindings.c0_binding import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _stub_bge_embedding(monkeypatch: pytest.MonkeyPatch) -> None:
+    mock_model = MagicMock()
+    mock_model.encode.return_value = MagicMock(tolist=lambda: [0.0] * 1024)
+    monkeypatch.setattr(
+        "apps_rg.runtime.bindings.c0_binding._get_embedding_model",
+        lambda: mock_model,
+    )
+
+
 class TestQueryFactVectorsMetadataFilterIntegration:
     """Integration tests for metadata filtering in actual Chroma queries."""
     
@@ -219,7 +229,7 @@ class TestMetadataScoreSeparation:
             "ids": [["chunk1"]],
             "metadatas": [[{
                 "source_class": "candidate_profile",
-                "employer": "Acme Corp",
+                "company": "Acme Corp",
                 "app": "apps_rg",
             }]],
             "documents": [["test content"]],
@@ -249,11 +259,9 @@ class TestMetadataScoreSeparation:
         if result.evidence_items:
             item = result.evidence_items[0]
             # Both scores should be present
-            assert hasattr(item, 'confidence_score')
-            # dense_score from Chroma distance
+            assert hasattr(item, "confidence_score")
             assert item.confidence_score >= 0.0
-            # metadata_score should be set when metadata matches
-            assert hasattr(item, 'metadata_match_score')
+            assert hasattr(item, "metadata_score")
 
 
 class TestUnsupportedClaimDowngradesFec:

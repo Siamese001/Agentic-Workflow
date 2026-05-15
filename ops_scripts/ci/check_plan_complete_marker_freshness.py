@@ -4,7 +4,7 @@ check_plan_complete_marker_freshness.py — CI gate NP13.
 
 Detects Plans DB rows that have been ``In Progress`` for more than
 ``_STALE_DAYS`` days without a corresponding ``PLAN_COMPLETE`` marker event
-recorded in ``artifacts/windsurf/wave_lifecycle_capture.jsonl``.
+recorded in ``artifacts/cursor/wave_lifecycle_capture.jsonl``.
 
 Advisory by default. Fail-closed: ``NOTION_PLAN_COMPLETE_FAIL_CLOSED=1``.
 Bypass: ``NOTION_PLAN_COMPLETE_BYPASS=1``.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Constitutional §26 — Windsurf config schema purity.
 
-Validates that `.windsurf/hooks.json` and `.windsurf/mcp_config.json` contain
+Validates that `.cursor/hooks.json` and `.windsurf/mcp_config.json` contain
 only fields published in the official Windsurf schema. Unknown keys (e.g.
 `powershell`, `bash`, `shell`, `env_override`, `platform`) silently disable
 the hook entry or MCP server — Windsurf's parser rejects the entry with no
@@ -9,10 +9,16 @@ error surfaced to the user.
 
 Precedent (2026-04-23):
     A `powershell` field added to 23 hook entries silently disabled the
-    entire `post_cascade_response` chain across a full Windsurf restart.
+    entire `post_cursor_agent_response` chain across a full Windsurf restart.
     Detected only via heartbeat-log forensics.
 
-Schema whitelists (per docs/windsurf/hooks.md + docs/windsurf/mcp.md):
+Bypass (Cursor-only / no Windsurf mirror maintenance):
+    ``WINDSURF_CONFIG_SCHEMA_BYPASS=1`` — skip validation of
+    ``.windsurf/hooks.json`` and ``.windsurf/mcp_config.json`` only. CI must
+    NOT set this; Cursor schema is still enforced by
+    ``check_cursor_config_schema.py``.
+
+Schema whitelists (per docs/cursor/hooks.md + docs/cursor/mcp.md):
 
     hooks.json per-entry:    command, working_directory, show_output
     mcp_config.json per srv: command, args, env, disabled
@@ -25,6 +31,7 @@ any unrecognized field.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -32,10 +39,28 @@ ROOT = Path(__file__).resolve().parents[2]
 HOOKS_PATH = ROOT / ".windsurf" / "hooks.json"
 MCP_PATH = ROOT / ".windsurf" / "mcp_config.json"
 
-# Schema whitelists — extend ONLY when docs/windsurf/*.md is updated upstream.
+# Schema whitelists — extend ONLY when docs/cursor/*.md is updated upstream.
 # Underscore-prefixed keys (e.g. `_note`, `_comment`) are universally allowed
 # as an inline-documentation convention; Windsurf's parser tolerates them.
-HOOK_ENTRY_FIELDS = {"command", "working_directory", "show_output"}
+HOOK_ENTRY_FIELDS = {
+    "command",
+    "working_directory",
+    "show_output",
+    # Governance metadata (enriched hooks.json — plan plan-update-enforcement-template-fix-e7a3c1).
+    # Windsurf tolerates underscore-prefixed keys; these are explicit non-_ fields.
+    "hook_id",
+    "lifecycle_stage",
+    "priority",
+    "entrypoint",
+    "blocking_mode",
+    "bypass_env_var",
+    "emits_receipt",
+    "owner_rule_ref",
+    "replacement_for",
+    "consolidation_phase",
+    "status",
+    "note",
+}
 # MCP servers support two transports:
 #   - Local stdio:   command + args + env
 #   - Remote HTTP:   url + optional type/transport
@@ -128,7 +153,7 @@ def _check_entry(entry: dict, allowed: set[str], path: str, violations: list[str
         else:
             violations.append(
                 f"  ❌ {path}: unknown field '{key}' — not in documented schema "
-                f"{sorted(allowed)}. Remove or verify against docs/windsurf/."
+                f"{sorted(allowed)}. Remove or verify against docs/cursor/."
             )
 
 
@@ -217,6 +242,17 @@ def _validate_mcp(violations: list[str]) -> None:
 
 
 def main() -> int:
+    if os.environ.get("WINDSURF_CONFIG_SCHEMA_BYPASS", "").strip() in (
+        "1",
+        "true",
+        "yes",
+    ):
+        print(
+            "[windsurf-config-schema] BYPASS — WINDSURF_CONFIG_SCHEMA_BYPASS=1 "
+            "(Windsurf hooks/MCP files not validated; Cursor gate is separate)"
+        )
+        return 0
+
     print("🔍 Validating Windsurf config schema purity (constitutional §26)")
     violations: list[str] = []
     _validate_hooks(violations)

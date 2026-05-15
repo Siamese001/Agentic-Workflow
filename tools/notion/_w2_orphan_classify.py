@@ -1,4 +1,4 @@
-"""W2 one-shot — classify the 38 unique orphan slugs by Cascade confidence."""
+"""W2 one-shot — classify the 38 unique orphan slugs by Cursor Agent confidence."""
 import json
 import re
 from collections import Counter

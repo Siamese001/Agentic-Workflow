@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-04-23
 **Phase**: Wave E.1 — `adg-dead-code-waves-efg-b2e4f7`
-**Deciders**: SVP Engineering (Cascade) + user Author-Gate approval
+**Deciders**: SVP Engineering (Cursor Agent) + user Author-Gate approval
 **ADG Snapshot**: `artifacts/adg/adg_indexed_04232026_1442.sqlite`
 
 ---

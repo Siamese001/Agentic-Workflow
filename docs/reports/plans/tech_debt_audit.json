@@ -1,7 +1,7 @@
 {
   "p1_rename_shims": [
     {
-      "file": ".windsurf/scripts/post_cascade_author_gate_miss_detector.py",
+      "file": ".windsurf/scripts/post_cursor_agent_author_gate_miss_detector.py",
       "lines": 251,
       "classes": [],
       "marker_excerpt": "legacy alias"
@@ -157435,13 +157435,13 @@
       "line": 115
     },
     {
-      "file": ".windsurf/scripts/post_cascade_deferred_scope_capture.py",
+      "file": ".windsurf/scripts/post_cursor_agent_deferred_scope_capture.py",
       "kind": "function",
       "name": "_ensure_log_parent",
       "line": 130
     },
     {
-      "file": ".windsurf/scripts/post_cascade_writeback_audit.py",
+      "file": ".windsurf/scripts/post_cursor_agent_writeback_audit.py",
       "kind": "function",
       "name": "_ensure_log_parent",
       "line": 130
@@ -165273,9 +165273,9 @@
     {
       "name": "detect_violations",
       "files": [
-        ".windsurf/scripts/post_cascade_adg_audit.py",
-        ".windsurf/scripts/post_cascade_long_command_audit.py",
-        ".windsurf/scripts/post_cascade_mcp_serialization_audit.py"
+        ".windsurf/scripts/post_cursor_agent_adg_audit.py",
+        ".windsurf/scripts/post_cursor_agent_long_command_audit.py",
+        ".windsurf/scripts/post_cursor_agent_mcp_serialization_audit.py"
       ]
     },
     {

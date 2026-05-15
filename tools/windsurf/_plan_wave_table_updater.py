@@ -2,7 +2,7 @@
 _plan_wave_table_updater.py — Update wave-status cells in plan .md files.
 
 Pure logic: no I/O side-effects beyond the file write. No Notion calls. No
-subprocess. Called by post_cascade_wave_lifecycle_capture.py after each
+subprocess. Called by post_cursor_agent_wave_lifecycle_capture.py after each
 WAVE_START / WAVE_COMPLETE / PLAN_COMPLETE marker is processed.
 
 Status cell mapping:
@@ -22,7 +22,7 @@ Inline field sync (plan-wave-inline-status-sync-8b4d2f):
     Updates are monotonic (never downgrade), idempotent, section-scoped, and
     code-fence-excluding.
 
-The plan file is located by scanning .windsurf/plans/<slug>.md. The slug
+The plan file is located by scanning .cursor/plans/<slug>.md. The slug
 must match the SLUG_RE pattern from _wave_lifecycle_helpers (alphanum-dash
 ending in 6 hex chars).
 
@@ -321,12 +321,12 @@ def _find_plan_file(repo_root: Path, slug: str) -> Path | None:
     """Resolve slug -> plan .md file. Return None if not found.
 
     Resolution order:
-    1. Exact match: .windsurf/plans/<slug>.md
-    2. Numeric-prefix match: .windsurf/plans/NN_<slug>.md (e.g. 01_<slug>.md)
-    3. Frontmatter scan: any .windsurf/plans/*.md whose ``plan_id:`` value
+    1. Exact match: .cursor/plans/<slug>.md
+    2. Numeric-prefix match: .cursor/plans/NN_<slug>.md (e.g. 01_<slug>.md)
+    3. Frontmatter scan: any .cursor/plans/*.md whose ``plan_id:`` value
        matches slug (exact) or whose filename stem (strip numeric prefix) matches.
     """
-    plans_dir = repo_root / ".windsurf" / "plans"
+    plans_dir = repo_root / ".cursor" / "plans"
 
     # 1. Exact match
     candidate = plans_dir / f"{slug}.md"

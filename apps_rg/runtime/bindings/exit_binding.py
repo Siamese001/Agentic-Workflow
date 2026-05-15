@@ -24,6 +24,8 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
 )
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
+from apps_rg.runtime.schemas import SectionCacheWriteProposal
+
 # ---------------------------------------------------------------------------
 # Blocking status set — apps_rg-owned; never in agentic_core
 # ---------------------------------------------------------------------------
@@ -82,6 +84,7 @@ class InertArtifactCommitCandidate:
     mutation_candidate_inert: bool = True
     non_durable: bool = True
     not_l4_truth: bool = True
+    not_replay_source: bool = True
     proposal_status: str = "PENDING_UWG"
 
 
@@ -106,6 +109,7 @@ class ExitDisposition:
 class ExitResult:
     disposition: ExitDisposition
     artifact_commit_candidates: list[InertArtifactCommitCandidate]
+    cache_write_proposals: tuple[SectionCacheWriteProposal, ...] = ()
 
 
 # ---------------------------------------------------------------------------
@@ -359,7 +363,73 @@ def exit_finalize_apps_rg(
     return ExitResult(
         disposition=disposition,
         artifact_commit_candidates=[run_metadata_candidate],
+        cache_write_proposals=(),
     )
+
+
+def build_exhaust_bundle_from_exit(
+    exit_result: ExitResult,
+    sealed: SealedL2Artifact,
+    *,
+    learning_profile_ref: str = "",
+    meta_feedback_profile_ref: str = "",
+    exit_disposition_ref: str | None = None,
+    gate_mesh_result_ref: str | None = None,
+    sealed_result_ref: str | None = None,
+) -> "RuntimeExhaustBundle":
+    """Map apps_rg ExitBindingResult + sealed L2 artifact to canonical RuntimeExhaustBundle.
+
+    apps_rg owns this mapper; core owns bundle schema and factory
+    (``build_runtime_exhaust_bundle``). Call only after Exit has finalized
+    for the run. ``exit_disposition_ref`` defaults to ``sealed.compilation_hash``
+    when non-empty; otherwise a deterministic digest from the Exit disposition.
+    """
+    from agentic_core.runtime.exhaust.runtime_exhaust_bundle import (
+        build_runtime_exhaust_bundle,
+    )
+
+    exit_ref = (exit_disposition_ref or "").strip()
+    if not exit_ref:
+        comp = (getattr(sealed, "compilation_hash", "") or "").strip()
+        exit_ref = comp if comp else _synthetic_exit_disposition_digest(exit_result)
+
+    gate_ref = gate_mesh_result_ref
+    if gate_ref is None:
+        refs = tuple(getattr(sealed, "gate_verdict_refs", ()) or ())
+        gate_ref = ",".join(refs) if refs else ""
+
+    sealed_ref = sealed_result_ref
+    if sealed_ref is None:
+        sealed_ref = (getattr(sealed, "replay_key", "") or "").strip() or (
+            getattr(sealed, "compilation_hash", "") or ""
+        ).strip()
+
+    return build_runtime_exhaust_bundle(
+        request_id=getattr(sealed, "request_id", "") or "",
+        run_id=getattr(sealed, "run_id", "") or "",
+        trace_root=getattr(sealed, "trace_id", "") or "",
+        gate_mesh_result_ref=gate_ref or "",
+        exit_disposition_ref=exit_ref,
+        sealed_result_ref=sealed_ref or "",
+        learning_profile_ref=learning_profile_ref,
+        meta_feedback_profile_ref=meta_feedback_profile_ref,
+    )
+
+
+def _synthetic_exit_disposition_digest(exit_result: ExitResult) -> str:
+    """Deterministic ref when no compilation_hash is available (harness/tests)."""
+    import hashlib
+    import json
+
+    d = exit_result.disposition
+    payload = {
+        "outcome_authorized": d.outcome_authorized,
+        "c0_blocking": d.c0_blocking,
+        "blocking_reason": d.blocking_reason,
+        "gate_ids": [g.gate_id for g in d.gate_results],
+    }
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return "sha256::" + hashlib.sha256(raw.encode()).hexdigest()[:40]
 
 
 def build_apps_rg_exit_harness(
@@ -488,6 +558,7 @@ __all__ = [
     "InertArtifactCommitCandidate",
     "X3Disposition",
     "build_apps_rg_exit_harness",
+    "build_exhaust_bundle_from_exit",
     "exit_finalize_apps_rg",
     "extract_apps_rg_exit_gate_policy",
     "produce_structured_resume_from_docx",

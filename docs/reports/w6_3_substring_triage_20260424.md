@@ -168,7 +168,7 @@ Total sites classified: **91**
   - context: `f"\n{len(total_errors)} wiring assertion(s) failed. "`
 - `ops_scripts/ci/check_ledger_coverage.py:102` lit=`.windsurf/scripts`
   - context: `print("  Fix: run `python .windsurf/scripts/post_commit_outcome_binder.py "`
-- `ops_scripts/ci/check_post_cascade_payload.py:119` lit=`.windsurf/scripts`
+- `ops_scripts/ci/check_post_cursor_agent_payload.py:119` lit=`.windsurf/scripts`
   - context: `f"    {_REQUIRED_IMPORT}\n"`
 - `ops_scripts/ci/executor_theater_gate.py:347` lit=`artifacts/adg`
   - context: `print("[EXECUTOR_THEATER_GATE] ERROR: No ADG SQLite found in artifacts/adg/")`
@@ -220,5 +220,5 @@ Total sites classified: **91**
   - context: `f"AGENTS.md: {status}; add the markers and run 'python .windsurf/scripts/sync_mcp_config.py'"`
 - `ops_scripts/ci/check_agents_md_sync.py:76` lit=`.windsurf/scripts`
   - context: `f"AGENTS.md: '{marker}' autogen block drifted from SSOT; run "`
-- `ops_scripts/ci/check_post_cascade_payload.py:83` lit=`.windsurf/scripts`
+- `ops_scripts/ci/check_post_cursor_agent_payload.py:83` lit=`.windsurf/scripts`
   - context: `f"tool_info. Replace with `{_REQUIRED_IMPORT}` (see "`

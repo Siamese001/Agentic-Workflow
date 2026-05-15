@@ -12,7 +12,7 @@ Exit codes:
     1 — duplicates detected
     2 — API error in fail-closed mode
 
-Bypass: BACKLOG_DUP_BYPASS=1 (logged to artifacts/windsurf/notion_backlog_dup_violations.jsonl).
+Bypass: BACKLOG_DUP_BYPASS=1 (logged to artifacts/cursor/notion_backlog_dup_violations.jsonl).
 
 DS-6 (notion-plans-db-hygiene-deferred-scope-d4f7c1).
 """

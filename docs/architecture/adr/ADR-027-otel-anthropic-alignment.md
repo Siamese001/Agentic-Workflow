@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-22
-- **Deciders**: Cascade (paired with user)
+- **Deciders**: Cursor Agent (paired with user)
 - **Related**:
   - ADR-023 Runtime HITL Exit Control
   - ADR-025 Unified Heal-Router OTel Schema

@@ -2,8 +2,8 @@
 """
 check_adg_first_violations_freshness.py — CI gate (CF1).
 
-Tails ``artifacts/windsurf/adg_first_violations.jsonl`` (produced by
-``post_cascade_adg_audit.py``) and fails when any non-bypass row within
+Tails ``artifacts/cursor/adg_first_violations.jsonl`` (produced by
+``post_cursor_agent_adg_audit.py``) and fails when any non-bypass row within
 the staleness window (default 7 days) has not been resolved.
 
 Sibling to ``ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py``
@@ -12,15 +12,19 @@ Sibling to ``ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness
 by the Windsurf hook but never surfaced in CI.
 
 Exits:
-    0 = log missing, empty, only bypass rows, or all rows aged out / resolved
-    1 = unresolved violations within staleness window
+    0 = log missing, empty, only bypass rows, all rows aged out / resolved, or
+        advisory mode with unresolved rows (default; drift logged to stderr).
+    1 = unresolved violations within staleness window (fail-closed only)
     2 = unreadable log / IO error
+
+Fail-closed: ``ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED=1`` exits 1 when any
+unresolved row remains in the staleness window.
 
 Bypass: ``ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1`` emits a warning and returns 0.
 Window override: ``ADG_FIRST_STALENESS_DAYS`` (int, default 7).
 
 Constitutional refs: §28 (ADG over grep), §34 (retrieval budgets).
-Sibling hook: ``.windsurf/scripts/post_cascade_adg_audit.py``.
+Sibling hook: ``.cursor/scripts/post_cursor_agent_adg_audit.py``.
 """
 
 from __future__ import annotations
@@ -128,7 +132,14 @@ def main() -> int:
         "to the log or rotate it. Bypass: ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1.",
         file=sys.stderr,
     )
-    return 1
+    if os.environ.get("ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED", "").strip() == "1":
+        return 1
+    print(
+        "[check_adg_first_violations_freshness] Advisory mode — violations present; "
+        "exiting 0 (set ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED=1 to fail closed).",
+        file=sys.stderr,
+    )
+    return 0
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Decision Date**: 2026-04-24
-- **Deciders**: Cascade + operator
+- **Deciders**: Cursor Agent + operator
 - **Impact Layers**: L6 (Observability), L0 (Routing — consulters surface in prompt context)
 - **Supersedes**: None
 - **Related**: ADR-023 (Runtime HITL — distinct from harness-side Author-Gate), ADR-031 (Priority scoring operational signals), ADR-019 (ADG materialized views)
@@ -90,7 +90,7 @@ transports.
 ### Positive
 
 - Every major decision class gets an empirical feedback loop.
-- Cascade queries precedent via consulting skills — same proven pattern as
+- Cursor Agent queries precedent via consulting skills — same proven pattern as
   `refactor-decision-memory`, now generalized.
 - Unified weekly report centralizes drift signals in one ≤6KB Markdown file.
 - Sunset criteria prevent ledger sprawl.

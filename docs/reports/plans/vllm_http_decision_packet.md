@@ -1,7 +1,7 @@
 # vLLM HTTP Seam Decision Packet
 
 **Generated:** 2026-04-11
-**Author:** Cascade (decision-prep pass — no code changes)
+**Author:** Cursor Agent (decision-prep pass — no code changes)
 **Implemented:** 2026-04-11 — Path A APPROVED and executed
 **ADG Snapshot:** `adg_indexed_04112026_1604.sqlite`
 **Findings source:** `docs/reports/plans/infra_wiring_findings.md` §E-1 + §FC

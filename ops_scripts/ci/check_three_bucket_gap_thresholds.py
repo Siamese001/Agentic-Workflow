@@ -1,6 +1,6 @@
 """G-THREE-BUCKET-GAP — three-bucket gap report threshold gate (W5).
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W5).
+Plan: ``.cursor/plans/three-bucket-gap-remediation-069806.md`` (W5).
 
 This gate consumes ``docs/reports/adg/THREE_BUCKET_GAP_REPORT.json``
 (produced by ``tools/adg/three_bucket_gap_report.py``) and enforces

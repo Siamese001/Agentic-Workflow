@@ -1,6 +1,6 @@
 """check_app_domain_harness_parity — apps_* eval-harness parity advisory gate.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W5.P6.
+Plan: ``.cursor/plans/apps-eval-harness-parity-f8d4a2.md`` W5.P6.
 
 ADVISORY-ONLY mode (as of commit-time): exit 0 regardless of findings so
 pre-commit does not block while the harness is still being wired. Findings

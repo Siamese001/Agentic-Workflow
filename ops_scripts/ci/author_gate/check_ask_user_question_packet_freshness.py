@@ -4,8 +4,8 @@ check_ask_user_question_packet_freshness.py — CI gate.
 
 Plan: author-gate-four-req-enforcement-c4d2a8 W2.P1.
 
-Tails ``artifacts/windsurf/ask_user_question_packet_violations.jsonl`` (produced
-by ``post_cascade_ask_user_question_packet_audit.py``) and fails when any
+Tails ``artifacts/cursor/ask_user_question_packet_violations.jsonl`` (produced
+by ``post_cursor_agent_ask_user_question_packet_audit.py``) and fails when any
 non-bypass row within the staleness window (default 7 days) has not been
 resolved.
 
@@ -126,7 +126,7 @@ def main() -> int:
         print(f"  - {json.dumps(row, ensure_ascii=False)}", file=sys.stderr)
     print(
         "Resolve by emitting an AUTHOR_GATE_PACKET before the offending "
-        "ask_user_question (use .windsurf/skills/author-gate-packet-builder/"
+        "ask_user_question (use .cursor/skills/author-gate-packet-builder/"
         "emit_packet.py), then append {\"resolved\": true} rows or rotate the log.",
         file=sys.stderr,
     )

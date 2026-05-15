@@ -15,7 +15,7 @@ on:
       - '.windsurf/schemas/decision_ledger.schema.sql'
       - '.windsurf/schemas/decision_record.schema.json'
       - '.windsurf/scripts/apply_ledger_schema.py'
-      - '.windsurf/scripts/post_cascade_author_gate_capture.py'
+      - '.windsurf/scripts/post_cursor_agent_author_gate_capture.py'
       - '.windsurf/scripts/post_commit_outcome_binder.py'
       - 'ops_scripts/ci/author_gate/**'
       - '.windsurf/state/refactor_decisions/**'
@@ -25,7 +25,7 @@ on:
       - '.windsurf/schemas/decision_ledger.schema.sql'
       - '.windsurf/schemas/decision_record.schema.json'
       - '.windsurf/scripts/apply_ledger_schema.py'
-      - '.windsurf/scripts/post_cascade_author_gate_capture.py'
+      - '.windsurf/scripts/post_cursor_agent_author_gate_capture.py'
       - '.windsurf/scripts/post_commit_outcome_binder.py'
       - 'ops_scripts/ci/author_gate/**'
   workflow_dispatch: {}

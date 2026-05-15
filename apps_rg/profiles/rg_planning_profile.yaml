@@ -1,0 +1,4 @@
+# apps_rg — L1 planning profile (advisory; consumed by L1 binding for planning_prior_refs).
+# Digest-stable SSOT for p3.1 U0→L1 profile_manifest wiring.
+schema_version: "1.0"
+profile_id: rg_planning_profile

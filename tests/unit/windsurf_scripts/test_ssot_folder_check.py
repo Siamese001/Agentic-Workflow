@@ -33,7 +33,7 @@ import _ssot_folder_check as helper  # noqa: E402
     "scripts/check_anything.py",
     "totally_random_file.py",
     "tools/_oneoff/whatever.py",
-    "src/post_cascade_misroute.py",
+    "src/post_cursor_agent_misroute.py",
 ])
 def test_existing_file_never_violates(path: str) -> None:
     """Pre-existing files always pass — the gate is for NEW files only."""
@@ -116,7 +116,7 @@ def test_oneoff_oneshot_blocked(path: str) -> None:
 
 
 @pytest.mark.parametrize("path", [
-    "tools/post_cascade_widget.py",
+    "tools/post_cursor_agent_widget.py",
     "ops_scripts/ci/pre_write_extra.py",
     # NOTE: scripts/ root has higher precedence — those land under scripts-sprawl
 ])
@@ -128,7 +128,7 @@ def test_hook_prefix_misroute_blocked(path: str) -> None:
 
 
 def test_hook_prefix_in_canonical_folder_passes() -> None:
-    assert helper.decide(".windsurf/scripts/post_cascade_new.py", exists=False) is None
+    assert helper.decide(".windsurf/scripts/post_cursor_agent_new.py", exists=False) is None
     assert helper.decide(".windsurf/scripts/pre_write_extra.py", exists=False) is None
 
 

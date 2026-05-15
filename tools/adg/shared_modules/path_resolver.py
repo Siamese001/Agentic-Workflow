@@ -16,7 +16,19 @@ from __future__ import annotations
 
 from datetime import datetime
 import os
+import sqlite3
 from pathlib import Path
+
+
+def connect_adg_snapshot_readonly(snapshot: Path, *, timeout: float = 5.0) -> sqlite3.Connection:
+    """Open an ADG indexed snapshot read-only with immutable VFS.
+
+    Read-write opens can rewrite SQLite headers / freelist metadata without
+    changing logical row counts, which breaks DSSE file SHA attestations while
+    leaving three-bucket digest checks green.
+    """
+    uri = f"file:{snapshot.resolve().as_posix()}?mode=ro&immutable=1"
+    return sqlite3.connect(uri, uri=True, timeout=timeout)
 
 
 def get_repo_root() -> Path:
@@ -49,10 +61,8 @@ def _has_nodes_table(path: Path) -> bool:
     table. Picking such a stub by mtime would crash consumers with
     `sqlite3.OperationalError: no such table: nodes`.
     """
-    import sqlite3 as _sq  # noqa: PLC0415
-
     try:
-        with _sq.connect(str(path)) as conn:
+        with connect_adg_snapshot_readonly(path) as conn:
             row = conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
             ).fetchone()

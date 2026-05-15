@@ -42,8 +42,8 @@ def tmp_ledger(tmp_path: Path) -> Path:
     # Redirect DB_PATH by patching the module-level constant via env var approach
     # would require code changes; simpler is to call the DDL directly.
     capture_mod = _import(
-        ".windsurf/scripts/post_cascade_author_gate_capture.py",
-        "post_cascade_author_gate_capture_under_test",
+        ".cursor/scripts/post_cursor_agent_author_gate_capture.py",
+        "post_cursor_agent_author_gate_capture_under_test",
     )
     db_path = tmp_path / "ledger.sqlite"
     conn = sqlite3.connect(str(db_path))
@@ -153,8 +153,8 @@ def test_outcome_writer_unparseable_returns_none() -> None:
 
 def test_reason_code_tail_parse() -> None:
     capture_mod = _import(
-        ".windsurf/scripts/post_cascade_author_gate_capture.py",
-        "post_cascade_author_gate_capture_parse_test",
+        ".cursor/scripts/post_cursor_agent_author_gate_capture.py",
+        "post_cursor_agent_author_gate_capture_parse_test",
     )
     tail = (
         ", confidence=0.89, gap=0.15, override=true, "
@@ -263,15 +263,22 @@ def test_bandit_update(tmp_ledger: Path) -> None:
 
 def test_render_card_shape() -> None:
     rc = _import(
-        ".windsurf/skills/author-gate-ui-renderer/render_card.py",
+        ".cursor/skills/author-gate-ui-renderer/render_card.py",
         "render_card_under_test",
     )
     packet = {
         "decision_id": "dec_test1",
         "decision_type": "refactor_scope",
+        "recommended_option_id": "minimal",
         "candidates": [
             {
-                "id": "minimal", "surfaced": True, "confidence_score": 0.89,
+                "id": "minimal", "surfaced": True, "is_recommended": True,
+                "confidence_score": 0.89,
+                "surface_label": "⭐ Recommended — 🟢 89% — Extract SovereignBaseAgent only",
+                "surface_description": (
+                    "[RECOMMENDED ⭐ confidence=0.89] · trade-off: "
+                    "Narrow extraction keeps blast radius small"
+                ),
                 "thesis": "Extract SovereignBaseAgent only",
                 "principle_at_stake": "layer gravity",
                 "what_would_flip": ["blast_radius>5", "hotspot rank moves to top-10"],
@@ -294,5 +301,6 @@ def test_render_card_shape() -> None:
     assert "precedent: suggestive" in card
     assert "Reason-code palette" in card
     assert len(options) == 2
-    assert "🟢" in options[0]["description"]
-    assert "recommended" in options[0]["description"]
+    assert "⭐" in options[0]["label"]
+    assert "RECOMMENDED" in options[0]["description"]
+    assert "trade-off:" in options[0]["description"]

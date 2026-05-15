@@ -7,6 +7,7 @@ Deterministic only. No C0, PA, L2, or provider calls.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
@@ -43,6 +44,12 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     """
     # Extract generation mode from app_payload if present
     app_payload = getattr(validated_request, "app_payload", None) or {}
+    if not app_payload:
+        raise ValueError(
+            "missing required keys: app_payload is empty; U0 must synthesize "
+            "task_spec, query_spec, support_expectation, and output_expectation."
+        )
+    _verify_l1_planning_profile_digest(app_payload)
     generation_mode = _extract_generation_mode(app_payload)
 
     # Derive work-shape hints based on generation mode
@@ -72,6 +79,26 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     # Extract L5 cert ref from validated request (U0→L1 handoff)
     l5_cert_ref = getattr(validated_request, "l5_certification_ref", None) or ""
 
+    task_spec = dict(app_payload.get("task_spec") or {})
+    query_spec = dict(app_payload.get("query_spec") or {})
+    support_expectation = dict(app_payload.get("support_expectation") or {})
+    output_expectation = dict(app_payload.get("output_expectation") or {})
+    policy_src = app_payload.get("policy_refs")
+    if isinstance(policy_src, Mapping) and policy_src:
+        policy_refs_out: Mapping[str, str] = {k: str(v) for k, v in policy_src.items()}
+    else:
+        policy_refs_out = _extract_policy_refs(app_payload)
+
+    work_shape = (
+        "full_resume_generation"
+        if work_shape_hints["merge_required_hint"]
+        else "narrow_regeneration"
+    )
+    task_shape = generation_mode or "unknown"
+    route_profile_ref = "apps_rg/config/domain_contract/route_profiles.yaml"
+
+    replay_key = str(getattr(validated_request, "replay_key", "") or "")
+
     return L1PlanContract(
         request_id=validated_request.request_id,
         run_id=validated_request.run_id,
@@ -85,6 +112,13 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         profile_manifest_digest=validated_request.payload_digest,
         tenant_id=getattr(validated_request, "tenant_id", ""),
         target_level=_extract_target_level(app_payload),
+        task_spec=task_spec,
+        query_spec=query_spec,
+        support_expectation=support_expectation,
+        output_expectation=output_expectation,
+        work_shape=work_shape,
+        task_shape=task_shape,
+        route_profile_ref=route_profile_ref,
         # Work-shape hints
         multiple_work_units_hint=work_shape_hints["multiple_work_units_hint"],
         merge_required_hint=work_shape_hints["merge_required_hint"],
@@ -97,9 +131,10 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         prompt_bom_refs=prompt_bom_refs,
         judge_eval_expectation_refs=(),  # Empty for now
         # Policy refs from payload if available
-        policy_refs=_extract_policy_refs(app_payload),
+        policy_refs=policy_refs_out,
         # L5 certification ref from U0
         l5_certification_ref=l5_cert_ref,
+        replay_key=replay_key,
     )
 
 
@@ -147,6 +182,38 @@ def _extract_target_level(app_payload: Mapping[str, Any]) -> str:
     return query_spec.get("target_level", "")
 
 
+def _verify_l1_planning_profile_digest(app_payload: Mapping[str, Any]) -> None:
+    """Fail closed when U0 forwards a digest that is empty or mismatched (p3.1 W2)."""
+
+    pm = app_payload.get("profile_manifest")
+    if not isinstance(pm, Mapping):
+        return
+    if "l1_planning_profile_digest" not in pm and "l1_planning_profile_ref" not in pm:
+        return
+    digest = pm.get("l1_planning_profile_digest")
+    if digest is None or (isinstance(digest, str) and not digest.strip()):
+        if os.environ.get("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "").strip():
+            return
+        raise ValueError(
+            "l1_plan_apps_rg: U0-declared l1_planning_profile_digest is empty. "
+            "U0 must compute and forward a 64-char sha256 digest. "
+            "Set APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST=1 only in narrow test fixtures."
+        )
+    if not isinstance(digest, str) or len(digest) != 64:
+        raise ValueError(
+            f"l1_plan_apps_rg: invalid l1_planning_profile_digest shape: {digest!r}"
+        )
+    from apps_rg.runtime.bindings.u0_profile_manifest import l1_planning_profile_digest
+
+    expected = l1_planning_profile_digest(allow_missing=False)
+    if digest != expected:
+        raise ValueError(
+            "l1_plan_apps_rg: planning profile digest mismatch. "
+            f"U0 declared={digest!r}, L1 computed={expected!r}. "
+            "Ensure both U0 and L1 read the same rg_planning_profile.yaml."
+        )
+
+
 def _extract_planning_prior_refs(app_payload: Mapping[str, Any]) -> tuple[str, ...]:
     """Extract planning prior refs from app_payload."""
     if not app_payload:
@@ -157,11 +224,14 @@ def _extract_planning_prior_refs(app_payload: Mapping[str, Any]) -> tuple[str, .
         return tuple(str(r) for r in prior_refs)
     # Check profile_manifest for rg_planning_profile ref
     profile_manifest = app_payload.get("profile_manifest", {})
+    l1_ref = profile_manifest.get("l1_planning_profile_ref")
+    if l1_ref:
+        return (str(l1_ref),)
     planning_ref = profile_manifest.get("rg_planning_profile")
     if planning_ref:
         return (str(planning_ref),)
-    # Canonical app-owned default
-    return ("apps_rg/config/domain_contract/rg_planning_profile.yaml",)
+    # Canonical app-owned default (must match u0_profile_manifest digest path)
+    return ("apps_rg/profiles/rg_planning_profile.yaml",)
 
 
 def _extract_prompt_bom_refs(app_payload: Mapping[str, Any]) -> tuple[str, ...]:
@@ -235,7 +305,8 @@ def _derive_capabilities(generation_mode: str) -> tuple[str, ...]:
 
 def _needs_grounding(generation_mode: str) -> bool:
     """Determine if C0 evidence collection is required."""
-    # All known modes need grounding; unknown conservatively does not
+    if generation_mode == "generate_scratch":
+        return False
     return generation_mode in _FULL_RESUME_GENERATION_MODES or generation_mode in _SINGLE_SECTION_MODES
 
 

@@ -150,7 +150,7 @@ def check(db_path: Path, window_days: int) -> tuple[int, list[str]]:
             "",
             "Remediation: ensure DECISION_CAPTURED markers carry confidence=, gap=, "
             "principle=, precedent= per author-gate-enforcement.md §Pipeline step 9.",
-            "Run: python .windsurf/scripts/author_gate_ledger_integrity.py --resign",
+            "Run: python .cursor/scripts/author_gate_ledger_integrity.py --resign",
         ]
         return 1, msg
     return 0, [

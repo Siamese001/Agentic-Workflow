@@ -6,12 +6,11 @@ Proves:
   2. Stale Windsurf hooks.json working_directory paths fail the schema gate.
   3. Correct repo-root hooks.json working_directory passes the schema gate.
   4. Freshness gate CF1 (ADG-first violations) logic is correct.
-  5. Freshness gate CF2 (MCP serialization violations) logic is correct.
-  6. Runtime-certification is no longer in pre-commit default stages.
-  7. HITL corpus trigger regex covers all four validator-owned files.
-  8. Author-gate ledger schema trigger includes the DDL file.
-  9. Intentional two-lane gates (snapshot-has-mvs, pipeline-skips) remain in pre-commit.
-  10. Promoted manual gates (OTEL, spans, purity, PII) are in run_contract_gates assurance plane.
+  5. Runtime-certification is no longer in pre-commit default stages.
+  6. HITL corpus trigger regex covers all four validator-owned files.
+  7. Author-gate ledger schema trigger includes the DDL file.
+  8. Intentional two-lane gates (snapshot-has-mvs, pipeline-skips) remain in pre-commit.
+  9. Promoted manual gates (OTEL, spans, purity, PII) are in run_contract_gates assurance plane.
 """
 from __future__ import annotations
 
@@ -149,7 +148,7 @@ class TestWorkingDirectoryValidation:
         """A hooks.json entry pointing to a nonexistent absolute path fails the gate."""
         stale_path = "C:\\Git\\Agentic-Workflow"  # stale clone — does not match tmp_path
         hooks = {
-            "post_cascade_response": [
+            "post_cursor_agent_response": [
                 {"command": "python script.py", "working_directory": stale_path, "show_output": False}
             ]
         }
@@ -162,7 +161,7 @@ class TestWorkingDirectoryValidation:
     def test_repo_root_aligned_path_passes(self, tmp_path: Path) -> None:
         """A hooks.json entry with working_directory pointing to the tmp repo root passes."""
         hooks = {
-            "post_cascade_response": [
+            "post_cursor_agent_response": [
                 {
                     "command": "python script.py",
                     "working_directory": str(tmp_path),
@@ -178,7 +177,7 @@ class TestWorkingDirectoryValidation:
     def test_relative_path_passes(self, tmp_path: Path) -> None:
         """A relative working_directory is always acceptable (resolved by Windsurf against workspace)."""
         hooks = {
-            "post_cascade_response": [
+            "post_cursor_agent_response": [
                 {"command": "python script.py", "working_directory": ".", "show_output": False}
             ]
         }
@@ -189,7 +188,7 @@ class TestWorkingDirectoryValidation:
         """An entry with _local_only_waiver: true is exempt from absolute path validation."""
         stale_path = "C:\\Git\\Agentic-Workflow"
         hooks = {
-            "post_cascade_response": [
+            "post_cursor_agent_response": [
                 {
                     "command": "python script.py",
                     "working_directory": stale_path,
@@ -255,40 +254,7 @@ class TestAdgFirstViolationsFreshness:
 
 
 # ---------------------------------------------------------------------------
-# 5. CF2 — MCP serialization violations freshness gate (pure evaluate())
-# ---------------------------------------------------------------------------
-
-from check_mcp_serialization_violations_freshness import evaluate as mcp_evaluate  # type: ignore[import]
-
-
-class TestMcpSerializationViolationsFreshness:
-    def _ts(self, *, days_ago: int = 0) -> str:
-        dt = datetime.now(timezone.utc) - timedelta(days=days_ago)
-        return dt.isoformat()
-
-    def test_empty_rows_passes(self) -> None:
-        assert mcp_evaluate([], 7) == []
-
-    def test_bypass_row_ignored(self) -> None:
-        rows = [{"reason": "bypass", "ts": self._ts(days_ago=1)}]
-        assert mcp_evaluate(rows, 7) == []
-
-    def test_resolved_row_ignored(self) -> None:
-        rows = [{"resolved": True, "ts": self._ts(days_ago=1)}]
-        assert mcp_evaluate(rows, 7) == []
-
-    def test_fresh_unresolved_fails(self) -> None:
-        rows = [{"violation": "remote_mcp_batched", "ts": self._ts(days_ago=2)}]
-        result = mcp_evaluate(rows, 7)
-        assert len(result) == 1
-
-    def test_aged_out_row_passes(self) -> None:
-        rows = [{"violation": "remote_mcp_batched", "ts": self._ts(days_ago=14)}]
-        assert mcp_evaluate(rows, 7) == []
-
-
-# ---------------------------------------------------------------------------
-# 6. runtime-certification is manual-only in pre-commit
+# 5. runtime-certification is manual-only in pre-commit
 # ---------------------------------------------------------------------------
 
 class TestRuntimeCertificationStage:
@@ -394,7 +360,6 @@ PROMOTED_SCRIPTS = [
     "ops_scripts/ci/check_apps_shared_purity.py",
     "ops_scripts/ci/check_pii_in_telemetry.py",
     "ops_scripts/ci/check_adg_first_violations_freshness.py",
-    "ops_scripts/ci/check_mcp_serialization_violations_freshness.py",
 ]
 
 

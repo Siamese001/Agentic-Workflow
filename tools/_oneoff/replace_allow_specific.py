@@ -17,7 +17,7 @@ SKIP_DIRS = {"archives", ".git", "__pycache__", ".venv", "venv", "node_modules"}
 SKIP_FILES = {
     Path("agentic_core/adg/artifact/multi_writer.py"),
     Path("tests/unit/conftest.py"),  # may be test fixture
-    Path(".windsurf/scripts/post_cascade_author_gate_capture.py"),  # hook probably uses as test
+    Path(".windsurf/scripts/post_cursor_agent_author_gate_capture.py"),  # hook probably uses as test
 }
 
 

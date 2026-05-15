@@ -40,7 +40,7 @@ from _notion_constants import (  # noqa: E402
     NOTION_BASE,
     WAVE_PHASE_DATA_SOURCE_ID,
 )
-from post_cascade_deferred_scope_capture import _resolve_plan_page_id  # noqa: E402
+from post_cursor_agent_deferred_scope_capture import _resolve_plan_page_id  # noqa: E402
 
 try:
     from tqdm import tqdm

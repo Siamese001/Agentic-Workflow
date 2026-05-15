@@ -2,7 +2,7 @@
 """
 check_ledger_append_only.py — W4.1 CI gate.
 
-Wraps `.windsurf/scripts/apply_append_only_triggers.py --check` with
+Wraps `.cursor/scripts/apply_append_only_triggers.py --check` with
 bypass logging. Exits 1 if any ledger is missing its BEFORE UPDATE /
 BEFORE DELETE triggers.
 

@@ -36,7 +36,7 @@ Exit codes
 Bypass
 ------
 CROSS_APP_CONTRACT_BYPASS=1 in env logs a bypass row to
-`artifacts/windsurf/cross_app_contract_violations.jsonl` and exits 0.
+`artifacts/cursor/cross_app_contract_violations.jsonl` and exits 0.
 
 Plan: requirements/contracts/REQ-CROSS-APP-* (Phase A).
 """

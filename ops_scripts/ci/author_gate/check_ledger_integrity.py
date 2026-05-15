@@ -41,7 +41,7 @@ def main() -> int:
             unsealed = res.total_rows - res.verified_rows
             print(
                 f"[check_ledger_integrity] PASS — {res.verified_rows}/{res.total_rows} sealed; "
-                f"{unsealed} unsealed row(s). Run: python .windsurf/scripts/"
+                f"{unsealed} unsealed row(s). Run: python .cursor/scripts/"
                 f"author_gate_ledger_integrity.py --backfill"
             )
         else:

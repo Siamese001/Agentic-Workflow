@@ -127,7 +127,7 @@ def main() -> int:
     if len(stale) > 20:
         print(f"  … {len(stale) - 20} more")
     print(
-        "\nRemediation: run `python .windsurf/scripts/post_commit_outcome_binder.py` "
+        "\nRemediation: run `python .cursor/scripts/post_commit_outcome_binder.py` "
         "to bind outcomes from recent commits."
     )
     return 1

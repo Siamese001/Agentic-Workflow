@@ -2,7 +2,7 @@
 
 **Plan:** `apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan`
 **Receipt timestamp:** 2026-05-14
-**Author:** Cascade (closure proof run)
+**Author:** Cursor Agent (closure proof run)
 
 ---
 

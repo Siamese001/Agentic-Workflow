@@ -54,8 +54,8 @@ Exit codes
 References
 ----------
     - Constitutional §22 (graph-layer evidence)
-    - .windsurf/plans/adg-pipeline-e2e-5287a1.md (W1 reorder + W2 this gate)
-    - .windsurf/rules/adg-graph-layer-enforcement.md
+    - .cursor/plans/adg-pipeline-e2e-5287a1.md (W1 reorder + W2 this gate)
+    - .cursor/rules/adg-graph-layer-enforcement.md
 """
 
 from __future__ import annotations
@@ -107,7 +107,9 @@ def _has_nodes_table(p: Path) -> bool:
     """
     try:
         import sqlite3 as _sq
-        with _sq.connect(str(p)) as conn:
+
+        uri = f"file:{p.as_posix()}?mode=ro&immutable=1"
+        with _sq.connect(uri, uri=True) as conn:
             row = conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
             ).fetchone()
@@ -146,7 +148,8 @@ def _resolve_snapshot(argv_path: str | None) -> Path:
 
 def _classify_objects(snapshot: Path) -> dict[str, list[str]]:
     """Return {'mv': [...], 'pview': [...], 'infra': [...], 'base': [...]}."""
-    with sqlite3.connect(str(snapshot)) as conn:
+    uri = f"file:{snapshot.as_posix()}?mode=ro&immutable=1"
+    with sqlite3.connect(uri, uri=True) as conn:
         rows = conn.execute(
             "SELECT name FROM sqlite_master WHERE type IN ('table','view') "
             "AND name NOT LIKE 'sqlite_%' ORDER BY name",
@@ -164,7 +167,8 @@ def _classify_objects(snapshot: Path) -> dict[str, list[str]]:
 
 def _canonical_artifact_digest(snapshot: Path) -> str:
     """Read `meta.artifact_digest` from the canonical snapshot."""
-    with sqlite3.connect(str(snapshot)) as conn:
+    uri = f"file:{snapshot.as_posix()}?mode=ro&immutable=1"
+    with sqlite3.connect(uri, uri=True) as conn:
         row = conn.execute(
             "SELECT value FROM meta WHERE key = 'artifact_digest'",
         ).fetchone()
@@ -198,7 +202,8 @@ def _check_projection_freshness(snapshot: Path) -> tuple[str, dict[str, str]]:
     latest = Path(projections[-1])
     info["projection"] = latest.name
     try:
-        with sqlite3.connect(str(latest)) as conn:
+        uri = f"file:{latest.as_posix()}?mode=ro&immutable=1"
+        with sqlite3.connect(uri, uri=True) as conn:
             row = conn.execute(
                 "SELECT value FROM proj_meta WHERE key = 'source_artifact_digest'",
             ).fetchone()
@@ -309,7 +314,7 @@ def main(argv: list[str]) -> int:
         "  2. Verify `_enrich_infra_views` + `_materialize_adg_views` run\n"
         "     BEFORE P0/P1/dead-import gates in tools/generate/generate_full_adg.py\n"
         "     (plan adg-pipeline-e2e-5287a1 W1, commit 9fb93f698c).\n"
-        "  3. See: .windsurf/rules/adg-graph-layer-enforcement.md\n",
+        "  3. See: .cursor/rules/adg-graph-layer-enforcement.md\n",
     )
     print(f"Log: {LOG_FILE.relative_to(ROOT)}")
     _log_violation(snapshot, counts, reasons)

@@ -1,6 +1,6 @@
 """Verifier — Schema validity of the hardened certification matrix.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``.cursor/plans/runtime-cert-hardened-w0-7e3c9a.md``
 Covers: RTC-REQ-002 (proof depth fields mandatory),
         RTC-REQ-003 (claim_type enum),
         RTC-REQ-006 (subclaim decomposition),

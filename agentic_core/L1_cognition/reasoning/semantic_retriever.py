@@ -295,6 +295,12 @@ class SemanticRetriever:
 
         Returns:
             Validated ``C0EvidenceContract`` ready for prompt assembly or exit eval.
+
+        Note:
+            Current-run exit + future-run L6 ingest for the same shaped retrieval
+            are exercised from ``apps_shared.integrations.governed_app_runner`` via
+            ``evidence_eval_bridge.evaluate_and_emit`` (same ``EvidenceBundle`` metrics
+            as ``build_exit_artifact`` / ``emit_bundle_telemetry``).
         """
         import hashlib as _hashlib
         import uuid as _uuid

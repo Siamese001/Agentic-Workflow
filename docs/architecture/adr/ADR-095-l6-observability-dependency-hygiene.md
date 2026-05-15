@@ -18,7 +18,7 @@ The historical "fix" was inline `# guardian: allow-layer-violation` comments at 
 
 ## Decision
 
-**Three-pronged hygiene policy**, codified here so that future Cascade sessions and human authors apply it consistently:
+**Three-pronged hygiene policy**, codified here so that future Cursor Agent sessions and human authors apply it consistently:
 
 ### 1. Reporter-class files MUST move to `L_OPS` (`ops_scripts/reports/`)
 

@@ -82,9 +82,9 @@ The ADG does **not** make decisions — it provides structural evidence for deci
 ADG (structural truth)
   └── Refactor Accelerator (W3.3–3.4) — consumes ADG for ranked candidates
   └── Governance Gate — consumes ADG violations for P1/P2/P3 defect counts
-  └── MCP Server (adg_sqlite) — serves ADG queries to Cascade at T3 analysis time
+  └── MCP Server (adg_sqlite) — serves ADG queries to Cursor Agent at T3 analysis time
   └── Memory MCP — receives ADG snapshot for session context
-  └── Redis hot cache — serves ADG topology for fast Cascade queries
+  └── Redis hot cache — serves ADG topology for fast Cursor Agent queries
   └── Graph Projection (derived) — adg_graph_<ts>.sqlite, built non-blocking from adg_indexed_<ts>.sqlite
         └── GraphProjectionBackend — read-only adapter (tools/adg/core/graph_projection_backend.py)
         └── Analyst CLI — tools/adg/adg_graph_query.py

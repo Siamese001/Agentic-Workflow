@@ -1,16 +1,17 @@
-"""Dry-run-safe ingestion pipeline for the process_docs Chroma collection.
+"""Dry-run-safe ingestion pipeline for Chroma collections (default: process_docs).
 
 W6 (chroma-graphrag-core-wiring-gaps-b3f7a1) implementation.
 
 GAP-07: Provide a safe, operator-controlled pipeline for ingesting documents
-into the process_docs Chroma collection using BAAI/bge-m3 embeddings.
+into Chroma using BAAI/bge-m3 embeddings (1024 dimensions). Default collection is
+``process_docs``; use ``--collection fact_vectors`` for the apps_rg C0 dense lane.
 
 Safety invariants (mandatory):
   - --dry-run is the safe default.  Running without --execute never writes data.
   - --execute must be passed explicitly for any write operation.
   - dry-run exits 0 and creates NO Chroma collections.
   - dry-run writes NO vectors and NO durable state.
-  - Collection name is hard-coded to process_docs (W6 target).
+  - Collection name defaults to process_docs; override with ``--collection``.
   - Embedding model is BAAI/bge-m3, 1024 dimensions.
   - No L4 runtime state is written — this pipeline is a tooling-layer operator
     script, not a runtime path.
@@ -43,6 +44,7 @@ _log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 COLLECTION_NAME: str = "process_docs"
+DEFAULT_FACT_VECTORS_COLLECTION: str = "fact_vectors"
 EMBEDDING_MODEL: str = "BAAI/bge-m3"
 EMBEDDING_DIMENSIONS: int = 1024
 
@@ -120,10 +122,10 @@ def load_documents(input_path: Path) -> list[dict[str, Any]]:
 # ---------------------------------------------------------------------------
 
 
-def dry_run_report(docs: list[dict[str, Any]]) -> None:
+def dry_run_report(docs: list[dict[str, Any]], *, collection_name: str = COLLECTION_NAME) -> None:
     """Print a dry-run summary to stdout. No collections, no writes."""
     print("[DRY RUN] chroma_ingest_pipeline — no data written")
-    print(f"  collection : {COLLECTION_NAME}")
+    print(f"  collection : {collection_name}")
     print(f"  model      : {EMBEDDING_MODEL} ({EMBEDDING_DIMENSIONS} dims)")
     print(f"  documents  : {len(docs)}")
     if docs:
@@ -141,13 +143,16 @@ def run_ingestion(
     docs: list[dict[str, Any]],
     chromadb_path: str,
     batch_size: int = 64,
+    *,
+    collection_name: str = COLLECTION_NAME,
 ) -> int:
-    """Ingest documents into the process_docs Chroma collection.
+    """Ingest documents into a Chroma collection (default: process_docs).
 
     Args:
         docs: List of document dicts from load_documents().
         chromadb_path: On-disk path for PersistentClient.
         batch_size: Number of documents per Chroma add() call.
+        collection_name: Target collection (e.g. ``process_docs``, ``fact_vectors``).
 
     Returns:
         Number of documents ingested.
@@ -163,12 +168,12 @@ def run_ingestion(
     model = _load_embedding_model()
     client = chromadb.PersistentClient(path=chromadb_path)
     collection = client.get_or_create_collection(
-        name=COLLECTION_NAME,
+        name=collection_name,
         metadata={"hnsw:space": "cosine"},
     )
     _log.info(
         "[chroma_ingest_pipeline] ingesting %d docs into %s at %s",
-        len(docs), COLLECTION_NAME, chromadb_path,
+        len(docs), collection_name, chromadb_path,
     )
 
     total = 0
@@ -245,6 +250,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=64,
         help="Documents per Chroma add() batch (default: 64).",
     )
+    parser.add_argument(
+        "--collection",
+        type=str,
+        default=COLLECTION_NAME,
+        help=(
+            "Chroma collection name (default: process_docs). "
+            "Use fact_vectors for apps_rg C0 dense lane (BGE-M3 / 1024)."
+        ),
+    )
     return parser
 
 
@@ -272,7 +286,7 @@ def main(argv: list[str] | None = None) -> int:
                 except (ValueError, OSError) as exc:
                     print(f"[DRY RUN] ERROR loading documents: {exc}", file=sys.stderr)
                     return 1
-        dry_run_report(docs)
+        dry_run_report(docs, collection_name=args.collection)
         return 0
 
     # --execute path — operator intent required
@@ -304,10 +318,11 @@ def main(argv: list[str] | None = None) -> int:
         docs=docs,
         chromadb_path=args.chromadb_path,
         batch_size=args.batch_size,
+        collection_name=args.collection,
     )
     print(
         f"[chroma_ingest_pipeline] complete: {ingested} documents ingested "
-        f"into '{COLLECTION_NAME}' at {args.chromadb_path}"
+        f"into '{args.collection}' at {args.chromadb_path}"
     )
     return 0
 

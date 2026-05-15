@@ -1,4 +1,4 @@
-"""Test: post_cascade_deferred_scope_capture forwards v2 optional signals
+"""Test: post_cursor_agent_deferred_scope_capture forwards v2 optional signals
 from DEFERRED_SCOPE marker keys to the scorer. ADR-031 passthrough contract.
 """
 
@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[4]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_deferred_scope_capture.py"
+HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_deferred_scope_capture.py"
 spec = importlib.util.spec_from_file_location("dsc_hook", HOOK_PATH)
 hook = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
 spec.loader.exec_module(hook)  # type: ignore[union-attr]

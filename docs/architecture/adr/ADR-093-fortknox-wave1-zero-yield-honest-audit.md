@@ -4,7 +4,7 @@
 |---|---|
 | Status | Accepted |
 | Decision date | 2026-05-01 |
-| Deciders | Repo owner + Cascade |
+| Deciders | Repo owner + Cursor Agent |
 | Supersedes | — |
 | Related | ADR-091 (Fort Knox certification discipline), ADR-092 (NO_BYPASS_RUNTIME verifier scope mismatch) |
 

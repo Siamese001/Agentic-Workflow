@@ -2,9 +2,9 @@
 """
 check_ag_queue_drain_freshness.py — Weekly drift detection for AG queue drain.
 
-Scans `artifacts/windsurf/ag_queue_drain_violations.jsonl` for rows in the
+Scans `artifacts/cursor/ag_queue_drain_violations.jsonl` for rows in the
 last 7 days. Fails (exit 1) when ≥3 non-bypass violations occur within
-the window — signals Cascade is regressing on the §35 drain discipline.
+the window — signals Cursor Agent is regressing on the §35 drain discipline.
 
 CLI::
 

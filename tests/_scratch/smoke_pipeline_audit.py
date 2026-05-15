@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Temporary smoke test for post_cascade_author_gate_pipeline_audit.py.
+"""Temporary smoke test for post_cursor_agent_author_gate_pipeline_audit.py.
 Delete after W5 verification."""
 
 import json
@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-AUDIT = REPO / ".windsurf" / "scripts" / "post_cascade_author_gate_pipeline_audit.py"
+AUDIT = REPO / ".windsurf" / "scripts" / "post_cursor_agent_author_gate_pipeline_audit.py"
 LOG = REPO / "artifacts" / "windsurf" / "author_gate_pipeline_violations.jsonl"
 
 

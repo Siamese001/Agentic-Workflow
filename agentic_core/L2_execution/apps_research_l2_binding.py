@@ -18,7 +18,9 @@ from __future__ import annotations
 
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
-from agentic_core.prompt_governance.pa_package_driven_binding import CompiledPromptArtifact
+from agentic_core.prompt_governance.pa_package_driven_binding import (  # guardian: allow-layer-violation -- apps_research thin L2 binding consumes PA artifact type before delegating to generic package-driven L2 executor
+    CompiledPromptArtifact,
+)
 from agentic_core.L2_execution.l2_package_driven_executor import (
     l2_execute_package_driven,
     SealedL2Artifact,

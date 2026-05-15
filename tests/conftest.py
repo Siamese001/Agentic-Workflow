@@ -315,7 +315,7 @@ _install_integration_compat_shims()
 # =====================================================================
 # Writes {ts, exit_code, passed, failed, errors, duration_s} to
 # artifacts/windsurf/last_test_signal.json at session end so the
-# post_cascade_author_gate_capture hook can populate decision_outcomes.tests_passed.
+# post_cursor_agent_author_gate_capture hook can populate decision_outcomes.tests_passed.
 
 
 def pytest_sessionstart(session):  # noqa: ARG001 — pytest hook signature

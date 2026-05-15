@@ -2,13 +2,13 @@
 """
 check_ledger_coverage.py — CI gate over the Author-Gate decision ledger.
 
-Thin wrapper around .windsurf/scripts/audit_ledger_coverage.py that runs in
+Thin wrapper around .cursor/scripts/audit_ledger_coverage.py that runs in
 --ci mode: exit 0 on OK/WARN, exit 2 on FAIL. Emits a human-readable report
 to stderr so PR reviewers see the breakdown.
 
 Wired into:
-    - .pre-commit-config.yaml (on staged changes to .windsurf/scripts/** or
-      .windsurf/skills/refactor-decision-memory/**)
+    - .pre-commit-config.yaml (on staged changes to .cursor/scripts/** or
+      .cursor/skills/refactor-decision-memory/**)
     - CI workflows that include gate invocation
 
 Bypass:
@@ -103,8 +103,8 @@ def main() -> int:
     if status == "FAIL":
         print("\n[check_ledger_coverage] FAIL — meta-learning ledger coverage below floor.", file=sys.stderr)
         print(
-            "  Fix: run `python .windsurf/scripts/post_commit_outcome_binder.py "
-            "--lookback 100` then `python .windsurf/scripts/promote_author_gate_patterns.py`.",
+            "  Fix: run `python .cursor/scripts/post_commit_outcome_binder.py "
+            "--lookback 100` then `python .cursor/scripts/promote_author_gate_patterns.py`.",
             file=sys.stderr,
         )
         print("  Bypass for unblocking (not recommended): LEDGER_COVERAGE_BYPASS=1", file=sys.stderr)

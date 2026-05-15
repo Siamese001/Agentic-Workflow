@@ -128,31 +128,31 @@ def _run_apps_rg(*args: str) -> subprocess.CompletedProcess:
 
 
 def test_e2e_missing_target_company_triggers_wizard() -> None:
-    """No --target-company → wizard mode (cascade-prompts) writes sentinel; exit 7."""
+    """No --target-company → wizard mode (cursor-prompts) writes sentinel; exit 7."""
     result = _run_apps_rg(
         "--target-role",
         "Senior Vice President, IT Strategy & Innovation",
-        "--cascade-prompts",
+        "--cursor-prompts",
     )
-    # Wizard mode with cascade-prompts writes sentinel and exits 7
+    # Wizard mode with cursor-prompts writes sentinel and exits 7
     assert result.returncode == 7
     combined = result.stdout + result.stderr
     assert "mandatory" in combined.lower() or "cascade" in combined.lower() or "sentinel" in combined.lower()
 
 
 def test_e2e_missing_target_role_triggers_wizard() -> None:
-    """No --target-role → wizard mode (cascade-prompts) writes sentinel; exit 7."""
-    result = _run_apps_rg("--target-company", "Brown & Brown", "--cascade-prompts")
-    # Wizard mode with cascade-prompts writes sentinel and exits 7
+    """No --target-role → wizard mode (cursor-prompts) writes sentinel; exit 7."""
+    result = _run_apps_rg("--target-company", "Brown & Brown", "--cursor-prompts")
+    # Wizard mode with cursor-prompts writes sentinel and exits 7
     assert result.returncode == 7
     combined = result.stdout + result.stderr
     assert "mandatory" in combined.lower() or "cascade" in combined.lower() or "sentinel" in combined.lower()
 
 
 def test_e2e_no_args_triggers_wizard() -> None:
-    """No args at all → wizard mode (cascade-prompts) writes sentinel; exit 7."""
-    result = _run_apps_rg("--cascade-prompts")
-    # Wizard mode with cascade-prompts writes sentinel and exits 7
+    """No args at all → wizard mode (cursor-prompts) writes sentinel; exit 7."""
+    result = _run_apps_rg("--cursor-prompts")
+    # Wizard mode with cursor-prompts writes sentinel and exits 7
     assert result.returncode == 7
     combined = result.stdout + result.stderr
     assert "mandatory" in combined.lower() or "cascade" in combined.lower() or "sentinel" in combined.lower()

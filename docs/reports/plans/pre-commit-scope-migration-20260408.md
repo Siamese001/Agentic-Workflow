@@ -38,17 +38,17 @@
 |------|-----------|--------|----------------|
 | T4.5 adg-autofix | `generate_full_adg.py` | `_run_p1_p2_auto_fix()` already exists | ✅ COVERED |
 | T5 adg-ci-gates | `generate_full_adg.py` | Entire purpose of `generate_full_adg.py` | ✅ COVERED |
-| T5.5 windsurf-plan-ci | Windsurf `pre_write_code` | Fires when Cascade writes plan files; checks format before write | ❌ GAP |
+| T5.5 windsurf-plan-ci | Windsurf `pre_write_code` | Fires when Cursor Agent writes plan files; checks format before write | ❌ GAP |
 | T6.5 zero-loss-refactor-verifier | `generate_full_adg.py` | Whole-repo hollow-file check is a post-generation integrity step | ❌ GAP |
-| T7 check-report-location | Windsurf `pre_write_code` | Fires when Cascade writes to `docs/`; enforces location SSOT | ❌ GAP (low priority) |
-| T7.5 plan-location-gate | Windsurf `pre_write_code` | Fires when Cascade writes `.md`; location check at write time | ❌ GAP (low priority) |
-| T7.7 windsurf-governance-health | Windsurf `post_write_code` | Fires after Cascade writes `.windsurf/` files; validates cross-refs | ❌ GAP |
+| T7 check-report-location | Windsurf `pre_write_code` | Fires when Cursor Agent writes to `docs/`; enforces location SSOT | ❌ GAP (low priority) |
+| T7.5 plan-location-gate | Windsurf `pre_write_code` | Fires when Cursor Agent writes `.md`; location check at write time | ❌ GAP (low priority) |
+| T7.7 windsurf-governance-health | Windsurf `post_write_code` | Fires after Cursor Agent writes `.windsurf/` files; validates cross-refs | ❌ GAP |
 | T7.9 adg-grep-ban | Windsurf `pre_write_code` (`pre_write_gate.py`) | Blocks grep usage as it's being written — earlier than commit | ❌ GAP |
 | T7.10 no-unconditional-xfail | Windsurf `pre_write_code` (`pre_write_gate.py`) | Blocks xfail at write time, not commit time | ❌ GAP |
-| T7.11 hitl-decision-record | Windsurf `pre_write_code` | Fires when Cascade writes plan docs | ❌ GAP (low priority) |
-| T7.12 rca-closure | Windsurf `pre_write_code` | Fires when Cascade writes RCA docs | ❌ GAP (low priority) |
+| T7.11 hitl-decision-record | Windsurf `pre_write_code` | Fires when Cursor Agent writes plan docs | ❌ GAP (low priority) |
+| T7.12 rca-closure | Windsurf `pre_write_code` | Fires when Cursor Agent writes RCA docs | ❌ GAP (low priority) |
 | T7.13 no-archives-imports | Windsurf `pre_write_code` (`pre_write_gate.py`) | Blocks archive imports at write time — `archives/` deleted but rule still valid | ❌ GAP (rule still valid for future) |
-| T7.14 sensitive-logs | Windsurf `pre_write_code` (`pre_write_gate.py`) | Fires when Cascade writes Python — better at write-time than commit | ❌ GAP |
+| T7.14 sensitive-logs | Windsurf `pre_write_code` (`pre_write_gate.py`) | Fires when Cursor Agent writes Python — better at write-time than commit | ❌ GAP |
 | T8 reject-generated-artifacts | `.gitignore` | Already resolved — artifacts gitignored | ✅ RESOLVED |
 | T9 tooling-apps-boundary | Windsurf `pre_write_code` (`pre_write_gate.py`) | Fires when writing to `tools/` or `ops_scripts/ci` — exact enforcement point | ❌ GAP |
 | T10 module-collision-guard | `generate_full_adg.py` | Structural topology check — belongs in full ADG scan, not per-commit | ❌ GAP |
@@ -84,7 +84,7 @@ These should be added to `@c:\Git\Agentic-Workflow\ops_scripts\hooks\windsurf\pr
 
 | Gap | Description | Suggested Action |
 |-----|-------------|-----------------|
-| **Windsurf governance health** | No check that cross-references in `.windsurf/rules/`, `.windsurf/skills/`, `.windsurf/workflows/` are valid after Cascade writes | Add `post_write_code` hook scoped to `.*\.windsurf/.*` pattern |
+| **Windsurf governance health** | No check that cross-references in `.windsurf/rules/`, `.windsurf/skills/`, `.windsurf/workflows/` are valid after Cursor Agent writes | Add `post_write_code` hook scoped to `.*\.windsurf/.*` pattern |
 | **Plan format validation** | No check that plan `.md` files have required wave table and phase summary | Add to `pre_write_code` scoped to `.windsurf/plans/.*\.md` |
 
 ---

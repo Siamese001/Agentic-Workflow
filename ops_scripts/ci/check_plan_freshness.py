@@ -2,7 +2,7 @@
 """
 check_plan_freshness.py — CI gate: Plan freshness + unauthorized expansion detection.
 
-Reuses W2 authorization logic from `.windsurf/scripts/_plan_scope_expansion_check.py`.
+Reuses W2 authorization logic from `.cursor/scripts/_plan_scope_expansion_check.py`.
 Does NOT duplicate marker parsing logic.
 
 Detects:
@@ -48,10 +48,9 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 REPORT_OUT = REPO_ROOT / "artifacts" / "ci" / "plan_freshness_gate.json"
 
-# Add .windsurf/scripts to path for W2 helper import
 sys.path.insert(0, str(REPO_ROOT))
 
 # ---------------------------------------------------------------------------
@@ -201,23 +200,9 @@ def import_w2_authorization_check() -> Any:
     Uses the same pattern as the W3 hook to avoid import issues.
     Handles dataclasses module import issues when using importlib.
     """
-    try:
-        # First try direct import (when running from repo root)
-        from windsurf.scripts._plan_scope_expansion_check import (
-            check_scope_authorization,
-        )
-
-        return check_scope_authorization
-    except ImportError:
-        pass
-    except AttributeError:
-        # W2 helper has dataclasses issues when imported in certain contexts
-        pass
-
-    # Fallback: use importlib with absolute path
     import importlib.util
 
-    helper_path = REPO_ROOT / ".windsurf" / "scripts" / "_plan_scope_expansion_check.py"
+    helper_path = REPO_ROOT / ".cursor" / "scripts" / "_plan_scope_expansion_check.py"
     if not helper_path.exists():
         return None
 

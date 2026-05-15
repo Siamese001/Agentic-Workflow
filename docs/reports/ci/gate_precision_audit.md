@@ -2,7 +2,7 @@
 
 **Plan**: `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (W4 P4.5)
 **Date**: 2026-04-30
-**Auditor**: Cascade (in-process negative-test harness)
+**Auditor**: Cursor Agent (in-process negative-test harness)
 **Harness**: `tests/unit/ops_scripts/ci/test_gate_precision_audit.py` (13 tests)
 **Fixtures**: `tests/fixtures/negative/`
 

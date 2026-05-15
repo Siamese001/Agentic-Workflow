@@ -1,7 +1,7 @@
 """
 wave_execution_state.py — CLI to mark/unmark a multi-wave plan as in-progress.
 
-Cascade runs this at the start of Wave 1 and again after the final wave
+Cursor Agent runs this at the start of Wave 1 and again after the final wave
 completes. While active, pre_mcp_gate.py blocks Notion MCP calls so all
 Notion writes are deferred to the end of the plan (avoids mid-wave stalls
 from the §25 remote-MCP serialization rule).
@@ -122,7 +122,7 @@ def _check_plan_registration(plan: str) -> int:
         "After posting, re-run this command. To force-refresh the local cache:\n"
         "  python ops_scripts/ci/check_plan_registration_freshness.py --refresh\n"
         "Bypass (rare): PLAN_REGISTRATION_BYPASS=1 (logged)\n"
-        "See .windsurf/rules/plan-registration-enforcement.md · constitutional §36.",
+        "See .cursor/rules/plan-registration-enforcement.md · constitutional §36.",
         file=sys.stderr,
     )
     return 2
@@ -268,7 +268,7 @@ def _notion_sync(plan: str, kind: str, wave: int | None = None, note: str | None
 
     Synthesizes a single ``WaveLifecycleMarker`` and runs it through
     ``wave_lifecycle_writer.apply_spec``. Failures are logged to
-    ``artifacts/windsurf/wave_lifecycle_notion.jsonl`` (by the writer) and
+    ``artifacts/cursor/wave_lifecycle_notion.jsonl`` (by the writer) and
     swallowed here so wave state remains the source of truth.
 
     Skipped when ``WAVE_LIFECYCLE_NOTION_BYPASS=1`` is set or when no

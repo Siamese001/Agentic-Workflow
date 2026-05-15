@@ -121,7 +121,7 @@ def _run_cli(args: list[str], env_extra: dict | None = None) -> subprocess.Compl
 def test_cli_start_status_complete(isolated_session, monkeypatch):
     # Pin session id for subprocess by passing it through env_extra
     session = f"pytest-cli-{os.getpid()}"
-    env = {"VSCODE_PID": session}
+    env = {"VSCODE_PID": session, "PLAN_REGISTRATION_BYPASS": "1"}
 
     # start
     r1 = _run_cli(["start", "--plan", "cli-test-abcdef"], env_extra=env)

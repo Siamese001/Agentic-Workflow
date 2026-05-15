@@ -61,16 +61,15 @@ class TestMetadataFilterProfileLoading:
             assert "display_name" in field
             assert "query_sources" in field
     
-    def test_filterable_fields_include_employer_title_cert(self) -> None:
-        """EVIDENCE: Filterable fields include employer, title, certification, year."""
+    def test_filterable_fields_include_company_role_cert(self) -> None:
+        """EVIDENCE: Filterable fields include company, role, certification, year."""
         profile = MetadataFilterProfile()
         fields = profile.get_filterable_fields()
-        
+
         field_names = [f.get("field_name") for f in fields]
-        
-        # Core W5 filterable fields must be present
-        assert "employer" in field_names
-        assert "title" in field_names
+
+        assert "company" in field_names
+        assert "role" in field_names
         assert "certification" in field_names
         assert "year" in field_names
 
@@ -393,14 +392,13 @@ class TestScoreSeparation:
         assert combined_field is None
     
     def test_evidence_item_has_both_scores(self) -> None:
-        """EVIDENCE: Evidence items can have both confidence_score and metadata_match_score."""
+        """EVIDENCE: Evidence items can have both confidence_score and metadata_score."""
         profile = MetadataFilterProfile()
-        
+
         evidence_fields = profile._config.get("score_separation", {}).get("evidence_item_fields", [])
-        
-        # Must have confidence_score (dense) and metadata_match_score
+
         assert "confidence_score" in evidence_fields
-        assert "metadata_match_score" in evidence_fields
+        assert "metadata_score" in evidence_fields
 
 
 class TestNoProcessDocsUsage:

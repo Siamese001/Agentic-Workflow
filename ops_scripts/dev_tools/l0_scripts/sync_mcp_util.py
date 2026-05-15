@@ -9,7 +9,7 @@ Usage:
     python scripts/sync_mcp_util.py --apply   # Apply changes
     python scripts/sync_mcp_util.py --verify  # Verify sync status only
 
-Author: Cascade
+Author: Cursor
 Date: January 19, 2026
 """
 
@@ -321,7 +321,7 @@ def main():
         print("\n" + "=" * 60)
         print("✅ SYNC COMPLETE")
         print("=" * 60)
-        print("\n⚠️  ACTION REQUIRED: Restart Windsurf/Cascade to activate changes")
+        print("\n⚠️  ACTION REQUIRED: Restart Windsurf/Cursor Agent to activate changes")
         sys.exit(0)
     else:
         print("\n❌ SYNC FAILED")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """post_weekly_summary.py — Build a compact Notion-ready writeback payload (W4.2).
 
-This module produces the JSON shape Cascade pastes into a Notion `API-post-page`
+This module produces the JSON shape Cursor Agent pastes into a Notion `API-post-page`
 or `API-patch-page` call. It does NOT make the Notion call itself — that is
 deliberate, because:
 
@@ -9,12 +9,12 @@ deliberate, because:
      issued ONE PER CASCADE RESPONSE with no sibling tool calls. A scripted
      Python file invoking notion-mcp would bypass the harness's serialization
      audit. The right pattern is: this script emits the payload to disk, and
-     Cascade picks it up next session and dispatches it as the sole tool call.
+     Cursor Agent picks it up next session and dispatches it as the sole tool call.
 
   2. The auto-router is documented in AGENTS.md "Auto-Routing Rules" — when
-     the weekly report changes, Cascade should post the dashboard summary to
+     the weekly report changes, Cursor Agent should post the dashboard summary to
      the MCP Registry Notes field on the affected ledger rows. This script
-     shapes the payload; the routing decision belongs to Cascade.
+     shapes the payload; the routing decision belongs to Cursor Agent.
 
 Output:
     artifacts/calibration/weekly_summary_<YYYY-Www>.json — bounded to ~5KB,

@@ -7,9 +7,9 @@ relative to the base branch (``main`` by default). Converts the
 append-only audit trail into a PR-level deterrent.
 
 Monitors:
-    artifacts/windsurf/adg_first_violations.jsonl
-    artifacts/windsurf/graph_layer_violations.jsonl
-    artifacts/windsurf/plan_evidence_violations.jsonl
+    artifacts/cursor/adg_first_violations.jsonl
+    artifacts/cursor/graph_layer_violations.jsonl
+    artifacts/cursor/plan_evidence_violations.jsonl
 
 For each, compares line count in HEAD vs base branch. Any growth = failure.
 
@@ -33,9 +33,9 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[2]
 
 _MONITORED_LOGS = [
-    "artifacts/windsurf/adg_first_violations.jsonl",
-    "artifacts/windsurf/graph_layer_violations.jsonl",
-    "artifacts/windsurf/plan_evidence_violations.jsonl",
+    "artifacts/cursor/adg_first_violations.jsonl",
+    "artifacts/cursor/graph_layer_violations.jsonl",
+    "artifacts/cursor/plan_evidence_violations.jsonl",
 ]
 
 _BYPASS_ENV = "ADG_VIOLATION_LOG_DELTA_BYPASS"

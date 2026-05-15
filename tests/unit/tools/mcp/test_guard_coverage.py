@@ -2,9 +2,9 @@
 guard_single_instance() at startup.
 
 Rationale
-    Orphan MCP server processes from stale Cascade sessions share stdio
+    Orphan MCP server processes from stale Cursor Agent sessions share stdio
     with the active session and trigger the upstream MCP client race
-    documented in .windsurf/rules/mcp-serialization.md. The
+    documented in upstream MCP client race notes. The
     ``guard_single_instance()`` helper terminates any sibling process
     before the new one starts serving. Without adoption, orphans survive.
 

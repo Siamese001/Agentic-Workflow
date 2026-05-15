@@ -4,7 +4,7 @@ Paginate Plans DB via API-query-data-source, report rows with Status value
 outside the canonical six-option set. Advisory by default; fail-closed via
 NOTION_PLANS_STATUS_FAIL_CLOSED=1. Skips when NOTION_API_KEY/TOKEN unset.
 
-Constitutional rule: .windsurf/rules/notion-plans-taxonomy.md >
+Constitutional rule: .cursor/rules/notion-plans-taxonomy.md >
 "CANONICAL Status option strings" (2026-05-03).
 """
 
@@ -153,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"\nCanonical set: {sorted(CANONICAL_STATUSES)}\n"
             f"Fix: API-patch-page each row with a canonical Status value.\n"
-            f"See .windsurf/rules/notion-plans-taxonomy.md > CANONICAL Status option strings."
+            f"See .cursor/rules/notion-plans-taxonomy.md > CANONICAL Status option strings."
         )
         if _fail_closed():
             return 1

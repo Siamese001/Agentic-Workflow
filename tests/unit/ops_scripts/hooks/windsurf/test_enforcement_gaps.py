@@ -11,20 +11,20 @@ Gap 1: Subprocess timeout not enforced
 Gap 2: Structured reasoning mandate not injected for T2/T3
   - pre_prompt_classifier must emit the SR mandate to stderr for T2/T3 prompts
     when infrastructure is healthy.
-  - Mandate must contain the key action words Cascade needs:
+  - Mandate must contain the key action words Cursor Agent needs:
     mcp8_create_task, SR_INTAKE, SR_PLAN, SR_APPROVAL.
   - T0/T1 must NOT emit the mandate.
-  - Mandate must reference the retired Sequential Thinking MCP so Cascade
+  - Mandate must reference the retired Sequential Thinking MCP so Cursor Agent
     knows NOT to use it.
 
 Gap 3: Redis health not checked before T2/T3 work
   - pre_prompt_classifier must exit 2 (BLOCK) when Redis is down for T2/T3.
   - Must NOT block T0/T1 when Redis is down.
   - Must NOT block T2/T3 when Redis is up (even if ADG is also healthy).
-  - Block message must mention Redis so Cascade knows why it was blocked.
+  - Block message must mention Redis so Cursor Agent knows why it was blocked.
 
-Gap 4: show_output: false made classifier output invisible to Cascade
-  - hooks.json must have show_output: true for pre_user_prompt so Cascade
+Gap 4: show_output: false made classifier output invisible to Cursor Agent
+  - hooks.json must have show_output: true for pre_user_prompt so Cursor Agent
     can read the SR mandate and tier tag.
 
 Gap 5: check_adg_health_stale renamed → broke test import
@@ -208,7 +208,7 @@ class TestGap1SubprocessTimeoutEnforcement:
 
 class TestGap2StructuredReasoningMandateInjection:
     """
-    Gap: pre_prompt_classifier never injected the SR mandate, so Cascade
+    Gap: pre_prompt_classifier never injected the SR mandate, so Cursor Agent
     continued using the retired Sequential Thinking MCP pattern.
     Fix: _SR_MANDATE printed to stderr for T2/T3 when infra is healthy.
     """
@@ -216,7 +216,7 @@ class TestGap2StructuredReasoningMandateInjection:
     def test_t3_mandate_contains_mcp8_create_task(self):
         _, stderr = _run_classifier_healthy("refactor the authentication architecture")
         assert "create_task" in stderr, (
-            "SR mandate must instruct Cascade to call create_task (task_manager MCP) for T3"
+            "SR mandate must instruct Cursor Agent to call create_task (task_manager MCP) for T3"
         )
 
     def test_t3_mandate_contains_sr_intake(self):
@@ -401,7 +401,7 @@ class TestGap3RedisHealthCheck:
     def test_redis_block_message_mentions_redis(self):
         _, stderr = self._run("refactor the entire architecture", redis_down=True)
         assert "redis" in stderr.lower() or "Redis" in stderr, (
-            "Block message must mention Redis so Cascade knows why it was blocked"
+            "Block message must mention Redis so Cursor Agent knows why it was blocked"
         )
 
     # Both red: still blocks
@@ -411,15 +411,15 @@ class TestGap3RedisHealthCheck:
 
 
 # ---------------------------------------------------------------------------
-# Gap 4: show_output: false made classifier output invisible to Cascade
+# Gap 4: show_output: false made classifier output invisible to Cursor Agent
 # ---------------------------------------------------------------------------
 
 
 class TestGap4ShowOutputInHooksJson:
     """
     Gap: hooks.json had show_output: false for pre_user_prompt, meaning
-    Cascade never saw the SR mandate or tier tag emitted to stderr.
-    Fix: show_output must be true so Cascade receives the classifier output.
+    Cursor Agent never saw the SR mandate or tier tag emitted to stderr.
+    Fix: show_output must be true so Cursor Agent receives the classifier output.
     """
 
     def setup_method(self):
@@ -444,7 +444,7 @@ class TestGap4ShowOutputInHooksJson:
             assert entry.get("show_output") is True, (
                 f"pre_user_prompt hook for pre_prompt_classifier must have "
                 f"show_output: true (found: {entry.get('show_output')!r}). "
-                "Without this, Cascade cannot see the SR mandate or tier tag."
+                "Without this, Cursor Agent cannot see the SR mandate or tier tag."
             )
 
     def test_pre_user_prompt_command_is_pre_prompt_classifier(self):

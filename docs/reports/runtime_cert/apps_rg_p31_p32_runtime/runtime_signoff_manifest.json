@@ -1,0 +1,55 @@
+{
+  "schema": "apps_rg_p31_p32_runtime_signoff_v1",
+  "generated_utc": "2026-05-15",
+  "plans": [
+    {
+      "slug": "p3.1_apps-rg-l1-contract-wiring-3e7f92",
+      "path": ".cursor/plans/p3.1_apps-rg-l1-contract-wiring-3e7f92.md"
+    },
+    {
+      "slug": "p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1",
+      "path": ".cursor/plans/p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md"
+    }
+  ],
+  "git_commit": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
+  "python": "3.12.10",
+  "results": {
+    "pytest_p31_p32": {
+      "exit_code": 0,
+      "collected": 79,
+      "passed": 78,
+      "skipped": 1,
+      "failed": 0,
+      "errors": 0,
+      "junit_xml": "docs/reports/runtime_cert/apps_rg_p31_p32_runtime/junit_p31_p32.xml",
+      "junit_summary": "errors=0 failures=0 skipped=1 tests=79"
+    },
+    "check_l0_app_agnostic": {
+      "exit_code": 0,
+      "note": "report-only gate per script header; 7 L0_routing files matched apps_rg-ish literals"
+    },
+    "apps_rg_cli_dry_run": {
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "-m",
+        "apps_rg",
+        "--dry-run",
+        "--target-company",
+        "EvidenceCo",
+        "--target-role",
+        "VP Engineering"
+      ],
+      "stdout_line": "DRY RUN: apps_rg pipeline validation complete (no LLM call)."
+    }
+  },
+  "artifact_sha256": {
+    "junit_p31_p32.xml": "8c9f1cf370c9441a24477ba445472869e14991a608b070c430fa2258d13554bd",
+    "pytest_p31_p32_signoff.log": "5031ba2a2096e69c7f3e39b952b11d9e7ae5ef4478445a7b89d63b27cb891405",
+    "check_l0_app_agnostic.log": "a5c000ee5ceefb7681aa9e9bec792bd6c3a2ecc4e8b86929300d5ee8dd14c78e",
+    "apps_rg_dry_run.log": "2b16cb0a4c0ec6a99d7ef9c668e51e223f724a2a1683d9cfce86866024a40e2a",
+    "git_head.txt": "c43f6b844ff436750b42345d131e547293546e1be887479d894bd989b529fbe7"
+  },
+  "pytest_command": "python -m pytest tests/_apps_contract/test_apps_rg_app_payload_consumption.py tests/_apps_contract/test_l0_canonical_profile_path.py tests/_apps_contract/test_l0_execution_form.py tests/_apps_contract/test_l0_gate_verdicts.py tests/_apps_contract/test_l0_cache_bypass.py tests/_apps_contract/test_apps_rg_l1_binding.py tests/_apps_contract/test_apps_rg_l1_profile_wiring.py tests/governance/test_apps_rg_l1_core_boundary.py --override-ini=\"addopts=\" -v --tb=line --junit-xml=docs/reports/runtime_cert/apps_rg_p31_p32_runtime/junit_p31_p32.xml",
+  "disclaimer": "This bundle is plan-scoped runtime proof (pytest + advisory CI scan + CLI dry-run). It is not Fort Knox RTC-REQ compiler output; do not treat as final_requirement_signoff_report.json evidence."
+}

@@ -184,7 +184,7 @@ def _load_audit_logs() -> list[dict]:
     audit_logs = []
     
     # Load plan identity verifications
-    log_file = Path("artifacts/windsurf/plan_identity_verifications.jsonl")
+    log_file = Path("artifacts/cursor/plan_identity_verifications.jsonl")
     if log_file.exists():
         with open(log_file, "r", encoding="utf-8") as f:
             for line in f:
@@ -196,7 +196,7 @@ def _load_audit_logs() -> list[dict]:
                         pass
     
     # Load plan status violations
-    violation_file = Path("artifacts/windsurf/notion_plans_status_violations.jsonl")
+    violation_file = Path("artifacts/cursor/notion_plans_status_violations.jsonl")
     if violation_file.exists():
         with open(violation_file, "r", encoding="utf-8") as f:
             for line in f:

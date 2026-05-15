@@ -45,7 +45,7 @@ USAGE
     python ops_scripts/ci/annotate_consumer_mode.py --apply --force-mode inventory \
         --filter tools/
 
-Plan: ``.windsurf/plans/three-bucket-otel-view-5db409.md`` (W6).
+Plan: ``.cursor/plans/three-bucket-otel-view-5db409.md`` (W6).
 """
 
 from __future__ import annotations
@@ -178,7 +178,7 @@ def has_existing_declaration(source: str) -> bool:
 # ---------------------------------------------------------------------------
 
 DECLARATION_TEMPLATE: Final[str] = (
-    "# W6 ADG consumer mode declaration (per .windsurf/rules/"
+    "# W6 ADG consumer mode declaration (per .cursor/rules/"
     "adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).\n"
     '__adg_consumer_mode__ = "{mode}"\n'
 )

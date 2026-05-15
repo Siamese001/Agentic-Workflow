@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-05-07
 **Phase**: P2, P3 (deferred-scope-spine-refinement-5e3d1b)
-**Deciders**: Cascade + user Author-Gate
+**Deciders**: Cursor Agent + user Author-Gate
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260507.sqlite`
 
 ---

@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-22
-- **Deciders**: Cascade (paired with user)
+- **Deciders**: Cursor Agent (paired with user)
 - **Related**:
   - Constitutional §22 (graph-layer evidence)
   - `@c:/Git/Agentic-Workflow/.windsurf/rules/adg-graph-layer-enforcement.md`

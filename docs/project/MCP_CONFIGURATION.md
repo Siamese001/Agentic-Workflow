@@ -168,7 +168,7 @@ PINECONE_ENVIRONMENT=your_environment
 
 After configuration, restart Windsurf to load the MCP servers. You can then:
 
-1. **Check MCP Status**: Look for MCP indicators in the Cascade panel
+1. **Check MCP Status**: Look for MCP indicators in the Cursor Agent panel
 2. **Use MCP Tools**: Tools will be available automatically in conversations
 3. **Debug**: Check Windsurf logs if servers fail to start
 

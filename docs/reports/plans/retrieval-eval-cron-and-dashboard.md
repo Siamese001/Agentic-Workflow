@@ -91,7 +91,7 @@ On regression, post a row with:
 - Plan File: `chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
 - Evidence: median value, baseline value, delta, replay command, run_id, summary.md path.
 - P-Band: P2 if any ADR acceptance gate fails; else P3.
-- Auto-routing: identical pattern to `post_cascade_deferred_scope_capture.py` (§Hook reuse below).
+- Auto-routing: identical pattern to `post_cursor_agent_deferred_scope_capture.py` (§Hook reuse below).
 
 ### 5.2 Backlog Snapshot — eval health pin
 The pre-rendered Backlog Snapshot page (per AGENTS.md) gains a top section:
@@ -105,12 +105,12 @@ A weekly-rendered narrative page summarizing trend lines per metric. Source: `hi
 
 ## 6. Hook Reuse — No New Hook
 
-`post_cascade_adr_registry_capture.py` (W1.2 follow-up) is the model: a fail-open Python script that detects a marker, queries Notion for dedup, posts on miss. The eval-regression poster is a **non-hook** scheduled-task companion that:
+`post_cursor_agent_adr_registry_capture.py` (W1.2 follow-up) is the model: a fail-open Python script that detects a marker, queries Notion for dedup, posts on miss. The eval-regression poster is a **non-hook** scheduled-task companion that:
 
 - Reads `history.jsonl` after the cron run finishes.
-- Issues one `mcp6_API-post-page` per regression via the Notion REST API directly (not via MCP — same urllib pattern as the existing capture hooks). Rationale: the cron runs outside Cascade's response envelope, so the SDK race the MCP serialization rule guards against doesn't apply.
+- Issues one `mcp6_API-post-page` per regression via the Notion REST API directly (not via MCP — same urllib pattern as the existing capture hooks). Rationale: the cron runs outside Cursor Agent's response envelope, so the SDK race the MCP serialization rule guards against doesn't apply.
 
-Implementation lives at `tools/eval/post_eval_regressions_to_notion.py` (new). Imports nothing new; mirrors `post_cascade_adr_registry_capture.py`'s urllib-only stance.
+Implementation lives at `tools/eval/post_eval_regressions_to_notion.py` (new). Imports nothing new; mirrors `post_cursor_agent_adr_registry_capture.py`'s urllib-only stance.
 
 ## 7. CI Integration (`--smoke`)
 
@@ -161,6 +161,6 @@ This spec is implemented and accepted when:
 
 - ADR-061 — golden set + RAGAS harness contract
 - AGENTS.md — Notion Workspace Map, auto-routing rules
-- `.windsurf/scripts/post_cascade_adr_registry_capture.py` — urllib-only Notion poster pattern reused here
+- `.windsurf/scripts/post_cursor_agent_adr_registry_capture.py` — urllib-only Notion poster pattern reused here
 - `tools/notion/snapshot_renderer.py` — backlog snapshot regeneration
 - Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

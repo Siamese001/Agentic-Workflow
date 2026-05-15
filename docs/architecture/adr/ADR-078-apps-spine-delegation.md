@@ -92,7 +92,7 @@ Each entry MUST carry:
 ## Pairing — advisory rule
 
 This deterministic gate pairs with the (separate) advisory rule
-`core-vs-apps-routing.md` which guides Cascade at author time. The rule is the
+`core-vs-apps-routing.md` which guides Cursor Agent at author time. The rule is the
 soft guidance; this gate is the hard fence.
 
 ## References

@@ -1,4 +1,4 @@
-"""Tests for post_cascade_author_gate_ui_audit.audit_response and emit_packet
+"""Tests for post_cursor_agent_author_gate_ui_audit.audit_response and emit_packet
 star-gating on the dominance verdict."""
 
 from __future__ import annotations
@@ -11,8 +11,8 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_author_gate_ui_audit.py"
-EMIT_PATH = REPO_ROOT / ".windsurf" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
+HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "post_cursor_agent_author_gate_ui_audit.py"
+EMIT_PATH = REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
 
 
 def _load(module_name: str, path: Path):
@@ -26,7 +26,7 @@ def _load(module_name: str, path: Path):
 
 @pytest.fixture(scope="module")
 def ui_audit():
-    return _load("post_cascade_author_gate_ui_audit", HOOK_PATH)
+    return _load("post_cursor_agent_author_gate_ui_audit", HOOK_PATH)
 
 
 @pytest.fixture(scope="module")
@@ -68,8 +68,8 @@ def test_emit_packet_star_only_when_dominance_fires(emit):
     assert stars[0]["surface_description_prefix"].startswith("[RECOMMENDED ⭐ confidence=0.90]")
 
 
-def test_emit_packet_no_star_when_top_077_gap_003(emit):
-    """The user's reported scenario: top=0.77 < 0.85 → no star anywhere."""
+def test_emit_packet_star_on_leading_when_surface_top_n(emit):
+    """Top=0.77 surfaces two options — leading option still gets ⭐ for Cursor UI."""
     spec = {
         "decision_type": "refactor_scope",
         "normalized_intent": "test",
@@ -81,17 +81,15 @@ def test_emit_packet_no_star_when_top_077_gap_003(emit):
     emit._fetch_precedent = lambda *a, **kw: {"verdict": "none", "matched_ids": [], "summary": ""}
     packet = emit.build_packet(spec)
     assert packet["routing"]["rule_applied"].startswith("surface_top_")
-    assert packet["recommended_option_id"] is None
+    assert packet["recommended_option_id"] == "a"
     stars = [c for c in packet["candidates"] if c.get("is_recommended")]
-    assert stars == []
-    for c in packet["candidates"]:
-        if c.get("surfaced"):
-            assert c["surface_description_prefix"].startswith("[confidence=")
-            assert "⭐" not in c["surface_description_prefix"]
+    assert len(stars) == 1
+    assert stars[0]["id"] == "a"
+    assert stars[0]["surface_description_prefix"].startswith("[RECOMMENDED ⭐ confidence=0.77]")
 
 
-def test_emit_packet_no_star_when_gap_below_012(emit):
-    """Top ≥ 0.85 but gap < 0.12 → no dominance, no star."""
+def test_emit_packet_star_on_leading_when_gap_below_012(emit):
+    """Top ≥ 0.85 but gap < 0.12 → no dominance auto-proceed, leading still starred."""
     spec = {
         "decision_type": "refactor_scope",
         "normalized_intent": "test",
@@ -103,8 +101,10 @@ def test_emit_packet_no_star_when_gap_below_012(emit):
     emit._fetch_precedent = lambda *a, **kw: {"verdict": "none", "matched_ids": [], "summary": ""}
     packet = emit.build_packet(spec)
     assert packet["routing"]["rule_applied"] != "dominance_fires"
+    assert packet["recommended_option_id"] == "a"
     stars = [c for c in packet["candidates"] if c.get("is_recommended")]
-    assert stars == []
+    assert len(stars) == 1
+    assert stars[0]["id"] == "a"
 
 
 def test_emit_packet_low_confidence_no_star(emit):
@@ -146,12 +146,19 @@ def test_ui_audit_clean_when_dominance_fires_with_one_star(ui_audit):
     assert ui_audit.audit_response(response) == []
 
 
-def test_ui_audit_clean_when_surface_top_n_with_zero_stars(ui_audit):
-    packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
+def test_ui_audit_clean_when_surface_top_n_with_leading_star(ui_audit):
+    packet = {
+        "routing": {"rule_applied": "surface_top_2"},
+        "decision_id": "dec_test",
+        "recommended_option_id": "a",
+    }
     options = [
         {
-            "label": "A",
-            "description": "[confidence=0.77] · trade-off: Localized change, narrow test surface",
+            "label": "⭐ Recommended — A",
+            "description": (
+                "[RECOMMENDED ⭐ confidence=0.77] · trade-off: "
+                "Localized change, narrow test surface"
+            ),
         },
         {
             "label": "B",
@@ -173,24 +180,24 @@ def test_ui_audit_fails_on_missing_confidence_prefix(ui_audit):
     assert any(v["invariant"] == "confidence_prefix_missing" for v in violations)
 
 
-def test_ui_audit_fails_on_star_without_dominance(ui_audit):
-    packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
+def test_ui_audit_fails_on_star_without_recommended_option(ui_audit):
+    packet = {
+        "routing": {"rule_applied": "low_confidence_ambiguity"},
+        "decision_id": "dec_test",
+        "recommended_option_id": None,
+    }
     options = [
         {
             "label": "A",
             "description": (
-                "[RECOMMENDED ⭐ confidence=0.77] · trade-off: "
-                "star applied without dominance verdict"
+                "[RECOMMENDED ⭐ confidence=0.60] · trade-off: "
+                "star applied when packet has no recommendation"
             ),
-        },
-        {
-            "label": "B",
-            "description": "[confidence=0.74] · trade-off: beta has the standard prefix",
         },
     ]
     response = _make_response(packet, options)
     violations = ui_audit.audit_response(response)
-    assert any(v["invariant"] == "non_dominance_forbids_star" for v in violations)
+    assert any(v["invariant"] == "no_recommendation_forbids_star" for v in violations)
 
 
 def test_ui_audit_fails_on_multiple_stars(ui_audit):
@@ -210,17 +217,21 @@ def test_ui_audit_fails_on_multiple_stars(ui_audit):
     assert any(v["invariant"] == "multiple_stars" for v in violations)
 
 
-def test_ui_audit_fails_when_dominance_missing_star(ui_audit):
-    packet = {"routing": {"rule_applied": "dominance_fires"}, "decision_id": "dec_test"}
+def test_ui_audit_fails_when_recommended_missing_star(ui_audit):
+    packet = {
+        "routing": {"rule_applied": "surface_top_2"},
+        "decision_id": "dec_test",
+        "recommended_option_id": "a",
+    }
     options = [
         {
             "label": "A",
-            "description": "[confidence=0.90] · trade-off: no star despite dominance verdict",
+            "description": "[confidence=0.90] · trade-off: no star despite recommended_option_id",
         },
     ]
     response = _make_response(packet, options)
     violations = ui_audit.audit_response(response)
-    assert any(v["invariant"] == "dominance_requires_exactly_one_star" for v in violations)
+    assert any(v["invariant"] == "recommended_requires_exactly_one_star" for v in violations)
 
 
 def test_ui_audit_noop_when_no_ask_user_question(ui_audit):

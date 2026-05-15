@@ -1,4 +1,4 @@
-"""Unit tests for .windsurf/scripts/post_cascade_wave_completion_audit.py.
+"""Unit tests for .windsurf/scripts/post_cursor_agent_wave_completion_audit.py.
 
 RCA: rca-wave-marker-emission-gap-c7d3f1 W4.P1.
 
@@ -26,7 +26,7 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_wave_completion_audit.py"
+HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_wave_completion_audit.py"
 HOOKS_JSON = REPO_ROOT / ".windsurf" / "hooks.json"
 
 
@@ -34,11 +34,11 @@ def _load_module():
     sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
-        "post_cascade_wave_completion_audit", HOOK_PATH
+        "post_cursor_agent_wave_completion_audit", HOOK_PATH
     )
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
-    key = "post_cascade_wave_completion_audit"
+    key = "post_cursor_agent_wave_completion_audit"
     if key in sys.modules:
         del sys.modules[key]
     sys.modules[key] = mod
@@ -92,14 +92,14 @@ class TestGap1GuardRemoved:
 
 class TestGap2HooksJson:
     def test_show_output_true_in_hooks_json(self):
-        """post_cascade_wave_completion_audit.py must have show_output=true."""
+        """post_cursor_agent_wave_completion_audit.py must have show_output=true."""
         data = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))
-        post_hooks = data.get("hooks", {}).get("post_cascade_response", [])
+        post_hooks = data.get("hooks", {}).get("post_cursor_agent_response", [])
         audit_entries = [
             h for h in post_hooks
-            if "post_cascade_wave_completion_audit" in h.get("command", "")
+            if "post_cursor_agent_wave_completion_audit" in h.get("command", "")
         ]
-        assert audit_entries, "post_cascade_wave_completion_audit.py not found in hooks.json"
+        assert audit_entries, "post_cursor_agent_wave_completion_audit.py not found in hooks.json"
         for entry in audit_entries:
             assert entry.get("show_output") is True, (
                 f"show_output must be true for {entry['command']} (GAP-2 fix)"

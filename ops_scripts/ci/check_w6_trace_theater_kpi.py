@@ -6,12 +6,12 @@ count vs real production imports. A rising ratio signals trace-
 theater (stub modules masquerading as instrumented surfaces).
 
 Tier: K (KPI). Emits one JSONL row per run to
-``artifacts/windsurf/kpi_trace_theater.jsonl``.
+``artifacts/cursor/kpi_trace_theater.jsonl``.
 """
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 

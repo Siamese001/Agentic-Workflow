@@ -11,10 +11,10 @@ The original constitutional `§25` "one remote MCP per response" rule (now scope
 
 | Layer | Mechanism | Posture |
 |---|---|---|
-| **Layer 0 — reactive** | `post_cascade_mcp_serialization_audit.py` post-hook logs violations to `artifacts/windsurf/mcp_serialization_violations.jsonl` | Logs after the hang already happened |
+| **Layer 0 — reactive** | `post_cursor_agent_mcp_serialization_audit.py` post-hook logs violations to `artifacts/windsurf/mcp_serialization_violations.jsonl` | Logs after the hang already happened |
 | **Layer 1 — preventive** | `_serialization_sentinel.py` cross-process sentinel imported by `pre_mcp_gate.py`, `pre_run_gate.py`, `pre_read_gate.py`, `pre_write_gate.py` | Blocks dispatch with exit 2 before the SDK fires its 4-minute internal timeout |
 
-Layer 1 was added 2026-04-25 after Cascade batched `todo_list + mcp1_adg_health` in one `<function_calls>` block and the turn hung on the MCP call until the user cancelled. Layer 0 logged the violation post-hoc but could not prevent the hang.
+Layer 1 was added 2026-04-25 after Cursor Agent batched `todo_list + mcp1_adg_health` in one `<function_calls>` block and the turn hung on the MCP call until the user cancelled. Layer 0 logged the violation post-hoc but could not prevent the hang.
 
 ## Decision
 

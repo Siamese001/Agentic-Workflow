@@ -26,7 +26,7 @@ categories:
     description: Writes to CI artifact directories by CI gate scripts
     paths:
       - "artifacts/ci/"
-      - "artifacts/windsurf/"
+      - "artifacts/cursor/"
       - "artifacts/governance/"
 
   uwg_implementation:
@@ -39,7 +39,7 @@ categories:
   docs_plans:
     description: Writes to documentation and plan files — not runtime production
     paths:
-      - ".windsurf/plans/"
+      - ".cursor/plans/"
       - "docs/"
       - "artifacts/governance/"
 

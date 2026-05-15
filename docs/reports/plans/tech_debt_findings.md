@@ -88,7 +88,7 @@ Top 10 victims by frequency:
 
 ## P3b — Namespace-package imports (4,650)
 
-Files exist on disk but at least one intermediate folder lacks `__init__.py`. These work at runtime in Cascade's environment because `sys.path` is augmented at startup — but they're brittle. Examples:
+Files exist on disk but at least one intermediate folder lacks `__init__.py`. These work at runtime in Cursor Agent's environment because `sys.path` is augmented at startup — but they're brittle. Examples:
 
 - `tools.generate.validation.gates` (147 hits)
 - `tools.generate.adg_graph_watchlist_builder` (57 hits)

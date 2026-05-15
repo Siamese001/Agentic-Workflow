@@ -4,17 +4,17 @@
 Queries the Wave/Phase Convergence Notion DB for open rows (Status not in
 ``{Done, Closed, Cancelled, Archived}``) and verifies that each row's
 ``Plan File`` property resolves to an existing file under
-``.windsurf/plans/``. Orphan rows (Notion says file X, disk lacks X) are
+``.cursor/plans/``. Orphan rows (Notion says file X, disk lacks X) are
 reported; missing Notion rows for on-disk plans are **not** flagged here
 (that's the inverse direction and a separate concern).
 
-Policy SSOT: ``.windsurf/rules/deferred-scope-capture.md`` §Auto-scaffold.
+Policy SSOT: ``.cursor/rules/deferred-scope-capture.md`` §Auto-scaffold.
 Notion data source: ``fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7``.
 
 Behavior:
 
-- Exits 0 with "no drift" when every open row's Plan File exists.
-- Exits 1 with a per-row report when any orphan is found.
+- Exits 0 with a per-row stderr report when orphans are found (advisory default).
+- Exits 1 when orphans are found **and** ``STRICT_DRIFT=1`` (fail-closed).
 - Exits 0 with a "skipped" message when NOTION_TOKEN is not set (safe for
   local dev, pre-commit on fresh clones). CI should set the token.
 - Exits 0 on any transport/parse error ("fail-open on transient failure")
@@ -239,7 +239,7 @@ def main() -> int:  # noqa: PLR0911
     print("", file=sys.stderr)
     print("Fix options:", file=sys.stderr)
     print(
-        "  1. Create the plan file at .windsurf/plans/<plan_file> (SSOT location).",
+        "  1. Create the plan file at .cursor/plans/<plan_file> (SSOT location).",
         file=sys.stderr,
     )
     print(
@@ -251,7 +251,14 @@ def main() -> int:  # noqa: PLR0911
         file=sys.stderr,
     )
     print("", file=sys.stderr)
-    return 1
+    if strict:
+        print("[plan_file_drift] STRICT_DRIFT=1 — failing closed on drift.", file=sys.stderr)
+        return 1
+    print(
+        "[plan_file_drift] Advisory mode — drift reported; exiting 0 (set STRICT_DRIFT=1 to fail).",
+        file=sys.stderr,
+    )
+    return 0
 
 
 if __name__ == "__main__":

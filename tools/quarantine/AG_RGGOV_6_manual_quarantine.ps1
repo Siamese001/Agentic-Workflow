@@ -1,5 +1,5 @@
 # AG-RGGOV-6 Manual Quarantine Script
-# Performs file moves that .codeiumignore blocks Cascade from doing automatically
+# Performs file moves that .codeiumignore blocks Cursor Agent from doing automatically
 #
 # Run: powershell -ExecutionPolicy Bypass -File tools/quarantine/AG_RGGOV_6_manual_quarantine.ps1
 

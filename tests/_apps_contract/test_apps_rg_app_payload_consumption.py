@@ -27,7 +27,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
+from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
 from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
 from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
 from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
@@ -126,13 +126,18 @@ def test_l1_output_expectation_carries_formats_and_flags() -> None:
     assert isinstance(oe["fact_checked_required"], bool)
 
 
-def test_l1_policy_refs_carries_all_six_refs() -> None:
+def test_l1_policy_refs_carries_all_policy_refs() -> None:
     vr = _live_validated_request()
     plan = l1_plan_apps_rg(vr)
     refs = plan.policy_refs
     expected_keys = {
-        "manifest_digest", "prompt_registry_ref", "hitl_policy_ref",
-        "l0_policy_ref", "agent_spec_ref", "thresholds_ref",
+        "manifest_digest",
+        "prompt_registry_ref",
+        "hitl_policy_ref",
+        "l0_policy_ref",
+        "agent_spec_ref",
+        "thresholds_ref",
+        "l5_governance_profile_ref",
     }
     assert set(refs.keys()) == expected_keys
     for key, value in refs.items():
@@ -168,32 +173,17 @@ def test_l0_route_family_grounded_when_fact_check_required() -> None:
     plan = l1_plan_apps_rg(vr)
     route = l0_route_apps_rg(plan)
     # Default valid fixture has fact_checked_required=True → grounded family
-    assert route.route_family == "evidence_grounded_generation"
+    assert route.route_family == "R3R4_MANAGED_WORKFLOW"
 
 
-def test_l0_route_changes_when_grounding_not_required(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Patch the synthesizer to emit generation_mode=generate_scratch
-    (which doesn't need grounding); L0 must select the ungrounded family."""
+def test_l0_route_changes_when_grounding_not_required() -> None:
+    """generation_mode=generate_scratch drops grounding; L0 selects scratch profile."""
 
-    from agentic_core.runtime.entry import u0_apps_rg_binding as binding_mod
-    from agentic_core.runtime.u0 import payload_synthesizer as synth_mod
-
-    real_synth = synth_mod.synthesize_contract_payload
-
-    def _scratch_synth(envelope: RequestEnvelope) -> dict[str, Any]:
-        contract = real_synth(envelope)
-        contract["generation_mode"] = "generate_scratch"
-        return contract
-
-    monkeypatch.setattr(binding_mod, "synthesize_contract_payload", _scratch_synth)
-
-    vr = _live_validated_request()
+    vr = _live_validated_request(_thin_payload(generation_mode="generate_scratch"))
     plan = l1_plan_apps_rg(vr)
     assert plan.grounding_required is False, "generate_scratch should drop grounding"
     route = l0_route_apps_rg(plan)
-    assert route.route_family == "ungrounded_generation"
+    assert route.route_family == "R4_MANAGED_DRAFT"
     assert route.cache_eligibility["r3_grounded"] is False
 
 
@@ -202,7 +192,7 @@ def test_l0_cache_eligibility_r1a_always_true_r4_never_for_apps_rg() -> None:
     plan = l1_plan_apps_rg(vr)
     route = l0_route_apps_rg(plan)
     ce = route.cache_eligibility
-    assert ce["r1a_exact"] is True
+    assert ce["r1a_exact"] is False
     assert ce["r4_action"] is False
     assert isinstance(ce["r1b_semantic"], bool)
     assert isinstance(ce["r3_grounded"], bool)
@@ -356,15 +346,18 @@ def test_pa_output_directive_lists_app_payload_formats() -> None:
 def test_c0_signature_takes_validated_request_not_legacy_payload() -> None:
     """AG-2 hard law: C0 must accept ValidatedRequest, not AppsRgIngressPayload."""
 
-    # `from __future__ import annotations` makes annotations strings; use
-    # get_type_hints to resolve them to real types.
     hints = typing.get_type_hints(c0_retrieve_apps_rg)
     sig = inspect.signature(c0_retrieve_apps_rg)
-    params = [p for p in sig.parameters if p != "return"]
-    assert len(params) == 2
-    second_param = params[1]
-    assert hints[second_param] is ValidatedRequest, (
-        f"c0_retrieve_apps_rg second param must be ValidatedRequest, got {hints[second_param]!r}"
+    pos = [
+        name
+        for name, p in sig.parameters.items()
+        if p.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
+    ]
+    assert len(pos) >= 2, f"expected >=2 positional params, got {pos!r}"
+    second = pos[1]
+    assert hints[second] is ValidatedRequest, (
+        f"c0_retrieve_apps_rg second positional param must be ValidatedRequest, "
+        f"got {hints[second]!r}"
     )
 
 
@@ -493,13 +486,34 @@ def test_dispatch_passes_validated_request_to_c0_and_pa() -> None:
 
 
 def test_full_dispatch_succeeds_with_ag2_wiring() -> None:
-    """End-to-end proof: a real apps_rg run dispatches successfully through
-    the AG-2 wiring (L1 reads app_payload, L0 reflects it, C0 + PA read
-    via ValidatedRequest)."""
+    """End-to-end proof: dispatch returns success; R4 spine mocked for CI determinism."""
+
+    from pathlib import Path
+    from unittest.mock import patch
+
+    from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        R4IntegratedRunResult,
+    )
+
+    fake_result = R4IntegratedRunResult(
+        run_id="smoke-run",
+        request_id="smoke-req",
+        route_id="R4_SINGLE_ACTION",
+        x3_disposition="EXIT_OK",
+        terminal_r5=False,
+        terminal_r5_reason="",
+        artifact_dir=Path("/tmp/apps_rg_dispatch_smoke"),
+        fault="",
+    )
 
     envelope = apps_rg_parse(_thin_payload())
     assert envelope is not None
-    result = apps_rg_dispatch(envelope)
+    with patch(
+        "apps_rg.runtime.orchestration.canonical_dispatch.run_integrated_r4_deterministic_pipeline",
+        return_value=fake_result,
+    ) as mock_run:
+        result = apps_rg_dispatch(envelope)
+        mock_run.assert_called_once()
     assert result.exit_status == "success"
     assert result.outcome_authorized is True
 

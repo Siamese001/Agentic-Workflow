@@ -33,7 +33,7 @@ from lookup_refactor_decisions import (  # noqa: E402
 )
 
 # ---------------------------------------------------------------------------
-# Minimal DDL to seed a test DB (mirrors post_cascade_hitl_capture._DDL)
+# Minimal DDL to seed a test DB (mirrors post_cursor_agent_hitl_capture._DDL)
 # ---------------------------------------------------------------------------
 
 _SEED_DDL = """\

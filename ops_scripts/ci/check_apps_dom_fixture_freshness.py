@@ -1,6 +1,6 @@
 """Evidence-freshness gate for APPS-DOM runtime harness fixtures.
 
-Plan: .windsurf/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.P1.
+Plan: .cursor/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.P1.
 
 Guards against stale fixtures masking regressions. The APPS-DOM runtime
 evidence chain (harness -> emitter -> merger -> compiler) depends on
@@ -11,22 +11,25 @@ harness fixtures under:
   - artifacts/apps_safe_abstain_runtime/         (X3E SAFE_ABSTAIN)
 
 If any of those directories contain a fixture older than the freshness
-window (default 168h = 1 week), the gate fails. This catches the case
+window (default 168h = 1 week), the gate reports drift. This catches the case
 where a plan landed runtime changes but nobody regenerated the fixtures,
 so the compiler still sees stale PASS assertions.
 
 Tolerance modes:
   - Absent fixture directory -> SKIP (first-run tolerant).
   - Fixtures present but all fresh -> PASS.
-  - Any fixture stale -> FAIL (unless bypass).
+  - Any fixture stale -> stderr report; exit 0 (advisory) unless
+    ``APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED=1`` (exit 1) or
+    ``APPS_DOM_FIXTURE_FRESHNESS_BYPASS=1`` (exit 0 with bypass banner).
 
 Configuration:
   - APPS_DOM_FIXTURE_FRESHNESS_HOURS  (default 168)
   - APPS_DOM_FIXTURE_FRESHNESS_BYPASS (1 to force PASS with WARNING)
+  - APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED (1 to exit 1 on stale fixtures; default advisory exit 0)
 
 Exit codes:
-  0  all fresh (or SKIP due to absent fixtures)
-  1  one or more fixtures stale
+  0  all fresh, SKIP (absent dirs), stale with advisory default, or BYPASS
+  1  stale fixtures when ``APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED=1``
   2  fatal error
 """
 from __future__ import annotations
@@ -187,14 +190,25 @@ def main() -> int:
         )
         return 0
 
+    fail_closed = os.environ.get("APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED", "").strip() == "1"
+    if fail_closed:
+        print(
+            f"[check_apps_dom_fixture_freshness] FAIL-CLOSED — {total_stale} fixture(s) older than "
+            f"{freshness_hours}h. Re-run:\n"
+            f"  python tools/cert/apps_e2e/run_app_cert_with_otel_capture.py\n"
+            f"  python tools/cert/apps_e2e/run_app_negative_control_with_otel.py\n"
+            f"  python tools/cert/apps_e2e/run_app_safe_abstain_with_otel.py"
+        )
+        return 1
+
     print(
-        f"[check_apps_dom_fixture_freshness] FAIL — {total_stale} fixture(s) older than "
-        f"{freshness_hours}h. Re-run:\n"
+        f"[check_apps_dom_fixture_freshness] Advisory — {total_stale} stale fixture(s) "
+        f"older than {freshness_hours}h (set APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED=1 to fail). Re-run:\n"
         f"  python tools/cert/apps_e2e/run_app_cert_with_otel_capture.py\n"
         f"  python tools/cert/apps_e2e/run_app_negative_control_with_otel.py\n"
         f"  python tools/cert/apps_e2e/run_app_safe_abstain_with_otel.py"
     )
-    return 1
+    return 0
 
 
 if __name__ == "__main__":

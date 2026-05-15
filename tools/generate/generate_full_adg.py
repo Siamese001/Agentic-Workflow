@@ -34,8 +34,20 @@ except ImportError:
         return json.dumps(obj, indent=2, sort_keys=True)
 
 
+def _json_write_payload(obj: object) -> str:
+    """Serialize large ADG sidecar JSON payloads; prefers orjson when installed."""
+    if _orjson is not None:
+        return _orjson.dumps(
+            obj,
+            option=_orjson.OPT_SORT_KEYS | _orjson.OPT_INDENT_2,
+            default=str,
+        ).decode("utf-8")
+    return json.dumps(obj, indent=2, sort_keys=True, default=str)
+
+
 import sys
 from pathlib import Path
+from typing import Any
 
 from tqdm import tqdm  # noqa: E402  (§16 progress-bar compliance for pipeline loops)
 
@@ -218,9 +230,7 @@ def _build_graphdb_network_projection(
             ),
             (work_dir / "index.json", adg_artifacts_dir / f"adg_graphdb_index_{ts}.json"),
         )
-        for src, dest in tqdm(
-            _graphdb_copies, desc="P6b graphdb stage", unit="file", total=len(_graphdb_copies)
-        ):
+        for src, dest in _graphdb_copies:
             if src.exists():
                 _shutil.copy2(src, dest)
                 staged.append(dest)
@@ -274,7 +284,7 @@ def _build_structural_outputs_report(
         }
     finally:
         conn.close()
-    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    dest.write_text(_json_write_payload(payload), encoding="utf-8")
     print(f"[ADG] P7 structural outputs: {dest.name}")
     return dest
 
@@ -317,7 +327,7 @@ def _build_refactor_accelerator_report(
         "lint_included": False,
         "candidates": [{k: v for k, v in c.items() if k != "node_id"} for c in candidates],
     }
-    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    dest.write_text(_json_write_payload(payload), encoding="utf-8")
     print(f"[ADG] P7 refactor accelerator: {dest.name} ({len(candidates)} candidates)")
     return dest
 
@@ -399,7 +409,7 @@ def _build_graphdb_queries_report(
         "blast_radius": blast_payload,
         "analyst": analyst_payload,
     }
-    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    dest.write_text(_json_write_payload(payload), encoding="utf-8")
     print(f"[ADG] P7 graphdb queries: {dest.name}")
     return dest
 
@@ -468,7 +478,7 @@ def _build_runtime_spine_report(
         "semantic_failures": semantic_failures,
         "semantic_satisfied": len(semantic_failures) == 0,
     }
-    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    dest.write_text(_json_write_payload(payload), encoding="utf-8")
     print(
         f"[ADG] P7 runtime spine: {dest.name} "
         f"(handoff_views={len(views)} families={len(cross)} "
@@ -1995,7 +2005,7 @@ def main() -> None:
             print(f"[ADG] WARN manifest finalize failed: {_e}")
 
     if p0_deferred or shared_deferred:
-        # Cascade Wave B summary line + W3.1 markdown table for full visibility.
+        # Cursor Agent Wave B summary line + W3.1 markdown table for full visibility.
         if shared_deferred:
             shared_rows = _shared_deferred_summary()
             print(

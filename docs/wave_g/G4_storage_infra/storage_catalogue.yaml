@@ -26,7 +26,7 @@ stores:
       - tools/adg/core/service.py
       - tools/adg/queries/**
       - agentic_core/adg/**
-      - mcp1_adg_* tool surface (Cascade)
+      - mcp1_adg_* tool surface (Cursor Agent)
     durability: durable
     retention_behavior: >-
       Per-regeneration snapshots accumulate in artifacts/adg/. Observed state:
@@ -464,7 +464,7 @@ stores:
       - tools/memory/purge_sync.py (telemetry)
     reader_modules:
       - human operators
-      - .windsurf/scripts/post_cascade_*
+      - .windsurf/scripts/post_cursor_agent_*
     durability: durable
     retention_behavior: >-
       artifacts/reports/: 2,687 files, 188.8 MB. No auto-pruning observed.
@@ -572,8 +572,8 @@ stores:
     kind: disk_artefact
     path_or_namespace: artifacts/windsurf/
     owner_modules:
-      - .windsurf/scripts/post_cascade_adg_audit.py
-      - .windsurf/scripts/post_cascade_hitl_capture.py
+      - .windsurf/scripts/post_cursor_agent_adg_audit.py
+      - .windsurf/scripts/post_cursor_agent_hitl_capture.py
       - .windsurf/scripts/post_mcp_audit.py
     writer_modules:
       - .windsurf/scripts/post_*

@@ -10,7 +10,7 @@ disagrees.
 Fail-closed: exit 1 on any compiler/verifier failure or `trust_level ==
 "FAILED"`. Fail-open only via `FORTKNOX_DISCIPLINE_BYPASS=1`.
 
-Advisory rule: `.windsurf/rules/fortknox-certification-discipline.md`.
+Advisory rule: `.cursor/rules/fortknox-certification-discipline.md`.
 """
 from __future__ import annotations
 

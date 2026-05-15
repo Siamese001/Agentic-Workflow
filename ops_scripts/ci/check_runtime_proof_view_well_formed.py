@@ -32,7 +32,7 @@ Failure modes detected:
     authority_status=AUTHORITATIVE_RUNTIME)
 
 Tier: B (advisory until activation flag set).
-Plan: ``.windsurf/plans/three-bucket-otel-view-5db409.md`` (W4.P4.1).
+Plan: ``.cursor/plans/three-bucket-otel-view-5db409.md`` (W4.P4.1).
 
 USAGE
 =====
@@ -226,7 +226,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[runtime_proof_view] {report['reason']}")
         return 0
 
-    con = sqlite3.connect(str(snapshot))
+    db_uri = f"file:{snapshot.as_posix()}?mode=ro&immutable=1"
+    con = sqlite3.connect(db_uri, uri=True, timeout=5)
     try:
         ok, msg = _check_view_exists(con)
         if not ok:

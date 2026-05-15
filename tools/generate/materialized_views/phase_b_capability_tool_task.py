@@ -18,20 +18,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-
-def _validate_sqlite_path(sqlite_path: Path) -> Path:
-    sqlite_path = sqlite_path.expanduser().resolve()
-    if not sqlite_path.exists():
-        raise FileNotFoundError(f"ADG SQLite not found: {sqlite_path}")
-    if not sqlite_path.is_file():
-        raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
-    return sqlite_path
-
-
-def _connect_sqlite(sqlite_path: Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(str(_validate_sqlite_path(sqlite_path)), timeout=30)
-    conn.execute("PRAGMA journal_mode=WAL")
-    return conn
+from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_mv as _connect_sqlite
 
 
 _PHASE_B_TABLES: tuple[str, ...] = (

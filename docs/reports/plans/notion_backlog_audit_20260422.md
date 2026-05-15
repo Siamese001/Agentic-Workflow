@@ -148,7 +148,7 @@ Created before 2026-04-22 19:31 schema enrichment, or created without populating
 | `five-tier-governance-model-a3f7c2` | 1.5 | W1 | Ready | Post-Write Audit (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 1.6 | W1 | Ready | Post-Run Audit (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 1.7 | W1 | Ready | Post-MCP Audit (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
-| `five-tier-governance-model-a3f7c2` | 1.8 | W1 | Ready | Post-Cascade Cleanup (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
+| `five-tier-governance-model-a3f7c2` | 1.8 | W1 | Ready | Post-Cursor-Agent Cleanup (ADVISORY) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 2.1 | W2 | Ready | Fix Rules (Policy) | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 2.10 | W2 | Ready | Approval & Exception Policy | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |
 | `five-tier-governance-model-a3f7c2` | 2.2 | W2 | Ready | Policy Cleanup | sub_wave, dependencies, success_criteria, files_in_scope, parent_plan_summary |

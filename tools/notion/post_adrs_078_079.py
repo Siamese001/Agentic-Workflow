@@ -50,7 +50,7 @@ ADR_PAYLOADS: list[dict[str, Any]] = [
             "imports into spine). Allowlist with per-package reason + ISO "
             "expires; bypass via APPS_SPINE_DELEGATION_GATE_BYPASS=1."
         ),
-        "deciders": ["Cascade", "operator"],
+        "deciders": ["Cursor Agent", "operator"],
     },
     {
         "adr_id": "ADR-079",
@@ -71,7 +71,7 @@ ADR_PAYLOADS: list[dict[str, Any]] = [
             "consumer: ExecutionOrchestrator._populate_d2_cache (W5 P5.3). "
             "Pairs with ADR-074 + ADR-078."
         ),
-        "deciders": ["Cascade", "operator"],
+        "deciders": ["Cursor Agent", "operator"],
     },
 ]
 

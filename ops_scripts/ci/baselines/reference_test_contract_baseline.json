@@ -7,456 +7,456 @@
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_boundary_fault_matrix_covers_all_layers": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_branch_join_state_hash_changes_deterministically": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_e2e_zip_requirements_map_to_proof_commands": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_each_fault_has_expected_blocking_layer": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_exit_can_consume_l2_candidate_manifest": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_exit_requires_l5_reclearance_for_human_modified_packet": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_fault_proof_bundle_hash_is_deterministic": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_blocks_candidate_that_changes_route_contract": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_cannot_emit_next_workflow_node": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_detects_mutation_intent": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_e2_rejects_missing_l5_binding_for_governed_packet": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_never_emits_commit_request": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_seals_candidate_manifest_without_commit": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_blocks_authority_changing_repair": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_calls_e1_before_e2": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_enforces_attempt_ceiling": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_enforces_repair_ceiling": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_never_calls_e3_after_failed_e2": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_never_emits_exit_disposition": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_never_writes_l4": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_preserves_proposed_state_diff_as_inert": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_receipt_replays_deterministically": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_sequencer_routes_every_terminal_case_to_e5": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_state_diff_candidate_has_write_auth_none_inside_l2": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l2_state_diff_candidate_requires_policy_hash_and_replay_key": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l3_does_not_dispatch_blocked_dependency": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l3_merge_requires_sealed_l2_artifact": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l3_step_contract_requires_checkpoint_ref": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l5_binding_requires_policy_blueprint_registry": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l5_never_emits_runtime_disposition": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l5_snapshot_receipt_detects_policy_drift": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_l6_rejects_raw_telemetry_as_memory": {
       "declared_in": [
         "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_local_critique_blocks_script_outside_sandbox": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_local_critique_cannot_change_route": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_local_critique_cannot_fetch_evidence": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_local_critique_counts_against_l2_budget": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_local_critique_post_output_schema_sanity_before_e5": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_local_critique_receipt_replays": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_candidate_requires_eval_record": {
       "declared_in": [
         "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_candidate_requires_privacy_scope": {
       "declared_in": [
         "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_proposal_requires_gauntlet_before_uwg": {
       "declared_in": [
         "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_update_never_affects_completed_run": {
       "declared_in": [
         "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_no_bypass_checker_fails_on_injected_direct_write": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_no_fault_can_create_l4_commit_without_uwg": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_no_fault_can_skip_exit_disposition": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_pa_blocks_c0_instruction_promotion": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_pa_blocks_human_text_as_authority": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_pa_never_calls_retrieval_or_execution": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_pa_provider_render_preserves_slot_order": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_pa_schema_bound_native_not_only_prose": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_pa_token_trim_preserves_required_authority_slots": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_proof_packet_contains_every_required_layer_ref": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_blocks_denied_filesystem_root": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_blocks_unapproved_import_or_subprocess": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_defaults_to_offline_network": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_enforces_wall_clock_and_memory_limit": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_quarantines_stdout_stderr_as_data": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_replay_uses_deterministic_seed": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_ptc_temp_cleanup_receipt_emitted": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_replay_harness_runs_same_fixture_twice": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_resume_cursor_replays_same_ready_node": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_trace_tree_has_expected_span_families": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_uwg_rejects_candidate_without_exit_commit_request": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_uwg_rejects_commit_request_missing_required_l5_refs": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
       ],
       "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
+      "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     }
   },
-  "rule_reference": ".windsurf/rules/constitutional.md (follows \u00a722 pattern)"
+  "rule_reference": ".cursor/rules/constitutional.md (follows \u00a722 pattern)"
 }

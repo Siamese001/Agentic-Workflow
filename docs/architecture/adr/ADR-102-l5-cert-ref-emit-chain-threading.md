@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-05-09
 **Phase**: l5-cert-ref-emit-chain-threading-c4e7f1 W0–W4
-**Deciders**: Cascade + user Author-Gate (W0 packet, 2026-05-09)
+**Deciders**: Cursor Agent + user Author-Gate (W0 packet, 2026-05-09)
 **ADG Snapshot**: `artifacts/adg/adg_indexed_<ts>.sqlite` (structural; cross-layer contract change)
 
 ---

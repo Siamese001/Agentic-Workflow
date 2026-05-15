@@ -142,7 +142,7 @@ def test_init_declares_client_type_as_optional_anthropic(executor_source: str):
 
 
 # ---------------------------------------------------------------------------
-# Cascade-known-broken marker (documents the separately-tracked issue)
+# Cursor Agent-known-broken marker (documents the separately-tracked issue)
 # ---------------------------------------------------------------------------
 
 

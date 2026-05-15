@@ -10,7 +10,7 @@ decreases it tightens the ratchet.
 
 Source: ADR-070 §Hotspot Concentration (2026-04-29 baseline).
 
-Baselines stored in `.windsurf/config/l5_fanin_ratchet.json`. To tighten
+Baselines stored in `.cursor/config/l5_fanin_ratchet.json`. To tighten
 after a successful refactor:
 
     python ops_scripts/ci/check_l5_hotspot_fanin_ratchet.py --update
@@ -23,7 +23,7 @@ Exit codes:
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -34,7 +34,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RATCHET_FILE = REPO_ROOT / ".windsurf" / "config" / "l5_fanin_ratchet.json"
+RATCHET_FILE = REPO_ROOT / ".cursor" / "config" / "l5_fanin_ratchet.json"
 
 # Initial baselines — captured 2026-04-29 from adg_indexed_04282026_2152.sqlite
 DEFAULT_RATCHET: dict[str, int] = {

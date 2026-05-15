@@ -7,7 +7,7 @@ window (default 90 days); complexity is AST-based (same engine as
 Q2).
 
 Tier: K (KPI, never CI-blocking). Emits a summary row per run to
-``artifacts/windsurf/kpi_churn_complexity.jsonl`` for trending.
+``artifacts/cursor/kpi_churn_complexity.jsonl`` for trending.
 """
 
 from __future__ import annotations

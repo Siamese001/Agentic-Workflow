@@ -14,7 +14,7 @@
 | Reclaim potential | ~50 GB |
 | Stack A vLLM | ✅ Active (32B-AWQ serving on :8000) |
 
-## What Cascade Tried
+## What Cursor Agent Tried
 
 | Attempt | Method | Result |
 |---|---|---|

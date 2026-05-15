@@ -1,7 +1,7 @@
 # RCA: Notion Plans DB Status Inconsistency (2026-05-10)
 
 **Incident date**: 2026-05-10 ~10:50 UTC  
-**Author**: RCA conducted by Cascade during recovery session  
+**Author**: RCA conducted by Cursor Agent during recovery session  
 **Severity**: HIGH (data correctness; no data loss but visible status corruption across ~170 rows + 11 duplicate-row pairs)  
 **Status**: Resolved (recovery complete this session); upstream fixes pending in 3 deferred-scope plans
 
@@ -14,7 +14,7 @@ Three independent failure modes in the Notion Plans DB write surface conspired t
 | # | Root cause | Mechanism | Surface |
 |---|---|---|---|
 | **A** | `_extract_status_from_plan()` defaults to `"Not Started"` when plan markdown lacks `status:` frontmatter | `tools/notion/backfill_historical_plan_statuses.py --patch` ran on 89 items and overwrote correct Notion Status values | The bulk overwrite |
-| **B** | `register_ondisk_plans_batch.py` and Cascade-direct `mcp7_API-post-page` calls do not coordinate dedup, leaving 11 slugs with duplicate Notion rows | Phantom rows accumulated. When (A) hit, the Status flipped on multiple copies of the same slug | The "still seeing Not Started after I patched it" experience |
+| **B** | `register_ondisk_plans_batch.py` and Cursor Agent-direct `mcp7_API-post-page` calls do not coordinate dedup, leaving 11 slugs with duplicate Notion rows | Phantom rows accumulated. When (A) hit, the Status flipped on multiple copies of the same slug | The "still seeing Not Started after I patched it" experience |
 | **C** | `plan_registration_cache.json` only refreshes when explicitly invoked (no scheduled refresh) | 9-hour gap between cache snapshot (01:44 UTC) and incident (10:50 UTC) made the cache miss user's retire/consolidate edits | The cache-driven recovery missed 3 author-gate UI plans |
 
 Each cause is independently fixable. (A) is a single-line bug. (B) requires architectural change. (C) is a cron/hook addition.
@@ -102,18 +102,18 @@ There are **at least 41 files** that write to Notion in this repo. The Plans DB 
 |---|---|---|
 | `tools/notion/register_ondisk_plans_batch.py` | ✅ Yes | `_slug_already_registered()` — Slug.title.equals filter |
 | `tools/notion/wave_lifecycle_writer.py` | ✅ Yes | `find_plan_page()` — same filter; falls back to most-recently-edited if duplicates exist (line 181-183) |
-| Cascade-direct `mcp7_API-post-page` (e.g. when I registered the recovery plan today) | ❌ No | Cascade fires the MCP tool with no dedupe step |
+| Cursor Agent-direct `mcp7_API-post-page` (e.g. when I registered the recovery plan today) | ❌ No | Cursor Agent fires the MCP tool with no dedupe step |
 | `tools/notion/plan_registration_backfill.py` | ❌ No | "API calls disabled in this version" but if enabled, no dedupe |
 | `tools/windsurf/wave_execution_state.py` (start command) | Indirect | Calls `_check_plan_registration` first (cache-based check) |
 
-**The gap**: when Cascade emits an `<invoke name="mcp7_API-post-page">` for plan registration via §36, there's no pre-write check that "a row with this slug already exists". The §36 pre-prompt hook surfaces unregistered plans but doesn't dedup if the cache says missing-but-actually-present.
+**The gap**: when Cursor Agent emits an `<invoke name="mcp7_API-post-page">` for plan registration via §36, there's no pre-write check that "a row with this slug already exists". The §36 pre-prompt hook surfaces unregistered plans but doesn't dedup if the cache says missing-but-actually-present.
 
 ### 3.3 Concrete dup-creation scenario observed today
 
 `l6-doctrinal-alignment-noninvasive-b9d3f5`:
 - Original row created 2026-05-09T11:05 (page_id `35b27693-f55c-8116-...`) — was Completed before the bulk overwrite
 - **Phantom row created 2026-05-10T10:06** (page_id `35c27693-f55c-811c-...`) — at Not Started
-- Trigger likely: §36 cache miss → Cascade or hook re-registered the slug at default Status
+- Trigger likely: §36 cache miss → Cursor Agent or hook re-registered the slug at default Status
 
 ### 3.4 Fix architecture
 
@@ -121,7 +121,7 @@ Three-layer defense:
 
 1. **Helper-level**: a single `register_plan_idempotent(slug, ...)` function in `tools/notion/_plan_registration.py` (or new module) that ALL Plans-DB POST callers use. Logic: query by slug; if non-archived row exists, return its page_id without creating; if multiple non-archived rows exist, raise `DuplicatePlansRowError` with the page_ids.
 
-2. **Hook-level**: `pre_mcp_tool_use` hook for `API-post-page` targeting Plans DB performs the same dedupe query and **blocks** the MCP call if a row already exists. Cascade's slug-from-payload extraction is the same regex as the post-cascade audit hook.
+2. **Hook-level**: `pre_mcp_tool_use` hook for `API-post-page` targeting Plans DB performs the same dedupe query and **blocks** the MCP call if a row already exists. Cursor Agent's slug-from-payload extraction is the same regex as the post-cursor-agent audit hook.
 
 3. **CI-level**: weekly `check_notion_plans_no_duplicates.py` queries the live DB, fails the build if any slug appears in >1 non-archived row.
 
@@ -153,11 +153,11 @@ Filed as **DEFERRED_SCOPE: plan-registration-cache-snapshot-discipline**.
 
 ---
 
-## 5. Why post-cascade auto-patch hook is NOT the cause
+## 5. Why post-cursor-agent auto-patch hook is NOT the cause
 
-`post_cascade_notion_plans_status_audit.py` has an `_auto_patch_violation()` function that flips non-canonical Status values to canonical equivalents (`Draft → Not Started`, `Live → In Progress`, etc.) via `STALE_EQUIVALENTS` in `_notion_plans_status_check.py`. I considered this as the bulk-overwrite source but ruled it out:
+`post_cursor_agent_notion_plans_status_audit.py` has an `_auto_patch_violation()` function that flips non-canonical Status values to canonical equivalents (`Draft → Not Started`, `Live → In Progress`, etc.) via `STALE_EQUIVALENTS` in `_notion_plans_status_check.py`. I considered this as the bulk-overwrite source but ruled it out:
 
-- **Per-response, not bulk**: hook fires once per Cascade response and only patches rows mentioned in that specific response's `<invoke>` blocks
+- **Per-response, not bulk**: hook fires once per Cursor Agent response and only patches rows mentioned in that specific response's `<invoke>` blocks
 - **Violations log shows only 1 entry** in `notion_plans_status_violations.jsonl` — the hook hasn't fired prolifically
 - **Mapping is correct**: `Draft → Not Started` reflects a deliberate 2026-05-03 rename; not a bug
 

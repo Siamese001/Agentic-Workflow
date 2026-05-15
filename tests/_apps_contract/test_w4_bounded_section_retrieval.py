@@ -217,7 +217,7 @@ class TestBoundedSectionRetrieval:
             profile_path.write_text(yaml.safe_dump({"enabled": False}))
             
             with patch.object(SectionRetrievalProfile, 'PROFILE_PATH', profile_path):
-                evidence, verdicts, status = _perform_bounded_section_retrieval(
+                evidence, verdicts, status, _, _ = _perform_bounded_section_retrieval(
                     chromadb_path=None,
                     app_payload={},
                     evidence_digest="test_digest",
@@ -230,7 +230,7 @@ class TestBoundedSectionRetrieval:
     
     def test_no_chromadb_path_returns_unknown(self) -> None:
         """EVIDENCE: No chromadb_path returns UNKNOWN with gate verdict."""
-        evidence, verdicts, status = _perform_bounded_section_retrieval(
+        evidence, verdicts, status, _, _ = _perform_bounded_section_retrieval(
             chromadb_path=None,
             app_payload={},
             evidence_digest="test_digest",
@@ -264,7 +264,7 @@ class TestBoundedSectionRetrieval:
             
             with patch.object(SectionRetrievalProfile, 'PROFILE_PATH', profile_path):
                 # Try with invalid chromadb_path
-                evidence, verdicts, status = _perform_bounded_section_retrieval(
+                evidence, verdicts, status, _, _ = _perform_bounded_section_retrieval(
                     chromadb_path="/nonexistent/path",
                     app_payload={},
                     evidence_digest="test_digest",

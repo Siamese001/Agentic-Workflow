@@ -32,7 +32,7 @@ Verdict logic:
     as `coverage<threshold` in the report; do NOT block certification
     until they are graduated to strict.
 
-Plan: ``.windsurf/plans/three-bucket-otel-view-5db409.md`` (W7).
+Plan: ``.cursor/plans/three-bucket-otel-view-5db409.md`` (W7).
 
 USAGE
 =====

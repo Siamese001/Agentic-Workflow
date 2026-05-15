@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-04-29
-**Deciders**: User (architectural correction), Cascade (validation + implementation)
+**Deciders**: User (architectural correction), Cursor Agent (validation + implementation)
 **Plan**: `.windsurf/plans/three-bucket-otel-view-5db409.md`
 **Supersedes**: parts of ADR-030 (Runtime ADG Ingest Contract) — see "Relationship to ADR-030" below.
 

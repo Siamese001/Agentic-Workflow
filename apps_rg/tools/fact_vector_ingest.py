@@ -10,15 +10,18 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 import yaml
+
+BGE_M3_MODEL_ID = "BAAI/bge-m3"
+BGE_M3_DIM = 1024
 
 
 @dataclass(frozen=True)
 class FactVectorChunk:
     """A single chunk of fact vector data for fact_vectors collection."""
-    
+
     chunk_id: str
     content: str
     app: str = "apps_rg"
@@ -28,20 +31,38 @@ class FactVectorChunk:
     source_version_hash: str = ""
     skills_mentioned: list[str] = field(default_factory=list)
     section_type: str = ""
-    
-    def __post_init__(self):
+    company: str = ""
+    role: str = ""
+    section_targets: str = ""
+    citation_anchor: str = ""
+    chunk_digest: str = ""
+    authority_class: str = "PRIMARY"
+    embedding_model_id: str = BGE_M3_MODEL_ID
+    embedding_dim: int = BGE_M3_DIM
+    freshness_status: str = "FRESH"
+    invalid_for_normative_use: str = "false"
+
+    def __post_init__(self) -> None:
         if not self.ingestion_timestamp:
             object.__setattr__(
-                self, 
-                "ingestion_timestamp", 
-                datetime.now(timezone.utc).isoformat()
+                self,
+                "ingestion_timestamp",
+                datetime.now(timezone.utc).isoformat(),
             )
-    
+        if not self.chunk_digest:
+            object.__setattr__(self, "chunk_digest", _compute_hash(self.content)[:32])
+        if not self.citation_anchor:
+            object.__setattr__(
+                self,
+                "citation_anchor",
+                f"{self.source_document_id}:{self.chunk_id[:48]}",
+            )
+
     def to_chroma_document(self) -> dict[str, Any]:
-        """Convert to Chroma document format."""
+        """JSONL row for ``tools.ingestion.chroma_ingest_pipeline`` (uses ``text``)."""
         return {
             "id": self.chunk_id,
-            "content": self.content,
+            "text": self.content,
             "metadata": {
                 "app": self.app,
                 "source_class": self.source_class,
@@ -50,6 +71,16 @@ class FactVectorChunk:
                 "source_version_hash": self.source_version_hash,
                 "skills_mentioned": json.dumps(self.skills_mentioned),
                 "section_type": self.section_type,
+                "company": self.company or "",
+                "role": self.role or "",
+                "section_targets": self.section_targets or "",
+                "citation_anchor": self.citation_anchor or "",
+                "chunk_digest": self.chunk_digest or "",
+                "authority_class": self.authority_class or "PRIMARY",
+                "embedding_model_id": self.embedding_model_id,
+                "embedding_dim": int(self.embedding_dim),
+                "freshness_status": self.freshness_status,
+                "invalid_for_normative_use": self.invalid_for_normative_use,
             },
         }
 
@@ -160,6 +191,9 @@ def ingest_candidate_profile(
     content: str,
     candidate_name: str,
     source_document_id: str,
+    *,
+    company: str = "",
+    role: str = "",
 ) -> list[FactVectorChunk]:
     """Ingest candidate profile (resume) into chunks.
     
@@ -186,6 +220,7 @@ def ingest_candidate_profile(
         skills = _extract_skills(section)
         section_type = _detect_section_type(section)
         
+        starget = section_type if section_type == "general" else f"{section_type},general"
         chunk = FactVectorChunk(
             chunk_id=chunk_id,
             content=section.strip(),
@@ -196,6 +231,9 @@ def ingest_candidate_profile(
             source_version_hash=content_hash,
             skills_mentioned=skills,
             section_type=section_type,
+            company=company,
+            role=role,
+            section_targets=starget,
         )
         chunks.append(chunk)
     
@@ -255,15 +293,33 @@ Role: {role_or_title}
             source_version_hash=content_hash,
             skills_mentioned=skills,
             section_type="project",
+            company=employer_or_client or "",
+            role=role_or_title or "",
+            section_targets="outcomes_lane,professional_experience,project",
         )
         chunks.append(chunk)
     
     return chunks
 
 
+def export_chunks_jsonl(chunks: Iterable[FactVectorChunk], out_path: Path) -> int:
+    """Write ``FactVectorChunk`` rows as JSONL for ``chroma_ingest_pipeline``."""
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    n = 0
+    with out_path.open("w", encoding="utf-8") as fh:
+        for chunk in chunks:
+            fh.write(json.dumps(chunk.to_chroma_document(), ensure_ascii=False) + "\n")
+            n += 1
+    return n
+
+
 __all__ = [
+    "BGE_M3_DIM",
+    "BGE_M3_MODEL_ID",
     "FactVectorChunk",
     "FactVectorSchema",
+    "export_chunks_jsonl",
     "ingest_candidate_profile",
     "ingest_project_evidence",
 ]

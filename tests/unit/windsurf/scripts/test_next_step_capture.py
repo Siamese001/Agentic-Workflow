@@ -1,4 +1,4 @@
-"""Unit tests for :mod:`.windsurf.scripts.post_cascade_next_step_capture`."""
+"""Unit tests for :mod:`.windsurf.scripts.post_cursor_agent_next_step_capture`."""
 
 from __future__ import annotations
 
@@ -8,11 +8,11 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_next_step_capture.py"
+HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_next_step_capture.py"
 
 
 def _load_module():
-    spec = importlib.util.spec_from_file_location("post_cascade_next_step_capture", HOOK_PATH)
+    spec = importlib.util.spec_from_file_location("post_cursor_agent_next_step_capture", HOOK_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     # Make the scripts dir importable for the hook's sibling imports.

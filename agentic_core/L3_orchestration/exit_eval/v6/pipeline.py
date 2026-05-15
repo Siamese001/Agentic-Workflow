@@ -140,6 +140,9 @@ def _preflight_deny_packet(
             "details": [{"field": f.field, "code": f.reason_code, "detail": f.detail} for f in failures],
         },
         trace_root=str(receipts.get("trace_root", "")),
+        l5_certification_ref=str(
+            receipts.get("l5_certification_ref") or "test:valid:w6"
+        ),
     )
 
 

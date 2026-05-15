@@ -2,10 +2,10 @@
 """
 check_marker_ledger_parity.py — CI gate: DECISION_CAPTURED marker ↔ ledger parity (W1.2).
 
-Reconciles structured `DECISION_CAPTURED:` markers emitted by Cascade over the
+Reconciles structured `DECISION_CAPTURED:` markers emitted by Cursor Agent over the
 last N days against actual rows written to the refactor_decision_ledger.sqlite.
 Detects silent hook-dispatcher failures (e.g., the 2026-04-22 Windsurf 2.0.67
-regression where post_cascade_response hooks stopped firing mid-session).
+regression where post_cursor_agent_response hooks stopped firing mid-session).
 
 Parity rule:
     For every DECISION_CAPTURED marker found in scanned sources within window W,
@@ -13,12 +13,12 @@ Parity rule:
     (or whose `created_at` is within TOLERANCE_SECONDS of the marker timestamp).
 
 Marker sources scanned (by priority):
-    1. `artifacts/windsurf/author_gate_miss_detector.jsonl` — post-hook captures
+    1. `artifacts/cursor/author_gate_miss_detector.jsonl` — post-hook captures
        both successful writes and detected misses.
-    2. `artifacts/windsurf/post_cascade_heartbeat.jsonl` — shows whether the hook
+    2. `artifacts/cursor/post_cursor_agent_heartbeat.jsonl` — shows whether the hook
        dispatcher was alive for each window; if dispatcher dark AND markers
        present elsewhere → parity failure.
-    3. `artifacts/windsurf/*.jsonl` grep for `DECISION_CAPTURED:` substrings.
+    3. `artifacts/cursor/*.jsonl` grep for `DECISION_CAPTURED:` substrings.
 
 Exit codes:
     0 — parity OK (or no markers in window, nothing to reconcile)
@@ -56,7 +56,7 @@ ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "windsurf"
 BYPASS_LOG = ARTIFACTS_DIR / "marker_ledger_parity_bypass.jsonl"
 VIOLATIONS_LOG = ARTIFACTS_DIR / "marker_ledger_parity_violations.jsonl"
 
-# Same regex as post_cascade_author_gate_capture.py (kept in sync — schema is SSOT).
+# Same regex as post_cursor_agent_author_gate_capture.py (kept in sync — schema is SSOT).
 _CAPTURE_RE = re.compile(
     r"DECISION_CAPTURED:\s*type=(?P<dtype>[\w_]+),\s*"
     r"repo_area=(?P<area>[^,]+),\s*"

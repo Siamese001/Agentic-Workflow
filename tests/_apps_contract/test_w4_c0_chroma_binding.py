@@ -17,6 +17,7 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
     SUPPORT_STATUS_PARTIAL,
     SUPPORT_STATUS_PASS,
     SUPPORT_STATUS_WEAK,
+    STATUS_NOT_APPLICABLE,
     STATUS_UNKNOWN,
     FinalEvidenceContract,
 )
@@ -115,12 +116,13 @@ class TestFileOnlyPath:
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert fec.citation_map == ()
 
-    def test_file_only_support_status_unknown(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """File-only path: support_status stays UNKNOWN (Chroma not queried)."""
+    def test_file_only_support_status_not_unknown(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """File-only path: dense lane NA — contract support_status NOT_APPLICABLE with reason."""
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
-        assert fec.support_status == STATUS_UNKNOWN
+        assert fec.support_status == STATUS_NOT_APPLICABLE
+        assert fec.not_applicable_reason
 
     def test_file_only_l5_cert_ref_correct(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
@@ -182,7 +184,7 @@ class TestEmbeddingEnabledGuard:
         # but guard must NOT raise; instead Chroma unavailable → fallback
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="/nonexistent/path")
         assert isinstance(fec, FinalEvidenceContract)
-        assert fec.support_status == STATUS_UNKNOWN  # Chroma failed → fallback
+        assert fec.support_status == SUPPORT_STATUS_EMPTY  # dense attempted, no hits
 
 
 # ---------------------------------------------------------------------------
@@ -370,7 +372,7 @@ class TestChromaRetrievalPath:
             fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 
         assert isinstance(fec, FinalEvidenceContract)
-        assert fec.support_status == STATUS_UNKNOWN
+        assert fec.support_status == SUPPORT_STATUS_EMPTY
         # File-only items still present
         assert any("jd_payload" in item.source for item in fec.evidence_items)
 

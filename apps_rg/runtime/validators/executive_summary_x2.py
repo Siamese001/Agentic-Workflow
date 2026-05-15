@@ -171,6 +171,9 @@ def detect_bullet_like_stacking(text: str) -> tuple[bool, str | None, int]:
     return False, None, action_openers
 
 
+MECHANICAL_PROOF_OPENERS = frozenset({"productized", "designed", "strengthened", "standardized"})
+
+
 def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     """Check if output reads like executive synthesis vs bullet conversion.
     
@@ -179,12 +182,38 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     sentences = split_sentences(text)
     if len(sentences) < 2:
         return False, "Output too short for executive summary"
-    
+
+    if re.search(r"\bthis was achieved while\b", text, re.IGNORECASE):
+        return False, "Bridge phrase 'This was achieved while' indicates bullet-like stacking"
+
+    mechanical_hits = 0
+    for sentence in sentences:
+        first = sentence.split()[0].lower().strip(",.;:") if sentence.split() else ""
+        if first in MECHANICAL_PROOF_OPENERS:
+            mechanical_hits += 1
+    if mechanical_hits >= 3:
+        return False, (
+            "Mechanical proof sequence detected "
+            "(Productized/Designed/Strengthened/Standardized opener pattern)"
+        )
+
     # Check for mechanical one-fact-per-sentence pattern
     is_stacking, reason, _ = detect_bullet_like_stacking(text)
     if is_stacking:
         return False, f"Sentence stacking detected: {reason}"
-    
+
+    if len(sentences) >= 4:
+        short_action_sentences = 0
+        for sentence in sentences:
+            words = sentence.split()
+            if not words:
+                continue
+            first = words[0].lower().strip(",.;:")
+            if first in ACTION_VERB_OPENERS and len(words) <= 22:
+                short_action_sentences += 1
+        if short_action_sentences >= 4:
+            return False, "One short proof-style sentence per fact (bullet conversion pattern)"
+
     # Check average sentence length (executive summaries have varied length)
     avg_len = sum(len(s.split()) for s in sentences) / len(sentences)
     if avg_len < 12:
@@ -327,10 +356,19 @@ def check_json_parse_valid(parsed_output: dict[str, Any] | None, raw_output: str
     
     if raw_output is None or raw_output == "":
         return False, "raw_output is missing"
+
+    if "```" in raw_output:
+        return False, "Raw output contains markdown code fences"
+
+    stripped = raw_output.strip()
+    if not stripped.startswith("{"):
+        return False, "Raw output must start with '{' (strict JSON only)"
+    if not stripped.endswith("}"):
+        return False, "Raw output must end with '}' (strict JSON only)"
     
     # Try to parse raw output to verify it's valid JSON
     try:
-        json.loads(raw_output)
+        json.loads(stripped)
     except json.JSONDecodeError as e:
         return False, f"Raw output is not valid JSON: {e}"
     

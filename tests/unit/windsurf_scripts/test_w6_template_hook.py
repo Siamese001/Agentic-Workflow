@@ -93,22 +93,22 @@ class TestHooksJsonRegistration:
         content = hooks_path.read_text(encoding="utf-8")
         return json.loads(content)
 
-    def test_post_cascade_plan_scope_audit_registered(
+    def test_post_cursor_agent_plan_scope_audit_registered(
         self, hooks_config: dict[str, Any]
     ) -> None:
-        """Hook post_cascade_plan_scope_audit.py is in post_cascade_response list."""
-        post_cascade = hooks_config.get("hooks", {}).get("post_cascade_response", [])
+        """Hook post_cursor_agent_plan_scope_audit.py is in post_cursor_agent_response list."""
+        post_cascade = hooks_config.get("hooks", {}).get("post_cursor_agent_response", [])
         commands = [h.get("command", "") for h in post_cascade]
         
-        audit_hooks = [c for c in commands if "post_cascade_plan_scope_audit.py" in c]
-        assert len(audit_hooks) >= 1, "post_cascade_plan_scope_audit.py not registered"
+        audit_hooks = [c for c in commands if "post_cursor_agent_plan_scope_audit.py" in c]
+        assert len(audit_hooks) >= 1, "post_cursor_agent_plan_scope_audit.py not registered"
 
     def test_hook_is_advisory_not_strict(self, hooks_config: dict[str, Any]) -> None:
         """Hook runs in advisory mode (show_output=true, no strict flag)."""
-        post_cascade = hooks_config.get("hooks", {}).get("post_cascade_response", [])
+        post_cascade = hooks_config.get("hooks", {}).get("post_cursor_agent_response", [])
         
         for hook in post_cascade:
-            if "post_cascade_plan_scope_audit.py" in hook.get("command", ""):
+            if "post_cursor_agent_plan_scope_audit.py" in hook.get("command", ""):
                 # Default advisory: show_output=true for visibility
                 assert hook.get("show_output") is True
                 # No strict enforcement by default
@@ -117,20 +117,20 @@ class TestHooksJsonRegistration:
                 assert "PLAN_SCOPE_AUDIT_STRICT" not in command
                 break
         else:
-            pytest.fail("post_cascade_plan_scope_audit.py hook not found")
+            pytest.fail("post_cursor_agent_plan_scope_audit.py hook not found")
 
     def test_hook_has_correct_working_directory(
         self, hooks_config: dict[str, Any]
     ) -> None:
         """Hook uses {repo_root} as working directory."""
-        post_cascade = hooks_config.get("hooks", {}).get("post_cascade_response", [])
+        post_cascade = hooks_config.get("hooks", {}).get("post_cursor_agent_response", [])
         
         for hook in post_cascade:
-            if "post_cascade_plan_scope_audit.py" in hook.get("command", ""):
+            if "post_cursor_agent_plan_scope_audit.py" in hook.get("command", ""):
                 assert hook.get("working_directory") == "{repo_root}"
                 break
         else:
-            pytest.fail("post_cascade_plan_scope_audit.py hook not found")
+            pytest.fail("post_cursor_agent_plan_scope_audit.py hook not found")
 
 
 class TestW6Integration:
@@ -143,7 +143,7 @@ class TestW6Integration:
 
     def test_w3_hook_exists(self) -> None:
         """W3 hook exists and is runnable."""
-        hook_path = REPO_ROOT / ".windsurf" / "scripts" / "post_cascade_plan_scope_audit.py"
+        hook_path = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_plan_scope_audit.py"
         assert hook_path.exists(), "W3 hook not found"
 
     def test_template_exists(self) -> None:
@@ -157,4 +157,4 @@ class TestW6Integration:
         content = hooks_path.read_text(encoding="utf-8")
         config = json.loads(content)
         assert "hooks" in config
-        assert "post_cascade_response" in config["hooks"]
+        assert "post_cursor_agent_response" in config["hooks"]

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_agents_mcp_coverage.py — CI gate: every MCP server in mcp_config.json
+check_agents_mcp_coverage.py — CI gate: every MCP server in .cursor/mcp.json
 must be documented in the AGENTS.md MCP Quick Reference table.
 
 Exit 0: all servers covered.
@@ -17,9 +17,11 @@ import re
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
-AGENTS_MD = REPO_ROOT / "AGENTS.md"
+_CI_DIR = Path(__file__).resolve().parent
+if str(_CI_DIR) not in sys.path:
+    sys.path.insert(0, str(_CI_DIR))
+
+from _mcp_ci_common import AGENTS_MD, CURSOR_MCP_PATH, WINDSURF_MCP_PATH  # noqa: E402
 
 # Matches the first backtick-quoted cell of each Quick Reference table row:
 #   | `GitKraken` | Git operations ... |
@@ -46,44 +48,59 @@ def load_documented_servers(agents_path: Path) -> set[str]:
     return set(_SERVER_REF_RE.findall(text))
 
 
+def _check_config(label: str, config_path: Path, documented: set[str]) -> list[str]:
+    if not config_path.exists():
+        return [f"{label} config missing at {config_path}"]
+    registered = load_registered_servers(config_path)
+    return [name for name in registered if name not in documented]
+
+
 def main() -> int:
-    if not MCP_CONFIG.exists():
-        print(f"[agents_mcp_coverage] SKIP: {MCP_CONFIG} not found", flush=True)
-        return 0
     if not AGENTS_MD.exists():
         print(f"[agents_mcp_coverage] FAIL: {AGENTS_MD} not found", flush=True)
         return 1
 
     try:
-        registered = load_registered_servers(MCP_CONFIG)
         documented = load_documented_servers(AGENTS_MD)
     except RuntimeError as exc:
         print(f"[agents_mcp_coverage] FAIL: {exc}", flush=True)
         return 1
 
-    missing = [s for s in registered if s not in documented]
+    missing_cursor = _check_config("Cursor", CURSOR_MCP_PATH, documented)
+    missing_windsurf = _check_config("Windsurf", WINDSURF_MCP_PATH, documented)
 
-    if missing:
+    if missing_cursor:
         print(
-            f"[agents_mcp_coverage] FAIL: {len(missing)} MCP server(s) registered in "
-            f"mcp_config.json but NOT documented in AGENTS.md Quick Reference:",
+            f"[agents_mcp_coverage] FAIL: {len(missing_cursor)} Cursor MCP server(s) "
+            "registered in .cursor/mcp.json but NOT documented in AGENTS.md:",
             flush=True,
         )
-        for name in missing:
+        for name in missing_cursor:
             print(f"  MISSING: {name}", flush=True)
         print(
-            "[agents_mcp_coverage] Add a row per missing server to the "
-            "'## MCP Quick Reference' table in AGENTS.md.",
+            "[agents_mcp_coverage] Run: python .cursor/scripts/sync_mcp_config.py",
             flush=True,
         )
         return 1
 
+    expected_windsurf_only = {"io.windsurf/mcp-playwright"}
+    unexpected_windsurf = [n for n in missing_windsurf if n not in expected_windsurf_only]
+    if unexpected_windsurf:
+        print(
+            f"[agents_mcp_coverage] FAIL: unexpected Windsurf server id(s) missing from AGENTS.md:",
+            flush=True,
+        )
+        for name in unexpected_windsurf:
+            print(f"  UNEXPECTED: {name}", flush=True)
+        return 1
+
+    cursor_count = len(load_registered_servers(CURSOR_MCP_PATH))
     print(
-        f"[agents_mcp_coverage] OK: all {len(registered)} MCP server(s) documented in AGENTS.md.",
+        f"[agents_mcp_coverage] OK: all {cursor_count} Cursor MCP server(s) documented in AGENTS.md.",
         flush=True,
     )
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

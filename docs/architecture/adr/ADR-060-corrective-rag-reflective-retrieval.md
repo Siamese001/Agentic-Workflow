@@ -29,7 +29,7 @@ This is the published gap closed by **CRAG** (Corrective Retrieval-Augmented Gen
 The repo already has the **upstream parts**: a reflexion engine at L3
 (`reflexion_engine.py`, 91 matches) for orchestration-side reflection, GraphRAG local/global/drift engines for KG hop, ADG SQLite for structural fallback, and (post-ADR-058) query transforms for reformulation. None of these are wired into a retrieval-time loop. The reflexion engine is scoped to *agent task* reflection — not retrieval-evidence reflection.
 
-CRAG's own ablation reports +3–8 % EM and +5–11 % F1 on Knowledge-NQ vs. vanilla RAG, with the largest gains on out-of-distribution queries — exactly the queries Cascade fields when the corpus lags behind a fast-moving codebase.
+CRAG's own ablation reports +3–8 % EM and +5–11 % F1 on Knowledge-NQ vs. vanilla RAG, with the largest gains on out-of-distribution queries — exactly the queries Cursor Agent fields when the corpus lags behind a fast-moving codebase.
 
 ## Decision
 

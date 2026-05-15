@@ -168,7 +168,7 @@ def _find_latest_adg_sqlite(adg_dir: Path) -> Path | None:
     """Return the latest ADG SQLite snapshot via canonical resolver."""
     from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
 
-    return latest_sqlite()
+    return latest_sqlite(require_nodes_table=True)
 
 
 def scan_file(file_path: Path) -> list[tuple[int, str]] | None:
@@ -294,7 +294,7 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
             raise RuntimeError(f"Could not load {module_path}")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        return module.materialize_infra_views(db_path)
+        return module.materialize_infra_views(db_path, scratch=True)
     except Exception as exc:  # review: structural scan should fall back to raw SQL instead of crashing  # guardian: allow-broad-exception -- offline tooling, reports failure
         _log.warning(
             "Could not materialize infra views for %s: %s — falling back to raw view query", db_path, exc

@@ -159,8 +159,8 @@ def _emit_router_decision_marker(
             decision_id=<uuid> selected=<route_id> ns=<namespace>
             posterior_alpha=<a> posterior_beta=<b>
 
-    Stays a single logical line so post_cascade_router_decision_audit.py
-    can parse it from logs / stdout / Cascade response trace.
+    Stays a single logical line so post_cursor_agent_router_decision_audit.py
+    can parse it from logs / stdout / Cursor Agent response trace.
     """
     print(
         f"ROUTER_DECISION: layer={_ROUTER_LAYER} router={_ROUTER_NAME} "

@@ -6,7 +6,7 @@ status taxonomy alignment with constitutional rule notion-plans-taxonomy.md, and
 NotionPatchSpec construction.
 
 Pure: no I/O, no subprocess, no Notion API calls. Specific exceptions only.
-Importable by tools/notion/wave_lifecycle_writer.py and the post-cascade hook.
+Importable by tools/notion/wave_lifecycle_writer.py and the post-cursor-agent hook.
 
 Constitutional tie-in: §25 (writers bypass MCP entirely), §27 (writers stay
 schema-pure), §35 (preserves WAVE_COMPLETE / PHASE_COMPLETE markers).
@@ -148,7 +148,7 @@ def _sanitize_note(raw: str | None) -> str | None:
 
 @dataclass(frozen=True)
 class WaveLifecycleMarker:
-    """One parsed marker from a Cascade response."""
+    """One parsed marker from a Cursor Agent response."""
 
     kind: str  # "wave_start" | "wave_complete" | "phase_complete" | "plan_complete"
     slug: str
@@ -161,7 +161,7 @@ class WaveLifecycleMarker:
 
 
 def parse_wave_lifecycle_markers(text: str) -> list[WaveLifecycleMarker]:
-    """Parse all wave-lifecycle markers from Cascade response text.
+    """Parse all wave-lifecycle markers from Cursor Agent response text.
 
     Returns markers in document order. Rows missing a valid slug are dropped.
     Never raises.

@@ -6,7 +6,7 @@
 | **Status** | Accepted |
 | **Date** | 2026-05-09 |
 | **Plan** | `l5-cert-ref-emit-chain-threading-c4e7f1` |
-| **Author** | Cascade (T3 architectural — cross-layer) |
+| **Author** | Cursor Agent (T3 architectural — cross-layer) |
 | **Supersedes** | — |
 | **Related** | ADR-049, ADR-051 (L5 governance plane), ADR-080 (runtime cert Phase D) |
 

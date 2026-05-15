@@ -8,7 +8,7 @@ import sys
 import urllib.error
 import urllib.request
 
-# Newer duplicates to archive (from post_cascade_deferred_scope_capture.jsonl)
+# Newer duplicates to archive (from post_cursor_agent_deferred_scope_capture.jsonl)
 DUPLICATE_PAGE_IDS = [
     "34b27693-f55c-817a-a7bc-f003f5a08617",  # E.E.1 dup
     "34b27693-f55c-815d-955a-de27e2f4200d",  # F.F.1 dup

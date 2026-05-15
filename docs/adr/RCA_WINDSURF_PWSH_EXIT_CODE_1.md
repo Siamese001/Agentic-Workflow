@@ -43,7 +43,7 @@ The error typically occurs when:
 
 ### 2.3 Specific to This Workspace
 
-This repository has **aggressive pre-hook scripts** (`.windsurf/scripts/pre_*.py`) that run on every Cascade interaction:
+This repository has **aggressive pre-hook scripts** (`.windsurf/scripts/pre_*.py`) that run on every Cursor Agent interaction:
 
 - `pre_prompt_classifier.py` — Runs before every prompt
 - `pre_run_gate.py` — Blocks PowerShell commands (exit 2 for pwsh/powershell)
@@ -86,7 +86,7 @@ Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
 ### 3.4 Test Windsurf Hook Scripts Directly
 ```powershell
 cd "C:\Git\Agentic-Workflow-FRESH"
-python .windsurf\scripts\post_cascade_heartbeat.py
+python .windsurf\scripts\post_cursor_agent_heartbeat.py
 echo "Exit code: $LASTEXITCODE"
 ```
 
@@ -184,8 +184,8 @@ After applying a fix, verify:
 
 - [ ] Open new terminal in Windsurf → no exit code 1 error
 - [ ] Run a simple command: `echo "test"` → works
-- [ ] Run a Python script: `python .windsurf/scripts/post_cascade_heartbeat.py` → exit code 0
-- [ ] Check hooks still fire: Look for heartbeat in `artifacts/windsurf/post_cascade_heartbeat.jsonl`
+- [ ] Run a Python script: `python .windsurf/scripts/post_cursor_agent_heartbeat.py` → exit code 0
+- [ ] Check hooks still fire: Look for heartbeat in `artifacts/windsurf/post_cursor_agent_heartbeat.jsonl`
 
 ---
 
@@ -193,7 +193,7 @@ After applying a fix, verify:
 
 - **Regular PowerShell profile backups** — before any changes
 - **Antivirus exclusion policy** — document for team onboarding
-- **Hook script smoke tests** — run `.windsurf/scripts/post_cascade_heartbeat.py` manually after any script edits
+- **Hook script smoke tests** — run `.windsurf/scripts/post_cursor_agent_heartbeat.py` manually after any script edits
 
 ---
 

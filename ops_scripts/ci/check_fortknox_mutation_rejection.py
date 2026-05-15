@@ -14,7 +14,7 @@ root — forbidden by the hostile-verifier doctrine.
 Fail-closed: exit 1 on any tamper accepted or clean-bundle drift.
 Fail-open only via `FORTKNOX_DISCIPLINE_BYPASS=1`.
 
-Advisory rule: `.windsurf/rules/fortknox-certification-discipline.md`.
+Advisory rule: `.cursor/rules/fortknox-certification-discipline.md`.
 """
 from __future__ import annotations
 

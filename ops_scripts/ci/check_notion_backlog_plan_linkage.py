@@ -8,7 +8,7 @@ NOTION_API_KEY / NOTION_TOKEN unset (offline CI safe).
 Emits artifacts/notion/backlog_plan_linkage.json with:
   total_rows, linked_rows, plan_file_only_rows, orphan_rows, violations[]
 
-Constitutional rule: .windsurf/rules/notion-backlog-plan-linkage.md
+Constitutional rule: .cursor/rules/notion-backlog-plan-linkage.md
 Plan: backlog-plan-linkage-enforcement-a4b2f1 W5.
 """
 from __future__ import annotations
@@ -183,7 +183,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  ... and {len(orphan_rows) - 20} more (see artifact)")
         print(
             f"\nFix: run tools/notion/backfill_backlog_plan_relation.py to re-link.\n"
-            f"See .windsurf/rules/notion-backlog-plan-linkage.md for invariant details."
+            f"See .cursor/rules/notion-backlog-plan-linkage.md for invariant details."
         )
         if _fail_closed():
             return 1

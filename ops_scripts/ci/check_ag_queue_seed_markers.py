@@ -2,7 +2,7 @@
 """
 check_ag_queue_seed_markers.py — Pre-commit gate: plan-prose ↔ AG_QUEUE_SEED parity.
 
-For each staged `.windsurf/plans/*.md` file, count:
+For each staged `.cursor/plans/*.md` file, count:
   - Prose lines mentioning future Author-Gate decisions
     (patterns: "Author-Gate required for", "Author-Gate pending for",
                "Author-Gate needed for")
@@ -73,7 +73,7 @@ def _staged_plans() -> list[Path]:
         p = line.strip()
         if not p:
             continue
-        if p.startswith(".windsurf/plans/") and p.endswith(".md"):
+        if p.startswith(".cursor/plans/") and p.endswith(".md"):
             full = REPO_ROOT / p
             if full.exists():
                 out.append(full)
@@ -157,7 +157,7 @@ def main() -> int:
         "\nRemediation: for every 'Author-Gate required for X' prose mention in the plan,\n"
         "add a matching marker line like:\n"
         "  AG_QUEUE_SEED: plan=<slug-6hex> id=<packet_id> depends_on=<id1,id2> title=<short>\n"
-        "Constitutional §35; rule .windsurf/rules/author-gate-queue-drain.md.\n"
+        "Constitutional §35; rule .cursor/rules/author-gate-queue-drain.md.\n"
         "Bypass (rare): AG_QUEUE_SEED_MARKERS_BYPASS=1",
         file=sys.stderr,
     )

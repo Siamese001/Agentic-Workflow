@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-23
-- **Deciders**: Cascade (paired with user)
+- **Deciders**: Cursor Agent (paired with user)
 - **Related**:
   - Constitutional §22 (graph-layer evidence)
   - `@c:/Git/Agentic-Workflow/.windsurf/rules/adg-canonical-invariants.md` §8 (static-vs-runtime ADG)

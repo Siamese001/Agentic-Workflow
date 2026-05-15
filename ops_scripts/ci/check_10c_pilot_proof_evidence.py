@@ -116,7 +116,13 @@ def _run_pytest(test_file: str) -> tuple[bool, str]:
         return False, f"pytest invocation failed: {exc}"
 
 
-def _check_one(req_id: str, ledger: dict[str, dict[str, str]], current_head: str) -> dict:
+def _check_one(
+    req_id: str,
+    ledger: dict[str, dict[str, str]],
+    current_head: str,
+    *,
+    skip_pytest: bool = False,
+) -> dict:
     result = {
         "req_id": req_id,
         "checks": {},
@@ -197,7 +203,15 @@ def _check_one(req_id: str, ledger: dict[str, dict[str, str]], current_head: str
     # P6: test passes
     p6_ok = False
     test_output_tail = ""
-    if p5_ok:
+    if skip_pytest:
+        if p5_ok:
+            p6_ok = True
+            test_output_tail = ""
+            result["checks"]["P6_test_passes"] = "SKIPPED"
+        else:
+            p6_ok = False
+            result["checks"]["P6_test_passes"] = False
+    elif p5_ok:
         p6_ok, test_output_tail = _run_pytest(test_file)
         result["checks"]["P6_test_passes"] = p6_ok
         if not p6_ok:
@@ -207,7 +221,7 @@ def _check_one(req_id: str, ledger: dict[str, dict[str, str]], current_head: str
     else:
         result["checks"]["P6_test_passes"] = False
 
-    result["passed"] = all((p2_ok, p3_ok, p4_ok, p5_ok, p6_ok))
+    result["passed"] = all((p2_ok, p3_ok, p4_ok, p5_ok, p6_ok)) and not result["errors"]
     result["test_output_tail"] = test_output_tail
     result["bundle_path"] = str(bundle_path.relative_to(REPO_ROOT)).replace("\\", "/")
     result["test_file"] = test_file
@@ -284,12 +298,12 @@ def main() -> int:
 
     results: list[dict] = []
     for req_id in PILOT_REQ_IDS:
-        if args.skip_pytest:
-            # Provide a stub for P6 so the gate can run without pytest
-            r = _check_one(req_id, ledger, current_head)
-            r["checks"]["P6_test_passes"] = "SKIPPED"
-        else:
-            r = _check_one(req_id, ledger, current_head)
+        r = _check_one(
+            req_id,
+            ledger,
+            current_head,
+            skip_pytest=args.skip_pytest,
+        )
         results.append(r)
         flag = "PASS" if r["passed"] else "FAIL"
         print(f"  {r['req_id']:<15} {flag:<5} status={r.get('proof_status', '?'):<18} bundle={r.get('bundle_path', '?')}")

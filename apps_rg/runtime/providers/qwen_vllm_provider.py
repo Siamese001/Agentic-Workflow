@@ -85,6 +85,7 @@ def build_qwen_request(
         "temperature": temperature,
         "max_tokens": max_tokens,
         "timeout_seconds": timeout_seconds,
+        "response_format": {"type": "json_object"},
     }
     return provider_request, payload
 

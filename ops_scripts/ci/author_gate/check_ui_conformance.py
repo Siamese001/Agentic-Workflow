@@ -3,7 +3,7 @@
 check_ui_conformance.py — CI gate: Author-Gate UI conformance violations are
 not stale-unresolved.
 
-Tails artifacts/windsurf/author_gate_ui_violations.jsonl and fails if any
+Tails artifacts/cursor/author_gate_ui_violations.jsonl and fails if any
 non-bypass row within the staleness window (default 7 days) has not been
 resolved (i.e., log tail still contains unresolved rows).
 

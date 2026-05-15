@@ -1,6 +1,6 @@
 """L6 Observer-Law CI Gate.
 
-Plan: .windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W4.
+Plan: .cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W4.
 
 Forbids `system_learning/` (L6 active surface) from importing modules
 that perform write-side actions on L0..L5 runtime layers. The L6
@@ -35,7 +35,7 @@ Modes
 
 Output
 ------
-Writes findings to `artifacts/windsurf/l6_observer_law_violations.json`.
+Writes findings to `artifacts/cursor/l6_observer_law_violations.json`.
 """
 from __future__ import annotations
 

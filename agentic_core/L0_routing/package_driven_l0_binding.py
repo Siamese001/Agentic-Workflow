@@ -19,7 +19,9 @@ except ImportError:
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import GraphTraversePolicy, RouteContract
-from agentic_core.L1_cognition.package_driven_l1_binding import PackageDrivenL1Plan
+from agentic_core.L1_cognition.package_driven_l1_binding import (  # guardian: allow-layer-violation -- L0 route evaluation consumes L1 PackageDrivenL1Plan from the package-driven pipeline; app-agnostic binding, no app-specific route logic
+    PackageDrivenL1Plan,
+)
 from agentic_core.L0_routing.reasoning.route_gates import check_d2_semantic_cache
 
 _LOGGER = logging.getLogger(__name__)

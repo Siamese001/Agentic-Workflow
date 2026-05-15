@@ -29,15 +29,15 @@
                     |                                                    | (reads, queries, aggregates)
                     | [X]                                                v
                     | Data exists, but                       +-----------------------+
-                    | Cascade is blind                       |    OTEL MCP SERVER    |
+                    | Cursor Agent is blind                       |    OTEL MCP SERVER    |
                     |                                        |  (Bounded Adapter &   |
                     v                                        |  Execution Surface)   |
 +---------------------------------------+                    +-----------------------+
-|         Cascade / Windsurf            |                                ^
+|         Cursor Agent / Windsurf            |                                ^
 |     (Cannot easily use data)          |                                | (governed tool call)
 +---------------------------------------+                                v
                                                      +---------------------------------------+
-                                                     |         Cascade / Windsurf            |
+                                                     |         Cursor Agent / Windsurf            |
                                                      |  (Operationalizes the Telemetry)      |
                                                      +---------------------------------------+
                                                                          |

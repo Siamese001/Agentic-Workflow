@@ -3,7 +3,7 @@
 **Status:** RESOLVED (2026-04-07)
 **Date:** 2026-04-07
 **Severity:** MEDIUM — Governance/Operational Clarity
-**Reporter:** Cascade
+**Reporter:** Cursor Agent
 **Resolution:** Option B — Unify P2 ratchet to use violations table as SSOT  
 
 ---

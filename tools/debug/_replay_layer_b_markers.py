@@ -1,7 +1,7 @@
 """Replay the 5 Layer-B DEFERRED_SCOPE markers through the capture hook.
 
-Used when Windsurf did not stream a Cascade response into the
-post_cascade_response hook (lifecycle gap). Manually pipes the marker
+Used when Windsurf did not stream a Cursor Agent response into the
+post_cursor_agent_response hook (lifecycle gap). Manually pipes the marker
 text to the hook as if stdin was the response.
 """
 
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-HOOK = REPO / ".windsurf" / "scripts" / "post_cascade_deferred_scope_capture.py"
+HOOK = REPO / ".windsurf" / "scripts" / "post_cursor_agent_deferred_scope_capture.py"
 
 MARKERS = """\
 Layer-B markers for scorer OTel auto-source (ADR-031).

@@ -104,7 +104,7 @@ After work:
   post_write_code        ( 4)
   post_run_command       ( 1)
   post_mcp_tool_use      ( 1)
-  post_cascade_response  (24 — capture markers, audits, ledger writebacks)
+  post_cursor_agent_response  (24 — capture markers, audits, ledger writebacks)
   post_setup_worktree    ( 1)
 ```
 
@@ -114,7 +114,7 @@ Windsurf hooks catch those process failures at the moment they happen.
 
 ### Operating discipline (visible signals)
 
-Every Cascade response in this repo emits structured markers that the post-action hooks parse and route into ledgers and Notion databases:
+Every Cursor Agent response in this repo emits structured markers that the post-action hooks parse and route into ledgers and Notion databases:
 
 ```text
 SR_PLAN / SR_APPROVAL / SR_EXECUTE / SR_VERIFY     -> reasoning packet (T2/T3)
@@ -315,7 +315,7 @@ Look for:
 - Pre-write gates.
 - Post-write audits.
 - MCP tool-use gates.
-- Cascade response audits.
+- Cursor Agent response audits.
 - Scope drift and deferred-scope capture.
 - Author-gate capture and miss detection.
 

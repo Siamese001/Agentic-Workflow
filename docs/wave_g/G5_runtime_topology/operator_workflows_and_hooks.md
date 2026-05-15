@@ -25,8 +25,8 @@ From `.windsurf/hooks.json`:
   - tier classification and routing guardrails.
 - `post_write_code` → `.windsurf/scripts/post_write_audit.py`, `.windsurf/scripts/post_write_mcp_config_sync.py`
   - write audit + MCP config propagation.
-- `post_run_command` / `post_mcp_tool_use` / `post_cascade_response`
-  - audit/cleanup and ADG-first retroactive detection (`post_cascade_adg_audit.py`).
+- `post_run_command` / `post_mcp_tool_use` / `post_cursor_agent_response`
+  - audit/cleanup and ADG-first retroactive detection (`post_cursor_agent_adg_audit.py`).
 
 ## 2) Operator workflows with runtime impact
 

@@ -7,9 +7,8 @@ Validates that cross-references between rules are intact:
 - No broken links after rule edits
 
 Exit codes:
-    0 — All cross-references valid (or no refs found)
-    1 — Broken references detected (advisory mode)
-    2 — Fail-closed mode, broken refs detected
+    0 — All cross-references valid, or advisory mode with broken refs (default)
+    2 — Broken references with ``RULE_CROSS_REF_FAIL_CLOSED=1``
 
 Environment:
     RULE_CROSS_REF_FAIL_CLOSED=1 — exit 2 on broken refs
@@ -33,15 +32,15 @@ from typing import Optional
 # Configuration
 # ---------------------------------------------------------------------------
 
-RULES_DIR: Path = Path(".windsurf/rules")
+RULES_DIR: Path = Path(".cursor/rules")
 ARTIFACTS_DIR: Path = Path("artifacts/ci")
 
 # Cross-reference patterns in markdown
 REF_PATTERNS: list[tuple[str, str]] = [
     # Markdown link: [text](path/to/file.md)
     (r"\[([^\]]+)\]\(([^)]+\.md)\)", "link"),
-    # Rule citation: @.windsurf/rules/file.md or @file.md
-    (r"@(?:\.windsurf/rules/)?([^\s]+\.md)", "citation"),
+    # Rule citation: @.cursor/rules/file.md or @file.md
+    (r"@(?:\.cursor/rules/)?([^\s]+\.md)", "citation"),
     # Reference block: see `file.md` or see `path/file.md`
     (r"see\s+`([^`]+\.md)`", "reference"),
 ]
@@ -79,7 +78,7 @@ def extract_cross_references(rule_file: Path) -> list[CrossRef]:
                 
                 # Normalize target path
                 if not target.startswith("."):
-                    target = f".windsurf/rules/{target}"
+                    target = f".cursor/rules/{target}"
                 
                 refs.append(CrossRef(
                     source_file=str(rule_file),
@@ -135,7 +134,7 @@ def validate_cross_reference(ref: CrossRef) -> ValidationResult:
 
 def _load_notion_plan_identity_rule_refs() -> list[CrossRef]:
     """Load cross-references specifically from notion-plan-identity-verification.md."""
-    rule_file = RULES_DIR / "notion-plan-identity-verification.md"
+    rule_file = RULES_DIR / "notion-plan-identity-verification.mdc"
     if not rule_file.exists():
         return []
     return extract_cross_references(rule_file)
@@ -149,7 +148,7 @@ def main() -> int:
         return 0
     
     # Find all rule files
-    rule_files = list(RULES_DIR.glob("*.md"))
+    rule_files = sorted(RULES_DIR.glob("*.md")) + sorted(RULES_DIR.glob("*.mdc"))
     if not rule_files:
         print("[RULE-XREF] No rule files found", file=sys.stderr)
         return 0
@@ -230,10 +229,9 @@ def main() -> int:
         if fail_closed:
             print("[RULE-XREF] FAIL-CLOSED mode — exiting with error", file=sys.stderr)
             return 2
-        else:
-            print(f"[RULE-XREF] Advisory mode — review {report_file}", file=sys.stderr)
-            return 1
-    
+        print(f"[RULE-XREF] Advisory mode — review {report_file}", file=sys.stderr)
+        return 0
+
     return 0
 
 

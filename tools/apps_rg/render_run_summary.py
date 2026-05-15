@@ -1,4 +1,4 @@
-"""Render a markdown summary of an apps_rg run for inline Cascade chat display.
+"""Render a markdown summary of an apps_rg run for inline Cursor Agent chat display.
 
 Reads the JSON evidence emitted by ``apps_rg`` into ``artifacts/apps_rg/runs/<run_id>/``
 and prints a structured markdown summary covering:
@@ -19,8 +19,8 @@ Invocation:
 If ``<run_dir>`` is omitted, the most recently modified directory under
 ``artifacts/apps_rg/runs/`` is selected.
 
-Cascade integration: per ``.windsurf/rules/apps-rg-post-run-summary.md``,
-Cascade MUST invoke this script after every apps_rg run and surface the
+Cursor Agent integration: per ``.windsurf/rules/apps-rg-post-run-summary.md``,
+Cursor Agent MUST invoke this script after every apps_rg run and surface the
 markdown output inline in chat.
 """
 from __future__ import annotations

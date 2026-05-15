@@ -51,9 +51,9 @@ WAVE3_FILES = [
     ".windsurf/scripts/plan_driven_closer.py",
     ".windsurf/scripts/post_commit_phase_closer.py",
     ".windsurf/scripts/rollback_bad_patches.py",
-    ".windsurf/scripts/post_cascade_next_step_capture.py",
-    ".windsurf/scripts/post_cascade_deferred_scope_capture.py",
-    ".windsurf/scripts/post_cascade_adr_registry_capture.py",
+    ".windsurf/scripts/post_cursor_agent_next_step_capture.py",
+    ".windsurf/scripts/post_cursor_agent_deferred_scope_capture.py",
+    ".windsurf/scripts/post_cursor_agent_adr_registry_capture.py",
     "ops_scripts/ci/check_notion_plan_file_drift.py",
     "tools/reports/recover_deferred_scope_pendings.py",
 ]

@@ -1,5 +1,5 @@
 """W5 singleton-token sites: find the exact source-line locations of
-singleton non-canonical guardian tokens so Cascade can normalize them
+singleton non-canonical guardian tokens so Cursor Agent can normalize them
 deterministically (typo fixes, not vocabulary additions).
 """
 

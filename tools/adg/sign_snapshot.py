@@ -61,6 +61,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Final
 
+from tools.adg.shared_modules.path_resolver import connect_adg_snapshot_readonly
+
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR: Final[Path] = REPO_ROOT / "artifacts" / "adg"
 KEYS_DIR: Final[Path] = ARTIFACTS_DIR / "keys"
@@ -192,8 +194,7 @@ def _ensure_keypair(
 def _has_nodes_table(p: Path) -> bool:
     """Skip stub/sentinel snapshots that lack the `nodes` base table."""
     try:
-        import sqlite3 as _sq
-        with _sq.connect(str(p)) as conn:
+        with connect_adg_snapshot_readonly(p) as conn:
             row = conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
             ).fetchone()
@@ -246,7 +247,7 @@ def _content_digest(snapshot: Path) -> dict[str, Any]:
     canonical projection of (static_edges_count, registry_edges_count,
     v_runtime_proof_count, total_nodes_count).
     """
-    con = sqlite3.connect(str(snapshot))
+    con = connect_adg_snapshot_readonly(snapshot)
     try:
         # Edge counts by bucket.
         try:
@@ -302,8 +303,10 @@ def _content_digest(snapshot: Path) -> dict[str, Any]:
 
 
 def _build_intoto_statement(snapshot: Path) -> dict[str, Any]:
-    file_sha = _file_sha256(snapshot)
+    # Content digest first so any snapshot inspection completes before the
+    # whole-file SHA is pinned (defense-in-depth if a reader ever opened RW).
     content = _content_digest(snapshot)
+    file_sha = _file_sha256(snapshot)
 
     statement = {
         "_type": INTOTO_STATEMENT_TYPE,
@@ -452,11 +455,11 @@ def sign_snapshot(
     if snap is None:
         raise FileNotFoundError("no ADG snapshot under artifacts/adg/")
 
+    content = _content_digest(snap)
     stats = SignStats(
         snapshot=_safe_relative(snap),
         snapshot_sha256=_file_sha256(snap),
     )
-    content = _content_digest(snap)
     stats.content_digest_sha256 = content["sha256"]
     stats.fields = {
         k: v for k, v in content.items() if k not in {"canonical", "sha256"}

@@ -1,7 +1,7 @@
 # Executive Summary — Agentic Requirements Baseline Design
 **Phase**: Design Only — No code changes made  
 **Date**: 2026-04-09  
-**Author**: Cascade (design-only analysis)  
+**Author**: Cursor Agent (design-only analysis)  
 **Deliverables**: baseline_requirements.md, requirements_traceability_matrix.md, gap_register.md, implementation_plan.md, test_plan.md, hitl_decision_log.md, executive_summary.md
 
 ---

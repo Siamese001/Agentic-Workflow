@@ -5,7 +5,7 @@ Targets rows where:
   - Blocking Items is empty
   - Success Criteria is empty
   - Evidence is either empty OR contains only an auto-DEFERRED-SCOPE stub
-    ("Auto-captured from DEFERRED_SCOPE marker ... Cascade to fill on execution")
+    ("Auto-captured from DEFERRED_SCOPE marker ... Cursor Agent to fill on execution")
   - Title is the only signal
 
 These are deferred-scope markers that were auto-posted but never enriched —
@@ -30,7 +30,7 @@ from triage_keep_drafts import (  # type: ignore[import-not-found]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "retire_empty_placeholders_audit.jsonl"
 
 DEFERRED_STUB = re.compile(
-    r"Auto-captured from DEFERRED_SCOPE marker.*Cascade to fill on execution",
+    r"Auto-captured from DEFERRED_SCOPE marker.*Cursor Agent to fill on execution",
     re.DOTALL,
 )
 TRIAGE_STAMP = re.compile(r"^\[TRIAGE \d{4}-\d{2}-\d{2}\] bucket=[A-Z]\d?\.")

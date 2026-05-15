@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-23
-- **Deciders**: Cascade (P2 Wave 8.1 execution) — user-directed
+- **Deciders**: Cursor Agent (P2 Wave 8.1 execution) — user-directed
 - **Impact Layers**: L0, L1, L2, L3, L4, L5, L6 (gravity crosses all)
 - **Supersedes**: — (SC-1 has been in audit mode since 2026-04-17)
 

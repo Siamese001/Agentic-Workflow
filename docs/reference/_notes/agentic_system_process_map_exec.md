@@ -1,4 +1,6 @@
 ========================================================================================================================
+> **SSOT (reference):** `docs/reference/_notes/` — this file is authoritative; do not duplicate process-map prose under `tools/`.
+========================================================================================================================
                                       AGENTIC SYSTEM PROCESS MAP - EXECUTIVE SUMMARY
 ========================================================================================================================
  [!] SIMPLEST VIABLE PATTERN: deterministic workflow first -> single agent -> multi-agent only
@@ -20,7 +22,8 @@
 
  [00D] EVAL PRIMITIVES (LLM-as-Judge, Deterministic Validators, Schema Checkers)
    ► Emits scorecard / critique / judge evidence
-   ► Primary placement: 05 Exit | Light use: 00C, L2 | Post-run: 06 L6
+   ► Primary placement: 05 Exit (X1D judges) + X2 deterministic validators | E5→Exit Evidence Eval Bridge packages metrics
+   ► Light use: 00C, L2 | Post-run: 06 L6
    ► Does NOT route, execute, approve by itself, or write to L4
 
  [00E] AUDIT PRIMITIVES (OTEL spans, evidence assertions, hash-chain, signer)
@@ -130,17 +133,30 @@
         │ [sealed artifacts / proposed_state_diff if any]
         ▼
 ┌───────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ EVIDENCE EVAL BRIDGE (L3-owned code; logical seam = after E5 Seal, before Exit)                                      │
+│ • Input: sealed L2 output + C0 evidence metrics already bound to the run (EvidenceBundle / contract material)      │
+│ • build_exit_artifact → X1-shaped dict + sealed _evidence_metrics appendix (evidence-only, no mutation)               │
+│ • Feeds step 5 X1: X1-shaped dict + _evidence_metrics for ExitControlGate.evaluate(dict); sealed envelope for          │
+│   evaluate_sealed(...) when the typed SealedL2Artifact path is active (same evidence slice, not a second Exit)      │
+│ • emit_bundle_telemetry → L2 BUS T (evidence_quality_metrics)                                                      │
+│ • enqueue AsyncEval / ShadowEval → L6 ingest (future-run observation only)                                        │
+│ • Does NOT replace step 5 | does NOT write L4 | does NOT bypass UWG                                                  │
+└───────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        │ [X1-shaped exit input + sealed artifact handoff]
+        ▼
+┌───────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 5. EXIT EVAL & CONTROL                                                          [DECODER] 🔶 gen_text (Output Grade) │
 │                                                                         [ENCODER] 🔵 intent vector vs 🟠 fact vector │
-│ ★ LLM-AS-JUDGE PRIMARY LIVE USE (00D)                                             (Semantic Safety Checks)           │
-│   • Scores candidate against rubric, evidence, schema, safety, false-confidence, citation integrity                  │
-│   • Emits judge scorecard as X1 evidence; X3 owns final disposition                                                  │
+│ ★ X1 — multi-dimensional current-run evaluation (X1A–X1D) on the sealed handoff                                    │
+│   • X1A rules / policy fit | X1B answer fit | X1C safety / integrity                                                   │
+│   • ★ X1D — grounded / replayable / citation support (semantic quality): primary home for 00D LLM-as-Judge          │
+│     scorecards, rubrics, and qualitative evidence — judges assess; they do not emit final runtime disposition       │
+│ ★ X2 — deterministic gates: schema, replay/hash, hard invariants, contract checks — PASS/FAIL/UNKNOWN, not “vibes”   │
+│ ★ X3 — aggregates exactly one final runtime disposition from X1 + X2 + policy mesh (single outcome authority)       │
 │   • Does not retrieve, execute, route, approve by itself, or write L4                                                │
 │                                                                                                                      │
 │ - Final policy & safety review                                                                                       │
-│ - X1 checks sealed result (incorporates Judge Scorecard)                                                             │
-│ - X2 aggregates verdicts                                                                                             │
-│ - X3 emits exactly one outcome                                                                                       │
+│ - Bridge (above) packages evidence for X1 dict path; Exit still owns authoritative disposition (X3)                   │
 │ - ★ Gate: output/replay/write                                                                                        │
 │ ◄── [ Receiving [RET] Short-Circuits & Artifacts ]                                                                   │
 │                                                                                                                      │
@@ -227,7 +243,8 @@ L7 AUDIT TAP POINTS:
 - C0:   evidence contract hash, ACL decisions, citation set
 - PA:   compiled prompt artifact hash, slot ordering
 - L2:   tool-call args/results, heal attempts, proposed_state_diff
-- Exit: judge scorecard, X1/X2/X3 verdicts, HITL escalations
+- E5→Exit Evidence Eval Bridge: exit-artifact dict hash, BUS T evidence_quality_metrics, shadow packet ids
+- Exit: judge scorecard (X1D / 00D), X1 dims, X2 deterministic gate verdicts, X3 final disposition, HITL escalations
 - UWG:  commit-request → commit-result with policy-replay-audit match
 - L6:   RCA, drift signals, promotion requests
 ========================================================================================================================

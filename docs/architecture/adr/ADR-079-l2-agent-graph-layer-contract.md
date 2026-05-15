@@ -41,7 +41,7 @@ these two paths:
 
 | Path | When to use | Notes |
 |---|---|---|
-| **`adg_sqlite` MCP tools** (P3.3 surface) | Cross-process consumers, skill harnesses, Cascade authoring, evaluation apps_* | Subject to MCP serialization (§25); use direct SQLite when blocked |
+| **`adg_sqlite` MCP tools** (P3.3 surface) | Cross-process consumers, skill harnesses, Cursor Agent authoring, evaluation apps_* | Subject to MCP serialization (§25); use direct SQLite when blocked |
 | **`tools.adg.core.service.ADGService`** (in-process) | Same-process agents that already share the runtime (e.g., L3 orchestrator) | Reuses the singleton SQLite connection + Redis cache; alignment to current `adg_snapshot_id` is automatic |
 
 **Forbidden**:

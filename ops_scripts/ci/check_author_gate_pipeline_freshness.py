@@ -4,8 +4,8 @@ check_author_gate_pipeline_freshness.py — CI gate (AGP1).
 
 Plan: author-gate-ui-renderer-hardening-a7f3c2 W3.P3.1.
 
-Tails ``artifacts/windsurf/author_gate_pipeline_violations.jsonl`` (produced
-by ``post_cascade_author_gate_pipeline_audit.py``) and fails when any
+Tails ``artifacts/cursor/author_gate_pipeline_violations.jsonl`` (produced
+by ``post_cursor_agent_author_gate_pipeline_audit.py``) and fails when any
 non-bypass row within the staleness window (default 7 days) has not been
 resolved.
 

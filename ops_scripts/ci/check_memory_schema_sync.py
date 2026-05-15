@@ -1,6 +1,6 @@
 """CI gate: Verify Memory MCP schema file matches Python constant.
 
-Ensures SSOT discipline: canonical schema in .windsurf/schemas/ must match
+Ensures SSOT discipline: canonical schema in .cursor/schemas/ must match
 what sqlite_memory_store.py uses at runtime.
 
 Gate ID: MEM-SYNC Memory MCP schema SSOT sync check

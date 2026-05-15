@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "694303203dd8ed350a5e90e123688031be6f1786",
+  "git_head_at_test_time": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
   "git_dirty_at_test_time": false,
-  "content_hash": "0e65d3f7f8b53028f3d7336aa16ad92084783dfae6eeada1a1706ed3f676c0db"
+  "content_hash": "eff908a261fa7f023eab59132f1e11be55ed2108d334d881faa56552d5355824"
 }

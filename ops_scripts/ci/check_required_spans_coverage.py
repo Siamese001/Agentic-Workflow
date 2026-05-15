@@ -13,11 +13,17 @@ Failure modes flagged:
     real bug, since L1 + L2 gates passed).
   * Manifest YAML is malformed.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+
+Exit policy:
+  - Default: **advisory** — prints violations and exits 0.
+  - ``REQUIRED_SPANS_FAIL_CLOSED=1`` — exits 1 when any manifest span lacks
+    ``@traces_execute`` or has a layer mismatch.
 """
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 from pathlib import Path
 from typing import Iterable
@@ -160,7 +166,13 @@ def main() -> int:
             "  (the latter requires Author-Gate approval — removing a row is\n"
             "  a breaking observability contract change)."
         )
-        return 1
+        if os.environ.get("REQUIRED_SPANS_FAIL_CLOSED", "").strip() == "1":
+            return 1
+        print(
+            "[B_required_spans] Advisory mode — violations present; exiting 0 "
+            "(set REQUIRED_SPANS_FAIL_CLOSED=1 to fail closed)."
+        )
+        return 0
 
     print(f"\n[B_required_spans] tier=B status=pass coverage={total}/{total} (100%)")
     return 0

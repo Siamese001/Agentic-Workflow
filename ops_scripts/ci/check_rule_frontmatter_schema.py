@@ -2,8 +2,8 @@
 """
 Rule Frontmatter Schema Validation Gate (RULE-FMT)
 
-Validates that .windsurf/rules/*.md files have valid YAML frontmatter
-conforming to the canonical schema at .windsurf/schemas/rule_frontmatter.schema.json.
+Validates that .cursor/rules/*.md files have valid YAML frontmatter
+conforming to the canonical schema at .cursor/schemas/rule_frontmatter.schema.json.
 
 Exit codes:
     0 = All rules have valid frontmatter (or advisory mode)
@@ -17,7 +17,7 @@ Environment:
 Output:
     artifacts/ci/rule_frontmatter_validation.json
 
-Rule: .windsurf/schemas/rule_frontmatter.schema.json
+Rule: .cursor/schemas/rule_frontmatter.schema.json
 """
 
 from __future__ import annotations
@@ -226,7 +226,7 @@ def _validate_field(name: str, value: Any, schema: dict[str, Any]) -> list[Viola
 def validate_rule_file(file_path: Path, schema: dict[str, Any]) -> list[Violation]:
     """Validate a single rule file."""
     violations: list[Violation] = []
-    rel_path = f".windsurf/rules/{file_path.name}"
+    rel_path = f".cursor/rules/{file_path.name}"
     
     try:
         content = file_path.read_text(encoding="utf-8")

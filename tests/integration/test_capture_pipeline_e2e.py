@@ -4,7 +4,7 @@ This test simulates the exact failure mode documented in
 ``docs/reports/rcas/rca-author-gate-capture-outage-20260427-a7c3b2.md`` by:
 
     1. Creating a fresh queue directory and ledger in tmp
-    2. Appending markers via ``append_marker.py`` (as Cascade would via run_command)
+    2. Appending markers via ``append_marker.py`` (as Cursor Agent would via run_command)
     3. Verifying the freshness gate correctly flags a stale queue
     4. Draining the queue into a ledger via ``queue_to_ledger.py``
     5. Verifying the staleness gate correctly reports fresh after a write
@@ -93,7 +93,7 @@ def isolated_pipeline(tmp_path, monkeypatch):
 
 class TestFullPipeline:
     def test_append_drain_staleness_closed_loop(self, isolated_pipeline):
-        # Step 1: Append two markers as Cascade would. Note that
+        # Step 1: Append two markers as Cursor Agent would. Note that
         # append_marker.py writes to the REPO queue dir by default; the test
         # exercises the CLI surface and exit codes rather than file contents.
         r1 = _run([

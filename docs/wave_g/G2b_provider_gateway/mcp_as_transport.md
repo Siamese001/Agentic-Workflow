@@ -23,7 +23,7 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 - **Repo entry point**: `tools/adg/mcp/server.py`
 - **External egress from the subprocess**: **none** (reads local SQLite, Redis cache at `localhost:6379`)
 - **Env keys injected by Windsurf**: `ADG_DIR`, `ADG_REDIS_URL`, `PYTHONPATH`, `PYTHONUNBUFFERED`
-- **Ingress**: Cascade tool calls → stdio → ADG query
+- **Ingress**: Cursor Agent tool calls → stdio → ADG query
 - **Egress**: loopback (adg sqlite file + redis localhost)
 - **Auth**: none (stdio + localhost Redis, unauthenticated)
 - **Classification**: pure loopback
@@ -81,12 +81,12 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 - **Transport**: stdio-loopback **+ external-egress**
 - **Subprocess**: `python -u tools/mcp/enhanced_http_server.py` (FastMCP + register_http_tools)
 - **Repo entry point**: `tools/mcp/enhanced_http_server.py` → `tools/mcp/http_mcp/tools.py`
-- **External egress**: **yes, by design.** This is the MCP that Cascade uses to make programmatic HTTP calls to arbitrary URLs (per constitutional MCP Authority rule: "enhanced_http is the sole authority for ALL programmatic HTTP calls").
+- **External egress**: **yes, by design.** This is the MCP that Cursor Agent uses to make programmatic HTTP calls to arbitrary URLs (per constitutional MCP Authority rule: "enhanced_http is the sole authority for ALL programmatic HTTP calls").
 - **HTTP client**: `aiohttp` (see `tools/mcp/http_mcp/client.py`)
 - **Retry posture** (per tool signatures): `retries: int = 3` default, `timeout: int = 30` default, `verify_ssl: bool = True`, `follow_redirects: bool = True`.
-- **Auth passthrough**: accepts `auth` argument in tool calls; no persistent credential storage. User / Cascade supplies credentials per request.
+- **Auth passthrough**: accepts `auth` argument in tool calls; no persistent credential storage. User / Cursor Agent supplies credentials per request.
 - **Env keys read**: several `HTTP_*` constants via `tools/mcp/http_mcp/constants.py::env_truthy`.
-- **Classification**: ingress from Cascade, egress to arbitrary URLs. **This is the only code path by which Cascade is SUPPOSED to make HTTP calls; all repo-internal services should use canonical gateways (SovereignLLMGateway, EmbeddingSovereignAgent).**
+- **Classification**: ingress from Cursor Agent, egress to arbitrary URLs. **This is the only code path by which Cursor Agent is SUPPOSED to make HTTP calls; all repo-internal services should use canonical gateways (SovereignLLMGateway, EmbeddingSovereignAgent).**
 
 ### MCP-08 — `filesystem`
 
@@ -149,7 +149,7 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 
 ## 4. Key findings
 
-- **Repo Python code has no MCP-ingress path**. MCPs exist only to let Cascade (Windsurf IDE) call into the repo's tools. The repo never acts as a client of its own MCP servers at runtime.
+- **Repo Python code has no MCP-ingress path**. MCPs exist only to let Cursor Agent (Windsurf IDE) call into the repo's tools. The repo never acts as a client of its own MCP servers at runtime.
 - **11 of 12 MCP servers are locally-launched** by Windsurf: **9 via stdio-loopback** (`adg_sqlite`, `memory`, `vector_db`, `otel_mcp`, `redis`, `pytest_mcp`, `enhanced_http`, `notion`, `task_manager`) and **2 via binary-subprocess** (`filesystem` Node launcher, `GitKraken` gk.exe). Network actors are the subprocesses themselves, not repo Python.
 - **2 servers have by-design external egress from their subprocesses** (`enhanced_http`, `notion`). Both are sanctioned transport surfaces — `enhanced_http` is the constitutional sole-authority for programmatic HTTP (per MCP Authority rule); `notion` is a cooperative PM integration. Neither is part of the repo's LLM inference or embedding pipelines.
 - **`deepwiki` is the only pure-external MCP** (no subprocess; Windsurf ↔ remote URL). Repo code does not reference it.
@@ -176,6 +176,6 @@ The catalogue in `egress_points.yaml` intentionally splits:
 
 ## 7. Hand-off
 
-- G3 should represent `enhanced_http` as an explicit named egress pipeline ("Cascade HTTP passthrough") to avoid confusion with SovereignLLMGateway.
+- G3 should represent `enhanced_http` as an explicit named egress pipeline ("Cursor Agent HTTP passthrough") to avoid confusion with SovereignLLMGateway.
 - G4b should record MCP-injected env keys (`VECTOR_DB_*`, `REDIS_*`, `ADG_REDIS_URL`, `MEMORY_DB`, `NOTION_TOKEN`) as `mcp_runtime_env` class, distinct from repo-runtime env.
 - G7 traceability: map `enhanced_http` tool surface to v1.4 atom space — no current atom explicitly scopes "IDE programmatic HTTP"; B7 candidate deferred.

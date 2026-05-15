@@ -330,7 +330,7 @@ From `agentic_core/config/mcp_mappings.yaml`:
 
 1. **Restart Windsurf** to load all 29 MCP servers
 2. **Set Environment Variables** (see above)
-3. **Verify Installation**: Check MCP panel in Cascade
+3. **Verify Installation**: Check MCP panel in Cursor Agent
 4. **Test Individual Servers**: Use MCP tools in conversations
 
 ---

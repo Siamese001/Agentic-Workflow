@@ -15,13 +15,13 @@ This gate enforces that T2/T3 refactoring plans use the graph-layer primitives
 (MVs, semantic edges, P-views) as PRIMARY drivers — not raw ``edges`` /
 ``violations`` table aggregations and never grep.
 
-Scans .windsurf/plans/*.md and validates that plans which declare a
+Scans .cursor/plans/*.md and validates that plans which declare a
 refactoring intent include an ``## ADG_GRAPH_LAYER_EVIDENCE`` section with:
   * at least 3 materialized views (mv_*) cited
   * at least 1 semantic-edge relation beyond 'imports' OR 1 P-view cross-ref
 
 Plans that LACK a refactoring intent (question plans, docs-only plans) are
-skipped. Violations are logged to artifacts/windsurf/graph_layer_violations.jsonl
+skipped. Violations are logged to artifacts/cursor/graph_layer_violations.jsonl
 and the gate exits non-zero.
 
 Run manually:
@@ -43,6 +43,13 @@ LOG_DIR = ROOT / "artifacts" / "windsurf"
 LOG_FILE = LOG_DIR / "graph_layer_violations.jsonl"
 BASELINE_FILE = ROOT / "ops_scripts" / "ci" / "baselines" / "graph_layer_evidence_baseline.json"
 
+# SSOT plan trees — baseline entries may use `.cursor/plans/` or `.windsurf/plans/`
+# prefixes; integrity checks must resolve against both roots.
+_PLAN_INTEGRITY_ROOTS: tuple[Path, ...] = (
+    ROOT / ".windsurf" / "plans",
+    ROOT / ".cursor" / "plans",
+)
+
 # --- Patterns -----------------------------------------------------------------
 
 REFACTOR_INTENT_PATTERNS = (
@@ -61,7 +68,7 @@ _FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 _PLAN_TYPE_RE = re.compile(r"^\s*plan_type\s*:\s*([A-Za-z0-9_\-]+)\s*$", re.MULTILINE)
 
 # plan_type values that REQUIRE the §22 evidence sections.
-_REFACTOR_PLAN_TYPES: frozenset[str] = frozenset({"refactor"})
+_REFACTOR_PLAN_TYPES: frozenset[str] = frozenset({"refactor", "scoped_refactor"})
 
 # plan_type values that are explicitly EXEMPT from §22 (governance, CI,
 # documentation, audit, or infrastructure plans that do not drive code changes
@@ -82,6 +89,7 @@ _EXEMPT_PLAN_TYPES: frozenset[str] = frozenset(
         # that *also* touches core — that case is handled by the refactor
         # path above, not by this exemption.
         "platform_core_change",  # generic core contract / export evolution
+        "retrospective",  # RCA / look-back plans; no forward refactor blast radius
     }
 )
 
@@ -258,7 +266,31 @@ def _load_baseline() -> set[str]:
     return set(data.get("grandfathered_plans", []))
 
 
-def _validate_baseline_integrity(baseline: set[str], plans: list[Path]) -> list[str]:
+def _plan_relpaths_on_disk() -> set[str]:
+    """All ``*.md`` paths under canonical plan dirs, relative to repo root."""
+    rels: set[str] = set()
+    for base in _PLAN_INTEGRITY_ROOTS:
+        if not base.is_dir():
+            continue
+        for p in base.rglob("*.md"):
+            if p.is_file():
+                rels.add(str(p.relative_to(ROOT)).replace("\\", "/"))
+    return rels
+
+
+def _grandfather_path_aliases(rel: str) -> set[str]:
+    """Baseline may list ``.cursor/plans/…`` while the live file is under ``.windsurf/plans/…`` (or vice versa)."""
+    aliases = {rel}
+    prefix_ws = ".windsurf/plans/"
+    prefix_cc = ".cursor/plans/"
+    if rel.startswith(prefix_ws):
+        aliases.add(prefix_cc + rel[len(prefix_ws) :])
+    elif rel.startswith(prefix_cc):
+        aliases.add(prefix_ws + rel[len(prefix_cc) :])
+    return aliases
+
+
+def _validate_baseline_integrity(baseline: set[str]) -> list[str]:
     """Validate the grandfathered-plans baseline for integrity.
 
     Two failure modes detected:
@@ -288,8 +320,8 @@ def _validate_baseline_integrity(baseline: set[str], plans: list[Path]) -> list[
         except (OSError, json.JSONDecodeError) as exc:
             issues.append(f"baseline_parse_error — {type(exc).__name__}: {exc}")
 
-    # Orphan detection — every baseline entry must correspond to an existing plan.
-    existing_rel = {str(p.relative_to(ROOT)).replace("\\", "/") for p in plans}
+    # Orphan detection — every baseline entry must exist on disk under a plan root.
+    existing_rel = _plan_relpaths_on_disk()
     for entry in sorted(baseline):
         if entry not in existing_rel:
             issues.append(f"baseline_orphan_entry — {entry!r} is grandfathered but no such plan exists")
@@ -310,7 +342,7 @@ def main() -> int:
     baseline = _load_baseline()
 
     # Baseline integrity — orphaned and duplicate entries are silent bypasses.
-    integrity_issues = _validate_baseline_integrity(baseline, plans)
+    integrity_issues = _validate_baseline_integrity(baseline)
     if integrity_issues:
         print(f"\n[check_graph_layer_evidence] FAIL — {len(integrity_issues)} baseline integrity issue(s):")
         for issue in integrity_issues:
@@ -326,7 +358,7 @@ def main() -> int:
     skipped_grandfathered = 0
     for idx, plan in enumerate(plans, 1):
         rel = str(plan.relative_to(ROOT)).replace("\\", "/")
-        if rel in baseline:
+        if baseline.intersection(_grandfather_path_aliases(rel)):
             skipped_grandfathered += 1
             continue
         print(f"  [{idx}/{len(plans)}] evaluating {plan.relative_to(ROOT)}")
@@ -346,7 +378,7 @@ def main() -> int:
             print(f"  - {v['plan']}")
             for m in v["missing"]:
                 print(f"      * {m}")
-        print(f"\nConstitutional rule §22 violated. See .windsurf/rules/adg-graph-layer-enforcement.md")
+        print(f"\nConstitutional rule §22 violated. See .cursor/rules/adg-graph-layer-enforcement.md")
         print(f"Log: {LOG_FILE.relative_to(ROOT)}")
         return 1
 

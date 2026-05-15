@@ -52,7 +52,7 @@ from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 # W3: RuntimeCustomizationPackageSection import for Exit package consumption
 import json
 from pathlib import Path
-from apps_lic.contracts.apps_lic_ingress_contract_v1 import (
+from apps_lic.contracts.apps_lic_ingress_contract_v1 import (  # guardian: allow-layer-violation -- Exit consumes apps_lic-owned RuntimeCustomizationPackageSection / ProfileRef for W3 package consumption; app contract SSOT lives under apps_lic
     RuntimeCustomizationPackageSection,
     ProfileRef,
 )

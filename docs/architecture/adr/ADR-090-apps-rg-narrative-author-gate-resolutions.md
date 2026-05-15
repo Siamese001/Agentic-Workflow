@@ -7,7 +7,7 @@
 | **Decision Date** | 2026-05-01 |
 | **Impact Layers** | apps_rg, apps_research, apps_eval, apps_shared |
 | **Plan** | `.windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md` §8 |
-| **Deciders** | Cascade (per user directive: "finish all next steps") |
+| **Deciders** | Cursor Agent (per user directive: "finish all next steps") |
 | **Supersedes** | none |
 
 ## Summary

@@ -1,9 +1,9 @@
-# W2: fact_vectors schema definition
-# Only candidate_profile and project_evidence source classes allowed
+# SSOT: fact_vectors collection (apps_rg C0 dense lane)
+# Embeddings MUST match tools.ingestion.chroma_ingest_pipeline (BGE-M3, 1024).
 
-schema_version: "1.0"
+schema_version: "2.0"
 collection_name: fact_vectors
-description: Candidate-owned fact embeddings for apps_rg resume_generation
+description: Candidate-owned fact embeddings for apps_rg resume_generation (separate from process_docs)
 
 allowed_source_classes:
   - candidate_profile
@@ -16,45 +16,108 @@ rejected_source_classes:
   - receipts
   - company_research
   - process_docs
+  - prior_outputs
+
+ssot:
+  persist_path_env: CHROMA_PERSIST_DIR
+  default_persist_relative: data/cache/chromadb
+  primary_collection: fact_vectors
+
+embedding:
+  model_id: BAAI/bge-m3
+  dimensions: 1024
 
 metadata_schema:
   app:
     type: string
     required: true
     allowed_values: [apps_rg]
-  
+
   source_class:
     type: string
     required: true
     allowed_values: [candidate_profile, project_evidence]
-  
+
   source_document_id:
     type: string
     required: true
-  
+
   source_version_hash:
     type: string
     required: true
-  
+
   ingestion_timestamp:
     type: string
     format: iso8601
     required: true
-  
-  skills_mentioned:
-    type: array
-    item_type: string
+
+  chunk_id:
+    type: string
     required: false
-  
+    notes: Optional duplicate of Chroma id for cross-refs
+
+  company:
+    type: string
+    required: false
+    notes: Employer / client for filtering (maps from JD target_company)
+
+  role:
+    type: string
+    required: false
+    notes: Role/title for filtering (maps from JD target_role)
+
+  section_targets:
+    type: string
+    required: false
+    notes: Comma-separated section_ids this chunk supports
+
   section_type:
     type: string
     required: false
-    allowed_values: [experience, skills, summary, education, projects, certifications, general, project]
 
-embedding:
-  model: sentence-transformers/all-MiniLM-L6-v2
-  dimensions: 384
-  
+  skills_mentioned:
+    type: string
+    required: false
+    notes: JSON-encoded list stored as scalar for Chroma
+
+  citation_anchor:
+    type: string
+    required: false
+
+  chunk_digest:
+    type: string
+    required: false
+
+  authority_class:
+    type: string
+    required: false
+    allowed_values: [PRIMARY, SUPPORTING, REFERENCE, UNKNOWN]
+
+  embedding_model_id:
+    type: string
+    required: false
+
+  embedding_dim:
+    type: integer
+    required: false
+
+  freshness_status:
+    type: string
+    required: false
+    allowed_values: [FRESH, STALE, EXPIRED, UNKNOWN]
+
+  invalid_for_normative_use:
+    type: string
+    required: false
+
+  certification:
+    type: string
+    required: false
+
+  year:
+    type: string
+    required: false
+
 chunking:
   max_tokens: 512
   overlap_tokens: 50

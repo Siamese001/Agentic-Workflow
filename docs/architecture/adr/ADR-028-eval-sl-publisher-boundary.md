@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-04-22
-**Deciders**: Cascade (planning); implemented under plan `eval-meta-otel-deferred-completion-d6b4e0`
+**Deciders**: Cursor Agent (planning); implemented under plan `eval-meta-otel-deferred-completion-d6b4e0`
 **Impact Layers**: L_APP (apps_eval) ↔ L_SL (system_learning)
 **Related**: ADR-025 (heal_router OTel), ADR-023 (runtime HITL), parent plan `eval-meta-otel-gap-review-ef4a20`
 
