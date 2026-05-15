@@ -1,0 +1,251 @@
+schema_version: "prompt_template_v1"
+template_id: "competency_selector_v2"
+version: "2.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "COMPETENCY_SELECTOR"
+
+purpose: |
+  Select and refine exactly 8 competency categories from verified skill inventory.
+  Output format: "Category Label: term, term, term"
+  No full sentences. No bullets. No keyword dump.
+  Terms must map to source_fact_ids and augment bullets, not duplicate them.
+
+sovereign_oath: |
+  VERIFIED SKILLS ONLY — JD IS TARGETING CONTEXT ONLY
+  
+  I may ONLY use skills from verified_skill_inventory with valid source_fact_ids.
+  JD and briefing are TARGETING CONTEXT only — never proof.
+  I may NOT restate resume bullet outcomes or metrics.
+  I may NOT include unsupported JD-only skills.
+  I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without source support.
+  I may NOT use em dash character anywhere.
+  I may NOT copy more than 5 consecutive words from finalized bullets.
+  I may NOT copy more than 4 consecutive words from JD.
+
+input_contract:
+  required_fields:
+    - verified_skill_inventory
+      schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id], evidence_type}]}"
+      description: "Skills verified from canonical JSON with fact provenance"
+    - candidate_fact_map
+      schema: "{facts: [{fact_id, fact_text, employment_source, bullet_references}]}"
+      description: "Map of all candidate facts with bullet cross-references"
+    - finalized_bullets
+      schema: "{employment_entries: [{bullets: [{bullet_id, bullet_text}]}]}"
+      access_level: "READ_ONLY_ANTI_DUPLICATION"
+      constraint: "May not copy more than 5 consecutive words"
+    - jd_text
+      access_level: "TARGETING_CONTEXT_ONLY"
+      constraint: "May not copy more than 4 consecutive words; JD terms require source_fact_id mapping"
+    - briefing_insights
+      access_level: "TARGETING_CONTEXT_ONLY"
+      constraint: "Company research only — not proof source"
+    - required_category_count
+      value: 8
+      constraint: "EXACTLY 8 — no more, no less"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - competencies
+      type: "array"
+      min_items: 8
+      max_items: 8
+      item_schema:
+        category_label: "string (must match one of 8 base categories or supported equivalent)"
+        terms: "array[string] — comma-separated capability terms"
+        format: "Category Label: term, term, term"
+        source_fact_ids: "array[string] — every term must map to at least one fact"
+        augment_rationale: "string — how this category augments (not duplicates) bullets"
+      forbidden_formats:
+        - "Full sentences or paragraphs"
+        - "Bullet characters (•, -, *)"
+        - "Numbered lists"
+        - "Keyword dump without taxonomy structure"
+    - excluded_jd_skills
+      type: "array"
+      description: "JD-requested skills excluded due to lack of source_fact_id support"
+      item_schema:
+        skill_name: "string"
+        exclusion_reason: "string"
+        jd_context: "string"
+    - removed_or_rewritten_terms
+      type: "array"
+      description: "Terms from inventory that were removed or rewritten with rationale"
+      item_schema:
+        original_term: "string"
+        action: "enum[removed, rewritten, collapsed]"
+        rationale: "string"
+        replacement_term: "string or null"
+    - category_change_log
+      type: "array"
+      description: "Per-category construction decisions"
+      item_schema:
+        category_label: "string"
+        source_inventory_skills: "array[string]"
+        terms_selected: "array[string]"
+        terms_excluded: "array[string]"
+        jd_influence: "string or null"
+        rationale: "string"
+    - ats_alignment_report
+      type: "object"
+      schema:
+        jd_keyword_coverage: "float 0.0-1.0"
+        coverage_method: "enum[direct_mapping, synonym_equivalent, not_supported]"
+        unsupported_jd_keywords: "array[string]"
+        ats_optimization_notes: "string"
+    - overlap_check
+      type: "object"
+      schema:
+        bullet_text_similarity_scores: "array[float] — similarity to each finalized bullet"
+        max_similarity: "float — must be < 0.8 (no restatement)"
+        consecutive_words_from_bullets: "array[string] — any phrases > 5 words flagged"
+        consecutive_words_from_jd: "array[string] — any phrases > 4 words flagged"
+        overlap_check_passed: "boolean (must be true)"
+    - claim_ledger
+      type: "array"
+      item_schema:
+        claim_text: "string"
+        source_fact_id: "string"
+        supported: "boolean"
+        skill_category: "string"
+    - gap_notes
+      type: "array"
+      description: "Unsupported JD requirements or competency gaps"
+    - self_check
+      type: "object"
+      schema:
+        exactly_8_categories: "boolean (must be true)"
+        format_valid: "boolean (must be true) — Category Label: term, term, term"
+        no_full_sentences: "boolean (must be true)"
+        no_bullets: "boolean (must be true)"
+        all_terms_have_source_facts: "boolean (must be true)"
+        no_unsupported_jd_skills: "boolean (must be true)"
+        no_bullet_restatement: "boolean (must be true) — max_similarity < 0.8"
+        no_em_dash: "boolean (must be true)"
+        no_excessive_jd_copying: "boolean (must be true) — max 4 consecutive words"
+        no_excessive_bullet_copying: "boolean (must be true) — max 5 consecutive words"
+        competencies_augment_bullets: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+base_categories:
+  required_count: 8
+  labels:
+    - "Agentic AI Platforms"
+    - "AI Runtime Governance"
+    - "Retrieval & Context Engineering"
+    - "LLMOps & Reliability"
+    - "Distributed Systems Engineering"
+    - "Platform Productization"
+    - "Strategic Partnerships & Ecosystem Execution"
+    - "Engineering Leadership"
+  allowed_operations:
+    - "Preserve category exactly"
+    - "Reorder categories"
+    - "Lightly rename with supported equivalent language only"
+  forbidden_operations:
+    - "Add ninth category"
+    - "Drop below eight categories"
+    - "Use full sentences or paragraphs"
+    - "Use bullet format"
+
+term_operations:
+  allowed:
+    - "Reorder terms within category"
+    - "Tighten terms (make more specific/precise)"
+    - "Collapse duplicate variants into one strongest supported term"
+    - "Replace term with supported JD-equivalent synonym (must map to source_fact_ids)"
+    - "Add verified capability term only if it maps to source_fact_ids AND augments bullets"
+  forbidden:
+    - "Add JD-only keyword without source_fact_id"
+    - "Add unsupported acronym, tool, method, framework, model, compliance term, or certification"
+    - "Repeat bullet metrics or outcomes"
+    - "Copy more than 5 consecutive words from finalized bullets"
+    - "Copy more than 4 consecutive words from JD"
+
+format_rules:
+  structure: "Category Label: term, term, term"
+  examples:
+    good: "Agentic AI Platforms: Multi-agent orchestration, GraphRAG retrieval, Policy-gated execution"
+    bad: "• Agentic AI Platforms — Expert in multi-agent orchestration and GraphRAG retrieval systems with policy-gated execution frameworks."
+    bad_reason: "Uses bullets, full sentences, and restates bullet content"
+  max_term_length: "5 words per term (compound concepts allowed)"
+  separator: ", " (comma + space)
+  no_ending_punctuation: true
+
+forbidden_patterns:
+  - pattern: "full_sentence_paragraph"
+    check: "Output contains sentences with subject-verb-object structure"
+    action: "REJECT"
+  - pattern: "bullet_list_format"
+    check: "Output contains •, -, *, or numbered list markers"
+    action: "REJECT"
+  - pattern: "keyword_dump"
+    check: "Terms lack taxonomy structure or category grouping"
+    action: "REJECT"
+  - pattern: "bullet_restatement"
+    check: "Similarity to any finalized bullet > 0.8 or restates bullet outcomes"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "unsupported_jd_skill"
+    check: "JD-requested skill included without source_fact_id mapping"
+    action: "REJECT — move to excluded_jd_skills"
+  - pattern: "unsupported_tool_acronym"
+    check: "Tool, framework, model, or certification added without canonical source"
+    action: "REJECT"
+  - pattern: "excessive_bullet_copying"
+    check: "More than 5 consecutive words copied from finalized bullets"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "excessive_jd_copying"
+    check: "More than 4 consecutive words copied from JD"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "em_dash"
+    check: "Character U+2014 or U+2013 present"
+    action: "REJECT"
+  - pattern: "ninth_category"
+    check: "Output contains 9 or more categories"
+    action: "REJECT"
+  - pattern: "missing_category"
+    check: "Output contains fewer than 8 categories"
+    action: "REJECT"
+
+validation_rules:
+  pre_output:
+    - assert: "len(output.competencies) == 8"
+      error: "CATEGORY_COUNT_INVALID"
+      message: "Must emit exactly 8 categories"
+    - assert: "all([c.category_label for c in output.competencies])"
+      error: "MISSING_CATEGORY_LABEL"
+      message: "Every category must have a label"
+    - assert: "all([len(c.terms) > 0 for c in output.competencies])"
+      error: "EMPTY_CATEGORY_TERMS"
+      message: "Every category must have at least one term"
+    - assert: "all([all([' ' not in t or t.count(' ') <= 4 for t in c.terms]) for c in output.competencies])"
+      error: "TERM_TOO_LONG"
+      message: "Terms should be concise (max 5 words)"
+  post_output:
+    - assert: "output.self_check.exactly_8_categories == true"
+    - assert: "output.self_check.format_valid == true"
+    - assert: "output.self_check.no_full_sentences == true"
+    - assert: "output.self_check.no_bullets == true"
+    - assert: "output.self_check.all_terms_have_source_facts == true"
+    - assert: "output.self_check.no_bullet_restatement == true"
+    - assert: "output.overlap_check.max_similarity < 0.8"
+    - assert: "len(output.overlap_check.consecutive_words_from_bullets) == 0"
+    - assert: "len(output.overlap_check.consecutive_words_from_jd) == 0"
+
+temperature_profile:
+  range: "0.10 - 0.25"
+  default: 0.15
+  rationale: "Conservative variation for taxonomy precision — competency selection is curation, not generation"
+  sweep_validation: "Must pass at 0.10, 0.175, 0.25 with consistent 8-category structure"
+
+payload_scope:
+  input_tokens_estimate: "~4,000 (skill inventory + finalized bullets + JD)"
+  output_tokens_estimate: "~800 (8 categories with terms)"
+  context_window_required: "8K minimum"
+  json_schema_strict: true
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2D STOP 10 — Competency Selector"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2d_outputs/stop_10_competency_selector_receipt.json"

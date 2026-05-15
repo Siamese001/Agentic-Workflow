@@ -224,4 +224,26 @@ __all__ = [
     "InMemoryAppDomainStore",
     "get_default_app_domain_store",
     "reset_default_app_domain_store",
+    # W2 — Generic L4 namespace contract parser
+    "L4ReadSurface",
+    "L4NamespaceManifest",
+    "ValidationResult",
+    "L4NamespaceContractError",
+    "L4NamespaceParseError",
+    "L4NamespaceParser",
+    "ALLOWED_SURFACE_TYPES",
+    "ALLOWED_READ_OPERATIONS",
+    "WRITE_CAPABLE_OPERATIONS",
 ]
+
+from agentic_core.L4_state.contracts.l4_namespace_contract import (  # noqa: E402
+    ALLOWED_READ_OPERATIONS,
+    ALLOWED_SURFACE_TYPES,
+    L4NamespaceContractError,
+    L4NamespaceManifest,
+    L4NamespaceParseError,
+    L4NamespaceParser,
+    L4ReadSurface,
+    ValidationResult,
+    WRITE_CAPABLE_OPERATIONS,
+)

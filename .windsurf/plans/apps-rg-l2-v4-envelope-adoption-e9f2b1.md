@@ -1,6 +1,7 @@
 ---
 title: "Apps_RG L2 v4 Envelope Adoption"
 slug: "apps-rg-l2-v4-envelope-adoption-e9f2b1"
+plan_type: refactor
 created: "2026-05-13"
 status: "Completed"
 tier: "T3"
@@ -723,3 +724,29 @@ The comprehensive L2 v4 envelope adoption plan has been created.
    - Core gap Author-Gate if needed
 
 The plan is ready for review and potential wave-by-wave implementation.
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+
+ADG Provenance: backend=sqlite, snapshot=adg_indexed_05122026_1828.sqlite
+
+| Rank | File | Archetype | Layer | Fan-In | Surfaces | Wave |
+|------|------|-----------|-------|--------|----------|------|
+| 1 | `agentic_core/L2_execution/l2_package_driven_executor.py` | ORCHESTRATOR | L2 | high | Execution Surface, State Surface | W1-W5 (read-only reference) |
+| 2 | `apps_rg/runtime/bindings/l2_binding.py` | CENTRAL_DEPENDENCY | L2/app | medium | Execution Surface, Write Surface | W3-W5 |
+| 3 | `agentic_core/L2_execution/orchestration/l2_phase_pipeline.py` | ORCHESTRATOR | L2 | medium | Execution Surface | W1 (reference adapter pattern) |
+
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+
+- **MV**: `mv_hotspot_centrality` — `agentic_core/L2_execution/l2_package_driven_executor.py` is high-fan-in ORCHESTRATOR; this plan adopts its E1→E5 envelope pattern for apps_rg wiring
+- **MV**: `mv_dependency_cone_risk` — `apps_rg/runtime/bindings/l2_binding.py` sits at the apps_rg/core boundary; cone risk from L2 contract adoption propagates to all downstream plan phases
+- **MV**: `mv_graph_reverse_dependency_hotspots` — `agentic_core/L2_execution/orchestration/l2_phase_pipeline.py` is a reverse-dependency hotspot; the adapter pattern (E1 Prep → E5 Seal) used here fans out to multiple app binding consumers
+- **Semantic edge**: `apps_rg/runtime/bindings/l2_binding.py` →`reads_from`→ `agentic_core.L2_execution.types.l2_v4_contracts` (WorkOrderInputs, FrozenExecutionContext); `l2_binding` →`writes_to`→ `SealedL2Artifact` (E5 seal output)
+- **Surface references**: Execution Surface (E1→E5 phase pipeline, HOP execution at E3), Write Surface (SealedL2Artifact output, mutation-inert commit discipline), State Surface (FrozenExecutionContext immutability contract)

@@ -1,0 +1,280 @@
+schema_version: "prompt_template_v1"
+template_id: "ibm_position_narrative_v1"
+version: "1.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "IBM_NARRATIVE"
+execution_order: "AFTER_IBM_BULLET_FACT_CHECK"
+
+purpose: |
+  Write exactly one sentence position narrative for IBM.
+  Uses finalized IBM bullets as read-only anti-repetition context.
+  Complements bullets without summarizing or repeating them.
+  No new claims beyond IBM allowed facts or fact-checked bullets.
+  No Unify runtime claim import.
+
+sovereign_oath: |
+  IBM NARRATIVE ONLY — BULLETS ARE READ-ONLY CONTEXT — NO UNIFY IMPORT
+  
+  I may ONLY reference finalized IBM bullets as anti-repetition context.
+  I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts.
+  I may NOT import Unify runtime claims into IBM narrative.
+  I may NOT introduce claims beyond supported IBM facts or fact-checked bullets.
+  I may NOT repeat bullet metrics or labels unless explicitly justified.
+  I may NOT copy bullet sentence structure.
+  I may NOT output bullet-list format — exactly one sentence only.
+  I may NOT use numbers unless present in base narrative or explicitly supported.
+  
+  FORBIDDEN TERMS unless explicitly in IBM source:
+  agentic AI, GraphRAG, multi-agent orchestration, deterministic routing, sandboxed execution,
+  replayable traces, governed AI runtime, prompt assembly, C0, L2, Exit (as layer), UWG.
+
+role_header_fields:
+  company:
+    source: "canonical_json.employment[exp_ibm_001].employer"
+    writable: false
+    value: "IBM"
+  location:
+    source: "canonical_json.employment[exp_ibm_001].location"
+    writable: false
+    value: "Edgewater, NJ"
+  historical_title:
+    source: "canonical_json.employment[exp_ibm_001].title"
+    writable: false
+    value: "Lead Client Partner"
+  dates:
+    source: "canonical_json.employment[exp_ibm_001].start_date / end_date"
+    writable: false
+    value: "2017-04 to 2022-10"
+
+input_contract:
+  required_fields:
+    - finalized_ibm_bullets
+      schema: "{bullets: [{bullet_id, bullet_text, source_fact_id}]}"
+      access_level: "READ_ONLY_ANTI_REPETITION"
+      constraints:
+        - "May not copy bullet_text"
+        - "May not mirror bullet sentence structure"
+        - "May not repeat bullet metrics without justification"
+    - selected_fact_plan
+      schema: "{exp_ibm_001: {priority: 2, narrative_angle: string}}"
+    - base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_section_hash
+      description: "SHA256 of IBM employment section"
+    - claim_ledger_from_bullets
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool, used_in_narrative: bool}]}"
+    - narrative_intent
+      allowed_values: ["COMPLEMENT_BULLETS", "FOUNDATION_POSITIONING", "ENTERPRISE_CONTEXT"]
+      default: "FOUNDATION_POSITIONING"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - position_narrative
+      type: "string"
+      constraints:
+        - "Exactly one sentence"
+        - "No bullet characters (•, -, *)"
+        - "No line breaks"
+        - "No numbering"
+      max_length: "250 characters"
+      style: "Complementary to bullets without summarizing"
+      positioning: "IBM as foundation for later Unify work, not competitor"
+      anti_patterns:
+        - "Summarizing bullet achievements"
+        - "Repeating bullet metrics verbatim"
+        - "Listing bullet topics"
+        - "Copying bullet sentence structure"
+        - "Importing Unify runtime claims"
+        - "Introducing new metrics not in bullets or base"
+    - claim_ledger
+      type: "array"
+      item_schema:
+        claim_text: "string"
+        source_fact_id: "string (must be bul_ibm_*)"
+        supported: "boolean"
+        narrative_usage: "enum[direct, inferred, avoided]"
+        repetition_risk: "enum[none, low, medium, high]"
+    - anti_repetition_check
+      type: "object"
+      schema:
+        bullet_metrics_repeated: "array[string] — metrics that appear in both bullets and narrative (should be empty or justified)"
+        bullet_labels_repeated: "array[string] — labels/topics that overlap (should be minimal)"
+        sentence_structure_similarity: "float 0.0-1.0 (should be < 0.3)"
+        complement_score: "float 0.0-1.0 (should be > 0.7)"
+        check_passed: "boolean"
+    - drift_check
+      type: "object"
+      description: "Detection of Unify runtime claim drift into IBM narrative"
+      schema:
+        unify_terms_detected: "array[string] — any agentic/GraphRAG/orchestration terms found"
+        runtime_inflation_score: "float 0.0-1.0 (must be 0.0)"
+        foundation_vs_runtime_frame: "enum[foundation, runtime, mixed] — must be 'foundation'"
+        drift_check_passed: "boolean (must be true)"
+    - gap_notes
+      type: "array"
+      description: "Unsupported narrative angles or gaps"
+    - change_log
+      type: "array"
+      description: "Narrative construction decisions: {draft, revision, rationale}"
+    - self_check
+      type: "object"
+      schema:
+        exactly_one_sentence: "boolean (must be true)"
+        no_bullet_list_format: "boolean (must be true)"
+        no_new_metrics: "boolean (must be true)"
+        no_repeated_bullet_metrics: "boolean (must be true)"
+        complements_not_summarizes: "boolean (must be true)"
+        no_cross_contamination: "boolean (must be true)"
+        no_unify_import: "boolean (must be true)"
+        foundation_positioning_only: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+narrative_complement_guidance:
+  purpose: |
+    The narrative should POSITION IBM as the foundation experience that enabled later Unify agentic work.
+    Frame IBM's role: enterprise-scale delivery, regulated financial services mastery,
+    data/lineage/observability foundations, and partnership execution.
+    
+    DO NOT frame IBM as: agentic AI work, runtime governance innovation, or multi-agent orchestration.
+  angle_options:
+    - "Enterprise-scale foundation: delivered governed systems at 99.9% uptime across regulated financial environments"
+    - "Data and lineage groundwork: established observability and compliance frameworks later extended"
+    - "Partnership execution: built multi-year alliances and portfolio management capabilities"
+  avoid:
+    - "Re-listing bullet achievements ($15M, 30%, 50%, 25%, 99.9%)"
+    - "Echoing bullet sentence structure (Subject-Verb-Object achievement pattern)"
+    - "Any mention of agentic AI, GraphRAG, orchestration, or runtime governance"
+    - "Implies IBM did current Unify-style work"
+  example_anti_patterns:
+    - bad: "Led agentic AI platform development and multi-agent orchestration at IBM."
+      reason: "Unify runtime inflation — IBM did not do agentic AI work"
+    - bad: "Architected cloud-native platforms generating $15M in revenue while reducing costs by 30% and achieving 99.9% uptime."
+      reason: "Repeats all metrics verbatim and lists bullet achievements"
+    - bad: "• Delivered enterprise platforms • Built partnerships • Reduced latency"
+      reason: "Bullet list format forbidden — must be one sentence"
+    - bad: "Built the governed AI runtime foundation later productized at Unify."
+      reason: "Imports Unify runtime concepts (governed AI runtime) into IBM"
+    - good: "Delivered enterprise-scale cloud and data platforms for regulated financial services, establishing the observability, compliance, and partnership foundations that later enabled agentic AI platform leadership."
+      reason: "Frames IBM as foundation (cloud, data, compliance) for later Unify work without inflating IBM's role"
+
+metric_handling_rules:
+  from_bullets:
+    - metric: "99.9% uptime"
+      allowed_usage: "NONE — mention 'enterprise reliability' or 'regulated environment delivery' conceptually"
+    - metric: "30% infrastructure overhead reduction"
+      allowed_usage: "NONE — mention 'cloud modernization' or 'cost optimization' conceptually"
+    - metric: "25% renewal rate improvement"
+      allowed_usage: "NONE — mention 'portfolio management' or 'productization' conceptually"
+    - metric: "50% regulatory response latency reduction"
+      allowed_usage: "NONE — mention 'compliance enablement' or 'data lineage' conceptually"
+    - metric: "$15M incremental revenue"
+      allowed_usage: "NONE — mention 'partnership execution' or 'ecosystem development' conceptually"
+  
+  conceptual_references_allowed:
+    - "enterprise-scale delivery" (instead of 99.9% uptime)
+    - "regulated financial services" (instead of specific compliance metrics)
+    - "cloud modernization" (instead of 30% reduction)
+    - "data lineage and observability" (instead of 50% latency reduction)
+    - "strategic partnerships" (instead of $15M)
+    - "foundation for later work" (positions IBM as precursor)
+
+forbidden_terms_in_narrative:
+  - term: "agentic AI"
+    action: "REJECT — Unify runtime claim"
+  - term: "GraphRAG"
+    action: "REJECT — Unify runtime claim"
+  - term: "multi-agent orchestration"
+    action: "REJECT — Unify runtime claim"
+  - term: "deterministic routing"
+    action: "REJECT — Unify runtime claim"
+  - term: "sandboxed execution"
+    action: "REJECT — Unify runtime claim"
+  - term: "replayable traces"
+    action: "REJECT — Unify runtime claim"
+  - term: "governed AI runtime"
+    action: "REJECT — Unify runtime claim"
+  - term: "prompt assembly"
+    action: "REJECT — Unify runtime claim"
+  - term: "C0"
+    action: "REJECT — layer reference"
+  - term: "L2"
+    action: "REJECT — layer reference"
+  - term: "Exit"
+    action: "REJECT — layer reference (unless job departure)"
+  - term: "UWG"
+    action: "REJECT — layer reference"
+
+forbidden_patterns:
+  - pattern: "bullet_list_output"
+    check: "Output contains •, -, *, or numbered lists"
+    action: "REJECT"
+  - pattern: "multiple_sentences"
+    check: "Output contains sentence-ending punctuation (.!?) more than once"
+    action: "REJECT"
+  - pattern: "repeated_bullet_metric"
+    check: "Metric from bullets appears verbatim in narrative without justification"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "copied_sentence_structure"
+    check: "Narrative mirrors Subject-Verb-Object achievement pattern of bullets"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "new_unsupported_metric"
+    check: "Number in narrative not present in base or bullets"
+    action: "REJECT"
+  - pattern: "unify_fact_contamination"
+    check: "Any claim sourcing from non-IBM employment"
+    action: "REJECT"
+  - pattern: "unify_runtime_import"
+    check: "Any agentic/orchestration/runtime claim applied to IBM"
+    action: "REJECT"
+  - pattern: "runtime_inflation"
+    check: "Implies IBM did current Unify-style agentic work"
+    action: "REJECT"
+
+validation_rules:
+  pre_output:
+    - assert: "output.position_narrative.count('.') == 1"
+      error: "NOT_EXACTLY_ONE_SENTENCE"
+      message: "Must be exactly one sentence"
+    - assert: "not any([c in output.position_narrative for c in ['•', '- ', '*', '1.', '2.', '3.']])"
+      error: "BULLET_LIST_FORMAT"
+      message: "Bullet list format forbidden"
+    - assert: "all([b.source_fact_id.startswith('bul_ibm_') for b in output.claim_ledger])"
+      error: "CROSS_CONTAMINATION"
+      message: "All claims must source from IBM facts only"
+    - assert: "output.drift_check.foundation_vs_runtime_frame == 'foundation'"
+      error: "RUNTIME_INFLATION_FRAME"
+      message: "IBM must be framed as foundation, not runtime"
+    - assert: "output.drift_check.runtime_inflation_score == 0.0"
+      error: "UNIFY_IMPORT_DETECTED"
+      message: "No Unify runtime claims in IBM narrative"
+    - assert: "len(output.drift_check.unify_terms_detected) == 0"
+      error: "FORBIDDEN_UNIFY_TERMS"
+      message: "Forbidden Unify runtime terms detected"
+  post_output:
+    - check: "anti_repetition_check.complement_score > 0.7"
+    - check: "anti_repetition_check.sentence_structure_similarity < 0.3"
+    - check: "anti_repetition_check.bullet_metrics_repeated is empty or all justified"
+
+temperature_profile:
+  range: "0.30 - 0.45"
+  default: 0.35
+  rationale: "Conservative variation for foundation positioning without inflating claims"
+  sweep_validation: "Must pass at 0.30, 0.375, 0.45 with consistent single-sentence structure"
+
+payload_scope:
+  input_tokens_estimate: "~2,800 (includes finalized bullets as context)"
+  output_tokens_estimate: "~350"
+  context_window_required: "4K minimum"
+  json_schema_strict: true
+
+execution_context:
+  runs_after: "ibm_bullet_tailor_v1 fact check completion"
+  input_dependency: "Finalized bullets from bullet pass (read-only)"
+  anti_repetition_source: "Finalized bullets used solely to avoid repetition, not to copy"
+  drift_prevention: "Explicit drift_check to catch Unify runtime claim import"
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2C STOP 8 — IBM Position Narrative"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2c_outputs/stop_8_ibm_narrative_receipt.json"

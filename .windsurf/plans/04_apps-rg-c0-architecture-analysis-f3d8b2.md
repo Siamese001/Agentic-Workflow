@@ -1,7 +1,7 @@
 ---
 slug: apps-rg-c0-architecture-analysis-f3d8b2
 status: Completed
-plan_type: architecture_analysis
+plan_type: audit
 dod_exempt: false
 created_at: "2026-05-13"
 updated_at: "2026-05-14"

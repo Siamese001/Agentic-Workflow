@@ -1,0 +1,170 @@
+schema_version: "prompt_template_v1"
+template_id: "resume_fact_check_v2"
+version: "2.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "FACT_VALIDATION_ONLY"
+
+purpose: |
+  Validator only. Temperature 0.0.
+  Validates every claim against source_fact_ids, candidate_fact_map, 
+  verified_skill_inventory, and canonical JSON.
+  JD and briefing are NEVER proof sources.
+
+sovereign_oath: |
+  VALIDATOR ONLY — JD AND BRIEFING ARE NEVER PROOF
+  
+  I validate claims against canonical sources only.
+  JD and briefing are targeting context — NOT evidence.
+  I reject JD-as-proof and briefing-as-proof.
+  Temperature is 0.0 — no creative variation.
+
+input_contract:
+  required_fields:
+    - resume_claims
+      schema: "{employment_claims: [...], skill_claims: [...], education_claims: [...], certification_claims: [...]}"
+      description: "All claims extracted from draft resume"
+    - claim_ledger
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
+      description: "Claim provenance from earlier stages"
+    - candidate_fact_map
+      schema: "{facts: [{fact_id, fact_text, source: enum[canonical_json, verified_skill]}]}"
+      description: "Map of all candidate facts with sources"
+    - verified_skill_inventory
+      schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id]}]}"
+      description: "Skills verified from canonical JSON"
+    - canonical_base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_section_hashes
+      description: "SHA256 hashes of canonical JSON sections for integrity"
+    - jd_text
+      access_level: "TARGETING_CONTEXT_ONLY"
+      constraint: "NEVER used as proof source"
+    - briefing_insights
+      access_level: "TARGETING_CONTEXT_ONLY"
+      constraint: "NEVER used as proof source"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - verification_report
+      type: "object"
+      schema:
+        total_claims: "integer"
+        verified_claims: "integer"
+        unsupported_claims: "integer"
+        mutated_claims: "integer"
+        verification_rate: "float 0.0-1.0"
+        overall_status: "enum[PASS, FAIL, PARTIAL]"
+    - claim_ledger_validation
+      type: "array"
+      item_schema:
+        claim_text: "string"
+        source_fact_id: "string or null"
+        claim_source: "enum[canonical_json, verified_skill, inferred, unsupported]"
+        verified: "boolean"
+        verification_method: "enum[direct_match, synonym_equivalent, unsupported]"
+    - unsupported_claims
+      type: "array"
+      description: "Claims lacking canonical source support"
+      item_schema:
+        claim_text: "string"
+        claimed_source: "string"
+        rejection_reason: "enum[no_source_fact_id, jd_as_proof_detected, briefing_as_proof_detected, mutated_from_source]"
+        suggested_action: "enum[remove, flag_for_review, source_from_canonical]"
+    - unsupported_metrics
+      type: "array"
+      description: "Metrics not found in canonical facts"
+      item_schema:
+        metric_text: "string"
+        location: "string"
+        rejection_reason: "string"
+    - mutation_findings
+      type: "array"
+      description: "Claims that drifted from canonical source"
+      item_schema:
+        original_fact: "string"
+        mutated_claim: "string"
+        mutation_type: "enum[metric_inflation, scope_expansion, unsupported_addition]"
+        severity: "enum[CRITICAL, WARNING]"
+    - suggested_corrections
+      type: "array"
+      description: "Recommended fixes for unsupported/mutated claims"
+      item_schema:
+        issue: "string"
+        location: "string"
+        suggested_fix: "string"
+        canonical_source: "string or null"
+    - gate_result
+      type: "object"
+      schema:
+        passed: "boolean"
+        fail_reasons: "array[string]"
+        required_actions: "array[string]"
+    - self_check
+      type: "object"
+      schema:
+        jd_as_proof_detected: "boolean (must be false)"
+        briefing_as_proof_detected: "boolean (must be false)"
+        em_dash_detected: "boolean (must be false)"
+        jd_phrase_copying_over_4_words: "boolean (must be false)"
+        section_count_valid: "boolean (must be true)"
+        section_shape_valid: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+forbidden_patterns:
+  - pattern: "jd_as_proof"
+    check: "Claim sourcing from JD text without canonical backing"
+    action: "REJECT — move to unsupported_claims"
+  - pattern: "briefing_as_proof"
+    check: "Claim sourcing from briefing insights without canonical backing"
+    action: "REJECT — move to unsupported_claims"
+  - pattern: "copied_field_mutation"
+    check: "Locked copied text (role headers) does not match canonical source"
+    action: "REJECT — critical mutation"
+  - pattern: "locked_copy_mutation"
+    check: "Copied text sections drift from canonical source"
+    action: "REJECT — critical mutation"
+  - pattern: "missing_source_fact_id"
+    check: "Claim lacks source_fact_id mapping"
+    action: "REJECT — move to unsupported_claims"
+  - pattern: "em_dash"
+    check: "Character U+2014 or U+2013 in claims"
+    action: "REJECT"
+  - pattern: "excessive_jd_copying"
+    check: "More than 4 consecutive words from JD in claim"
+    action: "REJECT — move to unsupported_claims"
+
+validation_rules:
+  pre_output:
+    - assert: "output.self_check.jd_as_proof_detected == false"
+      error: "JD_AS_PROOF_DETECTED"
+      message: "JD cannot be used as proof source"
+    - assert: "output.self_check.briefing_as_proof_detected == false"
+      error: "BRIEFING_AS_PROOF_DETECTED"
+      message: "Briefing cannot be used as proof source"
+    - assert: "output.self_check.em_dash_detected == false"
+      error: "EM_DASH_DETECTED"
+      message: "Em dash not allowed"
+    - assert: "output.self_check.jd_phrase_copying_over_4_words == false"
+      error: "EXCESSIVE_JD_COPYING"
+      message: "No more than 4 consecutive words from JD"
+  post_output:
+    - check: "verification_rate >= 0.95 for PASS"
+    - check: "unsupported_claims has zero CRITICAL items for PASS"
+
+temperature_profile:
+  range: "0.0"
+  default: 0.0
+  rationale: "Pure validation — no creative variation allowed"
+  sweep_validation: "Single value 0.0 only"
+
+payload_scope:
+  input_tokens_estimate: "~10,000 (resume + canonical JSON + claim ledger)"
+  output_tokens_estimate: "~4,000 (verification report + findings)"
+  context_window_required: "16K minimum"
+  json_schema_strict: true
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2E — resume_fact_check_v2 validator"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2e_outputs/w2e_final_validator_prompt_receipt.json"

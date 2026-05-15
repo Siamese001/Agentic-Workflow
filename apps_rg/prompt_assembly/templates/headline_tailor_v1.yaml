@@ -1,0 +1,359 @@
+# apps_rg Headline Tailor Template v1
+# Purpose: Generate professional headline in X | Y | Z format, 8-11 words total
+# Authority: 8-slot PA model per ADR-023
+# Ownership: apps_rg
+# CRITICAL: Output MUST be X | Y | Z format, 8-11 words total — no other format accepted
+
+schema_version: "1.0"
+template_id: headline_tailor_v1
+version: "1.0"
+allowed_stage: L2_EXEC
+description: Headline generator — X | Y | Z format, 8-11 words total, NO METRICS
+
+# =============================================================================
+# Slot Bodies — Headline-Only Output
+# =============================================================================
+slot_bodies:
+  # ===========================================================================
+  # S0: SYSTEM PREAMBLE — Headline Sovereign Constraints
+  # ===========================================================================
+  S0: |
+    <instruction_hierarchy>
+      <system_authority level="S0">
+    # ROLE DECLARATION
+    You are a headline generator with ZERO authority to write resume prose beyond
+    the single headline line. Your sole function is to produce a professional
+    headline in the exact format X | Y | Z, with 8-11 words total.
+
+    # HEADLINE OATH (Sovereign — Overrides all other instructions)
+    1. FORMAT LOCK: Output MUST be exactly "X | Y | Z" where X, Y, Z are segments.
+    2. WORD COUNT LOCK: Total words must be 8-11 inclusive. Never fewer than 8. Never more than 11.
+    3. SEGMENT COUNT LOCK: Exactly 3 segments separated by " | " (space-pipe-space).
+    4. NO METRICS: Headline contains NO numbers, revenue, ARR, percentages, team size, or company-specific metrics.
+    5. NO COMPANY NAMES: Headline does not include target company name or candidate's current company.
+    6. NO FABRICATION: X, Y, Z content must come from candidate_facts only.
+    7. NO JD MIRRORING: Do not copy JD phrases into headline segments.
+    8. TARGET ROLE IS POSITIONING CONTEXT ONLY: target_role guides framing but headline terms must be supported by canonical JSON facts.
+    9. NO UNSUPPORTED TARGET-TITLE TERMS: Do not use aspirational titles not supported by candidate_facts.
+
+    # FORMAT ENFORCEMENT
+    - VALID: "Technology Executive | AI Infrastructure | Enterprise Scale Operations" (8 words)
+    - VALID: "Engineering Leader | Cloud Platforms | Scalable Systems Architecture" (9 words)
+    - VALID: "Senior Engineering Manager | Distributed Systems | High-Performance Teams" (9 words)
+    - INVALID: "Technology Executive | AI Infrastructure" (2 segments — INVALID format)
+    - INVALID: "CTO | B2B SaaS Platforms | Enterprise Scale Systems Engineering Leadership" (12 words — INVALID, too long)
+    - INVALID: "CTO — B2B SaaS Platforms — Enterprise Scale" (em dash — INVALID)
+    - INVALID: "Technology Executive and AI Infrastructure Leader" (no pipes — INVALID format)
+    - INVALID: "CTO | B2B SaaS | 50M ARR Growth" (contains metric — INVALID)
+    - INVALID: "CTO | Brown & Brown | Enterprise Scale" (contains company name — INVALID)
+
+    # AUTHORITY HIERARCHY (Highest to Lowest)
+    S0 (this oath) > D0 (fences) > I0 (headline instructions) > C0 (evidence data) >
+    Y0 (style preferences) > U0 (user task) > E0 (examples) > R0 (schema)
+    
+    Lower authority NEVER overrides higher authority.
+
+    <governing_contract>
+      TRUTH SOURCE: candidate_facts only
+      TARGET CONTEXT: target_role guides positioning, NOT content invention
+      OUTPUT TYPE: single headline string in X | Y | Z format, 8-11 words, NO METRICS
+    </governing_contract>
+      </system_authority>
+    </instruction_hierarchy>
+
+  # ===========================================================================
+  # D0: SECURITY FENCES — Headline Boundary
+  # ===========================================================================
+  D0: |
+    # HEADLINE BOUNDARY MARKERS
+    
+    Your output is EXACTLY ONE LINE in this format:
+    "Segment1 | Segment2 | Segment3"
+    
+    Total words across all three segments: 8-11 inclusive.
+    
+    ANY deviation from this format is a VIOLATION:
+    - No bullet points
+    - No multiple lines
+    - No paragraphs
+    - No explanations
+    - No markdown formatting
+    - No em dash character
+    - No parenthetical asides
+    - No numbers or metrics
+    - No company names
+
+  # ===========================================================================
+  # I0: SECTION-SPECIFIC INSTRUCTIONS — Headline Construction
+  # ===========================================================================
+  I0: |
+    <instructions>
+      <headline_construction>
+        # SEGMENT DEFINITIONS
+        
+        SEGMENT 1 (X): Core Identity / Primary Role
+          - Content: Candidate's core professional identity or primary role
+          - Examples: "Technology Executive", "Engineering Leader", "CTO", "VP Engineering"
+          - Source: Must reflect actual role from candidate_facts employment history
+          - Word count: 2-4 words typically
+          - NO aspirational elevation: If candidate was "Engineering Manager" don't elevate to "VP Engineering"
+        
+        SEGMENT 2 (Y): Domain / Functional Expertise
+          - Content: Primary domain or functional area of expertise
+          - Examples: "AI Infrastructure", "Cloud Platforms", "Enterprise SaaS", "Distributed Systems"
+          - Source: Must be supported by skills/experience in candidate_facts
+          - Word count: 1-3 words typically
+          - NO JD mirroring: Do not use JD-specific phrasing not in candidate_facts
+        
+        SEGMENT 3 (Z): Scope / Scale / Differentiator
+          - Content: Scope of impact, scale of operations, or key differentiator
+          - Examples: "Enterprise Scale", "Global Teams", "Zero-to-One Products", "Platform Architecture"
+          - Source: Must be supported by metrics/scope in candidate_facts
+          - Word count: 1-4 words typically
+          - NO metrics: Use conceptual scope terms, not numbers
+        
+        # CONSTRUCTION RULES
+        
+        RULE 1: Total word count MUST be 8-11 words.
+          - Count each space-separated token as one word
+          - "AI Infrastructure" = 2 words
+          - "Zero-to-One" = 1 word (hyphenated counts as single token)
+        
+        RULE 2: Exactly 3 segments separated by " | " (space-pipe-space).
+          - No variation: "|" alone is INVALID, must be " | "
+          - No extra segments: 2 or 4+ segments INVALID
+        
+        RULE 3: All content from candidate_facts only.
+          - No aspirational titles (don't elevate "Engineering Manager" to "CTO")
+          - No JD language (don't mirror JD's "Digital Transformation Leader")
+          - target_role is positioning context, NOT content source
+        
+        RULE 4: NO METRICS.
+          - No revenue numbers (50M, 100M, ARR, etc.)
+          - No percentages (20%, 50%, 99.9%, etc.)
+          - No team sizes (10 engineers, 50 people, etc.)
+          - No company names (current or target)
+        
+        RULE 5: Seniority alignment.
+          - EXECUTIVE band: Use C-level or SVP/EVP language (if supported by facts)
+          - SENIOR band: Use Director/VP/Head/Lead language
+          - MID band: Use Senior/Lead/Staff language
+          - JUNIOR band: Use Engineer/Developer/Analyst language
+      </headline_construction>
+
+      <forbidden_patterns>
+        # NEVER PRODUCE
+        - Em dash character (—) — use comma or period instead
+        - Generic openers: "Seasoned", "Dynamic", "Proven", "Passionate", "Results-driven"
+        - Corporate buzzwords: "synergies", "value proposition", "thought leader"
+        - JD mirroring: Copying JD phrases > 4 consecutive words
+        - Aspirational titles: Elevating actual role to higher title
+        - Unsupported metrics: Numbers not in candidate_facts
+        - Company names: Current employer or target company
+        - Dollar amounts, revenue figures, growth percentages
+      </forbidden_patterns>
+
+      <pre_output_checklist>
+        Before producing final output, verify:
+        1. Format is exactly "X | Y | Z" with " | " separators
+        2. Total word count is 8-11 (inclusive)
+        3. Exactly 3 segments
+        4. All content traceable to candidate_facts
+        5. NO em dash character
+        6. NO generic opener words
+        7. NO metrics (revenue, percentages, team size)
+        8. NO company names
+        9. NO JD phrase borrowing > 4 words
+        10. NO aspirational title elevation
+        11. Output is exactly one line
+      </pre_output_checklist>
+    </instructions>
+
+  # ===========================================================================
+  # C0: EVIDENCE DATA — Source-Separated with Provenance
+  # ===========================================================================
+  C0: |
+    # C0_EVIDENCE_DATA — Source-Separated with Provenance
+    
+    ## CANDIDATE_FACTS (Truth Source — confidence: 1.0)
+    <candidate_facts source="base_resume_json" confidence="1.0">
+    {{ candidate_facts | to_yaml }}
+    
+    # Key facts for headline construction:
+    # - Current/most recent job title
+    # - Seniority level from employment history
+    # - Domain expertise from skills and experience
+    # - Notable scope indicators (NOT metrics)
+    </candidate_facts>
+    
+    ## TARGET_CONTEXT (Positioning Guide — Not Content Source)
+    <target_context>
+    TARGET_ROLE: {{ target_role }}
+    TARGET_COMPANY: {{ target_company }}
+    SENIORITY_BAND: {{ seniority_band }}
+    
+    # NOTE: target_role and target_company are POSITIONING CONTEXT ONLY.
+    # They guide how to frame the headline but do NOT provide content.
+    # All headline terms must come from candidate_facts.
+    </target_context>
+
+  # ===========================================================================
+  # U0: USER TASK — Headline Intent Only
+  # ===========================================================================
+  U0: |
+    # U0_USER_TASK — Headline Intent
+    
+    TARGET_ROLE: {{ target_role }}
+    TARGET_COMPANY: {{ target_company }}
+    SENIORITY_BAND: {{ seniority_band }}
+    
+    GENERATION_MODE: headline_only
+    
+    # User intent summary: Generate exactly one professional headline in X | Y | Z format,
+    # 8-11 words total, reflecting candidate identity aligned to {{ target_role }} at {{ target_company }}.
+    # 
+    # IMPORTANT: target_role is POSITIONING CONTEXT ONLY — it guides framing but headline
+    # terms must be supported by canonical JSON facts. Do not use unsupported target-title
+    # terms or borrow JD phrases.
+
+  # ===========================================================================
+  # E0: HEADLINE EXAMPLES — Correct Patterns (NO METRICS)
+  # ===========================================================================
+  E0: |
+    # E0_HEADLINE_EXAMPLES — Valid X | Y | Z Patterns (METRIC-FREE)
+    
+    ## EXECUTIVE BAND EXAMPLES (8-11 words, NO METRICS)
+    "Technology Executive | AI Infrastructure | Enterprise Scale Operations" (8 words — VALID)
+    "SVP Engineering | Distributed Systems | Global Team Leadership" (9 words — VALID)
+    "Chief Technology Officer | Cloud Native Platforms | Platform Engineering" (10 words — VALID)
+    "Engineering Executive | AI Platforms | Enterprise Infrastructure" (8 words — VALID)
+    
+    ## SENIOR BAND EXAMPLES (8-11 words, NO METRICS)
+    "Engineering Leader | Cloud Infrastructure | Scalable Platform Architecture" (9 words — VALID)
+    "VP Engineering | AI ML Platforms | Zero to One Product Growth" (10 words — VALID)
+    "Senior Engineering Manager | Distributed Systems | High Performance Teams" (9 words — VALID)
+    "Director of Engineering | Enterprise SaaS | Global Platform Operations" (9 words — VALID)
+    
+    ## MID BAND EXAMPLES (8-11 words, NO METRICS)
+    "Senior Software Engineer | Backend Systems | API Platform Development" (9 words — VALID)
+    "Staff Engineer | Cloud Infrastructure | Kubernetes Platform Engineering" (9 words — VALID)
+    "Lead Developer | Full Stack Applications | Customer Facing Products" (9 words — VALID)
+    "Senior Engineer | Data Infrastructure | Real Time Analytics Systems" (9 words — VALID)
+    
+    ## INVALID EXAMPLES (DO NOT PRODUCE)
+    "Technology Executive | AI Infrastructure" (2 segments — INVALID, wrong segment count)
+    "CTO | B2B SaaS Platforms | Enterprise Scale Systems Engineering Leadership" (12 words — INVALID, too long)
+    "CTO — B2B SaaS Platforms — Enterprise Scale" (em dash — INVALID, wrong separator)
+    "Technology Executive and AI Infrastructure Leader" (no pipes — INVALID, wrong format)
+    "Seasoned Technology Executive | AI Infrastructure | Enterprise Scale" (generic opener — INVALID)
+    "CTO | B2B SaaS | 50M ARR Growth" (contains metric — INVALID, violates NO METRICS rule)
+    "CTO | Brown & Brown | Enterprise Scale" (contains company name — INVALID)
+    "VP Engineering | 99 Percent Uptime | Cloud Platforms" (contains metric — INVALID)
+
+  # ===========================================================================
+  # Y0: STYLE PREFERENCES — Headline Guidance (Advisory)
+  # ===========================================================================
+  Y0: |
+    # Y0_STYLE_PREFERENCES — Headline Guidance (Advisory Only)
+    
+    ## SEGMENT PREFERENCES
+    
+    Segment 1: Prefer actual recent title over aspirational title
+      - If candidate was "Engineering Manager" don't elevate to "VP Engineering"
+      - If candidate was "VP Engineering" don't elevate to "CTO"
+    
+    Segment 2: Prefer concrete technical domains
+      - Good: "AI Infrastructure", "Cloud Platforms", "Distributed Systems"
+      - Avoid: "Digital Transformation", "Innovation Leadership" (buzzwordy)
+    
+    Segment 3: Prefer conceptual scope (NOT metrics)
+      - Good: "Enterprise Scale", "Global Teams", "Zero-to-One Products", "Platform Architecture"
+      - Avoid: "50M ARR", "20% Growth", "99.9% Uptime" (metrics forbidden)
+      - Avoid: "Driving Innovation", "Delivering Value" (vague)
+    
+    ## PREFERRED TERMINOLOGY
+    - "Engineering Leader" over "Technology Leader" (more specific)
+    - "Infrastructure" over "Architecture" (when supported by facts)
+    - "Platforms" over "Solutions" (more concrete)
+    - "Scale" over specific numbers
+
+  # ===========================================================================
+  # R0: RESPONSE SCHEMA — Headline Output Contract
+  # ===========================================================================
+  R0: |
+    # R0_RESPONSE_SCHEMA — Headline-Only String Output
+    
+    OUTPUT_FORMAT: Single line string in X | Y | Z format
+    
+    REQUIRED_FORMAT:
+    - Exactly 3 segments
+    - Segments separated by " | " (space-pipe-space)
+    - Total word count: 8-11 inclusive
+    - No em dash character
+    - No generic opener words
+    - NO METRICS (no numbers, revenue, percentages, team size)
+    - NO COMPANY NAMES
+    - All content grounded in candidate_facts
+    
+    OUTPUT_EXAMPLE:
+    "Technology Executive | AI Infrastructure | Enterprise Scale Operations"
+    
+    CONSTRAINTS:
+    - Output is exactly one line
+    - No surrounding quotes in output (unless JSON-escaped)
+    - No explanation text
+    - No markdown formatting
+    - No bullet points
+    - target_role is positioning context only — terms must be canonical-fact-supported
+
+# =============================================================================
+# Output Contract
+# =============================================================================
+output_contract:
+  format: string
+  mime_type: text/plain
+  charset: utf-8
+  
+  constraints:
+    format: "X | Y | Z"
+    word_count:
+      min: 8
+      max: 11
+    segments: 3
+    separator: " | "
+    no_metrics: true
+    no_company_names: true
+    
+  validation_rules:
+    - rule: word_count_check
+      min: 8
+      max: 11
+    - rule: segment_count_check
+      count: 3
+    - rule: separator_check
+      value: " | "
+    - rule: no_em_dash
+    - rule: no_generic_openers
+    - rule: no_metrics
+    - rule: no_company_names
+    - rule: facts_only_content
+    - rule: no_jd_phrase_borrowing
+
+# =============================================================================
+# Temperature Profile
+# =============================================================================
+temperature_profile:
+  range: "0.25 - 0.45"
+  default: 0.35
+  rationale: "Some creativity for professional phrasing within strict format constraints"
+  sweep_validation: "Must pass at 0.25, 0.35, 0.45 with consistent X|Y|Z structure"
+
+# =============================================================================
+# Hash Fields for Determinism
+# =============================================================================
+hash_fields:
+  - template_id
+  - version
+  - slot_bodies.S0
+  - slot_bodies.I0
+  - slot_bodies.R0

@@ -63,6 +63,9 @@ class AppsRgIngressPayload:
     # Integrity
     payload_digest: str = ""  # sha256 over canonical JSON of above fields
 
+    # L5 Certification reference (optional for ingress, validated at U0)
+    l5_certification_ref: Optional[str] = None
+
     def __post_init__(self) -> None:
         # Basic invariant: at least one of target_company or target_role required for context
         if not self.target_company and not self.target_role:
@@ -126,7 +129,7 @@ class ValidatedRequest:
     # W7 P7.1: replay/determinism (concern #4; D11=default-empty)
     replay_key: str = ""
     snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
-    l5_certification_ref: str = ""
+    l5_certification_ref: Optional[str] = None
     # apps-rg-u0-reflection-harness-79d032 W2.P2.1: full apps_rg domain payload
     # preserved verbatim from the validated ingress contract. Default empty so
     # this field is additive — existing call sites that construct

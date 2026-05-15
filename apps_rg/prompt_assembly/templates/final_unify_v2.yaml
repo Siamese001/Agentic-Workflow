@@ -1,0 +1,184 @@
+schema_version: "prompt_template_v1"
+template_id: "final_unify_v2"
+version: "2.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "FINAL_CONSISTENCY_ONLY"
+
+purpose: |
+  Consistency-only final review. No new content authority.
+  Performs allowed operations: remove duplicate claims, normalize metric wording,
+  resolve terminology drift, fix section ordering, flag issues.
+  Does NOT add new claims, metrics, or skills. Does NOT modify locked sections.
+
+sovereign_oath: |
+  CONSISTENCY ONLY — NO NEW CONTENT AUTHORITY
+  
+  I may ONLY perform allowed consistency operations.
+  I may NOT add new claims, metrics, or skills.
+  I may NOT modify locked sections (role headers, copied text).
+  I may NOT rewrite Unify or IBM substance.
+  I may NOT alter source_fact_ids or claim ledger support status.
+  I may NOT change copied headers or locked text.
+
+input_contract:
+  required_fields:
+    - draft_resume_json
+      schema: "{employment, skills, education, certifications, competencies}"
+      description: "Draft resume output from prior stages"
+    - canonical_base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - claim_ledger
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
+      description: "All claims with source fact provenance"
+    - locked_sections
+      schema: "{role_headers: [...], copied_text_sections: [...]}"
+      description: "Sections that must not be modified"
+    - final_unify_intent
+      allowed_values: ["CONSISTENCY_PASS", "FLAG_ISSUES"]
+      default: "CONSISTENCY_PASS"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - final_resume_json
+      type: "object"
+      description: "Final resume after consistency operations only"
+      constraints:
+        - "No new claims not in claim_ledger"
+        - "No new metrics not in source facts"
+        - "No new skills without source_fact_ids"
+        - "Locked sections unchanged"
+    - allowed_operations_applied
+      type: "array"
+      description: "List of allowed operations performed"
+      item_schema:
+        operation: "enum[remove_duplicate, normalize_metric, resolve_drift, fix_ordering, flag_issue]"
+        location: "string"
+        before: "string"
+        after: "string"
+        rationale: "string"
+    - forbidden_operations_detected
+      type: "array"
+      description: "Any attempts at forbidden operations that were blocked"
+      item_schema:
+        attempted_operation: "string"
+        location: "string"
+        blocked_reason: "string"
+    - net_new_content_check
+      type: "object"
+      schema:
+        new_claims_detected: "array[string]"
+        new_metrics_detected: "array[string]"
+        new_skills_detected: "array[string]"
+        check_passed: "boolean (must be true — zero new content)"
+    - locked_copy_check
+      type: "object"
+      schema:
+        role_headers_unchanged: "boolean (must be true)"
+        copied_text_unchanged: "boolean (must be true)"
+        source_fact_ids_unchanged: "boolean (must be true)"
+        claim_ledger_support_unchanged: "boolean (must be true)"
+        check_passed: "boolean (must be true)"
+    - claim_ledger_integrity_check
+      type: "object"
+      schema:
+        all_claims_have_source: "boolean (must be true)"
+        no_unsupported_claims_promoted: "boolean (must be true)"
+        source_fact_ids_valid: "boolean (must be true)"
+        check_passed: "boolean (must be true)"
+    - self_check
+      type: "object"
+      schema:
+        no_new_claims_added: "boolean (must be true)"
+        no_new_metrics_added: "boolean (must be true)"
+        no_new_skills_added: "boolean (must be true)"
+        locked_sections_unchanged: "boolean (must be true)"
+        source_fact_ids_preserved: "boolean (must be true)"
+        claim_ledger_preserved: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+allowed_operations:
+  - operation: "remove_duplicate_claim"
+    description: "Remove redundant claim appearing multiple times"
+    example: "Two bullets both mention '99.9% uptime' — keep one"
+  - operation: "normalize_metric_wording"
+    description: "Standardize metric phrasing without changing value"
+    example: "'$22 million' → '$22M' or '8→28' → '8 to 28' for consistency"
+  - operation: "resolve_terminology_drift"
+    description: "Align term usage across sections"
+    example: "'AI platforms' vs 'agentic systems' → consistent taxonomy term"
+  - operation: "fix_section_ordering"
+    description: "Reorder sections to canonical sequence"
+    example: "Ensure employment → skills → education → certifications order"
+  - operation: "flag_issue"
+    description: "Flag inconsistency without auto-fixing"
+    example: "Note metric mismatch between bullet and narrative for human review"
+
+forbidden_operations:
+  - operation: "add_new_claim"
+    action: "BLOCK"
+    reason: "No new content authority"
+  - operation: "add_new_metric"
+    action: "BLOCK"
+    reason: "No new content authority"
+  - operation: "add_new_skill"
+    action: "BLOCK"
+    reason: "No new content authority"
+  - operation: "modify_locked_section"
+    action: "BLOCK"
+    reason: "Role headers and copied text are locked"
+  - operation: "rewrite_substance"
+    action: "BLOCK"
+    reason: "Cannot rewrite Unify or IBM bullet substance"
+  - operation: "change_copied_header"
+    action: "BLOCK"
+    reason: "Role header fields are read-only"
+  - operation: "mutate_source_fact_id"
+    action: "BLOCK"
+    reason: "source_fact_ids must not be altered"
+  - operation: "alter_claim_ledger_support"
+    action: "BLOCK"
+    reason: "Support status in claim ledger is immutable"
+
+validation_rules:
+  pre_output:
+    - assert: "len(output.net_new_content_check.new_claims_detected) == 0"
+      error: "NEW_CLAIMS_DETECTED"
+      message: "final_unify_v2 cannot add new claims"
+    - assert: "len(output.net_new_content_check.new_metrics_detected) == 0"
+      error: "NEW_METRICS_DETECTED"
+      message: "final_unify_v2 cannot add new metrics"
+    - assert: "len(output.net_new_content_check.new_skills_detected) == 0"
+      error: "NEW_SKILLS_DETECTED"
+      message: "final_unify_v2 cannot add new skills"
+    - assert: "output.locked_copy_check.role_headers_unchanged == true"
+      error: "LOCKED_HEADERS_MODIFIED"
+      message: "Role headers must not be modified"
+    - assert: "output.locked_copy_check.copied_text_unchanged == true"
+      error: "LOCKED_TEXT_MODIFIED"
+      message: "Copied text sections must not be modified"
+    - assert: "output.locked_copy_check.source_fact_ids_unchanged == true"
+      error: "SOURCE_FACT_IDS_MODIFIED"
+      message: "source_fact_ids must not be altered"
+    - assert: "output.claim_ledger_integrity_check.check_passed == true"
+      error: "CLAIM_LEDGER_INTEGRITY_FAILED"
+      message: "Claim ledger integrity must be preserved"
+  post_output:
+    - check: "self_check.all_checks_passed == true"
+
+temperature_profile:
+  range: "0.0 - 0.1"
+  default: 0.0
+  rationale: "Consistency operations only — no creative variation"
+  sweep_validation: "Must pass at 0.0, 0.05, 0.1 with zero new content"
+
+payload_scope:
+  input_tokens_estimate: "~8,000 (full draft resume + claim ledger)"
+  output_tokens_estimate: "~6,000 (final resume + validation reports)"
+  context_window_required: "16K minimum"
+  json_schema_strict: true
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2E — final_unify_v2 validator"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2e_outputs/w2e_final_validator_prompt_receipt.json"

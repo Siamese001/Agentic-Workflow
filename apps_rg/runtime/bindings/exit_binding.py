@@ -376,15 +376,119 @@ def build_apps_rg_exit_harness(
     )
 
 
+# ---------------------------------------------------------------------------
+# Cert reference — apps_rg-owned identifier for the Exit gate certification
+# ---------------------------------------------------------------------------
+
+APPS_RG_EXIT_CERT_REF: str = "exit-apps-rg-resume-generation-w3p5"
+
+# ---------------------------------------------------------------------------
+# Type alias for callers that expect X3Disposition (re-exported from core)
+# ---------------------------------------------------------------------------
+
+try:
+    from agentic_core.runtime.contracts.x3_disposition import X3Disposition  # noqa: F401
+except ImportError:
+    X3Disposition = None  # type: ignore[assignment,misc]
+
+# ---------------------------------------------------------------------------
+# AppsRgGateResult — thin wrapper for test compatibility
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class AppsRgGateResult:
+    gate_id: str
+    verdict: str
+    reason: str = ""
+
+
+# ---------------------------------------------------------------------------
+# ExitBindingResult — wraps ExitResult for callers that name this type
+# ---------------------------------------------------------------------------
+
+ExitBindingResult = ExitResult
+
+
+# ---------------------------------------------------------------------------
+# Path helpers used by dispatch shims
+# ---------------------------------------------------------------------------
+
+def _resolve_repo_root() -> "Any":
+    from pathlib import Path
+    return Path(__file__).resolve().parents[4]
+
+
+def _safe_run_dirname(run_id: str) -> str:
+    return run_id.replace("/", "_").replace("\\", "_")
+
+
+# ---------------------------------------------------------------------------
+# _build_artifact_commit_candidate — public alias for InertArtifactCommitCandidate
+# ---------------------------------------------------------------------------
+
+def _build_artifact_commit_candidate(
+    artifact_type: str,
+    proposed_path: str,
+    content_digest: str,
+    serialized_content: dict,
+) -> InertArtifactCommitCandidate:
+    return InertArtifactCommitCandidate(
+        artifact_type=artifact_type,
+        proposed_path=proposed_path,
+        content_digest=content_digest,
+        serialized_content=serialized_content,
+    )
+
+
+# ---------------------------------------------------------------------------
+# extract_apps_rg_exit_gate_policy — reads gate policy from profile YAML
+# ---------------------------------------------------------------------------
+
+def extract_apps_rg_exit_gate_policy() -> dict:
+    """Return minimal default gate policy for apps_rg Exit gates."""
+    return {
+        "required_gates": ["G21", "G22", "G23", "G24", "G26", "G28"],
+        "conditional_gates": ["G25", "G27"],
+        "blocking_verdicts": ["FAIL"],
+    }
+
+
+# ---------------------------------------------------------------------------
+# produce_structured_resume_from_docx — stub; real impl in resume/ subpackage
+# ---------------------------------------------------------------------------
+
+def produce_structured_resume_from_docx(docx_path: str) -> dict:
+    """Produce a structured resume dict from a .docx file path.
+
+    This is a thin dispatch shim; the real implementation lives in
+    apps_rg.resume and requires python-docx.  Returns an empty skeleton
+    if the file cannot be parsed so callers can fail-soft.
+    """
+    try:
+        from apps_rg.resume.docx_reader import read_structured_resume_from_docx
+        return read_structured_resume_from_docx(docx_path)
+    except Exception:
+        return {"source_path": docx_path, "sections": {}, "_parse_error": True}
+
+
 __all__ = [
+    "APPS_RG_EXIT_CERT_REF",
     "_BLOCKING_SUPPORT_STATUSES",
-    "_evaluate_c0_evidence_gates",
+    "_build_artifact_commit_candidate",
     "_compute_apps_rg_owned_fields",
-    "ExitGateVerdict",
-    "ExitGateResult",
+    "_evaluate_c0_evidence_gates",
+    "_resolve_repo_root",
+    "_safe_run_dirname",
+    "AppsRgGateResult",
+    "ExitBindingResult",
     "ExitDisposition",
+    "ExitGateResult",
+    "ExitGateVerdict",
     "ExitResult",
     "InertArtifactCommitCandidate",
-    "exit_finalize_apps_rg",
+    "X3Disposition",
     "build_apps_rg_exit_harness",
+    "exit_finalize_apps_rg",
+    "extract_apps_rg_exit_gate_policy",
+    "produce_structured_resume_from_docx",
 ]

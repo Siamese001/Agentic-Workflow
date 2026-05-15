@@ -50,7 +50,7 @@ from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 
 # Producer imports — layer folders contain logic only, contracts imported from runtime/contracts/
 from agentic_core.L0_routing.u0_intake_validator import U0IntakeValidator
-from agentic_core.L1_cognition.l1_plan_contract import L1Planner
+from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
 from agentic_core.L0_routing.route_contract import L0Router
 from agentic_core.L0_routing.c0_evidence_contract import C0EvidenceCollector
 from agentic_core.L2_execution.prompt_assembly_contract import PromptAssembler
@@ -70,6 +70,7 @@ class TestW6ContractEmissionChain:
             target_level="L6",
             source_resume_ref="/path/to/resume.json",
             payload_digest="sha256:abc123",  # Valid digest for test
+            l5_certification_ref="test:valid:w6",
         )
 
         # U0 validates
@@ -86,32 +87,32 @@ class TestW6ContractEmissionChain:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         assert plan.request_id == validated.request_id
         assert plan.run_id == validated.run_id
         assert plan.task_plan
         assert "validate_ingress" in plan.task_plan
-        assert plan.plan_version == "W6.0"
+        assert plan.schema_version == "W6.0"
 
     def test_core_emits_route_contract(self) -> None:
         """L0 emits RouteContract after L1 planning."""
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         l0 = L0Router()
         route = l0.route(plan)
@@ -125,13 +126,13 @@ class TestW6ContractEmissionChain:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         l0 = L0Router()
         route = l0.route(plan)
@@ -152,13 +153,13 @@ class TestW6ContractEmissionChain:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         l0 = L0Router()
         route = l0.route(plan)
@@ -179,13 +180,13 @@ class TestW6ContractEmissionChain:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         l0 = L0Router()
         route = l0.route(plan)
@@ -209,12 +210,12 @@ class TestW6ContractEmissionChain:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
         l0 = L0Router()
         route = l0.route(plan)
         c0 = C0EvidenceCollector()
@@ -248,12 +249,12 @@ class TestW6FullPipelineIntegration:
             target_role="Engineering Manager",
             target_level="L6",
             source_resume_ref="/path/to/resume.json",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
         l0 = L0Router()
         route = l0.route(plan)
         c0 = C0EvidenceCollector()
@@ -274,6 +275,7 @@ class TestW6FullPipelineIntegration:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
@@ -281,8 +283,7 @@ class TestW6FullPipelineIntegration:
         request_id = validated.request_id
         trace_id = validated.trace_id
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         l0 = L0Router()
         route = l0.route(plan)
@@ -393,6 +394,19 @@ class TestW6CanonicalContractImports:
         # Should not have RequestEnvelope defined in this module
         assert not hasattr(payload_module, "RequestEnvelope")
 
+    def test_l1_planner_raises_runtime_error_on_instantiation(self) -> None:
+        """L1Planner is deprecated and must raise RuntimeError on instantiation."""
+        from agentic_core.L1_cognition.l1_plan_contract import L1Planner
+
+        with pytest.raises(RuntimeError) as exc_info:
+            L1Planner()
+
+        error_msg = str(exc_info.value)
+        assert "deprecated" in error_msg.lower()
+        assert "apps_rg.runtime.bindings.l1_binding" in error_msg
+        assert "l1_plan_apps_rg" in error_msg
+        assert "L1PlanContract" in error_msg
+
 
 class TestW6AppsRgIngressOnlyConstraint:
     """Verify apps_rg does not emit runtime contracts."""
@@ -457,13 +471,13 @@ class TestW6ContractVersioning:
         payload = AppsRgIngressPayload(
             target_company="TestCorp",
             target_role="Engineering Manager",
+            l5_certification_ref="test:valid:w6",
         )
 
         u0 = U0IntakeValidator()
         validated = u0.validate(payload)
 
-        l1 = L1Planner()
-        plan = l1.plan(validated)
+        plan = l1_plan_apps_rg(validated)
 
         l0 = L0Router()
         route = l0.route(plan)
@@ -480,7 +494,7 @@ class TestW6ContractVersioning:
         exit_emitter = ExitDispositionEmitter()
         disposition = exit_emitter.emit(sealed)
 
-        assert plan.plan_version == "W6.0"
+        assert plan.schema_version == "W6.0"
         assert route.route_version == "W6.0"
         assert evidence.contract_version == "W6.0"
         assert prompt_artifact.assembly_version == "W6.0"

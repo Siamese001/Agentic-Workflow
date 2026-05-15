@@ -1,6 +1,7 @@
 ---
 title: "apps_rg PA Prompt Hardening: Full Wave Plan"
 description: "Complete wave plan for apps_rg Prompt Assembly hardening — W1-W10 complete, W11 future"
+plan_type: refactor
 dod_exempt: false
 ---
 
@@ -1408,3 +1409,29 @@ Return:
 | **Next Action** | Implement W6: PA compiler/contracts skeleton |
 | **Estimated W6 Scope** | ~1,200 tokens |
 | **Estimated Total Remaining** | ~4,800 tokens (W6-W10) |
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+
+ADG Provenance: backend=sqlite, snapshot=adg_indexed_05122026_1828.sqlite
+
+| Rank | File | Archetype | Layer | Fan-In | Surfaces | Wave |
+|------|------|-----------|-------|--------|----------|------|
+| 1 | `apps_rg/prompt_assembly/compiler.py` | CENTRAL_DEPENDENCY | PA | medium | Execution Surface, Prompt Surface | W6 |
+| 2 | `apps_rg/prompt_assembly/contracts.py` | STATE_NODE | PA | medium | State Surface, Prompt Surface | W6 |
+| 3 | `apps_rg/prompt_assembly/section_contracts/` | CENTRAL_DEPENDENCY | PA | low | Prompt Surface | W7-W8 |
+
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+
+- **MV**: `mv_hotspot_centrality` — `apps_rg/prompt_assembly/compiler.py` is CENTRAL_DEPENDENCY; all 10 declarative YAML/JSON PA artifacts are compiled through this node; 173 tests fan into it
+- **MV**: `mv_dependency_cone_risk` — `apps_rg/prompt_assembly/contracts.py` is a STATE_NODE defining the 8-slot model; changes here propagate to all section contracts, E4/E5 templates, and the negative-control tests
+- **MV**: `mv_graph_reverse_dependency_hotspots` — `apps_rg/prompt_assembly/section_contracts/` is a reverse-dependency hotspot; W7-W8 E4/E5 template additions fan into section contract definitions
+- **Semantic edge**: `apps_rg/prompt_assembly/compiler.py` →`reads_from`→ `apps_rg/prompt_assembly/contracts.py` (8-slot compilation contract); `compiler.py` →`writes_to`→ compiled prompt packet (fail-closed validation output)
+- **Surface references**: Execution Surface (compiler fail-closed validation, smoke test execution), Prompt Surface (8-slot authority model, declarative YAML/JSON artifacts, anti-fabrication rules), State Surface (contracts.py slot definitions, source-separation invariants)

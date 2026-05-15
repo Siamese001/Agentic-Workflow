@@ -117,6 +117,7 @@ class U0IntakeValidator:
             payload_digest=ingress_payload.payload_digest,
             authority_validation_receipt=receipt,
             trace_id=trace_id,
+            l5_certification_ref=ingress_payload.l5_certification_ref,
         )
 
     def _check_forbidden_fields(self, payload: AppsRgIngressPayload) -> None:

@@ -980,3 +980,29 @@ python -m pytest tests/_apps_contract/ -v --tb=short
 - UWG promotion decisions (Exit/UWG scope)
 - Real LLM-judge calibration with Spearman ≥ 0.80 (requires human-labeled corpus)
 - Production-log mining with PII redaction (future plan)
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+
+ADG Provenance: backend=sqlite, snapshot=adg_indexed_05122026_1828.sqlite
+
+| Rank | File | Archetype | Layer | Fan-In | Surfaces | Wave |
+|------|------|-----------|-------|--------|----------|------|
+| 1 | `apps_rg/runtime/executive_summary.py` | ORCHESTRATOR | L2/Exit | medium | Execution Surface, State Surface | W4-W9 |
+| 2 | `apps_rg/runtime/bindings/exit_binding.py` | SAFETY_GATEKEEPER | L3/Exit | medium | Execution Surface, Security Surface | W6 |
+| 3 | `apps_rg/prompt_assembly/compiler.py` | CENTRAL_DEPENDENCY | PA | medium | Execution Surface, Prompt Surface | W2/W8 |
+
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+
+- **MV**: `mv_hotspot_centrality` — `apps_rg/runtime/executive_summary.py` identified as ORCHESTRATOR; all resume-path exit verdicts flow through this node
+- **MV**: `mv_dependency_cone_risk` — `apps_rg/runtime/bindings/exit_binding.py` at L3/Exit carries ×1.75 layer multiplier; cone risk elevated due to Security + Execution surface intersection
+- **MV**: `mv_graph_reverse_dependency_hotspots` — `apps_rg/prompt_assembly/compiler.py` is a reverse-dependency hotspot; W2 PA patching and W8 inert writeback changes both fan into this node
+- **Semantic edge**: `apps_rg/__main__.py` →`flows_to`→ `apps_rg.runtime.executive_summary` (dispatch chain); `executive_summary` →`writes_to`→ `ExitResult` (inert writeback path W8)
+- **Surface references**: Execution Surface (runtime dispatch, judge evaluation), State Surface (inert writeback types, L6 handoff), Prompt Surface (PA compiler, 8-slot model)

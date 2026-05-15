@@ -156,8 +156,13 @@ class FutureRunPromotionRequest:
     replay_proof_ref: str = ""  # Demonstrates fix works
     regression_proof_ref: str = ""  # Demonstrates no regression
     safety_proof_ref: str = ""  # Safety review passed
-    calibration_proof_ref: str = ""  # Judge calibration verified
-    
+    calibration_proof_ref: str = ""  # Judge calibration verified (pre-existing; not re-added)
+
+    # W1 proof fields (required before promotion; default "" for backward compat)
+    audit_manifest_ref: str = ""       # Required for every promotion request (no exceptions)
+    completed_eval_record_ref: str = ""  # Required for every L6 future-run promotion
+    rca_packet_ref: str = ""           # Required for corrective/policy/prompt/rubric/judge/cache changes
+
     # Rollback plan (required)
     rollback_plan_ref: str = ""
     
@@ -172,12 +177,19 @@ class FutureRunPromotionRequest:
 
 @dataclass(frozen=True)
 class L6GauntletResult:
-    """Result of L6 gauntlet (validation gate)."""
+    """Result of L6 gauntlet (validation gate).
+
+    gate_id identifies which gate produced this result (e.g. 'G29').
+    It is a ledger-tracking identifier ONLY — it does NOT constitute
+    GateVerdict evidence, 00C proof, Exit certification, UWG admission,
+    or L5 certification. Presence of gate_id never implies passed=True.
+    """
     run_id: str
     passed: bool
     failures: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     evidence_digest: str = ""
+    gate_id: str = ""  # Populated from PromotionGauntlet.GATE_ID; identifier only
 
 
 @dataclass(frozen=True)
@@ -214,4 +226,9 @@ __all__ = [
     "FutureRunPromotionRequest",
     "L6GauntletResult",
     "ObserverLawReceipt",
+    "PromotionGauntlet",
 ]
+
+# Lazy-imported to avoid circular dependency; exported at package level for
+# downstream consumers that do `from agentic_core.L6_learning import PromotionGauntlet`
+from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet as PromotionGauntlet  # noqa: E402

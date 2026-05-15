@@ -1,0 +1,289 @@
+schema_version: "prompt_template_v1"
+template_id: "ibm_bullet_tailor_v1"
+version: "1.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "IBM_BULLET"
+
+purpose: |
+  Rewrite IBM employment bullets only using IBM facts from canonical base resume.
+  Outputs exactly 5 bullets with zero HEAVY rewrites.
+  IBM is supporting proof for enterprise-scale cloud, data, AI platform, regulated financial services, lineage, observability, portfolio, and partnership execution.
+  No narrative text. No unsupported claims. No JD copying. No Unify runtime inflation.
+
+sovereign_oath: |
+  IBM FACTS ONLY — NO CROSS-CONTAMINATION — NO UNIFY RUNTIME INFLATION
+  
+  I may ONLY use facts from the IBM employment entry (fact_id: exp_ibm_001).
+  I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts.
+  I may NOT inflate IBM with Unify-style agentic runtime claims.
+  I may NOT introduce claims beyond supported IBM facts.
+  I may NOT copy JD phrases beyond 4 consecutive words.
+  I may NOT use em dash character anywhere.
+  I may NOT output narrative text — bullets only.
+  
+  FORBIDDEN TERMS unless explicitly in IBM source facts:
+  - agentic AI, GraphRAG, multi-agent orchestration
+  - deterministic routing, sandboxed execution, replayable traces
+  - governed AI runtime, prompt assembly
+  - C0, L2, Exit, UWG
+
+role_header_fields:
+  company:
+    source: "canonical_json.employment[exp_ibm_001].employer"
+    writable: false
+    value: "IBM"
+  location:
+    source: "canonical_json.employment[exp_ibm_001].location"
+    writable: false
+    value: "Edgewater, NJ"
+  historical_title:
+    source: "canonical_json.employment[exp_ibm_001].title"
+    writable: false
+    value: "Lead Client Partner"
+  dates:
+    source: "canonical_json.employment[exp_ibm_001].start_date / end_date"
+    writable: false
+    value: "2017-04 to 2022-10"
+
+input_contract:
+  required_fields:
+    - selected_fact_plan
+      schema: "{exp_ibm_001: {priority: 2, allowed_bullets: [bul_ibm_001..005], metrics: [...]}}"
+    - base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_section_hash
+      description: "SHA256 of IBM employment section for integrity"
+    - claim_ledger
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
+    - jd_alignment
+      schema: "{alignment_score, matched_terms, gap_terms}"
+    - rewrite_intensity_request
+      allowed_values: ["DEFAULT", "MODERATE", "LIGHT_PROTECTED"]
+      default: "DEFAULT"
+      forbidden: ["HEAVY"]
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - bullets
+      type: "array"
+      min_items: 5
+      max_items: 5
+      item_schema:
+        bullet_id: "string (must map to bul_ibm_001..005)"
+        bullet_text: "string"
+        rewrite_intensity: "enum[MODERATE, LIGHT_PROTECTED] — HEAVY forbidden"
+        has_metric: "boolean"
+        metric_raw: "string or null"
+        source_fact_ids: "array[string]"
+    - rewrite_distribution
+      type: "object"
+      schema:
+        MODERATE: "integer (2-3, default 3)"
+        LIGHT_PROTECTED: "integer (2-3, default 2)"
+        HEAVY: "integer (must be 0)"
+        total: "integer (must equal 5)"
+      default_distribution:
+        MODERATE: 3
+        LIGHT_PROTECTED: 2
+        HEAVY: 0
+      constraints:
+        - "HEAVY == 0 (forbidden)"
+        - "MODERATE >= 2, <= 3"
+        - "LIGHT_PROTECTED >= 2"
+        - "MODERATE + LIGHT_PROTECTED + HEAVY == 5"
+    - claim_ledger
+      type: "array"
+      item_schema:
+        claim_text: "string"
+        source_fact_id: "string (must be bul_ibm_*)"
+        supported: "boolean"
+    - gap_notes
+      type: "array"
+      description: "List of unsupported JD requirements or gaps"
+    - change_log
+      type: "array"
+      description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale}"
+    - self_check
+      type: "object"
+      schema:
+        bullet_count_valid: "boolean (must be true)"
+        distribution_valid: "boolean (must be true)"
+        no_heavy_rewrites: "boolean (must be true)"
+        no_narrative_text: "boolean (must be true)"
+        no_cross_contamination: "boolean (must be true)"
+        no_unify_runtime_inflation: "boolean (must be true)"
+        no_em_dash: "boolean (must be true)"
+        no_excessive_jd_copying: "boolean (must be true)"
+        metrics_preserved: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+rewrite_rules:
+  distribution_constraints:
+    DEFAULT:
+      MODERATE: 3
+      LIGHT_PROTECTED: 2
+      HEAVY: 0
+    FORBIDDEN:
+      - "HEAVY: > 0"
+    CUSTOM:
+      requires_strategic_justification: true
+      max_MODERATE: 3
+      min_LIGHT_PROTECTED: 2
+      
+  bullet_specific_guidance:
+    bul_ibm_001:
+      intensity_default: "MODERATE"
+      content: "Cloud-native AI and analytics platforms for regulated financial services"
+      key_terms: ["99.9% uptime", "governed enterprise decision systems", "regulated financial environments"]
+      ibm_role: "Enterprise-scale platform delivery"
+    bul_ibm_002:
+      intensity_default: "MODERATE"
+      content: "Cloud migration and infrastructure modernization"
+      key_terms: ["30% infrastructure overhead reduction", "scalable cloud-native architectures"]
+      ibm_role: "Cost optimization through modernization"
+    bul_ibm_003:
+      intensity_default: "LIGHT_PROTECTED"
+      content: "SaaS-like platform conversion for regulatory and analytics workflows"
+      key_terms: ["25% renewal rate improvement", "reusable platforms"]
+      ibm_role: "Portfolio and productization"
+      protected_reason: "Contains specific business metric (25%)"
+    bul_ibm_004:
+      intensity_default: "MODERATE"
+      content: "Real-time data ingestion, lineage, and observability frameworks"
+      key_terms: ["50% regulatory response latency reduction", "data lineage", "observability"]
+      ibm_role: "Data engineering and compliance enablement"
+    bul_ibm_005:
+      intensity_default: "LIGHT_PROTECTED"
+      content: "Hyperscaler alliances and co-sell partnership execution"
+      key_terms: ["$15M incremental revenue", "multi-year alliances"]
+      ibm_role: "Strategic partnerships and ecosystem execution"
+      protected_reason: "Contains specific revenue metric ($15M)"
+
+metric_preservation_rules:
+  - metric: "99.9% uptime"
+    bullet: "bul_ibm_001"
+    preservation: "EXACT"
+  - metric: "30% infrastructure overhead reduction"
+    bullet: "bul_ibm_002"
+    preservation: "EXACT"
+  - metric: "25% renewal rate improvement"
+    bullet: "bul_ibm_003"
+    preservation: "EXACT"
+  - metric: "50% regulatory response latency reduction"
+    bullet: "bul_ibm_004"
+    preservation: "EXACT"
+  - metric: "$15M incremental revenue"
+    bullet: "bul_ibm_005"
+    preservation: "EXACT"
+
+forbidden_terms_unless_ibm_source:
+  - term: "agentic AI"
+    action: "REJECT — not in IBM source facts"
+  - term: "GraphRAG"
+    action: "REJECT — not in IBM source facts"
+  - term: "multi-agent orchestration"
+    action: "REJECT — not in IBM source facts"
+  - term: "deterministic routing"
+    action: "REJECT — not in IBM source facts"
+  - term: "sandboxed execution"
+    action: "REJECT — not in IBM source facts"
+  - term: "replayable traces"
+    action: "REJECT — not in IBM source facts"
+  - term: "governed AI runtime"
+    action: "REJECT — not in IBM source facts"
+  - term: "prompt assembly"
+    action: "REJECT — not in IBM source facts"
+  - term: "C0"
+    action: "REJECT — not in IBM source facts"
+  - term: "L2"
+    action: "REJECT — not in IBM source facts"
+  - term: "Exit"
+    action: "REJECT — not in IBM source facts (unless referring to job departure)"
+  - term: "UWG"
+    action: "REJECT — not in IBM source facts"
+  - term: "GraphRAG"
+    action: "REJECT — not in IBM source facts"
+
+forbidden_patterns:
+  - pattern: "em dash"
+    check: "character U+2014 or U+2013 not allowed"
+    action: "REJECT"
+  - pattern: "narrative paragraph"
+    check: "output.bullets must not contain paragraph breaks or narrative flow"
+    action: "REJECT"
+  - pattern: "excessive_jd_copying"
+    check: "No more than 4 consecutive words from JD"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "unify_fact_contamination"
+    check: "source_fact_id must start with bul_ibm_*"
+    action: "REJECT"
+  - pattern: "insurtech_fact_contamination"
+    check: "source_fact_id must start with bul_ibm_*"
+    action: "REJECT"
+  - pattern: "ey_fact_contamination"
+    check: "source_fact_id must start with bul_ibm_*"
+    action: "REJECT"
+  - pattern: "early_career_contamination"
+    check: "source_fact_id must start with bul_ibm_*"
+    action: "REJECT"
+  - pattern: "unify_runtime_inflation"
+    check: "Any claim implying agentic runtime, multi-agent orchestration, or governed AI platform work at IBM"
+    action: "REJECT"
+
+validation_rules:
+  pre_output:
+    - assert: "len(output.bullets) == 5"
+      error: "BULLET_COUNT_INVALID"
+      message: "Must emit exactly 5 bullets"
+    - assert: "output.rewrite_distribution.HEAVY == 0"
+      error: "HEAVY_REWRITE_FORBIDDEN"
+      message: "IBM bullets do not permit HEAVY rewrites"
+    - assert: "output.rewrite_distribution.MODERATE >= 2 and output.rewrite_distribution.MODERATE <= 3"
+      error: "MODERATE_COUNT_INVALID"
+      message: "MODERATE must be 2 or 3"
+    - assert: "output.rewrite_distribution.LIGHT_PROTECTED >= 2"
+      error: "INSUFFICIENT_LIGHT_PROTECTED"
+      message: "Must have at least 2 LIGHT_PROTECTED bullets"
+    - assert: "sum([output.rewrite_distribution[k] for k in ['MODERATE', 'LIGHT_PROTECTED', 'HEAVY']]) == 5"
+      error: "DISTRIBUTION_SUM_INVALID"
+      message: "Distribution must sum to 5"
+    - assert: "not any([U+2014 in b.bullet_text for b in output.bullets])"
+      error: "EM_DASH_DETECTED"
+      message: "Em dash character forbidden"
+    - assert: "all([b.source_fact_id.startswith('bul_ibm_') for b in output.bullets])"
+      error: "CROSS_CONTAMINATION"
+      message: "All bullets must source from IBM facts only"
+    - assert: "not any([term in b.bullet_text.lower() for b in output.bullets for term in ['agentic', 'graphrag', 'multi-agent', 'deterministic routing', 'sandboxed', 'replayable', 'C0', 'UWG']])"
+      error: "UNIFY_RUNTIME_INFLATION"
+      message: "IBM bullets must not include Unify runtime terms"
+  post_output:
+    - check: "claim_ledger completeness"
+    - check: "gap_notes populated if gaps exist"
+    - check: "change_log tracks all modifications"
+
+temperature_profile:
+  range: "0.30 - 0.45"
+  default: 0.35
+  rationale: "Conservative rewrite variation — IBM supports Unify claims, not competes with them"
+  sweep_validation: "Must pass at 0.30, 0.375, 0.45 with consistent structure"
+
+payload_scope:
+  input_tokens_estimate: "~2,200"
+  output_tokens_estimate: "~1,000"
+  context_window_required: "4K minimum"
+  json_schema_strict: true
+
+ibm_positioning_guidance: |
+  IBM represents the foundation that enabled later Unify agentic work.
+  Frame IBM bullets as: enterprise-scale delivery, regulated financial services experience,
+  data/observability/lineage foundations, partnership execution, and portfolio management.
+  
+  DO NOT frame IBM as: agentic AI leadership, runtime governance innovation, or multi-agent orchestration.
+  Those capabilities were developed at Unify. IBM provided the enterprise-scale, regulated-environment,
+  and partnership foundations that made Unify work credible.
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2C STOP 7 — IBM Bullet Tailor"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2c_outputs/stop_7_ibm_bullet_receipt.json"

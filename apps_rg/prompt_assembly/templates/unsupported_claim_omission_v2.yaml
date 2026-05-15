@@ -1,0 +1,156 @@
+schema_version: "prompt_template_v1"
+template_id: "unsupported_claim_omission_v2"
+version: "2.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "OMISSION_VALIDATION_ONLY"
+
+purpose: |
+  Validator/repair recommendation only.
+  Identifies unsupported JD requirements and unsupported generated claims.
+  Does NOT generate new resume content.
+  Moves unsupported items to gap_notes / omission_report.
+  Must not fill gaps with invented claims.
+
+sovereign_oath: |
+  OMISSION VALIDATOR ONLY — NO CONTENT GENERATION
+  
+  I identify what must be removed or flagged.
+  I do NOT generate replacement content.
+  I do NOT invent claims to fill gaps.
+  Gaps are documented, not filled.
+
+input_contract:
+  required_fields:
+    - unsupported_claims_list
+      schema: "array[{claim_text, rejection_reason, location}]"
+      description: "Claims flagged as unsupported by prior validators"
+    - jd_requirements
+      schema: "array[{requirement_text, type: enum[skill, experience, certification, domain]}]"
+      description: "JD-requested requirements for comparison"
+    - canonical_base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - candidate_fact_map
+      schema: "{facts: [{fact_id, fact_text, coverage: enum[full, partial, none]}]}"
+      description: "Candidate facts with JD coverage mapping"
+    - verified_skill_inventory
+      schema: "{skills: [{skill_id, coverage_status: enum[verified, partial, unsupported]}]}"
+      description: "Skills with JD alignment status"
+    - briefing_gaps
+      schema: "array[{topic, gap_description}]"
+      description: "Gaps identified in briefing analysis"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - omission_report
+      type: "object"
+      schema:
+        total_unsupported_items: "integer"
+        jd_requirements_unsupported: "integer"
+        generated_claims_unsupported: "integer"
+        briefing_gaps_unaddressed: "integer"
+        omission_rate: "float 0.0-1.0"
+        overall_status: "enum[COMPLETE, PARTIAL, SIGNIFICANT_GAPS]"
+    - gap_notes
+      type: "array"
+      description: "Documented gaps that cannot be filled from canonical sources"
+      item_schema:
+        gap_id: "string"
+        gap_description: "string"
+        gap_type: "enum[jd_requirement, briefing_insight, unsupported_generated_claim]"
+        reason_unaddressed: "string"
+        would_require: "string — what would be needed (not being done)"
+    - removed_or_flagged_claims
+      type: "array"
+      description: "Claims that must be removed or flagged"
+      item_schema:
+        claim_text: "string"
+        original_location: "string"
+        action_taken: "enum[removed, flagged]"
+        rationale: "string"
+        replacement_attempted: "boolean (must be false — no replacements)"
+    - claim_ledger_validation
+      type: "object"
+      schema:
+        claims_omitted: "integer"
+        claims_flagged: "integer"
+        ledger_integrity_maintained: "boolean (must be true)"
+        unsupported_claims_removed: "array[string]"
+    - required_removals
+      type: "array"
+      description: "List of claims that MUST be removed before finalization"
+      item_schema:
+        removal_id: "string"
+        claim_text: "string"
+        removal_reason: "string"
+        severity: "enum[BLOCKING, ADVISORY]"
+    - gate_result
+      type: "object"
+      schema:
+        can_proceed: "boolean"
+        blocking_removals_count: "integer"
+        advisory_flags_count: "integer"
+        required_actions: "array[string]"
+    - self_check
+      type: "object"
+      schema:
+        no_invented_claims: "boolean (must be true — zero invented)"
+        no_invented_metrics: "boolean (must be true — zero invented)"
+        no_invented_skills: "boolean (must be true — zero invented)"
+        gaps_documented_not_filled: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+forbidden_patterns:
+  - pattern: "invent_replacement_claim"
+    check: "Attempt to create new claim to fill gap"
+    action: "BLOCK — gap must remain documented only"
+  - pattern: "invent_replacement_metric"
+    check: "Attempt to create new metric to fill gap"
+    action: "BLOCK"
+  - pattern: "invent_replacement_skill"
+    check: "Attempt to create new skill to fill gap"
+    action: "BLOCK"
+  - pattern: "fill_gap_with_synthesis"
+    check: "Synthesizing content to address gap"
+    action: "BLOCK — gaps are for documentation only"
+  - pattern: "em_dash"
+    check: "Character U+2014 or U+2013"
+    action: "REJECT"
+
+validation_rules:
+  pre_output:
+    - assert: "output.self_check.no_invented_claims == true"
+      error: "INVENTED_CLAIMS_DETECTED"
+      message: "Cannot invent claims to fill gaps"
+    - assert: "output.self_check.no_invented_metrics == true"
+      error: "INVENTED_METRICS_DETECTED"
+      message: "Cannot invent metrics to fill gaps"
+    - assert: "output.self_check.no_invented_skills == true"
+      error: "INVENTED_SKILLS_DETECTED"
+      message: "Cannot invent skills to fill gaps"
+    - assert: "output.self_check.gaps_documented_not_filled == true"
+      error: "GAPS_WERE_FILLED"
+      message: "Gaps must be documented, not filled"
+    - assert: "all([not r.replacement_attempted for r in output.removed_or_flagged_claims])"
+      error: "REPLACEMENTS_ATTEMPTED"
+      message: "No replacements attempted for removed claims"
+  post_output:
+    - check: "blocking_removals_count is accurate"
+    - check: "gate_result.can_proceed reflects blocking count"
+
+temperature_profile:
+  range: "0.0"
+  default: 0.0
+  rationale: "Pure omission analysis — no creative content generation"
+  sweep_validation: "Single value 0.0 only"
+
+payload_scope:
+  input_tokens_estimate: "~6,000 (unsupported claims + JD requirements + gaps)"
+  output_tokens_estimate: "~2,000 (omission report + gap notes)"
+  context_window_required: "8K minimum"
+  json_schema_strict: true
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2E — unsupported_claim_omission_v2 validator"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2e_outputs/w2e_final_validator_prompt_receipt.json"

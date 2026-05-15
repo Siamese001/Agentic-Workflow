@@ -1,0 +1,217 @@
+schema_version: "prompt_template_v1"
+template_id: "unify_position_narrative_v1"
+version: "1.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "UNIFY_NARRATIVE"
+execution_order: "AFTER_UNIFY_BULLET_FACT_CHECK"
+
+purpose: |
+  Write exactly one sentence position narrative for Unify Consulting.
+  Uses finalized Unify bullets as read-only anti-repetition context.
+  Complements bullets without summarizing or repeating them.
+  No new claims beyond Unify facts or fact-checked bullets.
+
+sovereign_oath: |
+  UNIFY NARRATIVE ONLY — BULLETS ARE READ-ONLY CONTEXT
+  
+  I may ONLY reference finalized Unify bullets as anti-repetition context.
+  I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
+  I may NOT introduce claims beyond supported Unify facts or fact-checked bullets.
+  I may NOT repeat bullet metrics or labels unless explicitly justified.
+  I may NOT copy bullet sentence structure.
+  I may NOT output bullet-list format — exactly one sentence only.
+  I may NOT use numbers unless present in base narrative or explicitly supported.
+
+role_header_fields:
+  company:
+    source: "canonical_json.employment[exp_unify_001].employer"
+    writable: false
+    value: "Unify Consulting"
+  location:
+    source: "canonical_json.employment[exp_unify_001].location"
+    writable: false
+    value: "Boca Raton, FL"
+  historical_title:
+    source: "canonical_json.employment[exp_unify_001].title"
+    writable: false
+    value: "SVP Engineering, Agentic AI Platforms"
+  dates:
+    source: "canonical_json.employment[exp_unify_001].start_date / end_date"
+    writable: false
+    value: "2023-02 to present"
+
+input_contract:
+  required_fields:
+    - finalized_unify_bullets
+      schema: "{bullets: [{bullet_id, bullet_text, source_fact_id}]}"
+      access_level: "READ_ONLY_ANTI_REPETITION"
+      constraints:
+        - "May not copy bullet_text"
+        - "May not mirror bullet sentence structure"
+        - "May not repeat bullet metrics without justification"
+    - selected_fact_plan
+      schema: "{exp_unify_001: {priority: 1, narrative_angle: string}}"
+    - base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_section_hash
+      description: "SHA256 of Unify employment section"
+    - claim_ledger_from_bullets
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool, used_in_narrative: bool}]}"
+    - narrative_intent
+      allowed_values: ["COMPLEMENT_BULLETS", "ROLE_POSITIONING", "TRANSITION_NARRATIVE"]
+      default: "COMPLEMENT_BULLETS"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - position_narrative
+      type: "string"
+      constraints:
+        - "Exactly one sentence"
+        - "No bullet characters (•, -, *)"
+        - "No line breaks"
+        - "No numbering"
+      max_length: "250 characters"
+      style: "Complementary to bullets without summarizing"
+      anti_patterns:
+        - "Summarizing bullet achievements"
+        - "Repeating bullet metrics verbatim"
+        - "Listing bullet topics"
+        - "Copying bullet sentence structure"
+        - "Introducing new metrics not in bullets or base"
+    - claim_ledger
+      type: "array"
+      item_schema:
+        claim_text: "string"
+        source_fact_id: "string (must be bul_unify_*)"
+        supported: "boolean"
+        narrative_usage: "enum[direct, inferred, avoided]"
+        repetition_risk: "enum[none, low, medium, high]"
+    - anti_repetition_check
+      type: "object"
+      schema:
+        bullet_metrics_repeated: "array[string] — metrics that appear in both bullets and narrative (should be empty or justified)"
+        bullet_labels_repeated: "array[string] — labels/topics that overlap (should be minimal)"
+        sentence_structure_similarity: "float 0.0-1.0 (should be < 0.3)"
+        complement_score: "float 0.0-1.0 (should be > 0.7)"
+        check_passed: "boolean"
+    - gap_notes
+      type: "array"
+      description: "Unsupported narrative angles or gaps"
+    - change_log
+      type: "array"
+      description: "Narrative construction decisions: {draft, revision, rationale}"
+    - self_check
+      type: "object"
+      schema:
+        exactly_one_sentence: "boolean (must be true)"
+        no_bullet_list_format: "boolean (must be true)"
+        no_new_metrics: "boolean (must be true)"
+        no_repeated_bullet_metrics: "boolean (must be true)"
+        complements_not_summarizes: "boolean (must be true)"
+        no_cross_contamination: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+narrative_complement_guidance:
+  purpose: |
+    The narrative should POSITION the role and PROVIDE CONTEXT, not LIST ACHIEVEMENTS.
+    Think of it as the "why this role matters" not the "what was accomplished".
+  angle_options:
+    - "Strategic mandate: why the company invested in this function"
+    - "Organizational scope: what this role touched and influenced"
+    - "Capability building: what infrastructure or systems were established"
+  avoid:
+    - "Re-listing bullet achievements"
+    - "Mentioning specific dollar amounts or percentages already in bullets"
+    - "Echoing bullet sentence structure (Subject-Verb-Object achievement pattern)"
+  example_anti_patterns:
+    - bad: "Led the ML engineering organization from 8 to 28 engineers while generating $22M in revenue and expanding margins by 20%."
+      reason: "Repeats all three metrics from bul_unify_006 verbatim"
+    - bad: "• Architected cloud-native platforms • Built dependency graphs • Standardized AI lifecycle"
+      reason: "Bullet list format forbidden — must be one sentence"
+    - bad: "SVP Engineering responsible for agentic AI platforms, governance, and commercialization with proven results."
+      reason: "Vague, sounds like JD buzzword stuffing, no specific positioning angle"
+    - good: "Built the organization's first dedicated agentic AI practice from emerging technology experiments into a governed production platform serving multiple Fortune 500 programs."
+      reason: "Positions the role's strategic mandate without repeating bullet metrics"
+
+forbidden_patterns:
+  - pattern: "bullet_list_output"
+    check: "Output contains •, -, *, or numbered lists"
+    action: "REJECT"
+  - pattern: "multiple_sentences"
+    check: "Output contains sentence-ending punctuation (.!?) more than once"
+    action: "REJECT"
+  - pattern: "repeated_bullet_metric"
+    check: "Metric from bullets appears verbatim in narrative without justification"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "copied_sentence_structure"
+    check: "Narrative mirrors Subject-Verb-Object achievement pattern of bullets"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "new_unsupported_metric"
+    check: "Number in narrative not present in base or bullets"
+    action: "REJECT"
+  - pattern: "ibm_fact_contamination"
+    check: "Any claim sourcing from non-Unify employment"
+    action: "REJECT"
+  - pattern: "cross_employment_summary"
+    check: "Narrative references career arc beyond Unify"
+    action: "REJECT"
+
+metric_handling_rules:
+  from_bullets:
+    - metric: "$22M IP-led revenue"
+      allowed_usage: "NONE — mention 'commercialization' or 'revenue generation' conceptually only"
+    - metric: "20% gross margin expansion"
+      allowed_usage: "NONE — mention 'margin improvement' or 'economics' conceptually only"
+    - metric: "8 to 28 specialists"
+      allowed_usage: "NONE — mention 'team building' or 'organization scaling' conceptually only"
+    - metric: "6 months to 3 weeks"
+      allowed_usage: "NONE — mention 'acceleration' or 'speed' conceptually only"
+    - metric: "99.9% uptime"  # IBM metric
+      allowed_usage: "FORBIDDEN — not a Unify fact"
+    - metric: "40% TCO reduction"  # InsurTech metric
+      allowed_usage: "FORBIDDEN — not a Unify fact"
+  
+  conceptual_references_allowed:
+    - "commercialization" (instead of "$22M")
+    - "platform economics" (instead of "20% margin")
+    - "organization scaling" (instead of "8→28")
+    - "deployment acceleration" (instead of "6mo→3wk")
+
+validation_rules:
+  pre_output:
+    - assert: "output.position_narrative.count('.') == 1"
+      error: "NOT_EXACTLY_ONE_SENTENCE"
+      message: "Must be exactly one sentence"
+    - assert: "not any([c in output.position_narrative for c in ['•', '- ', '*', '1.', '2.', '3.']])"
+      error: "BULLET_LIST_FORMAT"
+      message: "Bullet list format forbidden"
+    - assert: "all([b.source_fact_id.startswith('bul_unify_') for b in output.claim_ledger])"
+      error: "CROSS_CONTAMINATION"
+      message: "All claims must source from Unify facts only"
+  post_output:
+    - check: "anti_repetition_check.complement_score > 0.7"
+    - check: "anti_repetition_check.sentence_structure_similarity < 0.3"
+    - check: "anti_repetition_check.bullet_metrics_repeated is empty or all justified"
+
+temperature_profile:
+  range: "0.35 - 0.50"
+  default: 0.40
+  rationale: "Natural language variation for narrative flow while maintaining precision"
+  sweep_validation: "Must pass at 0.35, 0.425, 0.50 with consistent single-sentence structure"
+
+payload_scope:
+  input_tokens_estimate: "~3,000 (includes finalized bullets as context)"
+  output_tokens_estimate: "~300"
+  context_window_required: "4K minimum"
+  json_schema_strict: true
+
+execution_context:
+  runs_after: "unify_bullet_tailor_v1 fact check completion"
+  input_dependency: "Finalized bullets from bullet pass (read-only)"
+  anti_repetition_source: "Finalized bullets used solely to avoid repetition, not to copy"
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2B STOP 6 — Unify Position Narrative"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2b_outputs/stop_6_unify_narrative_receipt.json"

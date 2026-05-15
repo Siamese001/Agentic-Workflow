@@ -73,6 +73,15 @@ _EXEMPT_PLAN_TYPES: frozenset[str] = frozenset(
         "doc",  # documentation only
         "infra",  # infrastructure / tooling, not code refactor
         "tracker",  # descope trackers, status dashboards
+        # Generic core contract/schema evolution plans: these add or export
+        # types and contracts that apply to ALL apps uniformly.  Their scope
+        # is the contract surface itself, not any graph-measurable blast
+        # radius in the app/runtime dependency graph.  Graph-layer evidence
+        # is therefore not meaningful and must not be required here.
+        # Enforcement still applies to any plan with plan_type='refactor'
+        # that *also* touches core — that case is handled by the refactor
+        # path above, not by this exemption.
+        "platform_core_change",  # generic core contract / export evolution
     }
 )
 

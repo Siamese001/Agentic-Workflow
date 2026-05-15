@@ -476,6 +476,11 @@ def main() -> int:
     if len(sys.argv) > 1:
         argv_path = sys.argv[1]
         argv_norm = argv_path.replace("\\", "/")
+        # Block .env writes — Cascade cannot read it (pre_read_gate blocks it), so any
+        # write from Cascade will be a blank overwrite that destroys real API keys.
+        if argv_norm.endswith("/.env") or argv_norm == ".env":
+            print("[pre_write_gate] BLOCKED: .env writes are forbidden — edit manually in VS Code.", file=sys.stderr)
+            return 2
         if (
             not argv_path.endswith(".py")
             and not argv_path.endswith(mcp_config_suffix)
@@ -521,6 +526,8 @@ def main() -> int:
     # Allow .py, .json (mcp_config), and files under agentic_core/ regardless of extension.
     norm_fp = file_path.replace("\\", "/")
     is_core = "agentic_core/" in norm_fp
+    if norm_fp.endswith("/.env") or norm_fp == ".env":
+        return _exit_block(".env writes are forbidden — edit manually in VS Code.")
     if not file_path.endswith(".py") and not file_path.endswith(mcp_config_suffix) and not is_core:
         return 0
 

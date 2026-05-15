@@ -1,0 +1,194 @@
+schema_version: "prompt_template_v1"
+template_id: "docx_manifest_v2"
+version: "2.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "DETERMINISTIC_RENDER_MANIFEST"
+
+purpose: |
+  Deterministic render manifest and validation prompt contract.
+  No content generation.
+  Validates all inputs and produces render directives.
+  Must fail on locked copy drift, hash mismatch, missing sections.
+
+sovereign_oath: |
+  DETERMINISTIC VALIDATION ONLY — NO CONTENT GENERATION
+  
+  I validate inputs against canonical sources.
+  I produce render manifest — not content.
+  I fail on drift, not fix it.
+  All copied text must match canonical source exactly.
+
+input_contract:
+  required_fields:
+    - final_resume_json
+      schema: "{employment, skills, education, certifications, competencies}"
+      description: "Final validated resume JSON"
+    - canonical_base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_resume_json_hash
+      description: "SHA256 of canonical JSON"
+    - base_section_hashes
+      schema: "{employment_hash, skills_hash, education_hash, certifications_hash}"
+      description: "Per-section SHA256 hashes"
+    - locked_copy_hashes
+      schema: "{role_headers_hash, copied_text_hash}"
+      description: "Hashes of locked/copied text sections"
+    - final_claim_ledger
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
+      description: "Final claim provenance"
+    - final_omission_report
+      schema: "{omissions: [...], gap_notes: [...]}"
+      description: "Final omission report from prior stage"
+    - render_profile
+      schema: "{template: enum[standard_exec], output_format: enum[docx]}"
+      description: "Render configuration"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - docx_manifest
+      type: "object"
+      schema:
+        manifest_version: "string"
+        source_json_hash: "string (must match base_resume_json_hash)"
+        render_timestamp: "string"
+        sections_to_render:
+          type: "array"
+          item_schema:
+            section_id: "string"
+            section_type: "enum[header, employment, skills, education, certifications, competencies]"
+            source_data_path: "string"
+            render_directive: "string"
+    - section_mapping
+      type: "array"
+      item_schema:
+        canonical_section: "string"
+        resume_section: "string"
+        hash_match: "boolean (must be true for locked sections)"
+        status: "enum[VERIFIED, MISMATCH, MISSING]"
+    - locked_copy_validation
+      type: "object"
+      schema:
+        role_headers_validated: "boolean (must be true)"
+        role_headers_match_canonical: "boolean (must be true)"
+        copied_text_validated: "boolean (must be true)"
+        copied_text_match_canonical: "boolean (must be true)"
+        no_drift_detected: "boolean (must be true)"
+        validation_passed: "boolean (must be true)"
+    - hash_validation
+      type: "object"
+      schema:
+        base_json_hash_match: "boolean (must be true)"
+        section_hashes_match: "boolean (must be true)"
+        locked_copy_hashes_match: "boolean (must be true)"
+        all_hashes_valid: "boolean (must be true)"
+    - render_directives
+      type: "array"
+      description: "Per-section render instructions"
+      item_schema:
+        section_id: "string"
+        action: "enum[render, skip, flag_error]"
+        content_source: "string"
+        formatting_notes: "string"
+    - failure_reasons
+      type: "array"
+      description: "Any validation failures preventing render"
+      item_schema:
+        failure_type: "enum[hash_mismatch, locked_copy_drift, missing_section, unsupported_claim, missing_ledger, missing_omission_report]"
+        location: "string"
+        expected: "string"
+        actual: "string"
+        severity: "enum[BLOCKING, WARNING]"
+    - gate_result
+      type: "object"
+      schema:
+        can_render: "boolean"
+        blocking_failures: "integer"
+        warning_count: "integer"
+        required_fixes: "array[string]"
+    - self_check
+      type: "object"
+      schema:
+        canonical_json_hash_validated: "boolean (must be true)"
+        locked_copy_hashes_validated: "boolean (must be true)"
+        all_role_headers_present: "boolean (must be true)"
+        all_locked_sections_present: "boolean (must be true)"
+        no_em_dash_in_output: "boolean (must be true)"
+        no_jd_phrase_copying: "boolean (must be true)"
+        final_claim_ledger_exists: "boolean (must be true)"
+        final_omission_report_exists: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+validation_failures:
+  blocking:
+    - condition: "locked_copy_drift"
+      description: "Copied text does not match canonical source"
+      action: "FAIL — no render allowed"
+    - condition: "copied_header_drift"
+      description: "Role header fields drift from canonical"
+      action: "FAIL — no render allowed"
+    - condition: "missing_locked_section"
+      description: "Required section missing from final resume"
+      action: "FAIL — no render allowed"
+    - condition: "hash_mismatch"
+      description: "Canonical JSON hash does not match expected"
+      action: "FAIL — no render allowed"
+    - condition: "unsupported_final_claim"
+      description: "Final resume contains claim not in claim ledger"
+      action: "FAIL — no render allowed"
+  warning:
+    - condition: "formatting_anomaly"
+      description: "Non-blocking formatting inconsistency"
+      action: "FLAG — render allowed with warning"
+
+forbidden_patterns:
+  - pattern: "content_generation"
+    check: "Attempt to generate new resume content"
+    action: "BLOCK — manifest is validation only"
+  - pattern: "drift_auto_fix"
+    check: "Attempt to auto-correct drift"
+    action: "BLOCK — fail on drift, do not fix"
+  - pattern: "em_dash"
+    check: "Character U+2014 or U+2013 in output"
+    action: "REJECT"
+  - pattern: "jd_phrase_copying"
+    check: "JD phrases in render directives"
+    action: "REJECT"
+
+validation_rules:
+  pre_output:
+    - assert: "output.locked_copy_validation.validation_passed == true"
+      error: "LOCKED_COPY_VALIDATION_FAILED"
+      message: "Locked copied text must match canonical exactly"
+    - assert: "output.locked_copy_validation.no_drift_detected == true"
+      error: "DRIFT_DETECTED"
+      message: "No drift allowed in locked sections"
+    - assert: "output.hash_validation.all_hashes_valid == true"
+      error: "HASH_VALIDATION_FAILED"
+      message: "All hashes must match"
+    - assert: "output.self_check.final_claim_ledger_exists == true"
+      error: "MISSING_CLAIM_LEDGER"
+      message: "Final claim ledger required"
+    - assert: "output.self_check.final_omission_report_exists == true"
+      error: "MISSING_OMISSION_REPORT"
+      message: "Final omission report required"
+  post_output:
+    - check: "gate_result.can_render reflects validation results"
+    - check: "blocking_failures == 0 for can_render == true"
+
+temperature_profile:
+  range: "0.0"
+  default: 0.0
+  rationale: "Deterministic validation — no variation allowed"
+  sweep_validation: "Single value 0.0 only"
+
+payload_scope:
+  input_tokens_estimate: "~8,000 (final resume + canonical JSON + ledgers)"
+  output_tokens_estimate: "~3,000 (manifest + validation report)"
+  context_window_required: "16K minimum"
+  json_schema_strict: true
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2E — docx_manifest_v2 validator"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2e_outputs/w2e_final_validator_prompt_receipt.json"

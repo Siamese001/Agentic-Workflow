@@ -81,6 +81,22 @@ class L1PlanContract:
     snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
+    # W3: non-authority assertion (NAA) — L1 asserts it does not hold execution authority
+    # When present, all four required keys must be True.
+    non_authority_assertion: Mapping[str, bool] = field(default_factory=dict)
+
+    # W3: planning prior refs — references to prior planning context/decisions
+    planning_prior_refs: tuple[str, ...] = field(default_factory=tuple)
+
+    # W3: advisory route hints (not route authority)
+    route_hints: Mapping[str, str] = field(default_factory=dict)
+
+    # W3: prompt BOM refs — references to prompt bill-of-materials entries
+    prompt_bom_refs: tuple[str, ...] = field(default_factory=tuple)
+
+    # W3: judge evaluation expectation refs
+    judge_eval_expectation_refs: tuple[str, ...] = field(default_factory=tuple)
+
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref
         if not verify_certification_ref(self.l5_certification_ref):
@@ -88,3 +104,95 @@ class L1PlanContract:
                 f"L1PlanContract: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
                 "(AG-W0-5=fail_closed)"
             )
+
+        # Validate non_authority_assertion
+        if self.non_authority_assertion:
+            _validate_non_authority_assertion(self.non_authority_assertion)
+
+        # Validate route_hints reject route-authority keys
+        if self.route_hints:
+            _validate_route_hints(self.route_hints)
+
+        # Validate prompt_bom_refs format
+        if self.prompt_bom_refs:
+            _validate_ref_tuple(self.prompt_bom_refs, "prompt_bom_refs")
+
+        # Validate judge_eval_expectation_refs format
+        if self.judge_eval_expectation_refs:
+            _validate_ref_tuple(self.judge_eval_expectation_refs, "judge_eval_expectation_refs")
+
+
+# --- Validation Helpers ---
+
+# Required non-authority assertion keys
+_NAA_REQUIRED_KEYS = frozenset({"no_evidence_retrieval", "no_pa_assembly", "no_model_call", "no_c0_import"})
+
+# Forbidden route-authority keys in route_hints
+_ROUTE_AUTHORITY_KEYS = frozenset({"route_id", "route_family", "execution_form", "selected_route_reason", "route_digest"})
+
+
+def _validate_non_authority_assertion(naa: Mapping[str, bool]) -> None:
+    """Validate non_authority_assertion has all required keys and all values are True."""
+    present_keys = set(naa.keys())
+    missing_keys = _NAA_REQUIRED_KEYS - present_keys
+    if missing_keys:
+        raise ValueError(
+            f"L1PlanContract.non_authority_assertion: missing required keys {sorted(missing_keys)}. "
+            f"All of {_NAA_REQUIRED_KEYS} must be present when NAA is asserted."
+        )
+    extra_keys = present_keys - _NAA_REQUIRED_KEYS
+    if extra_keys:
+        raise ValueError(
+            f"L1PlanContract.non_authority_assertion: unknown keys {sorted(extra_keys)}. "
+            f"Only {_NAA_REQUIRED_KEYS} are allowed."
+        )
+    for key, value in naa.items():
+        if value is not True:
+            raise ValueError(
+                f"L1PlanContract.non_authority_assertion: key '{key}' must be True, got {value!r}. "
+                "All NAA assertions must affirmatively be True."
+            )
+
+
+def _validate_route_hints(hints: Mapping[str, str]) -> None:
+    """Validate route_hints contains no route-authority keys."""
+    for key in hints.keys():
+        if key in _ROUTE_AUTHORITY_KEYS:
+            raise ValueError(
+                f"L1PlanContract.route_hints: forbidden route-authority key '{key}'. "
+                f"Route hints must not contain {_ROUTE_AUTHORITY_KEYS}."
+            )
+
+
+def _validate_ref_tuple(refs: tuple[str, ...], field_name: str) -> None:
+    """Validate ref tuple contains only clean reference strings."""
+    # Forbidden patterns indicating raw prompt content
+    _FORBIDDEN_PROMPT_PATTERNS = [
+        "generate", "create", "write", "produce",
+        "resume", "cv", "cover letter",
+    ]
+
+    for i, ref in enumerate(refs):
+        if not isinstance(ref, str):
+            raise ValueError(
+                f"L1PlanContract.{field_name}[{i}]: must be str, got {type(ref).__name__}"
+            )
+        if "\n" in ref or "\r" in ref:
+            raise ValueError(
+                f"L1PlanContract.{field_name}[{i}]: ref must not contain newlines"
+            )
+        if "<prompt>" in ref or "</prompt>" in ref or ("<" in ref and ">" in ref):
+            raise ValueError(
+                f"L1PlanContract.{field_name}[{i}]: ref must not contain XML tags or prompt content"
+            )
+        if len(ref) > 256:
+            raise ValueError(
+                f"L1PlanContract.{field_name}[{i}]: ref length {len(ref)} exceeds max 256"
+            )
+        # Reject raw prompt content (natural language instructions)
+        ref_lower = ref.lower()
+        for pattern in _FORBIDDEN_PROMPT_PATTERNS:
+            if pattern in ref_lower and " " in ref_lower:
+                raise ValueError(
+                    f"L1PlanContract.{field_name}[{i}]: ref appears to contain prompt content: '{ref[:30]}...'"
+                )

@@ -1,0 +1,232 @@
+schema_version: "prompt_template_v1"
+template_id: "unify_bullet_tailor_v1"
+version: "1.0"
+allowed_stage: "L2_EXEC"
+rewrite_intent: "UNIFY_BULLET"
+
+purpose: |
+  Rewrite Unify Consulting employment bullets only using Unify facts from canonical base resume.
+  Outputs exactly 6 bullets with constrained rewrite distribution.
+  No narrative text. No unsupported claims. No JD copying.
+
+sovereign_oath: |
+  UNIFY FACTS ONLY — NO CROSS-CONTAMINATION
+  
+  I may ONLY use facts from the Unify Consulting employment entry (fact_id: exp_unify_001).
+  I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
+  I may NOT introduce claims beyond supported Unify facts.
+  I may NOT copy JD phrases beyond 4 consecutive words.
+  I may NOT use em dash character anywhere.
+  I may NOT output narrative text — bullets only.
+
+role_header_fields:
+  company:
+    source: "canonical_json.employment[exp_unify_001].employer"
+    writable: false
+    value: "Unify Consulting"
+  location:
+    source: "canonical_json.employment[exp_unify_001].location"
+    writable: false
+    value: "Boca Raton, FL"
+  historical_title:
+    source: "canonical_json.employment[exp_unify_001].title"
+    writable: false
+    value: "SVP Engineering, Agentic AI Platforms"
+  dates:
+    source: "canonical_json.employment[exp_unify_001].start_date / end_date"
+    writable: false
+    value: "2023-02 to present"
+
+input_contract:
+  required_fields:
+    - selected_fact_plan
+      schema: "{exp_unify_001: {priority: 1, allowed_bullets: [bul_unify_001..006], metrics: [...]}}"
+    - base_resume_json_ref
+      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_section_hash
+      description: "SHA256 of Unify employment section for integrity"
+    - claim_ledger
+      schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
+    - jd_alignment
+      schema: "{alignment_score, matched_terms, gap_terms}"
+    - rewrite_intensity_request
+      allowed_values: ["DEFAULT", "HEAVY", "MODERATE", "LIGHT_PROTECTED"]
+      default: "DEFAULT"
+    - strategic_tailor_plan
+      required_if: "rewrite_intensity_request != DEFAULT"
+      schema: "{justified_distribution: {HEAVY: int, MODERATE: int, LIGHT_PROTECTED: int}}"
+
+output_contract:
+  format: "JSON"
+  required_fields:
+    - bullets
+      type: "array"
+      min_items: 6
+      max_items: 6
+      item_schema:
+        bullet_id: "string (must map to bul_unify_001..006)"
+        bullet_text: "string"
+        rewrite_intensity: "enum[HEAVY, MODERATE, LIGHT_PROTECTED]"
+        has_metric: "boolean"
+        metric_raw: "string or null"
+        source_fact_ids: "array[string]"
+    - rewrite_distribution
+      type: "object"
+      schema:
+        HEAVY: "integer (0-3, max 3)"
+        MODERATE: "integer (0-6)"
+        LIGHT_PROTECTED: "integer (1-6, min 1)"
+        total: "integer (must equal 6)"
+      default_distribution:
+        HEAVY: 2
+        MODERATE: 3
+        LIGHT_PROTECTED: 1
+      constraints:
+        - "HEAVY <= 3"
+        - "LIGHT_PROTECTED >= 1"
+        - "HEAVY + MODERATE + LIGHT_PROTECTED == 6"
+    - claim_ledger
+      type: "array"
+      item_schema:
+        claim_text: "string"
+        source_fact_id: "string (must be bul_unify_*)"
+        supported: "boolean"
+    - gap_notes
+      type: "array"
+      description: "List of unsupported JD requirements or gaps"
+    - change_log
+      type: "array"
+      description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale}"
+    - self_check
+      type: "object"
+      schema:
+        bullet_count_valid: "boolean (must be true)"
+        distribution_valid: "boolean (must be true)"
+        no_narrative_text: "boolean (must be true)"
+        no_cross_contamination: "boolean (must be true)"
+        no_em_dash: "boolean (must be true)"
+        no_excessive_jd_copying: "boolean (must be true)"
+        metrics_preserved: "boolean (must be true)"
+        all_checks_passed: "boolean"
+
+rewrite_rules:
+  distribution_constraints:
+    DEFAULT:
+      HEAVY: 2
+      MODERATE: 3
+      LIGHT_PROTECTED: 1
+      protected_bullet_default: "bul_unify_006"
+      protected_bullet_rationale: "Platform Commercialization and Engineering Leadership — contains compound metrics ($22M, 20%, 8→28) that should not be split"
+    CUSTOM:
+      requires_strategic_justification: true
+      max_HEAVY: 3
+      min_LIGHT_PROTECTED: 1
+      
+  bullet_specific_guidance:
+    bul_unify_001:
+      intensity_default: "MODERATE"
+      content: "Agentic AI platform architecture"
+      key_terms: ["deterministic routing", "multi-agent orchestration", "GraphRAG", "sandboxed execution", "policy gating"]
+    bul_unify_002:
+      intensity_default: "MODERATE"
+      content: "Dependency graph intelligence"
+      key_terms: ["AST analysis", "legacy system analysis", "refactor risk"]
+    bul_unify_003:
+      intensity_default: "HEAVY"
+      content: "Governed runtime reliability"
+      key_terms: ["retrieval quality", "context assembly", "evaluation gates", "telemetry", "rollback controls"]
+    bul_unify_004:
+      intensity_default: "LIGHT_PROTECTED"
+      content: "AI systems lifecycle standardization"
+      key_terms: ["lab-to-production", "cycle time reduction", "6 months to 3 weeks"]
+      protected_reason: "Contains specific metric that should not be altered"
+    bul_unify_005:
+      intensity_default: "HEAVY"
+      content: "Distributed ecosystem engineering"
+      key_terms: ["AWS", "Databricks", "microservices", "API gateways"]
+    bul_unify_006:
+      intensity_default: "LIGHT_PROTECTED"
+      content: "Platform commercialization and engineering leadership"
+      key_terms: ["$22M IP-led revenue", "20% gross margin", "8 to 28 specialists"]
+      protected_reason: "Contains compound business metrics; must not be split or over-rewritten"
+
+metric_preservation_rules:
+  - metric: "6 months to 3 weeks"
+    bullet: "bul_unify_004"
+    preservation: "EXACT_OR_EQUIVALENT"
+    equivalent_allowed: ["reduced cycle time from six months to three weeks", "cut deployment cycles by ~85%"]
+  - metric: "$22M IP-led revenue"
+    bullet: "bul_unify_006"
+    preservation: "EXACT"
+  - metric: "20% gross margin expansion"
+    bullet: "bul_unify_006"
+    preservation: "EXACT"
+  - metric: "8 to 28 specialists"
+    bullet: "bul_unify_006"
+    preservation: "EXACT_OR_EQUIVALENT"
+    equivalent_allowed: ["scaled team from 8 to 28", "grew ML engineering org 3.5x"]
+
+forbidden_patterns:
+  - pattern: "em dash"
+    check: "character U+2014 or U+2013 not allowed"
+    action: "REJECT"
+  - pattern: "narrative paragraph"
+    check: "output.bullets must not contain paragraph breaks or narrative flow"
+    action: "REJECT"
+  - pattern: "excessive_jd_copying"
+    check: "No more than 4 consecutive words from JD"
+    action: "FLAG_AND_REWRITE"
+  - pattern: "ibm_fact_contamination"
+    check: "source_fact_id must start with bul_unify_*"
+    action: "REJECT"
+  - pattern: "insurtech_fact_contamination"
+    check: "source_fact_id must start with bul_unify_*"
+    action: "REJECT"
+  - pattern: "ey_fact_contamination"
+    check: "source_fact_id must start with bul_unify_*"
+    action: "REJECT"
+  - pattern: "early_career_contamination"
+    check: "source_fact_id must start with bul_unify_*"
+    action: "REJECT"
+
+validation_rules:
+  pre_output:
+    - assert: "len(output.bullets) == 6"
+      error: "BULLET_COUNT_INVALID"
+      message: "Must emit exactly 6 bullets"
+    - assert: "output.rewrite_distribution.HEAVY <= 3"
+      error: "HEAVY_EXCEEDS_MAX"
+      message: "Cannot have more than 3 HEAVY rewrites"
+    - assert: "output.rewrite_distribution.LIGHT_PROTECTED >= 1"
+      error: "NO_LIGHT_PROTECTED"
+      message: "Must have at least 1 LIGHT_PROTECTED bullet"
+    - assert: "sum([output.rewrite_distribution[k] for k in ['HEAVY', 'MODERATE', 'LIGHT_PROTECTED']]) == 6"
+      error: "DISTRIBUTION_SUM_INVALID"
+      message: "Distribution must sum to 6"
+    - assert: "not any([U+2014 in b.bullet_text for b in output.bullets])"
+      error: "EM_DASH_DETECTED"
+      message: "Em dash character forbidden"
+    - assert: "all([b.source_fact_id.startswith('bul_unify_') for b in output.bullets])"
+      error: "CROSS_CONTAMINATION"
+      message: "All bullets must source from Unify facts only"
+  post_output:
+    - check: "claim_ledger completeness"
+    - check: "gap_notes populated if gaps exist"
+    - check: "change_log tracks all modifications"
+
+temperature_profile:
+  range: "0.35 - 0.50"
+  default: 0.40
+  rationale: "Rewrite variation — heavier rewriting needs more controlled creativity"
+  sweep_validation: "Must pass at 0.35, 0.425, 0.50 with consistent structure"
+
+payload_scope:
+  input_tokens_estimate: "~2,500"
+  output_tokens_estimate: "~1,200"
+  context_window_required: "4K minimum"
+  json_schema_strict: true
+
+metadata:
+  produced_at: "2026-05-14"
+  produced_by: "W2B STOP 5 — Unify Bullet Tailor"
+  receipt_path: "artifacts/apps_rg/prompt_reset/w2b_outputs/stop_5_unify_bullet_receipt.json"

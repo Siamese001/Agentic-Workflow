@@ -1149,6 +1149,72 @@ class DeterministicClaimChecker:
         return results
 
 
+# ---------------------------------------------------------------------------
+# _compute_support_status — derives support_status from evidence items
+# ---------------------------------------------------------------------------
+
+def _compute_support_status(
+    evidence_items: list,
+    *,
+    required_source_classes: frozenset | None = None,
+) -> str:
+    """Compute a support_status string from a list of EvidenceItem objects.
+
+    Returns one of the canonical SUPPORT_STATUS_* constants.
+    """
+    if not evidence_items:
+        return SUPPORT_STATUS_EMPTY
+    if required_source_classes:
+        found = {getattr(e, "source_class", "") for e in evidence_items}
+        missing = required_source_classes - found
+        if missing:
+            return SUPPORT_STATUS_WEAK
+    return SUPPORT_STATUS_PASS
+
+
+# ---------------------------------------------------------------------------
+# _build_chroma_evidence — construct EvidenceItem list from Chroma results
+# ---------------------------------------------------------------------------
+
+def _build_chroma_evidence(
+    chroma_results: list[dict],
+    *,
+    source_class: str = "chroma_vector",
+    slot: str = ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
+) -> list[EvidenceItem]:
+    """Convert raw Chroma query result dicts into EvidenceItem objects.
+
+    Parameters
+    ----------
+    chroma_results:
+        List of dicts, each with at least ``content`` and optionally
+        ``metadata``, ``distance``, ``id`` keys.
+    source_class:
+        Source class label attached to each evidence item.
+    slot:
+        Prompt slot the evidence is authorised for.
+
+    Returns
+    -------
+    list[EvidenceItem]
+    """
+    items: list[EvidenceItem] = []
+    for idx, result in enumerate(chroma_results):
+        content = str(result.get("content", result.get("document", "")))
+        metadata: dict[str, Any] = dict(result.get("metadata", {}))
+        item_id = str(result.get("id", f"chroma_{idx}"))
+        items.append(
+            EvidenceItem(
+                item_id=item_id,
+                content=content,
+                source_class=source_class,
+                allowed_prompt_slot=slot,
+                metadata=metadata,
+            )
+        )
+    return items
+
+
 # Re-export from c0_briefing_bypass for W3 integration
 from apps_rg.runtime.bindings.c0_briefing_bypass import (
     BriefEvaluationResult,
@@ -1179,4 +1245,8 @@ __all__ = [
     "BriefEvaluationResult",
     "BriefingBypassEvaluator",
     "evaluate_manual_brief",
+    # Chroma evidence builders
+    "_build_chroma_evidence",
+    "_compute_support_status",
+    "_emit_retrieval_quality_span",
 ]

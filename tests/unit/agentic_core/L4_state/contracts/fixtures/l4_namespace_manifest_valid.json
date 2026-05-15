@@ -1,0 +1,23 @@
+{
+  "app_id": "test_app_1",
+  "version": "2.0.0",
+  "surfaces": [
+    {
+      "surface_id": "test_policy_registry",
+      "surface_type": "policy_registry",
+      "schema_version": "1.0",
+      "schema_ref": "schema://core/policy_registry/v1",
+      "acl_profile": "read-only",
+      "authority_class": "L4ReadAuthority",
+      "replay_key_pattern": "policy:{run_id}:{policy_id}",
+      "audit_manifest_ref": "manifest://audit/test_app_1/policy",
+      "retention_policy": "180d",
+      "allowed_operations": ["query", "get"],
+      "writer_policy": "",
+      "read_policy": "standard",
+      "owner_app_id": "test_app_1",
+      "pii_or_sensitive_data_class": "none",
+      "lineage_required": false
+    }
+  ]
+}

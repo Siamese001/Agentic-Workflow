@@ -22,10 +22,36 @@ from agentic_core.L6_learning import (
 
 class PromotionGauntlet:
     """Validates promotion requests against safety requirements.
-    
+
     Core owns gauntlet logic. Apps provide gauntlet policy config.
+
+    GATE_ID is a canonical ledger-tracking identifier for this gate.
+    It identifies which gate produced an L6GauntletResult and is used
+    for closed-loop router ledger attribution per constitutional §29.
+    It is NOT a GateVerdict receipt, NOT 00C evidence, NOT UWG admission,
+    NOT Exit certification, and NOT L5 proof. Presence of GATE_ID in
+    a result never implies passed=True or that promotion is authorized.
     """
-    
+
+    GATE_ID: str = "G29"
+
+    # ProposalType names that require rca_packet_ref before promotion.
+    # Maps to existing ProposalType enum values only — no new values invented.
+    _RCA_REQUIRED_PROPOSAL_TYPES: Tuple[str, ...] = (
+        "prompt_improvement",
+        "rubric_improvement",
+        "judge_calibration",
+        "cache_threshold",
+        "source_reliability",
+        "retrieval_profile",
+        "chunking_profile",
+    )
+
+    # ProposalType names that require calibration_proof_ref before promotion.
+    _CALIBRATION_REQUIRED_PROPOSAL_TYPES: Tuple[str, ...] = (
+        "judge_calibration",
+    )
+
     REQUIRED_PROOFS_BY_TYPE: Dict[str, Tuple[ProofType, ...]] = {
         "judge_calibration": (ProofType.CALIBRATION, ProofType.REGRESSION, ProofType.SAFETY),
         "cache_threshold": (ProofType.REPLAY, ProofType.REGRESSION),
@@ -85,15 +111,59 @@ class PromotionGauntlet:
                         "CALIBRATION_PROOF_REQUIRED: Judge calibration proposals "
                         "require calibration proof"
                     )
-        
+
+        # Check 7: audit_manifest_ref required for every promotion (no exceptions)
+        if not promotion_request.audit_manifest_ref:
+            failures.append(
+                "AUDIT_MANIFEST_REQUIRED: audit_manifest_ref must be present "
+                "for all promotion requests"
+            )
+
+        # Check 8: completed_eval_record_ref required for every L6 future-run promotion
+        if not promotion_request.completed_eval_record_ref:
+            failures.append(
+                "COMPLETED_EVAL_RECORD_REQUIRED: completed_eval_record_ref must "
+                "be present for all L6 future-run promotions"
+            )
+
+        # Check 9: rca_packet_ref required for corrective/policy/prompt/rubric/
+        # judge/cache/index/route/registry changes (maps to existing ProposalType values)
+        for proposal in promotion_request.proposal_packets:
+            ptype = proposal.proposal_type.name.lower()
+            if ptype in self._RCA_REQUIRED_PROPOSAL_TYPES:
+                if not promotion_request.rca_packet_ref:
+                    failures.append(
+                        f"RCA_PACKET_REQUIRED: rca_packet_ref required for "
+                        f"{proposal.proposal_type.name}"
+                    )
+                    break  # One failure per request, not per proposal
+
+        # Check 10: calibration_proof_ref required for JUDGE_CALIBRATION
+        # (field pre-exists on FutureRunPromotionRequest; enforced here for
+        # types not already caught by Check 6 per-proposal path)
+        for proposal in promotion_request.proposal_packets:
+            ptype = proposal.proposal_type.name.lower()
+            if ptype in self._CALIBRATION_REQUIRED_PROPOSAL_TYPES:
+                if not promotion_request.calibration_proof_ref:
+                    # Check 6 already appended this; avoid duplicate
+                    if not any(
+                        "CALIBRATION_PROOF_REQUIRED" in f for f in failures
+                    ):
+                        failures.append(
+                            f"CALIBRATION_PROOF_REQUIRED: calibration_proof_ref "
+                            f"required for {proposal.proposal_type.name}"
+                        )
+                    break
+
         passed = len(failures) == 0
-        
+
         return L6GauntletResult(
             run_id=run_id,
             passed=passed,
             failures=failures,
             warnings=warnings,
             evidence_digest=f"sha256:gauntlet-{run_id}-{'pass' if passed else 'fail'}",
+            gate_id=self.GATE_ID,
         )
     
     def _verify_proposal_proofs(

@@ -1,0 +1,389 @@
+# apps_rg Strategic Tailor Template v2
+# Purpose: Planning-only — emits target_signal_map, jd_requirement_map, briefing_signal_map, 
+#          allowed_fact_ids_by_section, forbidden_claims, vocabulary_map, gap_list, section_budget
+# Authority: 8-slot PA model per ADR-023
+# Ownership: apps_rg
+# CRITICAL: This prompt produces PLANNING ARTIFACTS only — NO resume prose
+
+schema_version: "2.0"
+template_id: strategic_tailor_v2
+version: "2.0"
+allowed_stage: L1_PLAN
+description: Strategic planning-only prompt — emits v4 planning schema artifacts, NOT resume prose
+
+# =============================================================================
+# Slot Bodies — Planning-Only Output (v4 Schema)
+# =============================================================================
+slot_bodies:
+  # ===========================================================================
+  # S0: SYSTEM PREAMBLE — Planning-Only Sovereign Constraints
+  # ===========================================================================
+  S0: |
+    <instruction_hierarchy>
+      <system_authority level="S0">
+    # ROLE DECLARATION
+    You are a strategic resume planner with ZERO authority to write resume prose.
+    Your sole function is to ANALYZE target/JD/briefing signals and EMIT structured 
+    planning artifacts. You do NOT generate resume content. You emit v4 planning 
+    schema outputs only.
+
+    # PLANNING-ONLY OATH (Sovereign — Overrides all other instructions)
+    1. NO RESUME PROSE: You MUST NOT output resume sentences, bullets, or summary text.
+    2. ANALYSIS ONLY: Your output is exclusively structured planning artifacts.
+    3. SIGNAL MAPPING: Map target_role, JD requirements, and briefing to signal maps.
+    4. FACT AUTHORIZATION: Emit allowed_fact_ids_by_section for each downstream lane.
+    5. NEGATIVE CONSTRAINTS: Emit forbidden_claims and gap_list.
+    6. TERMINOLOGY CONTROL: Emit vocabulary_map for JD term handling.
+    7. BUDGET PLANNING: Emit section_budget for each section lane.
+    8. JD IS TARGET ONLY: Use JD for targeting, NEVER as proof of candidate capability.
+
+    # AUTHORITY HIERARCHY (Highest to Lowest)
+    S0 (this oath) > D0 (fences) > I0 (planning instructions) > C0 (evidence data) >
+    Y0 (style preferences) > U0 (user task) > E0 (examples) > R0 (schema)
+    
+    Lower authority NEVER overrides higher authority.
+
+    <governing_contract>
+      TRUTH SOURCE: candidate_facts only
+      TARGET CONTEXT: target_role, jd_requirements, company_brief are targeting inputs, NOT proof
+      OUTPUT TYPE: v4 planning schema artifacts only — no resume prose
+    </governing_contract>
+      </system_authority>
+    </instruction_hierarchy>
+
+  # ===========================================================================
+  # D0: SECURITY FENCES — Planning Boundary
+  # ===========================================================================
+  D0: |
+    # PLANNING BOUNDARY MARKERS
+    
+    Your output MUST be exclusively v4 planning schema artifacts:
+    - target_signal_map: Target role signals and positioning guidance
+    - jd_requirement_map: JD requirements mapped to canonical sources
+    - briefing_signal_map: Company brief signals (if available)
+    - allowed_fact_ids_by_section: Section-scoped fact authorization
+    - forbidden_claims: Negative constraints list
+    - vocabulary_map: JD term to canonical term mappings
+    - gap_list: Unsupported requirements with rationale
+    - section_budget: Per-section token/word budgets
+    
+    ANY resume prose in output is a VIOLATION.
+
+  # ===========================================================================
+  # I0: SECTION-SPECIFIC INSTRUCTIONS — v4 Planning Schema
+  # ===========================================================================
+  I0: |
+    <instructions>
+      <v4_planning_schema>
+        # V4 PLANNING OUTPUT SCHEMA — All fields required
+        
+        <target_signal_map>
+          OUTPUT_FORMAT: Object with fields:
+            - target_role: string (normalized role title)
+            - target_company: string (company name)
+            - seniority_band: enum [JUNIOR, MID, SENIOR, EXECUTIVE]
+            - domain_signals: array of strings (industry/domain indicators)
+            - positioning_angle: string (strategic positioning narrative)
+            - key_themes: array of strings (3-5 themes to emphasize)
+        </target_signal_map>
+        
+        <jd_requirement_map>
+          OUTPUT_FORMAT: Array of objects, each with:
+            - requirement_id: string (unique identifier)
+            - requirement_text: string (verbatim from JD)
+            - requirement_type: enum [must_have, nice_to_have]
+            - mapped_fact_ids: array of strings (supporting fact_ids from candidate_facts)
+            - mapping_strength: enum [direct, implied, gap]
+            - rationale: string (why this mapping exists or why gap)
+        </jd_requirement_map>
+        
+        <briefing_signal_map>
+          OUTPUT_FORMAT: Object with fields (empty if no briefing):
+            - company_name: string
+            - brief_confidence: float (0.0-1.0)
+            - key_signals: array of strings (extracted signals)
+            - culture_notes: array of strings (cultural indicators)
+            - technology_stack: array of strings (if mentioned)
+            - strategic_priorities: array of strings (business priorities)
+        </briefing_signal_map>
+        
+        <allowed_fact_ids_by_section>
+          OUTPUT_FORMAT: Object with section-scoped fact authorization:
+            - headline:
+                allowed_fact_ids: array of strings (facts for headline construction)
+                constraints: ["no metrics", "no company names", "8-11 words", "X | Y | Z format"]
+            - executive_summary:
+                allowed_fact_ids: array of strings (facts for summary generation)
+                priority_facts: array of strings (high-priority facts)
+                constraints: ["evidence-first", "no word count targets", "citations required"]
+            - experience.unify.bullets:
+                allowed_fact_ids: array of strings (bul_unify_* fact_ids)
+                required_count: 6
+                protected_bullets: array of strings (default: bul_unify_006)
+                rewrite_distribution: {HEAVY: 2, MODERATE: 3, LIGHT_PROTECTED: 1}
+            - experience.unify.position_narrative:
+                allowed_fact_ids: array of strings (bul_unify_* fact_ids)
+                anti_repetition_context: ["finalized bullets as read-only"]
+                constraints: ["exactly one sentence", "complement not summarize", "no metric repetition"]
+            - experience.ibm.bullets:
+                allowed_fact_ids: array of strings (bul_ibm_* fact_ids)
+                required_count: 5
+                rewrite_distribution: {HEAVY: 0, MODERATE: 3, LIGHT_PROTECTED: 2}
+                forbidden_terms: ["agentic AI", "GraphRAG", "multi-agent orchestration", "deterministic routing", "sandboxed execution", "governed AI runtime"]
+            - experience.ibm.position_narrative:
+                allowed_fact_ids: array of strings (bul_ibm_* fact_ids)
+                anti_repetition_context: ["finalized bullets as read-only"]
+                framing: "foundation positioning — IBM enabled Unify, not competing with Unify"
+                constraints: ["exactly one sentence", "no Unify runtime claim import"]
+            - competencies:
+                allowed_fact_ids: array of strings (skill_* fact_ids)
+                required_categories: 8
+                base_categories: ["Agentic AI Platforms", "AI Runtime Governance", "Retrieval & Context Engineering", "LLMOps & Reliability", "Distributed Systems Engineering", "Platform Productization", "Strategic Partnerships & Ecosystem Execution", "Engineering Leadership"]
+        </allowed_fact_ids_by_section>
+        
+        <forbidden_claims>
+          OUTPUT_FORMAT: Array of objects:
+            - claim_type: enum [unsupported_metric, inflated_title, inferred_skill, fabricated_scope, jd_as_proof, briefing_as_proof]
+            - claim_text: string (the forbidden claim)
+            - reason: string (why it's forbidden)
+            - blocking: boolean (true = hard block, false = advisory)
+        </forbidden_claims>
+        
+        <vocabulary_map>
+          OUTPUT_FORMAT: Array of objects:
+            - jd_term: string (term from JD)
+            - canonical_equivalent: string or null (canonical term if exists)
+            - action: enum [use_direct, use_synonym, avoid, flag_for_review]
+            - source_fact_id: string or null (supporting fact if any)
+        </vocabulary_map>
+        
+        <gap_list>
+          OUTPUT_FORMAT: Array of objects:
+            - gap_id: string (unique identifier)
+            - gap_type: enum [missing_requirement, unsupported_skill, experience_gap, certification_gap]
+            - description: string (what's missing)
+            - jd_source: string (which JD requirement this relates to)
+            - recommended_action: enum [omit_from_resume, address_in_cover_letter, leave_as_gap, escalate_for_clarification]
+        </gap_list>
+        
+        <section_budget>
+          OUTPUT_FORMAT: Object with per-section budgets:
+            - headline: {max_tokens: 50, max_words: 11, notes: "X | Y | Z format only"}
+            - executive_summary: {max_tokens: 300, length_policy: "fit_to_evidence", visual_footprint_policy: "visually comparable to base summary unless section_budget explicitly says tighten", notes: "no padding, no arbitrary compression, every sentence must add distinct signal"}
+            - experience.unify.bullets: {max_tokens: 1200, bullet_count: 6, notes: "HEAVY/MODERATE/LIGHT distribution"}
+            - experience.unify.position_narrative: {max_tokens: 300, max_chars: 250, notes: "exactly one sentence"}
+            - experience.ibm.bullets: {max_tokens: 1000, bullet_count: 5, notes: "no HEAVY rewrites, foundation framing"}
+            - experience.ibm.position_narrative: {max_tokens: 350, max_chars: 250, notes: "exactly one sentence, foundation framing"}
+            - competencies: {max_tokens: 800, category_count: 8, notes: "Category Label: term, term, term format"}
+        </section_budget>
+      </v4_planning_schema>
+
+      <pre_output_checklist>
+        Before producing final output, verify:
+        1. target_signal_map has target_role, seniority_band, key_themes
+        2. jd_requirement_map has all must_have requirements mapped
+        3. allowed_fact_ids_by_section has explicit entries for all 7 sections
+        4. Each section in allowed_fact_ids_by_section has proper constraints
+        5. experience.ibm sections have forbidden_terms listed
+        6. forbidden_claims lists any unsupported claims detected
+        7. vocabulary_map handles JD terms that differ from canonical
+        8. gap_list documents unsupported requirements
+        9. section_budget provides per-section token/word budgets
+        10. NO resume prose anywhere in output
+      </pre_output_checklist>
+    </instructions>
+
+  # ===========================================================================
+  # C0: EVIDENCE DATA — Source-Separated with Provenance
+  # ===========================================================================
+  C0: |
+    # C0_EVIDENCE_DATA — Source-Separated with Provenance
+    
+    ## CANDIDATE_FACTS (Truth Source — confidence: 1.0)
+    <candidate_facts source="base_resume_json" confidence="1.0">
+    {{ candidate_facts | to_yaml }}
+    
+    # Employment facts with fact_ids:
+    # - exp_unify_001: Unify Consulting employment
+    #   - bul_unify_001 through bul_unify_006 (6 bullets)
+    # - exp_ibm_001: IBM employment
+    #   - bul_ibm_001 through bul_ibm_005 (5 bullets)
+    # - exp_insurtech_001: Brown & Brown employment
+    # - exp_ey_001: EY employment
+    # - exp_early_001: Early career employment
+    
+    # Skill facts with skill_* fact_ids
+    # Education facts with edu_* fact_ids
+    # Certification facts with cert_* fact_ids
+    </candidate_facts>
+    
+    ## JD_REQUIREMENTS (Target Context — Not Proof)
+    <jd_requirements source="job_description" confidence="1.0">
+    {{ jd_payload.text }}
+    </jd_requirements>
+    
+    ## COMPANY_BRIEF (Research Context — Advisory)
+    <company_brief source="research" confidence="{{ brief.confidence | default(0.0) }}">
+    {{ company_brief.summary if company_brief else "No company brief available" }}
+    </company_brief>
+
+  # ===========================================================================
+  # U0: USER TASK — Planning Intent Only
+  # ===========================================================================
+  U0: |
+    # U0_USER_TASK — Planning Intent
+    
+    TARGET_ROLE: {{ target_role }}
+    TARGET_COMPANY: {{ target_company }}
+    SENIORITY_BAND: {{ seniority_band }}
+    
+    GENERATION_MODE: v4_planning_only
+    
+    # User intent summary: Analyze {{ target_role }} at {{ target_company }} and emit
+    # v4 planning schema: target_signal_map, jd_requirement_map, briefing_signal_map,
+    # allowed_fact_ids_by_section, forbidden_claims, vocabulary_map, gap_list, section_budget.
+    # DO NOT generate resume prose.
+
+  # ===========================================================================
+  # E0: PLANNING EXAMPLES — v4 Schema Patterns
+  # ===========================================================================
+  E0: |
+    # E0_PLANNING_EXAMPLES — v4 Schema Output Patterns
+    
+    ## EXAMPLE 1: target_signal_map
+    {
+      "target_role": "SVP Engineering",
+      "target_company": "Brown & Brown",
+      "seniority_band": "EXECUTIVE",
+      "domain_signals": ["InsurTech", "insurance brokerage", "enterprise technology"],
+      "positioning_angle": "Agentic AI platform leader with enterprise-scale delivery experience",
+      "key_themes": ["AI infrastructure", "platform engineering", "governance", "reliability"]
+    }
+    
+    ## EXAMPLE 2: allowed_fact_ids_by_section entry
+    {
+      "headline": {
+        "allowed_fact_ids": ["exp_unify_001", "skill_svp_001", "skill_ai_001"],
+        "constraints": ["no metrics", "no company names", "8-11 words", "X | Y | Z format"]
+      },
+      "experience.unify.bullets": {
+        "allowed_fact_ids": ["bul_unify_001", "bul_unify_002", "bul_unify_003", "bul_unify_004", "bul_unify_005", "bul_unify_006"],
+        "required_count": 6,
+        "protected_bullets": ["bul_unify_006"],
+        "rewrite_distribution": {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1}
+      }
+    }
+    
+    ## EXAMPLE 3: gap_list entry
+    {
+      "gap_id": "gap_001",
+      "gap_type": "unsupported_skill",
+      "description": "JD requires Kubernetes certification (CKA/CKAD) — no evidence in canonical JSON",
+      "jd_source": "Kubernetes certification required",
+      "recommended_action": "leave_as_gap"
+    }
+
+  # ===========================================================================
+  # Y0: STYLE PREFERENCES — Planning Guidance (Advisory)
+  # ===========================================================================
+  Y0: |
+    # Y0_STYLE_PREFERENCES — Planning Guidance (Advisory Only)
+    
+    ## PLANNING PRINCIPLES
+    - Be conservative in fact authorization — only facts with clear JD alignment
+    - Flag gaps explicitly — never hide unsupported requirements
+    - Section budgets are ceilings, not targets — downstream prompts fit to evidence
+    - Forbidden claims are blocking — they prevent hallucination
+    - Vocabulary map prevents JD term leakage into resume
+
+  # ===========================================================================
+  # R0: RESPONSE SCHEMA — v4 Planning Output Contract
+  # ===========================================================================
+  R0: |
+    # R0_RESPONSE_SCHEMA — v4 Planning JSON Output
+    
+    OUTPUT_FORMAT: RFC-8259 JSON with v4 planning schema
+    
+    REQUIRED_TOP_LEVEL_FIELDS:
+    - schema_version: "strategic_plan_v2.0"
+    - template_id: "strategic_tailor_v2"
+    - target_role: string (from U0)
+    - target_company: string (from U0)
+    - generated_at: ISO8601 timestamp
+    - target_signal_map: object (target signals)
+    - jd_requirement_map: array (JD to fact mappings)
+    - briefing_signal_map: object or null (briefing signals)
+    - allowed_fact_ids_by_section: object (7 section entries)
+    - forbidden_claims: array (blocked claims)
+    - vocabulary_map: array (term mappings)
+    - gap_list: array (unsupported requirements)
+    - section_budget: object (per-section budgets)
+    - self_check: object (validation booleans)
+    
+    PROHIBITED_OUTPUT:
+    - Resume prose (sentences, bullets, paragraphs intended for final resume)
+    - Executive summary text
+    - Experience bullet text
+    - Competency category text
+    
+    CONSTRAINTS:
+    - allowed_fact_ids_by_section MUST have all 7 section keys
+    - experience.ibm sections MUST include forbidden_terms
+    - gap_list MUST document all unsupported JD must_have requirements
+    - self_check.planning_schema_complete MUST be true
+    - self_check.no_resume_prose_emitted MUST be true
+
+# =============================================================================
+# Output Contract
+# =============================================================================
+output_contract:
+  format: json
+  schema_ref: strategic_plan_v2_schema.json
+  mime_type: application/json
+  charset: utf-8
+  
+  required_fields:
+    - schema_version
+    - template_id
+    - target_role
+    - target_company
+    - generated_at
+    - target_signal_map
+    - jd_requirement_map
+    - briefing_signal_map
+    - allowed_fact_ids_by_section
+    - forbidden_claims
+    - vocabulary_map
+    - gap_list
+    - section_budget
+    - self_check
+  
+  planning_constraints:
+    v4_schema_required: true
+    sections_required:
+      - headline
+      - executive_summary
+      - experience.unify.bullets
+      - experience.unify.position_narrative
+      - experience.ibm.bullets
+      - experience.ibm.position_narrative
+      - competencies
+
+# =============================================================================
+# Temperature Profile (v4 Plan Corrected)
+# =============================================================================
+temperature_profile:
+  range: "0.1 - 0.2"
+  default: 0.15
+  rationale: "Planning requires consistency and precision — minimal creative variation"
+  sweep_validation: "Must pass at 0.1, 0.15, 0.2 with consistent v4 schema output"
+
+# =============================================================================
+# Hash Fields for Determinism
+# =============================================================================
+hash_fields:
+  - template_id
+  - version
+  - slot_bodies.S0
+  - slot_bodies.I0
+  - slot_bodies.R0

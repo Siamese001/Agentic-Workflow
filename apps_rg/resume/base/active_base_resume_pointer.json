@@ -1,0 +1,45 @@
+{
+  "pointer_version": "1.0",
+  "active_base_resume": {
+    "file_path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+    "base_resume_id": "amit_ayer_base_resume_v1",
+    "base_resume_json_hash": "sha256:pending_calculation_post_ingestion",
+    "base_resume_schema_version": "base_resume_v1.0",
+    "activated_at": "2026-05-14T00:00:00Z",
+    "activated_by": "W2A_STOP_1_canonical_json_proof"
+  },
+  "runtime_load_requirements": {
+    "required_fields_at_runtime": [
+      "base_resume_json_ref",
+      "base_resume_json_hash",
+      "base_resume_schema_version",
+      "base_section_hashes",
+      "locked_copy_hashes"
+    ],
+    "docx_usage_rules": {
+      "docx_for_creation_only": true,
+      "docx_for_validation_only": true,
+      "no_repeated_parsing": true,
+      "no_mutation_during_customization": true
+    }
+  },
+  "authority_hierarchy": {
+    "canonical_json_authoritative": true,
+    "docx_non_authoritative": true,
+    "conflict_resolution": "json_wins"
+  },
+  "refresh_workflow": {
+    "versioned": true,
+    "approval_required": true,
+    "separate_from_jd_customization": true,
+    "steps": [
+      "Ingest approved DOCX",
+      "Generate candidate JSON",
+      "Diff and approve",
+      "Write new JSON version",
+      "Update active pointer",
+      "Emit receipt"
+    ]
+  },
+  "updated_at": "2026-05-14T00:00:00Z"
+}

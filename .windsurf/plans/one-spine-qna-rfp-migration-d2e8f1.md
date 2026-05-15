@@ -1,6 +1,6 @@
 ---
 plan_id: one-spine-qna-rfp-migration-d2e8f1
-plan_type: migration
+plan_type: refactor
 touches_agentic_core: true
 touches_governance_ci: true
 touches_windsurf_rules: false
@@ -933,3 +933,31 @@ forward path. Do not leave design questions blank — either answer or block.
 | Performance comparison (new vs old path) | Deferred | Ops monitoring |
 | Full removal of `governed_run`/`governed_rfp_run` wrappers | Deferred — demotion to post-run receipt sufficient | Future cleanup |
 | Per-hop Exit coherence proof (Option B only) | Deferred if Option A chosen | Only required if W0 selects Option B |
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+> NOTE: This plan touches `agentic_core` (`AppIngressRunner`, `AppRuntimeProfile`) and migrates two app entrypoints; graph evidence is required.
+
+ADG Provenance: backend=sqlite, snapshot=adg_indexed_05122026_1828.sqlite
+
+| Rank | File | Archetype | Layer | Fan-In | Surfaces | Wave |
+|------|------|-----------|-------|--------|----------|------|
+| 1 | `agentic_core/runtime/entry/app_ingress_runner.py` | ORCHESTRATOR | L2 | high | Execution Surface, State Surface | W1-W2 (wire target) |
+| 2 | `apps_qna/__main__.py` | ORCHESTRATOR | L2/app | medium | Execution Surface | W1 (entrypoint migration) |
+| 3 | `apps_rfp/__main__.py` | ORCHESTRATOR | L2/app | medium | Execution Surface | W2 (entrypoint migration) |
+
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> RETROACTIVE_EVIDENCE_PATCH — added 2026-05-14 per GAP-C7 remediation batch 2.
+> This plan modifies `agentic_core` entry layer and app entrypoints; graph-layer evidence is required and not exempt.
+
+- **MV**: `mv_hotspot_centrality` — `agentic_core/runtime/entry/app_ingress_runner.py` is the canonical high-fan-in ORCHESTRATOR; W1/W2 wire both apps through its `run()` method, making all current-run orchestration converge here
+- **MV**: `mv_dependency_cone_risk` — `apps_qna/__main__.py` cone risk: demoting existing orchestration to post-run receipt requires reclassifying all entrypoint branches discovered in W0 audit; unclassified entrypoints block W1
+- **MV**: `mv_graph_reverse_dependency_hotspots` — `apps_rfp/__main__.py` is a reverse-dependency hotspot via `governed_rfp_run`; W2 demotes `governed_rfp_run` to post-run receipt or tombstone, collapsing multi-hop dispatch into `AppIngressRunner`
+- **Semantic edge**: `apps_qna/__main__.py` →`flows_to`→ `agentic_core.runtime.entry.app_ingress_runner.AppIngressRunner.run()` (W1 target wiring); `apps_rfp/__main__.py` →`flows_to`→ `AppIngressRunner.run()` (W2 target wiring)
+- **Surface references**: Execution Surface (`AppIngressRunner` dispatch, entrypoint migration, dry-run proof), State Surface (`AppRuntimeProfile` binding, route decision matrix from W0 audit)

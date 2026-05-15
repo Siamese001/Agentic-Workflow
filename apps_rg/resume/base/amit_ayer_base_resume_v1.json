@@ -1,0 +1,336 @@
+{
+  "schema_version": "base_resume_v1.0",
+  "base_resume_id": "amit_ayer_base_resume_v1",
+  "candidate_name": "Amit Ayer",
+  "generated_at": "2026-05-14T00:00:00Z",
+  "source_document": "C:\\Users\\amita\\Documents\\Resumes\\SVP Engineering Resume_Ayer.pdf",
+  "source_document_hash": "sha256:pending_docx_ingestion",
+  "base_resume_json_hash": "sha256:pending_calculation",
+  "locked": true,
+  "refresh_workflow_required_for_changes": true,
+  "header": {
+    "name": "Amit Ayer",
+    "phone": "+1-917-239-3830",
+    "email": "amitayer1@gmail.com",
+    "linkedin": "linkedin.com/in/amitayer1",
+    "location": "Boca Raton, FL"
+  },
+  "facts": {
+    "employment": [
+      {
+        "fact_id": "exp_unify_001",
+        "employer": "Unify Consulting",
+        "title": "SVP Engineering, Agentic AI Platforms",
+        "location": "Boca Raton, FL",
+        "start_date": "2023-02",
+        "end_date": "present",
+        "is_current": true,
+        "bullets": [
+          {
+            "bullet_id": "bul_unify_001",
+            "text": "Designed and operationalized governed agentic AI platform for regulated enterprise workflows, combining deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces",
+            "has_metric": false,
+            "technologies": ["GraphRAG", "multi-agent orchestration", "policy gating"],
+            "domain": "AI infrastructure"
+          },
+          {
+            "bullet_id": "bul_unify_002",
+            "text": "Built and applied software dependency graph intelligence to accelerate legacy system analysis to governed agentic deployment",
+            "has_metric": false,
+            "technologies": ["dependency graphs", "AST analysis"],
+            "domain": "developer tools"
+          },
+          {
+            "bullet_id": "bul_unify_003",
+            "text": "Strengthened enterprise retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards",
+            "has_metric": false,
+            "technologies": ["OpenTelemetry", "CI/CD", "vector retrieval"],
+            "domain": "platform engineering"
+          },
+          {
+            "bullet_id": "bul_unify_004",
+            "text": "Standardized AI systems lifecycle across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks",
+            "has_metric": true,
+            "metric_raw": "6 months to 3 weeks cycle time reduction",
+            "technologies": [],
+            "domain": "platform engineering"
+          },
+          {
+            "bullet_id": "bul_unify_005",
+            "text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers",
+            "has_metric": false,
+            "technologies": ["AWS", "Databricks", "vector services", "microservices"],
+            "domain": "cloud infrastructure"
+          },
+          {
+            "bullet_id": "bul_unify_006",
+            "text": "Productized core agentic AI primitives into reusable platform services, generating $22M in IP-led revenue, expanding gross margins by 20%, and scaling ML engineering organization from 8 to 28 specialists",
+            "has_metric": true,
+            "metric_raw": "$22M revenue, 20% margin, 8→28 headcount",
+            "technologies": [],
+            "domain": "business"
+          }
+        ]
+      },
+      {
+        "fact_id": "exp_ibm_001",
+        "employer": "IBM",
+        "title": "Lead Client Partner",
+        "location": "Edgewater, NJ",
+        "start_date": "2017-04",
+        "end_date": "2022-10",
+        "is_current": false,
+        "bullets": [
+          {
+            "bullet_id": "bul_ibm_001",
+            "text": "Architected cloud-native AI and analytics platforms that enabled governed enterprise decision systems operating at 99.9% uptime across regulated financial environments",
+            "has_metric": true,
+            "metric_raw": "99.9% uptime",
+            "technologies": ["AI platforms", "analytics", "cloud-native"],
+            "domain": "AI infrastructure"
+          },
+          {
+            "bullet_id": "bul_ibm_002",
+            "text": "Led migration from legacy on-prem environments to scalable cloud-native architectures, reducing infrastructure overhead by 30%",
+            "has_metric": true,
+            "metric_raw": "30% infrastructure overhead reduction",
+            "technologies": ["cloud migration", "modernization"],
+            "domain": "cloud infrastructure"
+          },
+          {
+            "bullet_id": "bul_ibm_003",
+            "text": "Converted bespoke regulatory and analytics workflows into reusable SaaS-like platforms, improving renewal rates by 25%",
+            "has_metric": true,
+            "metric_raw": "25% renewal rate improvement",
+            "technologies": ["SaaS platforms", "regulatory workflows"],
+            "domain": "platform engineering"
+          },
+          {
+            "bullet_id": "bul_ibm_004",
+            "text": "Engineered near-real-time ingestion, lineage, and observability frameworks that reduced regulatory response latency by 50%",
+            "has_metric": true,
+            "metric_raw": "50% latency reduction",
+            "technologies": ["data lineage", "observability", "real-time"],
+            "domain": "data engineering"
+          },
+          {
+            "bullet_id": "bul_ibm_005",
+            "text": "Structured multi-year hyperscaler alliances generating $15M in incremental revenue through co-sell motions",
+            "has_metric": true,
+            "metric_raw": "$15M incremental revenue",
+            "technologies": [],
+            "domain": "business"
+          }
+        ]
+      },
+      {
+        "fact_id": "exp_insurtech_001",
+        "employer": "InsurTech Cloud Solutions",
+        "title": "Chief Technology Officer",
+        "location": "New York, NY",
+        "start_date": "2014-04",
+        "end_date": "2017-03",
+        "is_current": false,
+        "bullets": [
+          {
+            "bullet_id": "bul_insurtech_001",
+            "text": "Led end-to-end modernization of monolithic policy administration systems into AWS-based architectures, reducing total cost of ownership by 40%",
+            "has_metric": true,
+            "metric_raw": "40% TCO reduction",
+            "technologies": ["AWS", "modernization", "monolith-to-microservices"],
+            "domain": "cloud infrastructure"
+          },
+          {
+            "bullet_id": "bul_insurtech_002",
+            "text": "Designed SOC 2-aligned cloud control frameworks enabling regulated insurers to adopt modern analytics and ML capabilities",
+            "has_metric": false,
+            "technologies": ["SOC 2", "compliance", "ML"],
+            "domain": "security/compliance"
+          },
+          {
+            "bullet_id": "bul_insurtech_003",
+            "text": "Re-architected underwriting and operational systems for high availability, achieving 99.99% uptime",
+            "has_metric": true,
+            "metric_raw": "99.99% uptime",
+            "technologies": ["high availability", "underwriting systems"],
+            "domain": "platform engineering"
+          }
+        ]
+      },
+      {
+        "fact_id": "exp_ey_001",
+        "employer": "Ernst & Young",
+        "title": "Actuarial Consultant and Quantitative Roles",
+        "location": "New York, NY",
+        "start_date": "2002-10",
+        "end_date": "2009-09",
+        "is_current": false,
+        "bullets": [
+          {
+            "bullet_id": "bul_ey_001",
+            "text": "Directed $15M regulatory analytics transformation program that improved lineage, controls, and predictive risk capabilities",
+            "has_metric": true,
+            "metric_raw": "$15M program",
+            "technologies": ["predictive risk modeling", "data lineage"],
+            "domain": "regulatory analytics"
+          },
+          {
+            "bullet_id": "bul_ey_002",
+            "text": "Achieved 40% reduction in audit remediation costs by implementing automated data lineage and predictive risk modeling",
+            "has_metric": true,
+            "metric_raw": "40% cost reduction",
+            "technologies": ["automated lineage", "risk modeling"],
+            "domain": "regulatory analytics"
+          },
+          {
+            "bullet_id": "bul_ey_003",
+            "text": "Optimized capital reserve requirements under Solvency II and AG43, reducing redundant capital holdings by 12%",
+            "has_metric": true,
+            "metric_raw": "12% capital reduction",
+            "technologies": ["Solvency II", "AG43", "actuarial modeling"],
+            "domain": "actuarial"
+          }
+        ]
+      },
+      {
+        "fact_id": "exp_early_career_001",
+        "employer": "Early Career Roles",
+        "title": "Quantitative Analyst and Systems Developer",
+        "location": "Philadelphia, PA",
+        "start_date": "pre-2002",
+        "end_date": "2002-09",
+        "is_current": false,
+        "bullets": [
+          {
+            "bullet_id": "bul_early_career_001",
+            "text": "Built high-performance valuation frameworks and deterministic modeling systems for insurance and risk analysis, developing the quantitative rigor, control discipline, and systems thinking that now underpin AI platform architecture and runtime governance work",
+            "has_metric": false,
+            "technologies": ["valuation frameworks", "deterministic modeling"],
+            "domain": "foundational engineering"
+          }
+        ]
+      }
+    ],
+    "skills": [
+      {
+        "fact_id": "skill_001",
+        "category": "Agentic AI Platforms",
+        "terms": ["Agentic AI", "Multi-agent orchestration", "LLM inference", "RAG", "GraphRAG", "Vector databases", "Prompt engineering", "Tool use frameworks"],
+        "evidence_source": "exp_unify_001, exp_unify_002"
+      },
+      {
+        "fact_id": "skill_002",
+        "category": "AI Runtime Governance",
+        "terms": ["Deterministic routing", "Policy gating", "Sandboxed execution", "Validation controls", "Replayable traces", "Human escalation controls", "Auditability frameworks"],
+        "evidence_source": "exp_unify_001"
+      },
+      {
+        "fact_id": "skill_003",
+        "category": "Retrieval & Context Engineering",
+        "terms": ["Enterprise retrieval", "Context assembly", "Evaluation gates", "Telemetry instrumentation", "Rollback controls", "AI CI/CD standards"],
+        "evidence_source": "exp_unify_003"
+      },
+      {
+        "fact_id": "skill_004",
+        "category": "LLMOps & Reliability",
+        "terms": ["Production reliability", "Traceable AI behavior", "Repeatable workflows", "Monitoring and remediation", "Vector services integration"],
+        "evidence_source": "exp_unify_003, exp_unify_004"
+      },
+      {
+        "fact_id": "skill_005",
+        "category": "Distributed Systems Engineering",
+        "terms": ["Cloud-native microservices", "AWS", "Databricks Lakehouse", "Enterprise data pipelines", "API gateways", "Identity controls", "Highly available execution layers"],
+        "evidence_source": "exp_unify_005, exp_ibm_002, exp_insurtech_001"
+      },
+      {
+        "fact_id": "skill_006",
+        "category": "Platform Productization",
+        "terms": ["Reusable platform services", "IP-led revenue generation", "Platform economics", "Scalable delivery models", "Gross margin expansion"],
+        "evidence_source": "exp_unify_006"
+      },
+      {
+        "fact_id": "skill_007",
+        "category": "Strategic Partnerships & Ecosystem Execution",
+        "terms": ["Hyperscaler alliances", "Co-sell motions", "Multi-year partnerships", "Revenue generation", "Platform modernization"],
+        "evidence_source": "exp_ibm_005"
+      },
+      {
+        "fact_id": "skill_008",
+        "category": "Engineering Leadership",
+        "terms": ["Org scaling", "ML engineering organization", "Senior engineers", "Platform leads", "Engineering organization growth"],
+        "evidence_source": "exp_unify_006"
+      }
+    ],
+    "education": [
+      {
+        "fact_id": "edu_columbia_ms_001",
+        "degree": "Master of Science in Biostatistics",
+        "institution": "Columbia University",
+        "year": null,
+        "honors": "Graduated with Distinction",
+        "evidence_confidence": 1.0
+      },
+      {
+        "fact_id": "edu_brown_ba_001",
+        "degree": "Bachelor of Arts in Biology",
+        "institution": "Brown University",
+        "year": null,
+        "honors": "Graduated Cum Laude",
+        "evidence_confidence": 1.0
+      }
+    ],
+    "certifications": [
+      {
+        "fact_id": "cert_aws_cml_001",
+        "name": "Certified Machine Learning Engineer – Associate",
+        "issuing_organization": "AWS",
+        "year": "2025",
+        "evidence_confidence": 1.0
+      },
+      {
+        "fact_id": "cert_databricks_lakehouse_001",
+        "name": "Databricks Lakehouse Fundamentals Accreditation",
+        "issuing_organization": "Databricks",
+        "year": "2023",
+        "evidence_confidence": 1.0
+      },
+      {
+        "fact_id": "cert_aws_sa_pro_001",
+        "name": "Certified Solutions Architect – Professional",
+        "issuing_organization": "AWS",
+        "year": "2023",
+        "evidence_confidence": 1.0
+      },
+      {
+        "fact_id": "cert_fsa_001",
+        "name": "Fellow of the Society of Actuaries",
+        "issuing_organization": "SOA",
+        "year": "2010",
+        "evidence_confidence": 1.0
+      }
+    ],
+    "metrics_summary": {
+      "total_revenue_impact": "$37M",
+      "total_cost_reduction": "70%+",
+      "team_scale_range": "8 to 28 engineers",
+      "uptime_achieved": "99.9% to 99.99%",
+      "cycle_time_improvement": "6 months to 3 weeks"
+    }
+  },
+  "fact_metadata": {
+    "total_facts": 52,
+    "employment_facts": 5,
+    "bullet_facts": 18,
+    "skill_facts": 8,
+    "education_facts": 2,
+    "certification_facts": 4,
+    "verification_status": "pending_human_review",
+    "last_verified": null,
+    "next_scheduled_review": "2026-06-14"
+  },
+  "json_schema_compliance": {
+    "schema_version": "base_resume_v1.0",
+    "valid": true,
+    "validation_errors": []
+  }
+}

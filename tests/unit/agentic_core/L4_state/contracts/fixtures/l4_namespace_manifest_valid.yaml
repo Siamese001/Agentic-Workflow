@@ -1,0 +1,37 @@
+app_id: sample_app
+version: "1.0.0"
+surfaces:
+  - surface_id: sample_cache
+    surface_type: cache
+    schema_version: "1.0"
+    schema_ref: "schema://core/cache/v1"
+    acl_profile: "read-only"
+    authority_class: "L4ReadAuthority"
+    replay_key_pattern: "cache:{run_id}:{key}"
+    audit_manifest_ref: "manifest://audit/sample_app/cache"
+    retention_policy: "30d"
+    allowed_operations:
+      - query
+      - get
+    writer_policy: ""
+    read_policy: "standard"
+    owner_app_id: "sample_app"
+    pii_or_sensitive_data_class: "none"
+    lineage_required: false
+  - surface_id: sample_vector_index
+    surface_type: vector_index
+    schema_version: "1.0"
+    schema_ref: "schema://core/vector_index/v1"
+    acl_profile: "read-only"
+    authority_class: "L4ReadAuthority"
+    replay_key_pattern: "vector:{run_id}:{collection}"
+    audit_manifest_ref: "manifest://audit/sample_app/vector"
+    retention_policy: "90d"
+    allowed_operations:
+      - search
+      - list
+    writer_policy: ""
+    read_policy: "standard"
+    owner_app_id: "sample_app"
+    pii_or_sensitive_data_class: "none"
+    lineage_required: true
