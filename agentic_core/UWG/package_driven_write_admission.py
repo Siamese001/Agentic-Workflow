@@ -1,8 +1,13 @@
 """W11 — Package-Driven Write Admission (UWG)
 
-UWG is the sole admission path for apps_research durable writes.
-Consumes FutureRunPromotionRequest from L6.
-Admits or blocks based on policy compliance.
+Spine vocabulary (W5 boundary remediation f8e3c1): **UWG** is the sole durable
+write admission path to governed L4 substrate — layers must not bypass UWG for
+durable commits. This module implements one **package-driven** UWG admission
+surface (research promotions); other UWG entrypoints share the same law.
+
+UWG is the configured admission path for **apps_research** durable writes shown
+here. Consumes ``FutureRunPromotionRequest`` from L6. Admits or blocks based on
+policy compliance.
 """
 from typing import Any, Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass

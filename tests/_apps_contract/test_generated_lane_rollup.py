@@ -7,7 +7,13 @@ from typing import Literal
 import pytest
 
 from apps_rg.runtime.reports import generated_lane_rollup as glr
-from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
+from apps_rg.runtime.runtime_proof_layout import (
+    finalize_runtime_proof_run,
+    load_latest_successful_real_pointer,
+    prepare_runtime_proof_run_dir,
+    resolve_accepted_real_rollup_run_dir,
+    resolve_run_dir_from_pointer,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ROLLUP_JSON = (
@@ -17,9 +23,9 @@ ROLLUP_PY = REPO_ROOT / "apps_rg" / "runtime" / "reports" / "generated_lane_roll
 
 
 def _lane_artifact_base(lane: str) -> Path:
-    """Prefer latest real run dir; fall back to legacy flat lane root for migration."""
-    rd = resolve_run_dir_from_pointer(REPO_ROOT, lane, "real")
-    if rd is not None and (rd / "x2_gate_outputs.json").is_file():
+    """Prefer accepted REAL_LLM+qwen rollup dir; fall back to legacy flat lane root."""
+    rd, tag = resolve_accepted_real_rollup_run_dir(REPO_ROOT, lane)
+    if rd is not None and tag != "missing_successful_real_run" and (rd / "x2_gate_outputs.json").is_file():
         return rd
     legacy = glr.RUNTIME_PROOFS / lane
     if (legacy / "x2_gate_outputs.json").is_file():
@@ -127,11 +133,243 @@ def test_lane_rows_include_run_pointer_fields(rollup_data: dict):
         "latest_real_run_id",
         "rollup_source_run_dir",
         "latest_real_artifact_path",
+        "latest_real_attempt_run_id",
+        "latest_successful_real_run_id",
+        "accepted_real_evidence_resolution",
     ):
         assert key in row
+
+
+def test_summary_includes_accepted_evidence_diagnostics(rollup_data: dict):
+    s = rollup_data["summary"]
+    if "lanes_accepted_evidence_via_migration_scan" not in s:
+        pytest.skip("Regenerate generated_lane_rollup.json after pointer-semantics upgrade")
+    assert "lanes_latest_real_attempt_blocked_but_accepted_rollup_REAL_LLM" in s
 
 
 def test_no_registry_import_in_rollup():
     text = ROLLUP_PY.read_text(encoding="utf-8")
     lowered = text.lower()
     assert "registry" not in lowered
+
+
+_LANE_PT = "headline"
+
+
+def _write_json(p: Path, obj: dict) -> None:
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def _write_min_proof_bundle(rd: Path, *, run_id: str, runtime_generation_status: str) -> None:
+    _write_json(
+        rd / "provider_request.json",
+        {"provider_requested": "qwen_vllm", "provider_attempted": runtime_generation_status == "REAL_LLM"},
+    )
+    _write_json(
+        rd / "l2_output.json",
+        {
+            "run_id": run_id,
+            "section_id": _LANE_PT,
+            "runtime_generation_status": runtime_generation_status,
+            "headline_line": "Unit headline",
+        },
+    )
+    _write_json(rd / "x2_gate_outputs.json", {"gates": [], "x2_passed": 0, "x2_failed": 0, "total_x2_gates": 0})
+    _write_json(rd / "x1d_llm_judge_outputs.json", {"judges": []})
+    _write_json(
+        rd / "x3_disposition.json",
+        {
+            "x3_code": "X3_BLOCK",
+            "blocked_judges": [],
+            "soft_failed_judges": [],
+            "proceed_to_runtime": False,
+        },
+    )
+    _write_json(rd / "l6_shadow_eval_package.json", {"offline_only": True})
+
+
+def test_finalize_real_llm_writes_latest_successful_real_pointer(tmp_path: Path):
+    repo = tmp_path
+    rid = "ok_run"
+    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", rid)
+    _write_min_proof_bundle(ad, run_id=rid, runtime_generation_status="REAL_LLM")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad,
+        run_id=rid,
+        section_id=_LANE_PT,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted=True,
+        command="pytest",
+    )
+    sp = load_latest_successful_real_pointer(repo, _LANE_PT)
+    assert sp is not None
+    assert sp.get("run_id") == rid
+    assert sp.get("runtime_generation_status") == "REAL_LLM"
+
+
+def test_finalize_blocked_does_not_update_latest_successful_real_pointer(tmp_path: Path):
+    repo = tmp_path
+    ok = "ok_run"
+    ad_ok = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", ok)
+    _write_min_proof_bundle(ad_ok, run_id=ok, runtime_generation_status="REAL_LLM")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad_ok,
+        run_id=ok,
+        section_id=_LANE_PT,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted=True,
+        command="pytest",
+    )
+    blocked = "blocked_run"
+    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", blocked)
+    _write_min_proof_bundle(ad_b, run_id=blocked, runtime_generation_status="BLOCKED")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad_b,
+        run_id=blocked,
+        section_id=_LANE_PT,
+        runtime_generation_status="BLOCKED",
+        provider_requested="qwen_vllm",
+        provider_attempted=True,
+        command="pytest",
+    )
+    sp = load_latest_successful_real_pointer(repo, _LANE_PT)
+    assert sp is not None and sp.get("run_id") == ok
+    latest_attempt = resolve_run_dir_from_pointer(repo, _LANE_PT, "real")
+    assert latest_attempt is not None and latest_attempt.name == blocked
+
+
+def test_mock_finalize_does_not_write_latest_successful_real_pointer(tmp_path: Path):
+    repo = tmp_path
+    rid = "mock_run"
+    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "mock", rid)
+    _write_min_proof_bundle(ad, run_id=rid, runtime_generation_status="MOCKED")
+    _write_json(ad / "provider_request.json", {"provider_requested": "mock"})
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "mock",
+        ad,
+        run_id=rid,
+        section_id=_LANE_PT,
+        runtime_generation_status="MOCKED",
+        provider_requested="mock",
+        provider_attempted=False,
+        command="pytest",
+    )
+    assert load_latest_successful_real_pointer(repo, _LANE_PT) is None
+
+
+def test_migration_scan_finds_prior_real_llm_when_successful_pointer_removed(tmp_path: Path):
+    """Simulates blocked contract test overwriting latest_real but not polluting accepted evidence."""
+    repo = tmp_path
+    good = "good_run"
+    ad_g = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", good)
+    _write_min_proof_bundle(ad_g, run_id=good, runtime_generation_status="REAL_LLM")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad_g,
+        run_id=good,
+        section_id=_LANE_PT,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted=True,
+        command="pytest",
+    )
+    succ = repo / "artifacts" / "apps_rg" / "runtime_proofs" / _LANE_PT / "latest_successful_real_run.json"
+    assert succ.is_file()
+    succ.unlink()
+
+    bad = "bad_run"
+    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", bad)
+    _write_min_proof_bundle(ad_b, run_id=bad, runtime_generation_status="BLOCKED")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad_b,
+        run_id=bad,
+        section_id=_LANE_PT,
+        runtime_generation_status="BLOCKED",
+        provider_attempted=False,
+        command="pytest-qwen-unavailable-contract",
+        provider_requested="qwen_vllm",
+    )
+
+    rd, tag = resolve_accepted_real_rollup_run_dir(repo, _LANE_PT)
+    assert tag == "migration_real_llm_qwen_vllm_scan"
+    assert rd is not None and rd.name == good
+
+
+def test_collect_lane_rolls_up_via_successful_bundle_not_blocked_attempt(tmp_path: Path):
+    repo = tmp_path
+    good = "good_run"
+    ad_g = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", good)
+    _write_min_proof_bundle(ad_g, run_id=good, runtime_generation_status="REAL_LLM")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad_g,
+        run_id=good,
+        section_id=_LANE_PT,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted=True,
+        command="pytest",
+    )
+    (repo / "artifacts" / "apps_rg" / "runtime_proofs" / _LANE_PT / "latest_successful_real_run.json").unlink()
+    bad = "bad_run"
+    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", bad)
+    _write_min_proof_bundle(ad_b, run_id=bad, runtime_generation_status="BLOCKED")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad_b,
+        run_id=bad,
+        section_id=_LANE_PT,
+        runtime_generation_status="BLOCKED",
+        provider_requested="qwen_vllm",
+        provider_attempted=False,
+        command="pytest",
+    )
+    row = glr.collect_lane(_LANE_PT, repo=repo, rollup_artifact_mode="real")
+    assert row["rollup_source_run_dir"].replace("\\", "/").endswith(f"{_LANE_PT}/real/{good}")
+    assert row["accepted_real_evidence_resolution"] == "migration_real_llm_qwen_vllm_scan"
+    assert row["runtime_generation_status"] == "REAL_LLM"
+    assert row["latest_real_attempt_runtime_generation_status"] == "BLOCKED"
+
+
+def test_collect_lane_raises_when_no_accepted_real_bundle(tmp_path: Path):
+    repo = tmp_path
+    only = "blocked_only"
+    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", only)
+    _write_min_proof_bundle(ad, run_id=only, runtime_generation_status="BLOCKED")
+    finalize_runtime_proof_run(
+        repo,
+        _LANE_PT,
+        "qwen_vllm",
+        ad,
+        run_id=only,
+        section_id=_LANE_PT,
+        runtime_generation_status="BLOCKED",
+        provider_requested="qwen_vllm",
+        provider_attempted=False,
+        command="pytest",
+    )
+    with pytest.raises(FileNotFoundError, match="missing_successful_real_run"):
+        glr.collect_lane(_LANE_PT, repo=repo, rollup_artifact_mode="real")

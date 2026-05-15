@@ -178,6 +178,95 @@ def test_x2_rejects_wrong_bullet_count():
     assert gate_map["x2_unify_bullet_count_6"] is False
 
 
+def test_normalize_parsed_output_cycle_metric_qualifier_passes_x2_gate():
+    """Gate requires exact substring 'six months to three weeks'; Qwen sometimes inserts 'just'."""
+    from apps_rg.runtime.dispatch.unify_bullets_dispatch import normalize_parsed_output
+    from apps_rg.runtime.validators.unify_bullets_x2 import run_unify_bullets_x2_gates
+
+    from apps_rg.runtime.dispatch.unify_bullets_dispatch import (
+        DEFAULT_INTENSITY_BY_BULLET,
+        build_selected_fact_plan,
+        extract_unify_employment,
+        load_base_resume,
+        build_runtime_payload,
+    )
+
+    base, path, base_hash = load_base_resume()
+    header, facts, allowed = extract_unify_employment(base)
+    plan = build_selected_fact_plan(facts)
+    rp = build_runtime_payload(
+        base_json_path=path,
+        base_hash=base_hash,
+        unify_header=header,
+        selected_fact_plan=plan,
+        allowed_fact_ids=allowed,
+        target_title="SVP",
+        target_company="Corp",
+        jd_text="AI governance",
+        briefing="regulated",
+    )
+    by_id = {f["fact_id"]: f for f in facts}
+    parsed_in: dict[str, object] = {
+        "bullets": [],
+        "claim_ledger": [],
+        "rewrite_distribution": {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6},
+        "jd_alignment": {"targeting_only": True},
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+    bullets_in: list[dict[str, object]] = []
+    for bid in (
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_005",
+        "bul_unify_006",
+    ):
+        fact = by_id[bid]
+        intensity = DEFAULT_INTENSITY_BY_BULLET[bid]
+        text = str(fact["claim_text"])
+        if bid == "bul_unify_004":
+            text = (
+                text.replace("six months to three weeks", "six months to just three weeks")
+                if "six months to three weeks" in text.lower()
+                else text + "; cycle from six months to just three weeks"
+            )
+        bullets_in.append(
+            {
+                "bullet_id": bid,
+                "bullet_text": text,
+                "rewrite_intensity": intensity,
+                "has_metric": fact.get("has_metric", False),
+                "metric_raw": fact.get("metric_raw"),
+                "source_fact_ids": [bid],
+            }
+        )
+
+    parsed_in["bullets"] = bullets_in
+    out = normalize_parsed_output(parsed_in, rp)
+    assert out is not None
+    b4 = next(b for b in out["bullets"] if b["bullet_id"] == "bul_unify_004")["bullet_text"]
+    assert "six months to just three weeks" not in b4.lower()
+    assert "six months to three weeks" in b4.lower()
+
+    gates = [
+        g.to_dict()
+        for g in run_unify_bullets_x2_gates(
+            bullets=out["bullets"],
+            parsed_output=out,
+            claim_ledger=out.get("claim_ledger") or [],
+            allowed_fact_ids=allowed,
+            jd_text="AI governance",
+            runtime_generation_status="REAL_LLM",
+            rewrite_distribution=out.get("rewrite_distribution"),
+        )
+    ]
+    met = next(g for g in gates if g["gate_id"] == "x2_unify_metrics_preserved")
+    assert met["pass"] is True
+
+
 def test_unify_overlay_files_exist():
     overlay = [
         "apps_rg/runtime/dispatch/unify_bullets_dispatch.py",

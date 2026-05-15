@@ -4,6 +4,12 @@ The single entrypoint for all runtime gate evaluation. Apps register their
 gate packs (definitions + callables); the engine executes gates in order,
 aggregates verdicts into GateBundles, and normalizes JudgeVerdicts.
 
+W5 vocabulary (boundary remediation f8e3c1): ``GateVerdict`` objects produced
+here are **00C / GateMesh** live proceed-or-stop evidence feeding write-admission
+and runtime bundles. They are **not** ``apps_rg.runtime.bindings.exit_binding.ExitGateVerdict``
+and they do **not** subsume Exit's single X3 disposition (X3 remains Exit-owned
+after X1/X2 aggregation).
+
 Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P4)
 """
 

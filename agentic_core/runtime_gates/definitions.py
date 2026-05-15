@@ -87,7 +87,11 @@ class GateDefinition:
 
 @dataclass(frozen=True)
 class GateVerdict:
-    """Verdict from a single gate evaluation.
+    """Verdict from a single **00C / runtime GateMesh** gate evaluation.
+
+    This is the canonical **live** gate verdict type for fused runtime gates.
+    Do **not** confuse with ``apps_rg.runtime.bindings.exit_binding.ExitGateVerdict``,
+    which is an **apps_rg-local** Exit helper enum — orthogonal namespace.
 
     Fields:
         gate_id: The gate that produced this verdict

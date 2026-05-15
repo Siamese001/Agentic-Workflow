@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-169",
   "selected_at_utc": "2026-04-30T15:19:22.659378+00:00",
-  "evidence_bound_at_utc": "2026-05-04T20:18:38.189706+00:00",
+  "evidence_bound_at_utc": "2026-05-15T18:53:36.890581+00:00",
   "canonical_owner_surface": "02_L1_Reasoning_Plan",
   "runtime_artifact_ref": "L1PlanContract",
   "otel_span_ref": "l1.plan.contract_emitted",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
+  "git_head_at_test_time": "ef555f5ad578b28617628ce6a90f3351c0ffb200",
   "git_dirty_at_test_time": false,
-  "content_hash": "d477b2813ec320090686dae6cf12efd593cef4252db9c322dc927bf84650d78f"
+  "content_hash": "0e22e4efdced1e62cd559bfe47b401b1b4c9046ef5ce5999a85bfedc59120457"
 }

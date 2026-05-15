@@ -2,6 +2,10 @@
 
 Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2 W10
 
+W5 vocabulary (boundary remediation f8e3c1): L6 is **completed-run-only** and
+**future-run-only** — no current-run rescue, no X3 emission, no direct durable
+writes (see ``completed_run_only`` / ``current_run_rescue_allowed`` defaults).
+
 Loads learning parameters from the domain contract profile files
 and returns a configured L6WritebackProposer instance.
 

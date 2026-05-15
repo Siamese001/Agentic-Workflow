@@ -5,6 +5,11 @@ Per plan apps-rg-golden-state-section-generation-a4f9e1 W2F.
 This shim re-exports from the new canonical location.
 It is a TEMPORARY compatibility shim for existing callers.
 Do not modify; the canonical implementation lives in apps_rg.
+
+W5 vocabulary (boundary remediation f8e3c1): canonical Exit helpers define
+``apps_rg.runtime.bindings.exit_binding.ExitGateVerdict`` (apps_rg-local).
+That type must not be confused with ``GateVerdict`` in
+``agentic_core.runtime_gates.definitions`` (00C fused gate mesh evidence).
 """
 from __future__ import annotations
 

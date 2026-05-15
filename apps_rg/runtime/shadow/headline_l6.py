@@ -1,53 +1,31 @@
-"""L6 shadow package for headline runtime slice."""
+"""L6 shadow handoff for headline."""
+
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.shadow.l6_handoff_packet import build_l6_shadow_handoff_dict
 
-@dataclass
-class L6ShadowPackage:
-    run_id: str
-    section_id: str
-    l2_output_ref: str
-    x1d_judge_refs: list[str]
-    x2_gate_refs: list[str]
-    x3_disposition_ref: str
-    human_label_required: bool
-    judge_calibration_status: str
-    offline_only: bool
-    promotion_allowed: bool
-    learning_mutation_performed: bool
-    runtime_approval_authority: str
-    notes: str
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+SECTION_ID = "headline"
 
 
 def build_l6_shadow_package(
     *,
-    run_id: str,
-    l2_output_ref: str,
-    x1d_judge_refs: list[str],
-    x2_gate_refs: list[str],
-    x3_disposition_ref: str,
-) -> L6ShadowPackage:
-    return L6ShadowPackage(
-        run_id=run_id,
-        section_id="headline",
-        l2_output_ref=l2_output_ref,
-        x1d_judge_refs=x1d_judge_refs,
-        x2_gate_refs=x2_gate_refs,
-        x3_disposition_ref=x3_disposition_ref,
-        human_label_required=True,
-        judge_calibration_status="NOT_CALIBRATED",
-        offline_only=True,
-        promotion_allowed=False,
-        learning_mutation_performed=False,
-        runtime_approval_authority="NONE",
-        notes="L6 shadow-eval only for headline. No runtime approval or learning mutation.",
+    artifact_dir: Path,
+    repo_root: Path,
+    prompt_id: str,
+    temperature: float | None,
+    max_tokens: int | None,
+) -> dict[str, Any]:
+    return build_l6_shadow_handoff_dict(
+        artifact_dir=artifact_dir,
+        repo_root=repo_root,
+        section_id=SECTION_ID,
+        prompt_id=prompt_id,
+        temperature=temperature,
+        max_tokens=max_tokens,
     )
 
 
-__all__ = ["L6ShadowPackage", "build_l6_shadow_package"]
+__all__ = ["build_l6_shadow_package"]

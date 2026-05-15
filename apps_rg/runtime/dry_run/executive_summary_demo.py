@@ -13,8 +13,20 @@ HARDENING FEATURES:
 - Never silently falls back to MOCKED
 - Reports BLOCKED with exact provider error if unavailable
 - X3_ALLOW requires REAL_LLM, product-quality PASS, all gates pass
+
+**W3:** ``test_dev_only`` — interactive/demo harness; not the production governed spine default.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_TEST_DEV_ONLY,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_TEST_DEV_ONLY
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import json
 import sys

@@ -8,6 +8,9 @@ Audit confirmed: only reference remaining is a comment in
 tests/_apps_contract/sample_w7_l7_trace_output.py (not a live import).
 Hard tombstone applied 2026-05-14.
 
+**W2 (boundary remediation f8e3c1):** QUARANTINE row in W1 CSV — tombstone satisfies
+quarantine intent; no revival without ADR + receipt.
+
 Canonical dispatch path:
     apps_rg.runtime.dispatch.apps_rg_dispatch consumed via
     AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).run(payload)

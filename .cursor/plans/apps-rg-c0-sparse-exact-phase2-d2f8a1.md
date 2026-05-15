@@ -22,21 +22,26 @@ Extend C0 evidence retrieval beyond the **dense BGE-M3 `fact_vectors`** lane wit
 - Replacing Chroma dense with sparse-only unless ADR-level decision.
 - Broad `agentic_core` FEC schema changes without governance receipt.
 
-## Wave structure (draft)
+## Wave structure
 
-| Wave | Focus | Exit criteria (draft) |
-|------|--------|------------------------|
-| **W1** | Requirements + contracts | ADR or plan-linked retrieval contract: sparse lane IDs, merge policy, caps, failure modes |
-| **W2** | Index + ingest path | Deterministic fixture + ingest/tooling for sparse collection(s) or Chroma hybrid config |
-| **W3** | Binding merge | `c0_retrieve_apps_rg` (or app-owned helper) merges dense + sparse with stable ordering; tests prove no duplicate explosion |
-| **W4** | FEC / receipts | Citation or lineage hooks for sparse hits; optional `dense_search_refs` sibling for sparse; freshness/contradiction rules scoped |
-| **W5** | Gates + CI | Readiness or sibling gate for sparse lane; contract tests; optional seed step mirroring dense pattern |
+| Wave | Focus | Status / exit |
+|------|--------|----------------|
+| **W1** | Requirements + contracts | **Done** — Decision B + gap plan (`apps-rg-c0-sparse-exact-core-boundary-gap-plan.md`); generic seam contract locked. |
+| **W2** | Index + ingest path | **Done** — `get_sparse_index` / `sparse_sidecar_exists` profile-driven; BM25 sidecar resolution; core unit tests. |
+| **W3** | Binding merge | **Done** — `c0_binding` optional sparse lane + RRF merge; 5-tuple bounded retrieval; `sparse_search_refs` populated when enabled. |
+| **W4** | FEC / receipts | **Done** — sparse receipts on lane; `section_retrieval_profile.yaml` per-section toggles; contract tests (`test_c0_sparse_exact_apps_rg_wiring`, `test_w4_bounded_section_retrieval`). |
+| **W5** | Gates + CI | **Future** — optional fail-closed sparse readiness gate / extended `test_c0_fact_vectors_chroma_runtime` when sparse fixture is standard in CI. |
 
-## Open questions (to resolve in W1)
+### Completion record (disk SSOT)
 
-- Chroma native hybrid vs separate collection vs external BM25 store.
-- Query text per section for sparse vs dense (same vs specialized).
-- Metadata filter parity across lanes.
+- **Completed:** 2026-05-15
+- **Notion Plans page:** `36127693-f55c-81c0-b56f-d455590ee9be`
+- **Delivered modules (representative):** `agentic_core/knowledge/retrieval/c0_sparse_exact_seam.py`; `bm25_store.py` sparse index helpers; `apps_rg/runtime/bindings/c0_binding.py`; `apps_rg/config/domain_contract/section_retrieval_profile.yaml`; unit + `_apps_contract` tests as listed in wave table.
+
+## Follow-ups (optional / W5)
+
+- CI fail-closed sparse readiness or extended chroma-runtime assertions when sparse sidecar is a standard fixture.
+- Broader metadata-filter parity across lanes if new sections enable sparse.
 
 ## Evidence discipline
 

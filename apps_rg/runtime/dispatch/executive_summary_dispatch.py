@@ -4,8 +4,23 @@ This module intentionally proves one real apps_rg section path only:
 canonical JSON -> executive_summary prompt payload -> provider -> X2 -> X1D -> X3 -> L6.
 
 It does not activate registry, does not edit v1 prompts, and does not touch agentic_core.
+
+**W3 classification (child plan apps-rg-agentic-core-boundary-remediation-child-f8e3c1):**
+``declared_temporary_slice`` — not the default governed package-driven PA/L2/Exit spine.
+Proof obligations: documented artifacts under ``artifacts/apps_rg/runtime_proofs/`` conventions;
+convergence tracked in ``w3_execution_path_convergence_f8e3c1.md``.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_DECLARED_TEMPORARY_SLICE,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import argparse
 import json
@@ -23,7 +38,8 @@ try:
 except ImportError:
     pass  # dotenv not installed, rely on system env
 
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request, call_qwen_vllm
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
@@ -645,14 +661,15 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
 
+    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT
     l6 = build_l6_shadow_package(
-        run_id=runtime_payload["run_id"],
-        l2_output_ref=str(artifact_dir / "l2_output.json"),
-        x1d_judge_refs=[j["judge_id"] for j in x1d],
-        x2_gate_refs=[g["gate_id"] for g in x2],
-        x3_disposition_ref=str(artifact_dir / "x3_disposition.json"),
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        prompt_id=PROMPT_ID,
+        temperature=l6_temp,
+        max_tokens=None,
     )
-    write_json(artifact_dir / "l6_shadow_eval_package.json", l6.to_dict())
+    write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
     real_result = {
         "provider_attempted": args.provider,
         "provider_available": bool(provider_result_data and provider_result_data.get("provider_available")),

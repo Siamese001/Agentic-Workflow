@@ -54,6 +54,10 @@ from agentic_core.knowledge.retrieval.c0_sparse_exact_seam import (
     merge_dense_sparse_rrf,
     query_sparse_lexical_lane,
 )
+from apps_rg.runtime.bindings.c0_evidence_trace_map import (
+    AppsRgEvidenceTraceMap,
+    SectionEvidenceTrace,
+)
 
 APPS_RG_C0_CERT_REF = "apps_rg::c0::resume_generation::v1"
 
@@ -109,6 +113,52 @@ def _provisional_digest(items: list[EvidenceItem]) -> str:
         for i in items
     )
     return hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()
+
+
+def _build_section_evidence_trace(
+    section: dict[str, Any],
+    query: str | None,
+    section_dense_items: list[EvidenceItem],
+    app_payload: dict[str, Any],
+    *,
+    timestamp_iso: str,
+) -> SectionEvidenceTrace:
+    """One ``SectionEvidenceTrace`` per profile section after dense+sparse merge."""
+    del timestamp_iso  # reserved for future receipt alignment
+    resume_text = str((app_payload.get("resume_payload") or {}).get("resume_text") or "")
+    jd_text = str((app_payload.get("jd_payload") or {}).get("jd_text") or "")
+    sr_hash = (
+        hashlib.sha256(resume_text.encode("utf-8")).hexdigest()[:32] if resume_text else ""
+    )
+    jd_h = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()[:32] if jd_text else ""
+    refs = tuple(str(getattr(it, "evidence_id", "") or it.source) for it in section_dense_items)
+    hashes = tuple(str(getattr(it, "chunk_digest", "") or "") for it in section_dense_items)
+    classes = tuple(_evidence_source_class(it) for it in section_dense_items)
+    statuses = [getattr(it, "support_status", STATUS_UNKNOWN) for it in section_dense_items]
+    if SUPPORT_STATUS_PASS in statuses:
+        sup: str = SUPPORT_STATUS_PASS
+    elif statuses:
+        sup = str(statuses[0])
+    else:
+        sup = STATUS_UNKNOWN
+    return SectionEvidenceTrace(
+        section_id=str(section.get("section_id", "unknown")),
+        section_type=str(section.get("section_type", "") or section.get("kind", "")),
+        source_resume_hash=sr_hash,
+        jd_hash=jd_h,
+        briefing_hash="",
+        retrieved_chunk_refs=refs,
+        retrieved_chunk_hashes=hashes,
+        source_span_refs=(),
+        claim_refs=(),
+        blocked_claims=(),
+        injection_risk="UNKNOWN",
+        support_status=sup,
+        evidence_item_ids=refs,
+        source_classes=classes,
+        retrieval_query=query or "",
+        retrieval_score=0.0,
+    )
 
 
 class C0EvidenceGapError(Exception):
@@ -214,6 +264,8 @@ def c0_retrieve_apps_rg(
     timestamp_iso: str = "",
     manual_brief_path: str | None = None,
     chromadb_path: str | None = None,
+    *,
+    trace_map_out: list[AppsRgEvidenceTraceMap] | None = None,
 ) -> FinalEvidenceContract:
     """C0 retrieval for apps_rg — inline JD/resume + optional ``fact_vectors`` dense lane."""
     if hasattr(route, "grounding_required") and not route.grounding_required:
@@ -276,6 +328,7 @@ def c0_retrieve_apps_rg(
     support_score_profile_rows: list[tuple[str, float]] = []
     chroma_dense_lane_completed = False
     section_profile = SectionRetrievalProfile()
+    section_traces_for_run: list[SectionEvidenceTrace] = []
 
     if effective_chroma:
         try:
@@ -284,13 +337,14 @@ def c0_retrieve_apps_rg(
             client = chromadb.PersistentClient(path=effective_chroma)
             fv_col = client.get_collection("fact_vectors")
             app_payload = getattr(validated_request, "app_payload", None) or {}
-            extra, sec_verdicts, _, sec_sparse_refs, sec_score_profile = _perform_bounded_section_retrieval(
+            extra, sec_verdicts, _, sec_sparse_refs, sec_score_profile, sec_traces = _perform_bounded_section_retrieval(
                 effective_chroma,
                 app_payload,
                 evidence_digest or _provisional_digest(merged_items),
                 ts,
                 chroma_collection=fv_col,
             )
+            section_traces_for_run.extend(sec_traces)
             section_gate_verdicts.extend(sec_verdicts)
             sparse_receipt_refs.extend(sec_sparse_refs)
             support_score_profile_rows.extend(sec_score_profile)
@@ -455,6 +509,16 @@ def c0_retrieve_apps_rg(
         run_id=run_id,
     )
     otel_span_refs = tuple([retrieval_quality_span["span_ref"]]) if retrieval_quality_span else tuple()
+
+    if trace_map_out is not None:
+        trace_sink = AppsRgEvidenceTraceMap(
+            run_id=run_id,
+            total_evidence_items=len(chroma_lane_items),
+            briefing_mode="manual_brief" if manual_brief_path else "",
+        )
+        for st in section_traces_for_run:
+            trace_sink.add_trace(st)
+        trace_map_out.append(trace_sink)
 
     return FinalEvidenceContract(
         request_id=request_id,
@@ -945,24 +1009,18 @@ def _perform_bounded_section_retrieval(
     evidence_digest: str,
     timestamp_iso: str,
     chroma_collection: Any | None = None,
-) -> tuple[list[EvidenceItem], list[Any], str, list[str], list[tuple[str, float]]]:
+) -> tuple[list[EvidenceItem], list[Any], str, list[str], list[tuple[str, float]], list[SectionEvidenceTrace]]:
     """Perform bounded section retrieval from fact_vectors.
-    
-    Returns: (evidence_items, gate_verdicts, status, sparse_receipt_refs, support_score_profile)
+
+    Returns: (evidence_items, gate_verdicts, status, sparse_receipt_refs,
+    support_score_profile, section_traces)
     """
     profile = SectionRetrievalProfile()
     
     if not profile.enabled:
-        verdict = GateVerdict(
-            gate_id="G_SECTION_RETRIEVAL",
-            gate_family="C0_G_SECTION_RETRIEVAL",
-            evaluated_stage="C0",
-            result=VERDICT_NOT_APPLICABLE,
-            not_applicable_reason="section_retrieval_profile disabled",
-            evaluated_at=timestamp_iso,
-            evidence_digest=evidence_digest,
-        )
-        return [], [verdict], "NOT_APPLICABLE", [], []
+        # Historical contract: disabled profile reports NOT_APPLICABLE with no gate row
+        # (callers treat this as "section machinery off", not a gate failure).
+        return [], [], "NOT_APPLICABLE", [], [], []
 
     if not chromadb_path and chroma_collection is None:
         verdict = GateVerdict(
@@ -974,7 +1032,7 @@ def _perform_bounded_section_retrieval(
             evaluated_at=timestamp_iso,
             evidence_digest=evidence_digest,
         )
-        return [], [verdict], "UNKNOWN", [], []
+        return [], [verdict], "UNKNOWN", [], [], []
 
     budget = SectionRetrievalBudget(
         max_total_items=profile.max_total_items,
@@ -985,7 +1043,31 @@ def _perform_bounded_section_retrieval(
     verdicts: list[Any] = []
     sparse_receipt_refs: list[str] = []
     support_score_profile: list[tuple[str, float]] = []
+    section_traces: list[SectionEvidenceTrace] = []
     metadata_profile = MetadataFilterProfile()
+
+    # Dense path health: invalid/missing persist dir or collection must be UNKNOWN,
+    # not EMPTY (bounded-section contract tests + operator clarity).
+    if chroma_collection is None and chromadb_path:
+        try:
+            import chromadb
+
+            _probe_client = chromadb.PersistentClient(path=chromadb_path)
+            _probe_client.get_collection(profile.collection_name)
+        except Exception:
+            verdict = GateVerdict(
+                gate_id="G_SECTION_RETRIEVAL",
+                gate_family="C0_G_SECTION_RETRIEVAL",
+                evaluated_stage="C0",
+                result=VERDICT_UNKNOWN,
+                unknown_reason=(
+                    "fact_vectors collection unavailable or chromadb_path not openable "
+                    f"({profile.collection_name})"
+                ),
+                evaluated_at=timestamp_iso,
+                evidence_digest=evidence_digest,
+            )
+            return [], [verdict], "UNKNOWN", [], [], []
 
     from tools.ingestion.chroma_ingest_pipeline import embed_text
 
@@ -1156,6 +1238,15 @@ def _perform_bounded_section_retrieval(
                             rebuilt.append(it)
                     section_dense_items = rebuilt
 
+            section_traces.append(
+                _build_section_evidence_trace(
+                    section,
+                    query,
+                    section_dense_items,
+                    app_payload,
+                    timestamp_iso=timestamp_iso,
+                )
+            )
             evidence_items.extend(section_dense_items)
             budget = budget.record_section_query()
 
@@ -1187,7 +1278,7 @@ def _perform_bounded_section_retrieval(
         verdicts.append(verdict)
         status = "EMPTY"
 
-    return evidence_items, verdicts, status, sparse_receipt_refs, support_score_profile
+    return evidence_items, verdicts, status, sparse_receipt_refs, support_score_profile, section_traces
 
 
 def _resolve_fec_sparse_search_refs(

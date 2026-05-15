@@ -1,7 +1,7 @@
 {
   "gate": "G-APPS-SPINE-DELEGATION",
   "tier": "B",
-  "timestamp": "2026-05-15T18:13:00.822823+00:00",
+  "timestamp": "2026-05-15T19:37:06.323230+00:00",
   "mode": "strict",
   "snapshot": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
   "snapshot_mtime_utc": "2026-05-15T15:28:12.490549+00:00",

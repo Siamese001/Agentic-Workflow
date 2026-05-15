@@ -2,8 +2,21 @@
 
 PA_BOUNDARY_CERT_S3 and related types used by tests verifying the PA
 boundary contract for apps_rg section-level prompt assembly.
+
+**W3:** ``governed_pa_l2_exit`` — composes ``CompiledPromptArtifact`` inputs consumed by the
+package-driven L2 spine via ``apps_rg.runtime.bindings.l2_binding`` (child plan f8e3c1).
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_GOVERNED_PA_L2_EXIT,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_GOVERNED_PA_L2_EXIT
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

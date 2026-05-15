@@ -24,6 +24,19 @@ These are **generic** and belong here:
 - Generic UWG write admission — validates CommitRequest, writes L4
 - Generic L6 completed-run consumer — consumes meta-feedback profiles
 
+### Vocabulary — Exit vs 00C vs L5 vs UWG vs L6 (SSOT)
+
+Docs-only clarity (child plan **f8e3c1** W5); behavior unchanged.
+
+| Symbol / concern | Role |
+|------------------|------|
+| `GateVerdict` in `runtime_gates` | **00C / GateMesh** — live proceed-or-stop gate evidence; not Exit X3 |
+| `ExitGateVerdict` in `apps_rg.runtime.bindings.exit_binding` | **apps_rg-local** Exit helper enum — **not** 00C `GateVerdict` |
+| Exit / X3 | Exactly **one** X3 disposition per run — Exit-owned after X1/X2 aggregation |
+| L5 certification packets | **Governance evidence only** — not runtime disposition |
+| UWG | **Only** durable write admission path to governed L4 |
+| L6 | **Completed-run** and **future-run** proposals only — no current-run rescue, no X3 |
+
 ### Infrastructure
 - Generic contract propagation chain
 - Generic proof and receipt validators

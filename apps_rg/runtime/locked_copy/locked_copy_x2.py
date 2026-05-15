@@ -5,11 +5,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.locked_copy.locked_copy_manifest import (
-    LOCKED_SECTION_IDS,
-    build_locked_sections,
-    load_base_resume,
-)
+from apps_rg.runtime.locked_copy.locked_copy_manifest import build_locked_sections, load_base_resume
 
 FORBIDDEN_PROVIDER_ARTIFACTS = (
     "provider_request.json",

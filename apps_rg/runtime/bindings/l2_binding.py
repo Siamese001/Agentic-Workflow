@@ -5,8 +5,20 @@ when the v4 feature flag is off, the generic package-driven L2 executor.
 
 Exposes quality-gate helper types used by the ``agentic_core`` LEGACY_SHIM at
 ``agentic_core.L2_execution.apps_rg_l2_binding``.
+
+**W3:** ``governed_pa_l2_exit`` — default spine for CPA→Sealed L2 via core executor/envelope.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_GOVERNED_PA_L2_EXIT,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_GOVERNED_PA_L2_EXIT
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import os
 from dataclasses import dataclass

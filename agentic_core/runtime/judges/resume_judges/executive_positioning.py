@@ -13,7 +13,8 @@ Invocation path:
     -> Qwen2.5-32B-Instruct-AWQ via vLLM (port 8000)
     -> ExecutivePositioningJudge.parse_response()
 
-Constitutional: apps_rg contributes config only. Core owns execution.
+Constitutional: apps_rg contributes rubric/system prompt bundles under
+``apps_rg/config/domain_contract/judges/`` (W2 f8e3c1). Core owns judge execution.
 See: agentic_core/AGENTS.md §Layer Separation.
 """
 
@@ -23,11 +24,33 @@ import json
 import logging
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
 
-_SYSTEM_PROMPT = """\
+
+def _resolve_apps_rg_judge_bundle_dir() -> Path | None:
+    """Locate ``apps_rg/config/domain_contract/judges`` without importing apps_rg."""
+    here = Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        cand = parent / "apps_rg" / "config" / "domain_contract" / "judges"
+        if cand.is_dir():
+            return cand
+    return None
+
+
+def _load_judge_text(filename: str, fallback: str) -> str:
+    root = _resolve_apps_rg_judge_bundle_dir()
+    if root is None:
+        return fallback
+    path = root / filename
+    if path.is_file():
+        return path.read_text(encoding="utf-8").strip()
+    return fallback
+
+
+_FALLBACK_SYSTEM_PROMPT = """\
 You are an expert executive resume evaluator. Your task is to assess whether a
 generated resume effectively positions the candidate for senior and executive roles
 by foregrounding scope, ownership, scale, and measurable outcomes.
@@ -36,7 +59,7 @@ Evaluate strictly against the rubric. Return ONLY a JSON object — no prose, no
 markdown, no explanation outside the JSON.
 """
 
-_RUBRIC = """\
+_FALLBACK_RUBRIC = """\
 RUBRIC — executive_positioning (informational dimension):
 
 Score 0.85–1.00 (Strong):
@@ -68,6 +91,15 @@ IMPORTANT:
   - Do not penalise for missing evidence if the candidate profile lacked it.
   - This is informational-only — your score does not gate pipeline exit.
 """
+
+_SYSTEM_PROMPT = _load_judge_text(
+    "executive_positioning_system_prompt.txt",
+    _FALLBACK_SYSTEM_PROMPT,
+)
+_RUBRIC = _load_judge_text(
+    "executive_positioning_rubric.txt",
+    _FALLBACK_RUBRIC,
+)
 
 
 @dataclass

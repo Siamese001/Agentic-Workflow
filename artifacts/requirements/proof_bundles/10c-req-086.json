@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-086",
   "selected_at_utc": "2026-04-30T12:39:39.596753+00:00",
-  "evidence_bound_at_utc": "2026-05-04T20:18:38.151116+00:00",
+  "evidence_bound_at_utc": "2026-05-15T18:53:36.846373+00:00",
   "canonical_owner_surface": "03B_PA_Prompt_Assembly",
   "runtime_artifact_ref": "CompiledPromptArtifact",
   "otel_span_ref": "pa.prompt.compiled_artifact_emitted",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
+  "git_head_at_test_time": "ef555f5ad578b28617628ce6a90f3351c0ffb200",
   "git_dirty_at_test_time": false,
-  "content_hash": "a286c4d92d6e340b7cfda59079822ea4033e93ff6edd16635f76bec58cd473af"
+  "content_hash": "1369bdac5da357e6ef3f775316db592ce28f8501a628bab8be15bb1eec5cfc02"
 }

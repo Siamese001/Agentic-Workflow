@@ -3,6 +3,13 @@
 W4: apps_rg owns all JD/resume-specific Exit gate logic here.
 agentic_core Exit must remain generic.
 
+W5 vocabulary (boundary remediation f8e3c1):
+    ``ExitGateVerdict`` below is **apps_rg-local** resume Exit helper typing only.
+    It is **not** ``agentic_core.runtime_gates.definitions.GateVerdict`` (**00C**
+    runtime GateMesh live proceed/stop evidence). Do not conflate the two types.
+    Exactly **one** runtime X3 disposition is owned by the generic Exit spine after
+    X1/X2 aggregation — not by these local enums.
+
 No L6 current-run rescue path is introduced here (category 9 invariant).
 
 Plan: apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan W4
@@ -44,7 +51,7 @@ _NON_BLOCKING_STATUSES: frozenset[str] = frozenset({
 
 
 # ---------------------------------------------------------------------------
-# Gate verdict enum (apps_rg-local; not the agentic_core GateVerdict)
+# Gate verdict enum (apps_rg-local; NOT 00C GateVerdict / GateMesh)
 # ---------------------------------------------------------------------------
 
 class ExitGateVerdict(str, Enum):

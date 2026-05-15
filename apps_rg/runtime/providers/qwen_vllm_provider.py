@@ -1,6 +1,14 @@
 """Qwen/vLLM provider seam for apps_rg executive summary runtime slice.
 
 No secrets are hardcoded. No silent mock fallback is allowed.
+
+**W3 note:** This module is **shared transport** (HTTP/OpenAI-compatible client). It does not
+select governed vs parallel routing — callers classify execution surfaces:
+
+- Section ``*_dispatch`` modules: import ``call_qwen_vllm`` from ``section_qwen_slice`` (centralized temporary slice).
+- ``l2_envelope_adapter`` / spine: ``governed_pa_l2_exit`` (via ``ProviderGateway``).
+
+Ownership unchanged: apps_rg-local seam; not FEC and not a pseudo-FEC surface.
 """
 from __future__ import annotations
 

@@ -1,0 +1,30 @@
+RUBRIC — executive_positioning (informational dimension):
+
+Score 0.85–1.00 (Strong):
+  - Executive summary leads with scope (org size, P&L, headcount, geography).
+  - Top 3 bullets each carry at least one quantified outcome OR ownership signal.
+  - Language signals authority: "led", "owned", "drove", "accountable for" — not
+    "supported", "assisted", "contributed to".
+  - Achievements cite results at the enterprise level (revenue, cost savings, NPS,
+    market share) where supported by candidate profile evidence.
+
+Score 0.65–0.84 (Moderate):
+  - Executive signals present but inconsistent — some bullets generic.
+  - Scope mentioned in summary but not threaded through role descriptions.
+  - Mix of ownership and support language.
+
+Score 0.40–0.64 (Weak):
+  - Summary reads as a mid-level IC rather than a leader.
+  - Achievements lack scale or ownership context.
+  - Language is primarily task-oriented ("responsible for") rather than
+    outcome-oriented ("delivered", "grew", "transformed").
+
+Score 0.00–0.39 (Fail):
+  - No executive positioning signals.
+  - Reads as a junior/IC resume regardless of target level.
+  - No quantified outcomes. No scope signals.
+
+IMPORTANT:
+  - Score based ONLY on what is present in the generated resume text.
+  - Do not penalise for missing evidence if the candidate profile lacked it.
+  - This is informational-only — your score does not gate pipeline exit.

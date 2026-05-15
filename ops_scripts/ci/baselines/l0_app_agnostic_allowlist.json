@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "description": "SSOT allowlist for L0_routing files that may match apps_rg / resume_generation literals. Used when L0_APP_AGNOSTIC_STRICT=1 or check_l0_app_agnostic.py --strict.",
+  "allowed_paths": [
+    "agentic_core/L0_routing/apps_rg_l0_binding.py",
+    "agentic_core/L0_routing/c0_evidence_contract.py",
+    "agentic_core/L0_routing/config/path_constants.py",
+    "agentic_core/L0_routing/gates/apps_rg_prerequisite_gate.py",
+    "agentic_core/L0_routing/package_driven_l0_binding.py",
+    "agentic_core/L0_routing/route_contract.py",
+    "agentic_core/L0_routing/u0_intake_validator.py"
+  ]
+}

@@ -15,6 +15,9 @@ Boundary invariants (enforced by GOV-3 and tests):
   - Packet status restricted to L5_CERTIFIED | L5_NOT_CERTIFIED
   - No runtime dispositions (see _vocab.FORBIDDEN_RUNTIME_DISPOSITIONS)
 
+W5 vocabulary (boundary remediation f8e3c1): L5 certification packets certify
+**governance evidence only** — not live 00C GateMesh verdicts and not Exit X3.
+
 L5_CERTIFIED semantics:
   Evidence-only certification. Does not emit live runtime decisions, gate
   verdicts, disposition writes, or commit approvals. Downstream systems make

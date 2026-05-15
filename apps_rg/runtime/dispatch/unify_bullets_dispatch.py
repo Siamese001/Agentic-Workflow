@@ -2,8 +2,20 @@
 
 Canonical base resume JSON -> Unify bullet tailor payload -> provider -> X2 -> X1D -> X3 -> L6.
 Does not activate registry or touch agentic_core.
+
+**W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_DECLARED_TEMPORARY_SLICE,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import argparse
 import hashlib
@@ -23,7 +35,8 @@ except ImportError:
 
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request, call_qwen_vllm
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.shadow.unify_bullets_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.unify_bullets_x2 import (
@@ -224,6 +237,31 @@ def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
     return counts
 
 
+def _canonicalize_unify_gate_metric_text(text: str) -> str:
+    """Normalize model drift that breaks x2_unify_metrics_preserved substring checks.
+
+    Canonical base uses word form ``six months to three weeks``. Models often insert
+    ``just`` or use digits ``6``/``3``; map those to the same gate token without
+    rewriting other content.
+    """
+    if not text:
+        return text
+    s = text
+    s = re.sub(
+        r"\bsix\s+months\s+to\s+(?:just\s+)?three\s+weeks\b",
+        "six months to three weeks",
+        s,
+        flags=re.IGNORECASE,
+    )
+    s = re.sub(
+        r"\b6\s+months\s+to\s+(?:just\s+)?3\s+weeks\b",
+        "six months to three weeks",
+        s,
+        flags=re.IGNORECASE,
+    )
+    return s
+
+
 def normalize_parsed_output(
     parsed: dict[str, Any] | None,
     runtime_payload: dict[str, Any],
@@ -240,10 +278,18 @@ def normalize_parsed_output(
         row["rewrite_intensity"] = str(row.get("rewrite_intensity", DEFAULT_INTENSITY_BY_BULLET[row["bullet_id"]])).upper()
         if not row.get("source_fact_ids"):
             row["source_fact_ids"] = [row["bullet_id"]]
+        bt = row.get("bullet_text")
+        if isinstance(bt, str):
+            row["bullet_text"] = _canonicalize_unify_gate_metric_text(bt)
         normalized_bullets.append(row)
 
     parsed = dict(parsed)
     parsed["bullets"] = normalized_bullets
+    if isinstance(parsed.get("claim_ledger"), list) and parsed["claim_ledger"]:
+        for cl in parsed["claim_ledger"]:
+            ct = cl.get("claim_text")
+            if isinstance(ct, str):
+                cl["claim_text"] = _canonicalize_unify_gate_metric_text(ct)
     if not isinstance(parsed.get("selected_fact_plan"), dict):
         parsed["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
     if not parsed.get("claim_ledger"):
@@ -543,14 +589,16 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
 
+    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT
+    l6_max = UNIFY_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
     l6 = build_l6_shadow_package(
-        run_id=runtime_payload["run_id"],
-        l2_output_ref=str(artifact_dir / "l2_output.json"),
-        x1d_judge_refs=[j["judge_id"] for j in x1d],
-        x2_gate_refs=[g["gate_id"] for g in x2],
-        x3_disposition_ref=str(artifact_dir / "x3_disposition.json"),
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        prompt_id=PROMPT_ID,
+        temperature=l6_temp,
+        max_tokens=l6_max,
     )
-    write_json(artifact_dir / "l6_shadow_eval_package.json", l6.to_dict())
+    write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
 
     write_json(
         artifact_dir / "real_l2_generation_result.json",

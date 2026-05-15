@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-115",
   "selected_at_utc": "2026-04-30T15:13:35.901916+00:00",
-  "evidence_bound_at_utc": "2026-05-04T20:18:38.168012+00:00",
+  "evidence_bound_at_utc": "2026-05-15T18:53:36.864670+00:00",
   "canonical_owner_surface": "00A_L5_Governance_Safety",
   "runtime_artifact_ref": "L5CertificationResult",
   "otel_span_ref": "l5.certification.evidence_emitted",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
+  "git_head_at_test_time": "ef555f5ad578b28617628ce6a90f3351c0ffb200",
   "git_dirty_at_test_time": false,
-  "content_hash": "864ad6efd126eeca14f72089faf9df2309cdc012393f8f6db7d46ee13ef15cbf"
+  "content_hash": "6de3966422a55f81f4d7bf66b17395f99eac4ab24efc729a7e13d1b5679fd78b"
 }

@@ -3,6 +3,9 @@
 Evaluates completed run evidence AFTER runtime boundary.
 Produces CompletedEvalRecord with learning observations.
 
+Exit owns exactly **one** X3 disposition per run; L6 consumes exhaust **after**
+that boundary and never emits X3.
+
 Hard Rules:
 - Post-runtime only (after Exit X3)
 - Read-only access to runtime artifacts

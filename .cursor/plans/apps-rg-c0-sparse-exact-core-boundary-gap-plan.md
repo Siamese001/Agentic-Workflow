@@ -1,9 +1,9 @@
 # apps_rg C0 Phase 2 — sparse/exact: core boundary gap plan
 
 **Slug:** `apps-rg-c0-sparse-exact-core-boundary-gap-plan`  
-**Status:** Planning complete (analysis-only parent task)  
+**Status:** Closed — W1–W4 implemented per Decision B (W5/W6 optional follow-ups)  
 **Analysis artifact:** `artifacts/apps_rg/c0_embedding_gap/apps_rg_c0_sparse_exact_core_boundary_gap_analysis.md`  
-**Phase 2 parent:** `.cursor/plans/apps-rg-c0-sparse-exact-phase2-d2f8a1.md`
+**Phase 2 parent:** `.cursor/plans/apps-rg-c0-sparse-exact-phase2-d2f8a1.md` (Status: **Completed**)
 
 ## Decision (locked for implementation)
 

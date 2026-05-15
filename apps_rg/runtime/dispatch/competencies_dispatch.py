@@ -2,8 +2,20 @@
 
 Canonical base resume plus read-only accepted section artifacts -> eight competency categories -> X1D -> X2 -> X3 -> L6.
 Does not activate registry or modify the shared governed-runtime spine package under sibling app paths.
+
+**W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_DECLARED_TEMPORARY_SLICE,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import argparse
 import hashlib
@@ -23,7 +35,8 @@ except ImportError:
 
 from apps_rg.runtime.exit.competencies_x3 import aggregate_x3
 from apps_rg.runtime.judges.competencies_x1d import run_competencies_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request, call_qwen_vllm
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
 from apps_rg.runtime.shadow.competencies_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.competencies_x2 import find_bullet_restatement_term, run_competencies_x2_gates
 from apps_rg.runtime.runtime_proof_layout import (
@@ -267,6 +280,242 @@ def _fix_fact_id_typos(fid: str) -> str:
     if re.match(r"^bul_ib_\d{3}$", s):
         s = "bul_ibm_" + s[7:]
     return s
+
+
+def _novel_term_vs_seen(candidate: str, seen_lower: set[str]) -> bool:
+    """Reject candidates that collide with X2 duplicate/near-duplicate rules."""
+    cl = candidate.strip().lower()
+    if len(cl) < 3:
+        return False
+    if cl in seen_lower:
+        return False
+    for existing in seen_lower:
+        if len(existing) >= 10 and len(cl) >= 10 and (cl in existing or existing in cl):
+            return False
+    return True
+
+
+def _sentence_like_term(candidate: str) -> bool:
+    tl = candidate.strip()
+    if re.search(r"[.!?]\s", tl) or (tl.endswith(".") and len(tl) > 1):
+        return True
+    if len(tl.split()) > 9:
+        return True
+    if re.match(r"^(?:the|a|an)\s+\w+", tl, re.I):
+        return True
+    return False
+
+
+def _candidate_phrases_for_category(cat: dict[str, Any], rows_by_id: dict[str, dict[str, Any]]) -> list[str]:
+    """Phrases grounded in sourced bullets only (technologies + short claim fragments)."""
+    ordered: list[str] = []
+    seen_l: set[str] = set()
+    fid_list = [_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in (cat.get("source_fact_ids") or [])]
+
+    def push(phrase: str) -> None:
+        p = str(phrase).strip().rstrip(".,;:")
+        if len(p) < 4 or len(p) > 56:
+            return
+        low = p.lower()
+        if low in seen_l:
+            return
+        seen_l.add(low)
+        ordered.append(p)
+
+    for fid in fid_list:
+        row = rows_by_id.get(fid)
+        if not row:
+            continue
+        for tech in row.get("technologies") or []:
+            if isinstance(tech, str) and tech.strip():
+                push(tech)
+        raw = str(row.get("claim_text", "") or "").strip()
+        if not raw:
+            continue
+        fragments = [
+            fragment.strip().rstrip(".,;—")
+            for fragment in re.split(r"[,;:]+|\s+and\s+", raw, flags=re.I)
+            if isinstance(fragment, str) and fragment.strip()
+        ]
+        for frag in fragments:
+            if "\n" in frag or len(frag) > 96:
+                continue
+            trimmed = frag if len(frag) <= 56 else frag[:56].rsplit(maxsplit=1)[0].strip()
+            push(trimmed)
+    return ordered
+
+
+def collapse_duplicate_competency_terms(
+    parsed: dict[str, Any],
+    bullet_rows: list[dict[str, Any]],
+    resume_support_blob_lower: str,
+) -> None:
+    """Rewrite duplicate/near-duplicate term strings across categories before X2 (resume-grounded substitutes)."""
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+    rows_by_id = {str(r.get("fact_id")): r for r in bullet_rows if r.get("fact_id")}
+    blob = resume_support_blob_lower
+
+    rewrote = parsed.setdefault("removed_or_rewritten_terms")
+    if not isinstance(rewrote, list):
+        rewrote = []
+        parsed["removed_or_rewritten_terms"] = rewrote
+    change_log = parsed.setdefault("change_log")
+    if not isinstance(change_log, list):
+        change_log = []
+        parsed["change_log"] = change_log
+
+    flattened_before: list[str] = []
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        for t in cat.get("terms") or []:
+            if isinstance(t, str) and t.strip():
+                flattened_before.append(t.strip())
+
+    seen_lower: set[str] = set()
+    made_change = False
+
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        terms_raw = cat.get("terms")
+        if not isinstance(terms_raw, list):
+            continue
+        cand_pool = _candidate_phrases_for_category(cat, rows_by_id)
+        new_terms: list[str] = []
+        for raw_t in terms_raw:
+            if not isinstance(raw_t, str):
+                continue
+            t_orig = raw_t.strip()
+            if not t_orig:
+                continue
+            low = t_orig.lower()
+            is_dup_with_seen = False
+            if low in seen_lower:
+                is_dup_with_seen = True
+            else:
+                for ext in seen_lower:
+                    if len(ext) >= 10 and len(low) >= 10 and (low in ext or ext in low):
+                        is_dup_with_seen = True
+                        break
+                if not is_dup_with_seen:
+                    for nt in new_terms:
+                        nl = nt.lower()
+                        if low == nl or (
+                            len(low) >= 10 and len(nl) >= 10 and (low in nl or nl in low)
+                        ):
+                            is_dup_with_seen = True
+                            break
+            replacement: str | None = None
+            if is_dup_with_seen:
+                for cand in cand_pool:
+                    low_c = cand.lower()
+                    if low_c not in blob:
+                        continue
+                    if low_c == low:
+                        continue
+                    if _sentence_like_term(cand):
+                        continue
+                    if _novel_term_vs_seen(
+                        cand,
+                        seen_lower | {lt.lower().rstrip(".") for lt in new_terms},
+                    ):
+                        replacement = cand
+                        break
+            use_t = replacement if replacement is not None else t_orig
+            if replacement is not None:
+                made_change = True
+                rewrote.append(f"{t_orig}→{replacement} (within {cat.get('category_label', '?')})")
+
+            low_use = use_t.strip().lower().rstrip(".")
+
+            def _coll(low: str) -> bool:
+                if low in seen_lower:
+                    return True
+                for ext in seen_lower:
+                    if len(low) >= 10 and len(ext) >= 10 and (low in ext or ext in low):
+                        return True
+                for nt in new_terms:
+                    nl = nt.strip().lower().rstrip(".")
+                    if (
+                        nl == low
+                        or (
+                            len(low) >= 10
+                            and len(nl) >= 10
+                            and (low in nl or nl in low)
+                        )
+                    ):
+                        return True
+                return False
+
+            if _coll(low_use):
+                alt: str | None = None
+                for cand in cand_pool:
+                    cl = cand.lower()
+                    if cl not in blob or _sentence_like_term(cand):
+                        continue
+                    if cl == low_use:
+                        continue
+                    if _novel_term_vs_seen(
+                        cand,
+                        seen_lower | {lt.lower().rstrip(".") for lt in new_terms},
+                    ):
+                        alt = cand
+                        break
+                if alt:
+                    rewrote.append(
+                        f"{use_t}→{alt} "
+                        "(post-substitution dedupe near x2_duplicate_variants_collapsed)",
+                    )
+                    made_change = True
+                    use_t = alt.strip()
+                    low_use = use_t.lower().rstrip(".")
+
+            seen_lower.add(low_use)
+            new_terms.append(use_t.strip())
+        cat["terms"] = new_terms
+
+    flattened_after = [
+        tt
+        for c in comps
+        if isinstance(c, dict)
+        for tt in (c.get("terms") or [])
+        if isinstance(tt, str) and tt.strip()
+    ]
+    if made_change:
+        change_log.append(
+            {
+                "operation": "duplicate_terms_collapsed_dispatch",
+                "reason": "x2_duplicate_variants_collapsed",
+                "term_count_before_after": [len(flattened_before), len(flattened_after)],
+            },
+        )
+
+
+def rebuild_claim_ledger_from_competencies(parsed: dict[str, Any], allowed_fact_ids: set[str]) -> None:
+    """One claim_ledger row per category term row (canonical shape for competencies X2 mapping)."""
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+    ledger: list[dict[str, Any]] = []
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        raw_ids = [_fix_fact_id_typos(str(x)) for x in (cat.get("source_fact_ids") or [])]
+        ids = sorted({x.split("_metric_")[0] for x in raw_ids if x.split("_metric_")[0] in allowed_fact_ids})
+        if not ids:
+            continue
+        cat["source_fact_ids"] = ids
+        for raw_t in cat.get("terms") or []:
+            if not isinstance(raw_t, str):
+                continue
+            ts = raw_t.strip()
+            if not ts:
+                continue
+            ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
+    parsed["claim_ledger"] = ledger
 
 
 def ensure_claim_ledger_coverage(parsed: dict[str, Any], allowed_fact_ids: set[str]) -> None:
@@ -602,6 +851,12 @@ def run_dispatch(args: argparse.Namespace) -> int:
         }
         write_json(artifact_dir / "provider_request.json", provider_request_data)
 
+    if parsed is not None:
+        collapse_duplicate_competency_terms(parsed, bullet_rows, resume_blob)
+        rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
+        prune_claim_ledger_bullet_paste(parsed)
+        raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+
     competencies = list((parsed or {}).get("competencies") or [])
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
     display_text = competencies_display_text(competencies)
@@ -697,14 +952,16 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
 
+    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else COMPETENCIES_TEMP_DEFAULT
+    l6_max = COMPETENCIES_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
     l6 = build_l6_shadow_package(
-        run_id=runtime_payload["run_id"],
-        l2_output_ref=str(artifact_dir / "l2_output.json"),
-        x1d_judge_refs=[j["judge_id"] for j in x1d],
-        x2_gate_refs=[g["gate_id"] for g in x2],
-        x3_disposition_ref=str(artifact_dir / "x3_disposition.json"),
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        prompt_id=PROMPT_ID,
+        temperature=l6_temp,
+        max_tokens=l6_max,
     )
-    write_json(artifact_dir / "l6_shadow_eval_package.json", l6.to_dict())
+    write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
 
     write_json(
         artifact_dir / "real_l2_generation_result.json",

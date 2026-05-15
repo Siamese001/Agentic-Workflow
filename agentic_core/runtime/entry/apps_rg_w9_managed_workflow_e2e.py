@@ -26,6 +26,9 @@ Scope invariants (non-negotiable):
 """
 from __future__ import annotations
 
+# W2 QUARANTINE catalog marker — boundary remediation f8e3c1 (test-gated E2E harness only).
+W2_QUARANTINE_BOUNDARY_REMEDIATION_F8E3C1 = True
+
 import hashlib
 import json
 import os

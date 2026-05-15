@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-123",
   "selected_at_utc": "2026-04-30T15:25:26.951349+00:00",
-  "evidence_bound_at_utc": "2026-05-04T20:18:38.195879+00:00",
+  "evidence_bound_at_utc": "2026-05-15T18:53:36.899443+00:00",
   "canonical_owner_surface": "00B_L4_State_Archive_and_UWG",
   "runtime_artifact_ref": "CommitRequest",
   "otel_span_ref": "uwg.commit.validated",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
+  "git_head_at_test_time": "ef555f5ad578b28617628ce6a90f3351c0ffb200",
   "git_dirty_at_test_time": false,
-  "content_hash": "babe9333bdd13cc8cd236efd56caf6f4d4f828a8d57fc67fb7b8a6db38e229a1"
+  "content_hash": "24340b05346939ce99043245db230c14bd1badf385bc7d8c4aafb33cb3210663"
 }

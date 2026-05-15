@@ -2,8 +2,20 @@
 
 Canonical base resume plus read-only companion artifacts -> one headline line (X | Y | Z) -> X1D -> X2 -> X3 -> L6.
 Imports read-only helpers from competencies_dispatch without modifying that seam's behavior.
+
+**W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_DECLARED_TEMPORARY_SLICE,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import argparse
 import hashlib
@@ -29,7 +41,8 @@ from apps_rg.runtime.dispatch.competencies_dispatch import (
 )
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request, call_qwen_vllm
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
 from apps_rg.runtime.shadow.headline_l6 import build_l6_shadow_package
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.validators.headline_x2 import headline_word_count, run_headline_x2_gates
@@ -532,14 +545,16 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
 
+    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else HEADLINE_TEMP_DEFAULT
+    l6_max = HEADLINE_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
     l6 = build_l6_shadow_package(
-        run_id=runtime_payload["run_id"],
-        l2_output_ref=str(artifact_dir / "l2_output.json"),
-        x1d_judge_refs=[j["judge_id"] for j in x1d],
-        x2_gate_refs=[g["gate_id"] for g in x2],
-        x3_disposition_ref=str(artifact_dir / "x3_disposition.json"),
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        prompt_id=PROMPT_ID,
+        temperature=l6_temp,
+        max_tokens=l6_max,
     )
-    write_json(artifact_dir / "l6_shadow_eval_package.json", l6.to_dict())
+    write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
 
     write_json(
         artifact_dir / "real_l2_generation_result.json",

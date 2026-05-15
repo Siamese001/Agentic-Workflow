@@ -1,0 +1,186 @@
+"""Contract tests for `apps_rg.runtime.orchestrate_full_resume` (step order + JSON shape).
+
+Full real-LLM E2E is exercised manually via the module CLI; these tests stub subprocess + package emit.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from unittest import mock
+
+from apps_rg.runtime import orchestrate_full_resume as ofr
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+class _FakeProc:
+    __slots__ = ("returncode", "stdout", "stderr")
+
+    def __init__(self, *, code: int = 0, out: str = "", err: str = "") -> None:
+        self.returncode = code
+        self.stdout = out
+        self.stderr = err
+
+
+def _lane_tail(mod: str) -> str:
+    return mod.split(".")[-1].removesuffix("_dispatch")
+
+
+def test_lane_modules_canonical_sequence() -> None:
+    tails = [_lane_tail(m) for m in ofr.LANE_MODULES]
+    assert tails == [
+        "headline",
+        "executive_summary",
+        "unify_bullets",
+        "unify_narrative",
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+    ]
+
+
+def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> None:
+    repo = tmp_path.resolve()
+    (repo / "apps_rg" / "resume" / "base").mkdir(parents=True)
+
+    rollup_dir = repo / "artifacts" / "apps_rg" / "runtime_proofs" / "generated_lane_rollup"
+    rollup_dir.mkdir(parents=True, exist_ok=True)
+    rollup_blob = {"rollup_id": "test-rollup", "lanes": {}}
+    (rollup_dir / "generated_lane_rollup.json").write_text(json.dumps(rollup_blob), encoding="utf-8")
+
+    fr_dir = repo / "artifacts" / "apps_rg" / "runtime_proofs" / "final_resume_assembly"
+    fr_dir.mkdir(parents=True)
+    fr_x2 = {
+        "gate_family": "final_resume_assembly_x2",
+        "all_pass": True,
+        "failed_gate_ids": [],
+        "gates": [],
+    }
+    (fr_dir / "final_resume_x2_gate_outputs.json").write_text(json.dumps(fr_x2), encoding="utf-8")
+
+    recorded: list[list[str]] = []
+
+    def fake_run(argv, cwd=None, **_kwargs):  # type: ignore[no-untyped-def]
+        recorded.append(list(argv))
+        return _FakeProc()
+
+    disposition = {
+        "final_x3_code": "X3_ALLOW",
+        "deterministic_blocked": False,
+        "deterministic_proof_summary": {"l6_handoff_agg_checks_all_true": True},
+        "l6_shadow_handoff_audit": {"l6_handoff_blocked": False, "aggregate_checks": {}},
+        "section_level_x3": {"lanes_detail": [], "rollup_x3_non_allow": []},
+        "non_generation_stage_guarantees": {
+            "provider_calls_made": False,
+            "qwen_calls_made": False,
+            "judge_calls_made": False,
+        },
+        "explicit_waiver_needed_for_allow_when_section_review": False,
+    }
+
+    with (
+        mock.patch("subprocess.run", side_effect=fake_run),
+        mock.patch(
+            "apps_rg.runtime.orchestrate_full_resume._run_docx_emit",
+            return_value={
+                "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
+                "render": {"gates_all_pass": True, "failed_gate_ids": []},
+            },
+        ),
+        mock.patch(
+            "apps_rg.runtime.package.resume_package_x3.emit_resume_package_artifacts",
+            return_value={
+                "resume_package_disposition": disposition,
+                "resume_package_manifest_path": repo / "manifest.json",
+                "resume_package_x3_disposition_path": repo / "x3.json",
+            },
+        ),
+    ):
+        out = ofr.run_orchestration(
+            repo=repo,
+            provider="mock",
+            x1d_judges="gemini_pro",
+            allow_non_allow_exit_zero=False,
+            mock_judges=True,
+            jd_text=None,
+            briefing=None,
+            base_resume=None,
+            output_docx=None,
+        )
+
+    mods_run = []
+    rollup_hit = locked_hit = assembler_hit = False
+    for av in recorded:
+        if "-m" in av:
+            i = av.index("-m")
+            mod = av[i + 1]
+            if mod.startswith("apps_rg.runtime.dispatch."):
+                mods_run.append(_lane_tail(mod))
+            elif mod == "apps_rg.runtime.reports.generated_lane_rollup":
+                rollup_hit = True
+            elif mod == "apps_rg.runtime.locked_copy.locked_copy_builder":
+                locked_hit = True
+            elif mod == "apps_rg.runtime.assembly.final_resume_assembler":
+                assembler_hit = True
+
+    assert mods_run == [
+        "headline",
+        "executive_summary",
+        "unify_bullets",
+        "unify_narrative",
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+    ]
+    assert rollup_hit and locked_hit and assembler_hit
+    assert out["orchestrator_status"] == "PASS"
+    assert out["package_x3_code"] == "X3_ALLOW"
+    assert "paths" in out and out["paths"]["final_docx"].endswith("amit_ayer_resume_v1.docx")
+    assert out["final_resume_assembly_result"]["all_pass"] is True
+    assert out["docx_manifest_result"]["gates_all_pass"] is True
+    assert out["docx_render_result"]["gates_all_pass"] is True
+    assert out["l6_handoff_summary"]["generated_lane_l6_artifact_audit"] == {}
+
+
+def test_main_allow_non_allow_exit_zero_returns_zero_on_partial(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    partial = {
+        "orchestrator_status": "PARTIAL",
+        "package_x3_code": "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",
+        "paths": {"final_docx": "x"},
+        "deterministic_gates_summary": {},
+        "generated_lane_x2_and_x3_summary": {},
+        "section_x3_summary": {},
+        "l6_handoff_summary": {},
+        "final_resume_assembly_result": {},
+        "docx_manifest_result": {},
+        "docx_render_result": {},
+        "non_generation_calls": {},
+    }
+    monkeypatch.setattr(ofr, "run_orchestration", lambda **_: partial)
+    monkeypatch.setattr(ofr, "find_repo_root", lambda: REPO_ROOT)
+    code = ofr.main(
+        ["--provider", "mock", "--x1d-judges", "gemini_pro", "--mock-judges", "--allow-non-allow-exit-zero"],
+    )
+    assert code == 0
+
+
+def test_main_fail_non_allow_partial_exit_code(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    partial = {
+        "orchestrator_status": "PARTIAL",
+        "package_x3_code": "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",
+        "paths": {},
+        "deterministic_gates_summary": {},
+        "generated_lane_x2_and_x3_summary": {},
+        "section_x3_summary": {},
+        "l6_handoff_summary": {},
+        "final_resume_assembly_result": {},
+        "docx_manifest_result": {},
+        "docx_render_result": {},
+        "non_generation_calls": {},
+    }
+    monkeypatch.setattr(ofr, "run_orchestration", lambda **_: partial)
+    monkeypatch.setattr(ofr, "find_repo_root", lambda: REPO_ROOT)
+    code = ofr.main(["--provider", "mock", "--x1d-judges", "gemini_pro", "--mock-judges"])
+    assert code == 2

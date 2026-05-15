@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-090",
   "selected_at_utc": "2026-04-30T15:31:10.211021+00:00",
-  "evidence_bound_at_utc": "2026-05-04T20:18:38.221233+00:00",
+  "evidence_bound_at_utc": "2026-05-15T18:53:36.926551+00:00",
   "canonical_owner_surface": "04_L2_Execute",
   "runtime_artifact_ref": "ExecutionResult",
   "otel_span_ref": "l2.execution.prep",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "d5408f5d2115b2520d91df7c1522eeb21b7c6fad",
+  "git_head_at_test_time": "ef555f5ad578b28617628ce6a90f3351c0ffb200",
   "git_dirty_at_test_time": false,
-  "content_hash": "d37525ace49e574f8401a5c3d6cc55e074a802887356d73552c5eeaa9c915e08"
+  "content_hash": "ddf709978b0ca5c5ec7ca2fd3b392e94560ed9406a767c4479a4e70afe7af53d"
 }

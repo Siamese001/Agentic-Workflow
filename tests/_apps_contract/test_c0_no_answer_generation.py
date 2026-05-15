@@ -180,6 +180,36 @@ class TestC0EvidenceTraceProduction(unittest.TestCase):
             )
 
 
+class TestC0TraceMapOut(unittest.TestCase):
+    """Optional trace_map_out populated alongside FEC (W4/W7 trace population)."""
+
+    def test_c0_trace_map_out_file_only_path(self) -> None:
+        from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
+        from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
+        from agentic_core.runtime.contracts.route_contract import RouteContract
+        from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
+        from apps_rg.runtime.bindings.c0_evidence_trace_map import AppsRgEvidenceTraceMap
+
+        route = RouteContract.__new__(RouteContract)
+        object.__setattr__(route, "grounding_required", True)
+        vr = ValidatedRequest.__new__(ValidatedRequest)
+        object.__setattr__(vr, "request_id", "req-trace-map")
+        object.__setattr__(vr, "run_id", "run-trace-map")
+        object.__setattr__(vr, "app_id", "apps_rg")
+        object.__setattr__(vr, "trace_id", "trace-map")
+        object.__setattr__(
+            vr,
+            "app_payload",
+            {"jd_payload": {"jd_text": "j" * 40}, "resume_payload": {"resume_text": "r" * 40}},
+        )
+
+        out: list[AppsRgEvidenceTraceMap] = []
+        fec = c0_retrieve_apps_rg(route, vr, chromadb_path=None, trace_map_out=out)
+        self.assertIsInstance(fec, FinalEvidenceContract)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0].run_id, "run-trace-map")
+
+
 import dataclasses
 
 

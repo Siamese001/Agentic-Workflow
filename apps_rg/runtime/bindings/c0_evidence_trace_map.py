@@ -1,4 +1,11 @@
-"""apps_rg C0 evidence trace map — per-section evidence provenance."""
+"""apps_rg C0 binding — per-section evidence provenance trace map.
+
+This module is part of the apps_rg C0 binding / integration path (retrieval wiring
+and trace shapes accompanying FinalEvidenceContract). Generic FEC schema and C0
+machinery remain in agentic_core.
+
+See ``FinalEvidenceContract`` in agentic_core — this map is not a substitute FEC.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -20,11 +27,26 @@ C0_BEHAVIOR_CONSTRAINTS: dict[str, bool] = {
 
 @dataclass(frozen=True)
 class SectionEvidenceTrace:
-    """Evidence provenance for a single resume section."""
+    """Evidence provenance for a single resume section (apps_rg trace companion).
+
+    W7 fields document retrieval provenance alongside core FEC; optional dense /
+    sparse seam fields remain for backward compatibility with older bindings.
+    """
 
     section_id: str
-    evidence_item_ids: list[str]
-    source_classes: list[str]
+    section_type: str = ""
+    source_resume_hash: str = ""
+    jd_hash: str = ""
+    briefing_hash: str = ""
+    retrieved_chunk_refs: tuple[str, ...] = ()
+    retrieved_chunk_hashes: tuple[str, ...] = ()
+    source_span_refs: tuple[dict[str, Any], ...] = ()
+    claim_refs: tuple[dict[str, Any], ...] = ()
+    blocked_claims: tuple[dict[str, Any], ...] = ()
+    injection_risk: str = "UNKNOWN"
+    support_status: str = "UNKNOWN"
+    evidence_item_ids: tuple[str, ...] = ()
+    source_classes: tuple[str, ...] = ()
     retrieval_query: str = ""
     retrieval_score: float = 0.0
     slot: str = "c0_evidence_data_only"

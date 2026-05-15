@@ -10,6 +10,8 @@ from typing import Any, Literal, Mapping
 
 from apps_rg.runtime.runtime_proof_layout import (
     load_latest_pointer,
+    load_latest_successful_real_pointer,
+    resolve_accepted_real_rollup_run_dir,
     resolve_rollup_run_dir,
 )
 
@@ -229,10 +231,21 @@ class LanePaths:
 def _lane_pointer_fields(repo: Path, lane: str) -> dict[str, Any]:
     real = load_latest_pointer(repo, lane, "real")
     mock = load_latest_pointer(repo, lane, "mock")
+    successful = load_latest_successful_real_pointer(repo, lane)
+    rid = real.get("run_id") if real else None
+    rstat = str(real.get("runtime_generation_status", "")) if real else ""
     return {
-        "latest_real_run_id": real.get("run_id") if real else None,
+        "latest_real_run_id": rid,
         "latest_real_generated_at_utc": real.get("generated_at_utc") if real else None,
         "latest_real_artifact_path": real.get("run_dir") if real else None,
+        "latest_real_attempt_run_id": rid,
+        "latest_real_attempt_runtime_generation_status": rstat or None,
+        "latest_successful_real_run_id": successful.get("run_id") if successful else None,
+        "latest_successful_real_generated_at_utc": successful.get("generated_at_utc") if successful else None,
+        "latest_successful_real_artifact_path": successful.get("run_dir") if successful else None,
+        "latest_successful_real_runtime_generation_status": (
+            str(successful.get("runtime_generation_status", "")) if successful else None
+        ),
         "latest_mock_run_id": mock.get("run_id") if mock else None,
         "latest_mock_generated_at_utc": mock.get("generated_at_utc") if mock else None,
         "latest_mock_artifact_path": mock.get("run_dir") if mock else None,
@@ -246,13 +259,25 @@ def collect_lane(
     rollup_artifact_mode: Literal["real", "mock"] = "real",
 ) -> dict[str, Any]:
     root = repo or REPO_ROOT
-    mode: Literal["real", "mock", "all"] = "mock" if rollup_artifact_mode == "mock" else "real"
-    base = resolve_rollup_run_dir(root, lane, artifact_mode=mode)
+    accepted_real_evidence_resolution: str | None = None
+    if rollup_artifact_mode == "mock":
+        base = resolve_rollup_run_dir(root, lane, artifact_mode="mock")
+        accepted_real_evidence_resolution = "latest_mock_run.json"
+    else:
+        base, accepted_real_evidence_resolution = resolve_accepted_real_rollup_run_dir(root, lane)
     if base is None:
+        real_attempt = load_latest_pointer(root, lane, "real") if rollup_artifact_mode == "real" else None
+        attempt_tail = ""
+        if real_attempt:
+            attempt_tail = (
+                f" latest_real_attempt: run_id={real_attempt.get('run_id')!r} "
+                f"runtime_generation_status={real_attempt.get('runtime_generation_status')!r} "
+                f"(not used as accepted real evidence)."
+            )
         raise FileNotFoundError(
-            f"Lane {lane!r}: no resolved run directory for rollup_artifact_mode={rollup_artifact_mode!r} "
-            f"(expected latest_{'mock' if rollup_artifact_mode == 'mock' else 'real'}_run.json under "
-            f"{_rel(RUNTIME_PROOFS / lane)})"
+            f"Lane {lane!r}: missing_successful_real_run — no accepted REAL_LLM qwen_vllm bundle "
+            f"(latest_successful_real_run.json, migration scan of real/*, and legacy flat exhausted) "
+            f"under {_rel(RUNTIME_PROOFS / lane)}.{attempt_tail}"
         )
     missing = [n for n in REQUIRED_RELATIVE if not (base / n).is_file()]
     if missing:
@@ -282,6 +307,7 @@ def collect_lane(
         "lane_key": lane,
         "section_id": section_id,
         "rollup_source_run_dir": _rel(base),
+        "accepted_real_evidence_resolution": accepted_real_evidence_resolution,
         **pointers,
         "runtime_generation_status": runtime_gen,
         "freshness": _collect_freshness(lane, base, l2),
@@ -330,6 +356,18 @@ def build_rollup(*, rollup_artifact_mode: Literal["real", "mock"] = "real") -> d
         for k, v in lanes.items()
         if str(v.get("runtime_generation_status", "")).upper().find("BLOCKED") >= 0
     ]
+    lanes_accepted_via_migration = [
+        k
+        for k, v in lanes.items()
+        if v.get("accepted_real_evidence_resolution") == "migration_real_llm_qwen_vllm_scan"
+    ]
+    attempt_blocked_but_rollup_real_llm = [
+        k
+        for k, v in lanes.items()
+        if str(v.get("latest_real_attempt_runtime_generation_status", "") or "").upper().find("BLOCKED")
+        >= 0
+        and str(v.get("runtime_generation_status", "")) == "REAL_LLM"
+    ]
 
     evidence_pack_commands = {lane: canonical_lane_command(lane) for lane in GENERATED_LANES}
 
@@ -344,7 +382,15 @@ def build_rollup(*, rollup_artifact_mode: Literal["real", "mock"] = "real") -> d
         "artifact_isolation": {
             "layout": "Option B",
             "run_dir_pattern": "artifacts/apps_rg/runtime_proofs/<lane>/{real|mock}/<run_id>/",
-            "pointer_files": ["latest_real_run.json", "latest_mock_run.json"],
+            "pointer_files": [
+                "latest_real_run.json",
+                "latest_successful_real_run.json",
+                "latest_mock_run.json",
+            ],
+            "real_only_rollup_resolves": (
+                "latest_successful_real_run.json, else newest eligible real/*/ (REAL_LLM+qwen_vllm), "
+                "else legacy flat REAL_LLM+qwen_vllm — never latest_real_run.json alone."
+            ),
         },
         "evidence_pack_commands": evidence_pack_commands,
         "lanes": lanes,
@@ -357,6 +403,8 @@ def build_rollup(*, rollup_artifact_mode: Literal["real", "mock"] = "real") -> d
             "lanes_runtime_generation_REAL_LLM": lanes_real_llm,
             "lanes_runtime_generation_MOCKED": lanes_mocked,
             "lanes_runtime_generation_BLOCKED_or_unknown": lanes_blocked_gen,
+            "lanes_accepted_evidence_via_migration_scan": lanes_accepted_via_migration,
+            "lanes_latest_real_attempt_blocked_but_accepted_rollup_REAL_LLM": attempt_blocked_but_rollup_real_llm,
         },
     }
 
@@ -440,7 +488,10 @@ def main(argv: list[str] | None = None) -> int:
         "--artifact-mode",
         choices=("real", "mock"),
         default="real",
-        help="Which run bucket to roll up (default: real — latest REAL_LLM / real-bucket run).",
+        help=(
+            "Which run bucket to roll up (default: real — accepted REAL_LLM qwen_vllm bundle via "
+            "latest_successful_real_run.json / migration scan, not latest_real_attempt alone)."
+        ),
     )
     parser.add_argument(
         "--include-mock",

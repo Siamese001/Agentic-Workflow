@@ -19,6 +19,10 @@ Bypass:
   exists in artifacts/cursor/core_addition_gate_violations.jsonl without a
   matching emergency_approval_receipt_ref field on the bypass event.
 
+Opt-in full-tree scan (rare audit only):
+  CORE_ADDITION_FULL_AGENTIC_CORE_SCAN=1 — when git reports no agentic_core
+  delta, walk all ``agentic_core/**/*.py`` instead of returning no changes.
+
 Artifact: artifacts/ci/agentic_core_addition_gate.json
 """
 
@@ -701,19 +705,26 @@ def _detect_changed_paths() -> list[str]:
             pass
         return []
 
-    paths = _git_diff(["--cached"]) or _git_diff(["HEAD"])
-    if paths:
-        return paths
+    # Union staged + working-tree deltas vs HEAD — both can be non-empty independently.
+    paths_set = set(_git_diff(["--cached"])) | set(_git_diff(["HEAD"]))
+    if paths_set:
+        return sorted(paths_set)
 
-    # Fallback: scan entire agentic_core/ (full repo run mode).
-    all_paths: list[str] = []
-    for root, dirs, files in os.walk(AGENTIC_CORE_PATH):
-        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
-        for fname in files:
-            if fname.endswith(".py"):
-                rel = str((Path(root) / fname).relative_to(REPO_ROOT)).replace("\\", "/")
-                all_paths.append(rel)
-    return all_paths
+    # No git delta under agentic_core/: treat as ZERO changed paths (PASS).
+    # The previous unconditional full-tree scan mis-fired when the working tree
+    # matched HEAD (empty diff), falsely flagging thousands of files and every
+    # receipt mismatch. Full-tree audit remains opt-in:
+    if os.environ.get("CORE_ADDITION_FULL_AGENTIC_CORE_SCAN") == "1":
+        all_paths: list[str] = []
+        for root, dirs, files in os.walk(AGENTIC_CORE_PATH):
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
+            for fname in files:
+                if fname.endswith(".py"):
+                    rel = str((Path(root) / fname).relative_to(REPO_ROOT)).replace("\\", "/")
+                    all_paths.append(rel)
+        return all_paths
+
+    return []
 
 
 # ---------------------------------------------------------------------------

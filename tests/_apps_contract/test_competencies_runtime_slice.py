@@ -96,6 +96,80 @@ def test_no_agentic_core_in_overlay_files():
         assert "agentic_core" not in text, path
 
 
+def test_duplicate_variants_collapsed_regression_fixture():
+    """Historical REAL_LLM run duplicated 'high availability' across categories."""
+    import json
+    from pathlib import Path
+
+    from apps_rg.runtime.dispatch.competencies_dispatch import (
+        JD_TEXT_DEFAULT,
+        build_resume_support_blob,
+        collect_employment_bullets,
+        collapse_duplicate_competency_terms,
+        load_base_resume,
+        load_companion_context,
+        rebuild_claim_ledger_from_competencies,
+    )
+    from apps_rg.runtime.validators.competencies_x2 import run_competencies_x2_gates
+
+    fixture = (
+        REPO_ROOT
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / "competencies"
+        / "real"
+        / "competencies_20260515_190942"
+        / "l2_output.json"
+    )
+    if not fixture.is_file():
+        pytest.skip(f"Missing competencies regression fixture under {fixture.parent}")
+    p = json.loads(fixture.read_text(encoding="utf-8"))
+    base, _, _ = load_base_resume()
+    rows, allowed, bullet_lowers = collect_employment_bullets(base)
+    blob = build_resume_support_blob(rows, load_companion_context())
+    parsed = {
+        "competencies": json.loads(json.dumps(p["competencies"])),
+        "selected_fact_plan": p["selected_fact_plan"],
+        "jd_alignment": p.get("jd_alignment", {}),
+        "excluded_jd_skills": list(p.get("excluded_jd_skills") or []),
+        "removed_or_rewritten_terms": list(p.get("removed_or_rewritten_terms") or []),
+        "gap_notes": list(p.get("gap_notes") or []),
+        "change_log": list(p.get("change_log") or []),
+        "self_check": p.get("self_check", {}) or {},
+        "claim_ledger": list(p.get("claim_ledger") or []),
+    }
+    flat_before = []
+    for c in parsed["competencies"]:
+        flat_before.extend(str(t).lower() for t in (c.get("terms") or []) if str(t).strip())
+    assert flat_before.count("high availability") >= 2
+
+    collapse_duplicate_competency_terms(parsed, rows, blob)
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    flat_after = []
+    for c in parsed["competencies"]:
+        flat_after.extend(str(t).lower() for t in (c.get("terms") or []) if str(t).strip())
+    assert flat_after.count("high availability") <= 1
+
+    gates = run_competencies_x2_gates(
+        competencies=parsed["competencies"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        jd_text=JD_TEXT_DEFAULT,
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted="qwen_vllm",
+        model_name="regression",
+        raw_output=json.dumps(parsed, sort_keys=True),
+        x1d_judges=[],
+    )
+    dup = next(g for g in gates if g.gate_id == "x2_duplicate_variants_collapsed")
+    assert dup.pass_ is True, dup.observed_value
+
+
 def test_x3_soft_fail_unit():
     from apps_rg.runtime.exit.competencies_x3 import aggregate_x3
 

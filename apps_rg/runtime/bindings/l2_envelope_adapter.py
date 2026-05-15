@@ -3,8 +3,20 @@
 Implements the contract surface exercised by ``tests/_apps_contract/test_apps_rg_l2_envelope.py``.
 
 Plan: apps-rg-l2-v4-envelope-adoption-e9f2b1 (W2–W7).
+
+**W3:** ``governed_pa_l2_exit`` — uses ``agentic_core`` ``ProviderGateway`` under envelope stages.
 """
 from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_GOVERNED_PA_L2_EXIT,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_GOVERNED_PA_L2_EXIT
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import hashlib
 import json

@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-15T17:38:25Z",
-  "fetched_at_epoch": 1778866705.978417,
+  "fetched_at": "2026-05-15T18:56:58Z",
+  "fetched_at_epoch": 1778871418.3748548,
   "plans": {
     "apps-rg-c0-sparse-exact-phase2-d2f8a1": {
       "status": "Completed",
