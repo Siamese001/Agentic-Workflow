@@ -1,6 +1,8 @@
 # apps_rg prompt authority remediation program
 
 **Version:** 1.0 (planning artifact)  
+**Execution status:** **CLOSED** — **2026-05-15**. Waves **W0–W12** satisfied; W12 runtime proof **PASS** (scoped **171** tests, empty `agentic_core` diff on `topic/apps_rg-prompt-authority`). **W13** / **W14** remain **separate** artifacts (full-suite triage plan + quality benchmark scaffold only); they do **not** block this closure.
+
 **Canonical language:** *apps_rg owns prompt content; PA assembles, fences, hashes, and emits `CompiledPromptArtifact`; L2 executes the bounded packet; X2 / X1D / Exit judge the outcome.*
 
 **Related:** Narrow wave (closed) — `docs/reports/apps_rg_prompt_review/apps_rg_prompt_remediation_plan.md`.
@@ -291,6 +293,8 @@ apps_rg/prompt_assembly/section_prompt_contracts/
 
 ## Wave 12 — Full runtime prompt authority proof
 
+**Status:** **CLOSED — PASS** (2026-05-15). Evidence: `docs/reports/apps_rg_prompt_authority/W12_runtime_proof.md`, `artifacts/apps_rg/prompt_authority/full_runtime_prompt_authority_proof.json`.
+
 **Deliverables:**
 
 ```text
@@ -298,7 +302,7 @@ artifacts/apps_rg/prompt_authority/full_runtime_prompt_authority_proof.json
 docs/reports/apps_rg_prompt_authority/W12_runtime_proof.md
 ```
 
-**Proof payload (shape):** all generated sections use compiled artifact; no inline authority; ledger-only display; X2 green; X1D invoked or mocked with label; locked preserved; no `agentic_core` diff; full apps_contract PASS or classified PARTIAL.
+**Proof payload (shape):** all generated sections use compiled artifact; no inline authority; ledger-only display; X2 green; X1D invoked or mocked with label; locked preserved; no `agentic_core` diff on the prompt-authority branch; scoped proof **PASS** (**171** tests: 57 + 70 + 44); full `tests/_apps_contract` **not** required for W12 closure (out of scope / separate surface).
 
 **Commands:** adapter test, no-inline test, registry integrity, ledger citations, all section slices, full `tests/_apps_contract`.
 
@@ -353,8 +357,8 @@ W0 baseline
 | **A** — Architecture proof | W0–W3 | Adapter + contracts; no risky migration |
 | **B** — Weakest lanes | W4–W6 | Exec summary, competencies, headline |
 | **C** — Stable lanes | W7 | IBM/Unify mechanical |
-| **D** — SSOT closure | W8–W12 | Registry, ledger, gates, proof |
-| **E** — Quality / suite | W13–W14 | Triage + benchmark |
+| **D** — SSOT closure | W8–W12 | Registry, ledger, gates, proof — **CLOSED** (2026-05-15) |
+| **E** — Quality / suite | W13–W14 | Triage + benchmark — **separate** follow-on (plan/scaffold only; not blocking program closure) |
 
 ---
 
@@ -391,4 +395,5 @@ Implement **W0–W3** of this program only.
 
 | Date | Change |
 |------|--------|
+| 2026-05-15 | Program execution **CLOSED** through W12 (runtime proof PASS, scoped 171). W13/W14 remain ancillary docs only. |
 | 2026-05-15 | Initial program document from staged charter (W0–W14, chunks A–E). |

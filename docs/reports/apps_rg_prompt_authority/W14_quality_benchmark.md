@@ -1,5 +1,7 @@
 # W14 — Section quality benchmark (design + scaffold only)
 
+**Cursor plan (execution SSOT):** `.cursor/plans/apps-rg-w14-quality-benchmark-f1a9b3.md` — Notion Plans **Slug** matches; row **Status** starts **Not Started** when registered.
+
 ## Purpose
 
 Define how to **evaluate resume section quality offline** for generated lanes, without:

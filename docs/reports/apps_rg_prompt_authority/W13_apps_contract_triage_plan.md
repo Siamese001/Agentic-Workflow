@@ -1,5 +1,7 @@
 # W13 — `tests/_apps_contract` full-suite triage plan (plan only)
 
+**Cursor plan (execution SSOT):** `.cursor/plans/apps-rg-w13-apps-contract-triage-c4d7e2.md` — Notion Plans **Slug** matches; row **Status** starts **Not Started** when registered.
+
 ## Goal
 
 Provide a **classification and execution playbook** for running the entire `tests/_apps_contract` surface **without** fixing failures in this wave. No full suite was executed for W13.
@@ -37,14 +39,16 @@ python -m pytest -p pytest_timeout tests/_apps_contract --collect-only -q
 7. **Fixture drift** — golden files, snapshot paths, artifact dirs renamed.
 8. **Unrelated app contract failure** — tests for other apps under shared `_apps_contract` folder.
 
-## W12 blocker vs W13-only
+## W12 vs W13-only (W12 closed **PASS**)
+
+**W12 closeout (2026-05-15):** Scoped proof **171** passed on **`topic/apps_rg-prompt-authority`** with **empty** `agentic_core` diff/status. Prior **BLOCKED** / **PARTIAL_ENV** labels are superseded (see `W12_runtime_proof.md` + `full_runtime_prompt_authority_proof.json`). W13 remains **plan-only**; full `tests/_apps_contract` is still a separate surface.
 
 | If failure is… | Bucket | Blocks W12 “pure” claim? |
 |----------------|--------|---------------------------|
 | `test_apps_rg_prompt_bom_exists.py` (as known) | Stale BOM/layout | **W13-only** — does not negate PA compile or slice proofs unless BOM is promoted as SSOT gate for the same seams. |
 | `test_apps_rg_prompt_registry_integrity.py` / no-inline / X2 alignment / ledger-only | Prompt-authority | **W12-relevant** — these are already green in scoped proof. |
 | Import/collection failure in unrelated module | Collection/setup | **W13** until proven to hide a W12 seam. |
-| Modified `agentic_core` in working tree | Out-of-scope churn | **W12 purity gate** — not a pytest failure, but blocks “no core diff” release story. |
+| Modified `agentic_core` in working tree | Out-of-scope churn | **Was** the W12 purity gate — **satisfied** on the PA branch at W12 closeout via split + clean tree; if this regresses again, treat as release-hygiene, not W13 triage content. |
 
 ## Recommended child plan (when full suite is requested)
 

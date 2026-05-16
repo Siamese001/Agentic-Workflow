@@ -647,6 +647,7 @@ def main() -> int:
     comp_rd = _accepted_lane_run_dir(cwd, "competencies")
     l2_comp_blob: dict[str, Any] | None = None
     comp_x2_failed: list[str] = []
+    comp_x2_gate_rows: list[dict[str, Any]] = []
     cpp_refs_list: list[str] = []
     if comp_rd:
         gx_candidate = comp_rd / "x2_gate_outputs.json"
@@ -659,19 +660,24 @@ def main() -> int:
         if gx_candidate.is_file():
             try:
                 gx_read = json.loads(gx_candidate.read_text(encoding="utf-8"))
+                comp_x2_gate_rows = [
+                    g for g in (gx_read.get("gates") or []) if isinstance(g, dict)
+                ]
                 comp_x2_failed = [
                     str(g.get("gate_id"))
-                    for g in (gx_read.get("gates") or [])
-                    if isinstance(g, dict) and not g.get("pass")
+                    for g in comp_x2_gate_rows
+                    if not g.get("pass")
                 ]
             except (json.JSONDecodeError, OSError):
                 comp_x2_failed = []
+                comp_x2_gate_rows = []
         cpp_refs_list = scrape_fact_id_tokens_from_compiled_prompt(comp_rd / "compiled_prompt.txt")
 
     fec_refs_avail = art["c0"].get("fec_evidence_chunk_ids_unique") or []
     cx2_fix = (
-        "Gemini judges: bounded HTTP 429 retries (APPS_RG_GEMINI_JUDGE_MAX_RETRIES) + BLOCKED_RATE_LIMIT adapter; "
-        "x1d_lane_judge_diagnostics merges lane x1d_llm_judge_outputs.json; competencies/headline dispatch fixes."
+        "Deterministic competencies: expand_structured_competencies_min_two_terms appends an extra grounded "
+        "bullet-derived noun phrase when a structured category collapses to a single term (X2 category format); "
+        "competencies_x2_diagnostics now surfaces structured term counts/source_fact parity for E2E proof."
     )
     art["competencies_x2_diagnostics"] = build_competencies_x2_diagnostics(
         l2_output=l2_comp_blob if isinstance(l2_comp_blob, dict) else None,
@@ -681,6 +687,7 @@ def main() -> int:
         compiled_prompt_fact_refs_available=cpp_refs_list,
         fix_applied=cx2_fix,
         decisive_reason=(", ".join(comp_x2_failed) if comp_x2_failed else "lane competencies deterministic X2 gates GREEN"),
+        x2_gate_rows=comp_x2_gate_rows,
     )
 
     from apps_rg.runtime.whole_run_exit import (

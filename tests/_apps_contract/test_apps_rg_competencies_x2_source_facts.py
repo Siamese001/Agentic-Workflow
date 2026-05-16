@@ -11,6 +11,8 @@ from apps_rg.runtime.dispatch.competencies_dispatch import (
     build_resume_support_blob,
     build_selected_fact_plan,
     collect_employment_bullets,
+    dedupe_structured_competency_terms,
+    expand_structured_competencies_min_two_terms,
     load_base_resume,
     prune_claim_ledger_bullet_paste,
     rebuild_claim_ledger_from_competencies,
@@ -210,6 +212,153 @@ def test_competencies_diagnostics_reports_final_resume_snapshot_parity() -> None
     )
     assert d["competencies_json_parity_final_vs_lane_l2"] is True
     assert d["fec_evidence_refs_available"][0].startswith("fv_")
+    assert d["structured_terms_count"] >= 1
+    assert d["structured_terms_count"] == d["terms_with_source_fact_ids"]
+    assert d["terms_missing_source_fact_ids"] == []
+
+
+def test_fixture_single_structured_term_fails_format_gate_then_expand_goes_green() -> None:
+    """Reproduce x2_competency_format_category_colon_terms idx=single-term collapse; deterministic expand repairs."""
+    rows, allowed, bullet_lowers, blob = _base_context()
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    parsed = dict(build_mock_output({"selected_fact_plan": plan}))
+    parsed["competencies"][0]["terms"] = [
+        {"text": "governed agentic systems", "source_fact_id": "bul_unify_001"},
+    ]
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    prune_claim_ledger_bullet_paste(parsed)
+    bad = run_competencies_x2_gates(
+        competencies=parsed["competencies"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        jd_text="",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted="qwen_vllm",
+        x1d_judges=_three_pass_judges(),
+    )
+    fm_bad = next(g for g in bad if g.gate_id == "x2_competency_format_category_colon_terms")
+    assert fm_bad.pass_ is False
+
+    expand_structured_competencies_min_two_terms(
+        parsed,
+        bullet_rows=rows,
+        allowed_fact_ids=allowed,
+        resume_support_blob_lower=blob,
+        bullet_texts_lower=bullet_lowers,
+    )
+    dedupe_structured_competency_terms(parsed)
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    prune_claim_ledger_bullet_paste(parsed)
+    good = run_competencies_x2_gates(
+        competencies=parsed["competencies"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        jd_text="",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted="qwen_vllm",
+        x1d_judges=_three_pass_judges(),
+    )
+    fm_ok = next(g for g in good if g.gate_id == "x2_competency_format_category_colon_terms")
+    assert fm_ok.pass_ is True
+    assert len(parsed["competencies"][0]["terms"]) >= 2
+    rst = next(g for g in good if g.gate_id == "x2_no_bullet_outcome_restatement")
+    assert rst.pass_ is True
+
+
+def test_expand_preserves_claim_ledger_per_structured_term() -> None:
+    rows, allowed, bullet_lowers, blob = _base_context()
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    parsed = dict(build_mock_output({"selected_fact_plan": plan}))
+    parsed["competencies"][0]["terms"] = [
+        {"text": "governed agentic systems", "source_fact_id": "bul_unify_001"},
+    ]
+    expand_structured_competencies_min_two_terms(
+        parsed,
+        bullet_rows=rows,
+        allowed_fact_ids=allowed,
+        resume_support_blob_lower=blob,
+        bullet_texts_lower=bullet_lowers,
+    )
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    phrases = []
+    for t in parsed["competencies"][0]["terms"]:
+        if isinstance(t, dict) and term_phrase(t):
+            phrases.append(term_phrase(t))
+    lowered = [e["claim_text"].strip().lower() for e in parsed["claim_ledger"]]
+    assert all(p.lower() in lowered for p in phrases)
+    for t in parsed["competencies"][0]["terms"]:
+        if isinstance(t, dict):
+            fid = str(t.get("source_fact_id", "")).split("_metric_")[0]
+            assert fid in allowed
+
+
+def test_final_resume_snapshot_structured_ids_parity_with_lane() -> None:
+    """Assembly embeds verbatim l2_output_snapshot — structured source_fact_id keys survive."""
+    rows, allowed, _, _ = _base_context()
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    parsed = dict(build_mock_output({"selected_fact_plan": plan}))
+    lane_terms = parsed["competencies"][0]["terms"]
+    fr = {"sections": [{"section_id": "competencies", "l2_output_snapshot": parsed}]}
+    snap = None
+    for sec in fr["sections"]:
+        if isinstance(sec, dict) and sec.get("section_id") == "competencies":
+            snap = sec.get("l2_output_snapshot")
+            break
+    assert isinstance(snap, dict)
+    assert snap["competencies"][0]["terms"] == lane_terms
+
+
+def test_x1d_judges_all_pass_do_not_bypass_exactly_eight_categories() -> None:
+    rows, allowed, bullet_lowers, blob = _base_context()
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    mo = dict(build_mock_output({"selected_fact_plan": plan}))
+    comps = list(mo["competencies"][:7])
+    mo["competencies"] = comps
+    rebuild_claim_ledger_from_competencies(mo, allowed)
+    gates = run_competencies_x2_gates(
+        competencies=comps,
+        parsed_output=mo,
+        claim_ledger=mo["claim_ledger"],
+        jd_text="",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+        provider_requested="qwen_vllm",
+        provider_attempted="qwen_vllm",
+        x1d_judges=_three_pass_judges(),
+    )
+    g8 = next(g for g in gates if g.gate_id == "x2_competency_exactly_8_categories")
+    assert g8.pass_ is False
+
+
+def test_near_duplicate_structured_terms_then_expand_minimum_two_terms() -> None:
+    rows, allowed, bullet_lowers, blob = _base_context()
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    parsed = dict(build_mock_output({"selected_fact_plan": plan}))
+    t0 = parsed["competencies"][0]["terms"][0]
+    assert isinstance(t0, dict)
+    parsed["competencies"][0]["terms"] = [dict(t0), dict(t0)]
+    dedupe_structured_competency_terms(parsed)
+    assert sum(1 for t in parsed["competencies"][0]["terms"] if isinstance(t, dict)) == 1
+    expand_structured_competencies_min_two_terms(
+        parsed,
+        bullet_rows=rows,
+        allowed_fact_ids=allowed,
+        resume_support_blob_lower=blob,
+        bullet_texts_lower=bullet_lowers,
+    )
+    assert sum(
+        1 for t in parsed["competencies"][0]["terms"] if isinstance(t, dict) and term_phrase(t)
+    ) >= 2
 
 
 def test_mock_slice_still_passes_x2_source_mapping() -> None:

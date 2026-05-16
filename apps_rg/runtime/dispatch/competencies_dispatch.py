@@ -595,6 +595,129 @@ def dedupe_structured_competency_terms(parsed: dict[str, Any]) -> None:
         cat["terms"] = kept
 
 
+def expand_structured_competencies_min_two_terms(
+    parsed: dict[str, Any],
+    *,
+    bullet_rows: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+    resume_support_blob_lower: str,
+    bullet_texts_lower: list[str],
+) -> None:
+    """When a structured (dict-backed) competency category emits only one nonempty term after repair/dedupe,
+    deterministically append a second short grounded phrase sourced from the same validated ``bul_*`` rows.
+
+    Addresses ``x2_competency_format_category_colon_terms`` (2≤terms≤7) without inventing canonical fact ids —
+    fragments are restricted to bullet ``technologies`` and short claim splits (see
+    :func:`_candidate_phrases_for_category`).
+    """
+
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+
+    rows_by_id = {str(r.get("fact_id")): r for r in bullet_rows if r.get("fact_id")}
+
+    def _nonempty_terms_total(terms_raw: Any) -> int:
+        if not isinstance(terms_raw, list):
+            return 0
+        total = 0
+        for t in terms_raw:
+            if isinstance(t, dict):
+                if term_phrase(t):
+                    total += 1
+            elif isinstance(t, str) and t.strip():
+                total += 1
+        return total
+
+    global_seen: set[str] = set()
+    for cat0 in comps:
+        if not isinstance(cat0, dict):
+            continue
+        for tt in cat0.get("terms") or []:
+            p0 = term_phrase(tt)
+            if p0:
+                global_seen.add(p0.lower().strip().rstrip("."))
+
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        terms_raw = cat.get("terms")
+        if not isinstance(terms_raw, list) or not _terms_list_has_dict(terms_raw):
+            continue
+        if _nonempty_terms_total(terms_raw) != 1:
+            continue
+
+        validated_set: set[str] = set()
+        for sr in cat.get("source_fact_ids") or []:
+            x = _fix_fact_id_typos(str(sr))
+            fid = x.split("_metric_")[0]
+            if fid in allowed_fact_ids:
+                validated_set.add(fid)
+        validated = sorted(validated_set)
+        if not validated:
+            continue
+
+        local_seen: set[str] = set()
+        for t in terms_raw:
+            pv = term_phrase(t)
+            if pv:
+                local_seen.add(pv.lower().strip().rstrip("."))
+        combined_seen = global_seen | local_seen
+
+        cand_pool = _candidate_phrases_for_category(cat, rows_by_id)
+        eligible: list[tuple[int, str, str, str]] = []
+        for raw_cand in cand_pool:
+            cand = str(raw_cand).strip()
+            if not cand:
+                continue
+            if _sentence_like_term(cand):
+                continue
+            if _long_bullet_text_restatement(cand, bullet_texts_lower):
+                continue
+            if not _novel_term_vs_seen(cand, combined_seen):
+                continue
+            picked_fid = ""
+            for fid in validated:
+                if term_primary_support_overlap(cand, fid, resume_support_blob_lower):
+                    picked_fid = fid
+                    break
+            if not picked_fid:
+                continue
+            eligible.append((len(cand), cand.lower(), cand, picked_fid))
+
+        if not eligible:
+            continue
+        eligible.sort()
+        chosen = eligible[0]
+        _, _, phrase, sfid = chosen
+        append_term = {"text": phrase, "source_fact_id": sfid}
+        wr = parsed.setdefault("removed_or_rewritten_terms")
+        if not isinstance(wr, list):
+            wr = []
+            parsed["removed_or_rewritten_terms"] = wr
+        changelog.append(
+            {
+                "operation": "expand_structured_competency_min_two_terms",
+                "reason": (
+                    "structured category had exactly one nonempty term — appended second phrase from "
+                    "validated category bullet technologies/fragments overlapping resume blob"
+                ),
+                "category_label": cat.get("category_label"),
+                "phrase": phrase,
+                "source_fact_id": sfid,
+            }
+        )
+        wr.append(f"expand min-two: +{phrase!r} (@{sfid}) in {cat.get('category_label', '?')}")
+        terms_raw.append(append_term)
+        cat["terms"] = terms_raw
+        global_seen.add(phrase.lower().strip().rstrip("."))
+
+
 def collapse_duplicate_competency_terms(
     parsed: dict[str, Any],
     bullet_rows: list[dict[str, Any]],
@@ -1178,6 +1301,14 @@ def run_dispatch(args: argparse.Namespace) -> int:
         )
         coerce_structured_competencies_resume_support(
             parsed, bullet_rows, resume_blob, bullet_lowers
+        )
+        dedupe_structured_competency_terms(parsed)
+        expand_structured_competencies_min_two_terms(
+            parsed,
+            bullet_rows=bullet_rows,
+            allowed_fact_ids=allowed_fact_ids,
+            resume_support_blob_lower=resume_blob,
+            bullet_texts_lower=bullet_lowers,
         )
         dedupe_structured_competency_terms(parsed)
         rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)

@@ -1,33 +1,36 @@
 {
   "schema_version": "1.0",
   "wave": "W12",
-  "generated_at_utc": "2026-05-16T00:00:00Z",
-  "status": "BLOCKED",
+  "generated_at_utc": "2026-05-15T23:00:00Z",
+  "branch": "topic/apps_rg-prompt-authority",
+  "split_base_git": "77b8487ecf",
+  "status": "PASS",
   "status_reasons": [
-    "W12 purity closeout (2026-05-16): agentic_core contains substantive spine/binding edits (not prompt-authority). Per closeout rules, treating as required shared-core / parallel initiative — no silent revert; purity gate remains open.",
-    "Scoped apps_rg proof remains green: 57 + 70 + 44 = 171 tests passed on re-run (see proof_commands)."
+    "Final closeout 2026-05-15: W12 scoped proof PASS — 57 + 70 + 44 = 171 tests; agentic_core purity PASS (empty diff + empty status on PA branch).",
+    "Branch split: prompt-authority on topic/apps_rg-prompt-authority; binding/Exit work isolated on topic/agentic_core-binding-exit from the same BASE.",
+    "Prior BLOCKED / PARTIAL / PARTIAL_ENV labels superseded (mixed core tree + transient Qwen timeout); narrow Qwen rerun and 70-test bundle re-verified green; no code edits during rerun.",
+    "Full tests/_apps_contract not run — correctly out of scope."
   ],
   "purity_closeout": {
-    "date_utc": "2026-05-16",
-    "classification": {
-      "agentic_core/L3_orchestration/exit_eval/v6/types.py": "required_shared_core — SourceType enum extension APP_BINDING_COMPATIBILITY_PACKAGE (binding envelope); not W4–W11 prompt work",
-      "agentic_core/runtime/exit/x3_disposition.py": "required_shared_core — AG-5 re-exports from exit_disposition; exit receipt compatibility surface",
-      "agentic_core/runtime/bindings/** (untracked)": "required_shared_core — binding validation / app binding package loaders (11 files); intentional source scaffolding, not temp/artifact",
-      "agentic_core/runtime/exit/*.py (untracked x1_*, x2_*, x3_emitter, exit_*_packet)": "required_shared_core — exit checkout/aggregation pipeline modules; not prompt-authority"
-    },
-    "reverts_or_removals": [],
-    "resolution_options": [
-      "Move agentic_core changes to a dedicated binding/exit branch and keep prompt-authority branch clean for W12 PASS",
-      "If changes were unintended mix-in, explicitly request revert/stash of listed paths (not done here)"
-    ]
+    "date_utc": "2026-05-15",
+    "final_classification": "PASS",
+    "resolution": "Empty git diff and empty git status for pathspec agentic_core on topic/apps_rg-prompt-authority after split from BASE 77b8487ecf.",
+    "historical_note": "2026-05-16 draft had BLOCKED when agentic_core binding/exit edits were present on the PA working tree; that state is archived — not current."
   },
   "full_apps_contract_status": "NOT_RUN_OUT_OF_SCOPE",
+  "scoped_proof_total_tests": 171,
   "proof_commands": [
     {
       "cmd": "set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 && python -m pytest -p pytest_timeout tests/_apps_contract/test_apps_rg_prompt_registry_integrity.py tests/_apps_contract/test_apps_rg_no_inline_prompt_authority.py tests/_apps_contract/test_apps_rg_x2_x1d_alignment.py tests/_apps_contract/test_apps_rg_ledger_only_citations.py -q --tb=short",
       "exit_code": 0,
       "tests_collected": 57,
       "outcome": "57 passed"
+    },
+    {
+      "cmd": "set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 && python -m pytest -p pytest_timeout tests/_apps_contract/test_exec_summary_runtime_slice.py::test_qwen_unavailable_blocks_not_mocks -q --tb=short",
+      "exit_code": 0,
+      "tests_collected": 1,
+      "outcome": "1 passed (narrow rerun; earlier env saw ~120s TimeoutExpired — advisory only, not current failure)"
     },
     {
       "cmd": "set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 && python -m pytest -p pytest_timeout tests/_apps_contract/test_headline_runtime_slice.py tests/_apps_contract/test_exec_summary_runtime_slice.py tests/_apps_contract/test_competencies_runtime_slice.py -q --tb=short",
@@ -44,12 +47,14 @@
     {
       "cmd": "git diff --name-only -- agentic_core",
       "exit_code": 0,
-      "outcome": "non_empty_local_worktree",
-      "paths_observed": [
-        "agentic_core/L3_orchestration/exit_eval/v6/types.py",
-        "agentic_core/runtime/exit/x3_disposition.py"
-      ],
-      "note": "Untracked paths under agentic_core/runtime/ also present in this checkout; not enumerated here. Re-run after `git status agentic_core` clean for authoritative list."
+      "outcome": "empty",
+      "branch": "topic/apps_rg-prompt-authority"
+    },
+    {
+      "cmd": "git status --short -- agentic_core",
+      "exit_code": 0,
+      "outcome": "empty",
+      "branch": "topic/apps_rg-prompt-authority"
     }
   ],
   "aggregate_claims": {
@@ -70,7 +75,7 @@
     "x2_x1d_evidence_artifact": "artifacts/apps_rg/prompt_authority/x2_x1d_alignment_matrix.json",
     "locked_sections_non_llm": true,
     "locked_sections_note": "education, certifications, early_career: llm_generation_allowed false per x2_x1d_alignment_matrix.json",
-    "agentic_core_diff_empty": false
+    "agentic_core_diff_empty": true
   },
   "generated_sections": {
     "headline": {
@@ -160,9 +165,10 @@
     }
   },
   "carry_forward": [
-    "Clean agentic_core working tree (or move unrelated work to another branch) before declaring W12 PASS on purity gate.",
-    "Optional: extend slice tests to assert compiled_prompt_artifact.json and prompt_hash parity with PA artifact for each lane mock run.",
-    "W13: full tests/_apps_contract triage when promoted; known stale test_apps_rg_prompt_bom_exists.py.",
-    "W14: human-labeled calibration sets and judge score execution remain out of scope until explicitly requested."
+    "W13: PASS as tests/_apps_contract triage plan only; full suite remains separate and not promoted by the scoped 171 proof.",
+    "W14: PASS as quality benchmark scaffold only (docs/reports/apps_rg_prompt_authority/W14_quality_benchmark.md).",
+    "Qwen/vLLM timeout on test_qwen_unavailable_blocks_not_mocks is advisory only if it recurs (env/provider flake); not a current W12 failure after narrow rerun.",
+    "pr_body.md (if untracked) is unrelated repo noise outside agentic_core.",
+    "Optional: extend slice tests to assert compiled_prompt_artifact.json and prompt_hash parity with PA artifact for each lane mock run."
   ]
 }

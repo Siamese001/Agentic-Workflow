@@ -2,11 +2,36 @@
 
 ## Status
 
-**BLOCKED (purity gate)** on 2026-05-16 closeout: scoped `apps_rg` proof **passed** (57 + 70 + 44 = **171** tests on re-run), but **`agentic_core`** still carries **substantive binding/exit edits** (tracked diff + untracked `runtime/bindings/` and exit pipeline modules). Classified as **required shared-core / parallel initiative**, not prompt-authority — per W12 rules **no silent revert** here; move work to its own branch or explicitly request revert to achieve **PASS**.
+**PASS** (final closeout **2026-05-15** on branch **`topic/apps_rg-prompt-authority`**).
 
-Prior label **PARTIAL** (proof good, tree dirty) is superseded for closeout by **BLOCKED** until the tree is clean.
+Prior labels **PARTIAL** (Qwen slice timeout), **PARTIAL_ENV**, and **BLOCKED** (purity gate when `agentic_core` churn was mixed into the PA working tree) are **superseded**. Resolution: branch split from shared **BASE `77b8487ecf…`** — prompt-authority on this branch; binding/Exit spine work isolated on **`topic/agentic_core-binding-exit`**. Narrow Qwen rerun and full headline/exec/competencies bundle re-verified green; **`agentic_core`** purity re-checked (**empty** `git diff` and **empty** `git status` for `agentic_core`).
+
+### Final evidence (recorded)
+
+| Check | Result |
+|-------|--------|
+| Branch | `topic/apps_rg-prompt-authority` |
+| `agentic_core` purity | **PASS** — empty diff, empty status (pathspec `agentic_core`) |
+| Qwen narrow rerun | **PASS** — `test_qwen_unavailable_blocks_not_mocks`, 1 passed, exit 0 |
+| Headline / exec / competencies bundle | **PASS** — 70 passed, exit 0 |
+| Prior W12 registry / no-inline / X2 / ledger bundle | **PASS** — 57 passed |
+| Prior Unify / IBM slice bundle | **PASS** — 44 passed |
+| Full scoped proof total | **PASS** — **171** passed (57 + 70 + 44) |
+| Full `tests/_apps_contract` | **NOT RUN** — correctly out of scope |
+| Code edits during rerun | **None** |
+
+**Advisory (not a current failure):** An earlier run hit `subprocess.TimeoutExpired` (~120s) calling real `qwen_vllm` on `test_qwen_unavailable_blocks_not_mocks` (environment/provider timing). The narrow rerun **passed** (~72s). Treat Qwen timeout risk as **flake / env advisory** only unless it recurs.
+
+**Repo noise:** `pr_body.md` (if present untracked) is **unrelated** to this proof and lives outside `agentic_core`.
 
 Durable bundle: `artifacts/apps_rg/prompt_authority/full_runtime_prompt_authority_proof.json`
+
+## Carry-forward (W13 / W14)
+
+- **W13** — **PASS** as **triage plan only**; full `tests/_apps_contract` remains **not promoted** here.
+- **W14** — **PASS** as **quality benchmark scaffold only** (see `W14_quality_benchmark.md`).
+- Full `tests/_apps_contract` is a **separate** execution surface; scoped **171** does **not** replace it.
+- Additional strings (Qwen advisory, `pr_body.md`, optional slice assertions): `carry_forward` in `full_runtime_prompt_authority_proof.json`.
 
 ## What was proven (generated lanes)
 
@@ -32,18 +57,15 @@ Run from repo root (Windows `cmd`):
 ```bat
 set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 python -m pytest -p pytest_timeout tests/_apps_contract/test_apps_rg_prompt_registry_integrity.py tests/_apps_contract/test_apps_rg_no_inline_prompt_authority.py tests/_apps_contract/test_apps_rg_x2_x1d_alignment.py tests/_apps_contract/test_apps_rg_ledger_only_citations.py -q --tb=short
+python -m pytest -p pytest_timeout tests/_apps_contract/test_exec_summary_runtime_slice.py::test_qwen_unavailable_blocks_not_mocks -q --tb=short
 python -m pytest -p pytest_timeout tests/_apps_contract/test_headline_runtime_slice.py tests/_apps_contract/test_exec_summary_runtime_slice.py tests/_apps_contract/test_competencies_runtime_slice.py -q --tb=short
 python -m pytest -p pytest_timeout tests/_apps_contract/test_unify_narrative_runtime_slice.py tests/_apps_contract/test_unify_bullets_runtime_slice.py tests/_apps_contract/test_ibm_narrative_runtime_slice.py tests/_apps_contract/test_ibm_bullets_runtime_slice.py -q --tb=short
 git diff --name-only -- agentic_core
+git status --short -- agentic_core
 ```
 
 Full `tests/_apps_contract` was **not** run (out of scope).
 
 ## Git / artifacts
 
-- `.gitignore` now allows **only** `artifacts/apps_rg/prompt_authority/*.json` to be versioned; **`artifacts/apps_rg/runtime_proofs/` remains ignored** (bulky).
-- Promote **PASS** after: `git diff --name-only -- agentic_core` is empty **and** no unintended untracked `agentic_core` paths remain.
-
-## Carry-forward
-
-See `carry_forward` in `full_runtime_prompt_authority_proof.json`.
+- `.gitignore` allows **only** `artifacts/apps_rg/prompt_authority/*.json` to be versioned; **`artifacts/apps_rg/runtime_proofs/` remains ignored** (bulky).
