@@ -1,6 +1,9 @@
 """Contract: ``GenerateResumeStep`` modular vs legacy (``APPS_RG_R4_GENERATION_MODE``).
 
-Default remains ``legacy_full_resume`` (``run_apps_rg_l2_envelope``). Modular is opt-in; no silent fallback.
+Default when env is **unset** is ``modular_section_lanes``. ``legacy_full_resume`` is explicit rollback.
+
+Contract suite autouse pins ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for envelope stubs;
+tests below call ``delenv`` when asserting default modular resolution.
 """
 
 from __future__ import annotations
@@ -79,9 +82,9 @@ def _successful_modular_result(repo: Path) -> ModularR4GenerationResult:
     )
 
 
-def test_resolve_mode_default_is_legacy(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_mode_default_is_modular_when_unset(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv(ENV_APPS_RG_R4_GENERATION_MODE, raising=False)
-    assert resolve_apps_rg_r4_generation_mode() == MODE_LEGACY_FULL_RESUME
+    assert resolve_apps_rg_r4_generation_mode() == MODE_MODULAR_SECTION_LANES
 
 
 def test_resolve_modular_when_set(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -107,16 +110,21 @@ def test_r4_generation_route_declares_modular_canonical() -> None:
     "apps_rg.l2_recipe.modular_resume_generation.run_modular_resume_generation",
     autospec=True,
 )
-def test_default_mode_calls_envelope_not_modular(mock_modular, mock_env, tmp_path) -> None:
+def test_default_mode_calls_modular_not_envelope(mock_modular, mock_env, tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv(ENV_APPS_RG_R4_GENERATION_MODE, raising=False)
     mock_env.return_value = SimpleNamespace(
         proposed_state_diff={"generated_resume": _valid_rg_output(find_repo_root())},
         execution_status="completed",
     )
+    repo = find_repo_root()
+    art = repo / "artifacts" / "apps_rg" / "runs" / f"wiring_default_{uuid.uuid4().hex[:10]}"
+    art.mkdir(parents=True, exist_ok=True)
+    mock_modular.return_value = _successful_modular_result(repo)
     step = GenerateResumeStep()
-    out = step(_pa_context(artifact_dir=str(tmp_path)))
-    mock_env.assert_called_once()
-    mock_modular.assert_not_called()
-    assert out.get("apps_rg_r4_generation_mode") == MODE_LEGACY_FULL_RESUME
+    out = step(_pa_context(artifact_dir=str(art)))
+    mock_modular.assert_called_once()
+    mock_env.assert_not_called()
+    assert out.get("apps_rg_r4_generation_mode") == MODE_MODULAR_SECTION_LANES
     assert "generated_resume" in out
 
 

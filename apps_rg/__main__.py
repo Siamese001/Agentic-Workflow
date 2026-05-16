@@ -16,14 +16,13 @@ When ``--resume`` is omitted (or empty), the CLI uses the canonical base resume 
 ``--resume`` explicitly to override.
 
 **Generation topology:** this CLI is the canonical **R4 integrated product** entry
-(``dispatch_apps_rg_run`` → governed spine). **Canonical proven** résumé body generation
-is **modular** (seven section lanes + deterministic merge) when
-``APPS_RG_R4_GENERATION_MODE=modular_section_lanes`` — see
-``apps_rg.l2_recipe.r4_generation_route``. **Default** when that env var is unset remains
-``legacy_full_resume`` (explicit rollback): one ``run_apps_rg_l2_envelope`` call with a
-full tailor-existing CPA. Offline per-lane orchestration under
-``python -m apps_rg.runtime.orchestrate_full_resume`` is a separate module entry from
-integrated dispatch.
+(``dispatch_apps_rg_run`` → governed spine). **Default** résumé body generation is
+**modular** (seven section lanes + deterministic merge) when
+``APPS_RG_R4_GENERATION_MODE`` is unset — see ``apps_rg.l2_recipe.r4_generation_route``.
+Set ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for explicit **rollback** to one
+``run_apps_rg_l2_envelope`` call with a full tailor-existing CPA. Offline per-lane
+orchestration under ``python -m apps_rg.runtime.orchestrate_full_resume`` is a separate
+module entry from integrated dispatch.
 
 **L2 model execution (résumé body):** by default ``APPS_RG_L2_PROVIDER_MODE`` is unset
 and the v4 envelope uses **local vLLM** (``ProviderGateway`` ``local_only``).

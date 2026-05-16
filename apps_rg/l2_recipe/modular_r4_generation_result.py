@@ -35,6 +35,9 @@ class ModularR4GenerationResult:
 
     def ok_for_recipe_context(self) -> bool:
         """Mirror future GenerateResumeStep guard (same predicates)."""
+        pol = self.extras.get("recipe_lane_policy") if isinstance(self.extras, dict) else None
+        if isinstance(pol, dict) and pol.get("fatal_lane_failures"):
+            return False
         return (
             self.decisive_status == "PASS"
             and self.final_schema_valid

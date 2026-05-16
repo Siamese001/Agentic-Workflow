@@ -170,6 +170,14 @@ def verify_recorded_modular_r4_proof_bundle(
                     if str(r.get("section_lane") or "") == "full_resume":
                         errs.append("unexpected_full_resume_section_lane")
 
+            sch = str(raw_calls.get("schema_version") or "")
+            if "phase1.v2" in sch:
+                rlp = raw_calls.get("recipe_lane_policy")
+                if not isinstance(rlp, dict):
+                    errs.append("section_calls_missing_recipe_lane_policy")
+                elif str(raw_calls.get("decisive_status") or "") == "PASS" and rlp.get("fatal_lane_failures"):
+                    errs.append("section_calls_PASS_with_fatal_lane_failures")
+
     merge_path = run_dir / "modular_r4" / "outputs" / "rg_output_merge_receipt.json"
     if not merge_path.is_file():
         errs.append("missing_modular_r4/outputs/rg_output_merge_receipt.json")

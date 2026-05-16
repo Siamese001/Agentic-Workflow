@@ -11,8 +11,10 @@ ENTRYPOINT_MATRIX (code-derived; keep in sync with ``apps_rg.l2_recipe.r4_genera
    - Declared **canonical proven** execution style: **modular_section_lanes**
      (see ``R4_RECIPE_GENERATION_EXECUTION_STYLE``) — seven section lanes + merge when
      ``APPS_RG_R4_GENERATION_MODE=modular_section_lanes``.
-   - **Default** runtime mode when env unset: **legacy_full_resume** (explicit rollback)
-     → ``GenerateResumeStep`` uses ``run_apps_rg_l2_envelope`` + tailor-existing CPA
+   - **Default** runtime mode when env unset: **modular_section_lanes**
+     → ``GenerateResumeStep`` uses ``run_modular_resume_generation`` (no envelope)
+   - **Explicit rollback:** ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` →
+     ``run_apps_rg_l2_envelope`` + tailor-existing CPA
    - Provider call expectation (modular mode): **per-lane** structured generation (no
      full-résumé provider lane)
    - Qwen full résumé in one call: **only in legacy envelope mode** (single CPA)
@@ -87,4 +89,4 @@ def test_modular_orchestrator_exports_seven_lane_modules() -> None:
 def test_golden_r4_ssot_declares_modular_canonical() -> None:
     assert rr.R4_RECIPE_GENERATION_EXECUTION_STYLE == "modular_section_lanes"
     assert rr.CANONICAL_PROVEN_GENERATION_ROUTE == "modular_section_lanes"
-    assert rr.DEFAULT_RUNTIME_GENERATION_MODE == "legacy_full_resume"
+    assert rr.DEFAULT_RUNTIME_GENERATION_MODE == "modular_section_lanes"

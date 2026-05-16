@@ -130,6 +130,11 @@ def write_modular_generate_step_receipt(
         "final_merge_attempted": getattr(mr, "final_merge_attempted", None),
         "decisive_status": getattr(mr, "decisive_status", None),
         "failure_reason": getattr(mr, "failure_reason", None),
+        "recipe_lane_policy": (
+            getattr(mr, "extras", {}).get("recipe_lane_policy")
+            if isinstance(getattr(mr, "extras", None), dict)
+            else None
+        ),
     }
     out = Path(artifact_dir) / "modular_r4" / "generate_resume_step_receipt.json"
     out.parent.mkdir(parents=True, exist_ok=True)

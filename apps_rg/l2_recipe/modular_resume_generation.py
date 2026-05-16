@@ -21,6 +21,7 @@ from apps_rg.l2_recipe.modular_lane_adapter import (
     resolve_latest_lane_run_dir,
     run_dispatch_main,
 )
+from apps_rg.l2_recipe.modular_lane_recipe_policy import summarize_modular_lane_recipe_policy
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 from apps_rg.l2_recipe.modular_rg_output_builder import (
     build_rg_output_from_modular_sections,
@@ -639,9 +640,21 @@ def run_modular_resume_generation(
             },
         )
 
+    recipe_lane_policy = summarize_modular_lane_recipe_policy(
+        section_call_records,
+        enforce_product_lane_requirements=bool(profile.phase1_invoke_real_lanes),
+    )
+    if profile.phase1_invoke_real_lanes and recipe_lane_policy.get("fatal_lane_failures"):
+        decisive = "FAIL"
+        failure = "fatal_lane_recipe_policy:" + "; ".join(
+            f'{f["section_lane"]}:{f.get("decisive_reason_code") or ""}'
+            for f in recipe_lane_policy["fatal_lane_failures"][:8]
+        )
+        pass_source = ""
+
     section_calls_path = modular_root / "section_provider_calls.json"
     calls_schema = (
-        "apps_rg.section_provider_calls.phase1.v1"
+        "apps_rg.section_provider_calls.phase1.v2"
         if profile.phase1_invoke_real_lanes
         else "apps_rg.section_provider_calls.phase0.v1"
     )
@@ -659,6 +672,7 @@ def run_modular_resume_generation(
             "lane_dispatch_modules": list(LANE_DISPATCH_MODULES),
             "decisive_status": decisive,
             "pass_source": pass_source,
+            "recipe_lane_policy": recipe_lane_policy,
         },
     )
 
@@ -689,6 +703,7 @@ def run_modular_resume_generation(
             "lanes_executed": lanes_executed,
             "lane_outputs_valid": lane_outputs_valid,
             "final_merge_attempted": final_merge_attempted,
+            "recipe_lane_policy": recipe_lane_policy,
         },
     )
 

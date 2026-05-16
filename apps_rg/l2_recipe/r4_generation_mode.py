@@ -2,18 +2,20 @@
 
 Canonical **proven** generation style for integrated R4 is documented in
 ``apps_rg.l2_recipe.r4_generation_route`` (``modular_section_lanes``). **Default** when
-unset remains ``legacy_full_resume`` for explicit rollback and deterministic defaults.
+unset is ``modular_section_lanes``. Set ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume``
+for explicit monolithic envelope rollback.
 
 ``APPS_RG_R4_GENERATION_MODE`` selects how the recipe obtains structured résumé JSON:
 
-- unset / empty → ``legacy_full_resume`` (monolithic ``run_apps_rg_l2_envelope``)
-- ``modular_section_lanes`` → ``run_modular_resume_generation`` (no envelope)
+- unset / empty → ``modular_section_lanes`` (``run_modular_resume_generation``; no envelope)
+- ``legacy_full_resume`` → monolithic ``run_apps_rg_l2_envelope``
+- ``modular_section_lanes`` → same modular path as default
 
 For modular mode, section dispatch ``--provider`` defaults to ``mock``. Set
 ``APPS_RG_MODULAR_LANE_PROVIDER=qwen_vllm`` for real vLLM generation (with
 ``VLLM_BASE_URL`` / ``QWEN_VLLM_MODEL`` per ``qwen_vllm_provider``).
 
-Invalid values fail closed with ``RuntimeError`` (no silent downgrade to legacy).
+Invalid values fail closed with ``RuntimeError`` (no silent coercion to ``legacy_full_resume``).
 """
 
 from __future__ import annotations
@@ -34,11 +36,12 @@ AppsRgR4GenerationMode = Literal["legacy_full_resume", "modular_section_lanes"]
 def resolve_apps_rg_r4_generation_mode() -> AppsRgR4GenerationMode:
     """Return generation mode from ``APPS_RG_R4_GENERATION_MODE``.
 
-    Default when unset is ``legacy_full_resume`` (preserves historic behavior).
+    Default when unset is ``modular_section_lanes``. Use ``legacy_full_resume`` only as
+    explicit rollback (monolithic envelope).
     """
     raw = os.environ.get(ENV_APPS_RG_R4_GENERATION_MODE, "").strip().lower()
     if not raw:
-        return MODE_LEGACY_FULL_RESUME
+        return MODE_MODULAR_SECTION_LANES
     if raw == MODE_LEGACY_FULL_RESUME:
         return MODE_LEGACY_FULL_RESUME
     if raw == MODE_MODULAR_SECTION_LANES:

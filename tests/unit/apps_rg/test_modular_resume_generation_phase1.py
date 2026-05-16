@@ -39,7 +39,8 @@ def test_phase1_runs_seven_lanes_mock_provider_no_envelope() -> None:
     calls_path = art / res.section_provider_calls_ref
     assert calls_path.is_file()
     raw = json.loads(calls_path.read_text(encoding="utf-8"))
-    assert raw["schema_version"] == "apps_rg.section_provider_calls.phase1.v1"
+    assert raw["schema_version"] == "apps_rg.section_provider_calls.phase1.v2"
+    assert isinstance(raw.get("recipe_lane_policy"), dict)
     assert len(raw["records"]) == 7
     assert {r["section_lane"] for r in raw["records"]} == set(GENERATED_LANES)
     assert all(r.get("section_lane") != "full_resume" for r in raw["records"])
