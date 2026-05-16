@@ -1,0 +1,12 @@
+# Fixture manifest: self-contained generic binding package for native-core proof harness.
+schema_version: "1.0"
+binding_kind: generic_apps_binding_fixture_v1
+app_id: apps_rg
+exit_compatibility_absence_reason: >
+  Fixture scopes generic W1/W2 profile-ref validation; Exit-shaped bundles are exercised in dedicated native-core tests.
+sections:
+  runtime_customization_package: runtime_customization_package.yaml
+  l1_static_plan_profile: l1_static_plan_profile.yaml
+  l0_managed_route_profile: l0_managed_route_profile.yaml
+  evidence_discipline: evidence_discipline.yaml
+  pa_lane_refs: pa_lane_refs.yaml

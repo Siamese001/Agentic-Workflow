@@ -33,6 +33,7 @@ try:
 except ImportError:
     pass
 
+from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
@@ -187,45 +188,9 @@ def build_runtime_payload(
 
 
 def build_prompt_messages(runtime_payload: dict[str, Any]) -> list[dict[str, str]]:
-    facts = runtime_payload["selected_fact_plan"]["facts"]
-    fact_lines = "\n".join(
-        f"- {fact['fact_id']}: {fact['claim_text']}"
-        + (f" | metric: {fact['metric_raw']}" if fact.get("metric_raw") else "")
-        for fact in facts
-    )
-    header = runtime_payload["unify_header"]
-    system = (
-        "You are a Unify Consulting employment bullet tailor. "
-        "Return RAW JSON ONLY: response must begin with { and end with }. "
-        "No markdown fences. No prose outside JSON.\n\n"
-        "READ-ONLY HEADER (never rewrite): "
-        f"company={header['employer']}; title={header['title']}; "
-        f"location={header['location']}; dates={header['start_date']} to {header['end_date']}.\n\n"
-        "SCOPE: Use ONLY bul_unify_001..006 facts. No IBM, InsurTech, or EY facts.\n"
-        "OUTPUT: exactly 6 bullets. bullet_id MUST be bul_unify_001 through bul_unify_006 (never B1/B2 aliases).\n"
-        "Each bullet object: bullet_id, bullet_text, rewrite_intensity, has_metric, metric_raw, source_fact_ids.\n"
-        "claim_ledger MUST list every bullet with claim_text and source_fact_ids.\n"
-        "Keep JSON compact to avoid truncation.\n"
-        "DISTRIBUTION: 2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED (max HEAVY=3, min LIGHT_PROTECTED=1).\n"
-        f"Protected bullet {PROTECTED_BULLET_DEFAULT} must be LIGHT_PROTECTED and preserve $22M, 20%, 8 to 28 metrics.\n"
-        "Preserve cycle-time metric in bul_unify_004: six months to three weeks.\n"
-        "JD and briefing are targeting context only, never proof.\n"
-        "No first person. No em dash. No inline source tags. No generic filler.\n"
-        "Include top-level: bullets, selected_fact_plan, claim_ledger, jd_alignment, gap_notes, "
-        "change_log, rewrite_distribution, self_check."
-    )
-    user = f"""
-Target title (context only): {runtime_payload['target_title']}
-Target company (context only): {runtime_payload['target_company']}
-JD (context only): {runtime_payload['jd_text']}
-Briefing (context only): {runtime_payload['briefing']}
-
-CANONICAL UNIFY FACTS:
-{fact_lines}
-
-Return one JSON object with rewrite_distribution HEAVY=2, MODERATE=3, LIGHT_PROTECTED=1, total=6.
-""".strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    """W7: PA-compiled system prompt via ``section_prompt_adapter`` (no inline fallback)."""
+    rid = str(runtime_payload.get("run_id") or "unify_bullets_prompt_build")
+    return compile_unify_bullets_prompt(runtime_payload, run_id=rid).artifact.messages
 
 
 def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
@@ -439,11 +404,26 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    messages = build_prompt_messages(runtime_payload)
-    compiled_prompt = json.dumps(messages, indent=2)
+    section_compiled = compile_unify_bullets_prompt(runtime_payload, run_id=runtime_payload["run_id"])
+    messages = section_compiled.artifact.messages
+    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(compiled_prompt, encoding="utf-8")
+    (artifact_dir / "compiled_prompt.txt").write_text(
+        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    write_json(
+        artifact_dir / "compiled_prompt_artifact.json",
+        {
+            "section_id": section_compiled.section_id,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "dispatch_sha256_prompt16": prompt_hash,
+            "slot_count": section_compiled.artifact.slot_count,
+        },
+    )
 
     provider_request_data = None
     provider_result_data = None
@@ -517,6 +497,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
     write_json(artifact_dir / "l2_output.json", l2_output)
@@ -545,6 +528,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
             "prompt_id": PROMPT_ID,
             "provider": args.provider,
             "temperature": args.temperature if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT,
+            "section_prompt_adapter": True,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
         },
     )
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])

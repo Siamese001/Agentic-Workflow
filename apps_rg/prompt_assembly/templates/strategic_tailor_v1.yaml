@@ -37,8 +37,10 @@ slot_bodies:
        a) OMIT the claim entirely, OR
        b) Replace with "[Gap: insufficient evidence]"
        You MUST NOT generalize, approximate, or fabricate to fill gaps.
-    5. CITATION REQUIREMENT: Every material bullet point MUST preserve its source 
-       reference as [source: {fact_id}] when evidence IDs are available in C0.
+    5. PROOF SURFACE (LEDGER-ONLY): Bind material claims through claim_ledger /
+       source_fact_ids / evidence_ids (and gap_notes when evidence is insufficient).
+       Resume display text MUST NOT contain inline source tags, bracket citations, or
+       footnotes — proof lives in structured ledger fields, not in recruiter-facing prose.
     6. METRIC VERIFICATION: All quantitative claims must appear verbatim in 
        <candidate_facts> or be explicitly labeled as [estimated] with source noted.
     7. DATE INTEGRITY: Employment dates must match <candidate_facts> exactly. 
@@ -95,11 +97,12 @@ slot_bodies:
             Innovative, Forward-thinking, Accomplished, Visionary, Detail-oriented, Strategic
           PROOF_POINT_SOURCE: candidate_facts only — max 2 proof points
           DO_NOT_USE_AS_PROOF: company_brief or jd_requirements
-          CITATION: every proof point must carry [source: fact_id]
-          PATTERN: "[Role/function] with [X years] in [domain]. [Key achievement + metric + source]. [Second achievement + source]."
+          PROOF_BINDING: each proof point must have claim_ledger / source_fact_ids rows tied to candidate_facts
+          DISPLAY_TEXT: summary prose must NOT include inline [source: ...] or [fact: ...] tags
+          PATTERN: "[Role/function] with [X years] in [domain]. [Key achievement + metric]. [Second achievement]."
           PRE_OUTPUT_CHECKLIST: Before producing output verify:
             - no discouraged opener in first clause
-            - at least 1 [source: X] citation
+            - at least one proof point is ledger-bound to candidate_facts
             - no em dash character
         </executive_summary>
 
@@ -115,14 +118,14 @@ slot_bodies:
           BULLET_PATTERN: "[POWER_VERB] [technical action] [business context] resulting in [metric] across [scope]"
           METRIC_MIN_FRACTION: 0.60
           FORBIDDEN_PHRASES: "Responsible for", "Duties included", "Helped with", "Worked on", "Participated in"
-          CITATION: End each bullet with [source: {fact_id}] from candidate_facts
+          PROOF_BINDING: bind each bullet to candidate_facts via claim_ledger / source_fact_ids — bullet display text stays clean (no inline source tags)
         </experience>
 
         <projects>
           FORMAT: "Project Name | Role | Date Range"
           REQUIRED: technical_stack_from_facts, specific_contribution, quantified_outcome
           FORBIDDEN: technologies not in candidate_facts
-          CITATION: "[source: {project_evidence.id}]"
+          PROOF_BINDING: project evidence IDs belong in claim_ledger / structured fields — not inline tags in display text
         </projects>
 
         <skills>
@@ -148,7 +151,7 @@ slot_bodies:
 
         PREFER ALTERNATIVES (advisory — use only if supported by specific evidence):
         - Power verbs Pioneered, Orchestrated, Championed, Spearheaded, Transformed, Revolutionized:
-          only use if paired with a concrete metric from candidate_facts with [source: X]
+          only use if paired with a concrete metric from candidate_facts with claim_ledger / source_fact_ids binding (display text stays clean)
         - Meticulous, Nuanced, Realm, Leverage, Utilize, Facilitate, Impactful,
           Actionable, Seamlessly, Robust — prefer plain specific alternatives
         - Bullet variety: avoid more than 3 bullets per section starting with the same verb root
@@ -204,8 +207,8 @@ slot_bodies:
         5. JD mirror: does any section read like the JD rewritten in first person?
            If yes: revise to lead with the candidate's own experience narrative.
 
-        6. Citation integrity: every [source: X] ID in the draft maps to a candidate_facts entry.
-           No [source: X] ID maps to jd_requirements or company_brief.
+        6. Proof integrity: every material claim is backed by claim_ledger / source_fact_ids from candidate_facts,
+           not from jd_requirements or company_brief. Display prose must remain free of inline source/citation tags.
 
         When the draft satisfies all 6 items, emit the final output.
       </pre_output_checklist>
@@ -288,16 +291,16 @@ slot_bodies:
     reducing time-to-market by 40%. Deep expertise in distributed systems, team 
     leadership (50+ engineers), and board reporting."
     
-    ## EXAMPLE 2: Experience Bullet Pattern (Senior)
+    ## EXAMPLE 2: Experience Bullet Pattern (Senior) — display text clean; bind exp_001 in claim_ledger
     "Architected microservices migration from monolith, reducing deployment time 
     from 6 hours to 15 minutes and enabling 10x traffic scaling without performance 
-    degradation [source: exp_001]"
+    degradation."
     
-    ## EXAMPLE 3: Project Pattern
+    ## EXAMPLE 3: Project Pattern — display text clean; bind proj_003 in claim_ledger
     "Open-source monitoring tool | Core Contributor | 2022-2023
     - Built distributed tracing module in Go, adopted by 300+ teams
     - Reduced p95 latency visibility gap from hours to seconds
-    - Presented at KubeCon; 50K GitHub stars [source: proj_003]"
+    - Presented at KubeCon; 50K GitHub stars"
     
     ## EXAMPLE 4: Skills Organization Pattern
     "Languages: Python, Go, TypeScript

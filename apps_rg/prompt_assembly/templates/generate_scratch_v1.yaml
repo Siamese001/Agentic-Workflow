@@ -98,7 +98,7 @@ slot_bodies:
           LEAD_CLAUSE: Open with operating identity as first clause — no generic opener
           FORBIDDEN_OPENERS: Seasoned, Dynamic, Proven, Passionate, Dedicated, Results-driven,
             Innovative, Forward-thinking, Accomplished, Visionary, Detail-oriented, Strategic
-          PROOF_POINT_SOURCE: candidate_facts only — max 2 proof points with [source: X]
+          PROOF_POINT_SOURCE: candidate_facts only — max 2 proof points; bind each via claim_ledger / source_fact_ids (display prose stays clean — no inline source tags)
           LENGTH: max 4 lines / max 60 words
         </executive_summary>
       </section_instructions>
@@ -145,7 +145,7 @@ slot_bodies:
 
         5. JD mirror: does any section read like the JD rewritten in first person? If yes: revise.
 
-        6. Citation integrity: every [source: X] maps to a candidate_facts entry, not jd_requirements.
+        6. Proof integrity: ledger rows map to candidate_facts, not jd_requirements; display text has no inline source/citation tags.
 
         When the draft satisfies all 6 items, emit the final output.
       </pre_output_checklist>
@@ -214,11 +214,11 @@ slot_bodies:
     - "improved latency a lot"
     - "Python, C++"
     
-    ORGANIZED (correct — with uncertainty markers):
+    ORGANIZED (correct — display bullets clean; uncertainty markers OK; bind fact_002–004 in claim_ledger / source_fact_ids):
     Google | Software Engineer | 2018-2022
-    - Built search ranking system [source: fact_002]
-    - Led team of 5 engineers [unclear: individual contribution vs. management] [source: fact_003]
-    - Improved latency [unclear: specific improvement, baseline unknown] [source: fact_004]
+    - Built search ranking system
+    - Led team of 5 engineers [unclear: individual contribution vs. management]
+    - Improved latency [unclear: specific improvement, baseline unknown]
     
     Skills: Python, C++
     

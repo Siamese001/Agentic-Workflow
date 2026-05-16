@@ -1,0 +1,32 @@
+# Minimal route profile list for native-core proof (single-step grounded read).
+- route_profile_id: arpf::apps_rg::resume_generation::default_single_step::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  conditions: {}
+  spine:
+    route_family: R3_SIMPLE_GROUNDED_READ
+    route_id: R3_SIMPLE_GROUNDED_READ
+    execution_form: SINGLE_STEP
+    l3_required: false
+  personalization_default: false
+  provider_model_requirement_ref: apps_rg::provider_model::resume_generation::v1
+  managed_workflow:
+    workflow_ref: ""
+    workflow_manifest_ref: ""
+    workflow_registry_ref: ""
+  budget_constraints:
+    enforced: false
+    profile_present: false
+  graph_traverse:
+    graph_expansion_allowed: false
+    max_hops: 0
+    max_nodes: 0
+    max_edges: 0
+    allowed_relation_types: []
+    contradiction_scan_enabled: false
+    supersession_scan_enabled: false
+    graph_adapter_ref: ""
+    live_wiring_deferred: true
+    wiring_gate: DEFERRED

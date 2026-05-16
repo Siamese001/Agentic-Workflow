@@ -1,0 +1,21 @@
+# W2 stub — no dispatch wiring until W6. pa_template_ref uses registry E3 template for W3 adapter compile proofs.
+section_id: headline
+mode: COMPOSE_NEW
+apps_rg_prompt_template_ref: apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml
+pa_template_ref: strategic_tailor_v1
+output_schema_ref: apps_rg/rg_output_schema.json
+claim_ledger_required: true
+display_text_source_tags_allowed: false
+jd_as_proof_allowed: false
+companion_context_allowed: true
+companion_context_authority: U_TIER_CONTEXT_ONLY
+x2_gate_profile_ref: apps_rg/runtime/validators/headline_x2.py
+x1d_judge_profile_ref: apps_rg/runtime/judges/headline_x1d.py
+locked_fields: []
+llm_generation_allowed: true
+notes: >
+  W8 ledger-only citations: resume display text must not contain inline source/citation tags.
+  Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
+  jd_requirements / company_brief are targeting only, not proof.
+  Companion context is U-tier only, not proof.
+  W6: runtime compile via strategic_tailor_v1 + headline_tailor_v1 slot_bodies; facts in C0, JD in c0_jd_requirements, companion U-tier only.

@@ -1,0 +1,168 @@
+{
+  "schema_version": "1.0",
+  "wave": "W12",
+  "generated_at_utc": "2026-05-16T00:00:00Z",
+  "status": "BLOCKED",
+  "status_reasons": [
+    "W12 purity closeout (2026-05-16): agentic_core contains substantive spine/binding edits (not prompt-authority). Per closeout rules, treating as required shared-core / parallel initiative — no silent revert; purity gate remains open.",
+    "Scoped apps_rg proof remains green: 57 + 70 + 44 = 171 tests passed on re-run (see proof_commands)."
+  ],
+  "purity_closeout": {
+    "date_utc": "2026-05-16",
+    "classification": {
+      "agentic_core/L3_orchestration/exit_eval/v6/types.py": "required_shared_core — SourceType enum extension APP_BINDING_COMPATIBILITY_PACKAGE (binding envelope); not W4–W11 prompt work",
+      "agentic_core/runtime/exit/x3_disposition.py": "required_shared_core — AG-5 re-exports from exit_disposition; exit receipt compatibility surface",
+      "agentic_core/runtime/bindings/** (untracked)": "required_shared_core — binding validation / app binding package loaders (11 files); intentional source scaffolding, not temp/artifact",
+      "agentic_core/runtime/exit/*.py (untracked x1_*, x2_*, x3_emitter, exit_*_packet)": "required_shared_core — exit checkout/aggregation pipeline modules; not prompt-authority"
+    },
+    "reverts_or_removals": [],
+    "resolution_options": [
+      "Move agentic_core changes to a dedicated binding/exit branch and keep prompt-authority branch clean for W12 PASS",
+      "If changes were unintended mix-in, explicitly request revert/stash of listed paths (not done here)"
+    ]
+  },
+  "full_apps_contract_status": "NOT_RUN_OUT_OF_SCOPE",
+  "proof_commands": [
+    {
+      "cmd": "set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 && python -m pytest -p pytest_timeout tests/_apps_contract/test_apps_rg_prompt_registry_integrity.py tests/_apps_contract/test_apps_rg_no_inline_prompt_authority.py tests/_apps_contract/test_apps_rg_x2_x1d_alignment.py tests/_apps_contract/test_apps_rg_ledger_only_citations.py -q --tb=short",
+      "exit_code": 0,
+      "tests_collected": 57,
+      "outcome": "57 passed"
+    },
+    {
+      "cmd": "set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 && python -m pytest -p pytest_timeout tests/_apps_contract/test_headline_runtime_slice.py tests/_apps_contract/test_exec_summary_runtime_slice.py tests/_apps_contract/test_competencies_runtime_slice.py -q --tb=short",
+      "exit_code": 0,
+      "tests_collected": 70,
+      "outcome": "70 passed"
+    },
+    {
+      "cmd": "set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 && python -m pytest -p pytest_timeout tests/_apps_contract/test_unify_narrative_runtime_slice.py tests/_apps_contract/test_unify_bullets_runtime_slice.py tests/_apps_contract/test_ibm_narrative_runtime_slice.py tests/_apps_contract/test_ibm_bullets_runtime_slice.py -q --tb=short",
+      "exit_code": 0,
+      "tests_collected": 44,
+      "outcome": "44 passed"
+    },
+    {
+      "cmd": "git diff --name-only -- agentic_core",
+      "exit_code": 0,
+      "outcome": "non_empty_local_worktree",
+      "paths_observed": [
+        "agentic_core/L3_orchestration/exit_eval/v6/types.py",
+        "agentic_core/runtime/exit/x3_disposition.py"
+      ],
+      "note": "Untracked paths under agentic_core/runtime/ also present in this checkout; not enumerated here. Re-run after `git status agentic_core` clean for authoritative list."
+    }
+  ],
+  "aggregate_claims": {
+    "apps_rg_owned_prompt_content": true,
+    "compile_via_section_prompt_adapter": true,
+    "evidence_tests": [
+      "tests/_apps_contract/test_apps_rg_no_inline_prompt_authority.py",
+      "tests/_apps_contract/test_apps_rg_prompt_registry_integrity.py"
+    ],
+    "prompt_hash_dispatch_persistence": true,
+    "prompt_hash_evidence": "Implementation: each generated-lane dispatch computes sha16(compiled_prompt) and writes compiled_prompt_artifact.json + injects prompt_hash into L2 payloads; slice tests assert X2/pass plumbing but do not currently assert prompt_hash fields on disk.",
+    "section_contract_refs_ssot": "apps_rg/prompt_assembly/section_prompt_contracts/*.contract.yaml",
+    "inline_prompt_authority_active": false,
+    "silent_inline_fallback": false,
+    "ledger_only_display": true,
+    "ledger_only_evidence_tests": ["tests/_apps_contract/test_apps_rg_ledger_only_citations.py"],
+    "x2_x1d_alignment": true,
+    "x2_x1d_evidence_artifact": "artifacts/apps_rg/prompt_authority/x2_x1d_alignment_matrix.json",
+    "locked_sections_non_llm": true,
+    "locked_sections_note": "education, certifications, early_career: llm_generation_allowed false per x2_x1d_alignment_matrix.json",
+    "agentic_core_diff_empty": false
+  },
+  "generated_sections": {
+    "headline": {
+      "section_id": "headline",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_headline_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/headline_x2.py"
+    },
+    "executive_summary": {
+      "section_id": "executive_summary",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_exec_summary_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/executive_summary_x2.py"
+    },
+    "competencies": {
+      "section_id": "competencies",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+      "pa_slots_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.pa_slots.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_competencies_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/competencies_x2.py"
+    },
+    "unify_narrative": {
+      "section_id": "unify_narrative",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_unify_narrative_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/unify_narrative_x2.py"
+    },
+    "unify_bullets": {
+      "section_id": "unify_bullets",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/unify_bullets.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_unify_bullets_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/unify_bullets_x2.py"
+    },
+    "ibm_narrative": {
+      "section_id": "ibm_narrative",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/ibm_narrative.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_ibm_narrative_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/ibm_narrative_x2.py"
+    },
+    "ibm_bullets": {
+      "section_id": "ibm_bullets",
+      "compiled_prompt_artifact": true,
+      "prompt_hash": true,
+      "template_ref": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+      "pa_shell_ref": "strategic_tailor_v1",
+      "contract_ref": "apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml",
+      "inline_prompt_authority": false,
+      "runtime_slice_tests": ["tests/_apps_contract/test_ibm_bullets_runtime_slice.py"],
+      "x2_slice_passed": true,
+      "x2_validator_ref": "apps_rg/runtime/validators/ibm_bullets_x2.py"
+    }
+  },
+  "carry_forward": [
+    "Clean agentic_core working tree (or move unrelated work to another branch) before declaring W12 PASS on purity gate.",
+    "Optional: extend slice tests to assert compiled_prompt_artifact.json and prompt_hash parity with PA artifact for each lane mock run.",
+    "W13: full tests/_apps_contract triage when promoted; known stale test_apps_rg_prompt_bom_exists.py.",
+    "W14: human-labeled calibration sets and judge score execution remain out of scope until explicitly requested."
+  ]
+}

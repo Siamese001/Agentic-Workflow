@@ -37,8 +37,10 @@ slot_bodies:
        Fit content to substance. No arbitrary length constraints.
     5. JD/TARGET CONTEXT IS NOT PROOF: JD requirements are TARGET context only,
        NOT proof of candidate experience.
-    6. CLAIM_LEDGER ALIGNMENT: Every claim in output must correspond to claim_ledger entry.
-    7. CITATION REQUIREMENT: Every material claim MUST carry [source: {fact_id}] citation.
+    6. CLAIM_LEDGER ALIGNMENT: Every material claim in resume_display_text must have a matching
+       claim_ledger row with source_fact_ids drawn ONLY from selected_fact_plan facts.
+    7. DISPLAY TEXT IS CLEAN: resume_display_text MUST NOT contain [source: ...], [fact: ...],
+       bracket citations, or raw fact_id tokens. Proof lives ONLY in claim_ledger, gap_notes, and hashes.
     8. GAP HANDLING: Unsupported JD requirements → gap_notes only, never fabrication.
 
     # AUTHORITY HIERARCHY (Highest to Lowest)
@@ -49,7 +51,7 @@ slot_bodies:
     Example: Even if U0 implies length preference, S0 Oath 4 blocks arbitrary constraints.
 
     <governing_contract>
-      TRUTH SOURCE: selected_fact_plan and claim_ledger only
+      TRUTH SOURCE: selected_fact_plan C0 payload only (not JD/briefing)
       TARGET CONTEXT: target_role guides positioning, NOT content invention
       OUTPUT TYPE: executive summary paragraph with evidence-first structure
       LENGTH PRINCIPLE: Fit-to-evidence only — no arbitrary length targets
@@ -87,6 +89,20 @@ slot_bodies:
       </evidence_tier_selection>
 
       <executive_summary_construction>
+        # OUTPUT SERIALIZATION (Sovereign — must survive providers that add markdown)
+        - Return RAW JSON ONLY as a single object. First character ``{``, last character ``}``.
+        - The serialized object text must begin with { (no preamble) and end with } (no postamble).
+        - No markdown code fences: do **not** wrap the answer in ``` or ```json blocks.
+        - No ```json prologue and no closing ``` — model output must be parseable JSON text only.
+        - No ``` — never emit fenced blocks around the JSON object.
+
+        # DEFAULT NARRATIVE ARC (fit-to-evidence; override only when facts are too thin)
+        - Default: exactly TWO synthesized sentences in ``resume_display_text``.
+        - Sentence 1: executive identity / operating identity from selected facts
+          (patterns may read like "enterprise AI platform leader ..." only when the facts support that scope).
+        - Sentence 2: governance, delivery reliability, or platform outcomes tied to claim_ledger rows.
+        - Collapse enumerations into grouped phrases; avoid one-resume-bullet-per-sentence stacking.
+
         # PARAGRAPH STRUCTURE (Evidence-First Flow)
         
         SENTENCE 1: Role Identity Lead
@@ -98,7 +114,7 @@ slot_bodies:
         
         SENTENCE 2-3: Primary Proof Points (2 claims maximum)
           - Each claim must have supporting metric from selected facts
-          - Format: "[Achievement + metric + scope]. [source: fact_id]"
+          - Format: "[Achievement + metric + scope]." (tags live in claim_ledger only, not in resume_display_text)
           - Claims must be grounded in specific candidate_facts
           - NO unsupported generalizations
         
@@ -113,7 +129,7 @@ slot_bodies:
         
         The summary should:
         - Be as long as needed to convey the selected evidence
-        - Be as short as possible while maintaining all required citations
+        - Be as short as possible while maintaining claim_ledger completeness
         - NEVER pad with filler to hit arbitrary targets
         - NEVER cut strong evidence to meet arbitrary limits
         
@@ -127,9 +143,9 @@ slot_bodies:
         - Innovative, Forward-thinking, Accomplished, Visionary, Detail-oriented, Strategic
         
         REQUIRED_ELEMENTS:
-        - [source: X] citation after every claim with metric
+        - claim_ledger rows with source_fact_ids for every quantified or material claim
         - Role identity in first clause
-        - At least one quantified achievement with metric
+        - At least one quantified achievement with metric when selected facts include metrics
         
         FORBIDDEN_ELEMENTS:
         - Em dash character (—) — use comma, semicolon, or period
@@ -158,7 +174,7 @@ slot_bodies:
       <claim_ledger_alignment>
         OUTPUT MUST ALIGN WITH claim_ledger entries:
         - Each claim_ledger_emitted.claim_summary should have corresponding prose in output.executive_summary
-        - claim_ledger_emitted.source_fact_ids must match citations in output
+        - claim_ledger_emitted.source_fact_ids must match material claims (display text stays tag-free)
         - If claim_ledger indicates target_section = "executive_summary", it MUST appear
       </claim_ledger_alignment>
 
@@ -166,7 +182,7 @@ slot_bodies:
         FINAL_OUTPUT must include these self_check fields:
         - selected_fact_plan_hash: sha256 hash of input selected_fact_plan
         - claims_emitted_count: number of claims in output
-        - citations_count: number of [source: X] citations
+        - citations_count: number of claim_ledger rows (display text has zero inline citations)
         - any_unsupported_claims: boolean (must be false)
         - any_generic_openers: boolean (must be false)
         - any_em_dash: boolean (must be false)
@@ -176,7 +192,7 @@ slot_bodies:
       <pre_output_checklist>
         Before producing final output, verify:
         1. First clause opens with role identity (not generic opener)
-        2. Every claim has [source: X] citation
+        2. Every material claim appears in claim_ledger with valid source_fact_ids
         3. No em dash character in output
         4. No generic opener words used
         5. No arbitrary padding or cutting
@@ -194,7 +210,7 @@ slot_bodies:
     # C0_EVIDENCE_DATA — Planning Artifacts as Source
     
     ## SELECTED_FACT_PLAN (Ground Truth Selection)
-    <selected_fact_plan source="strategic_tailor_v2" confidence="1.0">
+    <selected_fact_plan source="strategic_tailor_v1" confidence="1.0">
     {{ selected_fact_plan | to_yaml }}
     
     # These facts have been strategically selected for this role.
@@ -202,7 +218,7 @@ slot_bodies:
     </selected_fact_plan>
     
     ## CLAIM_LEDGER (Planned Claims to Expand)
-    <claim_ledger source="strategic_tailor_v2" confidence="1.0">
+    <claim_ledger source="strategic_tailor_v1" confidence="1.0">
     {{ claim_ledger | to_yaml }}
     
     # These claims are planned for the executive summary.
@@ -217,7 +233,7 @@ slot_bodies:
     </candidate_facts>
     
     ## GAP_NOTES (Unsupported Requirements to Document)
-    <gap_notes source="strategic_tailor_v2" confidence="1.0">
+    <gap_notes source="strategic_tailor_v1" confidence="1.0">
     {{ gap_notes | to_yaml }}
     
     # These JD requirements lack candidate evidence.
@@ -266,26 +282,26 @@ slot_bodies:
     
     ## POSITIVE EXAMPLE 1 (Executive Band)
     "CTO with 15 years leading enterprise AI infrastructure across financial services
-    and insurance verticals. Cut cloud infrastructure spend by $2.1M in FY2023
-    [source: fact_003]. Delivered 40% operations efficiency improvement via ML
-    pipeline modernization serving 12 business units [source: fact_007]."
+    and insurance verticals. Cut cloud infrastructure spend by $2.1M in FY2023.
+    Delivered 40% operations efficiency improvement via ML
+    pipeline modernization serving 12 business units."
     
     Analysis:
     - Opens with role + years (no generic opener)
     - Two specific proof points with metrics
-    - Every claim has [source: X] citation
+    - claim_ledger would list each clause with source_fact_ids (not pasted into this prose)
     - No em dash, no buzzwords, no generic openers
     - Length emerges from evidence density
     
     ## POSITIVE EXAMPLE 2 (Senior Band)
     "Engineering leader with 12 years building distributed systems at scale.
     Grew platform from 500K to 8M daily active users while maintaining 99.97%
-    uptime [source: fact_011]. Built and retained 45-person engineering org
-    through two acquisitions [source: fact_019]."
+    uptime. Built and retained 45-person engineering org
+    through two acquisitions."
     
     Analysis:
     - Role identity lead
-    - Two concrete metrics with citations
+    - Two concrete metrics; ledger rows would map each to source facts
     - Natural prose, no AI-pattern phrases
     - Length determined by evidence
     
@@ -353,7 +369,7 @@ slot_bodies:
     - No arbitrary length constraints
     - Length emerges from evidence density
     - Must open with role identity (not generic opener)
-    - Every claim must have corresponding citation
+    - Every claim must have a claim_ledger row with source_fact_ids
     - No em dash character
     - No generic opener words
     
@@ -394,7 +410,7 @@ output_contract:
     # NO arbitrary length constraints — fit-to-evidence only
     min_claims: 1
     max_claims: 5
-    require_citations: true
+    require_citations: false
     require_role_identity_lead: true
     forbid_generic_openers: true
     forbid_em_dash: true
@@ -417,9 +433,9 @@ validation_rules:
     severity: error
     pattern: "role identity lead"
   
-  - rule: citation_required
+  - rule: display_text_no_inline_source_tags
     severity: error
-    pattern: "[source:"
+    pattern: "claim_ledger carries source_fact_ids"
   
   - rule: selected_fact_plan_emitted
     severity: error

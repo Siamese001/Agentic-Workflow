@@ -248,8 +248,17 @@ freshness_profile:
 # =============================================================================
 citation_requirement:
   required: true
-  
-  citation_format: "[source: {fact_id}]"
+
+  citation_posture:
+    w9_class: ACTIVE_PROMPT_AUTHORITY_LEDGER_ONLY
+    resume_display: no_inline_source_tags
+    structured_proof_surfaces:
+      - claim_ledger
+      - source_fact_ids
+      - evidence_ids
+    legacy_inline_bracket_example_non_authoritative: "[source: {fact_id}]"
+    note: >-
+      Evidence-profile citation posture matches rg_prompt_profile: proof binds in ledger fields, not display prose.
   
   # When citations are required
   citation_triggers:

@@ -264,6 +264,218 @@ templates:
         - docx_manifest
         - formatting_directives
 
+  # ---------------------------------------------------------------------------
+  # W9 — Section PA templates (dispatch → section_prompt_adapter; not L2 flow_route)
+  # ---------------------------------------------------------------------------
+  executive_summary.generate_scratch_v1:
+    template_id: executive_summary.generate_scratch_v1
+    description: Executive summary section PA narrative SSOT (W4/W8 ledger-only)
+    path: templates/executive_summary.generate_scratch_v1.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [executive_summary]
+
+  headline_tailor_v1:
+    template_id: headline_tailor_v1
+    description: Headline section PA (W6)
+    path: templates/headline_tailor_v1.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [headline]
+
+  competency_selector_v2:
+    template_id: competency_selector_v2
+    description: Competencies section PA SSOT path (W5)
+    path: templates/competency_selector_v2.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [competencies]
+
+  competency_selector_v2_pa_slots:
+    template_id: competency_selector_v2_pa_slots
+    description: Competencies PA slot-body pack (merged at compile)
+    path: templates/competency_selector_v2.pa_slots.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: []
+    optional_slots: []
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [competencies]
+
+  unify_position_narrative_v1:
+    template_id: unify_position_narrative_v1
+    description: Unify narrative section PA (W7)
+    path: templates/unify_position_narrative_v1.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [unify_narrative]
+
+  unify_bullet_tailor_v1:
+    template_id: unify_bullet_tailor_v1
+    description: Unify bullets section PA (W7)
+    path: templates/unify_bullet_tailor_v1.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [unify_bullets]
+
+  ibm_position_narrative_v1:
+    template_id: ibm_position_narrative_v1
+    description: IBM narrative section PA (W7)
+    path: templates/ibm_position_narrative_v1.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [ibm_narrative]
+
+  ibm_bullet_tailor_v1:
+    template_id: ibm_bullet_tailor_v1
+    description: IBM bullets section PA (W7)
+    path: templates/ibm_bullet_tailor_v1.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [ibm_bullets]
+
+  w7_strategic_tailor_shell_slots:
+    template_id: w7_strategic_tailor_shell_slots
+    description: Shared W7 shell slot bodies for Unify/IBM PA lanes
+    path: templates/w7_strategic_tailor_shell_slots.yaml
+    version: "1.0"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: []
+    optional_slots: []
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: []
+
+  # ---------------------------------------------------------------------------
+  # W9 — TEST_ONLY validator / planning fixtures (never L2 flow_route targets)
+  # ---------------------------------------------------------------------------
+  strategic_tailor_v2:
+    template_id: strategic_tailor_v2
+    description: Planning-only template — contract tests only (STOP 4A / W2A)
+    path: templates/strategic_tailor_v2.yaml
+    version: "1.0"
+    allowed_stage: E3_EXEC
+    w9_classification: TEST_ONLY
+    runtime_dispatch_reachable: false
+    required_slots: [S0, I0, C0, U0, D0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [planning]
+
+  resume_fact_check_v2:
+    template_id: resume_fact_check_v2
+    description: Fact-check v2 fixture — test_w2e_final_validator_prompts only
+    path: templates/resume_fact_check_v2.yaml
+    version: "1.0"
+    allowed_stage: E4_HEAL
+    w9_classification: TEST_ONLY
+    runtime_dispatch_reachable: false
+    required_slots: [S0, I0, C0, U0, D0, R0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [verification_report]
+
+  unsupported_claim_omission_v2:
+    template_id: unsupported_claim_omission_v2
+    description: Omission v2 fixture — test_w2e_final_validator_prompts only
+    path: templates/unsupported_claim_omission_v2.yaml
+    version: "1.0"
+    allowed_stage: E4_HEAL
+    w9_classification: TEST_ONLY
+    runtime_dispatch_reachable: false
+    required_slots: [S0, I0, C0, U0, D0, R0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [omission_report]
+
+  docx_manifest_v2:
+    template_id: docx_manifest_v2
+    description: DOCX manifest v2 fixture — test_w2e_final_validator_prompts only
+    path: templates/docx_manifest_v2.yaml
+    version: "1.0"
+    allowed_stage: E5_EXIT
+    w9_classification: TEST_ONLY
+    runtime_dispatch_reachable: false
+    required_slots: [S0, I0, C0, U0, D0, R0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [docx_manifest]
+
+  final_unify_v2:
+    template_id: final_unify_v2
+    description: Final unify v2 fixture — lane_yaml_parity / validator tests only
+    path: templates/final_unify_v2.yaml
+    version: "1.0"
+    allowed_stage: E4_HEAL
+    w9_classification: TEST_ONLY
+    runtime_dispatch_reachable: false
+    required_slots: [S0, I0, C0, U0, D0, R0]
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [unified_resume]
+
 # =============================================================================
 # Default Template Resolution
 # =============================================================================

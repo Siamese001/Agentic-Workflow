@@ -21,6 +21,8 @@ class SourceType(str, Enum):
     RET_CACHE_SEMANTIC = "RET_CACHE_SEMANTIC"
     RET_FALLBACK = "RET_FALLBACK"
     HITL_RECLEARED_PACKET = "HITL_RECLEARED_PACKET"
+    # Generic AG-5 native binding / sealed terminal sources (additive).
+    APP_BINDING_COMPATIBILITY_PACKAGE = "APP_BINDING_COMPATIBILITY_PACKAGE"
 
 
 class GateResult(str, Enum):

@@ -1,0 +1,193 @@
+{
+  "schema_version": "1.0",
+  "description": "W11 X2 (deterministic) vs X1D (soft quality) alignment matrix for apps_rg generated and locked sections. SSOT for test_apps_rg_x2_x1d_alignment.",
+  "rules": {
+    "x2": "Deterministic correctness: schema, ledger, facts, JD-not-proof, inline tags, mocks, hashes where applicable.",
+    "x1d": "Soft quality: executive presence, JD fit, clarity, coherence — never sole gate for schema, dates, employers, titles, metrics, source tags, locked copy."
+  },
+  "sections": [
+    {
+      "section_id": "headline",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/headline_x2.py",
+      "x2_gates_sample": [
+        "x2_headline_no_inline_source_tags",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_x1d_required_judges_present"
+      ],
+      "x2_deterministic_facts": [
+        "schema/parse",
+        "pipe format",
+        "word count band",
+        "no inline source tags",
+        "judge presence wiring (orchestration, not semantic substitution)"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/headline_x1d.py",
+      "x1d_soft_dimensions": ["executive_presence", "clarity", "concision", "jd_fit_signal"]
+    },
+    {
+      "section_id": "executive_summary",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/executive_summary_x2.py",
+      "x2_gates_sample": [
+        "x2_schema_valid",
+        "x2_claim_ledger_present",
+        "x2_inline_source_tags_absent",
+        "x2_jd_as_proof_zero",
+        "x2_unsupported_claim_zero"
+      ],
+      "x2_deterministic_facts": [
+        "claim ledger",
+        "source_fact coverage",
+        "JD/briefing not proof",
+        "unsupported/mixed claims",
+        "inline tags absent",
+        "monolithic prompt flags",
+        "prompt hash"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/executive_summary_x1d.py",
+      "x1d_soft_dimensions": ["executive_voice", "coherence", "jd_alignment_quality", "concision"]
+    },
+    {
+      "section_id": "competencies",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/competencies_x2.py",
+      "x2_gates_sample": [
+        "x2_no_inline_source_tags",
+        "x2_terms_source_fact_ids",
+        "x2_jd_gap_markers",
+        "x2_duplicate_term_zero"
+      ],
+      "x2_deterministic_facts": [
+        "eight categories",
+        "source_fact_ids per term",
+        "JD-only gap markers",
+        "duplicate/near-duplicate terms",
+        "companion not proof"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/competencies_x1d.py",
+      "x1d_soft_dimensions": ["readability", "cluster_coherence", "seniority_signal"]
+    },
+    {
+      "section_id": "unify_narrative",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/unify_narrative_x2.py",
+      "x2_gates_sample": [
+        "x2_unify_narrative_unify_only_fact_scope",
+        "x2_no_inline_source_tags",
+        "x2_no_jd_only_claims",
+        "x2_json_parse_valid"
+      ],
+      "x2_deterministic_facts": [
+        "Unify-only fact scope",
+        "lane leakage prohibitions",
+        "JD phrase copy",
+        "narrative shape",
+        "inline tags absent"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/unify_narrative_x1d.py",
+      "x1d_soft_dimensions": ["coherence", "executive_brevity", "usefulness"]
+    },
+    {
+      "section_id": "unify_bullets",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/unify_bullets_x2.py",
+      "x2_gates_sample": [
+        "x2_no_inline_source_tags",
+        "x2_json_parse_valid"
+      ],
+      "x2_deterministic_facts": [
+        "bullet serialization",
+        "ledger binding",
+        "JD not proof",
+        "inline tags absent"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/unify_bullets_x1d.py",
+      "x1d_soft_dimensions": ["clarity", "impact_signal", "redundancy"]
+    },
+    {
+      "section_id": "ibm_narrative",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/ibm_narrative_x2.py",
+      "x2_gates_sample": [
+        "x2_no_inline_source_tags",
+        "x2_json_parse_valid"
+      ],
+      "x2_deterministic_facts": [
+        "IBM narrative scope",
+        "companion U-tier not proof",
+        "inline tags absent",
+        "parse/schema"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/ibm_narrative_x1d.py",
+      "x1d_soft_dimensions": ["executive_summary_quality", "alignment", "concision"]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/validators/ibm_bullets_x2.py",
+      "x2_gates_sample": [
+        "x2_no_inline_source_tags",
+        "x2_json_parse_valid"
+      ],
+      "x2_deterministic_facts": [
+        "bullet scope",
+        "ledger binding",
+        "inline tags absent"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/ibm_bullets_x1d.py",
+      "x1d_soft_dimensions": ["precision", "redundancy", "readability"]
+    },
+    {
+      "section_id": "education",
+      "llm_generation_allowed": false,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/render/docx_manifest_x2.py",
+      "x2_gates_sample": ["x2_docx_manifest_source_final_resume_present"],
+      "x2_deterministic_facts": ["locked deterministic copy / manifest packaging — not LLM rewrite"],
+      "x1d_judge_profile_ref": null,
+      "x1d_soft_dimensions": [],
+      "x1d_na_reason": "LOCKED_DETERMINISTIC — no LLM judge lane"
+    },
+    {
+      "section_id": "certifications",
+      "llm_generation_allowed": false,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/render/docx_manifest_x2.py",
+      "x2_gates_sample": ["x2_docx_manifest_source_final_resume_present"],
+      "x2_deterministic_facts": ["locked deterministic copy / manifest"],
+      "x1d_judge_profile_ref": null,
+      "x1d_soft_dimensions": [],
+      "x1d_na_reason": "LOCKED_DETERMINISTIC"
+    },
+    {
+      "section_id": "early_career",
+      "llm_generation_allowed": false,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/render/docx_manifest_x2.py",
+      "x2_gates_sample": ["x2_docx_manifest_source_final_resume_present"],
+      "x2_deterministic_facts": ["locked deterministic copy / manifest"],
+      "x1d_judge_profile_ref": null,
+      "x1d_soft_dimensions": [],
+      "x1d_na_reason": "LOCKED_DETERMINISTIC"
+    }
+  ]
+}

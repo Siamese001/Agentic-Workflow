@@ -1,0 +1,33 @@
+ M apps_rg/__main__.py
+ M apps_rg/l2_recipe/steps.py
+ M apps_rg/prompt_assembly/examples/executive_summary_examples.yaml
+ M apps_rg/prompt_assembly/rubrics/section_quality_rubrics.yaml
+ M apps_rg/prompt_assembly/section_contracts/executive_summary_contract.yaml
+ M apps_rg/runtime/RUNBOOK_E2E.md
+ M apps_rg/runtime/dispatch/competencies_dispatch.py
+ M apps_rg/runtime/dispatch/executive_summary_dispatch.py
+ M apps_rg/runtime/dispatch/ibm_bullets_dispatch.py
+ M apps_rg/runtime/dispatch/ibm_narrative_dispatch.py
+ M apps_rg/runtime/orchestration/canonical_dispatch.py
+ M apps_rg/runtime/validators/competencies_x2.py
+ M apps_rg/runtime/validators/executive_summary_x2.py
+ M tests/_apps_contract/test_apps_rg_e2e_resume_orchestrator.py
+ M tests/_apps_contract/test_competencies_runtime_slice.py
+ M tests/_apps_contract/test_ibm_bullets_runtime_slice.py
+ M tests/_apps_contract/test_ibm_narrative_runtime_slice.py
+ M tests/_apps_contract/test_w2a_stop_1_4.py
+ M tests/_apps_contract/test_w4_main_canonical.py
+?? .cursor/plans/apps-rg-core-gap-analysis-915f38.md
+?? .cursor/plans/apps-rg-prompt-authority-program-c4e8a2.md
+?? .cursor/plans/apps-rg-prompt-remediation-6bd4c3.md
+?? .cursor/plans/l7-audit-core-gap-closure-a8c3f1.md
+?? apps_rg/l2_recipe/pa_context_bridge.py
+?? apps_rg/runtime/policy/
+?? docs/architecture/mirrors/
+?? docs/reports/apps_rg_prompt_authority/
+?? docs/reports/apps_rg_prompt_review/
+?? docs/reports/runtime_cert/l7_audit_core_gap_closure_20260516.md
+?? ops_scripts/ci/prove_apps_rg_e2e_runtime.py
+?? tests/_apps_contract/test_apps_rg_lane_yaml_parity.py
+?? tests/_apps_contract/test_review_waiver_policy_doc.py
+?? tools/apps_rg/prompt_inventory_grep.py

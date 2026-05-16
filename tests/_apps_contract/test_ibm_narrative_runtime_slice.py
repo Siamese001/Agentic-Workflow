@@ -138,3 +138,118 @@ def test_x3_soft_fail_unit():
         product_quality_status="PASS",
     )
     assert x3.x3_code == "X3_REVIEW_JUDGE_SOFT_FAIL"
+
+
+_FULL_METRIC_COMPANION = """bul_ibm_001: reclaimed $15M in annual run-rate cost.
+bul_ibm_002: uptime 99.9%.
+bul_ibm_003: 30% acceleration.
+bul_ibm_004: cut 25% cycle time.
+bul_ibm_005: boosted 50% adoption.
+"""
+
+
+def test_companion_metric_budget_collapse_keeps_single_tracked_metric():
+    from apps_rg.runtime.dispatch.ibm_narrative_dispatch import collapse_narrative_sentence_for_companion_metric_budget
+    from apps_rg.runtime.validators.ibm_narrative_x2 import count_ibm_narrative_metric_hits
+
+    noisy = (
+        "At IBM, platform teams delivered $15M run-rate exits, held 99.9% uptime, and accelerated modernization by 30%."
+    )
+    out = collapse_narrative_sentence_for_companion_metric_budget(noisy, _FULL_METRIC_COMPANION)
+    assert count_ibm_narrative_metric_hits(out) <= 1
+
+
+def test_truncate_keeps_only_first_numeric_metric_in_clause():
+    from apps_rg.runtime.dispatch.ibm_narrative_dispatch import truncate_narrative_after_first_metric_hit
+    from apps_rg.runtime.validators.ibm_narrative_x2 import count_ibm_narrative_metric_hits
+
+    raw = "IBM teams captured $15M savings while sustaining 99.9% uptime in regulated delivery."
+    out = truncate_narrative_after_first_metric_hit(raw)
+    assert "$15m" in out.lower() or "$15" in out
+    assert "99.9%" not in out
+    assert count_ibm_narrative_metric_hits(out) <= 1
+
+
+def _minimal_x1d_rows() -> list[dict]:
+    return [
+        {"provider_key": "gemini_pro"},
+        {"provider_key": "openai_chatgpt"},
+        {"provider_key": "anthropic_claude"},
+    ]
+
+
+def test_ledger_fact_ids_string_source_fact_ids_one_token_not_chars():
+    from apps_rg.runtime.validators.ibm_narrative_x2 import _ledger_fact_ids
+
+    ledger = [{"claim_text": "architected platforms", "source_fact_ids": "bul_ibm_001"}]
+    assert _ledger_fact_ids(ledger) == {"bul_ibm_001"}
+
+
+def test_ledger_fact_ids_comma_separated_string():
+    from apps_rg.runtime.validators.ibm_narrative_x2 import _ledger_fact_ids
+
+    ledger = [{"claim_text": "x", "source_fact_ids": "bul_ibm_001, bul_ibm_002"}]
+    assert _ledger_fact_ids(ledger) == {"bul_ibm_001", "bul_ibm_002"}
+
+
+def test_ledger_fact_ids_list_form_still_works():
+    from apps_rg.runtime.validators.ibm_narrative_x2 import _ledger_fact_ids
+
+    ledger = [
+        {"claim_text": "a", "source_fact_ids": ["bul_ibm_001"]},
+        {"claim_text": "b", "source_fact_ids": ["bul_ibm_002", "bul_ibm_003"]},
+    ]
+    assert _ledger_fact_ids(ledger) == {"bul_ibm_001", "bul_ibm_002", "bul_ibm_003"}
+
+
+def test_ledger_fact_ids_metric_suffix_stripped():
+    from apps_rg.runtime.validators.ibm_narrative_x2 import _ledger_fact_ids
+
+    ledger = [{"claim_text": "x", "source_fact_ids": "bul_ibm_001_metric_extra"}]
+    assert _ledger_fact_ids(ledger) == {"bul_ibm_001"}
+
+
+def test_string_source_fact_ids_passes_ibm_only_gates_when_valid():
+    from apps_rg.runtime.validators.ibm_narrative_x2 import run_ibm_narrative_x2_gates
+
+    po = {"section_id": "ibm_narrative"}
+    raw = json.dumps(po)
+    claim = [{"claim_text": "led enterprise cloud programs", "source_fact_ids": "bul_ibm_001"}]
+    gates = run_ibm_narrative_x2_gates(
+        narrative_sentence="At IBM, the executive led enterprise cloud programs for major accounts.",
+        parsed_output=po,
+        claim_ledger=claim,
+        jd_text="",
+        runtime_generation_status="REAL_LLM",
+        companion_bullet_texts=None,
+        provider_requested="qwen_vllm",
+        provider_attempted="qwen_vllm",
+        raw_output=raw,
+        x1d_judges=_minimal_x1d_rows(),
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_ibm_narrative_source_supported"].pass_
+    assert by_id["x2_ibm_narrative_ibm_only_fact_scope"].pass_
+
+
+def test_invalid_non_ibm_source_fact_id_fails_ibm_gates():
+    from apps_rg.runtime.validators.ibm_narrative_x2 import run_ibm_narrative_x2_gates
+
+    po = {"section_id": "ibm_narrative"}
+    raw = json.dumps(po)
+    claim = [{"claim_text": "unify scope work", "source_fact_ids": "bul_unify_001"}]
+    gates = run_ibm_narrative_x2_gates(
+        narrative_sentence="At IBM, the executive led unify scope work for clients.",
+        parsed_output=po,
+        claim_ledger=claim,
+        jd_text="",
+        runtime_generation_status="REAL_LLM",
+        companion_bullet_texts=None,
+        provider_requested="qwen_vllm",
+        provider_attempted="qwen_vllm",
+        raw_output=raw,
+        x1d_judges=_minimal_x1d_rows(),
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert not by_id["x2_ibm_narrative_source_supported"].pass_
+    assert not by_id["x2_ibm_narrative_ibm_only_fact_scope"].pass_

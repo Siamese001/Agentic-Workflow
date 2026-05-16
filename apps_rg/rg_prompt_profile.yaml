@@ -237,8 +237,17 @@ truthfulness_markers:
     estimated: "[estimated: {basis}]"
     gap: "[Gap: {requirement} — insufficient evidence]"
     
-  # Citation format
-  citation_format: "[source: {fact_id}]"
+  # Citation / proof posture (W9) — ACTIVE prompt authority is ledger-only for resume display.
+  citation_posture:
+    w9_class: ACTIVE_PROMPT_AUTHORITY_LEDGER_ONLY
+    recruiter_display_text: clean_prose_no_inline_source_tags
+    structured_proof_surfaces:
+      - claim_ledger
+      - source_fact_ids
+      - evidence_ids
+    legacy_inline_bracket_example_non_authoritative: "[source: {fact_id}]"
+    legacy_note: >-
+      Bracket-tagged example is audit/schema heritage only; resume display must not include inline source tags.
   
   # Unsupported claim handling
   unsupported_claim_policy:

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "description": "Runtime lanes still assembling provider messages outside PA compiler (W0 snapshot).",
+  "lanes": [
+    {
+      "dispatch": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W5"
+    },
+    {
+      "dispatch": "apps_rg/runtime/dispatch/executive_summary_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W4"
+    },
+    {
+      "dispatch": "apps_rg/runtime/dispatch/headline_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W6"
+    },
+    {
+      "dispatch": "apps_rg/runtime/dispatch/ibm_bullets_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W7"
+    },
+    {
+      "dispatch": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W7"
+    },
+    {
+      "dispatch": "apps_rg/runtime/dispatch/unify_bullets_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W7"
+    },
+    {
+      "dispatch": "apps_rg/runtime/dispatch/unify_narrative_dispatch.py",
+      "authority": "INLINE_BUILD_PROMPT_MESSAGES",
+      "planned_adapter_wave": "W7"
+    }
+  ]
+}

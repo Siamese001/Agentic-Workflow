@@ -116,3 +116,10 @@ def test_core_metrics_in_mock_output():
     assert "30%" in joined
     assert "25%" in joined
     assert "50%" in joined
+
+
+def test_canonicalize_bul_ibm_double_underscore_source_fact_id():
+    from apps_rg.runtime.dispatch.ibm_bullets_dispatch import _canonicalize_bul_ibm_source_fact_id
+
+    assert _canonicalize_bul_ibm_source_fact_id("bul_ibm__002") == "bul_ibm_002"
+    assert _canonicalize_bul_ibm_source_fact_id("bul_ibm____003") == "bul_ibm_003"

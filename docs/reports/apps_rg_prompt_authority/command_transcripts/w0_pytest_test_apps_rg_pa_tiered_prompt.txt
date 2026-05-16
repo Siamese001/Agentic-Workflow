@@ -1,0 +1,625 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collected 120 items
+
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py FFF....FFFFFFFFFFF [ 15%]
+FFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 75%]
+F.FFFFFFFF...........FF..F....                                           [100%]
+
+================================== FAILURES ===================================
+___________ TestProfilePresence.test_pa_prompt_profile_file_exists ____________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:75: in test_pa_prompt_profile_file_exists
+    assert profile.exists(), f"PA prompt profile missing: {profile}"
+E   AssertionError: PA prompt profile missing: C:\Git\Agentic-Workflow-FRESH\apps_rg\config\domain_contract\resume_pa_prompt_profile.v1.json
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Git/Agentic-Workflow-FRESH/apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json').exists
+______________ TestProfilePresence.test_pa_prompt_profile_loads _______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:81: in test_pa_prompt_profile_loads
+    with open(profile_path, encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\domain_contract\\resume_pa_prompt_profile.v1.json'
+______ TestProfilePresence.test_pa_prompt_profile_has_all_treatment_keys ______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:89: in test_pa_prompt_profile_has_all_treatment_keys
+    with open(profile_path, encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\domain_contract\\resume_pa_prompt_profile.v1.json'
+______________ TestHeavySection.test_headline_treatment_is_heavy ______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:120: in test_headline_treatment_is_heavy
+    assert artifact.treatment == "HEAVY"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__________ TestHeavySection.test_heavy_section_source_span_required ___________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:124: in test_heavy_section_source_span_required
+    assert artifact.source_span_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'source_span_required'
+__________ TestHeavySection.test_heavy_section_jd_alignment_required __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:128: in test_heavy_section_jd_alignment_required
+    assert artifact.jd_alignment_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+_________ TestHeavySection.test_heavy_section_blocked_items_required __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:132: in test_heavy_section_blocked_items_required
+    assert artifact.blocked_items_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'blocked_items_required'
+_________ TestHeavySection.test_heavy_section_support_status_required _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:136: in test_heavy_section_support_status_required
+    assert artifact.support_status_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'support_status_required'
+_____________ TestHeavySection.test_heavy_section_rewrite_allowed _____________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:140: in test_heavy_section_rewrite_allowed
+    assert artifact.rewrite_allowed is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+______________ TestHeavySection.test_heavy_section_not_verbatim _______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:144: in test_heavy_section_not_verbatim
+    assert artifact.preserve_verbatim is False
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'preserve_verbatim'
+______________ TestHeavySection.test_heavy_section_not_copy_only ______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:148: in test_heavy_section_not_copy_only
+    assert artifact.copy_only is False
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+_____ TestHeavySection.test_heavy_section_prompt_directive_mentions_star ______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:152: in test_heavy_section_prompt_directive_mentions_star
+    assert "STAR" in artifact.prompt_directive or "HEAVY" in artifact.prompt_directive
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+__ TestHeavySection.test_heavy_section_prompt_directive_mentions_source_span __
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:156: in test_heavy_section_prompt_directive_mentions_source_span
+    assert "source" in artifact.prompt_directive.lower() or "span" in artifact.prompt_directive.lower()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+______ TestHeavySection.test_heavy_section_anti_invention_rules_present _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:160: in test_heavy_section_anti_invention_rules_present
+    assert len(artifact.anti_invention_rules) >= 5
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'anti_invention_rules'
+______ TestHeavySection.test_heavy_section_anti_invention_no_new_metrics ______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:164: in test_heavy_section_anti_invention_no_new_metrics
+    combined = " ".join(artifact.anti_invention_rules).lower()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'anti_invention_rules'
+_ TestHeavySection.test_heavy_section_support_status_values_include_insufficient _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:169: in test_heavy_section_support_status_values_include_insufficient
+    assert "INSUFFICIENT_SOURCE_SUPPORT" in artifact.support_status_values
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'support_status_values'
+_____________ TestHeavySection.test_executive_summary_also_heavy ______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:173: in test_executive_summary_also_heavy
+    assert artifact.treatment == "HEAVY"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_______________ TestHeavySection.test_optional_role_id_threaded _______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:182: in test_optional_role_id_threaded
+    artifact = _build("headline", role_id="unify", employer="Unify Consulting")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:59: in _build
+    return pa.build_section_prompt_artifact(section_id, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: build_section_prompt_artifact() got an unexpected keyword argument 'role_id'
+_____________ TestHeavySection.test_optional_source_text_threaded _____________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:187: in test_optional_source_text_threaded
+    artifact = _build("headline", source_text="CTO | Technology | Insurance")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:59: in _build
+    return pa.build_section_prompt_artifact(section_id, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: build_section_prompt_artifact() got an unexpected keyword argument 'source_text'
+___________ TestHeavySection.test_optional_jd_context_ref_threaded ____________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:191: in test_optional_jd_context_ref_threaded
+    artifact = _build("headline", jd_context_ref="jd://brown-and-brown/svp-it")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:59: in _build
+    return pa.build_section_prompt_artifact(section_id, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: build_section_prompt_artifact() got an unexpected keyword argument 'jd_context_ref'
+______ TestModerateSection.test_insurtech_bullets_treatment_is_moderate _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:202: in test_insurtech_bullets_treatment_is_moderate
+    assert artifact.treatment == "MODERATE"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_______ TestModerateSection.test_moderate_section_source_span_required ________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:206: in test_moderate_section_source_span_required
+    assert artifact.source_span_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'source_span_required'
+_______ TestModerateSection.test_moderate_section_jd_alignment_required _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:210: in test_moderate_section_jd_alignment_required
+    assert artifact.jd_alignment_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+______ TestModerateSection.test_moderate_section_blocked_items_required _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:214: in test_moderate_section_blocked_items_required
+    assert artifact.blocked_items_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'blocked_items_required'
+______ TestModerateSection.test_moderate_section_support_status_required ______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:218: in test_moderate_section_support_status_required
+    assert artifact.support_status_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'support_status_required'
+__________ TestModerateSection.test_moderate_section_rewrite_allowed __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:222: in test_moderate_section_rewrite_allowed
+    assert artifact.rewrite_allowed is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+___________ TestModerateSection.test_moderate_section_not_copy_only ___________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:226: in test_moderate_section_not_copy_only
+    assert artifact.copy_only is False
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+______ TestModerateSection.test_moderate_section_anti_invention_present _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:230: in test_moderate_section_anti_invention_present
+    assert len(artifact.anti_invention_rules) >= 5
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'anti_invention_rules'
+____ TestModerateSection.test_moderate_prompt_directive_mentions_moderate _____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:234: in test_moderate_prompt_directive_mentions_moderate
+    assert "MODERATE" in artifact.prompt_directive or "moderate" in artifact.prompt_directive.lower()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_______ TestModerateSection.test_moderate_support_status_values_correct _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:238: in test_moderate_support_status_values_correct
+    assert "INSUFFICIENT_SOURCE_SUPPORT" in artifact.support_status_values
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'support_status_values'
+_____________ TestLightSection.test_ey_bullets_treatment_is_light _____________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:250: in test_ey_bullets_treatment_is_light
+    assert artifact.treatment == "LIGHT"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__________ TestLightSection.test_light_section_source_span_required ___________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:254: in test_light_section_source_span_required
+    assert artifact.source_span_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'source_span_required'
+________ TestLightSection.test_light_section_jd_alignment_not_required ________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:258: in test_light_section_jd_alignment_not_required
+    assert artifact.jd_alignment_required is False
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+_________ TestLightSection.test_light_section_blocked_items_required __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:262: in test_light_section_blocked_items_required
+    assert artifact.blocked_items_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'blocked_items_required'
+_________ TestLightSection.test_light_section_support_status_required _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:266: in test_light_section_support_status_required
+    assert artifact.support_status_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'support_status_required'
+_________ TestLightSection.test_light_section_anti_invention_present __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:270: in test_light_section_anti_invention_present
+    assert len(artifact.anti_invention_rules) >= 5
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'anti_invention_rules'
+______________ TestLightSection.test_light_section_not_copy_only ______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:274: in test_light_section_not_copy_only
+    assert artifact.copy_only is False
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+_________ TestLightSection.test_light_prompt_directive_mentions_light _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:278: in test_light_prompt_directive_mentions_light
+    assert "LIGHT" in artifact.prompt_directive or "minimal" in artifact.prompt_directive.lower()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_______ TestVerbatimSections.test_verbatim_section_treatment[education] _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+____ TestVerbatimSections.test_verbatim_section_treatment[certifications] _____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_____ TestVerbatimSections.test_verbatim_section_treatment[early_career] ______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+____ TestVerbatimSections.test_verbatim_section_treatment[unify_narrative] ____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_____ TestVerbatimSections.test_verbatim_section_treatment[ibm_narrative] _____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__ TestVerbatimSections.test_verbatim_section_treatment[insurtech_narrative] __
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_____ TestVerbatimSections.test_verbatim_section_treatment[ey_narrative] ______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:297: in test_verbatim_section_treatment
+    assert artifact.treatment == "VERBATIM", f"{section_id}: expected VERBATIM, got {artifact.treatment}"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__ TestVerbatimSections.test_verbatim_section_rewrite_not_allowed[education] __
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:308: in test_verbatim_section_rewrite_not_allowed
+    assert artifact.rewrite_allowed is False, f"{section_id}: rewrite_allowed should be False"
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+_ TestVerbatimSections.test_verbatim_section_rewrite_not_allowed[certifications] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:308: in test_verbatim_section_rewrite_not_allowed
+    assert artifact.rewrite_allowed is False, f"{section_id}: rewrite_allowed should be False"
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+_ TestVerbatimSections.test_verbatim_section_rewrite_not_allowed[early_career] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:308: in test_verbatim_section_rewrite_not_allowed
+    assert artifact.rewrite_allowed is False, f"{section_id}: rewrite_allowed should be False"
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+_ TestVerbatimSections.test_verbatim_section_rewrite_not_allowed[unify_narrative] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:308: in test_verbatim_section_rewrite_not_allowed
+    assert artifact.rewrite_allowed is False, f"{section_id}: rewrite_allowed should be False"
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+_ TestVerbatimSections.test_verbatim_section_rewrite_not_allowed[ibm_narrative] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:308: in test_verbatim_section_rewrite_not_allowed
+    assert artifact.rewrite_allowed is False, f"{section_id}: rewrite_allowed should be False"
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+_ TestVerbatimSections.test_verbatim_section_preserve_verbatim_true[education] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:318: in test_verbatim_section_preserve_verbatim_true
+    assert artifact.preserve_verbatim is True, f"{section_id}: preserve_verbatim should be True"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'preserve_verbatim'
+_ TestVerbatimSections.test_verbatim_section_preserve_verbatim_true[certifications] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:318: in test_verbatim_section_preserve_verbatim_true
+    assert artifact.preserve_verbatim is True, f"{section_id}: preserve_verbatim should be True"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'preserve_verbatim'
+_ TestVerbatimSections.test_verbatim_section_preserve_verbatim_true[early_career] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:318: in test_verbatim_section_preserve_verbatim_true
+    assert artifact.preserve_verbatim is True, f"{section_id}: preserve_verbatim should be True"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'preserve_verbatim'
+_ TestVerbatimSections.test_verbatim_section_preserve_verbatim_true[unify_narrative] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:318: in test_verbatim_section_preserve_verbatim_true
+    assert artifact.preserve_verbatim is True, f"{section_id}: preserve_verbatim should be True"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'preserve_verbatim'
+____ TestVerbatimSections.test_verbatim_section_copy_only_true[education] _____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:327: in test_verbatim_section_copy_only_true
+    assert artifact.copy_only is True, f"{section_id}: copy_only should be True"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+__ TestVerbatimSections.test_verbatim_section_copy_only_true[certifications] __
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:327: in test_verbatim_section_copy_only_true
+    assert artifact.copy_only is True, f"{section_id}: copy_only should be True"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+___ TestVerbatimSections.test_verbatim_section_copy_only_true[early_career] ___
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:327: in test_verbatim_section_copy_only_true
+    assert artifact.copy_only is True, f"{section_id}: copy_only should be True"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+_ TestVerbatimSections.test_verbatim_section_prompt_directive_prohibits_rewrite[education] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:337: in test_verbatim_section_prompt_directive_prohibits_rewrite
+    directive_lower = artifact.prompt_directive.lower()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_ TestVerbatimSections.test_verbatim_section_prompt_directive_prohibits_rewrite[certifications] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:337: in test_verbatim_section_prompt_directive_prohibits_rewrite
+    directive_lower = artifact.prompt_directive.lower()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_ TestVerbatimSections.test_verbatim_section_prompt_directive_prohibits_rewrite[early_career] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:337: in test_verbatim_section_prompt_directive_prohibits_rewrite
+    directive_lower = artifact.prompt_directive.lower()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_ TestVerbatimSections.test_verbatim_section_prompt_directive_prohibits_rewrite[unify_narrative] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:337: in test_verbatim_section_prompt_directive_prohibits_rewrite
+    directive_lower = artifact.prompt_directive.lower()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_ TestVerbatimSections.test_verbatim_section_jd_alignment_not_required[education] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:350: in test_verbatim_section_jd_alignment_not_required
+    assert artifact.jd_alignment_required is False, f"{section_id}: verbatim section should not require JD alignment"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+_ TestVerbatimSections.test_verbatim_section_jd_alignment_not_required[certifications] _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:350: in test_verbatim_section_jd_alignment_not_required
+    assert artifact.jd_alignment_required is False, f"{section_id}: verbatim section should not require JD alignment"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+______ TestCompetenciesSection.test_competencies_treatment_is_jd_ranked _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:360: in test_competencies_treatment_is_jd_ranked
+    assert artifact.treatment == "JD_RANKED_NOUN_PHRASES"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_______ TestCompetenciesSection.test_competencies_jd_alignment_required _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:364: in test_competencies_jd_alignment_required
+    assert artifact.jd_alignment_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+______ TestCompetenciesSection.test_competencies_blocked_items_required _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:368: in test_competencies_blocked_items_required
+    assert artifact.blocked_items_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'blocked_items_required'
+____ TestCompetenciesSection.test_competencies_phrase_word_bounds_present _____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:372: in test_competencies_phrase_word_bounds_present
+    assert artifact.phrase_word_bounds is not None
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'phrase_word_bounds'
+_ TestCompetenciesSection.test_competencies_prompt_directive_mentions_noun_phrases _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:379: in test_competencies_prompt_directive_mentions_noun_phrases
+    "noun phrase" in artifact.prompt_directive.lower()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_ TestCompetenciesSection.test_competencies_prompt_directive_no_sentence_bullets _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:385: in test_competencies_prompt_directive_no_sentence_bullets
+    assert "sentence" in artifact.prompt_directive.lower() or "No sentence" in artifact.prompt_directive
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+______ TestCompetenciesSection.test_competencies_anti_invention_present _______
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:389: in test_competencies_anti_invention_present
+    assert len(artifact.anti_invention_rules) >= 5
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'anti_invention_rules'
+__________ TestCompetenciesSection.test_competencies_rewrite_allowed __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:393: in test_competencies_rewrite_allowed
+    assert artifact.rewrite_allowed is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'rewrite_allowed'
+___________ TestCompetenciesSection.test_competencies_not_copy_only ___________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:397: in test_competencies_not_copy_only
+    assert artifact.copy_only is False
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'copy_only'
+_________ TestCompetenciesSection.test_competencies_evidence_required _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:401: in test_competencies_evidence_required
+    assert artifact.evidence_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'evidence_required'
+__________ TestBulletOrdinalTierRouting.test_unify_bullet_1_is_heavy __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:411: in test_unify_bullet_1_is_heavy
+    assert artifact.treatment == "HEAVY"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__________ TestBulletOrdinalTierRouting.test_unify_bullet_2_is_heavy __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:416: in test_unify_bullet_2_is_heavy
+    assert artifact.treatment == "HEAVY"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__________ TestBulletOrdinalTierRouting.test_unify_bullet_3_is_heavy __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:420: in test_unify_bullet_3_is_heavy
+    assert artifact.treatment == "HEAVY"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+________ TestBulletOrdinalTierRouting.test_unify_bullet_4_is_moderate _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:424: in test_unify_bullet_4_is_moderate
+    assert artifact.treatment == "MODERATE"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+________ TestBulletOrdinalTierRouting.test_unify_bullet_5_is_moderate _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:429: in test_unify_bullet_5_is_moderate
+    assert artifact.treatment == "MODERATE"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__________ TestBulletOrdinalTierRouting.test_unify_bullet_6_is_light __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:433: in test_unify_bullet_6_is_light
+    assert artifact.treatment == "LIGHT"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+__________ TestBulletOrdinalTierRouting.test_unify_bullet_7_is_light __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:438: in test_unify_bullet_7_is_light
+    assert artifact.treatment == "LIGHT"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_________ TestBulletOrdinalTierRouting.test_ibm_bullet_1_is_moderate __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:442: in test_ibm_bullet_1_is_moderate
+    assert artifact.treatment == "MODERATE"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_________ TestBulletOrdinalTierRouting.test_ibm_bullet_2_is_moderate __________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:447: in test_ibm_bullet_2_is_moderate
+    assert artifact.treatment == "MODERATE"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+___________ TestBulletOrdinalTierRouting.test_ibm_bullet_3_is_light ___________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:451: in test_ibm_bullet_3_is_light
+    assert artifact.treatment == "LIGHT"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+___________ TestBulletOrdinalTierRouting.test_ibm_bullet_4_is_light ___________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:456: in test_ibm_bullet_4_is_light
+    assert artifact.treatment == "LIGHT"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+____ TestBulletOrdinalTierRouting.test_insurtech_bullet_1_is_moderate_flat ____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:460: in test_insurtech_bullet_1_is_moderate_flat
+    assert artifact.treatment == "MODERATE"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+_________ TestBulletOrdinalTierRouting.test_ey_bullet_1_is_light_flat _________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:464: in test_ey_bullet_1_is_light_flat
+    assert artifact.treatment == "LIGHT"
+           ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'treatment'
+________ TestBulletOrdinalTierRouting.test_bullet_artifact_has_ordinal ________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:471: in test_bullet_artifact_has_ordinal
+    artifact = _build_bullet("unify_bullets", 4, role_id="unify")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:64: in _build_bullet
+    return pa.build_section_prompt_artifact_for_bullet(section_id, ordinal, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: build_section_prompt_artifact_for_bullet() got an unexpected keyword argument 'role_id'
+____ TestBulletOrdinalTierRouting.test_unify_bullet_1_source_span_required ____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:477: in test_unify_bullet_1_source_span_required
+    assert artifact.source_span_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'source_span_required'
+___ TestBulletOrdinalTierRouting.test_unify_bullet_1_jd_alignment_required ____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:481: in test_unify_bullet_1_jd_alignment_required
+    assert artifact.jd_alignment_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+___ TestBulletOrdinalTierRouting.test_unify_bullet_1_blocked_items_required ___
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:485: in test_unify_bullet_1_blocked_items_required
+    assert artifact.blocked_items_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'blocked_items_required'
+____ TestBulletOrdinalTierRouting.test_unify_bullet_6_source_span_required ____
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:489: in test_unify_bullet_6_source_span_required
+    assert artifact.source_span_required is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'source_span_required'
+_ TestBulletOrdinalTierRouting.test_unify_bullet_6_jd_alignment_not_required __
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:493: in test_unify_bullet_6_jd_alignment_not_required
+    assert artifact.jd_alignment_required is False
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'jd_alignment_required'
+_________________ TestFailClosed.test_unknown_section_raises __________________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:503: in test_unknown_section_raises
+    with pytest.raises(UnknownSectionError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'apps_rg.runtime.schemas.section_treatment_profile.UnknownSectionError'>
+______________ TestFailClosed.test_unknown_section_bullet_raises ______________
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:508: in test_unknown_section_bullet_raises
+    with pytest.raises(UnknownSectionError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'apps_rg.runtime.schemas.section_treatment_profile.UnknownSectionError'>
+_ TestPABoundaryGuards.test_build_section_prompt_artifact_does_not_call_model _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:589: in test_build_section_prompt_artifact_does_not_call_model
+    assert isinstance(artifact.prompt_directive, str)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'SectionPromptArtifact' object has no attribute 'prompt_directive'
+_ TestPABoundaryGuards.test_build_section_prompt_artifact_does_not_mutate_cache _
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:597: in test_build_section_prompt_artifact_does_not_mutate_cache
+    assert after is not None
+E   assert None is not None
+__ TestPABoundaryGuards.test_pa_prompt_config_does_not_contain_provider_keys __
+tests\_apps_contract\test_apps_rg_pa_tiered_prompt.py:617: in test_pa_prompt_config_does_not_contain_provider_keys
+    with open(profile_path, encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\domain_contract\\resume_pa_prompt_profile.v1.json'
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestProfilePresence::test_pa_prompt_profile_file_exists
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestProfilePresence::test_pa_prompt_profile_loads
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestProfilePresence::test_pa_prompt_profile_has_all_treatment_keys
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_headline_treatment_is_heavy
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_source_span_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_jd_alignment_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_blocked_items_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_support_status_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_rewrite_allowed
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_not_verbatim
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_not_copy_only
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_prompt_directive_mentions_star
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_prompt_directive_mentions_source_span
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_anti_invention_rules_present
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_anti_invention_no_new_metrics
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_heavy_section_support_status_values_include_insufficient
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_executive_summary_also_heavy
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_optional_role_id_threaded
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_optional_source_text_threaded
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestHeavySection::test_optional_jd_context_ref_threaded
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_insurtech_bullets_treatment_is_moderate
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_source_span_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_jd_alignment_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_blocked_items_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_support_status_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_rewrite_allowed
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_not_copy_only
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_section_anti_invention_present
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_prompt_directive_mentions_moderate
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestModerateSection::test_moderate_support_status_values_correct
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_ey_bullets_treatment_is_light
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_section_source_span_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_section_jd_alignment_not_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_section_blocked_items_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_section_support_status_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_section_anti_invention_present
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_section_not_copy_only
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestLightSection::test_light_prompt_directive_mentions_light
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[education]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[certifications]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[early_career]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[unify_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[ibm_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[insurtech_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_treatment[ey_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_rewrite_not_allowed[education]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_rewrite_not_allowed[certifications]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_rewrite_not_allowed[early_career]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_rewrite_not_allowed[unify_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_rewrite_not_allowed[ibm_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_preserve_verbatim_true[education]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_preserve_verbatim_true[certifications]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_preserve_verbatim_true[early_career]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_preserve_verbatim_true[unify_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_copy_only_true[education]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_copy_only_true[certifications]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_copy_only_true[early_career]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_prompt_directive_prohibits_rewrite[education]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_prompt_directive_prohibits_rewrite[certifications]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_prompt_directive_prohibits_rewrite[early_career]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_prompt_directive_prohibits_rewrite[unify_narrative]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_jd_alignment_not_required[education]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestVerbatimSections::test_verbatim_section_jd_alignment_not_required[certifications]
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_treatment_is_jd_ranked
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_jd_alignment_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_blocked_items_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_phrase_word_bounds_present
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_prompt_directive_mentions_noun_phrases
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_prompt_directive_no_sentence_bullets
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_anti_invention_present
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_rewrite_allowed
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_not_copy_only
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestCompetenciesSection::test_competencies_evidence_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_1_is_heavy
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_2_is_heavy
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_3_is_heavy
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_4_is_moderate
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_5_is_moderate
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_6_is_light
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_7_is_light
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_ibm_bullet_1_is_moderate
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_ibm_bullet_2_is_moderate
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_ibm_bullet_3_is_light
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_ibm_bullet_4_is_light
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_insurtech_bullet_1_is_moderate_flat
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_ey_bullet_1_is_light_flat
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_bullet_artifact_has_ordinal
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_1_source_span_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_1_jd_alignment_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_1_blocked_items_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_6_source_span_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestBulletOrdinalTierRouting::test_unify_bullet_6_jd_alignment_not_required
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestFailClosed::test_unknown_section_raises
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestFailClosed::test_unknown_section_bullet_raises
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestPABoundaryGuards::test_build_section_prompt_artifact_does_not_call_model
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestPABoundaryGuards::test_build_section_prompt_artifact_does_not_mutate_cache
+FAILED tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py::TestPABoundaryGuards::test_pa_prompt_config_does_not_contain_provider_keys
+================== 97 failed, 23 passed, 3 warnings in 0.86s ==================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+EXIT=1

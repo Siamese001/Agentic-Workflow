@@ -39,7 +39,17 @@ discouraged_adjectives:
   - dedicated
 
 pre_output_checklist_required: true
-citation_required: true
+
+# Runtime resume display: recruiter-facing prose only. Proof and fact IDs live in
+# claim_ledger + selected_fact_plan payloads — not as inline [source: …] tags in
+# resume_display_text.
+proof_authority:
+  canonical_binding: claim_ledger
+  display_text: clean_prose_only_no_inline_source_tags
+  note: >
+    Material claims must be reifiable via claim_ledger rows (source_fact_ids).
+    gap_notes is the documented escape when a ledger row is not fully
+    materialized in display text (executive_summary X2 gate).
 
 jd_mirror_guidance_fraction: 0.20
 jd_mirror_note: >

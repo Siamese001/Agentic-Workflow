@@ -33,12 +33,17 @@ try:
 except ImportError:
     pass
 
+from apps_rg.runtime.dispatch.competencies_pa import compile_competencies_prompt
 from apps_rg.runtime.exit.competencies_x3 import aggregate_x3
 from apps_rg.runtime.judges.competencies_x1d import run_competencies_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
 from apps_rg.runtime.shadow.competencies_l6 import build_l6_shadow_package
-from apps_rg.runtime.validators.competencies_x2 import find_bullet_restatement_term, run_competencies_x2_gates
+from apps_rg.runtime.validators.competencies_x2 import (
+    find_bullet_restatement_term,
+    run_competencies_x2_gates,
+    term_primary_support_overlap,
+)
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
@@ -77,6 +82,17 @@ REPO_ROOT = _find_repo_root()
 BASE_POINTER = REPO_ROOT / "apps_rg" / "resume" / "base" / "active_base_resume_pointer.json"
 BASE_JSON_DEFAULT = REPO_ROOT / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
 LANE_KEY = "competencies"
+
+
+def term_phrase(raw: Any) -> str:
+    """Normalize a competency term to display text (string or structured object)."""
+    if isinstance(raw, dict):
+        return str(raw.get("text") or raw.get("phrase") or raw.get("term") or "").strip()
+    return str(raw).strip()
+
+
+def _terms_list_has_dict(terms_raw: Any) -> bool:
+    return isinstance(terms_raw, list) and any(isinstance(t, dict) for t in terms_raw)
 
 
 def sha16(value: str | bytes) -> str:
@@ -213,49 +229,15 @@ def build_prompt_messages(
     companion_context: str,
     fact_lines: str,
 ) -> list[dict[str, str]]:
-    system = (
-        "You produce exactly EIGHT resume competency categories for ATS alignment. "
-        "Return RAW JSON only: first character {, last character }. No markdown fences.\n\n"
-        "OUTPUT CONTRACT (top-level object):\n"
-        "- competencies: array of exactly 8 objects, each with:\n"
-        "  - category_label: short title (no colon character, no newlines, not a sentence)\n"
-        "  - terms: array of 2 to 6 short noun phrases (no full sentences, no bullet markers, no em dash)\n"
-        "  - source_fact_ids: non-empty array of bul_* bullet fact ids from CANONICAL_EMPLOYMENT_BULLETS only\n"
-        "- selected_fact_plan: include ONLY {section_id, selection_method, required_fact_ids} — do NOT list facts[]; "
-        "the server attaches the canonical facts array after parsing.\n"
-        "- claim_ledger: array where EVERY term appears once as claim_text with the same source_fact_ids as its parent category\n"
-        "- jd_alignment: {targeting_only: true, jd_used_as_proof: false}\n"
-        "- excluded_jd_skills: array of strings (JD phrases intentionally excluded; may be empty)\n"
-        "- removed_or_rewritten_terms: array of strings (may be empty)\n"
-        "- gap_notes: array of strings\n"
-        "- change_log: array of objects\n"
-        "- self_check: object with boolean flags you verified\n\n"
-        "RULES:\n"
-        "- Terms augment resume evidence; do not paste long bullet fragments or restate outcomes.\n"
-        "- JD and briefing are targeting context only, never proof.\n"
-        "- Do not invent tools, frameworks, models, or methods absent from canonical bullets or their technologies lists.\n"
-        "- Avoid keyword stuffing and duplicate near-synonyms across categories.\n"
-        "- Third person / capability voice only; no first person; no inline source tags.\n"
+    """W5: PA-compiled single system message via ``section_prompt_adapter`` (no inline prompt fallback)."""
+    run_id = str(runtime_payload.get("run_id") or "competencies_prompt_build")
+    compiled = compile_competencies_prompt(
+        runtime_payload,
+        companion_context=companion_context,
+        fact_lines=fact_lines,
+        run_id=run_id,
     )
-    user = f"""
-TARGET_TITLE (context only): {runtime_payload['target_title']}
-TARGET_COMPANY (context only): {runtime_payload['target_company']}
-JD_TEXT (context only): {runtime_payload['jd_text']}
-BRIEFING (context only): {runtime_payload['briefing']}
-
-CANONICAL_EMPLOYMENT_BULLETS:
-{fact_lines}
-
-READ_ONLY_ACCEPTED_SECTIONS (context only; do not treat as proof without bul_* support):
-{companion_context if companion_context.strip() else "(no companion artifacts found on disk)"}
-
-SELECTED_FACT_PLAN_STUB (output this shape only; do not paste facts[]):
-{json.dumps({"section_id": "competencies", "selection_method": "canonical_base_resume_employment_bullets", "required_fact_ids": runtime_payload["selected_fact_plan"]["required_fact_ids"]}, separators=(',', ':'), ensure_ascii=False)}
-
-FULL_CANONICAL_FACTS (read-only; do not paste into JSON output):
-{fact_lines}
-""".strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    return compiled.artifact.messages
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
@@ -345,6 +327,274 @@ def _candidate_phrases_for_category(cat: dict[str, Any], rows_by_id: dict[str, d
     return ordered
 
 
+def repair_structured_competencies_source_facts(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str],
+    resume_support_blob_lower: str,
+) -> None:
+    """Bind structured term ``source_fact_id`` deterministically when the model cites an unusable token.
+
+    - Never invents canonical ``bul_*`` ids beyond those already declared on the category (filtered to allowed).
+    - When multiple category facts remain, prefers the lexicographically first fact id whose resume-grounding
+      heuristic overlaps the competency phrase; otherwise falls back to the first validated category fact id.
+      (Both choices are deterministic and drawn from validated category provenance.)
+    """
+
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        terms_raw = cat.get("terms")
+        if not isinstance(terms_raw, list):
+            continue
+        if not _terms_list_has_dict(terms_raw):
+            continue
+
+        raw_ids = [_fix_fact_id_typos(str(x)) for x in (cat.get("source_fact_ids") or [])]
+        validated = sorted(
+            {base for x in raw_ids if (base := x.split("_metric_")[0]) in allowed_fact_ids}
+        )
+        if not validated:
+            continue
+
+        for raw_t in terms_raw:
+            if not isinstance(raw_t, dict):
+                continue
+            phrase = term_phrase(raw_t)
+            if not phrase:
+                continue
+
+            sr = raw_t.get("source_fact_id")
+            current_base = ""
+            if sr is not None and str(sr).strip():
+                current_base = _fix_fact_id_typos(str(sr)).split("_metric_")[0]
+
+            picked = ""
+            if current_base in allowed_fact_ids and term_primary_support_overlap(
+                phrase, current_base, resume_support_blob_lower
+            ):
+                picked = current_base
+            else:
+                for fid in validated:
+                    if term_primary_support_overlap(phrase, fid, resume_support_blob_lower):
+                        picked = fid
+                        break
+
+            fallback = validated[0]
+            resolved = picked or fallback
+
+            if str(raw_t.get("source_fact_id", "")).split("_metric_")[0] != resolved:
+                raw_before = raw_t.get("source_fact_id")
+                raw_t["source_fact_id"] = resolved
+                changelog.append(
+                    {
+                        "operation": "repair_structured_competencies_source_fact",
+                        "reason": (
+                            "source_fact_id not usable for deterministic X2 grounding; "
+                            "rebound within validated category source_fact_ids"
+                        ),
+                        "category_label": cat.get("category_label"),
+                        "phrase": phrase,
+                        "source_fact_id_before": raw_before,
+                        "source_fact_id_after": resolved,
+                    },
+                )
+
+
+def _structured_terms_near_duplicate(a: str, b: str) -> bool:
+    """Mirrors competencies X2 duplicate/near-duplicate detection for flattened phrases."""
+    a_norm = a.lower().strip().rstrip(".")
+    b_norm = b.lower().strip().rstrip(".")
+    if a_norm == b_norm:
+        return True
+    return bool(
+        len(a_norm) >= 10 and len(b_norm) >= 10 and (a_norm in b_norm or b_norm in a_norm)
+    )
+
+
+def _long_bullet_text_restatement(term: str, bullet_texts_lower: list[str]) -> bool:
+    """Mirror ``competencies_x2._bullet_restatement`` — long phrase embedded in a canon bullet."""
+
+    tn = term.lower().strip()
+    if len(tn) < 36:
+        return False
+    return any(tn in b for b in bullet_texts_lower)
+
+
+def coerce_structured_competencies_resume_support(
+    parsed: dict[str, Any],
+    bullet_rows: list[dict[str, Any]],
+    resume_support_blob_lower: str,
+    bullet_texts_lower: list[str],
+) -> None:
+    """Rewrite unsupported structured competency phrases using bullet-derived fragments already in blob.
+
+    Terms with no grounding options are dropped rather than emitting resume-ungrounded payloads.
+    """
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+    rows_by_id = {str(r.get("fact_id")): r for r in bullet_rows if r.get("fact_id")}
+    rewrote = parsed.setdefault("removed_or_rewritten_terms")
+    if not isinstance(rewrote, list):
+        rewrote = []
+        parsed["removed_or_rewritten_terms"] = rewrote
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        terms_raw = cat.get("terms")
+        if not isinstance(terms_raw, list) or not _terms_list_has_dict(terms_raw):
+            continue
+        new_terms: list[Any] = []
+        for raw_t in terms_raw:
+            if not isinstance(raw_t, dict):
+                new_terms.append(raw_t)
+                continue
+            phrase = term_phrase(raw_t)
+            if not phrase:
+                continue
+            sr = raw_t.get("source_fact_id")
+            fid_base = (
+                _fix_fact_id_typos(str(sr)).split("_metric_")[0] if sr is not None and str(sr).strip() else ""
+            )
+            if not fid_base:
+                changelog.append(
+                    {
+                        "operation": "drop_ungrounded_structured_competency",
+                        "reason": "missing source_fact_id after structured repair",
+                        "category_label": cat.get("category_label"),
+                        "phrase": phrase,
+                    }
+                )
+                continue
+            if (
+                term_primary_support_overlap(phrase, fid_base, resume_support_blob_lower)
+                and not _long_bullet_text_restatement(phrase, bullet_texts_lower)
+            ):
+                new_terms.append(raw_t)
+                continue
+
+            cand_pool = _candidate_phrases_for_category(
+                {"source_fact_ids": [fid_base], "category_label": cat.get("category_label")},
+                rows_by_id,
+            )
+            eligible = sorted(
+                (
+                    str(c).strip()
+                    for c in cand_pool
+                    if term_primary_support_overlap(str(c).strip(), fid_base, resume_support_blob_lower)
+                    and not _long_bullet_text_restatement(str(c).strip(), bullet_texts_lower)
+                ),
+                key=lambda c: (len(c), c.lower()),
+            )
+            if not eligible:
+                rewrote.append(
+                    f"DROPPED ungrounded term {phrase!r} (fact {fid_base}) "
+                    f"within {cat.get('category_label', '?')}"
+                )
+                changelog.append(
+                    {
+                        "operation": "drop_ungrounded_structured_competency",
+                        "reason": "no bullet fragments for bound fact overlap resume support blob",
+                        "category_label": cat.get("category_label"),
+                        "phrase": phrase,
+                        "source_fact_id": fid_base,
+                    }
+                )
+                continue
+
+            resolved = eligible[0]
+            if resolved != phrase:
+                raw_next = dict(raw_t)
+                raw_next["text"] = resolved
+                rewrote.append(
+                    f"{phrase}→{resolved} (within {cat.get('category_label', '?')} via {fid_base})"
+                )
+                changelog.append(
+                    {
+                        "operation": "coerce_structured_competency_resume_support",
+                        "reason": "term tokens absent from resume support blob — substituted sourced fragment",
+                        "category_label": cat.get("category_label"),
+                        "phrase_before": phrase,
+                        "phrase_after": resolved,
+                        "source_fact_id": fid_base,
+                    }
+                )
+                new_terms.append(raw_next)
+            else:
+                new_terms.append(raw_t)
+        cat["terms"] = new_terms
+
+
+def dedupe_structured_competency_terms(parsed: dict[str, Any]) -> None:
+    """Collapse duplicate structured competency phrases deterministically (X2-aligned near-duplicate rule)."""
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+    rewrote = parsed.setdefault("removed_or_rewritten_terms")
+    if not isinstance(rewrote, list):
+        rewrote = []
+        parsed["removed_or_rewritten_terms"] = rewrote
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+
+    flattened_seen: list[str] = []
+
+    def _keep_phrase(phrase_lower: str) -> bool:
+        for seen in flattened_seen:
+            if _structured_terms_near_duplicate(phrase_lower, seen):
+                return False
+        flattened_seen.append(phrase_lower)
+        return True
+
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        terms_raw = cat.get("terms")
+        if not isinstance(terms_raw, list) or not _terms_list_has_dict(terms_raw):
+            continue
+        kept: list[dict[str, Any]] = []
+        for raw_t in terms_raw:
+            if not isinstance(raw_t, dict):
+                continue
+            phrase = term_phrase(raw_t)
+            if not phrase:
+                continue
+            low = phrase.lower().strip().rstrip(".")
+            if _keep_phrase(low):
+                kept.append(raw_t)
+            else:
+                changelog.append(
+                    {
+                        "operation": "drop_structured_competency_near_duplicate",
+                        "reason": "x2_duplicate_variants_collapsed / near-duplicate term",
+                        "category_label": cat.get("category_label"),
+                        "phrase": phrase,
+                    }
+                )
+                rewrote.append(
+                    f"DEDUP dropped {phrase!r} near-duplicate "
+                    f"within {cat.get('category_label', '?')}"
+                )
+        cat["terms"] = kept
+
+
 def collapse_duplicate_competency_terms(
     parsed: dict[str, Any],
     bullet_rows: list[dict[str, Any]],
@@ -371,8 +621,9 @@ def collapse_duplicate_competency_terms(
         if not isinstance(cat, dict):
             continue
         for t in cat.get("terms") or []:
-            if isinstance(t, str) and t.strip():
-                flattened_before.append(t.strip())
+            p = term_phrase(t)
+            if p:
+                flattened_before.append(p)
 
     seen_lower: set[str] = set()
     made_change = False
@@ -382,6 +633,12 @@ def collapse_duplicate_competency_terms(
             continue
         terms_raw = cat.get("terms")
         if not isinstance(terms_raw, list):
+            continue
+        if _terms_list_has_dict(terms_raw):
+            for raw_t in terms_raw:
+                p = term_phrase(raw_t)
+                if p:
+                    seen_lower.add(p.lower().rstrip("."))
             continue
         cand_pool = _candidate_phrases_for_category(cat, rows_by_id)
         new_terms: list[str] = []
@@ -478,11 +735,12 @@ def collapse_duplicate_competency_terms(
         cat["terms"] = new_terms
 
     flattened_after = [
-        tt
+        p
         for c in comps
         if isinstance(c, dict)
         for tt in (c.get("terms") or [])
-        if isinstance(tt, str) and tt.strip()
+        for p in [term_phrase(tt)]
+        if p
     ]
     if made_change:
         change_log.append(
@@ -509,10 +767,13 @@ def rebuild_claim_ledger_from_competencies(parsed: dict[str, Any], allowed_fact_
             continue
         cat["source_fact_ids"] = ids
         for raw_t in cat.get("terms") or []:
-            if not isinstance(raw_t, str):
-                continue
-            ts = raw_t.strip()
+            ts = term_phrase(raw_t)
             if not ts:
+                continue
+            if isinstance(raw_t, dict) and raw_t.get("source_fact_id") is not None:
+                sid = _fix_fact_id_typos(str(raw_t["source_fact_id"])).split("_metric_")[0]
+                if sid in allowed_fact_ids:
+                    ledger.append({"claim_text": ts, "source_fact_ids": [sid]})
                 continue
             ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
     parsed["claim_ledger"] = ledger
@@ -532,14 +793,17 @@ def ensure_claim_ledger_coverage(parsed: dict[str, Any], allowed_fact_ids: set[s
         if not ids:
             continue
         cat["source_fact_ids"] = ids
-        for t in cat.get("terms") or []:
-            if not isinstance(t, str):
-                continue
-            ts = t.strip()
+        for raw_t in cat.get("terms") or []:
+            ts = term_phrase(raw_t)
             if not ts:
                 continue
             if ts.lower() not in covered:
-                ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
+                if isinstance(raw_t, dict) and raw_t.get("source_fact_id") is not None:
+                    sid = _fix_fact_id_typos(str(raw_t["source_fact_id"])).split("_metric_")[0]
+                    if sid in allowed_fact_ids:
+                        ledger.append({"claim_text": ts, "source_fact_ids": [sid]})
+                else:
+                    ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
                 covered.add(ts.lower())
     for entry in ledger:
         raw_ids = entry.get("source_fact_ids")
@@ -550,17 +814,39 @@ def ensure_claim_ledger_coverage(parsed: dict[str, Any], allowed_fact_ids: set[s
 
 
 def prune_claim_ledger_bullet_paste(parsed: dict[str, Any]) -> None:
-    """Remove claim_ledger rows that look like full bullet pastes, not competency terms."""
+    """Remove claim_ledger rows that look like full employment-bullet pastes, not competency noun phrases."""
+
+    comps = parsed.get("competencies")
+    term_claim_lower: set[str] = set()
+    if isinstance(comps, list):
+        for cat in comps:
+            if not isinstance(cat, dict):
+                continue
+            for raw_t in cat.get("terms") or []:
+                p = term_phrase(raw_t)
+                if p:
+                    term_claim_lower.add(p.strip().lower())
+
     ledger = parsed.get("claim_ledger")
     if not isinstance(ledger, list):
         return
+    # Canonical employment bullets are often 180–260+ chars; competencies stay short noun phrases.
+    _employment_bullet_heuristic_min_chars = 220
+
     cleaned: list[dict[str, Any]] = []
     for entry in ledger:
         if not isinstance(entry, dict):
             continue
         ct = str(entry.get("claim_text", "")).strip()
-        if len(ct) <= 72 and "\n" not in ct:
+        if "\n" in ct:
+            continue
+        low = ct.lower().rstrip(".")
+        if low in term_claim_lower:
             cleaned.append(entry)
+            continue
+        if len(ct) > _employment_bullet_heuristic_min_chars:
+            continue
+        cleaned.append(entry)
     parsed["claim_ledger"] = cleaned
 
 
@@ -620,7 +906,11 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     competencies: list[dict[str, Any]] = [
         {
             "category_label": "Agentic AI Platforms",
-            "terms": ["governed agentic systems", "multi-agent coordination", "policy-aware routing"],
+            "terms": [
+                {"text": "governed agentic systems", "source_fact_id": "bul_unify_001"},
+                {"text": "multi-agent coordination", "source_fact_id": "bul_unify_001"},
+                {"text": "policy-aware routing", "source_fact_id": "bul_unify_001"},
+            ],
             "source_fact_ids": ["bul_unify_001"],
         },
         {
@@ -663,7 +953,14 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     for cat in competencies:
         ids = list(cat["source_fact_ids"])
         for t in cat["terms"]:
-            ledger.append({"claim_text": t, "source_fact_ids": ids})
+            ts = term_phrase(t)
+            if not ts:
+                continue
+            if isinstance(t, dict) and t.get("source_fact_id") is not None:
+                sid = _fix_fact_id_typos(str(t["source_fact_id"])).split("_metric_")[0]
+                ledger.append({"claim_text": ts, "source_fact_ids": [sid]})
+            else:
+                ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
     return {
         "competencies": competencies,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
@@ -683,7 +980,8 @@ def competencies_display_text(competencies: list[dict[str, Any]]) -> str:
         label = str(c.get("category_label", "")).strip()
         terms = c.get("terms") or []
         if isinstance(terms, list):
-            lines.append(f"{label}: {', '.join(str(t) for t in terms if str(t).strip())}")
+            phrases = [p for t in terms if (p := term_phrase(t))]
+            lines.append(f"{label}: {', '.join(phrases)}")
     return "\n".join(lines)
 
 
@@ -728,7 +1026,7 @@ def retry_qwen_competency_restatement(
             "content": (
                 f"DETERMINISTIC_REVISION: The term or phrase \"{bad_term}\" overlaps a canonical employment bullet. "
                 "Rewrite ALL eight categories so every term is a short distinct noun phrase (max 5 words, under 48 characters) "
-                "that does NOT contain any contiguous 18+ character substring copied from CANONICAL_EMPLOYMENT_BULLETS. "
+                "that does NOT contain any contiguous 18+ character substring copied from C0 candidate_facts / proof bullets. "
                 "Keep bul_* source_fact_ids accurate. Return full JSON again with the same required keys; "
                 "selected_fact_plan stub only (section_id, selection_method, required_fact_ids)."
             ),
@@ -779,11 +1077,31 @@ def run_dispatch(args: argparse.Namespace) -> int:
         for row in bullet_rows
     )
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    messages = build_prompt_messages(runtime_payload, companion_context, fact_lines)
-    compiled_prompt = json.dumps(messages, indent=2)
+    section_compiled = compile_competencies_prompt(
+        runtime_payload,
+        companion_context=companion_context,
+        fact_lines=fact_lines,
+        run_id=runtime_payload["run_id"],
+    )
+    messages = section_compiled.artifact.messages
+    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(compiled_prompt, encoding="utf-8")
+    (artifact_dir / "compiled_prompt.txt").write_text(
+        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    write_json(
+        artifact_dir / "compiled_prompt_artifact.json",
+        {
+            "section_id": section_compiled.section_id,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "dispatch_sha256_prompt16": prompt_hash,
+            "slot_count": section_compiled.artifact.slot_count,
+        },
+    )
 
     provider_raw_output: str | None = None
     provider_request_data = None
@@ -853,6 +1171,15 @@ def run_dispatch(args: argparse.Namespace) -> int:
 
     if parsed is not None:
         collapse_duplicate_competency_terms(parsed, bullet_rows, resume_blob)
+        repair_structured_competencies_source_facts(
+            parsed,
+            allowed_fact_ids=allowed_fact_ids,
+            resume_support_blob_lower=resume_blob,
+        )
+        coerce_structured_competencies_resume_support(
+            parsed, bullet_rows, resume_blob, bullet_lowers
+        )
+        dedupe_structured_competency_terms(parsed)
         rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         prune_claim_ledger_bullet_paste(parsed)
         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
@@ -907,7 +1234,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "competencies": competencies,
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
-        "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True},
+        "jd_alignment": (parsed or {}).get("jd_alignment")
+        or {"targeting_only": True, "jd_used_as_proof": False},
         "excluded_jd_skills": (parsed or {}).get("excluded_jd_skills") or [],
         "removed_or_rewritten_terms": (parsed or {}).get("removed_or_rewritten_terms") or [],
         "gap_notes": (parsed or {}).get("gap_notes") or [],
@@ -915,6 +1243,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
     write_json(artifact_dir / "l2_output.json", l2_output)
@@ -928,6 +1259,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
             "prompt_id": PROMPT_ID,
             "provider": args.provider,
             "temperature": args.temperature if args.provider == "qwen_vllm" else COMPETENCIES_TEMP_DEFAULT,
+            "section_prompt_adapter": True,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
         },
     )
 

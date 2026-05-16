@@ -61,6 +61,14 @@ artifacts/requirements/*
 !artifacts/requirements/proof_bundles/
 !artifacts/requirements/proof_bundles/*.json
 
+# W12: version apps_rg prompt-authority JSON bundles only (not bulky runtime_proofs).
+# (Do not repeat `artifacts/*` here — it would negate earlier ! proof-bundle rules.)
+!artifacts/apps_rg/
+artifacts/apps_rg/*
+!artifacts/apps_rg/prompt_authority/
+artifacts/apps_rg/prompt_authority/*
+!artifacts/apps_rg/prompt_authority/*.json
+
 # IDE & Editor
 .DS_Store/
 .idea/

@@ -17,12 +17,13 @@ examples:
     after: |
       Technology executive with 18 years leading enterprise AI programs across
       financial services and insurance verticals. Cut cloud spend by $2.1M in
-      FY2023 [source: fact_003]. Delivered 40% ops-efficiency gain via ML
-      pipeline modernization serving 12 business units [source: fact_007].
-    citation_preserved: true
+      FY2023. Delivered 40% ops-efficiency gain via ML pipeline modernization
+      serving 12 business units.
+    claim_ledger_grounded: true
     annotation: >
-      Leads with role identity + years, no generic opener, 2 candidate_facts
-      proof points with citations, no em dash, varied sentence structure.
+      Leads with role identity + years, no generic opener, two concrete proof
+      points (fact binding lives in claim_ledger — display prose has no inline
+      source tags), no em dash, varied sentence structure.
     anti_ai_compliance:
       no_em_dash: true
       no_pioneered_orchestrated: true
@@ -38,12 +39,12 @@ examples:
     after: |
       Engineering leader with 12 years building distributed systems at scale.
       Grew platform from 500K to 8M daily active users while maintaining
-      99.97% uptime [source: fact_011]. Built and retained a 45-person
-      engineering org through two acquisitions [source: fact_019].
-    citation_preserved: true
+      99.97% uptime. Built and retained a 45-person engineering org through
+      two acquisitions.
+    claim_ledger_grounded: true
     annotation: >
       Concrete scale metrics, org-leadership evidence, natural prose, no
-      discouraged openers, no buzzwords.
+      discouraged openers, no buzzwords; proof IDs belong in claim_ledger only.
     anti_ai_compliance:
       no_em_dash: true
       no_pioneered_orchestrated: true
@@ -63,12 +64,12 @@ examples:
     annotation: >
       VIOLATION: opens with discouraged opener "Seasoned executive", uses double
       hyphen substituting em dash, "cross-functional synergies" corporate
-      buzzword, "Passionate about" generic opener, no citations, JD keyword
+      buzzword, "Passionate about" generic opener, no claim_ledger-ready proof, JD keyword
       mirror, no concrete metrics.
     ai_giveaway_markers:
       - generic_opener
       - corporate_buzzwords
-      - no_citation
+      - no_ledger_grounding
       - keyword_mirror
     anti_ai_compliance:
       no_em_dash: false
@@ -89,11 +90,11 @@ examples:
     annotation: >
       VIOLATION: "Results-driven" generic opener, "passionate about", "leveraging
       synergies", "dynamic landscape", "drive meaningful impact", "Proven track
-      record" -- all AI-pattern phrases. Zero concrete evidence or citations.
+      record" -- all AI-pattern phrases. Zero concrete evidence or ledger-ready proof.
     ai_giveaway_markers:
       - generic_opener
       - corporate_buzzwords
-      - no_citation
+      - no_ledger_grounding
       - no_metrics
     anti_ai_compliance:
       no_em_dash: true
@@ -112,19 +113,18 @@ examples:
       cross-functional synergies resulting in paradigm-shifting outcomes.
     after: |
       CTO with 14 years building AI platforms for Fortune 500 clients.
-      Delivered $3.8M ARR growth through platform consolidation in 2022
-      [source: fact_004]. Scaled engineering org from 12 to 60 across
-      three acquisitions [source: fact_012].
+      Delivered $3.8M ARR growth through platform consolidation in 2022.
+      Scaled engineering org from 12 to 60 across three acquisitions.
     repair_actions:
       - Removed "Visionary" generic opener
       - Removed em dash (--) and replaced sentence structure
       - Replaced "pioneering AI transformation" with concrete role + years
       - Removed "holistic approach", "robust solution", "cross-functional synergies", "paradigm-shifting"
-      - Added two candidate_facts citations with source IDs
+      - Bound metrics to claim_ledger rows (display prose stays free of inline source tags)
       - Grounded claims in specific metrics
     annotation: >
       Repair converts AI-pattern opener + buzzword density into concrete,
-      cited, natural prose with seniority identity lead.
+      ledger-grounded natural prose with seniority identity lead.
     anti_ai_compliance:
       no_em_dash: true
       no_pioneered_orchestrated: true

@@ -85,8 +85,13 @@ class GenerateResumeStep(BaseRecipeStep):
         if not any(k in context for k in ("compiled_prompt_artifact", "pa_artifact",
                                             "prompt_artifact", "governed_context")):
             try:
+                from apps_rg.l2_recipe.pa_context_bridge import (
+                    build_prompt_assembly_input_from_l2_context,
+                )
                 from apps_rg.prompt_assembly.compiler import compile_prompt
-                artifact = compile_prompt(context)
+
+                pa_input = build_prompt_assembly_input_from_l2_context(context)
+                artifact = compile_prompt(pa_input)
                 context = {**context, "compiled_prompt_artifact": artifact}
             except Exception as exc:
                 raise RuntimeError(f"PA_COMPILE_FAILED: {exc}") from exc

@@ -37,10 +37,37 @@ class X2GateResult:
         return data
 
 
+def _iter_source_fact_id_tokens(raw: Any) -> list[str]:
+    """Normalize ``source_fact_ids`` to discrete fact-id tokens.
+
+    L2 output may emit a single id as a string (``\"bul_ibm_001\"``); iterating
+    that string character-wise is invalid. Lists/tuples/sets iterate elements.
+    Comma-separated strings split safely after strip (empty parts dropped).
+    """
+    if raw is None:
+        return []
+    if isinstance(raw, str):
+        s = raw.strip()
+        if not s:
+            return []
+        if "," in s:
+            return [p.strip() for p in s.split(",") if p.strip()]
+        return [s]
+    if isinstance(raw, (list, tuple, set)):
+        out: list[str] = []
+        for x in raw:
+            sx = str(x).strip()
+            if sx:
+                out.append(sx)
+        return out
+    sx = str(raw).strip()
+    return [sx] if sx else []
+
+
 def _ledger_fact_ids(claim_ledger: list[dict[str, Any]]) -> set[str]:
     ids: set[str] = set()
     for claim in claim_ledger:
-        for fid in claim.get("source_fact_ids") or []:
+        for fid in _iter_source_fact_id_tokens(claim.get("source_fact_ids")):
             ids.add(str(fid).split("_metric_")[0])
         if claim.get("source_fact_id"):
             ids.add(str(claim["source_fact_id"]).split("_metric_")[0])

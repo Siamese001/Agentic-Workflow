@@ -1,0 +1,8 @@
+package_version: native-core-proof-fixture-1
+package_digest: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+refs:
+  fixture_self: tests/_core_contract/fixtures/apps_rg_binding_package/runtime_customization_package.yaml
+profile_manifest:
+  workflow_manifest_ref: tests/_core_contract/fixtures/apps_rg_binding_package/fixture_route_profiles.yaml
+  runtime_gate_profile_ref: tests/_core_contract/fixtures/apps_rg_binding_package/fixture_route_profiles.yaml
+  runtime_customization_package_self_ref: tests/_core_contract/fixtures/apps_rg_binding_package/runtime_customization_package.yaml

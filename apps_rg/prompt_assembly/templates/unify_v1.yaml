@@ -176,26 +176,27 @@ slot_bodies:
     Example 1 - Terminology drift:
     Summary: "AWS Lambda"
     Experience bullet: "serverless Lambda functions"
-    candidate_facts: "AWS Lambda [source: fact_012]"
+    candidate_facts entry: fact_012 text includes "AWS Lambda"
     Resolution: Unify experience to "AWS Lambda" — update experience bullet text
-    Report: "Terminology unified: 'serverless Lambda functions' → 'AWS Lambda' [source: fact_012]"
+    Report: "Terminology unified: 'serverless Lambda functions' → 'AWS Lambda' (source_fact_ids: fact_012 in claim_ledger)"
 
     Example 2 - Contradiction resolution:
     Summary: "Led team of 12"
-    Experience: "Led cross-functional team of 8 [source: fact_003]"
-    candidate_facts: "Team size: 8 [source: fact_003]"
+    Experience: "Led cross-functional team of 8"
+    candidate_facts: "Team size: 8 — fact_003"
     Resolution: Remove "12" from summary; use "8" per evidence
     Report: "Contradiction: summary 'team of 12' conflicts with fact_003 'team of 8'; removed inflated claim from summary"
 
     Example 3 - Duplication removal:
     Summary: "Reduced API latency by 40%"
-    Experience bullet: "Reduced API latency by 40% [source: fact_007]"
-    Resolution: Remove from summary; citation stays in experience
-    Report: "Duplicate removed from summary; preserved in experience with citation"
+    Experience bullet: "Reduced API latency by 40%"
+    candidate_facts: fact_007 supports the metric
+    Resolution: Remove duplicate from summary; keep single ledger-bound bullet in experience
+    Report: "Duplicate removed from summary; preserved in experience with claim_ledger binding to fact_007"
 
     Example 4 - FORBIDDEN:
     Summary: "Led team of 12"
-    Experience: "Led team of 8 [source: fact_003]"
+    Experience: "Led team of 8"
     WRONG: "Led team of 10" (averaged/invented claim)
     RIGHT: Remove the unsupported "12" from summary
 

@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "captured_for": "W0 baseline — pre W2/W3 prompt authority artifacts",
+  "build_prompt_messages_defs": [
+    {
+      "path": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W5)."
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/executive_summary_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W4)."
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/headline_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W6)."
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/ibm_bullets_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W7)."
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W7)."
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/unify_bullets_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W7)."
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/unify_narrative_dispatch.py",
+      "symbol": "build_prompt_messages",
+      "notes": "Active lane; inline message assembly (migration W7)."
+    }
+  ],
+  "test_import_build_prompt_messages": [
+    "tests/_apps_contract/test_exec_summary_runtime_slice.py"
+  ]
+}

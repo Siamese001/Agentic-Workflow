@@ -38,6 +38,7 @@ try:
 except ImportError:
     pass  # dotenv not installed, rely on system env
 
+from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summary_prompt
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
@@ -96,33 +97,25 @@ def load_base_resume() -> tuple[dict[str, Any], Path, str]:
 
 
 def extract_allowed_facts(base_resume: dict[str, Any]) -> tuple[list[dict[str, Any]], set[str]]:
+    """Collect bullets in résumé order; no hard-coded bullet IDs or employer filters."""
     facts_obj = base_resume.get("facts", base_resume)
     selected: list[dict[str, Any]] = []
     for emp in facts_obj.get("employment", []):
-        if "unify" not in str(emp.get("employer", "")).lower():
-            continue
-        priority = {
-            "bul_unify_006": 10,
-            "bul_unify_001": 9,
-            "bul_unify_003": 8,
-            "bul_unify_004": 7,
-            "bul_unify_005": 6,
-            "bul_unify_002": 5,
-        }
+        employer = emp.get("employer", "")
         for bullet in emp.get("bullets", []):
             bid = bullet.get("bullet_id")
             if not bid:
                 continue
-            selected.append({
-                "fact_id": bid,
-                "claim_text": bullet.get("text", ""),
-                "source_employment": emp.get("employer"),
-                "priority_rank": priority.get(bid, 1),
-                "metric_raw": bullet.get("metric_raw", "") if bullet.get("has_metric") else "",
-                "domain": bullet.get("domain", ""),
-                "technologies": bullet.get("technologies", []),
-            })
-    selected.sort(key=lambda row: row.get("priority_rank", 0), reverse=True)
+            selected.append(
+                {
+                    "fact_id": bid,
+                    "claim_text": bullet.get("text", ""),
+                    "source_employment": employer,
+                    "metric_raw": bullet.get("metric_raw", "") if bullet.get("has_metric") else "",
+                    "domain": bullet.get("domain", ""),
+                    "technologies": bullet.get("technologies", []),
+                }
+            )
     allowed = {row["fact_id"] for row in selected}
     for row in selected:
         if row.get("metric_raw"):
@@ -131,11 +124,12 @@ def extract_allowed_facts(base_resume: dict[str, Any]) -> tuple[list[dict[str, A
 
 
 def build_selected_fact_plan(selected_facts: list[dict[str, Any]]) -> dict[str, Any]:
+    top = selected_facts[:4]
     return {
         "section_id": "executive_summary",
-        "selection_method": "canonical_json_priority_rank",
-        "facts": selected_facts[:4],
-        "required_fact_ids": [row["fact_id"] for row in selected_facts[:4]],
+        "selection_method": "resume_document_order_top_n",
+        "facts": top,
+        "required_fact_ids": [row["fact_id"] for row in top],
     }
 
 
@@ -212,79 +206,10 @@ def check_executive_summary_narrative_shape(
 
 
 def build_prompt_messages(runtime_payload: dict[str, Any]) -> list[dict[str, str]]:
-    facts = runtime_payload["selected_fact_plan"]["facts"]
-    fact_lines = "\n".join(
-        f"- {fact['fact_id']}: {fact['claim_text']}" + (f" Metric: {fact['metric_raw']}" if fact.get("metric_raw") else "")
-        for fact in facts
-    )
-    system = (
-        "You are an executive resume summary generator. "
-        "Return RAW JSON ONLY: the response must begin with { and end with }. "
-        "No markdown. No code fences. No ```json. No prose before or after the JSON object. "
-        "Use ONLY selected facts as proof. JD and briefing are targeting context only—never use them as proof. "
-        "\n\nSTRICT PROHIBITIONS (violations fail quality gates):\n"
-        "- THIRD PERSON ONLY. Never use I, me, my, we, our, or ours anywhere in resume_display_text.\n"
-        "- Never open with 'As an [title], I...' — use noun-phrase identity only "
-        "(e.g., Enterprise AI platform leader who...).\n"
-        "- NO target company presented as employer or experience.\n"
-        "- NO generic filler phrases: 'Strategic leader', 'proven track record', 'dynamic', 'visionary', 'results-driven', 'passionate', 'transformative', 'market position'.\n"
-        "- NO unsupported industry or regulatory claims unless directly stated in selected facts.\n"
-        "- NO inline citations, source tags, or fact IDs in resume_display_text.\n"
-        "- NO em dash (—).\n"
-        "- NO word count targets. Fit to evidence only.\n"
-        "- NO bridge sentence 'This was achieved while/through/by...'.\n"
-        "- NO mechanical sequence of proof sentences starting with Productized / Designed / Strengthened / Standardized.\n"
-        "- Do NOT write one short proof sentence per claim-ledger row.\n"
-        "- Do NOT begin 3+ consecutive sentences with bare action verbs (Generated / Integrated / Enhanced / Built).\n"
-        "\n\nNARRATIVE SHAPE (resume_display_text) — default exactly TWO sentences:\n"
-        "- Sentence 1 (commercial leadership arc): Open with a source-supported executive identity phrase only "
-        "(e.g., enterprise AI platform leader, engineering leader, AI platform leader). Then integrate in one "
-        "flowing sentence: $22M IP-led revenue, 20% gross margin expansion, and ML engineering scale from 8 to 28 "
-        "specialists tied to productized agentic AI primitives / reusable platform services (bul_unify_006).\n"
-        "- Sentence 2 (technical governance + delivery arc): Active voice only — who built the governed agentic AI "
-        "platform architecture, retrieval/evaluation/telemetry/rollback controls (bul_unify_001, bul_unify_003), "
-        "and lifecycle governance that reduced lab-to-production cycle time from six months to three weeks "
-        "(bul_unify_004). Forbidden passive: 'cycle time was reduced'.\n"
-        "- Collapse enumerations: use grouped phrases (e.g., governed multi-agent platform architecture; "
-        "retrieval and evaluation controls; lifecycle governance and rollback instrumentation). "
-        "Never list 6+ comma-separated capabilities in one sentence.\n"
-        "- Weave multiple facts per sentence; vary openings with participial or subordinate clauses.\n"
-        "- Every material claim needs source_fact_ids in claim_ledger; no inline fact IDs in resume_display_text.\n"
-        "\n\nOUTPUT FORMAT (strict JSON object only):\n"
-        "- resume_display_text: string, executive summary text only, no source tags\n"
-        "- selected_fact_plan: object, echo selected facts used\n"
-        "- claim_ledger: array of objects with claim_text and source_fact_ids\n"
-        "- jd_alignment: object\n"
-        "- gap_notes: array\n"
-        "- change_log: array\n"
-        "- self_check: object\n"
-        "\n\nGOOD SHAPE (do not copy verbatim): two sentences — (1) executive identity + commercial/platform "
-        "outcomes in one arc; (2) platform governance, controls, and lifecycle velocity in one arc.\n"
-        "BAD PATTERN (will fail): three sentences mapping one-to-one to three claim-ledger bullets; "
-        "long comma-separated capability dumps; Generated... / Integrated... / Enhanced... as three parallel proofs.\n"
-    )
-    user = f"""
-Create an executive summary for target title: {runtime_payload['target_title']}.
-Target company (targeting context ONLY, never proof): {runtime_payload['target_company']}.
-JD focus (targeting context ONLY, never proof): {runtime_payload['jd_text']}.
-Briefing notes (targeting context ONLY, never proof): {runtime_payload['briefing']}.
-
-SELECTED CANONICAL FACTS (PROOF SOURCE ONLY—use ONLY these for claims):
-{fact_lines}
-
-CRITICAL AUTO-REJECT (output will fail deterministic gates):
-- Any first-person pronoun (I, me, my, we, our) or opener "As an ..., I ...".
-- Any markdown or ```json fences.
-- The phrase "This was achieved while/through/by" (or close variants).
-- Chained proof sentences opening with Productized, then Designed, then Strengthened, then Standardized.
-- Four or more consecutive sentences beginning with action verbs.
-
-REMEMBER:
-- Output RAW JSON ONLY. First character must be {{. Last character must be }}.
-- Default to exactly TWO synthesized sentences (commercial arc, then technical governance/delivery arc).
-- Group capabilities; never paste bullet lists into prose.
-""".strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    """PA-assembled messages via ``section_prompt_adapter`` + executive_summary template (W4)."""
+    run_id = str(runtime_payload.get("run_id") or "exec_summary_prompt_build")
+    compiled = compile_executive_summary_prompt(runtime_payload, run_id=run_id)
+    return compiled.artifact.messages
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
@@ -302,21 +227,25 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    facts = runtime_payload["selected_fact_plan"]["facts"]
-    by_id = {f["fact_id"]: f for f in facts}
-    text = (
-        "Enterprise AI platform leader who converted governed agentic AI primitives into reusable platform "
-        "services, generating $22M in IP-led revenue, expanding gross margins by 20%, and scaling the ML engineering "
-        "organization from 8 to 28 specialists. Built the governed multi-agent platform architecture, retrieval and "
-        "evaluation controls, telemetry and rollback instrumentation, and lifecycle governance that standardized "
-        "intake through remediation and reduced lab-to-production cycle time from six months to three weeks."
-    )
-    claims = [
-        {"claim_text": "governed agentic AI platform with deterministic routing and multi-agent orchestration", "source_fact_ids": ["bul_unify_001"]},
-        {"claim_text": "retrieval quality, policy gating, telemetry, and rollback controls", "source_fact_ids": ["bul_unify_003"]},
-        {"claim_text": "$22M IP-led revenue, 20% gross margin expansion, 8 to 28 specialists", "source_fact_ids": ["bul_unify_006", f"bul_unify_006_metric_{sha16(by_id.get('bul_unify_006', {}).get('metric_raw', ''))[:8]}"]},
-        {"claim_text": "reduced lab-to-production cycle from six months to three weeks", "source_fact_ids": ["bul_unify_004", f"bul_unify_004_metric_{sha16(by_id.get('bul_unify_004', {}).get('metric_raw', ''))[:8]}"]},
-    ]
+    facts = list(runtime_payload["selected_fact_plan"]["facts"])
+    phrases = [str(f.get("claim_text") or "").strip() for f in facts if str(f.get("claim_text") or "").strip()]
+    if len(phrases) >= 2:
+        lead = "Enterprise AI platform leader who advanced " + " and ".join(phrases[:2]) + " across the scope described in selected facts."
+        tail_phrases = phrases[2:4] if len(phrases) > 2 else [phrases[-1]]
+        tail = "Built on " + " and ".join(tail_phrases) + " with active-voice delivery and governance discipline."
+    else:
+        lead = "Enterprise AI platform leader with platform delivery depth grounded in the selected canonical facts."
+        tail = "Extended technical governance and lifecycle patterns aligned with the same fact plan."
+    text = f"{lead} {tail}"
+
+    claims: list[dict[str, Any]] = []
+    for f in facts:
+        bid = str(f["fact_id"])
+        ids: list[str] = [bid]
+        if f.get("metric_raw"):
+            ids.append(f"{bid}_metric_{sha16(str(f['metric_raw']))[:8]}")
+        ct = str(f.get("claim_text") or "").strip() or bid
+        claims.append({"claim_text": ct, "source_fact_ids": ids})
     return {
         "resume_display_text": text,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
@@ -388,12 +317,10 @@ def retry_qwen_for_synthesis(
             "content": (
                 f"SYNTHESIS REJECTED: {reject_reason}. "
                 "Return a NEW complete JSON object (RAW JSON only; first char {{, last char }}). "
-                "Rewrite resume_display_text as exactly TWO synthesized sentences: "
-                "(1) enterprise AI platform leader (or engineering leader) + commercial arc with $22M IP-led revenue, "
-                "20% margin expansion, and 8 to 28 ML engineering scale; "
-                "(2) governed multi-agent platform architecture, grouped retrieval/evaluation/telemetry/rollback "
-                "controls, and active-voice lifecycle proof that reduced lab-to-production cycle time from six months "
-                "to three weeks (never passive 'cycle time was reduced'). "
+                "Rewrite resume_display_text as exactly TWO synthesized sentences using ONLY the selected facts "
+                "already shown in the user message; do not introduce metrics or outcomes absent from those facts. "
+                "(1) executive identity + commercial or scope arc grounded in the fact lines. "
+                "(2) technical governance and delivery arc in active voice (never passive 'cycle time was reduced'). "
                 "Collapse comma-separated capability lists. "
                 "THIRD PERSON ONLY — remove all I/me/my/we/our; never 'As an X, I...'. "
                 "Forbidden: one sentence per claim-ledger row; Generated/Integrated/Enhanced as three parallel proofs; "
@@ -491,11 +418,26 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    messages = build_prompt_messages(runtime_payload)
-    compiled_prompt = json.dumps(messages, indent=2)
+    section_compiled = compile_executive_summary_prompt(runtime_payload, run_id=runtime_payload["run_id"])
+    messages = section_compiled.artifact.messages
+    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(compiled_prompt, encoding="utf-8")
+    (artifact_dir / "compiled_prompt.txt").write_text(
+        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    write_json(
+        artifact_dir / "compiled_prompt_artifact.json",
+        {
+            "section_id": section_compiled.section_id,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "provider_prompt_hash": prompt_hash,
+            "slot_count": section_compiled.artifact.slot_count,
+        },
+    )
 
     provider_request_data = None
     provider_result_data = None
@@ -563,13 +505,17 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "resume_display_text": resume_display_text,
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
-        "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True},
+        "jd_alignment": (parsed or {}).get("jd_alignment")
+        or {"targeting_only": True, "jd_used_as_proof": False},
         "gap_notes": (parsed or {}).get("gap_notes") or [],
         "change_log": (parsed or {}).get("change_log") or [],
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "text_claim_coverage": coverage,
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
         "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
         "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
@@ -593,6 +539,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "temperature": temperature,
         "strategic_tailor_v1_invoked": False,
         "monolithic_prompt_invoked": False,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
     }
     write_json(artifact_dir / "prompt_selection_trace.json", trace)
     write_json(artifact_dir / "fact_check_result.json", {"passed": False, "failed_gates": [], "status": "pending"})

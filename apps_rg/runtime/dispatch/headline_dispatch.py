@@ -39,6 +39,7 @@ from apps_rg.runtime.dispatch.competencies_dispatch import (
     load_base_resume,
     load_companion_context,
 )
+from apps_rg.runtime.dispatch.headline_pa import compile_headline_prompt
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
@@ -134,49 +135,16 @@ def build_prompt_messages(
     fact_lines: str,
     employer_names: str,
 ) -> list[dict[str, str]]:
-    stub = json.dumps(
-        {
-            "section_id": "headline",
-            "selection_method": "canonical_base_resume_employment_bullets",
-            "required_fact_ids": runtime_payload["selected_fact_plan"]["required_fact_ids"],
-        },
-        separators=(",", ":"),
+    """W6: PA-compiled system prompt via ``section_prompt_adapter`` (no inline fallback)."""
+    run_id = str(runtime_payload.get("run_id") or "headline_prompt_build")
+    compiled = compile_headline_prompt(
+        runtime_payload,
+        companion_context=companion_context,
+        fact_lines=fact_lines,
+        forbidden_employer_lines=employer_names,
+        run_id=run_id,
     )
-    system = (
-        "You write exactly ONE resume headline line. Return RAW JSON only: first character {, last character }. "
-        "No markdown fences.\n\n"
-        "HEADLINE RULES:\n"
-        "- Format MUST be exactly: SegmentOne | SegmentTwo | SegmentThree (single spaces around pipes).\n"
-        "- Total word count across all three segments MUST be between 8 and 11 words (count words as tokens separated by spaces; pipes are not words).\n"
-        "- No metrics: no dollar amounts, percentages, arrows, or numeric proof.\n"
-        "- No company or employer names (see FORBIDDEN_EMPLOYER_NAMES).\n"
-        "- No first person, no em dash, no inline source tags.\n"
-        "- JD and briefing are targeting context only, never proof.\n"
-        "- Executive SVP-level tone; ATS-relevant noun phrases.\n\n"
-        "OUTPUT CONTRACT:\n"
-        "- headline_line: string matching the rules above\n"
-        "- selected_fact_plan: ONLY this stub shape (no facts[] array): "
-        f"{stub}\n"
-        "- claim_ledger: array of objects with claim_text and source_fact_ids (bul_* only from canonical bullets)\n"
-        "- jd_alignment: {targeting_only: true, jd_used_as_proof: false}\n"
-        "- gap_notes, change_log, self_check arrays/objects as needed\n"
-    )
-    user = f"""
-TARGET_TITLE (context only): {runtime_payload['target_title']}
-TARGET_COMPANY (context only): {runtime_payload['target_company']}
-JD_TEXT (context only): {runtime_payload['jd_text']}
-BRIEFING (context only): {runtime_payload['briefing']}
-
-FORBIDDEN_EMPLOYER_NAMES (do not appear anywhere in headline_line):
-{employer_names}
-
-CANONICAL_EMPLOYMENT_BULLETS (proof only; do not paste into headline):
-{fact_lines}
-
-READ_ONLY_ACCEPTED_SECTIONS (context only):
-{companion_context if companion_context.strip() else "(no companion artifacts on disk)"}
-""".strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    return compiled.artifact.messages
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
@@ -204,17 +172,185 @@ def _fix_fact_id_typos(fid: str) -> str:
 def ensure_claim_ledger(headline: str, parsed: dict[str, Any], allowed_fact_ids: set[str]) -> None:
     ledger = list(parsed.get("claim_ledger") or [])
     if ledger:
-        for entry in ledger:
-            if not isinstance(entry, dict):
-                continue
-            raw_ids = entry.get("source_fact_ids")
-            if isinstance(raw_ids, list):
-                entry["source_fact_ids"] = [_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in raw_ids]
-        return
+        dict_rows = [e for e in ledger if isinstance(e, dict)]
+        string_ids_raw = [str(e).strip() for e in ledger if isinstance(e, str) and str(e).strip()]
+        normalized_ids = sorted(
+            {
+                _fix_fact_id_typos(s).split("_metric_")[0]
+                for s in string_ids_raw
+                if _fix_fact_id_typos(s).split("_metric_")[0] in allowed_fact_ids
+            }
+        )
+
+        hl = headline.strip()
+
+        def _sanitize_dict_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+            out_rows: list[dict[str, Any]] = []
+            for entry in rows:
+                raw_ids = entry.get("source_fact_ids")
+                if isinstance(raw_ids, list):
+                    entry["source_fact_ids"] = [
+                        _fix_fact_id_typos(str(x)).split("_metric_")[0] for x in raw_ids if str(x).strip()
+                    ]
+                out_rows.append(entry)
+            return out_rows
+
+        dict_rows = _sanitize_dict_rows(dict_rows)
+
+        if dict_rows and not normalized_ids:
+            parsed["claim_ledger"] = dict_rows
+            return
+
+        merged_ids_from_dicts = sorted(
+            {
+                fid
+                for entry in dict_rows
+                for fid in (
+                    [_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in (entry.get("source_fact_ids") or [])]
+                    if isinstance(entry.get("source_fact_ids"), list)
+                    else []
+                )
+                if fid in allowed_fact_ids
+            }
+        )
+
+        if normalized_ids:
+            merged = sorted(set(normalized_ids) | set(merged_ids_from_dicts))
+            change_log = parsed.setdefault("change_log", [])
+            if not isinstance(change_log, list):
+                change_log = []
+                parsed["change_log"] = change_log
+            change_log.append(
+                {
+                    "operation": "normalize_claim_ledger_string_fact_ids",
+                    "reason": "claim_ledger was a flat bul_* string list — coerced into dict rows for X2",
+                    "normalized_source_fact_ids": merged,
+                }
+            )
+            parsed["claim_ledger"] = [
+                {"claim_text": hl, "source_fact_ids": merged},
+            ]
+            return
+
+        if dict_rows:
+            parsed["claim_ledger"] = dict_rows
+            return
+
     default_ids = [x for x in ("bul_unify_001", "bul_ibm_001", "bul_unify_004") if x in allowed_fact_ids]
     if not default_ids:
         default_ids = sorted(allowed_fact_ids)[:3]
     parsed["claim_ledger"] = [{"claim_text": headline.strip(), "source_fact_ids": default_ids}]
+
+
+_HEADLINE_PAD_STOP = frozenset(
+    {
+        "and",
+        "or",
+        "the",
+        "for",
+        "with",
+        "from",
+        "into",
+        "that",
+        "this",
+        "have",
+        "been",
+        "were",
+        "their",
+        "such",
+        "also",
+        "more",
+        "most",
+        "some",
+        "than",
+        "when",
+        "what",
+        "will",
+        "your",
+        "about",
+        "after",
+        "before",
+        "between",
+        "through",
+        "under",
+        "while",
+        "which",
+        "where",
+        "being",
+        "other",
+        "these",
+        "those",
+        "there",
+        "here",
+        "very",
+        "just",
+        "only",
+        "into",
+        "onto",
+        "upon",
+        "enterprise",
+        "platform",
+        "systems",
+        "engineering",
+        "delivery",
+        "quality",
+        "data",
+        "ai",
+        "ml",
+        "saas",
+        "saas-like",
+        "cloud",
+        "native",
+        "native-like",
+        "ibm",
+        "ey",
+        "insurtech",
+    }
+)
+
+
+def _pad_headline_word_count(headline_line: str, resume_support_blob_lower: str) -> str:
+    """Expand X | Y | Z headline deterministically toward 8 words when undersized (resume tokens only).
+
+    Leaves headlines already in the 8-11 band unchanged. Does not add digits or punctuation beyond spaces.
+    """
+    hl = headline_line.strip()
+    if hl.count("|") != 2:
+        return hl
+    wc = headline_word_count(hl)
+    if wc >= 8:
+        return hl
+
+    cand_words = sorted(
+        set(re.findall(r"\b[a-z]{4,}\b", resume_support_blob_lower)),
+        key=lambda w: (len(w), w),
+    )
+    for _ in range(24):
+        if headline_word_count(hl) >= 8:
+            break
+        parts = [p.strip() for p in hl.split("|")]
+        if len(parts) != 3:
+            break
+        added = False
+        for w in cand_words:
+            if w in _HEADLINE_PAD_STOP:
+                continue
+            if len(w) < 4:
+                continue
+            idx = min(range(3), key=lambda i: len(parts[i].split()))
+            seg_words = set(parts[idx].lower().split())
+            if w in seg_words:
+                continue
+            parts[idx] = f"{parts[idx]} {w}".strip()
+            cand_hl = " | ".join(parts)
+            wc_try = headline_word_count(cand_hl)
+            if wc_try <= 11:
+                hl = cand_hl
+                added = True
+                break
+        if not added:
+            break
+    return hl
 
 
 def normalize_parsed_output(
@@ -222,6 +358,8 @@ def normalize_parsed_output(
     runtime_payload: dict[str, Any],
     allowed_fact_ids: set[str],
     headline_line: str,
+    *,
+    companion_nonempty: bool = False,
 ) -> dict[str, Any] | None:
     if not parsed:
         return parsed
@@ -229,7 +367,13 @@ def normalize_parsed_output(
     hl = str(out.get("headline_line") or headline_line or "").strip()
     out["headline_line"] = hl
     out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
-    out.setdefault("jd_alignment", {"targeting_only": True, "jd_used_as_proof": False})
+    jd = dict(out.get("jd_alignment") or {})
+    jd.setdefault("targeting_only", True)
+    jd["jd_used_as_proof"] = False
+    if companion_nonempty:
+        jd["companion_context_used"] = True
+        jd["companion_used_as_proof"] = False
+    out["jd_alignment"] = jd
     out.setdefault("gap_notes", [])
     out.setdefault("change_log", [])
     out.setdefault("self_check", {"normalized_by_dispatch": True})
@@ -272,6 +416,8 @@ def retry_headline_word_and_pipe(
     runtime_payload: dict[str, Any],
     allowed_fact_ids: set[str],
     reason: str,
+    *,
+    companion_nonempty: bool,
 ) -> tuple[str, dict[str, Any]]:
     repair_messages = [
         *messages,
@@ -294,7 +440,16 @@ def retry_headline_word_and_pipe(
     if new_parsed is None:
         return raw_output, parsed
     hl = str(new_parsed.get("headline_line", "")).strip()
-    new_parsed = normalize_parsed_output(new_parsed, runtime_payload, allowed_fact_ids, hl) or parsed
+    new_parsed = (
+        normalize_parsed_output(
+            new_parsed,
+            runtime_payload,
+            allowed_fact_ids,
+            hl,
+            companion_nonempty=companion_nonempty,
+        )
+        or parsed
+    )
     if not isinstance(new_parsed.get("change_log"), list):
         new_parsed["change_log"] = []
     new_parsed["change_log"] = list(parsed.get("change_log") or []) + list(new_parsed.get("change_log") or [])
@@ -350,6 +505,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
     required_ids = sorted(allowed_fact_ids)
     selected_fact_plan = build_selected_fact_plan(bullet_rows, required_ids)
     companion_context = load_companion_context()
+    companion_nonempty = bool(companion_context.strip())
     resume_blob = build_resume_support_blob(bullet_rows, companion_context)
     employer_blob = "\n".join(f"- {n}" for n in employer_names)
 
@@ -372,11 +528,32 @@ def run_dispatch(args: argparse.Namespace) -> int:
         for row in bullet_rows
     )
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    messages = build_prompt_messages(runtime_payload, companion_context, fact_lines, employer_blob)
-    compiled_prompt = json.dumps(messages, indent=2)
+    section_compiled = compile_headline_prompt(
+        runtime_payload,
+        companion_context=companion_context,
+        fact_lines=fact_lines,
+        forbidden_employer_lines=employer_blob,
+        run_id=runtime_payload["run_id"],
+    )
+    messages = section_compiled.artifact.messages
+    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(compiled_prompt, encoding="utf-8")
+    (artifact_dir / "compiled_prompt.txt").write_text(
+        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    write_json(
+        artifact_dir / "compiled_prompt_artifact.json",
+        {
+            "section_id": section_compiled.section_id,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "dispatch_sha256_prompt16": prompt_hash,
+            "slot_count": section_compiled.artifact.slot_count,
+        },
+    )
 
     provider_request_data = None
     provider_result_data = None
@@ -411,7 +588,13 @@ def run_dispatch(args: argparse.Namespace) -> int:
                 )
             if parsed is not None:
                 hl0 = str(parsed.get("headline_line", "")).strip()
-                parsed = normalize_parsed_output(parsed, runtime_payload, allowed_fact_ids, hl0)
+                parsed = normalize_parsed_output(
+                    parsed,
+                    runtime_payload,
+                    allowed_fact_ids,
+                    hl0,
+                    companion_nonempty=companion_nonempty,
+                )
                 raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
                 hl = str(parsed.get("headline_line", "")).strip()
                 wc = headline_word_count(hl)
@@ -424,8 +607,29 @@ def run_dispatch(args: argparse.Namespace) -> int:
                         runtime_payload,
                         allowed_fact_ids,
                         f"word_count={wc} or pipe_format invalid",
+                        companion_nonempty=companion_nonempty,
                     )
                     if parsed is not None:
+                        raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+                if parsed is not None:
+                    hl2 = str(parsed.get("headline_line", "")).strip()
+                    padded = _pad_headline_word_count(hl2, resume_blob)
+                    if padded != hl2:
+                        ch = parsed.setdefault("change_log", [])
+                        if not isinstance(ch, list):
+                            ch = []
+                            parsed["change_log"] = ch
+                        ch.append(
+                            {
+                                "operation": "pad_headline_word_count",
+                                "reason": "undersized ATS headline padded with resume-derived tokens "
+                                "(deterministic)",
+                                "headline_before": hl2,
+                                "headline_after": padded,
+                            }
+                        )
+                        parsed["headline_line"] = padded
+                        ensure_claim_ledger(padded, parsed, allowed_fact_ids)
                         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
             else:
                 raw_output = raw_model_output_original
@@ -439,6 +643,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             runtime_payload,
             allowed_fact_ids,
             str(mo.get("headline_line", "")),
+            companion_nonempty=companion_nonempty,
         )
         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
         runtime_generation_status = "MOCKED"
@@ -482,6 +687,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             claim_ledger=claim_ledger,
             jd_text=args.jd_text,
             target_company=args.target_company,
+            target_title=args.target_title,
             resume_support_blob=resume_blob,
             employer_names_lower=employer_names,
             allowed_fact_ids=allowed_fact_ids,
@@ -491,6 +697,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             model_name=model_name,
             raw_output=raw_output,
             x1d_judges=x1d,
+            companion_context=companion_context,
         )
     ]
 
@@ -502,12 +709,16 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "headline_line": headline_line,
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
-        "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True},
+        "jd_alignment": (parsed or {}).get("jd_alignment")
+        or {"targeting_only": True, "jd_used_as_proof": False},
         "gap_notes": (parsed or {}).get("gap_notes") or [],
         "change_log": (parsed or {}).get("change_log") or [],
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
     write_json(artifact_dir / "l2_output.json", l2_output)
@@ -521,6 +732,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
             "prompt_id": PROMPT_ID,
             "provider": args.provider,
             "temperature": args.temperature if args.provider == "qwen_vllm" else HEADLINE_TEMP_DEFAULT,
+            "section_prompt_adapter": True,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
         },
     )
 

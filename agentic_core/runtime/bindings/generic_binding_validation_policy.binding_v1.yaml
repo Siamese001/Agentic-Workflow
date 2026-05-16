@@ -1,0 +1,5 @@
+# Generic binding validation policy — evidence discipline allowlists (W2).
+canonical_proof_roles_allowlist:
+  - candidate_truth_substrate
+targeting_only_policy_values_allowlist:
+  - not_proof_not_candidate_truth

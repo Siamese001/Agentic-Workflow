@@ -17,6 +17,14 @@ gap_marking:
     Any JD skill absent from candidate_facts must use the gap marker format above.
     Never list silently.
 
+display_and_proof:
+  resume_display_text: clean_no_inline_source_tags
+  proof_surfaces: claim_ledger_and_source_fact_ids
+  note: >
+    Recruiter-facing competency lines must not include bracket source tags or footnotes.
+    Bind each cluster to candidate_facts via claim_ledger / source_fact_ids; JD text is
+    targeting only and is never proof of capability.
+
 ordering:
   cluster_ordering: jd_priority
   note: >

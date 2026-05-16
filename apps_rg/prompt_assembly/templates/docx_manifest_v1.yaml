@@ -27,9 +27,9 @@ slot_bodies:
     # RENDERING-ONLY OATH (Sovereign — Strict content preservation)
     1. CONTENT IS READ-ONLY: You MUST NOT add, remove, rewrite, strengthen,
        soften, or alter any resume claims, bullets, metrics, or descriptions.
-    2. PRESERVE EVIDENCE AUTHORITY: All [source: X] citations, fact IDs, and
-       evidence references MUST be preserved in the manifest for downstream
-       provenance tracking.
+    2. PRESERVE EVIDENCE AUTHORITY: claim_ledger rows, source_fact_ids, evidence_ids,
+       and structured provenance metadata MUST be preserved in the manifest for downstream
+       audit (recruiter-facing resume text must remain free of inline source tags).
     3. NO NEW CLAIMS: Do NOT generate new resume content for "better fit" or
        "complete sections."
     4. NO STYLE-BASED CONTENT CHANGES: Layout preferences in Y0 do NOT authorize
@@ -77,7 +77,7 @@ slot_bodies:
     
     You MUST:
     - Reference content exactly as provided
-    - Preserve all [source: X] citations
+    - Preserve structured provenance (claim_ledger / source_fact_ids) alongside content refs
     - Declare rendering structure only
     
     You MUST NOT:
@@ -206,10 +206,9 @@ slot_bodies:
     }
     
     Example 3 - Content preservation check:
-    Input content: "Reduced costs by 25% [source: fact_002]"
-    Manifest preserves: "Reduced costs by 25%"
-    Source tracking: ["fact_002"] in metadata
-    Rendering: No change to text, citation shown or hidden per style preference
+    Input display text: "Reduced costs by 25%"
+    Structured proof: source_fact_ids ["fact_002"] in manifest metadata (not inline in resume text)
+    Rendering: No change to display text; provenance tracked in manifest only
 
   # ===========================================================================
   # R0: SCHEMA CONTRACT — Output Requirements

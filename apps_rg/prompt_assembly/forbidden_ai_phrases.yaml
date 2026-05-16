@@ -30,7 +30,7 @@ power_verbs_out_of_register:
     - Propelled
     - Catapulted
     - Galvanized
-  exception: "may use if accompanied by concrete metric from candidate_facts with [source: X]"
+  exception: "may use if accompanied by concrete metric from candidate_facts with claim_ledger / source_fact_ids binding (resume display text remains free of inline source tags)"
 
 generic_openers:
   description: "Forbidden as the first clause of executive_summary"

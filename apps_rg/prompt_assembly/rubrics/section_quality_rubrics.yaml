@@ -12,7 +12,8 @@ dimensions:
     weight_executive_summary: 0.25
     pass_gate: 0.90
     definition: >
-      Fraction of claims backed by candidate_facts with [source: X] citations.
+      Fraction of claims backed by candidate_facts and reflected in claim_ledger
+      (display prose omits inline source tags; ledger is the canonical proof surface).
     severity: hard_fail
     note: Primary factual integrity dimension.
 
@@ -56,9 +57,10 @@ dimensions:
     weight_executive_summary: 0.05
     pass_gate: 0.90
     definition: >
-      [source: X] IDs preserved from C0 candidate_facts input.
+      Fact IDs preserved via claim_ledger / selected_fact_plan binding to
+      candidate_facts (no requirement that prose repeats inline [source: X] tags).
     severity: hard_fail
-    note: Every material claim must carry its fact_id citation.
+    note: Ledger and plan artifacts hold citations; resume display stays clean.
 
   voice_naturalness:
     weight_executive_summary: 0.05

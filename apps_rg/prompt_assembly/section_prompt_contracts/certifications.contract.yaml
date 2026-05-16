@@ -1,0 +1,22 @@
+section_id: certifications
+mode: LOCKED_DETERMINISTIC
+apps_rg_prompt_template_ref: apps_rg/prompt_assembly/section_contracts/LOCKED_DETERMINISTIC_COPY
+pa_template_ref: ""
+output_schema_ref: apps_rg/rg_output_schema.json
+claim_ledger_required: true
+display_text_source_tags_allowed: false
+jd_as_proof_allowed: false
+companion_context_allowed: false
+companion_context_authority: FORBIDDEN
+x2_gate_profile_ref: apps_rg/runtime/render/docx_manifest_x2.py
+x1d_judge_profile_ref: ""
+locked_fields:
+  - certification_names
+  - issuers
+  - dates
+llm_generation_allowed: false
+
+notes: >
+  W8 ledger-only citations: deterministic locked copy into resume display must not inject
+  inline source/citation tags. Proof and audit trail remain in claim_ledger / evidence slots
+  and DOCX manifest gates — not jd_requirements as proof.

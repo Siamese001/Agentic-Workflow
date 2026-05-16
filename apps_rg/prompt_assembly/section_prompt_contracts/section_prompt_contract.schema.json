@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg/prompt_assembly/section_prompt_contracts/section_prompt_contract.schema.json",
+  "title": "apps_rg section_prompt_contract",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "section_id",
+    "mode",
+    "apps_rg_prompt_template_ref",
+    "pa_template_ref",
+    "output_schema_ref",
+    "claim_ledger_required",
+    "display_text_source_tags_allowed",
+    "jd_as_proof_allowed",
+    "companion_context_allowed",
+    "companion_context_authority",
+    "x2_gate_profile_ref",
+    "x1d_judge_profile_ref",
+    "locked_fields",
+    "llm_generation_allowed"
+  ],
+  "properties": {
+    "section_id": { "type": "string", "minLength": 1 },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "COMPOSE_NEW",
+        "REWRITE_FROM_FACT_POOL",
+        "SUMMARIZE_ROLE_SCOPE",
+        "LOCKED_DETERMINISTIC"
+      ]
+    },
+    "apps_rg_prompt_template_ref": {
+      "type": "string",
+      "description": "Filesystem path under apps_rg that owns the prompt template YAML (apps_rg-owned content SSOT)."
+    },
+    "pa_template_ref": {
+      "type": "string",
+      "description": "prompt_registry.yaml template_id used by PA compiler for this section (may be absent for LOCKED_DETERMINISTIC stubs)."
+    },
+    "output_schema_ref": { "type": "string" },
+    "claim_ledger_required": { "type": "boolean" },
+    "display_text_source_tags_allowed": { "type": "boolean" },
+    "jd_as_proof_allowed": { "type": "boolean" },
+    "companion_context_allowed": { "type": "boolean" },
+    "companion_context_authority": {
+      "type": "string",
+      "enum": ["NONE", "U_TIER_CONTEXT_ONLY", "FORBIDDEN"]
+    },
+    "x2_gate_profile_ref": { "type": "string" },
+    "x1d_judge_profile_ref": { "type": "string" },
+    "locked_fields": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "llm_generation_allowed": {
+      "type": "boolean",
+      "description": "false for deterministic / copied sections (non-LLM)."
+    },
+    "notes": { "type": "string" }
+  }
+}

@@ -8,7 +8,7 @@ schema_version: "1.0"
 template_id: unsupported_claim_omission_v1
 version: "1.0"
 allowed_stage: E4_HEAL
-description: Remove unsupported claims while preserving verified content and source citations exactly
+description: Remove unsupported claims while preserving verified content; proof binds via claim_ledger / source_fact_ids (display text stays clean)
 
 # =============================================================================
 # Slot Bodies — Full 8-slot content
@@ -29,8 +29,9 @@ slot_bodies:
        generalize specific claims, or create filler content.
     2. PRESERVE EXACTLY: All verified claims MUST be preserved word-for-word
        unless removal is required for unsupported content.
-    3. SOURCE ID PRESERVATION: Every citation [source: X] MUST be preserved
-       exactly in the output.
+    3. PROOF BINDINGS: Preserve claim_ledger / source_fact_ids for verified material.
+       Resume display strings MUST NOT include inline [source: ...] tags — use structured
+       ledger fields and omission_receipt for audit proof.
     4. NO FILLER: Do NOT replace removed claims with vague generalizations.
        Example: "Led various projects" replacing "Led $5M project (unverified)" 
        is FORBIDDEN.
@@ -71,7 +72,8 @@ slot_bodies:
     You MUST:
     - Remove claims marked UNSUPPORTED or FABRICATION
     - Preserve claims marked VERIFIED or PARTIAL exactly
-    - Preserve all [source: X] citations
+    - Preserve claim_ledger / source_fact_ids rows for verified claims
+    - Keep resume display text free of inline source/citation tags
     
     You MUST NOT:
     - Add new claims to fill gaps
@@ -88,16 +90,16 @@ slot_bodies:
     For each claim in <fact_check_report>:
     
     1. VERIFIED CLAIMS
-       - Preserve exactly in output
-       - Maintain [source: X] citations
+       - Preserve exactly in output (display prose only — no inline source tags)
+       - Retain claim_ledger / source_fact_ids bindings
        - Preserve all metrics, dates, context
     
     2. PARTIAL CLAIMS  
        - If partially supported, preserve supported portion
        - Remove unsupported portion
-       - Update [source: X] to reflect remaining evidence
+       - Update claim_ledger / source_fact_ids to match the trimmed claim
        - Example: "Led team of 20 (unsupported) on AWS project (verified)" 
-         becomes "Led team on AWS project [source: fact_003]"
+         becomes display "Led team on AWS project" with ledger row for fact_003
     
     3. UNSUPPORTED CLAIMS
        - Remove entirely from resume
@@ -120,7 +122,7 @@ slot_bodies:
     ## Experience Bullets
     - Remove unsupported metrics
     - Remove unsupported scope claims  
-    - Preserve verified achievements with citations
+    - Preserve verified achievements with ledger binding (not inline resume tags)
     - Bullets with partial support: trim to verified portion only
     
     ## Skills
@@ -157,20 +159,20 @@ slot_bodies:
     
     Example 2 - Partial preservation:
     Input: "Led team of 50 engineers [unverified] on cloud migration [verified]"
-    Evidence: "Led cloud migration project [source: fact_001]"
-    Output: "Led team on cloud migration [source: fact_001]"
-    Omission log: "Partial: removed 'of 50 engineers' - team size unverified"
+    Evidence ledger: fact_001 supports cloud migration leadership
+    Output display: "Led team on cloud migration"
+    Omission log: "Partial: removed 'of 50 engineers' - team size unverified; claim_ledger -> fact_001"
     
     Example 3 - FORBIDDEN (do not do this):
     Input: "Architected $10M system [unverified]"
     Wrong output: "Worked on system architecture"  # FORBIDDEN generalization
     Correct output: REMOVE ENTIRELY + gap note
     
-    Example 4 - Preserve source IDs:
-    Input: "Built ML pipeline [source: fact_002] reducing latency 30% [unverified]"
-    Evidence: "Built ML pipeline [source: fact_002]"
-    Output: "Built ML pipeline [source: fact_002]"
-    Omission log: "Partial: removed 'reducing latency 30%' - metric unverified"
+    Example 4 - Preserve verified claim; trim unverified clause:
+    Input display: "Built ML pipeline reducing latency 30% [unverified]"
+    Evidence: Built ML pipeline is verified (fact_002)
+    Output display: "Built ML pipeline"
+    Omission log: "Partial: removed latency clause - metric unverified; claim_ledger -> fact_002"
 
   # ===========================================================================
   # R0: SCHEMA CONTRACT — Output Requirements

@@ -1,0 +1,11 @@
+# Cursor shell task 361987 — W0 baseline evidence pointer
+
+Recorded in `W0_baseline.md` § Task 361987.
+
+- `tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py`: exit **1**, **97** failed (23 passed)  
+  Transcript: `w0_pytest_test_apps_rg_pa_tiered_prompt.txt`
+- Full `tests/_apps_contract` rerun: `w0_pytest_apps_contract_full_rerun.txt`  
+  Summary: exit **1** — **1605** failed / **4890** passed / **81** errors / **19** skipped (857.52s)
+- **Classification:** broader suite / profile-contract drift — **not** a scoped W0–W3 blocker.
+
+Machine-readable: `artifacts/apps_rg/prompt_authority/w0_test_status.json` (`cursor_shell_task_evidence.task_id: "361987"`).

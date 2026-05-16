@@ -1,0 +1,7 @@
+schema_version: "1.0"
+planning_posture:
+  mode: static_managed
+plan_hops:
+  - hop_id: native_proof_hop
+digest_stable_refs:
+  rg_planning_profile_ssot: tests/_core_contract/fixtures/apps_rg_binding_package/fixture_rg_plan_digest_src.yaml

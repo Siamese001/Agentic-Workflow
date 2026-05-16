@@ -1,0 +1,192 @@
+{
+  "schema_version": "1.0",
+  "w9_wave": "W9",
+  "description": "W9 classification for every apps_rg prompt_assembly/templates/*.yaml surface. UNKNOWN is forbidden unless listed under explicit_carry_forward with a reason (W12/W13/W14).",
+  "classifications": [
+    {
+      "relative_path": "templates/strategic_tailor_v1.yaml",
+      "template_id": "strategic_tailor_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "strategic_tailor_v1",
+      "notes": "E3 PA shell; pa_context_bridge + default_templates."
+    },
+    {
+      "relative_path": "templates/tailor_existing_v1.yaml",
+      "template_id": "tailor_existing_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "tailor_existing_v1",
+      "notes": "E3 flow_route tailor_existing."
+    },
+    {
+      "relative_path": "templates/generate_scratch_v1.yaml",
+      "template_id": "generate_scratch_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "generate_scratch_v1",
+      "notes": "E3 flow_route generate_scratch."
+    },
+    {
+      "relative_path": "templates/enhance_current_v1.yaml",
+      "template_id": "enhance_current_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "enhance_current_v1",
+      "notes": "E3 enhancement selection rule."
+    },
+    {
+      "relative_path": "templates/resume_fact_check_v1.yaml",
+      "template_id": "resume_fact_check_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "resume_fact_check_v1",
+      "notes": "E4 heal template; not wired in pa_context_bridge E3 map."
+    },
+    {
+      "relative_path": "templates/unsupported_claim_omission_v1.yaml",
+      "template_id": "unsupported_claim_omission_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "unsupported_claim_omission_v1",
+      "notes": "E4 heal template."
+    },
+    {
+      "relative_path": "templates/bullet_diversity_repair_v1.yaml",
+      "template_id": "bullet_diversity_repair_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "bullet_diversity_repair_v1",
+      "notes": "E4 heal template."
+    },
+    {
+      "relative_path": "templates/unify_v1.yaml",
+      "template_id": "unify_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "unify_v1",
+      "notes": "E4 unify hop."
+    },
+    {
+      "relative_path": "templates/docx_manifest_v1.yaml",
+      "template_id": "docx_manifest_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "docx_manifest_v1",
+      "notes": "E5 export manifest; NON_DISPLAY_AUDIT_ONLY semantics — preserves structured provenance for render, not inline resume tags."
+    },
+    {
+      "relative_path": "templates/executive_summary.generate_scratch_v1.yaml",
+      "template_id": "executive_summary.generate_scratch_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "executive_summary.generate_scratch_v1",
+      "notes": "Section PA narrative SSOT; executive_summary.contract.yaml."
+    },
+    {
+      "relative_path": "templates/headline_tailor_v1.yaml",
+      "template_id": "headline_tailor_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "headline_tailor_v1",
+      "notes": "Section PA; headline.contract.yaml."
+    },
+    {
+      "relative_path": "templates/competency_selector_v2.yaml",
+      "template_id": "competency_selector_v2",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "competency_selector_v2",
+      "notes": "Section PA SSOT ref; competencies.contract.yaml apps_rg_prompt_template_ref."
+    },
+    {
+      "relative_path": "templates/competency_selector_v2.pa_slots.yaml",
+      "template_id": "competency_selector_v2_pa_slots",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "competency_selector_v2_pa_slots",
+      "notes": "PA slot-body pack merged at compile time; not a standalone flow_route template."
+    },
+    {
+      "relative_path": "templates/unify_position_narrative_v1.yaml",
+      "template_id": "unify_position_narrative_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "unify_position_narrative_v1",
+      "notes": "Section PA unify_narrative."
+    },
+    {
+      "relative_path": "templates/unify_bullet_tailor_v1.yaml",
+      "template_id": "unify_bullet_tailor_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "unify_bullet_tailor_v1",
+      "notes": "Section PA unify_bullets."
+    },
+    {
+      "relative_path": "templates/ibm_position_narrative_v1.yaml",
+      "template_id": "ibm_position_narrative_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "ibm_position_narrative_v1",
+      "notes": "Section PA ibm_narrative."
+    },
+    {
+      "relative_path": "templates/ibm_bullet_tailor_v1.yaml",
+      "template_id": "ibm_bullet_tailor_v1",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "ibm_bullet_tailor_v1",
+      "notes": "Section PA ibm_bullets."
+    },
+    {
+      "relative_path": "templates/w7_strategic_tailor_shell_slots.yaml",
+      "template_id": "w7_strategic_tailor_shell_slots",
+      "classification": "ACTIVE",
+      "runtime_dispatch_reachable": true,
+      "registry_entry": "w7_strategic_tailor_shell_slots",
+      "notes": "Shared W7 shell slot bodies merged by PA for Unify/IBM lanes."
+    },
+    {
+      "relative_path": "templates/strategic_tailor_v2.yaml",
+      "template_id": "strategic_tailor_v2",
+      "classification": "TEST_ONLY",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "strategic_tailor_v2",
+      "notes": "Planning-only fixture; exercised by test_stop4_exec_summary_no_word_count and test_w2a_stop_1_4. Not an L2 flow_route target."
+    },
+    {
+      "relative_path": "templates/docx_manifest_v2.yaml",
+      "template_id": "docx_manifest_v2",
+      "classification": "TEST_ONLY",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "docx_manifest_v2",
+      "notes": "Validator v2 draft; test_w2e_final_validator_prompts + lane_yaml_parity class expectations only."
+    },
+    {
+      "relative_path": "templates/resume_fact_check_v2.yaml",
+      "template_id": "resume_fact_check_v2",
+      "classification": "TEST_ONLY",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "resume_fact_check_v2",
+      "notes": "test_w2e_final_validator_prompts."
+    },
+    {
+      "relative_path": "templates/unsupported_claim_omission_v2.yaml",
+      "template_id": "unsupported_claim_omission_v2",
+      "classification": "TEST_ONLY",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "unsupported_claim_omission_v2",
+      "notes": "test_w2e_final_validator_prompts."
+    },
+    {
+      "relative_path": "templates/final_unify_v2.yaml",
+      "template_id": "final_unify_v2",
+      "classification": "TEST_ONLY",
+      "runtime_dispatch_reachable": false,
+      "registry_entry": "final_unify_v2",
+      "notes": "test_apps_rg_lane_yaml_parity + test_w2e_final_validator_prompts."
+    }
+  ],
+  "explicit_carry_forward": []
+}

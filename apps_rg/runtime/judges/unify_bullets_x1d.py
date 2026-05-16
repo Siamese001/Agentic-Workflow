@@ -17,6 +17,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _make_blocked_output,
     _resolve_anthropic_model,
     _resolve_gemini_model,
+    resolve_x1d_provider_credentials,
 )
 
 JUDGE_RUBRIC_VERSION = "unify_bullets_x1d_v1"
@@ -122,15 +123,21 @@ def run_unify_bullets_judges(
             continue
 
         meta = PROVIDERS[key]
-        api_key = os.environ.get(str(meta["env"]), "")
+        api_key, env_checked = resolve_x1d_provider_credentials(key, os.environ)
         if not api_key:
+            detail = (
+                f"No non-empty API credential in {env_checked}; "
+                f"(Gemini: GEMINI_API_KEY then GOOGLE_API_KEY)."
+                if key == "gemini_pro"
+                else f"{meta['env']} environment variable not set"
+            )
             outputs.append(
                 _make_blocked_output(
                     key,
                     input_hash,
                     "BLOCKED_PROVIDER_UNAVAILABLE",
                     "BLOCKED_PROVIDER_UNAVAILABLE",
-                    f"{meta['env']} environment variable not set",
+                    detail,
                 )
             )
             continue

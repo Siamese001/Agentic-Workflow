@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "description": "W9 runtime bypass / allowlist metadata. pa_context_bridge only resolves E3 v1 templates; TEST_ONLY templates must never appear in _FLOW_ROUTE_TO_TEMPLATE_ID.",
+  "l2_flow_route_allowlist_template_ids": [
+    "strategic_tailor_v1",
+    "tailor_existing_v1",
+    "generate_scratch_v1",
+    "enhance_current_v1"
+  ],
+  "forbidden_in_l2_flow_bridge": [
+    "strategic_tailor_v2",
+    "docx_manifest_v2",
+    "resume_fact_check_v2",
+    "unsupported_claim_omission_v2",
+    "final_unify_v2",
+    "executive_summary.generate_scratch_v1",
+    "headline_tailor_v1"
+  ],
+  "notes": "Section-lane templates are compiled via dispatch->section_prompt_adapter, not pa_context_bridge flow_route."
+}

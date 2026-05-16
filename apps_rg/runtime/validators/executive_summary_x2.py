@@ -222,6 +222,22 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     return True, None
 
 
+def check_claim_ledger_orphan_source_ids(
+    claim_ledger: list[dict[str, Any]], allowed_fact_ids: set[str]
+) -> tuple[bool, str | None]:
+    """Every ledger row must cite only allowed_fact_ids (including metric-suffixed ids)."""
+    for i, row in enumerate(claim_ledger):
+        if not isinstance(row, dict):
+            continue
+        ids = row.get("source_fact_ids") or []
+        if not ids:
+            return False, f"claim_ledger[{i}] missing source_fact_ids"
+        for sid in ids:
+            if sid not in allowed_fact_ids:
+                return False, f"claim_ledger[{i}] orphan source_fact_id {sid!r} (not in allowed set)"
+    return True, None
+
+
 def check_claim_coverage_accounting(
     resume_display_text: str,
     parsed_output: dict[str, Any] | None,
@@ -264,6 +280,61 @@ def check_claim_coverage_accounting(
             if not any(sid in ledger_fact_ids or "_metric_" in sid for sid in source_ids):
                 return False, f"Material claim has source_fact_ids not found in claim_ledger"
     
+    return True, None
+
+
+def _ledger_claim_tokens(claim_text: str) -> list[str]:
+    return [t for t in re.findall(r"[a-z0-9$%]+", claim_text.lower()) if len(t) > 3]
+
+
+def ledger_row_materialized_in_display(claim: dict[str, Any], resume_display_text: str) -> bool:
+    """Rough token-overlap check: claim corroborated by resume body (mirrors sentence coverage heuristics)."""
+    ct = str(claim.get("claim_text") or claim.get("claim_summary") or "").strip()
+    if not ct:
+        return True
+    resume_l = resume_display_text.lower()
+    tokens = _ledger_claim_tokens(ct)
+    if not tokens:
+        return True
+    hits = sum(1 for t in tokens if t in resume_l)
+    need = max(1, min(3, len(tokens)))
+    return hits >= need
+
+
+def gap_notes_excuse_ledger_claim(claim: dict[str, Any], gap_notes: list[Any]) -> bool:
+    """Explicit escape: gap_notes must name a source_fact_id and/or a long token from the claim."""
+    if not isinstance(gap_notes, list) or not gap_notes:
+        return False
+    blob = " ".join(str(g) for g in gap_notes).lower()
+    for sid in claim.get("source_fact_ids") or []:
+        base = str(sid).split("_metric_")[0].lower()
+        if len(base) > 3 and base in blob:
+            return True
+    for t in _ledger_claim_tokens(str(claim.get("claim_text") or ""))[:8]:
+        if len(t) >= 8 and t in blob:
+            return True
+    return False
+
+
+def check_claim_ledger_materialized_or_gap_excused(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+    gap_notes: list[Any],
+) -> tuple[bool, str | None]:
+    """Each claim_ledger row must appear in resume text OR be explicitly excused in gap_notes."""
+    bad: list[str] = []
+    for i, claim in enumerate(claim_ledger):
+        if not isinstance(claim, dict):
+            continue
+        if ledger_row_materialized_in_display(claim, resume_display_text):
+            continue
+        if gap_notes_excuse_ledger_claim(claim, gap_notes):
+            continue
+        bad.append(f"idx={i}")
+    if bad:
+        return False, "claim_ledger rows not materialized in resume_display_text without gap_notes excuse: " + ", ".join(
+            bad
+        )
     return True, None
 
 
@@ -700,6 +771,9 @@ def run_x2_gates(
     )
     add("x2_source_fact_coverage_100", source_coverage_ok, "100%" if source_coverage_ok else "<100%", "100%", "One or more claims lack allowed source_fact_ids.")
 
+    orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(claim_ledger, allowed_fact_ids)
+    add("x2_claim_ledger_orphan_zero", orphan_ok, orphan_reason or "ok", "no_orphans", orphan_reason)
+
     unsupported = []
     mixed = []
     overbroad = []
@@ -745,7 +819,19 @@ def run_x2_gates(
         resume_display_text, parsed_output, text_claim_coverage, claim_ledger
     )
     add("x2_claim_coverage_accounting_consistent", accounting_ok, accounting_reason, None, accounting_reason)
-    
+
+    gap_notes_list = (parsed_output or {}).get("gap_notes") if isinstance((parsed_output or {}).get("gap_notes"), list) else []
+    ledger_mat_ok, ledger_mat_reason = check_claim_ledger_materialized_or_gap_excused(
+        resume_display_text, claim_ledger, gap_notes_list
+    )
+    add(
+        "x2_claim_ledger_materialized_or_gap_excused",
+        ledger_mat_ok,
+        ledger_mat_reason or "ok",
+        "materialized_or_gap",
+        ledger_mat_reason,
+    )
+
     # New source-sensitive phrase gate
     if selected_facts:
         source_ok, source_reason = check_source_sensitive_phrases(resume_display_text, selected_facts)

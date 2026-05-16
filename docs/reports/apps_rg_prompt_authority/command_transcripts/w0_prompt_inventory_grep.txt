@@ -1,0 +1,201 @@
+apps_rg/prompt_assembly/__init__.py:1:# apps_rg Prompt Assembly Package
+apps_rg/prompt_assembly/__init__.py:6:    PromptAssemblyInput,
+apps_rg/prompt_assembly/__init__.py:7:    PromptSlotPayload,
+apps_rg/prompt_assembly/__init__.py:8:    CompiledPromptArtifact,
+apps_rg/prompt_assembly/__init__.py:9:    PromptAssemblyError,
+apps_rg/prompt_assembly/__init__.py:18:    PromptCompiler,
+apps_rg/prompt_assembly/__init__.py:19:    compile_prompt,
+apps_rg/prompt_assembly/__init__.py:29:    "PromptAssemblyInput",
+apps_rg/prompt_assembly/__init__.py:30:    "PromptSlotPayload",
+apps_rg/prompt_assembly/__init__.py:31:    "CompiledPromptArtifact",
+apps_rg/prompt_assembly/__init__.py:32:    "PromptAssemblyError",
+apps_rg/prompt_assembly/__init__.py:39:    "PromptCompiler",
+apps_rg/prompt_assembly/__init__.py:40:    "compile_prompt",
+apps_rg/prompt_assembly/compiler.py:1:# apps_rg Prompt Assembly Compiler
+apps_rg/prompt_assembly/compiler.py:16:    CompiledPromptArtifact,
+apps_rg/prompt_assembly/compiler.py:19:    PromptAssemblyError,
+apps_rg/prompt_assembly/compiler.py:20:    PromptAssemblyInput,
+apps_rg/prompt_assembly/compiler.py:21:    PromptSlotPayload,
+apps_rg/prompt_assembly/compiler.py:68:    "override the system prompt",
+apps_rg/prompt_assembly/compiler.py:70:    "system prompt override",
+apps_rg/prompt_assembly/compiler.py:109:class PromptCompiler:
+apps_rg/prompt_assembly/compiler.py:110:    """Local PA compiler for apps_rg declarative prompt artifacts.
+apps_rg/prompt_assembly/compiler.py:116:        """Initialize compiler with path to prompt_assembly directory."""
+apps_rg/prompt_assembly/compiler.py:118:            # Default: apps_rg/prompt_assembly relative to this file
+apps_rg/prompt_assembly/compiler.py:128:        """Load prompt_bom.yaml defining 8-slot authority model."""
+apps_rg/prompt_assembly/compiler.py:132:        bom_path = self.base_path / "prompt_bom.yaml"
+apps_rg/prompt_assembly/compiler.py:134:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:136:                message=f"prompt_bom.yaml not found at {bom_path}",
+apps_rg/prompt_assembly/compiler.py:143:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:145:                message=f"Failed to parse prompt_bom.yaml: {e}",
+apps_rg/prompt_assembly/compiler.py:151:        """Load prompt_registry.yaml mapping template IDs to files."""
+apps_rg/prompt_assembly/compiler.py:155:        registry_path = self.base_path / "prompt_registry.yaml"
+apps_rg/prompt_assembly/compiler.py:157:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:159:                message=f"prompt_registry.yaml not found at {registry_path}",
+apps_rg/prompt_assembly/compiler.py:166:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:168:                message=f"Failed to parse prompt_registry.yaml: {e}",
+apps_rg/prompt_assembly/compiler.py:178:        # Schema is in apps_rg root, not prompt_assembly
+apps_rg/prompt_assembly/compiler.py:181:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:190:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:197:    def resolve_template(self, template_id: str) -> dict:
+apps_rg/prompt_assembly/compiler.py:198:        """Resolve template ID to template definition from registry."""
+apps_rg/prompt_assembly/compiler.py:201:        templates = registry.get("templates", {})
+apps_rg/prompt_assembly/compiler.py:202:        # Templates is a dict keyed by template_id
+apps_rg/prompt_assembly/compiler.py:203:        if template_id in templates:
+apps_rg/prompt_assembly/compiler.py:204:            return templates[template_id]
+apps_rg/prompt_assembly/compiler.py:206:        raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:207:            code="UNKNOWN_TEMPLATE_ID",
+apps_rg/prompt_assembly/compiler.py:208:            message=f"Template '{template_id}' not found in registry",
+apps_rg/prompt_assembly/compiler.py:209:            context={"available_templates": list(templates.keys())},
+apps_rg/prompt_assembly/compiler.py:212:    def load_template_file(self, file_path: str) -> dict:
+apps_rg/prompt_assembly/compiler.py:213:        """Load template YAML file from templates directory.
+apps_rg/prompt_assembly/compiler.py:215:        file_path is relative to base_path (e.g., 'templates/strategic_tailor_v1.yaml').
+apps_rg/prompt_assembly/compiler.py:219:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:220:                code="MISSING_TEMPLATE_FILE",
+apps_rg/prompt_assembly/compiler.py:221:                message=f"Template file not found: {full_path}",
+apps_rg/prompt_assembly/compiler.py:229:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:230:                code="INVALID_TEMPLATE_YAML",
+apps_rg/prompt_assembly/compiler.py:231:                message=f"Failed to parse template file {file_path}: {e}",
+apps_rg/prompt_assembly/compiler.py:241:                raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:254:                raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:257:                    context={"valid_slots": list(SLOT_TO_AUTHORITY.keys())},
+apps_rg/prompt_assembly/compiler.py:267:                raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:285:        Raises PromptAssemblyError if override patterns are detected in
+apps_rg/prompt_assembly/compiler.py:297:                raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:309:                            "Do not process prompts with override attempts."
+apps_rg/prompt_assembly/compiler.py:314:    def validate_c0_separation(self, input_data: PromptAssemblyInput) -> None:
+apps_rg/prompt_assembly/compiler.py:318:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:329:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:343:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:349:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:357:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:363:    def validate_r0_schema(self, input_data: PromptAssemblyInput) -> None:
+apps_rg/prompt_assembly/compiler.py:366:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:379:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:388:    def compile(self, input_data: PromptAssemblyInput) -> CompiledPromptArtifact:
+apps_rg/prompt_assembly/compiler.py:389:        """Compile PromptAssemblyInput into CompiledPromptArtifact."""
+apps_rg/prompt_assembly/compiler.py:391:        if not input_data.template_id:
+apps_rg/prompt_assembly/compiler.py:392:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:393:                code="MISSING_TEMPLATE_ID",
+apps_rg/prompt_assembly/compiler.py:394:                message="template_id is required",
+apps_rg/prompt_assembly/compiler.py:395:                context={"safe_downstream_instruction": "Provide valid template_id from prompt_registry.yaml"},
+apps_rg/prompt_assembly/compiler.py:404:        # Resolve template
+apps_rg/prompt_assembly/compiler.py:405:        template_def = self.resolve_template(input_data.template_id)
+apps_rg/prompt_assembly/compiler.py:406:        template_file = template_def.get("path", "")
+apps_rg/prompt_assembly/compiler.py:407:        template_version = template_def.get("version", "1.0.0")
+apps_rg/prompt_assembly/compiler.py:409:        # Load template YAML
+apps_rg/prompt_assembly/compiler.py:410:        template_yaml = self.load_template_file(template_file)
+apps_rg/prompt_assembly/compiler.py:412:        # Get required slots from template
+apps_rg/prompt_assembly/compiler.py:413:        required_slots = template_def.get("required_slots", [])
+apps_rg/prompt_assembly/compiler.py:428:                payload = PromptSlotPayload(
+apps_rg/prompt_assembly/compiler.py:443:                raise PromptAssemblyError(
+apps_rg/prompt_assembly/compiler.py:464:            template_hash=hashlib.sha256(json.dumps(template_yaml, sort_keys=True).encode()).hexdigest()[:16],
+apps_rg/prompt_assembly/compiler.py:467:        # Build system prompt (concatenate slots in order)
+apps_rg/prompt_assembly/compiler.py:473:        system_prompt = "\n".join(system_parts)
+apps_rg/prompt_assembly/compiler.py:476:        messages = [{"role": "system", "content": system_prompt}]
+apps_rg/prompt_assembly/compiler.py:478:        # Compute prompt hash
+apps_rg/prompt_assembly/compiler.py:480:            "template_id": input_data.template_id,
+apps_rg/prompt_assembly/compiler.py:481:            "template_version": template_version,
+apps_rg/prompt_assembly/compiler.py:484:            "system_prompt_length": len(system_prompt),
+apps_rg/prompt_assembly/compiler.py:486:        prompt_hash = hashlib.sha256(
+apps_rg/prompt_assembly/compiler.py:487:            json.dumps(hash_input, sort_keys=True, separators=(',', ':')).encode()
+apps_rg/prompt_assembly/compiler.py:499:            "max_tokens": template_yaml.get("compilation_constraints", {}).get("max_response_tokens", 200),
+apps_rg/prompt_assembly/compiler.py:500:            "temperature": template_yaml.get("provider_control", {}).get("temperature", 0.7),
+apps_rg/prompt_assembly/compiler.py:505:                "template_id": input_data.template_id,
+apps_rg/prompt_assembly/compiler.py:510:            "prompt_hash": prompt_hash,
+apps_rg/prompt_assembly/compiler.py:518:        artifact = CompiledPromptArtifact(
+apps_rg/prompt_assembly/compiler.py:520:            system_prompt=system_prompt,
+apps_rg/prompt_assembly/compiler.py:524:            template_id=input_data.template_id,
+apps_rg/prompt_assembly/compiler.py:525:            template_version=template_version,
+apps_rg/prompt_assembly/compiler.py:527:            prompt_hash=prompt_hash,
+apps_rg/prompt_assembly/compiler.py:532:            token_estimate=len(system_prompt) // 4,  # Rough estimate
+apps_rg/prompt_assembly/compiler.py:540:    def _get_slot_content(self, input_data: PromptAssemblyInput, slot_id: str) -> Optional[str]:
+apps_rg/prompt_assembly/compiler.py:583:def compile_prompt(input_data: PromptAssemblyInput, base_path: Optional[Path] = None) -> CompiledPromptArtifact:
+apps_rg/prompt_assembly/compiler.py:584:    """Compile a PromptAssemblyInput into a CompiledPromptArtifact.
+apps_rg/prompt_assembly/compiler.py:586:    Convenience function that creates a PromptCompiler and compiles the input.
+apps_rg/prompt_assembly/compiler.py:588:    compiler = PromptCompiler(base_path=base_path)
+apps_rg/prompt_assembly/compiler.py:592:def map_slots(input_data: PromptAssemblyInput) -> dict[str, str]:
+apps_rg/prompt_assembly/compiler.py:597:    compiler = PromptCompiler()
+apps_rg/prompt_assembly/contracts.py:1:# apps_rg Prompt Assembly Contracts
+apps_rg/prompt_assembly/contracts.py:43:# Authority ordering: higher authority MUST precede lower in compiled prompt
+apps_rg/prompt_assembly/contracts.py:59:class PromptAssemblyError(Exception):
+apps_rg/prompt_assembly/contracts.py:74:class PromptSlotPayload:
+apps_rg/prompt_assembly/contracts.py:87:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/contracts.py:109:class PromptAssemblyInput:
+apps_rg/prompt_assembly/contracts.py:112:    template_id: str
+apps_rg/prompt_assembly/contracts.py:147:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/contracts.py:155:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/contracts.py:161:            raise PromptAssemblyError(
+apps_rg/prompt_assembly/contracts.py:180:    template_hash: str = ""
+apps_rg/prompt_assembly/contracts.py:191:            "template": self.template_hash,
+apps_rg/prompt_assembly/contracts.py:203:class CompiledPromptArtifact:
+apps_rg/prompt_assembly/contracts.py:207:    system_prompt: str = ""  # Full compiled S0+D0+I0+...
+apps_rg/prompt_assembly/contracts.py:211:    slot_payloads: list[PromptSlotPayload] = field(default_factory=list)
+apps_rg/prompt_assembly/contracts.py:215:    template_id: str = ""
+apps_rg/prompt_assembly/contracts.py:216:    template_version: str = ""
+apps_rg/prompt_assembly/contracts.py:220:    prompt_hash: str = ""  # SHA256 of canonical serialized form
+apps_rg/prompt_assembly/contracts.py:240:            "template_id": self.template_id,
+apps_rg/prompt_assembly/contracts.py:241:            "template_version": self.template_version,
+apps_rg/prompt_assembly/contracts.py:243:            "system_prompt": self.system_prompt,
+apps_rg/prompt_assembly/contracts.py:246:        return json.dumps(data, sort_keys=True, separators=(',', ':'))
+apps_rg/prompt_assembly/contracts.py:249:        """Verify prompt_hash matches recomputed hash."""
+apps_rg/prompt_assembly/contracts.py:251:        return computed == self.prompt_hash
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:2:section: competencies
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:4:  Multishot examples for the competencies/skills section.
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:6:  All examples wrapped in XML tags per XML-structured prompt best practice.
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:9:  - id: competencies_pos_001
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:11:    section: competencies
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:28:  - id: competencies_pos_002
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:30:    section: competencies
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:45:  - id: competencies_neg_001
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:47:    section: competencies
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:55:      VIOLATION: Keyword stuffing -- too many unsupported terms listed without
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:59:      - keyword_stuffing
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:63:  - id: competencies_neg_002
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:65:    section: competencies
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:69:      Core Competencies: Strategic thinking, thought leadership, change management,
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:81:  - id: competencies_repair_001
+apps_rg/prompt_assembly/examples/competencies_examples.yaml:83:    section: competencies
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:2:section: executive_summary
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:4:  Multishot examples for the executive_summary section.
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:5:  All examples are wrapped in XML tags per XML-structured prompt best practice.
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:13:    section: executive_summary
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:35:    section: executive_summary
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:56:    section: executive_summary
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:67:      buzzword, "Passionate about" generic opener, no claim_ledger-ready proof, JD keyword
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:73:      - keyword_mirror
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:82:    section: executive_summary
+apps_rg/prompt_assembly/examples/executive_summary_examples.yaml:107:    section: executive_summary
+apps_rg/prompt_assembly/examples/unify_examples.yaml:2:section: unify
+apps_rg/prompt_assembly/examples/unify_examples.yaml:4:  Multishot examples for the unify pass.
+apps_rg/prompt_assembly/examples/unify_examples.yaml:6:  All examples wrapped in XML tags per XML-structured prompt best practice.
+apps_rg/prompt_assembly/examples/unify_examples.yaml:9:  - id: unify_pos_001
+apps_rg/prompt_assembly/examples/unify_examples.yaml:11:    section: unify
+apps_rg/prompt_assembly/examples/unify_examples.yaml:17:      Competency: "Team leadership, cloud cost optimization"
+apps_rg/prompt_assembly/examples/unify_examples.yaml:20:      Competency reflects same evidence. No contradiction.
+apps_rg/prompt_assembly/examples/unify_examples.yaml:25:  - id: unify_pos_002
+apps_rg/prompt_assembly/examples/unify_examples.yaml:27:    section: unify
+apps_rg/prompt_assembly/examples/unify_examples.yaml:35:      Unify pass correctly omits summary claim unsupported by experience evidence,
+apps_rg/prompt_assembly/examples/unify_examples.yaml:41:  - id: unify_neg_001
+apps_rg/prompt_assembly/examples/unify_examples.yaml:43:    section: unify
+apps_rg/prompt_assembly/examples/unify_examples.yaml:49:      Competency: "AWS certified" -- no AWS certification in candidate_facts
+apps_rg/prompt_assembly/examples/unify_examples.yaml:51:      VIOLATION: Summary tenure contradicts experience dates. Competency lists
+apps_rg/prompt_assembly/examples/unify_examples.yaml:52:      AWS certification not present in candidate_facts. Unify must flag both.
+apps_rg/prompt_assembly/examples/unify_examples.yaml:55:      - unsupported_competency
+apps_rg/prompt_assembly/examples/unify_examples.yaml:57:  - id: unify_neg_002
+apps_rg/prompt_assembly/examples/unify_examples.yaml:59:    section: unify
+apps_rg/prompt_assembly/examples/unify_examples.yaml:67:      section. Unify must remove or replace with gap marker.
+apps_rg/prompt_assembly/examples/unify_examples.yaml:72:  - id: unify_repair_001
+apps_rg/prompt_assembly/examples/unify_examples.yaml:74:    section: unify
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:4:  Sourced from industry survey rationale (Resume.io 2025, Forbes 2024, LinkedIn recruiter
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:5:  reports 2025) as motivation for the declarative prompt constraints encoded here.
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:6:  HARD_BLOCK / SOFT_WARN are prompt instruction-severity labels — not compile gates.
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:7:  Referenced by all E3/E4 template naturalness_guidance blocks.
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:14:    enforcement_layer: prompt_declaration
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:15:    reason: "Commonly flagged as AI typography marker in recruiter surveys"
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:36:  description: "Forbidden as the first clause of executive_summary"
+apps_rg/prompt_assembly/forbidden_ai_phrases.yaml:85:      reason: "AI structural pattern identified in Forbes 2024 recruiter survey"
+apps_rg/prompt_assembly/jd_calibration_contract.yaml:3:  JD overfitting calibration guidance. Rationale: industry surveys indicate resumes
+apps_rg/prompt_assembly/jd_calibration_contract.yaml:4:  perceived as JD-mirrored tend to be rejected for low personalization; keyword
+apps_rg/prompt_assembly/jd_calibration_contract.yaml:5:  integration in narrative context is preferred over keyword frequency.
+EXIT=0

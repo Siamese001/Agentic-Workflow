@@ -3,6 +3,7 @@ section: unify
 description: >
   Multishot examples for the unify pass.
   Shows correct contradiction removal and consistency enforcement.
+  Display resume text stays free of inline source tags; proof uses claim_ledger / source_fact_ids.
   All examples wrapped in XML tags per XML-structured prompt best practice.
 
 examples:
@@ -13,11 +14,12 @@ examples:
     before: null
     after: |
       Summary: "Led 45-person engineering org delivering $4M cost reduction"
-      Experience bullet: "Led 45-person eng org, cut cloud costs by $4M [source: fact_012]"
+      Experience bullet: "Led 45-person eng org, cut cloud costs by $4M"
       Competency: "Team leadership, cloud cost optimization"
+    claim_ledger_binding: "Experience bullet -> fact_012"
     annotation: >
       Summary claim is grounded in experience bullet with matching metric.
-      Competency reflects same evidence. No contradiction.
+      Competency reflects same evidence. No contradiction. Proof in ledger, not inline tags.
     anti_ai_compliance:
       no_em_dash: true
       no_corporate_buzzwords: true
@@ -30,10 +32,11 @@ examples:
     after: |
       Removed summary sentence: "Delivered 10x revenue growth" -- no supporting
       evidence in experience bullets for this magnitude of claim.
-      Retained: "Grew platform ARR from $2M to $8M in 18 months [source: fact_007]"
+      Retained: "Grew platform ARR from $2M to $8M in 18 months"
+    claim_ledger_binding: "Retained sentence -> fact_007 via claim_ledger"
     annotation: >
       Unify pass correctly omits summary claim unsupported by experience evidence,
-      preserves the grounded version with citation.
+      preserves the grounded version with ledger binding.
     anti_ai_compliance:
       no_em_dash: true
       no_corporate_buzzwords: true
@@ -79,14 +82,15 @@ examples:
       Experience (2019-2020 role): "Managed team of 15"
     after: |
       Summary: "Grew engineering teams progressively from 8 to 22 engineers
-      (2019-2022) [source: fact_015]"
+      (2019-2022)"
+    claim_ledger_binding: "summary aligned to fact_015 in claim_ledger"
     repair_actions:
       - Removed unsupported "100+" claim -- maximum supported is 22
       - Combined accurate tenure reference from experience bullets
-      - Added source citation tracing to candidate_facts
+      - Updated claim_ledger / source_fact_ids to match trimmed summary
     annotation: >
       Repair corrects scope inflation in summary to match grounded experience
-      evidence while preserving the genuine growth narrative.
+      evidence while preserving the genuine growth narrative (display text clean).
     anti_ai_compliance:
       no_em_dash: true
       no_corporate_buzzwords: true

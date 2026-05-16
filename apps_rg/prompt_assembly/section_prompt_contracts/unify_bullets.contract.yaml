@@ -1,0 +1,19 @@
+section_id: unify_bullets
+mode: REWRITE_FROM_FACT_POOL
+apps_rg_prompt_template_ref: apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml
+pa_template_ref: strategic_tailor_v1
+output_schema_ref: apps_rg/rg_output_schema.json
+claim_ledger_required: true
+display_text_source_tags_allowed: false
+jd_as_proof_allowed: false
+companion_context_allowed: false
+companion_context_authority: NONE
+x2_gate_profile_ref: apps_rg/runtime/validators/unify_bullets_x2.py
+x1d_judge_profile_ref: apps_rg/runtime/judges/unify_bullets_x1d.py
+locked_fields: []
+llm_generation_allowed: true
+notes: >
+  W8 ledger-only citations: resume display text must not contain inline source/citation tags.
+  Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
+  jd_requirements / company_brief are targeting only, not proof.
+  W7 mechanical migration.

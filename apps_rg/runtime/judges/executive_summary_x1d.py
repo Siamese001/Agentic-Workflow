@@ -6,14 +6,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import hashlib
+import time
 import urllib.error
 import urllib.request
-import hashlib
-import re
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 
 JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
@@ -124,6 +125,8 @@ PROVIDERS = {
     "gemini_pro": {
         "provider_name": "Gemini Pro",
         "env": "GEMINI_API_KEY",
+        # Matches Google AI Studio / GenAI SDK parity: GEMINI_API_KEY primary, GOOGLE_API_KEY alternate.
+        "env_fallbacks": ("GOOGLE_API_KEY",),
         "model_env": "APPS_RG_GEMINI_JUDGE_MODEL",
         "fallback_env": "GEMINI_MODEL",
         "default_model": "gemini-2.0-flash",
@@ -142,6 +145,31 @@ PROVIDERS = {
         "default_model": "claude-3-5-sonnet-20241022",
     },
 }
+
+
+def resolve_x1d_provider_credentials(provider_key: str, environ: Mapping[str, str]) -> tuple[str, list[str]]:
+    """Return `(api_key, env_vars_consulted_in_order)` for preflight parity with lane judge execution."""
+    meta = PROVIDERS.get(provider_key)
+    if not meta:
+        return "", []
+    primary = str(meta.get("env") or "")
+    consulted: list[str] = []
+
+    # Gemini accepts the standard key or the documented Google AI Studio alternate.
+    if provider_key == "gemini_pro":
+        for name in (primary, *[str(x) for x in (meta.get("env_fallbacks") or ())]):
+            if not name or name in consulted:
+                continue
+            consulted.append(name)
+            raw = str(environ.get(name) or "").strip()
+            if raw:
+                return raw, consulted
+        return "", consulted if consulted else ([primary] if primary else [])
+
+    if primary:
+        consulted.append(primary)
+        return str(environ.get(primary) or "").strip(), consulted
+    return "", consulted
 
 
 def _artifact_path(provider_key: str, suffix: str) -> Path:
@@ -289,6 +317,84 @@ def _extract_anthropic_message_text(data: dict[str, Any]) -> str:
         if block.get("type") == "text" and block.get("text"):
             chunks.append(str(block["text"]))
     return "".join(chunks)
+
+
+def _gemini_judge_max_retries() -> int:
+    raw = os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_RETRIES", "4").strip()
+    try:
+        return max(0, min(12, int(raw)))
+    except ValueError:
+        return 4
+
+
+def _parse_gemini_retry_delay_seconds(error_body: str) -> float | None:
+    """Best-effort parse of RetryInfo / prose retry hints from Gemini error JSON."""
+    delay: float | None = None
+    try:
+        data = json.loads(error_body)
+    except json.JSONDecodeError:
+        data = {}
+    err = data.get("error") if isinstance(data.get("error"), dict) else {}
+    msg = str(err.get("message") or "")
+    details = err.get("details")
+    if isinstance(details, list):
+        for detail in details:
+            if not isinstance(detail, dict):
+                continue
+            if detail.get("@type", "").endswith("RetryInfo"):
+                rd = detail.get("retryDelay")
+                if rd is None:
+                    continue
+                if isinstance(rd, (int, float)):
+                    delay = float(rd)
+                    break
+                s = str(rd).strip().rstrip("s")
+                try:
+                    delay = float(s)
+                    break
+                except ValueError:
+                    continue
+    if delay is None and msg:
+        m = re.search(r"retry\s+in\s+([0-9]+(?:\.[0-9]+)?)\s*s", msg, flags=re.I)
+        if m:
+            try:
+                delay = float(m.group(1))
+            except ValueError:
+                delay = None
+    return delay
+
+
+def _classify_gemini_http_block(status_code: int, error_body: str) -> tuple[str, str, str]:
+    """Return (evaluator_mode, provider_status, short_message) for non-success HTTP."""
+    body_l = error_body.lower()
+    if status_code == 429 or "resource_exhausted" in body_l:
+        snippet = (
+            error_body[:900] + ("…" if len(error_body) > 900 else "")
+            if error_body
+            else "Gemini quota or rate limited (HTTP 429)."
+        )
+        return "BLOCKED_RATE_LIMIT", "BLOCKED_RATE_LIMIT", snippet
+    if status_code in (401, 403):
+        snippet = (
+            error_body[:500] + ("…" if len(error_body) > 500 else "")
+            if error_body
+            else f"Gemini authorization error ({status_code})."
+        )
+        return (
+            "BLOCKED_PROVIDER_UNAVAILABLE",
+            "BLOCKED_PROVIDER_UNAVAILABLE",
+            f"Gemini API error {status_code}: {snippet}",
+        )
+    snippet = (
+        error_body[:900] + ("…" if len(error_body) > 900 else "")
+        if error_body
+        else f"Gemini API error ({status_code})."
+    )
+    return (
+        "BLOCKED_PROVIDER_UNAVAILABLE",
+        "BLOCKED_PROVIDER_UNAVAILABLE",
+        f"Gemini API error {status_code}: {snippet}",
+    )
 
 
 def _extract_gemini_text(data: dict[str, Any]) -> tuple[str, str | None]:
@@ -958,19 +1064,46 @@ def _call_gemini(
     })
     
     req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
-    
-    try:
-        with urllib.request.urlopen(req, timeout=60) as response:
-            raw_response = response.read().decode()
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode()
-        err_path = _artifact_path(provider_key, "provider_response_raw")
-        _write_artifact(err_path, {"error": True, "status_code": e.code, "body": error_body, "input_hash": input_hash})
-        return _make_blocked_output(
-            provider_key, input_hash, "BLOCKED_PROVIDER_UNAVAILABLE",
-            "BLOCKED_PROVIDER_UNAVAILABLE", f"Gemini API error {e.code}: {error_body}",
-            raw_response_ref=str(err_path), model_name=model
-        )
+
+    retries = _gemini_judge_max_retries()
+    raw_response = ""
+    for attempt in range(retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as response:
+                raw_response = response.read().decode()
+            break
+        except urllib.error.HTTPError as e:
+            body = e.read().decode(errors="replace")
+            if attempt < retries and e.code == 429:
+                wait_s = _parse_gemini_retry_delay_seconds(body)
+                if wait_s is None:
+                    wait_s = min(30.0, 2.0**attempt)
+                sleep_for = min(45.0, max(1.5, float(wait_s)))
+                time.sleep(sleep_for)
+                continue
+
+            eval_mode, prov_status, msg = _classify_gemini_http_block(e.code, body)
+            err_path = _artifact_path(provider_key, "provider_response_raw")
+            _write_artifact(
+                err_path,
+                {
+                    "error": True,
+                    "status_code": e.code,
+                    "body": body,
+                    "input_hash": input_hash,
+                    "attempt": attempt,
+                    "retries_configured": retries,
+                },
+            )
+            return _make_blocked_output(
+                provider_key,
+                input_hash,
+                eval_mode,
+                prov_status,
+                msg,
+                raw_response_ref=str(err_path),
+                model_name=model,
+            )
     
     # Write raw response artifact
     raw_path = _artifact_path(provider_key, "provider_response_raw")
@@ -1063,11 +1196,17 @@ def run_llm_judges(
             continue
         
         meta = PROVIDERS[key]
-        api_key = os.environ.get(str(meta["env"]), "")
+        api_key, env_checked = resolve_x1d_provider_credentials(key, os.environ)
         if not api_key:
             outputs.append(_make_blocked_output(
                 key, input_hash, "BLOCKED_PROVIDER_UNAVAILABLE",
-                "BLOCKED_PROVIDER_UNAVAILABLE", f"{meta['env']} environment variable not set"
+                "BLOCKED_PROVIDER_UNAVAILABLE",
+                (
+                    f"No non-empty API credential in {env_checked}; "
+                    f"Gemini resolves GEMINI_API_KEY then GOOGLE_API_KEY for parity with Google AI Studio."
+                    if key == "gemini_pro"
+                    else f"{meta['env']} environment variable not set"
+                ),
             ))
             continue
         

@@ -18,10 +18,17 @@ integrity_rules:
 de_duplication:
   collapse_repeated_achievements: true
   preserve_highest_specificity_instance: true
-  merge_strategy: keep_most_specific_with_citation
+  merge_strategy: keep_most_specific_with_ledger_binding
 
 consistency_checks:
   date_integrity: required
   title_consistency: required
   metric_consistency: required
   scope_consistency: required
+
+proof_authority:
+  display_text: clean_prose_only_no_inline_source_tags
+  canonical_binding: claim_ledger
+  note: >
+    Unify adjusts resume display text for consistency; proof stays in claim_ledger /
+    source_fact_ids / evidence_ids. JD and companion context are never proof surfaces.

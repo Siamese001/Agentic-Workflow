@@ -1,0 +1,47 @@
+schema_version: '1.0'
+binding_id: apps_rg_spine_binding_fixture_v1
+hash_algorithm: sha256
+l2_artifact_layout:
+  lane_root_pattern: artifacts/apps_rg/runtime_proofs/<lane_key>/
+  run_scoped_pattern: artifacts/apps_rg/runtime_proofs/<lane_key>/<bucket>/<run_id>/l2_output.json
+  bucket_values:
+    - real
+    - mock
+  primary_filename: l2_output.json
+lanes:
+  - lane_key: headline
+    dispatch_module: apps_rg.runtime.dispatch.headline_dispatch
+    prompt_id: headline_dispatch_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml
+  - lane_key: executive_summary
+    dispatch_module: apps_rg.runtime.dispatch.executive_summary_dispatch
+    prompt_id: executive_summary.generate_scratch_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml
+  - lane_key: unify_bullets
+    dispatch_module: apps_rg.runtime.dispatch.unify_bullets_dispatch
+    prompt_id: unify_bullet_tailor_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/unify_bullets.contract.yaml
+  - lane_key: unify_narrative
+    dispatch_module: apps_rg.runtime.dispatch.unify_narrative_dispatch
+    prompt_id: unify_position_narrative_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml
+  - lane_key: ibm_bullets
+    dispatch_module: apps_rg.runtime.dispatch.ibm_bullets_dispatch
+    prompt_id: ibm_bullet_tailor_dispatch_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml
+  - lane_key: ibm_narrative
+    dispatch_module: apps_rg.runtime.dispatch.ibm_narrative_dispatch
+    prompt_id: ibm_position_narrative_dispatch_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/ibm_narrative.contract.yaml
+  - lane_key: competencies
+    dispatch_module: apps_rg.runtime.dispatch.competencies_dispatch
+    prompt_id: competencies_dispatch_v1
+    section_contract: apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml
+file_hashes:
+  apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml: f59c29d99dc718dd6d85647d55c6f9cf1c5476252aa346e5e535af0a3a86099b
+  apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml: 39c05144c4283892968ab73a80a465f0c0e43adff18fc2533fce27cfb1498f96
+  apps_rg/prompt_assembly/section_prompt_contracts/unify_bullets.contract.yaml: 472493fefd1ac673191580e277960e5a556197775e63ea5c8642696a0ea23396
+  apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml: 7f4a66873efd7617c81816d9a28d91b8978432fc136b8d46b3159a49acca49ce
+  apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml: 6c9f9b7b1d2173ff9ea00269376e731ed9364f45e2011b78dd336d7f2b95a701
+  apps_rg/prompt_assembly/section_prompt_contracts/ibm_narrative.contract.yaml: e2a67cc75e311cc466da96520568fca871f808f9a12562f6f6f5f2b222154575
+  apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml: 087e0ff897479f1da093d37f65f52bfd681e758838c810ef0260f57bacb246c0

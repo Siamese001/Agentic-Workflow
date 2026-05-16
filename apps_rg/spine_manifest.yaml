@@ -74,6 +74,37 @@ templates:
     required_slots: [S0, I0, C0, U0, R0]
     description: "Generate DOCX formatting manifest"
 
+  - id: unify_v1
+    version: "1.0.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "Unify terminology and de-duplicate (E4)"
+
+  # W9: Full template SSOT is apps_rg/prompt_assembly/prompt_registry.yaml (section PA + TEST_ONLY rows).
+  - id: "executive_summary.generate_scratch_v1"
+    version: "1.0.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "Executive summary section PA"
+
+  - id: headline_tailor_v1
+    version: "1.0.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "Headline section PA"
+
+  - id: competency_selector_v2
+    version: "1.0.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "Competencies section PA SSOT path"
+
+  - id: strategic_tailor_v2
+    version: "1.0.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "TEST_ONLY planning fixture (contract tests)"
+
 # -----------------------------------------------------------------------------
 # Compilation Constraints
 # -----------------------------------------------------------------------------

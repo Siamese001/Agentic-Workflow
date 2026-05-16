@@ -33,6 +33,7 @@ try:
 except ImportError:
     pass
 
+from apps_rg.runtime.dispatch.ibm_narrative_pa import compile_ibm_narrative_prompt
 from apps_rg.runtime.exit.ibm_narrative_x3 import aggregate_x3
 from apps_rg.runtime.judges.ibm_narrative_x1d import run_ibm_narrative_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
@@ -190,53 +191,9 @@ def build_runtime_payload(
 
 
 def build_prompt_messages(runtime_payload: dict[str, Any], companion_text: str) -> list[dict[str, str]]:
-    facts = runtime_payload["selected_fact_plan"]["facts"]
-    fact_lines = "\n".join(
-        f"- {fact['fact_id']}: {fact['claim_text']}"
-        + (f" | metric: {fact['metric_raw']}" if fact.get("metric_raw") else "")
-        for fact in facts
-    )
-    header = runtime_payload["ibm_header"]
-    cand = str(runtime_payload.get("candidate_name") or "").strip()
-    cand_line = f"Executive name from resume (optional, at most once, natural third person): {cand}.\n" if cand else ""
-    companion_block = (
-        f"\nACCEPTED_IBM_BULLETS (read-only; do not recap each line):\n{companion_text}\n"
-        if companion_text.strip()
-        else "\n(No companion ibm_bullets artifact; still avoid repeating every metric in one list.)\n"
-    )
-    system = (
-        "You write exactly ONE polished IBM employment narrative sentence. "
-        "Return RAW JSON only: first character {, last character }. No markdown fences.\n\n"
-        f"READ-ONLY CONTEXT (not copy-paste openers): employer={header['employer']}, title={header['title']}, "
-        f"location={header['location']}, dates={header['start_date']} to {header['end_date']}.\n"
-        f"{cand_line}"
-        "VOICE (mandatory):\n"
-        "- Include the exact text \"IBM\" once as the employer anchor (company name).\n"
-        "- Third person or implied subject only. No first person. No em dash. No inline source tags.\n"
-        "- IBM should read as supporting enterprise and platform credibility, not current agentic runtime ownership.\n\n"
-        "SCOPE: Use ONLY bul_ibm_001..005 facts for proof. No Unify, InsurTech, EY, education, certification, or early-career facts.\n"
-        "Never use Unify-era runtime vocabulary (agentic AI, GraphRAG, multi-agent orchestration, deterministic routing, "
-        "sandboxed execution, replayable traces, governed AI runtime, prompt assembly, C0, L2, Exit, UWG).\n"
-        "JD and briefing are targeting context only, never proof.\n\n"
-        "METRICS: If companion IBM bullets already carry $15M, 99.9%, 30%, 25%, and 50%, mention at most one metric cluster "
-        "in narrative_sentence (prefer a single concrete proof such as 99.9% uptime or $15M where it fits the arc).\n\n"
-        "SYNTHESIS: Complement the five bullets with connective framing; do not summarize each bullet or copy a five-word opening from them.\n\n"
-        "Required JSON keys: narrative_sentence, selected_fact_plan, claim_ledger, jd_alignment, gap_notes, change_log, self_check.\n"
-        "claim_ledger: array of {claim_text, source_fact_ids} with bul_ibm_001 through bul_ibm_005 only (single underscores; no typos).\n"
-        "Every substantive clause in narrative_sentence must appear as claim_text in claim_ledger with matching bul_ibm_* IDs."
-    )
-    user = f"""
-Target title (context only): {runtime_payload['target_title']}
-Target company (context only): {runtime_payload['target_company']}
-JD (context only): {runtime_payload['jd_text']}
-Briefing (context only): {runtime_payload['briefing']}
-
-CANONICAL IBM FACTS:
-{fact_lines}
-{companion_block}
-Write one narrative_sentence only: enterprise platform credibility at IBM, third person, one period at the end, under 52 words.
-""".strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    """W7: PA-compiled system prompt via ``section_prompt_adapter`` (no inline fallback)."""
+    rid = str(runtime_payload.get("run_id") or "ibm_narrative_prompt_build")
+    return compile_ibm_narrative_prompt(runtime_payload, companion_text, run_id=rid).artifact.messages
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
@@ -295,6 +252,89 @@ def normalize_parsed_output(
     return out
 
 
+def truncate_narrative_after_first_metric_hit(narrative: str) -> str:
+    """When multiple tracked IBM metrics remain in one clause, drop text from the second metric onward."""
+    s = narrative.strip()
+    patterns = (
+        re.compile(r"\$15\s*m", re.I),
+        re.compile(r"99\.9%"),
+        re.compile(r"\b30\s*%"),
+        re.compile(r"\b25\s*%"),
+        re.compile(r"\b50\s*%"),
+    )
+    spans: list[tuple[int, int]] = []
+    for rx in patterns:
+        for m in rx.finditer(s):
+            spans.append((m.start(), m.end()))
+    spans.sort(key=lambda x: x[0])
+    if len(spans) < 2:
+        return s
+    cut = spans[1][0]
+    clipped = s[:cut].rstrip()
+    clipped = re.sub(r"\s*[,;:]\s*$", "", clipped)
+    clipped = re.sub(r"\s+and\s*$", "", clipped, flags=re.I)
+    clipped = clipped.rstrip(" ,")
+    return clipped if clipped else s
+
+
+def collapse_narrative_sentence_for_companion_metric_budget(narrative: str, companion_text: str, max_rounds: int = 24) -> str:
+    """Deterministic collapse when bullets already expose the five core metrics: keep <=1 counted metric hits."""
+    s = narrative.strip()
+    if not companion_text.strip() or not companion_ibm_bullets_have_full_metric_bundle(companion_text):
+        return s
+    for _ in range(max_rounds):
+        if count_ibm_narrative_metric_hits(s) <= 1:
+            break
+        before = s
+        parts = [p.strip() for p in s.split(",") if p.strip()]
+        rebuilt: list[str] = []
+        if len(parts) > 1:
+            for chunk in parts:
+                candidate = ", ".join(rebuilt + [chunk]) if rebuilt else chunk
+                if count_ibm_narrative_metric_hits(candidate) > 1:
+                    break
+                rebuilt.append(chunk)
+            rebuilt_text = ", ".join(rebuilt).strip()
+            if rebuilt_text:
+                s = rebuilt_text
+        if count_ibm_narrative_metric_hits(s) <= 1:
+            break
+        s = truncate_narrative_after_first_metric_hit(s)
+        if s == before:
+            break
+    return s
+
+
+def reconcile_narrative_claim_ledger(narrative: str, ledger: list[Any]) -> list[dict[str, Any]]:
+    """Subset ledger to claims still verbatim in narrative; fallback when trimming removed clause-level claims."""
+    nlow = narrative.lower()
+    kept: list[dict[str, Any]] = []
+    for e in ledger or []:
+        if not isinstance(e, dict):
+            continue
+        ct = str(e.get("claim_text", "")).strip()
+        if len(ct) >= 6 and ct.lower() in nlow:
+            kept.append(dict(e))
+    if kept:
+        return kept
+    return [{"claim_text": narrative.strip().rstrip(".!?"), "source_fact_ids": ["bul_ibm_001"]}]
+
+
+def apply_companion_metric_budget_trim(parsed: dict[str, Any] | None, companion_text: str) -> None:
+    """In-place deterministic trim against companion bullets before X2 (does not loosen gates)."""
+    if not parsed:
+        return
+    before = str(parsed.get("narrative_sentence", "")).strip()
+    collapsed = collapse_narrative_sentence_for_companion_metric_budget(before, companion_text).strip()
+    if collapsed != before:
+        clog = list(parsed.get("change_log") or []) if isinstance(parsed.get("change_log"), list) else []
+        clog.append({"operation": "companion_metric_budget_deterministic_trim", "reason": "deterministic_pre_x2"})
+        parsed["change_log"] = clog
+    parsed["narrative_sentence"] = collapsed
+    led = list(parsed.get("claim_ledger") or []) if isinstance(parsed.get("claim_ledger"), list) else []
+    parsed["claim_ledger"] = reconcile_narrative_claim_ledger(collapsed, led)
+
+
 def retry_qwen_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
@@ -344,9 +384,9 @@ def retry_qwen_for_metric_budget(
             "role": "user",
             "content": (
                 "DETERMINISTIC_REVISION: Accepted IBM bullets already list $15M, 99.9%, 30%, 25%, and 50%. "
-                "narrative_sentence MUST cite at most ONE numeric proof from that set (for example only 99.9% uptime "
-                "or only $15M, never both). Remove extra dollar amounts and extra percentage tokens. "
-                "Return one full JSON object again with the same required keys."
+                "narrative_sentence MUST include ZERO OR ONE numeric token from that IBM proof set (never two percentages; "
+                "never $15M together with any percentage). Prefer qualitative enterprise modernization and reliability framing. "
+                "Remove extra numeric tokens while keeping IBM as employer anchor—return one full JSON object with the same keys."
             ),
         },
     ]
@@ -447,11 +487,30 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    messages = build_prompt_messages(runtime_payload, companion_text)
-    compiled_prompt = json.dumps(messages, indent=2)
+    section_compiled = compile_ibm_narrative_prompt(
+        runtime_payload,
+        companion_text,
+        run_id=runtime_payload["run_id"],
+    )
+    messages = section_compiled.artifact.messages
+    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(compiled_prompt, encoding="utf-8")
+    (artifact_dir / "compiled_prompt.txt").write_text(
+        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    write_json(
+        artifact_dir / "compiled_prompt_artifact.json",
+        {
+            "section_id": section_compiled.section_id,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "dispatch_sha256_prompt16": prompt_hash,
+            "slot_count": section_compiled.artifact.slot_count,
+        },
+    )
 
     provider_request_data = None
     provider_result_data = None
@@ -491,6 +550,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
                     companion_text,
                     runtime_payload,
                 )
+                apply_companion_metric_budget_trim(parsed, companion_text)
+                parsed = normalize_parsed_output(parsed, runtime_payload)
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"
@@ -562,6 +623,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
     write_json(artifact_dir / "l2_output.json", l2_output)
@@ -575,6 +639,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
             "prompt_id": PROMPT_ID,
             "provider": args.provider,
             "temperature": args.temperature if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT,
+            "section_prompt_adapter": True,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
         },
     )
 

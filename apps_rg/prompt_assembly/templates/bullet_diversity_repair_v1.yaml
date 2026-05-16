@@ -33,8 +33,10 @@ slot_bodies:
        - Tools and technologies mentioned
        - Project scope and responsibilities
        - Outcomes and results
-    2. PRESERVE SOURCE IDs: Every [source: X] citation MUST appear in exactly
-       the same location in the output.
+    2. PRESERVE PROOF BINDINGS: claim_ledger / source_fact_ids for each bullet must stay
+       aligned with the same factual claims. Resume display text MUST NOT contain inline
+       [source: ...] tags — if legacy input includes them, strip the tags while keeping facts,
+       and rely on structured ledger fields for proof.
     3. VERB DIVERSITY ONLY: Replace repetitive action verbs with varied
        alternatives. Do NOT change what was done, only how it's described.
     4. NO NEW SUBSTANCE: Do NOT add achievements, inflate scope, or invent
@@ -78,7 +80,8 @@ slot_bodies:
     
     You MUST:
     - Preserve all factual content exactly
-    - Preserve all [source: X] citations exactly
+    - Preserve claim_ledger / source_fact_ids bindings (no orphaned proof rows)
+    - Keep resume display strings free of inline source/citation tags
     - Preserve all metrics, dates, names, tools
     
     You MUST NOT:
@@ -125,7 +128,7 @@ slot_bodies:
     - Replace weak/repetitive verbs ONLY
     - Keep object of action exactly the same
     - Preserve all metrics and qualifiers
-    - Maintain [source: X] citations
+    - Maintain claim_ledger alignment (display text stays clean — no inline source tags)
     
     ## Step 5: Verify Preservation
     For each bullet, confirm:
@@ -133,7 +136,7 @@ slot_bodies:
     - Dates unchanged
     - Tools/tech unchanged
     - Scope unchanged
-    - Source IDs preserved
+    - Structured proof IDs preserved (claim_ledger / source_fact_ids)
 
     <naturalness_guidance>
       ref: apps_rg/prompt_assembly/forbidden_ai_phrases.yaml
@@ -155,36 +158,39 @@ slot_bodies:
   # E0: EXAMPLES — Repair Patterns
   # ===========================================================================
   E0: |
-    # REPAIR EXAMPLES
+    # REPAIR EXAMPLES (display text clean; ledger holds fact_ids)
     
     Example 1 - Verb diversity:
     Before: 
-    - Led team of 5 engineers [source: fact_001]
-    - Led migration project [source: fact_002]
-    - Led daily standups [source: fact_003]
+    - Led team of 5 engineers
+    - Led migration project
+    - Led daily standups
     
     After:
-    - Led team of 5 engineers [source: fact_001]
-    - Directed migration project [source: fact_002]
-    - Facilitated daily standups [source: fact_003]
+    - Led team of 5 engineers
+    - Directed migration project
+    - Facilitated daily standups
+    (claim_ledger: fact_001, fact_002, fact_003 unchanged)
     
     Example 2 - Weak to strong (preserve metrics):
-    Before: "Was responsible for reducing costs by 20% [source: fact_004]"
-    After: "Reduced costs by 20% [source: fact_004]"
+    Before: "Was responsible for reducing costs by 20%"
+    After: "Reduced costs by 20%"
+    (source_fact_ids: fact_004)
     
     Example 3 - Passive to active:
-    Before: "Was tasked with rebuilding the API [source: fact_005]"
-    After: "Rebuilt the API [source: fact_005]"
+    Before: "Was tasked with rebuilding the API"
+    After: "Rebuilt the API"
+    (source_fact_ids: fact_005)
     
     Example 4 - FORBIDDEN (do not do this):
-    Before: "Improved response time by 10% [source: fact_006]"
-    Wrong: "Dramatically improved response time [source: fact_006]"  # FORBIDDEN
-    Right: "Improved response time by 10% [source: fact_006]"  # Keep as-is
+    Before: "Improved response time by 10%"
+    Wrong: "Dramatically improved response time"  # FORBIDDEN
+    Right: "Improved response time by 10%"  # Keep as-is
     
     Example 5 - Preserve tools exactly:
-    Before: "Built AWS Lambda functions [source: fact_007]"
-    Wrong: "Built serverless functions [source: fact_007]"  # FORBIDDEN generalization
-    Right: "Built AWS Lambda functions [source: fact_007]"
+    Before: "Built AWS Lambda functions"
+    Wrong: "Built serverless functions"  # FORBIDDEN generalization
+    Right: "Built AWS Lambda functions"
 
   # ===========================================================================
   # R0: SCHEMA CONTRACT — Output Requirements

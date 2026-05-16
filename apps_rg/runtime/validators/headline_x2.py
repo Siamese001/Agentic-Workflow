@@ -14,6 +14,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_json_parse_valid,
     check_judge_rows_present,
     check_judge_schema_valid,
+    check_target_title_inflation,
     has_jd_phrase_copy,
 )
 
@@ -21,6 +22,18 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 _METRIC_RE = re.compile(
     r"(\$\s*\d|\d+\s*%|%\d|\b\d{1,3}\s*m\b|\d+\s*→\s*\d+|\b99\.|\b\d{1,2}\.\d+\s*%)",
     re.IGNORECASE,
+)
+
+_HEADLINE_SCHEMA_KEYS = frozenset(
+    {
+        "headline_line",
+        "selected_fact_plan",
+        "claim_ledger",
+        "jd_alignment",
+        "gap_notes",
+        "change_log",
+        "self_check",
+    }
 )
 
 
@@ -40,9 +53,11 @@ class X2GateResult:
         return data
 
 
-def _ledger_fact_ids(claim_ledger: list[dict[str, Any]]) -> set[str]:
+def _ledger_fact_ids(claim_ledger: list[Any]) -> set[str]:
     ids: set[str] = set()
-    for claim in claim_ledger:
+    for claim in claim_ledger or []:
+        if not isinstance(claim, dict):
+            continue
         for fid in claim.get("source_fact_ids") or []:
             ids.add(str(fid).split("_metric_")[0])
     return ids
@@ -60,6 +75,7 @@ def run_headline_x2_gates(
     claim_ledger: list[dict[str, Any]],
     jd_text: str,
     target_company: str,
+    target_title: str = "",
     resume_support_blob: str,
     employer_names_lower: list[str],
     allowed_fact_ids: set[str],
@@ -69,6 +85,7 @@ def run_headline_x2_gates(
     model_name: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
+    companion_context: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -145,7 +162,7 @@ def run_headline_x2_gates(
             company_hit = name
             break
     add(
-        "x2_headline_no_company_names",
+        "x2_headline_no_unsupported_employer_names",
         company_hit is None,
         company_hit or "ok",
         "no employers",
@@ -161,7 +178,7 @@ def run_headline_x2_gates(
     )
     add("x2_no_em_dash", EM_DASH not in h, "em dash", "absent", "Em dash in headline.")
     add(
-        "x2_no_inline_source_tags",
+        "x2_headline_no_inline_source_tags",
         not INLINE_SOURCE_PATTERN.search(h),
         "tags",
         "absent",
@@ -201,6 +218,16 @@ def run_headline_x2_gates(
     json_ok, json_reason = check_json_parse_valid(parsed_output, raw_output)
     add("x2_json_parse_valid", json_ok, json_reason, None, json_reason)
 
+    schema_ok = isinstance(parsed_output, dict) and _HEADLINE_SCHEMA_KEYS <= set(parsed_output.keys())
+    missing = sorted(_HEADLINE_SCHEMA_KEYS - set(parsed_output.keys())) if isinstance(parsed_output, dict) else sorted(_HEADLINE_SCHEMA_KEYS)
+    add(
+        "x2_headline_schema_valid",
+        schema_ok,
+        "ok" if schema_ok else missing,
+        sorted(_HEADLINE_SCHEMA_KEYS),
+        None if schema_ok else f"Missing headline schema keys: {missing}",
+    )
+
     provider_ok = provider_requested == provider_attempted if provider_requested else True
     add(
         "x2_provider_requested_attempted",
@@ -225,8 +252,8 @@ def run_headline_x2_gates(
         blocked_invalid = []
         for judge in x1d_judges:
             if str(judge.get("evaluator_mode", "")).startswith("BLOCKED_"):
-                schema_ok, _ = check_judge_schema_valid(judge)
-                if not schema_ok:
+                judge_schema_ok, _ = check_judge_schema_valid(judge)
+                if not judge_schema_ok:
                     blocked_invalid.append(judge.get("provider_key"))
         add(
             "x2_x1d_schema_valid",
@@ -246,6 +273,44 @@ def run_headline_x2_gates(
         "<=140 chars",
         None if exec_ok else "Headline too long for ATS headline slot.",
     )
+
+    infl_ok, infl_reason = check_target_title_inflation(h, target_company, target_title or None)
+    add(
+        "x2_headline_no_title_inflation",
+        infl_ok,
+        infl_reason or "ok",
+        "no SVP at target framing",
+        infl_reason,
+    )
+
+    jd_al = parsed_output.get("jd_alignment") if isinstance(parsed_output, dict) else None
+    jd_pf = isinstance(jd_al, dict) and jd_al.get("jd_used_as_proof") is False
+    add(
+        "x2_headline_jd_context_not_proof",
+        jd_pf,
+        jd_al if isinstance(jd_al, dict) else "missing",
+        "jd_used_as_proof=false",
+        None if jd_pf else "jd_used_as_proof must be exactly false",
+    )
+
+    cc = (companion_context or "").strip()
+    if not cc:
+        add(
+            "x2_headline_companion_context_not_proof",
+            True,
+            "no companion lanes",
+            "n/a",
+            None,
+        )
+    else:
+        cmp_pf = isinstance(jd_al, dict) and jd_al.get("companion_used_as_proof") is not True
+        add(
+            "x2_headline_companion_context_not_proof",
+            cmp_pf,
+            jd_al if isinstance(jd_al, dict) else "missing",
+            "companion_used_as_proof not true",
+            None if cmp_pf else "companion_used_as_proof must not be true",
+        )
 
     return gates
 

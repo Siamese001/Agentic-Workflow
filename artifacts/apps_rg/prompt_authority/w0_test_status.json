@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "py_version": "3.12.10",
+  "w0_overall_status": "PARTIAL",
+  "scoped_w1_w3_status": "PASS",
+  "cursor_shell_task_evidence": {
+    "task_id": "361987",
+    "note": "W0 baseline batch; broader pytest surfaces red as recorded below — not scoped W0-W3 blockers."
+  },
+  "pytest_note": "Set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 before -p pytest_timeout to avoid duplicate pytest_timeout registration.",
+  "w13_triage_candidates": [
+    "Missing apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json (test_apps_rg_pa_tiered_prompt)",
+    "SectionPromptArtifact API drift vs test_apps_rg_pa_tiered_prompt expectations"
+  ],
+  "w0_w3_fix_policy": "Do not fix W13 items in W0-W3 unless they block section_prompt_adapter tests (they do not).",
+  "commands": [
+    {
+      "name": "git_status_short",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_git_status.txt",
+      "exit_code": 0
+    },
+    {
+      "name": "prompt_inventory_grep",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_prompt_inventory_grep.txt",
+      "exit_code": 0
+    },
+    {
+      "name": "pytest_headline_runtime_slice",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_pytest_headline.txt",
+      "exit_code": 0
+    },
+    {
+      "name": "pytest_exec_summary_runtime_slice",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_pytest_test_exec_summary_runtime_slice.txt",
+      "exit_code": 0
+    },
+    {
+      "name": "pytest_competencies_runtime_slice",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_pytest_test_competencies_runtime_slice.txt",
+      "exit_code": 0
+    },
+    {
+      "name": "pytest_apps_rg_pa_tiered_prompt",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_pytest_test_apps_rg_pa_tiered_prompt.txt",
+      "exit_code": 1,
+      "failed": 97,
+      "passed": 23,
+      "classification": "Broader suite / profile-contract drift — not a scoped W0-W3 blocker (candidate W13 triage)"
+    },
+    {
+      "name": "pytest_apps_contract_full",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_pytest_apps_contract_full_rerun.txt",
+      "exit_code": 1,
+      "summary_line": "= 1605 failed, 4890 passed, 19 skipped, 134 warnings, 81 errors in 857.52s (0:14:17) =",
+      "failed": 1605,
+      "passed": 4890,
+      "errors": 81,
+      "skipped": 19,
+      "classification": "Broader suite / profile-contract drift — not a scoped W0-W3 blocker; do not expand W0-W3 to fix full suite"
+    },
+    {
+      "name": "pytest_section_prompt_adapter_w3",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w3_pytest_section_prompt_adapter.txt",
+      "exit_code": 0
+    },
+    {
+      "name": "git_diff_agentic_core",
+      "transcript": "docs/reports/apps_rg_prompt_authority/command_transcripts/w0_agentic_core_diff.txt",
+      "exit_code": 0,
+      "paths_changed_under_agentic_core": []
+    }
+  ]
+}

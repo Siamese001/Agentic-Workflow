@@ -92,7 +92,7 @@ slot_bodies:
           LEAD_CLAUSE: Open with seniority/operating identity as first clause
           FORBIDDEN_OPENERS: Seasoned, Dynamic, Proven, Passionate, Dedicated, Results-driven,
             Innovative, Forward-thinking, Accomplished, Visionary, Detail-oriented, Strategic
-          PROOF_POINT_SOURCE: candidate_facts only — max 2 proof points with [source: X]
+          PROOF_POINT_SOURCE: candidate_facts only — max 2 proof points; claim_ledger / source_fact_ids hold proof (display prose stays clean — no inline source tags)
           LENGTH: max 4 lines / max 60 words
         </executive_summary>
       </section_instructions>

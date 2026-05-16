@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg/evals/section_quality_benchmark/executive_summary.schema.json",
+  "title": "executive_summary_benchmark_row",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "w14.scaffold.1" },
+    "section_id": { "type": "string", "const": "executive_summary" },
+    "run_id": { "type": "string" },
+    "prompt_hash": { "type": "string" },
+    "section_contract_ref": { "type": "string" },
+    "output_payload": { "type": "object", "description": "Parsed section output per rg_output_schema" },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "factual_support": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "jd_fit": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "executive_presence": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "concision": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "specificity": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "seniority_signal": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "unsupported_claim_risk": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
+        "resume_usefulness": { "type": ["number", "null"], "minimum": 1, "maximum": 5 }
+      }
+    },
+    "human_notes": { "type": "string" },
+    "labeler_id": { "type": "string" }
+  },
+  "required": ["schema_version", "section_id"]
+}

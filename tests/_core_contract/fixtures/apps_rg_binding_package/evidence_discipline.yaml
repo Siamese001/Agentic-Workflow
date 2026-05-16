@@ -1,0 +1,22 @@
+# Evidence discipline — repo-relative paths resolved from REPO_ROOT in tests.
+schema_version: "1.0"
+binding_id: apps_rg_spine_binding_v1
+
+canonical_proof_evidence:
+  role: candidate_truth_substrate
+  description: >
+    Canonical base resume JSON is proof-evidence for factual claims in native-core harness tests.
+  primary_paths:
+    - apps_rg/resume/base/amit_ayer_base_resume_v1.json
+  active_pointer_ref:
+    path: apps_rg/resume/base/active_base_resume_pointer.json
+    note: Fixture harness uses canonical primary path only.
+
+targeting_context_only:
+  policy: not_proof_not_candidate_truth
+  description: >
+    Job description and briefing artifacts are targeting context only for this proof harness.
+  examples_non_proof_paths:
+    - artifacts/apps_rg/runtime_inputs/brown_brown_svp_it_job_description.txt
+    - artifacts/apps_rg/runtime_inputs/brown_brown_svp_it_briefing.txt
+  enforcement_surface: native_core_proof_fixture

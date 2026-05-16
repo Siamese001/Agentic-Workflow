@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LANE_KEY = "competencies"
 CMD = [
@@ -50,7 +52,7 @@ def test_mock_eight_categories():
 def test_x2_gate_count():
     run_cmd("--provider", "mock", "--mock-judges")
     x2 = load_json("x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 18
+    assert x2["total_x2_gates"] == 26
     assert x2["x2_failed"] == 0
 
 

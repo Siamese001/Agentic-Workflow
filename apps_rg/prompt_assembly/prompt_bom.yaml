@@ -139,6 +139,22 @@ template_registry_refs:
   - bullet_diversity_repair_v1
   - unify_v1
   - docx_manifest_v1
+  # W9 — section PA + shared shell (see prompt_registry.yaml)
+  - "executive_summary.generate_scratch_v1"
+  - headline_tailor_v1
+  - competency_selector_v2
+  - competency_selector_v2_pa_slots
+  - unify_position_narrative_v1
+  - unify_bullet_tailor_v1
+  - ibm_position_narrative_v1
+  - ibm_bullet_tailor_v1
+  - w7_strategic_tailor_shell_slots
+  # TEST_ONLY / fixtures (registry SSOT; not L2 flow_route)
+  - strategic_tailor_v2
+  - resume_fact_check_v2
+  - unsupported_claim_omission_v2
+  - docx_manifest_v2
+  - final_unify_v2
 
 # =============================================================================
 # Hash Fields for Determinism
