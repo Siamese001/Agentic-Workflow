@@ -44,9 +44,17 @@ class MVRedisReader:
             self._attempt_connect()
 
     def _attempt_connect(self) -> None:
+        """Connect to Redis; fail-soft (optional accelerator)."""
         try:
             import redis
+        except ImportError as e:
+            logger.debug("MVRedisReader unavailable (import): %s", e)
+            self._available = False
+            self._client = None
+            return
 
+        redis_exc = getattr(redis, "RedisError", ConnectionError)
+        try:
             self._client = redis.from_url(
                 self._redis_url,
                 decode_responses=True,
@@ -56,13 +64,14 @@ class MVRedisReader:
             self._client.ping()
             self._available = True
         except (
+            redis_exc,
             OSError,
+            TimeoutError,
             ValueError,
             TypeError,
-            ImportError,
             AttributeError,
             RuntimeError,
-        ) as e:  # guardian: allow-broad-exception -- Redis client raises varied connection/auth/import errors; MVReader is optional accelerator
+        ) as e:  # guardian: allow-broad-exception -- Redis ping/transport must not collapse ADGService construction
             logger.debug("MVRedisReader unavailable: %s", e)
             self._available = False
             self._client = None

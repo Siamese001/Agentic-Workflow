@@ -368,6 +368,45 @@ class SQLiteBackend:
             logger.warning("mv_hotspot_centrality unavailable: %s", exc)
             return []
 
+    def hydrate_mv_hotspot_centrality_ordered(
+        self, ordered_node_ids: list[str]
+    ) -> list[dict[str, Any]] | None:
+        """Return ``mv_hotspot_centrality`` rows for Redis-ranked ``node_id`` strings.
+
+        Preserves Redis ZSET ordering. Returns ``None`` when the MV is missing or
+        any ``node_id`` is absent — callers must fall back to a canonical
+        SQLite ``ORDER BY`` query because SQLite remains authoritative on row
+        material.
+        """
+        if not ordered_node_ids:
+            return []
+        conn = self._require_conn()
+        try:
+            placeholders = ",".join("?" * len(ordered_node_ids))
+            cur = conn.execute(
+                f"SELECT * FROM mv_hotspot_centrality WHERE node_id IN ({placeholders})",
+                ordered_node_ids,
+            )
+            fetched = [dict(r) for r in cur.fetchall()]
+        except sqlite3.OperationalError as exc:
+            logger.warning("mv_hotspot_centrality hydrate unavailable: %s", exc)
+            return None
+
+        by_nid: dict[str, dict[str, Any]] = {}
+        for row in fetched:
+            key = str(row["node_id"])
+            if key in by_nid:
+                return None  # ambiguous duplicate MV rows — treat as mismatch
+            by_nid[key] = row
+
+        out: list[dict[str, Any]] = []
+        for nid in ordered_node_ids:
+            row = by_nid.get(str(nid))
+            if row is None:
+                return None
+            out.append(row)
+        return out
+
     def list_p_views(self) -> list[str]:
         """Return all P-view names present in the snapshot, sorted."""
         conn = self._require_conn()

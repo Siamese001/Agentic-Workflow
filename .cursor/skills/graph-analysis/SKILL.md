@@ -42,6 +42,12 @@ analysis primitives. Using only the raw `edges`/`violations` tables is
 `grep_search` is ONLY permitted for literal string searches (TODOs, comments, non-Python content).
 For ALL dependency analysis: `mcp1_adg_nodes_by_file` → `mcp1_adg_edge_fanin` / `mcp1_adg_edge_fanout`.
 
+### Canonical retrieval ladder (ADG)
+
+**One line:** Redis warm projection → **`adg_sqlite` MCP** read-only gateway → SQLite direct only with **`DEGRADED_FALLBACK: reason=<…>`** unless matching a **named CI parity script**.
+
+**Doctrine (verbatim):** SQLite is canonical truth. Redis is a hot projection/read-through optimization, never authority. MCP is the preferred read-only gateway for agents. Direct sqlite3 or SQLiteBackend access in plans requires either a named CI parity script or an explicit DEGRADED_FALLBACK reason. Warm Redis hits may serve MCP responses only when provenance is visible through backend_used and, where required, rows hydrate or validate against canonical SQLite. Cold, missing, error, empty, or divergent Redis falls back to SQLite. Agents must not silently default to raw sqlite3 for refactor or analysis work.
+
 ## Module→Symbol Auto-Expansion Protocol
 
 **AFTER `adg_nodes_by_file` returns nodes for a file, expand to symbol-level fan-in:**

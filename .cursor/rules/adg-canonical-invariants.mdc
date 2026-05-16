@@ -12,7 +12,11 @@ alwaysApply: false
 
 ## 1. Source-of-Truth Hierarchy
 
-SQLite = CANONICAL TRUTH (mutable only via `generate_full_adg.py`). Redis = hot read-only projection. MCP = read-only gateway. SQLite wins on divergence. Provenance required: `backend_used` (`redis_cache`/`sqlite`/`degraded_grep`).
+**Canonical retrieval ladder (one line):** Redis warm projection → MCP read-only gateway (**`adg_sqlite`**) → SQLite direct only with **`DEGRADED_FALLBACK: reason=<…>`** unless matching a **named CI parity script**.
+
+**Doctrine (verbatim):** SQLite is canonical truth. Redis is a hot projection/read-through optimization, never authority. MCP is the preferred read-only gateway for agents. Direct sqlite3 or SQLiteBackend access in plans requires either a named CI parity script or an explicit DEGRADED_FALLBACK reason. Warm Redis hits may serve MCP responses only when provenance is visible through backend_used and, where required, rows hydrate or validate against canonical SQLite. Cold, missing, error, empty, or divergent Redis falls back to SQLite. Agents must not silently default to raw sqlite3 for refactor or analysis work.
+
+SQLite remains mutable only via `generate_full_adg.py`. SQLite wins on divergence. Provenance required on MCP/tool responses: **`backend_used`** (e.g. `redis`, `sqlite`, `projection`, plus legacy/cache strings where applicable). Never treat Redis rows as authoritative without SQLite hydration or canonical fallback where the pipeline defines it.
 
 ## 2. ADG Wins Conflicts
 

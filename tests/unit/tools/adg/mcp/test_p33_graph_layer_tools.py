@@ -221,24 +221,119 @@ def test_query_p_view_rejects_non_string(backend: SQLiteBackend) -> None:
 
 def test_service_get_mv_hotspot_centrality(synthetic_snapshot: Path, monkeypatch) -> None:
     monkeypatch.setenv("ADG_DIR", str(synthetic_snapshot.parent))
-    monkeypatch.setenv("ADG_REDIS_URL", "")  # disable redis
+    monkeypatch.setenv("ADG_REDIS_URL", "redis://127.0.0.1:63830/13")
+    from unittest.mock import MagicMock
+
     from tools.adg.core.service import ADGService
 
     svc = ADGService()
     try:
+        # Force deterministic SQLite authoritative path regardless of localhost Redis probes.
+        fake_mv = MagicMock()
+        fake_mv.available = False
+        svc._mv_reader = fake_mv
+
         resp = svc.get_mv_hotspot_centrality(limit=2)
         assert resp.status == "ok"
+        assert set(resp.data.keys()) == {"hotspots", "count"}
+        assert resp.data["count"] == 2
+        assert resp.backend_used == "sqlite"
+        assert resp.data["hotspots"][0]["adg_name"] == "pkg.high_central"
+    finally:
+        svc.close()
+
+
+def test_service_get_mv_hotspot_centrality_w4_redis_warm_preserves_backend_used_redis(
+    synthetic_snapshot: Path, monkeypatch
+) -> None:
+    monkeypatch.setenv("ADG_DIR", str(synthetic_snapshot.parent))
+    monkeypatch.setenv("ADG_REDIS_URL", "redis://127.0.0.1:63830/13")
+    from unittest.mock import MagicMock
+
+    from tools.adg.core.service import ADGService
+
+    svc = ADGService()
+    try:
+        fake_mv = MagicMock()
+        fake_mv.available = True
+        # Non-SQLite DESC order vs degree_centrality → proves Redis ranking preserved when hydrate succeeds.
+        fake_mv.get_mv_top.return_value = [("3", 0.05), ("1", 0.95)]
+        svc._mv_reader = fake_mv
+
+        resp = svc.get_mv_hotspot_centrality(limit=10)
+        assert resp.status == "ok"
+        assert set(resp.data.keys()) == {"hotspots", "count"}
+        assert resp.backend_used == "redis"
+        assert resp.data["count"] == 2
+        assert resp.data["hotspots"][0]["node_id"] == 3
+        assert resp.data["hotspots"][1]["node_id"] == 1
+
+        fake_mv.get_mv_top.assert_called_once_with(
+            "mv_hotspot_centrality",
+            "01012099_0000",
+            k=10,
+        )
+    finally:
+        svc.close()
+
+
+def test_service_get_mv_hotspot_centrality_w4_missing_row_in_sqlite_fallback_sqlite(
+    synthetic_snapshot: Path, monkeypatch
+) -> None:
+    """Stale Redis ranks unknown node_ids → hydrate None → canonical SQLite."""
+    monkeypatch.setenv("ADG_DIR", str(synthetic_snapshot.parent))
+    monkeypatch.setenv("ADG_REDIS_URL", "redis://127.0.0.1:63830/13")
+    from unittest.mock import MagicMock
+
+    from tools.adg.core.service import ADGService
+
+    svc = ADGService()
+    try:
+        fake_mv = MagicMock()
+        fake_mv.available = True
+        fake_mv.get_mv_top.return_value = [("404", 1.0)]
+        svc._mv_reader = fake_mv
+
+        resp = svc.get_mv_hotspot_centrality(limit=2)
+        assert resp.status == "ok"
+        assert set(resp.data.keys()) == {"hotspots", "count"}
+        assert resp.backend_used == "sqlite"
         assert resp.data["count"] == 2
         assert resp.data["hotspots"][0]["adg_name"] == "pkg.high_central"
     finally:
         svc.close()
 
 
+def test_tool_handler_adg_mv_hotspot_centrality_passes_through_payload_and_backend() -> (
+    None
+):
+    """W4 MCP wrapper: unchanged ``data`` shape + ``backend_used`` echo."""
+    from unittest.mock import MagicMock, patch
+
+    from tools.adg.core.models import ADGResponse
+    from tools.adg.mcp import tool_handlers
+
+    mock_svc = MagicMock()
+    mock_svc.get_mv_hotspot_centrality.return_value = ADGResponse(
+        status="ok",
+        data={"hotspots": [{"node_id": 7, "adg_name": "x"}], "count": 1},
+        backend_used="redis",
+    )
+
+    with patch.object(tool_handlers.runtime, "_service", mock_svc):
+        out = tool_handlers.adg_mv_hotspot_centrality(limit=9)
+
+    mock_svc.get_mv_hotspot_centrality.assert_called_once_with(9)
+    assert out["status"] == "ok"
+    assert out["backend_used"] == "redis"
+    assert set(out["data"].keys()) == {"hotspots", "count"}
+
+
 def test_service_get_semantic_fanout_validates_relation_type(
     synthetic_snapshot: Path, monkeypatch
 ) -> None:
     monkeypatch.setenv("ADG_DIR", str(synthetic_snapshot.parent))
-    monkeypatch.setenv("ADG_REDIS_URL", "")
+    monkeypatch.setenv("ADG_REDIS_URL", "redis://127.0.0.1:63830/13")
     from tools.adg.core.service import ADGService
 
     svc = ADGService()
@@ -261,7 +356,7 @@ def test_service_query_p_view_error_lists_available(
     synthetic_snapshot: Path, monkeypatch
 ) -> None:
     monkeypatch.setenv("ADG_DIR", str(synthetic_snapshot.parent))
-    monkeypatch.setenv("ADG_REDIS_URL", "")
+    monkeypatch.setenv("ADG_REDIS_URL", "redis://127.0.0.1:63830/13")
     from tools.adg.core.service import ADGService
 
     svc = ADGService()

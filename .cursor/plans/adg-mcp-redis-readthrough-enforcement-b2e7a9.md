@@ -35,12 +35,13 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1  
-PLAN_STATUS: IN_PROGRESS  
-CURRENT_WAVE: W1  
-LAST_COMPLETED_WAVE: (none)  
+PLAN_STATUS: COMPLETE  
+CURRENT_WAVE: COMPLETE  
+LAST_COMPLETED_WAVE: W5  
 LAST_UPDATED: 2026-05-16  
 
-> W1 artifact: `artifacts/test_inventory/adg_mcp_redis_readthrough_inventory.md` (pending human review before marking W1 complete / DoD-4).
+> **CLOSED.** W1 inventory SSOT: `docs/reports/adg/adg_mcp_redis_readthrough_inventory.md`. W3 MV key contract + W4 mock verification: `docs/reports/adg/adg_mcp_redis_mv_key_contract.md`.  
+> **W5 doctrine:** Canonical ladder + verbatim doctrine in **`adg-sqlite`**, **`graph-analysis`**, **`mcp-integration` §2**, **`adg-canonical-invariants.mdc` §1**. No ADGService behavior change in W5; **`test_mv_mcp_handlers.py`** drift remains separate.
 
 ---
 
@@ -58,9 +59,9 @@ LAST_UPDATED: 2026-05-16
 |------|--------|-------------------|
 | **W1** | Inventory | Matrix: MCP tool → `ADGService` method → `_read_through_cache`? → `backend_used` today |
 | **W2** | Implement read-through | Wire **high-value** SQLite-only paths to same cache pattern as fan-in (at minimum: `get_mv_hotspot_centrality`; candidates: `find_node`, `query_p_view`, `get_blast_radius` if sqlite-only) |
-| **W3** | Redis / MV keys | Ensure `adg_redis_ingest.py` / `RedisCache` / `MvReader` expose data **needed** by W2 (add keys or document gap) |
-| **W4** | Verification | Unit/integration tests for `backend_used` / hit-miss; MCP handler tests if present; **no** graph regeneration requirement for merge |
-| **W5** | Doctrine sync | Update `.cursor/skills/adg-sqlite.md`, `graph-analysis`, `mcp-integration` §2: explicit ladder **Redis (warm) → MCP → SQLite direct + `DEGRADED_FALLBACK` reason** |
+| **W3** | Redis / MV keys | **DONE (W3 wave):** hotspot key contract + ingest gap — **`docs/reports/adg/adg_mcp_redis_mv_key_contract.md`** |
+| **W4** | Verification | **DONE:** mock-only tests for **`get_mv_hotspot_centrality` `backend_used`** (redis/sqlite/error/empty/divergence), **`response.data`** keys **`{hotspots,count}`**, MCP handler passthrough; **no graph regen**. Table: **`docs/reports/adg/adg_mcp_redis_mv_key_contract.md`** § W4 verification. |
+| **W5** | Doctrine sync | **DONE:** canonical ladder Redis warm → MCP → SQLite direct + **`DEGRADED_FALLBACK`** unless CI parity — **`adg-sqlite`**, **`graph-analysis`**, **`mcp-integration` §2**, **`adg-canonical-invariants.mdc`** |
 
 ---
 
@@ -81,14 +82,15 @@ LAST_UPDATED: 2026-05-16
 
 ## W4 acceptance
 
-- Tests prove at least one **redis hit** path (mock or embedded Redis) and **sqlite fallback**.
-- `python -m pytest` on touched tests **green** (narrow scope).
+- **DONE (2026-05-16):** Narrow pytest proves hotspot path **`backend_used`** for **redis vs sqlite** (warm rank + hydrated rows; cold `MVRedisReader`; `None`/`[]`; reader exception); **SQLite fallback** preserves canonical ordering on divergence (`hydrate_mv_hotspot_centrality_ordered` → `None`).
+- **`ADGResponse.data`** retains exactly **`hotspots`** + **`count`** (validated in read-through + **P33** tests); **`tools/adg/mcp/tool_handlers.adg_mv_hotspot_centrality`** echoes **`status`/`data`/`backend_used`** with same inner `data` shape.
+- **No** standalone `redis-server` required for proofs (MagicMock **`_mv_reader`** / stub services).
 
 ---
 
 ## W5 acceptance
 
-- Rules/skills cite **one** canonical ladder; agent guidance: raw `sqlite3` in plans requires **`DEGRADED_FALLBACK`** unless matching named CI script.
+- **DONE (2026-05-16):** Skills **`adg-sqlite`**, **`graph-analysis`**, **`mcp-integration` §2**, and rule **`adg-canonical-invariants.mdc` §1** cite the **same** canonical ladder and **verbatim doctrine** (Redis warm projection → MCP → SQLite direct only with **`DEGRADED_FALLBACK`** unless named CI parity script). Reports **`adg_mcp_redis_mv_key_contract.md`** § W5 + inventory header updated.
 
 ---
 
@@ -99,8 +101,10 @@ LAST_UPDATED: 2026-05-16
 | DoD-1 | Plan file on disk | DONE (this file) |
 | DoD-2 | Parent linked | DONE |
 | DoD-3 | Notion Plans row | DONE (`36227693-f55c-815d-8eda-dcd9e3aa0031`) |
-| DoD-4 | W1 inventory artifact | 🔲 (file created; awaits review per W1 gates) |
-| DoD-5 | Code + tests + docs | 🔲 |
+| DoD-4 | W1 inventory artifact | DONE — `docs/reports/adg/adg_mcp_redis_readthrough_inventory.md` (+ optional artifacts mirror `artifacts/test_inventory/...`) |
+| DoD-W3 | W3 `mv_hotspot_centrality` Redis key proof | DONE — `docs/reports/adg/adg_mcp_redis_mv_key_contract.md` + `tests/unit/tools/adg/test_mv_hotspot_redis_key_contract.py` |
+| DoD-W4 | W4 hotspot `backend_used` + payload verification (mock-only) | DONE — `docs/reports/adg/adg_mcp_redis_mv_key_contract.md` § W4 + `test_get_mv_hotspot_centrality_readthrough.py` + **`test_p33_graph_layer_tools.py`** (W4 nodes) |
+| DoD-5 | W5 doctrine sync (skills/rules ladder) | DONE — `.cursor/skills/adg-sqlite/SKILL.md`, `graph-analysis/SKILL.md`, `mcp-integration/SKILL.md` §2, `.cursor/rules/adg-canonical-invariants.mdc`; evidence **`docs/reports/adg/adg_mcp_redis_mv_key_contract.md`** § W5 |
 
 ---
 
@@ -108,9 +112,10 @@ LAST_UPDATED: 2026-05-16
 
 - `.cursor/rules/adg-canonical-invariants.mdc`
 - `.cursor/skills/adg-sqlite/SKILL.md`
+- `.cursor/skills/graph-analysis/SKILL.md`
 - `.cursor/skills/mcp-integration/SKILL.md` §2
 - `tools/adg/core/service.py`
 - `ops_scripts/ci/check_l5_hotspot_fanin_ratchet.py` (SQLite-canonical note)
 
-PLAN_CREATED: slug=adg-mcp-redis-readthrough-enforcement-b2e7a9 path=.cursor/plans/adg-mcp-redis-readthrough-enforcement-b2e7a9.md status=Not Started  
+PLAN_CREATED: slug=adg-mcp-redis-readthrough-enforcement-b2e7a9 path=.cursor/plans/adg-mcp-redis-readthrough-enforcement-b2e7a9.md status=COMPLETE  
 NOTION_PLAN_PAGE_ID: 36227693-f55c-815d-8eda-dcd9e3aa0031

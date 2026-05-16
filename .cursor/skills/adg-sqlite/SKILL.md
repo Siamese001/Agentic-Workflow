@@ -12,7 +12,11 @@ metadata:
 In-house MCP — no upstream vendor. The canonical static dependency graph for this repo.
 
 **Sibling skill:** `graph-analysis` (decision tree for picking ADG MCP vs grep vs SQLite-direct vs semantic)
-**Doctrine:** `.cursor/rules/adg-canonical-invariants.md`, `.cursor/rules/adg-graph-layer-enforcement.md`
+**Doctrine:** `.cursor/rules/adg-canonical-invariants.mdc`, `.cursor/rules/adg-graph-layer-enforcement.md`
+
+**Canonical retrieval ladder (one line):** Redis warm projection → **`adg_sqlite` MCP** (read-only gateway) → SQLite direct only with **`DEGRADED_FALLBACK: reason=<…>`** unless matching a **named CI parity script**.
+
+**Canonical doctrine (verbatim):** SQLite is canonical truth. Redis is a hot projection/read-through optimization, never authority. MCP is the preferred read-only gateway for agents. Direct sqlite3 or SQLiteBackend access in plans requires either a named CI parity script or an explicit DEGRADED_FALLBACK reason. Warm Redis hits may serve MCP responses only when provenance is visible through backend_used and, where required, rows hydrate or validate against canonical SQLite. Cold, missing, error, empty, or divergent Redis falls back to SQLite. Agents must not silently default to raw sqlite3 for refactor or analysis work.
 
 ## When To Use This MCP
 
@@ -52,7 +56,8 @@ In-house MCP — no upstream vendor. The canonical static dependency graph for t
 ## Hard Rules
 
 1. **`grep_search` for dependency analysis is FORBIDDEN.** Always use ADG. (Constitutional §22, §28.)
-3. **SQLite-direct fallback supersedes grep.** When MCP is blocked, query `artifacts/adg/adg_indexed_<ts>.sqlite` directly via the `sqlite3` module — NOT grep. (See `graph-analysis/SKILL.md`.)
+2. **Canonical ladder:** Prefer **`adg_sqlite` MCP** after Redis warm signals; never silently skip MCP for refactor/analysis work. Direct SQLite reads require **`DEGRADED_FALLBACK`** or a **named CI parity script** (see canonical doctrine above).
+3. **SQLite-direct fallback still forbids grep.** When MCP is unavailable, query `artifacts/adg/adg_indexed_<ts>.sqlite` via `sqlite3` — NOT grep — and stamp **`DEGRADED_FALLBACK: reason=<…>`** unless the step is an explicit CI-parity script. (See `graph-analysis/SKILL.md`.)
 4. **Provenance stamping required** for ADG-backed answers in plans/reports: `ADG Provenance: backend=<redis_cache|sqlite|degraded_grep>, snapshot=adg_indexed_<ts>.sqlite`.
 5. **Lock protocol before MCP restart:** `adg_close_connections` → restart → `adg_reopen_connections` → `adg_health` to verify.
 6. **T2/T3 work is BLOCKED** if `adg_health` is red and Redis hot cache is cold. Run `/mcp-failure-rca`.

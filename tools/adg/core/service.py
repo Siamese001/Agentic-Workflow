@@ -7,6 +7,7 @@ from typing import Any, Callable
 from tools.adg.cache.redis_cache import RedisCache
 from tools.adg.core.models import ADGResponse, HealthStatus
 from tools.adg.core.sqlite_backend import SQLiteBackend
+from tools.adg.mv_reader import MVRedisReader
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class ADGService:
     _redis: RedisCache | None
     _redis_url: str
     _adg_snapshot_id: str
+    _mv_reader: MVRedisReader
 
     def __init__(self, redis_url: str | None = None):
         # SQLite is mandatory — fail fast if unavailable
@@ -50,6 +52,7 @@ class ADGService:
         self._redis_url = resolved_url
         self._redis = None
         self._connect_redis()
+        self._mv_reader = MVRedisReader(redis_url=self._redis_url)
 
     def _connect_redis(self) -> None:
         """Best-effort Redis initialization that never blocks SQLite-only mode."""
@@ -302,6 +305,7 @@ class ADGService:
         if self._redis is not None:
             self._redis.close()
         self._connect_redis()
+        self._mv_reader = MVRedisReader(redis_url=self._redis_url)
         logger.info("ADGService reopened backend connections")
 
     def get_projection_status(self) -> ADGResponse:
@@ -419,12 +423,45 @@ class ADGService:
     # ---------------------------------------------------------------------
 
     def get_mv_hotspot_centrality(self, limit: int = 50) -> ADGResponse:
-        """Top-N nodes from `mv_hotspot_centrality` (most structurally central first)."""
-        rows = self._sqlite.get_mv_hotspot_centrality(limit)
+        """Top-N nodes from `mv_hotspot_centrality` (most structurally central first).
+
+        When Redis projects ``mv_hotspot_centrality`` (``MVRedisReader``), prefers
+        the ZSET ranking and **hydrates** full rows from SQLite so the MCP payload
+        shape matches the SQLite-only path. Any miss, divergence, empty ranked
+        list, or error falls back to a canonical SQLite query; SQLite stays
+        authoritative for row existence and column values.
+        """
+        backend = "sqlite"
+        hotspots: list[Any] | None = None
+
+        safe_limit = SQLiteBackend._normalize_limit(limit, default=50)
+
+        try:
+            if self._mv_reader.available:
+                ranked = self._mv_reader.get_mv_top(
+                    "mv_hotspot_centrality",
+                    self._adg_snapshot_id,
+                    k=safe_limit,
+                )
+                # Cannot distinguish Redis key-miss vs empty MV from []; always
+                # fall through to SQLite in that case.
+                if ranked is not None and len(ranked) > 0:
+                    ordered_ids = [str(member_id) for member_id, _score in ranked]
+                    hydrated = self._sqlite.hydrate_mv_hotspot_centrality_ordered(ordered_ids)
+                    if hydrated is not None and len(hydrated) == len(ordered_ids):
+                        hotspots = hydrated
+                        backend = "redis"
+        except Exception as exc:  # guardian: allow-broad-exception -- optional MV Redis accelerator must never fail-closed vs SQLite canonical path
+            logger.debug("get_mv_hotspot_centrality MVRedisReader path failed: %s", exc)
+
+        if hotspots is None:
+            hotspots = self._sqlite.get_mv_hotspot_centrality(limit)
+            backend = "sqlite"
+
         return ADGResponse(
             status="ok",
-            data={"hotspots": rows, "count": len(rows)},
-            backend_used="sqlite",
+            data={"hotspots": hotspots, "count": len(hotspots)},
+            backend_used=backend,
         )
 
     def get_semantic_fanout(
@@ -440,8 +477,6 @@ class ADGService:
         delegating to the existing edge-fanout read path. Pure imports
         edges should still go through ``adg_edge_fanout``.
         """
-        from tools.adg.core.sqlite_backend import SQLiteBackend  # noqa: PLC0415
-
         if relation_type not in SQLiteBackend.SEMANTIC_RELATION_TYPES:
             return ADGResponse(
                 status="error",
