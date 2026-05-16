@@ -13,12 +13,38 @@ import json
 import uuid
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
     run_integrated_r4_deterministic_pipeline,
 )
 
 _SUCCESS_X3 = frozenset({"EXIT_OK", "EXIT_PARTIAL"})
+_BRIEF_FETCH_MAX_BYTES = 2_000_000
+
+
+def _fetch_url_text(url: str, *, max_bytes: int = _BRIEF_FETCH_MAX_BYTES) -> str:
+    """Fetch brief content from http(s); bounded read for CLI safety."""
+    req = Request(url, headers={"User-Agent": "apps_rg-cli/1"})
+    with urlopen(req, timeout=45) as resp:  # noqa: S310 — intentional user-supplied brief URL
+        raw = resp.read(max_bytes + 1)
+    if len(raw) > max_bytes:
+        return ""
+    return raw.decode("utf-8", errors="replace")
+
+
+def _read_optional_brief(path_or_url: str) -> str:
+    """Load research brief from local path or http(s) URL."""
+    s = str(path_or_url).strip()
+    if not s:
+        return ""
+    if s.startswith(("http://", "https://")):
+        try:
+            return _fetch_url_text(s)
+        except (HTTPError, URLError, OSError, ValueError):
+            return ""
+    return _read_optional_file(s)
 
 
 def _read_optional_file(path_str: str) -> str:
@@ -31,6 +57,39 @@ def _read_optional_file(path_str: str) -> str:
         except OSError:
             return ""
     return str(path_str)
+
+
+def _normalize_jd_text_and_title(
+    jd_raw: str,
+    *,
+    target_role: str,
+) -> tuple[str, str]:
+    """Return (description text, job posting title for jd_payload).
+
+    If ``jd_raw`` is a JSON object with ``title`` / ``description``, those override
+    the generic file-as-text behaviour so interactive CLI can pass structured JD.
+    """
+    jd_text = jd_raw
+    jd_title = str(target_role).strip()
+
+    st = jd_raw.strip()
+    if st.startswith("{"):
+        try:
+            obj = json.loads(st)
+            if isinstance(obj, dict):
+                if obj.get("title") is not None and str(obj.get("title")).strip():
+                    jd_title = str(obj["title"]).strip()
+                if "description" in obj and obj.get("description") is not None:
+                    jd_text = str(obj["description"])
+                elif obj:
+                    jd_text = json.dumps(obj, sort_keys=True, separators=(",", ":"))
+        except json.JSONDecodeError:
+            pass
+
+    if not str(jd_text).strip():
+        jd_text = f"{target_role} — resume generation request (canonical CLI)."
+
+    return jd_text, jd_title or str(target_role).strip()
 
 
 def _sha16(text: str) -> str:
@@ -48,15 +107,17 @@ def build_raw_request_for_r4(
     generation_mode: str = "strategic_tailor",
 ) -> dict[str, Any]:
     """Shape a raw_request dict for ``run_integrated_r4_deterministic_pipeline``."""
-    jd_text = _read_optional_file(jd) if jd else ""
-    if not jd_text.strip():
-        jd_text = f"{target_role} — resume generation request (canonical CLI)."
+    jd_raw = _read_optional_file(jd) if jd else ""
+    jd_text, jd_title_effective = _normalize_jd_text_and_title(
+        jd_raw,
+        target_role=target_role,
+    )
     jd_payload = {
-        "title": target_role,
+        "title": jd_title_effective,
         "description": jd_text,
         "company": target_company,
     }
-    brief_text = _read_optional_file(manual_brief)
+    brief_text = _read_optional_brief(manual_brief)
     resume_text = _read_optional_file(resume_path)
 
     jd_blob = json.dumps(jd_payload, sort_keys=True, separators=(",", ":"))

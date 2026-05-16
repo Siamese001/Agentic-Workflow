@@ -8,13 +8,10 @@ Tests:
 - No get_llm_gateway/SovereignLLMGateway usage
 - No quarantine imports
 - No core runtime contract emission
-- Ingress payload types exist
-- Main function delegates to AppIngressRunner
+- Main delegates to ``dispatch_apps_rg_run`` (canonical CLI entry), not inline spine logic
 """
 
 import ast
-import inspect
-import sys
 from pathlib import Path
 
 import pytest
@@ -142,40 +139,73 @@ class TestW5IngressOnlyConstraints:
                     )
 
 
-class TestW5IngressPayloadTypes:
-    """Verify ingress payload dataclasses exist."""
+class TestW5CanonicalDispatchEntry:
+    """``__main__`` wires CLI primitives to ``dispatch_apps_rg_run`` (ingress-only)."""
 
-    def test_apps_rg_ingress_payload_imported_from_core(self) -> None:
-        """Verify AppsRgIngressPayload is imported from agentic_core, not locally defined."""
-        source = _get_main_module_source()
-        # Should import from core, not define locally
-        assert "from agentic_core.runtime.contracts.apps_rg_ingress_payload import" in source
-        assert "AppsRgIngressPayload" in source
-        # Should NOT define class locally
-        assert "class AppsRgIngressPayload" not in source
-        # Should use the imported class
-        assert "target_company" in source
-        assert "target_role" in source
+    def test_imports_dispatch_apps_rg_run_from_core_entry(self) -> None:
+        tree = _parse_main_ast()
+        has_import = False
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module == "agentic_core.runtime.entry.apps_rg_dispatch":
+                for alias in node.names:
+                    if alias.name == "dispatch_apps_rg_run":
+                        has_import = True
+                        break
+        assert has_import, "__main__ must import dispatch_apps_rg_run from agentic_core.runtime.entry.apps_rg_dispatch"
 
-    def test_request_envelope_imported_from_core(self) -> None:
-        """Verify RequestEnvelope is imported from agentic_core, not locally defined."""
+    def test_main_function_body_calls_dispatch_apps_rg_run(self) -> None:
+        tree = _parse_main_ast()
+        main_fn: ast.FunctionDef | None = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name == "main":
+                main_fn = node
+                break
+        assert main_fn is not None
+        found = False
+        for node in ast.walk(main_fn):
+            if isinstance(node, ast.Call):
+                fn = node.func
+                if isinstance(fn, ast.Name) and fn.id == "dispatch_apps_rg_run":
+                    found = True
+                    break
+                if isinstance(fn, ast.Attribute) and fn.attr == "dispatch_apps_rg_run":
+                    found = True
+                    break
+        assert found, "main() must call dispatch_apps_rg_run(...)"
+
+    def test_no_local_request_envelope_definition(self) -> None:
+        """Ingress envelope construction happens inside dispatch / U0 — not in __main__."""
         source = _get_main_module_source()
-        # Should import from core
-        assert "RequestEnvelope" in source
-        # Should NOT define class locally
         assert "class RequestEnvelope" not in source
-        # Should use the imported class
-        assert "app_id" in source or "payload" in source
 
 
 class TestW5IngressFlow:
     """Verify ingress flow delegates to agentic_core."""
 
-    def test_main_function_delegates_to_runner(self) -> None:
-        """Verify main() calls AppIngressRunner."""
-        source = _get_main_module_source()
-        assert "AppIngressRunner" in source, "AppIngressRunner import/delegation missing"
-        assert "runner.run" in source or "runner.run(" in source, "runner.run() call missing"
+    def test_main_invokes_dispatch_apps_rg_run_at_runtime(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Behavior: main() calls the canonical dispatch seam with CLI-derived primitives."""
+        calls: list[dict[str, object]] = []
+
+        def _fake_dispatch(**kwargs: object) -> dict[str, object]:
+            calls.append(kwargs)
+            return {
+                "exit_status": "success",
+                "execution_status": "completed",
+                "outcome_authorized": True,
+                "artifact_dir": "",
+            }
+
+        monkeypatch.setattr(
+            "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run",
+            _fake_dispatch,
+        )
+        import apps_rg.__main__ as rg_main
+
+        code = rg_main.main(["--target-company", "AcmeCo", "--target-role", "Engineer"])
+        assert code == 0
+        assert len(calls) == 1
+        assert calls[0].get("target_company") == "AcmeCo"
+        assert calls[0].get("target_role") == "Engineer"
 
     def test_no_direct_model_calls(self) -> None:
         """Verify no direct LLM model calls in main."""
@@ -208,10 +238,19 @@ class TestW5IngressFlow:
 
 
 class TestW5FailClosedBehavior:
-    """Verify fail-closed behavior when runner unavailable."""
+    """Verify fail-closed CLI exit when the dispatch seam fails."""
 
-    def test_runner_import_guard_exists(self) -> None:
-        """Verify AppIngressRunner import has fail-closed guard."""
-        source = _get_main_module_source()
-        assert "_RUNNER_AVAILABLE" in source or "ImportError" in source
-        assert "RuntimeError" in source, "Fail-closed RuntimeError missing"
+    def test_dispatch_failure_returns_exit_1(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """When dispatch raises, main catches and returns 1 (no successful CLI outcome)."""
+
+        def _boom(**_kwargs: object) -> dict[str, object]:
+            raise RuntimeError("dispatch simulated failure")
+
+        monkeypatch.setattr(
+            "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run",
+            _boom,
+        )
+        import apps_rg.__main__ as rg_main
+
+        code = rg_main.main(["--target-company", "AcmeCo", "--target-role", "Engineer"])
+        assert code == 1
