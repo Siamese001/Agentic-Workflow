@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Literal, Mapping
 
 from apps_rg.runtime.runtime_proof_layout import (
+    is_accepted_real_llm_qwen_bundle,
     load_latest_pointer,
     load_latest_successful_real_pointer,
     resolve_accepted_real_rollup_run_dir,
@@ -327,6 +328,154 @@ def collect_lane(
         "proceed_to_runtime": bool(x3.get("proceed_to_runtime", False)),
         "l6_offline_only": bool(l6.get("offline_only", False)),
         "artifact_refs": artifact_refs,
+    }
+
+
+def _lane_pointer_fields_modular(base: Path, l2: Mapping[str, Any]) -> dict[str, Any]:
+    """Pointer-shaped fields when rollup reads explicit modular ``sections/<lane>/`` run dirs."""
+    rid = l2.get("run_id")
+    return {
+        "latest_real_run_id": None,
+        "latest_real_generated_at_utc": None,
+        "latest_real_artifact_path": None,
+        "latest_real_attempt_run_id": None,
+        "latest_real_attempt_runtime_generation_status": None,
+        "latest_successful_real_run_id": None,
+        "latest_successful_real_generated_at_utc": None,
+        "latest_successful_real_artifact_path": None,
+        "latest_successful_real_runtime_generation_status": None,
+        "latest_mock_run_id": rid,
+        "latest_mock_generated_at_utc": _mtime_iso_utc(base / "l2_output.json"),
+        "latest_mock_artifact_path": _rel(base),
+    }
+
+
+def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str, Any]:
+    """Build one rollup lane row from an explicit run directory (R4 modular Phase 1+)."""
+    missing = [n for n in REQUIRED_RELATIVE if not (base / n).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Lane {lane!r} missing artifacts under {_rel(base)}: {missing}")
+
+    lp = LanePaths(lane=lane, base=base)
+    l2 = _load_json(lp.p("l2_output.json"))
+    x2_raw = _load_json(lp.p("x2_gate_outputs.json"))
+    x1d_raw = _load_json(lp.p("x1d_llm_judge_outputs.json"))
+    x3 = _load_json(lp.p("x3_disposition.json"))
+    l6 = _load_json(lp.p("l6_shadow_eval_package.json"))
+
+    x2n = _normalize_x2(x2_raw)
+    judges = _normalize_x1d_judges(x1d_raw)
+    blocked, soft = _normalize_blocked_soft(x3)
+    triple = _judge_triple(judges)
+
+    artifact_refs = {n: _rel(lp.p(n)) for n in REQUIRED_RELATIVE}
+    pointers = _lane_pointer_fields_modular(base, l2)
+
+    section_id = str(l2.get("section_id") or lane)
+    runtime_gen = str(
+        l2.get("runtime_generation_status") or x3.get("runtime_generation_status") or "UNKNOWN"
+    )
+
+    lane_section_root = base.parent.parent
+    accepted_real_evidence_resolution = "modular_r4_explicit_run_dir"
+    ptr_path = lane_section_root / "latest_successful_real_run.json"
+    if ptr_path.is_file():
+        try:
+            raw_ptr = _load_json(ptr_path)
+            rel = raw_ptr.get("run_dir") if isinstance(raw_ptr, dict) else None
+            if isinstance(rel, str):
+                ptr_base = (repo / rel).resolve()
+                if ptr_base.resolve() == base.resolve() and is_accepted_real_llm_qwen_bundle(base):
+                    accepted_real_evidence_resolution = "latest_successful_real_run.json"
+        except (json.JSONDecodeError, OSError, ValueError, TypeError):
+            pass
+
+    return {
+        "lane_key": lane,
+        "section_id": section_id,
+        "rollup_source_run_dir": _rel(base),
+        "accepted_real_evidence_resolution": accepted_real_evidence_resolution,
+        **pointers,
+        "runtime_generation_status": runtime_gen,
+        "freshness": _collect_freshness(lane, base, l2),
+        "output_summary": _output_summary(l2, lane),
+        "x2_total_gates": x2n["total_x2_gates"],
+        "x2_passed": x2n["x2_passed"],
+        "x2_failed": x2n["x2_failed"],
+        "x2_failed_gate_ids": list(x2n["failed_gate_ids"]),
+        "x2_artifact_failed_gates": list(x2n["artifact_failed_gates"]),
+        "gemini_provider_status": triple["gemini_pro"],
+        "openai_provider_status": triple["openai_chatgpt"],
+        "anthropic_provider_status": triple["anthropic_claude"],
+        "soft_failed_judges": soft,
+        "blocked_judges": blocked,
+        "x3_code": str(x3.get("x3_code", "")),
+        "authorization_scope": str(x3.get("authorization_scope", "")),
+        "proceed_to_runtime": bool(x3.get("proceed_to_runtime", False)),
+        "l6_offline_only": bool(l6.get("offline_only", False)),
+        "artifact_refs": artifact_refs,
+    }
+
+
+def build_modular_lane_rollup(repo: Path, lane_run_dirs: Mapping[str, Path]) -> dict[str, Any]:
+    """Deterministic rollup from explicit per-lane run directories under ``modular_r4/sections``."""
+    lanes: dict[str, Any] = {}
+    errors: list[str] = []
+    for lane in GENERATED_LANES:
+        base = lane_run_dirs.get(lane)
+        if base is None or not base.is_dir():
+            errors.append(f"Lane {lane!r}: missing run directory")
+            continue
+        try:
+            lanes[lane] = collect_lane_from_run_dir(lane, base, repo=repo)
+        except FileNotFoundError as e:
+            errors.append(str(e))
+    if errors:
+        raise FileNotFoundError("\n".join(errors))
+
+    lanes_x3_allow = [k for k, v in lanes.items() if v.get("x3_code") == "X3_ALLOW"]
+    lanes_x3_review = [
+        k
+        for k, v in lanes.items()
+        if isinstance(v.get("x3_code"), str) and str(v["x3_code"]).startswith("X3_REVIEW")
+    ]
+    lanes_x2_failures = [k for k, v in lanes.items() if int(v.get("x2_failed") or 0) > 0]
+    l6_offline_all = all(bool(v.get("l6_offline_only")) for v in lanes.values())
+    lanes_real_llm = [k for k, v in lanes.items() if v.get("runtime_generation_status") == "REAL_LLM"]
+    lanes_mocked = [k for k, v in lanes.items() if v.get("runtime_generation_status") == "MOCKED"]
+    lanes_blocked_gen = [
+        k
+        for k, v in lanes.items()
+        if str(v.get("runtime_generation_status", "")).upper().find("BLOCKED") >= 0
+    ]
+    current_mode = "modular_r4_sections"
+
+    return {
+        "rollup_id": f"modular_generated_lane_rollup_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "repo_root": _rel(repo.resolve()),
+        "current_rollup_artifact_mode": current_mode,
+        "rollup_artifact_mode_arg": "modular_explicit",
+        "artifact_isolation": {
+            "layout": "modular_r4_sections",
+            "run_dir_pattern": "<artifact_dir>/modular_r4/sections/<lane>/{real|mock}/<run_id>/",
+            "pointer_files": ["latest_real_run.json", "latest_successful_real_run.json", "latest_mock_run.json"],
+            "scoped_under_repo": True,
+        },
+        "evidence_pack_commands": {lane: canonical_lane_command(lane) for lane in GENERATED_LANES},
+        "lanes": lanes,
+        "summary": {
+            "lane_keys": list(GENERATED_LANES),
+            "lanes_with_x3_allow": lanes_x3_allow,
+            "lanes_with_x3_review_prefix": lanes_x3_review,
+            "lanes_with_x2_failures": lanes_x2_failures,
+            "all_l6_offline_only": l6_offline_all,
+            "lanes_runtime_generation_REAL_LLM": lanes_real_llm,
+            "lanes_runtime_generation_MOCKED": lanes_mocked,
+            "lanes_runtime_generation_BLOCKED_or_unknown": lanes_blocked_gen,
+            "lanes_accepted_evidence_via_migration_scan": [],
+            "lanes_latest_real_attempt_blocked_but_accepted_rollup_REAL_LLM": [],
+        },
     }
 
 

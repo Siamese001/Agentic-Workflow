@@ -18,15 +18,9 @@ PLANNED_DOCX_REL = f"{RUNTIME_PROOFS}/docx/amit_ayer_resume_v1.docx"
 POINTER_PATH = Path("apps_rg/resume/base/active_base_resume_pointer.json")
 CANONICAL_BASE_RESUME_REPO_REL = Path("apps_rg/resume/base/amit_ayer_base_resume_v1.json")
 
-LANE_MODULES: tuple[str, ...] = (
-    "apps_rg.runtime.dispatch.headline_dispatch",
-    "apps_rg.runtime.dispatch.executive_summary_dispatch",
-    "apps_rg.runtime.dispatch.unify_bullets_dispatch",
-    "apps_rg.runtime.dispatch.unify_narrative_dispatch",
-    "apps_rg.runtime.dispatch.ibm_bullets_dispatch",
-    "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
-    "apps_rg.runtime.dispatch.competencies_dispatch",
-)
+from apps_rg.l2_recipe.modular_resume_generation import LANE_DISPATCH_MODULES
+
+LANE_MODULES: tuple[str, ...] = LANE_DISPATCH_MODULES
 
 
 def find_repo_root(start: Path | None = None) -> Path:

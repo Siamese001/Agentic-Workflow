@@ -394,6 +394,72 @@ class TestProviderModeRestrictions:
             gateway.invoke(request)
 
 
+class TestProviderGatewayLocalVllmThreadsProfile:
+    """LOCAL_VLLM must use CPA/profile model_id and base URL (not env-only defaults)."""
+
+    def test_qwen_gateway_gets_model_and_url_from_profile(self):
+        from unittest.mock import patch
+
+        from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning.qwen_inference_gateway import (
+            QwenInferenceResponse,
+        )
+
+        captured: dict[str, object] = {}
+
+        class _FakeGateway:
+            def __init__(self, model_id=None, base_url=None, **_kwargs):
+                captured["model_id"] = model_id
+                captured["base_url"] = base_url
+
+            async def infer(self, request):
+                captured["max_tokens"] = request.max_tokens
+                captured["temperature"] = request.temperature
+                captured["top_p"] = request.top_p
+                captured["response_format"] = request.response_format
+                return QwenInferenceResponse(
+                    success=True,
+                    response="{}",
+                    confidence=1.0,
+                    model_used="m",
+                    latency_ms=1.0,
+                )
+
+            async def aclose(self):
+                return None
+
+        gateway = ProviderGateway(provider_mode=ProviderMode.LOCAL_ONLY)
+        profile = ProviderProfile(
+            profile_id="test_local_vllm_thread",
+            provider_kind=ProviderKind.LOCAL_VLLM,
+            model_id="profile-model-id-xyz",
+            endpoint_url="http://127.0.0.1:9999/v1",
+            capabilities=("text_generation",),
+            requires_network=True,
+        )
+        request = ProviderRequest(
+            prompt_text="hello",
+            provider_profile=profile,
+            max_tokens=2048,
+            temperature=0.0,
+            top_p=0.8,
+            run_id="run-vllm",
+            node_id="n1",
+        )
+
+        with patch(
+            "agentic_core.L3_orchestration.inference.qwen_vllm.reasoning.qwen_inference_gateway.QwenInferenceGateway",
+            _FakeGateway,
+        ):
+            response = gateway.invoke(request)
+
+        assert response.success is True
+        assert captured["model_id"] == "profile-model-id-xyz"
+        assert captured["base_url"] == "http://127.0.0.1:9999/v1"
+        assert captured["max_tokens"] == 2048
+        assert captured["temperature"] == 0.0
+        assert captured["top_p"] == 0.8
+
+
 class TestNoProviderHardcoding:
     """test_no_provider_hardcoding_in_core"""
     
@@ -406,10 +472,11 @@ class TestNoProviderHardcoding:
         
         # Should not have hardcoded provider API calls or endpoints
         # Provider kinds are ok (stub, local_vllm, external_api are generic)
+        # External vendor default hosts — forbid *new* ad-hoc endpoints; Gemini OpenAI-compat
+        # base is intentionally centralized in ``_resolve_base_url`` (RB13 external routing).
         hardcoded_api_calls = [
             "api.openai.com",
-            "api.anthropic.com", 
-            "generativelanguage.googleapis.com",
+            "api.anthropic.com",
         ]
         for name in hardcoded_api_calls:
             assert name.lower() not in source.lower(), f"Hardcoded API endpoint found: {name}"

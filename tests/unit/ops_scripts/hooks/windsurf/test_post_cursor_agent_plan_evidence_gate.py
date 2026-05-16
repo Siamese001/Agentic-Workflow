@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOK = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_plan_evidence_gate.py"
+HOOK = REPO_ROOT / ".cursor" / "scripts" / "post_cursor_agent_plan_evidence_gate.py"
 
 
 def _run_hook(stdin_payload: str, env_overrides: dict[str, str] | None = None) -> subprocess.CompletedProcess:

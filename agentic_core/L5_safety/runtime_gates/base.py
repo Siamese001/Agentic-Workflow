@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Callable, ClassVar, Protocol, runtime_checkable
 
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     Disposition,
     GateContext,
     GateDecision,

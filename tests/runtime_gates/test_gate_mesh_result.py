@@ -10,7 +10,7 @@ from agentic_core.L5_safety.runtime_gates.mesh_result import (
     GateMeshResult,
     build_mesh_result,
 )
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     Disposition,
     GateDecision,
     Result,

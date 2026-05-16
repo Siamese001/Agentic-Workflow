@@ -374,7 +374,23 @@ class RuntimeProfileResolver:
         for key in config_keys:
             if key in raw_data:
                 payload[key] = raw_data[key]
-        
+
+        # pipeline_defaults: pass through app-owned spine/dispatch sections without
+        # interpreting them in core (resolver remains app-agnostic).
+        if profile_type == "pipeline_defaults":
+            pipeline_pass_through = (
+                "identity_defaults",
+                "auth_defaults",
+                "artifact_prefix",
+                "replay_key_fields",
+                "policy_refs",
+                "quality_defaults",
+                "exit_eval_wire",
+            )
+            for key in pipeline_pass_through:
+                if key in raw_data:
+                    payload[key] = raw_data[key]
+
         return payload
     
     def list_available_profiles(self, app_id: str) -> list[str]:

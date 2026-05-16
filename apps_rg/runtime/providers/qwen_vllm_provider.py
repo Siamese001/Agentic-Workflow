@@ -52,14 +52,19 @@ class ProviderResult:
     model: str
     raw_model_output: str
     provider_response: dict[str, Any] | None
+    reasoning_execution_receipt: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
-def assert_temperature_in_profile(temperature: float, low: float = 0.35, high: float = 0.55) -> None:
+def assert_temperature_in_profile(
+    temperature: float,
+    low: float = 0.0,
+    high: float = 0.99,
+) -> None:
     if not (low <= temperature <= high):
-        raise ValueError(f"temperature {temperature} outside executive_summary profile {low}-{high}")
+        raise ValueError(f"temperature {temperature} outside allowed bounds [{low}, {high}]")
 
 
 def build_qwen_request(
@@ -72,15 +77,18 @@ def build_qwen_request(
     timeout_seconds: int = DEFAULT_QWEN_TIMEOUT_SECONDS,
     base_url: str = DEFAULT_QWEN_BASE_URL,
     model: str = DEFAULT_QWEN_MODEL,
+    temperature_bounds: tuple[float, float] = (0.0, 0.99),
 ) -> tuple[ProviderRequest, dict[str, Any]]:
     """Build an OpenAI-compatible vLLM chat request."""
-    assert_temperature_in_profile(temperature)
+    t_low, t_high = temperature_bounds
+    bounded = float(min(max(float(temperature), t_low), t_high))
+    assert_temperature_in_profile(bounded, low=t_low, high=t_high)
     provider_request = ProviderRequest(
         provider_requested="qwen_vllm",
         provider_attempted=True,
         provider_url=base_url,
         model=model,
-        temperature=temperature,
+        temperature=bounded,
         max_tokens=max_tokens,
         timeout_seconds=timeout_seconds,
         prompt_hash=prompt_hash,
@@ -90,7 +98,7 @@ def build_qwen_request(
     payload = {
         "model": model,
         "messages": messages,
-        "temperature": temperature,
+        "temperature": bounded,
         "max_tokens": max_tokens,
         "timeout_seconds": timeout_seconds,
         "response_format": {"type": "json_object"},

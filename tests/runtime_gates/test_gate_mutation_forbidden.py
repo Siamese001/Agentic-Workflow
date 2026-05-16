@@ -73,7 +73,7 @@ def test_envelope_identity_preserved(base_ctx):
 
 def test_decision_carries_evidence_refs_when_present():
     """When the gate sets evidence_refs / replay_refs, they survive verdict serialization."""
-    from agentic_core.L5_safety.runtime_gates.types import (
+    from agentic_core.L5_safety.runtime_gates.contracts import (
         Disposition,
         GateDecision,
     )

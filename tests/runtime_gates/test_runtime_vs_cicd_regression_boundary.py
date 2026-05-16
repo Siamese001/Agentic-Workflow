@@ -18,7 +18,7 @@ Doctrine rule (00C.8):
 
 from __future__ import annotations
 
-from agentic_core.L5_safety.runtime_gates.types import Disposition
+from agentic_core.L5_safety.runtime_gates.contracts import Disposition
 
 # Allowed live-run dispositions for G25 per 00C.6.
 G25_ALLOWED = {

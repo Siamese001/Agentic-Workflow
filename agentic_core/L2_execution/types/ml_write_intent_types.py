@@ -281,9 +281,10 @@ class MLWriteIntentExecutor:
         _seg_hash = _hashlib.sha256(f"{_trace_id}:MLWriteIntentExecutor.execute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
-        # Wave 3: Guardrail pre-check
+        # Wave 3: Guardrail pre-check (target derived from payload or kind — no attr drift)
         guardrail = get_guardrail_gate()
-        guardrail.check(operation="execute_ml_write", target=intent.target_path)
+        _target = str(intent.payload.get("target_path") or intent.kind)
+        guardrail.check(operation="execute_ml_write", target=_target)
         if not _SANDBOX_ACTIVE:
             raise MLWriteEnvelopeViolation(
                 f"execute() called outside L2.2 commit sandbox for kind={intent.kind!r}",

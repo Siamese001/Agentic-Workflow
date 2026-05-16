@@ -40,17 +40,23 @@ _NOTION_BASE = "https://api.notion.com/v1"
 _NOTION_API_VERSION = "2025-09-03"
 _NOTION_TIMEOUT_S = 30
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
 # Validation constants
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-[a-f0-9]{6}$")
 VALID_CREATION_STATUSES = frozenset({"Not Started", "Completed"})
 FORBIDDEN_AT_CREATION = {"In Progress", "Waiting", "Deferred", "Retired", "Archived"}
 
-# Audit log paths
-_AUDIT_LOG_PATH = Path("artifacts/cursor/plan_creation_corrections.jsonl")
-_ALERT_LOG_PATH = Path("artifacts/cursor/plan_creation_alerts.jsonl")
+# Audit log paths (repo-root anchored — hook cwd is usually repo root but this stays correct)
+_AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_corrections.jsonl"
+_ALERT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_alerts.jsonl"
 
 # Plans DB identifiers
 PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+PLANS_DATABASE_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
+PLANS_PARENT_IDS = frozenset({PLANS_DATA_SOURCE_ID, PLANS_DATABASE_ID})
+
+_NOTION_MCP_SERVER_KEY = "notion"
 
 
 @dataclass
@@ -101,7 +107,7 @@ def _extract_plans_creation_payloads(response_text: str) -> list[dict[str, Any]]
         re.DOTALL,
     )
     
-    plans_ids = [PLANS_DATA_SOURCE_ID, "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"]
+    plans_ids = [PLANS_DATA_SOURCE_ID, PLANS_DATABASE_ID]
     
     for match in invoke_pattern.finditer(response_text):
         block_content = match.group(1)
@@ -390,6 +396,120 @@ def _process_creation(creation: dict[str, Any]) -> CorrectionEvent | AlertEvent 
 
 
 # =============================================================================
+# CURSOR beforeMCPExecution STAGE 2 (AFTER pre_mcp_gate)
+# =============================================================================
+
+
+def _ensure_hook_import_path() -> None:
+    hooks = _REPO_ROOT / ".cursor" / "hooks"
+    hs = str(hooks)
+    if hs not in sys.path:
+        sys.path.insert(0, hs)
+
+
+def _mcp_tool_targets_plans_create(tool_short: str, tool_input: dict[str, Any]) -> bool:
+    if tool_short != "API-post-page":
+        return False
+    parent = tool_input.get("parent")
+    if not isinstance(parent, dict):
+        return False
+    db_id = parent.get("database_id")
+    if db_id and str(db_id) in PLANS_PARENT_IDS:
+        return True
+    ds = parent.get("data_source_id")
+    if ds and str(ds) in PLANS_PARENT_IDS:
+        return True
+    return False
+
+
+def run_mcp_plan_auditor_stage(payload: dict[str, Any]) -> int:
+    """
+    Cursor ``beforeMCPExecution`` stage 2 — runs after ``pre_mcp_gate`` allows.
+
+    Exit 0 = allow, 2 = BLOCK (stderr carries ``[PLAN_AUDITOR_BLOCK]`` / ``[PLAN_CREATION_BLOCK]``).
+    """
+    if os.environ.get("NOTION_PLAN_CREATION_GATE_BYPASS") == "1":
+        print("[unified-auditor] BYPASS: NOTION_PLAN_CREATION_GATE_BYPASS=1", file=sys.stderr)
+        return 0
+
+    _ensure_hook_import_path()
+    from lib.cursor_hook_common import (  # noqa: PLC0415
+        normalize_mcp_payload,
+        parse_mcp_tool_input,
+        resolve_mcp_server_name,
+        strip_mcp_tool_prefix,
+    )
+
+    normalized = normalize_mcp_payload(payload)
+    server = resolve_mcp_server_name(payload, normalized).strip().lower()
+    tool_raw = str(normalized.get("tool_info", {}).get("mcp_tool_name", ""))
+    tool_short = strip_mcp_tool_prefix(tool_raw)
+
+    if server != _NOTION_MCP_SERVER_KEY:
+        print(
+            f"[PLAN_AUDITOR] NOT_APPLICABLE reason=non_notion_mcp server={server or '<unknown>'}",
+            file=sys.stderr,
+        )
+        return 0
+
+    if tool_short == "API-patch-page":
+        print(
+            "[PLAN_AUDITOR] NOT_APPLICABLE reason=notion_plan_patch_deferred_w1 tool=API-patch-page",
+            file=sys.stderr,
+        )
+        return 0
+
+    if tool_short != "API-post-page":
+        print(
+            f"[PLAN_AUDITOR] NOT_APPLICABLE reason=not_plans_create_tool tool={tool_raw or '<empty>'}",
+            file=sys.stderr,
+        )
+        return 0
+
+    args = parse_mcp_tool_input(payload)
+    if args is None:
+        print(
+            "[PLAN_AUDITOR_BLOCK] code=MCP_TOOL_INPUT_JSON_INVALID reason=cannot_parse_tool_input",
+            file=sys.stderr,
+        )
+        return 2
+
+    if not _mcp_tool_targets_plans_create(tool_short, args):
+        parent = args.get("parent")
+        parent_kind = ""
+        pid = ""
+        if isinstance(parent, dict):
+            if parent.get("database_id"):
+                parent_kind = "database_id"
+                pid = str(parent.get("database_id"))
+            elif parent.get("data_source_id"):
+                parent_kind = "data_source_id"
+                pid = str(parent.get("data_source_id"))
+        print(
+            f"[PLAN_AUDITOR] NOT_APPLICABLE reason=not_plans_database parent={parent_kind}:{pid or '<missing>'}",
+            file=sys.stderr,
+        )
+        return 0
+
+    notion_body: dict[str, Any] = {"properties": args.get("properties", {})}
+    if not notion_body["properties"]:
+        print(
+            "[PLAN_AUDITOR_BLOCK] code=PLAN_CREATE_MISSING_PROPERTIES reason=API-post-page_missing_properties",
+            file=sys.stderr,
+        )
+        return 2
+
+    ok, errors = _check_payload(notion_body)
+    if not ok:
+        for error in errors:
+            print(f"[PLAN_CREATION_BLOCK] {error}", file=sys.stderr)
+        return 2
+
+    print("[PLAN_AUDITOR] APPLICABLE outcome=ALLOW reason=plans_create_payload_ok", file=sys.stderr)
+    return 0
+
+
+# =============================================================================
 # UNIFIED ENTRY POINTS
 # =============================================================================
 
@@ -464,10 +584,35 @@ def main() -> int:
     Main entry point.
     
     Determines mode from argv[1]:
+    - 'mcp_before': Cursor beforeMCPExecution JSON on stdin (after pre_mcp_gate)
     - 'pre': Run pre-flight validation (blocking)
     - 'post': Run post-flight audit (advisory)
     - Default: Run both (pre then post logic detection)
     """
+    if len(sys.argv) > 1 and sys.argv[1] == "mcp_before":
+        raw = sys.stdin.read()
+        if not raw.strip():
+            print(
+                "[PLAN_AUDITOR_BLOCK] code=MCP_HOOK_EMPTY_STDIN reason=no_payload_for_mcp_before",
+                file=sys.stderr,
+            )
+            return 2
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError:
+            print(
+                "[PLAN_AUDITOR_BLOCK] code=MCP_HOOK_JSON reason=mcp_before_stdin_not_json",
+                file=sys.stderr,
+            )
+            return 2
+        if not isinstance(parsed, dict):
+            print(
+                "[PLAN_AUDITOR_BLOCK] code=MCP_HOOK_PAYLOAD reason=mcp_before_stdin_not_object",
+                file=sys.stderr,
+            )
+            return 2
+        return run_mcp_plan_auditor_stage(parsed)
+
     if len(sys.argv) > 1 and sys.argv[1] == "pre":
         return run_pre_flight()
     elif len(sys.argv) > 1 and sys.argv[1] == "post":

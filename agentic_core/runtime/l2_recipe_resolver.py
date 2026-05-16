@@ -118,10 +118,16 @@ def resolve_l2_recipe(
                     pass
         flow_route = raw_request.get("flow_route", "tailor_existing")
 
+        _contract_mode = raw_request.get("resume_artifact_contract_mode")
+        _contract_mode_s = (
+            str(_contract_mode).strip() if _contract_mode is not None else ""
+        ) or "full"
+
         context: dict[str, Any] = {
             "app_name": app_name,
             "target_company": raw_request.get("target_company", ""),
             "target_role": raw_request.get("target_role", ""),
+            "resume_artifact_contract_mode": _contract_mode_s,
             "manual_brief": raw_request.get("manual_brief", "apps_rg/scripts/_interactive_brief.json"),
             "research_via": raw_request.get("research_via"),
             "auto_research_internal": raw_request.get("auto_research_internal", False),
@@ -137,8 +143,8 @@ def resolve_l2_recipe(
             step = step_cls()
             result = step(context)
             results.append(result)
-            if result.get("run_dir"):
-                context["run_dir"] = result["run_dir"]
+            if result.get("generated_resume") is not None:
+                context["generated_resume"] = result["generated_resume"]
             if result.get("exit_code", 0) != 0 and not result.get("skipped"):
                 _log.error(
                     "[L2 recipe] Step %s failed: %s",

@@ -37,7 +37,7 @@ from apps_rg.runtime.dispatch.ibm_bullets_pa import compile_ibm_bullets_prompt
 from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.shadow.ibm_bullets_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.ibm_bullets_x2 import (
@@ -288,7 +288,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": IBM_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(repair_payload)
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -434,7 +434,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         )
         provider_request_data = provider_req.to_dict()
         write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(provider_payload)
+        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
         provider_result_data = result.to_dict()
         raw_output = result.raw_model_output
         runtime_generation_status = result.runtime_generation_status

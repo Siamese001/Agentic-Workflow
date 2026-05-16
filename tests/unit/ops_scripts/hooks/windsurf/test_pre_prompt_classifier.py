@@ -31,7 +31,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
 
 from pre_prompt_classifier import (
     _detect_adg_graph_intent,
@@ -183,37 +183,37 @@ class TestCheckPlanExists:
         assert check_plan_exists("T1") is True
 
     def test_t2_no_plans_dir_false(self, tmp_path):
-        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T2") is False
 
     def test_t2_empty_plans_dir_false(self, tmp_path):
-        (tmp_path / ".windsurf" / "plans").mkdir(parents=True)
-        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
+        (tmp_path / ".cursor" / "plans").mkdir(parents=True)
+        with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T2") is False
 
     def test_t2_with_plan_file_true(self, tmp_path):
-        plans = tmp_path / ".windsurf" / "plans"
+        plans = tmp_path / ".cursor" / "plans"
         plans.mkdir(parents=True)
         (plans / "my-plan-abc123.md").write_text("# Plan")
-        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T2") is True
 
     def test_t3_no_plans_dir_false(self, tmp_path):
-        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T3") is False
 
     def test_t3_with_plan_file_true(self, tmp_path):
-        plans = tmp_path / ".windsurf" / "plans"
+        plans = tmp_path / ".cursor" / "plans"
         plans.mkdir(parents=True)
         (plans / "plan.md").write_text("# Plan")
-        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T3") is True
 
     def test_non_md_file_in_plans_not_counted(self, tmp_path):
-        plans = tmp_path / ".windsurf" / "plans"
+        plans = tmp_path / ".cursor" / "plans"
         plans.mkdir(parents=True)
         (plans / "not_a_plan.txt").write_text("text")
-        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T2") is False
 
 
@@ -285,7 +285,11 @@ class TestCheckRedisAdgHot:
             assert check_redis_adg_hot() is True
 
     def test_redis_import_error_returns_false(self):
-        with patch.dict("sys.modules", {"redis": None}):
+        # Python 3.12+: sys.modules["redis"]=None raises on import; simulate
+        # client failure after a stub redis module is loaded.
+        mock_redis_mod = MagicMock()
+        mock_redis_mod.from_url.side_effect = OSError("simulated redis unavailable")
+        with patch.dict("sys.modules", {"redis": mock_redis_mod}):
             assert check_redis_adg_hot() is False
 
     def test_connection_exception_returns_false(self):
@@ -325,7 +329,7 @@ class TestMain:
                     ):
                         if repo_root is not None:
                             with patch(
-                                "pre_prompt_classifier.REPO_ROOT",
+                                "pre_prompt_classifier.repo_root",
                                 repo_root,
                             ):
                                 return main()
@@ -410,7 +414,7 @@ class TestMain:
 
     # --- plan warning ---
     def test_no_plan_for_t3_emits_warning(self, capsys, tmp_path):
-        (tmp_path / ".windsurf" / "plans").mkdir(parents=True)
+        (tmp_path / ".cursor" / "plans").mkdir(parents=True)
         payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
         self._run(payload, adg_red=False, redis_down=False, repo_root=tmp_path)
         captured = capsys.readouterr()
@@ -485,7 +489,7 @@ class TestMain:
         """Mandate fires on first turn (no session_state.json) as a human-diagnostic advisory."""
         state_path = tmp_path / "session_state.json"
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         captured = capsys.readouterr()
         assert "mem_recall_session_start not yet called" in captured.err
@@ -495,7 +499,7 @@ class TestMain:
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         captured = capsys.readouterr()
         assert "mem_recall_session_start not yet called" in captured.err
@@ -505,7 +509,7 @@ class TestMain:
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         captured = capsys.readouterr()
         assert "mem_recall_session_start not yet called" not in captured.err
@@ -515,7 +519,7 @@ class TestMain:
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
         assert state["memory_recalled"] is True
@@ -525,7 +529,7 @@ class TestMain:
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "fix and update the module"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
         assert state["memory_recalled"] is True
@@ -535,7 +539,7 @@ class TestMain:
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "fix the typo in the docstring"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
         assert state["memory_recalled"] is True
@@ -555,7 +559,7 @@ class TestMain:
             encoding="utf-8",
         )
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
         assert state["memory_recalled"] is True
@@ -568,7 +572,7 @@ class TestMain:
         state_path = tmp_path / "session_state.json"
         state_path.write_text("{{not valid json", encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
         assert state["memory_recalled"] is False
@@ -582,31 +586,31 @@ class TestMain:
 class TestShouldEmitMemoryMandate:
     def test_returns_true_when_no_file(self, tmp_path):
         state_path = tmp_path / "missing_state.json"
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             assert _should_emit_memory_mandate() is True
 
     def test_returns_true_when_field_absent(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"current_tier": "T2"}), encoding="utf-8")
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             assert _should_emit_memory_mandate() is True
 
     def test_returns_true_when_false(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             assert _should_emit_memory_mandate() is True
 
     def test_returns_false_when_true(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             assert _should_emit_memory_mandate() is False
 
     def test_fail_open_on_corrupt_json(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text("{bad json", encoding="utf-8")
-        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+        with patch("pre_prompt_classifier.session_state", state_path):
             assert _should_emit_memory_mandate() is True
 
 
@@ -671,7 +675,7 @@ class TestPytestMcpRoutingTrace:
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         with (
-            patch("pre_prompt_classifier.SESSION_STATE", state_path),
+            patch("pre_prompt_classifier.session_state", state_path),
             patch("pre_prompt_classifier.check_redis_up", return_value=True),
             patch("pre_prompt_classifier.check_redis_adg_hot", return_value=True),
             patch("sys.stdin", StringIO(payload)),
@@ -786,8 +790,8 @@ class TestAdgGraphSrHint:
         state_dir = tmp_path / "state"
         state_dir.mkdir()
         with (
-            patch("pre_prompt_classifier.REPO_ROOT", tmp_path),
-            patch("pre_prompt_classifier.SESSION_STATE", state_dir / "session_state.json"),
+            patch("pre_prompt_classifier.repo_root", tmp_path),
+            patch("pre_prompt_classifier.session_state", state_dir / "session_state.json"),
             patch("pre_prompt_classifier.check_redis_up", return_value=redis_up),
             patch("pre_prompt_classifier.check_redis_adg_hot", return_value=redis_up),
             patch("pre_prompt_classifier.check_adg_health_red", return_value=False),

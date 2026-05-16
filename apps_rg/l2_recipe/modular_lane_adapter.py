@@ -1,0 +1,187 @@
+"""Phase 1 — in-process modular lane helpers (apps_rg only; no l2 envelope).
+
+Invokes existing ``*_dispatch.main()`` entrypoints with scoped proof layout via
+``APPS_RG_MODULAR_R4_SECTIONS_ROOT``.
+"""
+
+from __future__ import annotations
+
+import importlib
+import json
+from pathlib import Path
+from typing import Any
+
+
+def lane_argv_for_provider(*, provider: str) -> list[str]:
+    if provider == "mock":
+        return ["--provider", "mock", "--mock-judges", "--allow-non-allow-exit-zero"]
+    return ["--provider", provider, "--allow-non-allow-exit-zero"]
+
+
+def run_dispatch_main(module_qualname: str, argv: list[str]) -> int:
+    mod = importlib.import_module(module_qualname)
+    return int(mod.main(argv))
+
+
+def resolve_latest_lane_run_dir(
+    repo: Path,
+    sections_root: Path,
+    lane: str,
+    *,
+    lane_provider: str = "mock",
+) -> Path:
+    """Pick newest run dir from per-lane pointer files under ``sections_root/<lane>/``.
+
+    ``mock`` provider prefers ``latest_mock_run.json`` first so plumbing runs are stable.
+    ``qwen_vllm`` prefers ``latest_successful_real_run.json`` so rollup matches assembly gates.
+    """
+    lp = str(lane_provider or "mock").strip().lower()
+    if lp == "mock":
+        ptr_order = ("latest_mock_run.json", "latest_real_run.json")
+    else:
+        ptr_order = (
+            "latest_successful_real_run.json",
+            "latest_real_run.json",
+            "latest_mock_run.json",
+        )
+    for ptr in ptr_order:
+        p = sections_root / lane / ptr
+        if not p.is_file():
+            continue
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        rel = raw.get("run_dir") if isinstance(raw, dict) else None
+        if isinstance(rel, str):
+            rd = (repo / rel).resolve()
+            if rd.is_dir() and (rd / "l2_output.json").is_file():
+                return rd
+    msg = f"no resolvable run_dir pointer for lane {lane!r} under {sections_root}"
+    raise FileNotFoundError(msg)
+
+
+def build_section_provider_call_record(
+    *,
+    lane: str,
+    candidate_index: int,
+    run_dir: Path,
+    artifact_dir: Path,
+    self_consistency_requested: int,
+    self_consistency_executed: int,
+    provider_profile: str,
+) -> dict[str, Any]:
+    """One row for ``section_provider_calls.json`` (Phase 1 schema)."""
+    l2p = run_dir / "l2_output.json"
+    prov: dict[str, Any] = {}
+    pr_path = run_dir / "provider_request.json"
+    if pr_path.is_file():
+        try:
+            loaded = json.loads(pr_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            loaded = {}
+        if isinstance(loaded, dict):
+            prov = loaded
+    prv_resp: dict[str, Any] = {}
+    pr_resp_path = run_dir / "provider_response.json"
+    if pr_resp_path.is_file():
+        try:
+            loaded2 = json.loads(pr_resp_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            loaded2 = {}
+        if isinstance(loaded2, dict):
+            prv_resp = loaded2
+    compiled = run_dir / "compiled_prompt.txt"
+    prompt_chars = len(compiled.read_text(encoding="utf-8")) if compiled.is_file() else 0
+
+    reasoning_execution_receipt_ref: str | None = None
+    trace_path = run_dir / "prompt_selection_trace.json"
+    if trace_path.is_file():
+        try:
+            tr = json.loads(trace_path.read_text(encoding="utf-8"))
+            rec = tr.get("reasoning_execution_receipt") if isinstance(tr, dict) else None
+            if rec is not None:
+                reasoning_execution_receipt_ref = trace_path.relative_to(artifact_dir).as_posix()
+        except (json.JSONDecodeError, OSError, ValueError):
+            reasoning_execution_receipt_ref = None
+
+    l2: dict[str, Any] = {}
+    if l2p.is_file():
+        try:
+            loaded3 = json.loads(l2p.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            loaded3 = {}
+        if isinstance(loaded3, dict):
+            l2 = loaded3
+
+    provider_req = str(prov.get("provider_requested") or provider_profile).strip().lower()
+    attempted_any = prov.get("provider_attempted")
+    provider_call_attempted: bool
+    if isinstance(attempted_any, bool):
+        provider_call_attempted = attempted_any
+    else:
+        provider_call_attempted = provider_req == "qwen_vllm"
+
+    model_id = str(prv_resp.get("model") or prov.get("model") or ("mock_deterministic" if provider_req == "mock" else ""))
+    max_t = prv_resp.get("max_tokens", prov.get("max_tokens", 0))
+    max_tokens = int(max_t) if max_t is not None else 0
+    temp_raw = prv_resp.get("temperature", prov.get("temperature", 0.0))
+    temperature = float(temp_raw) if temp_raw is not None else 0.0
+    top_raw = prv_resp.get("top_p", prov.get("top_p", 1.0))
+    top_p = float(top_raw) if top_raw is not None else 1.0
+    response_format_sent = prov.get("response_format") or prv_resp.get("response_format")
+    generation_status = str(l2.get("runtime_generation_status") or "UNKNOWN")
+    parsed_output_shape = str(l2.get("section_id") or lane)
+
+    section_schema_validation_status = "unknown"
+    x2p = run_dir / "x2_gate_outputs.json"
+    if x2p.is_file():
+        try:
+            x2 = json.loads(x2p.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            x2 = {}
+        if isinstance(x2, dict):
+            failed = int(x2.get("x2_failed") or 0)
+            section_schema_validation_status = "lane_x2_pass" if failed == 0 else "lane_x2_fail"
+        elif isinstance(x2, list):
+            failed_ct = sum(1 for g in x2 if isinstance(g, dict) and not g.get("pass", True))
+            section_schema_validation_status = "lane_x2_pass" if failed_ct == 0 else "lane_x2_fail"
+
+    decisive_reason_code = "UNKNOWN"
+    x3p = run_dir / "x3_disposition.json"
+    if x3p.is_file():
+        try:
+            x3 = json.loads(x3p.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            x3 = {}
+        if isinstance(x3, dict):
+            decisive_reason_code = str(x3.get("x3_code") or "UNKNOWN")
+
+    output_ref = l2p.relative_to(artifact_dir).as_posix()
+
+    return {
+        "section_lane": lane,
+        "provider_call_attempted": provider_call_attempted,
+        "provider_profile": provider_profile + "_section_lane",
+        "model_id": model_id,
+        "candidate_index": candidate_index,
+        "self_consistency_requested": self_consistency_requested,
+        "self_consistency_executed": self_consistency_executed,
+        "prompt_chars": prompt_chars,
+        "prompt_truncated": False,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "top_p": top_p,
+        "response_format_sent": response_format_sent,
+        "generation_status": generation_status,
+        "parsed_output_shape": parsed_output_shape,
+        "section_schema_validation_status": section_schema_validation_status,
+        "decisive_reason_code": decisive_reason_code,
+        "output_ref": output_ref,
+        "reasoning_execution_receipt_ref": reasoning_execution_receipt_ref,
+    }
+
+
+__all__ = [
+    "build_section_provider_call_record",
+    "lane_argv_for_provider",
+    "resolve_latest_lane_run_dir",
+    "run_dispatch_main",
+]

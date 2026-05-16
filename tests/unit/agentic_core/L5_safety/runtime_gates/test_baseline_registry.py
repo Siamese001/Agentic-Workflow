@@ -117,7 +117,7 @@ def test_unknown_metric_ignored() -> None:
 def test_integration_with_g25_anomaly_gate() -> None:
     """Wire BaselineRegistry → G25 RuntimeAnomalyGate."""
     from agentic_core.L5_safety.runtime_gates import GateContext, evaluate
-    from agentic_core.L5_safety.runtime_gates.types import Disposition
+    from agentic_core.L5_safety.runtime_gates.contracts import Disposition
 
     reg = BaselineRegistry()
     # Seed baseline with normal observations.

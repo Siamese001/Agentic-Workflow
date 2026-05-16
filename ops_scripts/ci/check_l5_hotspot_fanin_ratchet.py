@@ -34,6 +34,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 RATCHET_FILE = REPO_ROOT / ".cursor" / "config" / "l5_fanin_ratchet.json"
 
 # Initial baselines — captured 2026-04-29 from adg_indexed_04282026_2152.sqlite

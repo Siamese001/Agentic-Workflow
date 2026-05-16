@@ -15,13 +15,17 @@ Gate-result discipline (spec §X1):
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 
 from agentic_core.L3_orchestration.exit_eval.v6.types import (
     ExitReviewPacket,
     GateResult,
     GateVerdict,
 )
+from agentic_core.runtime.reasoning.reasoning_control_resolver import (
+    reasoning_quality_certification_allowed,
+)
+from agentic_core.runtime.reasoning.reasoning_execution_receipt import ReasoningExecutionReceipt
 
 
 def _verdict(
@@ -169,6 +173,65 @@ def eval_x1c(packet: ExitReviewPacket) -> GateVerdict:
     return _verdict("X1C", GateResult.PASS)
 
 
+def _exec_summary_reasoning_lane(exec_trace: Mapping[str, Any]) -> bool:
+    lid = exec_trace.get("reasoning_section_lane") or exec_trace.get("reasoning_section_id")
+    return str(lid or "") == "executive_summary"
+
+
+def _apply_reasoning_quality_certification_cap(v: GateVerdict, packet: ExitReviewPacket) -> GateVerdict:
+    """QUALITY_REQUIRED reasoning gaps deny a full X1D PASS (ADR-REASONING-EXECUTION-CONTROL)."""
+    if v.result is not GateResult.PASS:
+        return v
+    et = packet.exec_trace or {}
+    raw = et.get("reasoning_execution_receipt")
+    if _exec_summary_reasoning_lane(et):
+        if not isinstance(raw, dict) or not raw:
+            return _verdict(
+                "X1D",
+                GateResult.WARN,
+                severity="warn",
+                reason_codes=["REASONING_EXECUTIVE_SUMMARY_PROOF_MISSING"],
+                score=v.score,
+                grader_type=v.grader_type,
+                metadata={**v.metadata, "reasoning_executive_summary_proof_missing": True},
+            )
+    if not isinstance(raw, dict) or not raw:
+        return v
+    rec = ReasoningExecutionReceipt.from_primitive(raw)
+    if rec is None:
+        if _exec_summary_reasoning_lane(et):
+            return _verdict(
+                "X1D",
+                GateResult.WARN,
+                severity="warn",
+                reason_codes=["REASONING_EXECUTIVE_SUMMARY_PROOF_MISSING"],
+                score=v.score,
+                grader_type=v.grader_type,
+                metadata={**v.metadata, "reasoning_executive_summary_proof_invalid": True},
+            )
+        return v
+    if reasoning_quality_certification_allowed(rec):
+        return v
+    reason = (
+        "REASONING_EXECUTIVE_SUMMARY_QUALITY_NOT_CERTIFIABLE"
+        if _exec_summary_reasoning_lane(et)
+        else "REASONING_QUALITY_NOT_CERTIFIABLE"
+    )
+    return _verdict(
+        "X1D",
+        GateResult.WARN,
+        severity="warn",
+        reason_codes=[reason],
+        score=v.score,
+        grader_type=v.grader_type,
+        metadata={
+            **v.metadata,
+            "reasoning_quality_certification_denied": True,
+            "reasoning_section_lane": et.get("reasoning_section_lane"),
+        },
+    )
+
+
 # ---- X1D — Groundedness + Faithfulness + Citation + Support ----
 
 
@@ -228,7 +291,10 @@ def eval_x1d(packet: ExitReviewPacket) -> GateVerdict:
             score=groundedness,
             grader_type="hybrid",
         )
-    return _verdict("X1D", GateResult.PASS, score=groundedness, grader_type="hybrid")
+    return _apply_reasoning_quality_certification_cap(
+        _verdict("X1D", GateResult.PASS, score=groundedness, grader_type="hybrid"),
+        packet,
+    )
 
 
 # ---- X1E — Process / Tool / Retry / Handoff ----

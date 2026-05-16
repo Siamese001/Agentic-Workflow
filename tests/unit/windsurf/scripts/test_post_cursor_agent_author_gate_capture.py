@@ -2,7 +2,7 @@
 """
 test_post_cursor_agent_author_gate_capture.py
 
-Unit tests for .windsurf/scripts/post_cursor_agent_author_gate_capture.py
+Unit tests for .cursor/scripts/post_cursor_agent_author_gate_capture.py
 
 Coverage:
     _init_db           — schema creation, idempotency
@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".cursor" / "scripts"))
 
 import post_cursor_agent_author_gate_capture as _m  # noqa: E402  (used for monkeypatching module globals)
 

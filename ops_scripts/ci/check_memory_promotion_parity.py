@@ -30,7 +30,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER_DB = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_DB = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "memory_promotion_violations.jsonl"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "memory_promotion_bypass.jsonl"

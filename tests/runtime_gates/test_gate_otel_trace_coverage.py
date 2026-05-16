@@ -57,7 +57,7 @@ def test_unknown_material_emits_dedicated_span(base_ctx):
     base_ctx.trace_root = ""
     # G01 emits DENY (FAIL) for missing envelope; we want UNKNOWN — instead
     # exercise via a direct synthesized decision through the evaluator path.
-    from agentic_core.L5_safety.runtime_gates.types import (
+    from agentic_core.L5_safety.runtime_gates.contracts import (
         Disposition,
         GateDecision,
         Result,

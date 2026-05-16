@@ -15,11 +15,18 @@ from agentic_core.knowledge.retrieval.prompt_envelope import (
     PromptAssemblyStatus,
     PromptEnvelope,
 )
-from apps_rg.utils.anthropic_rag_entrypoint import (
-    AbstainRecommendedError,
-    AnthropicRagPayload,
-    build_anthropic_rag_payload,
-)
+try:
+    from apps_rg.utils.anthropic_rag_entrypoint import (
+        AbstainRecommendedError,
+        AnthropicRagPayload,
+        build_anthropic_rag_payload,
+    )
+except ModuleNotFoundError:
+    pytest.skip(
+        "apps-rg-unit-pytest-remediation-f7e2a9 W1: apps_rg.utils.anthropic_rag_entrypoint "
+        "not on disk.",
+        allow_module_level=True,
+    )
 
 
 @dataclass

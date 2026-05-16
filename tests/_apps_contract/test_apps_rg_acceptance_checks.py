@@ -212,7 +212,7 @@ class TestLayerReceiptCompleteness:
         (d / "u0_validated_request.json").write_text(json.dumps({
             "request_id": "req-001",
             "trace_root": "trace-001",
-            "transport": "cli",
+            "transport": "ui",
             "source_channel": "apps_rg_cli",
             "schema_valid": True,
             "producer_component": "agentic_core.L0_routing.intake.pipeline",

@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L5_safety.runtime_gates.digest import mesh_digest
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     SCHEMA_VERSION,
     Disposition,
     GateDecision,

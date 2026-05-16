@@ -7,7 +7,7 @@ Stop: tool/model not on approved roster MUST NOT be invoked.
 from __future__ import annotations
 
 from agentic_core.L5_safety.runtime_gates.base import register_gate
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     DecisionAlias,
     Disposition,
     GateContext,

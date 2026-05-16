@@ -223,7 +223,37 @@ slot_bodies:
   R0: |
     # R0_RESPONSE_SCHEMA
     
-    OUTPUT_FORMAT: RFC-8259 JSON per rg_output_schema.json
+    OUTPUT_FORMAT: RFC-8259 JSON per rg_output_schema.json (single object, UTF-8).
+    
+    OUTPUT_RULES (hard — generation fails validation if violated):
+    - Emit EXACTLY one JSON object as the entire assistant message. No markdown fences (```),
+      no ```json blocks, no commentary, no preamble or postscript.
+    - Top-level keys MUST match rg_output_schema.json exactly:
+      schema_version, candidate_name, target_role, target_company, generated_at,
+      sections, citations, gaps, metadata.
+    - ``sections`` MUST include keys: summary, experience, skills, education
+      (and certifications when present in source material).
+    - Forbidden: ``{"raw_text": "..."}`` as the sole output; forbidden: wrapping the résumé in one prose string.
+    - Fill required fields from candidate_facts / C0 only — never invent employers, dates, or metrics.
+    
+    COMPACT REQUIRED SKELETON (replace placeholders with real evidence-bound content):
+    {
+      "schema_version": "master_resume_v2.16",
+      "candidate_name": "<string>",
+      "target_role": "<string>",
+      "target_company": "<string>",
+      "generated_at": "<ISO8601>",
+      "sections": {
+        "summary": {"text": "<string>", "word_count": <int>},
+        "experience": [{"title": "", "company": "", "dates": "", "bullets": []}],
+        "skills": {"categories": [{"name": "Other", "items": []}]},
+        "education": [{"degree": "", "institution": "", "year": "YYYY"}],
+        "certifications": []
+      },
+      "citations": [],
+      "gaps": [],
+      "metadata": {}
+    }
     
     TAILORING-SPECIFIC NOTES:
     - section_order: preserve from existing resume
@@ -265,3 +295,15 @@ output_contract:
     content_addition: prohibited
     reordering: allowed
     rephrasing: allowed
+
+# =============================================================================
+# Provider Control — CPA → L2 envelope → ProviderGateway (bounded entropy)
+# =============================================================================
+provider_control:
+  temperature: 0.1
+  top_p: 0.8
+
+compilation_constraints:
+  max_response_tokens: 4096
+  require_json_output: true
+  enforce_slot_order: true

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from agentic_core.L5_safety.runtime_gates import evaluate
-from agentic_core.L5_safety.runtime_gates.types import Disposition
+from agentic_core.L5_safety.runtime_gates.contracts import Disposition
 
 
 def test_g16_blocks_direct_memory_write(ctx_factory):

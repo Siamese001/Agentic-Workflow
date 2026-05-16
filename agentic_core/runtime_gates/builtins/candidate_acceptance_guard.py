@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from agentic_core.L5_safety.runtime_gates.types import Result
+from agentic_core.L5_safety.runtime_gates.contracts import Result
 from agentic_core.runtime_gates.definitions import GateVerdict
 
 

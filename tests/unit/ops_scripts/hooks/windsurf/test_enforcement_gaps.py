@@ -43,7 +43,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
 
 
 # ---------------------------------------------------------------------------

@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import fields, replace
 from typing import Any
 
-from agentic_core.L5_safety.runtime_gates.types import GateContext
+from agentic_core.L5_safety.runtime_gates.contracts import GateContext
 
 # Identity fields propagated across every layer.
 _IDENTITY_FIELDS = (

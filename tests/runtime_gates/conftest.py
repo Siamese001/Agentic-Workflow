@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L5_safety.runtime_gates.otel_spans import get_recorder
-from agentic_core.L5_safety.runtime_gates.types import GateContext
+from agentic_core.L5_safety.runtime_gates.contracts import GateContext
 
 
 def _base_ctx(**overrides) -> GateContext:

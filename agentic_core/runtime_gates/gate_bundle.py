@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
-from agentic_core.L5_safety.runtime_gates.types import Result
+from agentic_core.L5_safety.runtime_gates.contracts import Result
 
 from agentic_core.runtime_gates.definitions import (
     GateDefinition,

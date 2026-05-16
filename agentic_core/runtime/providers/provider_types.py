@@ -152,6 +152,9 @@ class ProviderRequest:
     provider_profile: ProviderProfile
     max_tokens: Optional[int] = None
     temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    # OpenAI-compatible chat.completions only; omit when None (server default).
+    openai_response_format: Optional[Dict[str, Any]] = None
     request_id: str = ""
     run_id: str = ""
     trace_root: str = ""
@@ -168,6 +171,7 @@ class ProviderResponse:
     receipt: ProviderInvocationReceipt
     error_message: Optional[str] = None
     model_used: Optional[str] = None
+    invocation_meta: Optional[Dict[str, Any]] = None
 
 
 class ProviderGatewayError(Exception):

@@ -33,6 +33,7 @@ class ResumePackageProofPaths:
     docx_manifest_x2_json: Path
     docx_render_manifest_json: Path
     docx_render_x2_json: Path
+    apps_rg_output_manifest_json: Path
     output_dir: Path
 
     def package_manifest_json(self) -> Path:
@@ -66,6 +67,7 @@ def resolve_resume_package_paths(
         docx_manifest_x2_json=rr / RUNTIME_PROOFS / "docx_manifest" / "docx_manifest_x2_gate_outputs.json",
         docx_render_manifest_json=docx_out / "docx_render_manifest.json",
         docx_render_x2_json=docx_out / "docx_render_x2_gate_outputs.json",
+        apps_rg_output_manifest_json=docx_out / "apps_rg_output_manifest.json",
         output_dir=(rr / out_rel).resolve(),
     )
 

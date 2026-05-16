@@ -82,7 +82,7 @@ def _run_live_interview(argv: list[str]) -> int:
     result = runner.run(payload)
 
     from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner as _AIR
-    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired
     if isinstance(result, ClarificationRequired):
         logger.error("apps_qna live interview: clarification required: %s", result.reason)
         return 1
@@ -154,7 +154,7 @@ def _run_product_build(argv: list[str]) -> int:
     import logging
 
     from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired
     from apps_qna.runtime.profile_builder import build_app_runtime_contract
     from apps_qna.types.spine_contracts import X3Disposition
 

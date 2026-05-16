@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
 
 from pre_run_gate import check_command, _check_interactive  # noqa: E402
 

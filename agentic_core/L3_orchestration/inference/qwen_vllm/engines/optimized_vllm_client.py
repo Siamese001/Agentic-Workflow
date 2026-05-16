@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 import logging
 import os
 import time
@@ -32,6 +33,74 @@ import aiohttp.client_exceptions
 logger = logging.getLogger(__name__)
 
 
+def _truncate_prompt_for_context(
+    prompt: str,
+    *,
+    completion_budget: int,
+) -> str:
+    """Ensure prompt tokens + completion fit ``QWEN_LOCAL_MAX_MODEL_LEN``."""
+    from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+        QWEN_LOCAL_MAX_MODEL_LEN,
+    )
+
+    reserve = 128
+    max_prompt_tokens = QWEN_LOCAL_MAX_MODEL_LEN - int(completion_budget) - reserve
+    if max_prompt_tokens < 256:
+        max_prompt_tokens = 256
+    # ~2 chars / token conservative
+    max_chars = max_prompt_tokens * 2
+    if len(prompt) <= max_chars:
+        return prompt
+    logger.warning(
+        "optimized_vllm_client: truncating prompt %s → %s chars "
+        "(max_model_len=%s, completion_budget=%s)",
+        len(prompt),
+        max_chars,
+        QWEN_LOCAL_MAX_MODEL_LEN,
+        completion_budget,
+    )
+    return (
+        prompt[:max_chars]
+        + "\n\n[TRUNCATED_BY_VLLM_CLIENT: input exceeded local context — "
+        "summarize or use a shorter brief / evidence bundle.]"
+    )
+
+
+def _clamp_completion_tokens(*, prompt: str, requested_max_tokens: int) -> int:
+    """Keep prompt + completion within ``QWEN_LOCAL_MAX_MODEL_LEN`` (avoids vLLM HTTP 400).
+
+    Uses a conservative characters→tokens estimate so long PA prompts (e.g. full
+    résumé + briefing) do not request more completion slots than fit.
+    """
+    from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+        QWEN_LOCAL_MAX_MODEL_LEN,
+    )
+
+    # ~2 chars/token is a safe upper bound for English-ish prose.
+    est_prompt_tokens = max(1, len(prompt) // 2)
+    reserve = 96
+    room = QWEN_LOCAL_MAX_MODEL_LEN - est_prompt_tokens - reserve
+    if room < 1:
+        logger.warning(
+            "optimized_vllm_client: prompt may exceed context "
+            "(est_prompt_tokens~%s, max_model_len=%s, prompt_chars=%s)",
+            est_prompt_tokens,
+            QWEN_LOCAL_MAX_MODEL_LEN,
+            len(prompt),
+        )
+        return 1
+    if requested_max_tokens > room:
+        logger.info(
+            "optimized_vllm_client: clamping max_tokens %s → %s "
+            "(est_prompt_tokens~%s, max_model_len=%s)",
+            requested_max_tokens,
+            room,
+            est_prompt_tokens,
+            QWEN_LOCAL_MAX_MODEL_LEN,
+        )
+    return max(1, min(int(requested_max_tokens), int(room)))
+
+
 @dataclass(frozen=True)
 class VLLMRequest:
     """Single vLLM inference request."""
@@ -40,6 +109,7 @@ class VLLMRequest:
     max_tokens: int = 2048
     temperature: float = 0.1
     top_p: float = 1.0
+    response_format: dict[str, Any] | None = None
     stop: list[str] | None = None
     request_id: str | None = None
 
@@ -55,6 +125,12 @@ class VLLMResponse:
     latency_ms: float
     error_message: str | None = None
     cached: bool = False
+    http_status: int | None = None
+    prompt_chars_in: int = 0
+    prompt_chars_after_truncate: int = 0
+    prompt_truncated: bool = False
+    effective_max_tokens: int = 0
+    completion_budget_used: int = 0
 
 
 class OptimizedVLLMClient:
@@ -168,7 +244,13 @@ class OptimizedVLLMClient:
 
     def _compute_cache_key(self, request: VLLMRequest) -> str:
         """Compute deterministic cache key from request."""
-        content = f"{request.prompt}:{request.max_tokens}:{request.temperature}:{request.top_p}"
+        rf_key = ""
+        if request.response_format:
+            try:
+                rf_key = json.dumps(request.response_format, sort_keys=True)
+            except (TypeError, ValueError):
+                rf_key = str(request.response_format)
+        content = f"{request.prompt}:{request.max_tokens}:{request.temperature}:{request.top_p}:{rf_key}"
         return hashlib.sha256(content.encode()).hexdigest()[:32]
 
     async def infer(self, request: VLLMRequest) -> VLLMResponse:
@@ -192,7 +274,14 @@ class OptimizedVLLMClient:
                 model=cached.model,
                 tokens_used=cached.tokens_used,
                 latency_ms=0.0,  # Cache hit is instant
+                error_message=cached.error_message,
                 cached=True,
+                http_status=cached.http_status,
+                prompt_chars_in=cached.prompt_chars_in,
+                prompt_chars_after_truncate=cached.prompt_chars_after_truncate,
+                prompt_truncated=cached.prompt_truncated,
+                effective_max_tokens=cached.effective_max_tokens,
+                completion_budget_used=cached.completion_budget_used,
             )
 
         # Submit to batch queue and wait for result
@@ -215,6 +304,12 @@ class OptimizedVLLMClient:
                 tokens_used=0,
                 latency_ms=0.0,
                 error_message=str(e),
+                http_status=None,
+                prompt_chars_in=len(request.prompt) if request else 0,
+                prompt_chars_after_truncate=0,
+                prompt_truncated=False,
+                effective_max_tokens=0,
+                completion_budget_used=0,
             )
 
     async def infer_batch(self, requests: list[VLLMRequest]) -> list[VLLMResponse]:
@@ -329,12 +424,22 @@ class OptimizedVLLMClient:
         # `base_url` is stored stripped of trailing slash (line 82); add it back here.
         url = urljoin(self.base_url + "/", "chat/completions")
 
+        completion_target = max(256, min(int(request.max_tokens), 4096))
+        eff_prompt = _truncate_prompt_for_context(
+            request.prompt,
+            completion_budget=completion_target,
+        )
+        max_tokens = _clamp_completion_tokens(
+            prompt=eff_prompt,
+            requested_max_tokens=request.max_tokens,
+        )
+        trunc_applied = len(eff_prompt) != len(request.prompt)
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "user", "content": request.prompt},
+                {"role": "user", "content": eff_prompt},
             ],
-            "max_tokens": request.max_tokens,
+            "max_tokens": max_tokens,
             "temperature": request.temperature,
             "top_p": request.top_p,
             "stream": False,
@@ -342,14 +447,37 @@ class OptimizedVLLMClient:
 
         if request.stop:
             payload["stop"] = request.stop
+        if request.response_format:
+            payload["response_format"] = request.response_format
 
         start_time = time.time()
 
         try:
             async with self._session.post(url, json=payload) as resp:
-                resp.raise_for_status()
-                data = await resp.json()
+                if resp.status >= 400:
+                    try:
+                        err_body = (await resp.text())[:8000]
+                    except (TypeError, ValueError, aiohttp.client_exceptions.ClientError):
+                        err_body = "<response body unreadable>"
+                    err_msg = f"HTTP {resp.status}: {err_body}"
+                    logger.error("vLLM chat/completions error: %s", err_msg[:2000])
+                    latency_ms = (time.time() - start_time) * 1000
+                    return VLLMResponse(
+                        success=False,
+                        text="",
+                        model=self.model,
+                        tokens_used=0,
+                        latency_ms=latency_ms,
+                        error_message=err_msg,
+                        http_status=int(resp.status),
+                        prompt_chars_in=len(request.prompt),
+                        prompt_chars_after_truncate=len(eff_prompt),
+                        prompt_truncated=trunc_applied,
+                        effective_max_tokens=int(max_tokens),
+                        completion_budget_used=int(completion_target),
+                    )
 
+                data = await resp.json()
                 latency_ms = (time.time() - start_time) * 1000
 
                 # Extract response text
@@ -370,6 +498,12 @@ class OptimizedVLLMClient:
                     model=data.get("model", self.model),
                     tokens_used=tokens_used,
                     latency_ms=latency_ms,
+                    http_status=int(resp.status),
+                    prompt_chars_in=len(request.prompt),
+                    prompt_chars_after_truncate=len(eff_prompt),
+                    prompt_truncated=trunc_applied,
+                    effective_max_tokens=int(max_tokens),
+                    completion_budget_used=int(completion_target),
                 )
 
         except aiohttp.client_exceptions.ClientError as e:
@@ -382,6 +516,12 @@ class OptimizedVLLMClient:
                 tokens_used=0,
                 latency_ms=latency_ms,
                 error_message=f"HTTP error: {e}",
+                http_status=None,
+                prompt_chars_in=len(request.prompt),
+                prompt_chars_after_truncate=len(eff_prompt),
+                prompt_truncated=trunc_applied,
+                effective_max_tokens=int(max_tokens),
+                completion_budget_used=int(completion_target),
             )
         except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             latency_ms = (time.time() - start_time) * 1000
@@ -393,6 +533,12 @@ class OptimizedVLLMClient:
                 tokens_used=0,
                 latency_ms=latency_ms,
                 error_message=f"Unexpected error: {e}",
+                http_status=None,
+                prompt_chars_in=len(request.prompt),
+                prompt_chars_after_truncate=len(eff_prompt),
+                prompt_truncated=trunc_applied,
+                effective_max_tokens=int(max_tokens),
+                completion_budget_used=int(completion_target),
             )
 
     async def _call_batch(self, requests: list[VLLMRequest]) -> list[VLLMResponse]:

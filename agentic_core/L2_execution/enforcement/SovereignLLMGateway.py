@@ -28,6 +28,13 @@ from agentic_core.L2_execution.enforcement.provider_adapter import (
     adapter_v2_enabled as _adapter_v2_enabled,
 )
 from agentic_core.L2_execution.reasoning import CompiledPromptArtifact
+from agentic_core.runtime.reasoning.reasoning_control_resolver import (
+    ReasoningGovernanceError,
+    build_execution_plan,
+    enforce_blocked,
+    resolve_gateway_receipt,
+)
+from agentic_core.runtime.reasoning.transport_capabilities import TransportCapabilities
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -605,6 +612,14 @@ class SovereignLLMGateway:
             success = True
             tokens_out = response.get("tokens_used", 0)
 
+            reasoning_plan = build_execution_plan(reasoning_kwargs)
+            caps = TransportCapabilities.from_provider(provider_impl)
+            raw_obs = response.get("_reasoning_transport_observed")
+            observed_transport = raw_obs if isinstance(raw_obs, dict) else {}
+            receipt_obj = resolve_gateway_receipt(reasoning_plan, caps, observed_transport)
+            response["_reasoning_execution_receipt"] = receipt_obj.to_primitive()
+            enforce_blocked(receipt_obj)
+
             # Add reasoning path metadata to response
             response["_reasoning_path"] = {
                 "path_id": path.path_id,
@@ -619,6 +634,9 @@ class SovereignLLMGateway:
         except CircuitBreakerOpenError:
             error_type = "circuit_breaker_open"
             error_message = "Circuit breaker is open"
+            raise
+
+        except ReasoningGovernanceError:
             raise
 
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
@@ -928,7 +946,11 @@ class _PlaceholderProvider:
             "content": "[Placeholder response]",
             "tokens_used": 10,
             "model": self._config.model,
+            "_reasoning_transport_observed": {},
         }
+
+    def reasoning_transport_kw_forwarded(self) -> frozenset[str]:
+        return frozenset()
 
     def get_token_count(self, text: str) -> int:
         """Rough token estimate."""

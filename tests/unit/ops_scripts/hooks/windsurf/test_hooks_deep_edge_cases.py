@@ -30,10 +30,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[5]
-# Cursor scripts second so `.windsurf/scripts` remains first on sys.path for hook
-# parity tests (e.g. pre_write_gate). Modules only in `.cursor/scripts` still resolve.
+# Authoritative hook implementations for this repo live under `.cursor/scripts`.
 sys.path.insert(0, str(_REPO_ROOT / ".cursor" / "scripts"))
-sys.path.insert(0, str(_REPO_ROOT / ".windsurf" / "scripts"))
 
 # Repo-relative .py path for pre_write_gate payloads — avoids SSOT repo-root-py
 # blocks on synthetic top-level names (constitutional §31 / _ssot_folder_check).
@@ -420,10 +418,10 @@ class TestPreWriteGateArgvFastPath:
         }
         assert self._run_with_argv("module.py", payload) == 2
 
-    def test_argv_mcp_config_json_proceeds_to_gate(self):
-        # No edits → deletion block
-        payload = {"tool_info": {"file_path": "mcp_config.json", "edits": []}}
-        assert self._run_with_argv("mcp_config.json", payload) == 2
+    def test_argv_mcp_json_proceeds_to_gate(self):
+        # No edits → mcp.json deletion block
+        payload = {"tool_info": {"file_path": ".cursor/mcp.json", "edits": []}}
+        assert self._run_with_argv("mcp.json", payload) == 2
 
 
 # ============================================================================

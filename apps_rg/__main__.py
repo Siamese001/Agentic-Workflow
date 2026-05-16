@@ -7,6 +7,31 @@ Interactive mode (``--interactive``) stores prompted JD and briefing under
 ``artifacts/apps_rg/cli_inputs/cli_<id>/`` (``jd.json``, ``research_brief.*``)
 and passes those paths to dispatch.
 
+Non-TTY runners (IDE agents, CI): set ``APPS_RG_INTERACTIVE_STDIN=1`` and pipe one
+line per prompt (company, role, JD listing title, JD text, optional brief), or pass
+``--jd`` / ``--manual-brief`` / ``--target-*`` explicitly.
+
+When ``--resume`` is omitted (or empty), the CLI uses the canonical base resume JSON
+(``apps_rg/resume/base/amit_ayer_base_resume_v1.json`` under the repo root). Pass
+``--resume`` explicitly to override.
+
+**Generation topology:** this CLI is the canonical **R4 integrated product** entry
+(``dispatch_apps_rg_run`` → governed spine). **Canonical proven** résumé body generation
+is **modular** (seven section lanes + deterministic merge) when
+``APPS_RG_R4_GENERATION_MODE=modular_section_lanes`` — see
+``apps_rg.l2_recipe.r4_generation_route``. **Default** when that env var is unset remains
+``legacy_full_resume`` (explicit rollback): one ``run_apps_rg_l2_envelope`` call with a
+full tailor-existing CPA. Offline per-lane orchestration under
+``python -m apps_rg.runtime.orchestrate_full_resume`` is a separate module entry from
+integrated dispatch.
+
+**L2 model execution (résumé body):** by default ``APPS_RG_L2_PROVIDER_MODE`` is unset
+and the v4 envelope uses **local vLLM** (``ProviderGateway`` ``local_only``).
+Set ``APPS_RG_L2_PROVIDER_MODE=stub_only`` or ``APPS_RG_L2_FORCE_STUB=1`` for deterministic
+stub JSON (CI / dry runs). Use ``APPS_RG_L2_PROVIDER_MODE=live_allowed`` when the compiled
+CPA targets an external API lane (``anthropic``, ``openai``, ``google_gemini``) and keys
+are present.
+
 Cross-company contamination guard:
     _assert_artifact_matches_company(path, target_company, artifact_type)
     raises SystemExit if the artifact's declared `company` does not match the
@@ -23,17 +48,28 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 import uuid
 from pathlib import Path
 from typing import Any, Callable
 
+from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+    run_integrated_r4_deterministic_pipeline,
+)
+from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
+
 __all__ = [
     "_assert_artifact_matches_company",
     "_build_raw_request",
     "_prompt_jd_interactive",
+    "_run_with_args",
+    "check_r1a_cache",
+    "compute_r1a_key",
     "main",
+    "run_integrated_r4_deterministic_pipeline",
+    "stamp_r1a_cache",
 ]
 
 
@@ -110,6 +146,54 @@ def _repo_root_for_cli_inputs() -> Path:
         if (parent / "pyproject.toml").exists() or (parent / ".git").exists():
             return parent
     return Path.cwd()
+
+
+def _default_resume_path() -> str:
+    """Absolute path to canonical base resume JSON, or ``""`` if missing."""
+    p = (
+        _repo_root_for_cli_inputs()
+        / "apps_rg"
+        / "resume"
+        / "base"
+        / "amit_ayer_base_resume_v1.json"
+    )
+    return str(p.resolve()) if p.is_file() else ""
+
+
+def _print_paths_for_cursor_workspace(artifact_dir_str: str) -> None:
+    """Emit repo-relative POSIX paths and file:// URIs (Cursor/VS Code friendly).
+
+    Raw Windows ``artifact_dir=C:\\...`` strings often do not linkify in the
+    integrated terminal or chat; workspace-relative ``artifacts/...`` and
+    ``file:///`` URIs are easier to open.
+    """
+    if not str(artifact_dir_str).strip():
+        return
+    root = _repo_root_for_cli_inputs().resolve()
+    try:
+        ad = Path(artifact_dir_str).resolve()
+    except OSError:
+        return
+    try:
+        rel = ad.relative_to(root).as_posix()
+        print(f"artifact_dir_workspace={rel}", flush=True)
+    except ValueError:
+        print(f"artifact_dir_workspace={ad.as_posix()}", flush=True)
+    try:
+        print(f"artifact_dir_uri={ad.as_uri()}", flush=True)
+    except ValueError:
+        pass
+    docx = ad / "outputs" / "resume.docx"
+    if docx.is_file():
+        try:
+            dx_rel = docx.resolve().relative_to(root).as_posix()
+            print(f"resume_docx_workspace={dx_rel}", flush=True)
+        except ValueError:
+            print(f"resume_docx_workspace={docx.resolve().as_posix()}", flush=True)
+        try:
+            print(f"resume_docx_uri={docx.resolve().as_uri()}", flush=True)
+        except ValueError:
+            pass
 
 
 def _new_interactive_inputs_session_dir() -> Path:
@@ -196,26 +280,55 @@ def _materialize_brief_file(
     return out
 
 
+def _stdin_batch_interactive_enabled() -> bool:
+    """Non-TTY stdin batching (one line per prompt) — opt-in to avoid hangs in tools/CI."""
+    return os.environ.get("APPS_RG_INTERACTIVE_STDIN", "").strip().lower() in ("1", "true", "yes")
+
+
+def _reject_interactive_without_stdin_batch() -> None:
+    if sys.stdin.isatty() or _stdin_batch_interactive_enabled():
+        return
+    print(
+        "apps_rg: --interactive needs an interactive terminal, or non-interactive stdin with "
+        "APPS_RG_INTERACTIVE_STDIN=1 and one answer line per prompt (see --help). "
+        "Otherwise pass --target-company, --target-role, --jd, etc.",
+        file=sys.stderr,
+        flush=True,
+    )
+    raise SystemExit(2)
+
+
+def _cli_input() -> str:
+    """Read one line from stdin; fail cleanly on EOF (empty pipe)."""
+    try:
+        return input()
+    except EOFError:
+        print(
+            "apps_rg: EOF on stdin — with APPS_RG_INTERACTIVE_STDIN=1, pipe one line per prompt "
+            "in the same order as the questions (company, role, JD listing title, JD body, brief). "
+            "Or use an interactive terminal. You can also pass --jd / --manual-brief / --target-*.",
+            file=sys.stderr,
+            flush=True,
+        )
+        raise SystemExit(2) from None
+
+
 def _prompt_jd_interactive() -> str:
-    """Prompt for a JD path, JSON blob, or one-line description (TTY only)."""
-    if not sys.stdin.isatty():
-        msg = "apps_rg: non-interactive mode — stdin is not a TTY; provide --jd"
-        print(msg, file=sys.stderr, flush=True)
-        raise SystemExit(msg)
+    """Prompt for a JD path, JSON blob, or one-line description."""
+    _reject_interactive_without_stdin_batch()
     print("JD file path, JSON, or one-line description:", flush=True)
-    return input().strip()
+    return _cli_input().strip()
 
 
 def _gather_interactive_fields(args: argparse.Namespace) -> None:
     """Prompt for JD + briefing and save under ``artifacts/apps_rg/cli_inputs/cli_<id>/``."""
-    if not sys.stdin.isatty():
-        print("apps_rg: --interactive requires a TTY stdin.", file=sys.stderr, flush=True)
-        raise SystemExit(2)
-
+    _reject_interactive_without_stdin_batch()
     if not str(args.target_company).strip():
-        args.target_company = input("Target company: ").strip()
+        print("Target company: ", end="", flush=True)
+        args.target_company = _cli_input().strip()
     if not str(args.target_role).strip():
-        args.target_role = input("Target role: ").strip()
+        print("Target role: ", end="", flush=True)
+        args.target_role = _cli_input().strip()
 
     session: Path | None = None
 
@@ -231,14 +344,14 @@ def _gather_interactive_fields(args: argparse.Namespace) -> None:
 
     if not str(args.jd).strip():
         print("Job posting title as listed on the JD (Enter to use target role):", flush=True)
-        posting_title = input().strip() or str(args.target_role).strip()
+        posting_title = _cli_input().strip() or str(args.target_role).strip()
 
         print(
             "\nJD — path to .txt/.json, paste JSON {{title, description}}, "
             "or a one-line summary (Enter to skip):",
             flush=True,
         )
-        jd_guess = input().strip()
+        jd_guess = _cli_input().strip()
         if jd_guess.strip():
             jd_path = _materialize_jd_file(
                 _session_dir(),
@@ -254,7 +367,7 @@ def _gather_interactive_fields(args: argparse.Namespace) -> None:
             "\nResearch briefing — local file path, https URL, or short paste (optional, Enter to skip):",
             flush=True,
         )
-        brief_guess = input().strip()
+        brief_guess = _cli_input().strip()
         if brief_guess:
             brief_path = _materialize_brief_file(_session_dir(), brief_guess, _fetch_url_text)
             args.manual_brief = str(brief_path)
@@ -326,6 +439,125 @@ def _build_raw_request(args: Any) -> dict[str, Any]:
     )
 
 
+def _semantic_cache_r1b_enabled() -> bool:
+    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+
+
+def _run_with_args(
+    args: Any,
+    *,
+    runs_dir: Path,
+    artifact_dir_override: Path | None = None,
+) -> None:
+    """Exercise R4 + R1 cache wiring (canonical unit tests monkeypatch internals).
+
+    CLI production path uses ``dispatch_apps_rg_run``. This shim mirrors the legacy
+    L0 remediation tests that assert pre/post-flight cache bookkeeping.
+    """
+    from agentic_core.L0_routing.gates.apps_rg_prerequisite_gate import (
+        check_apps_rg_prerequisites,
+    )
+    from apps_rg.cache import r1b_adapter as _r1b_mod
+    from apps_rg.runtime.orchestration.canonical_dispatch import build_raw_request_for_r4
+
+    check_apps_rg_prerequisites(
+        target_company=str(getattr(args, "target_company", "") or ""),
+        target_role=str(getattr(args, "target_role", "") or ""),
+        policy_hash=os.environ.get("APPS_RG_POLICY_HASH", ""),
+        blueprint_hash=os.environ.get("APPS_RG_BLUEPRINT_HASH", ""),
+        trace_id=str(getattr(args, "tenant_id", "") or "default_cli"),
+        manual_brief_path=str(getattr(args, "manual_brief", "") or ""),
+    )
+
+    raw_request = build_raw_request_for_r4(
+        target_company=str(getattr(args, "target_company", "") or ""),
+        target_role=str(getattr(args, "target_role", "") or ""),
+        target_level=str(getattr(args, "target_level", "") or ""),
+        jd=str(getattr(args, "jd", "") or ""),
+        manual_brief=str(getattr(args, "manual_brief", "") or ""),
+        resume_path=str(getattr(args, "resume", "") or ""),
+        generation_mode=str(
+            getattr(args, "generation_mode", None) or "strategic_tailor",
+        ),
+    )
+
+    resume_snapshot = str(raw_request.get("resume_hash") or "")
+    r1a_key = compute_r1a_key(
+        source_resume_hash=resume_snapshot,
+        target_company=str(getattr(args, "target_company", "") or ""),
+        target_role=str(getattr(args, "target_role", "") or ""),
+    )
+
+    env_policy = os.environ.get("APPS_RG_POLICY_HASH")
+    env_bp = os.environ.get("APPS_RG_BLUEPRINT_HASH")
+
+    r1a_hit = check_r1a_cache(
+        r1a_key,
+        runs_dir=runs_dir,
+        policy_hash=env_policy,
+        blueprint_hash=env_bp,
+    )
+    if r1a_hit:
+        raise SystemExit(0)
+
+    if _semantic_cache_r1b_enabled():
+        r1b_probe = _r1b_mod.check_r1b_for_apps_rg(
+            raw_request=raw_request,
+            runs_dir=str(runs_dir),
+        )
+        if isinstance(r1b_probe, dict) and bool(r1b_probe.get("cached")):
+            raise SystemExit(0)
+
+    artifact_root = (
+        artifact_dir_override
+        if artifact_dir_override is not None
+        else (runs_dir / "_r4_artifact_scratch")
+    )
+    if artifact_dir_override is None:
+        artifact_root.mkdir(parents=True, exist_ok=True)
+
+    outcome = run_integrated_r4_deterministic_pipeline(
+        raw_request=raw_request,
+        app_name="apps_rg",
+        artifact_dir=artifact_root,
+    )
+
+    fault_txt = str(getattr(outcome, "fault", "") or "").strip()
+    if fault_txt:
+        raise SystemExit(1)
+    if bool(getattr(outcome, "terminal_r5", False)):
+        raise SystemExit(0)
+
+    stamp_r1a_cache(
+        r1a_key,
+        Path(outcome.artifact_dir),
+        policy_hash=env_policy,
+        blueprint_hash=env_bp,
+    )
+
+    if _semantic_cache_r1b_enabled():
+        generated = Path(outcome.artifact_dir) / "generated_resume.json"
+        if generated.is_file():
+            try:
+                payload = json.loads(generated.read_text(encoding="utf-8"))
+                if isinstance(payload, list):
+                    semantic_writer = _r1b_mod.AppsRgR1BCacheAdapter(
+                        runs_dir=str(runs_dir),
+                    )
+                    semantic_writer.store_intent_and_output(
+                        intent=dict(raw_request),
+                        chunks=payload,
+                    )
+            except (OSError, json.JSONDecodeError, TypeError):
+                pass
+
+    raise SystemExit(0)
+
+
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="apps_rg",
@@ -336,7 +568,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--target-level", default="", help="Target level (optional)")
     p.add_argument("--jd", default="", help="Path to JD JSON/txt or inline text")
     p.add_argument("--manual-brief", default="", help="Path or https URL to pre-built research brief")
-    p.add_argument("--resume", default="", help="Path to source resume (PDF/DOCX/JSON)")
+    p.add_argument(
+        "--resume",
+        default="",
+        help=(
+            "Path to source resume (PDF/DOCX/JSON). "
+            "Default: apps_rg/resume/base/amit_ayer_base_resume_v1.json when omitted."
+        ),
+    )
     p.add_argument(
         "--generation-mode",
         default="strategic_tailor",
@@ -352,7 +591,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "--interactive",
         "-i",
         action="store_true",
-        help="TTY: prompt for JD + briefing; save under artifacts/apps_rg/cli_inputs/cli_<id>/",
+        help=(
+            "Prompt for JD + briefing; with APPS_RG_INTERACTIVE_STDIN=1, read one line per prompt from "
+            "stdin when not a TTY. Saves under artifacts/apps_rg/cli_inputs/cli_<id>/"
+        ),
     )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
     return p
@@ -366,6 +608,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     parser = _build_parser()
     args = parser.parse_args(argv)
     args.non_interactive = not args.interactive
+
+    if not str(getattr(args, "resume", "") or "").strip():
+        dr = _default_resume_path()
+        if dr:
+            args.resume = dr
 
     # Wizard / cursor-prompts mode: if mandatory inputs are missing, write a
     # sentinel line and exit 7 so the calling process (Cursor Agent IDE) can prompt
@@ -440,7 +687,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             flush=True,
         )
         if isinstance(result, dict) and result.get("artifact_dir"):
-            print(f"artifact_dir={result['artifact_dir']}", flush=True)
+            ad_str = str(result["artifact_dir"])
+            print(f"artifact_dir={ad_str}", flush=True)
+            _print_paths_for_cursor_workspace(ad_str)
         if status != "success" or not authorized:
             return 1
         return 0

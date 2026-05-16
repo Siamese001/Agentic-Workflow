@@ -28,7 +28,7 @@ import sys
 from scripts.proof.otel_bootstrap import setup_tracer as _otel_setup
 
 from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired
 from apps_underwriting_ai.runtime.bindings.u0_binding import U0ValidationError
 from apps_underwriting_ai.runtime.profile_builder import build_app_runtime_contract
 

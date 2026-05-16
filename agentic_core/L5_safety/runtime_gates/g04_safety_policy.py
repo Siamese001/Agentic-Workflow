@@ -8,7 +8,7 @@ Stop condition: missing/inconsistent policy_hash MUST block route/execution.
 from __future__ import annotations
 
 from agentic_core.L5_safety.runtime_gates.base import allow, deny, escalate, register_gate
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     Disposition,
     GateContext,
     GateDecision,

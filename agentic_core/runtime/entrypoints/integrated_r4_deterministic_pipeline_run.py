@@ -1,9 +1,11 @@
-"""R4_SINGLE_ACTION — apps_rg deterministic pipeline entrypoint.
+"""R4_SINGLE_ACTION integrated deterministic pipeline entrypoint.
 
-Thin composition wrapper over canonical spine components for the
-apps_rg R4_SINGLE_ACTION route family.  This module MUST NOT
-reimplement U0, L1, L0, L2, Exit, 00C, L5, UWG, or L6 behaviour —
-it only imports and sequences the canonical components.
+Thin composition wrapper over canonical spine components for any ``apps_*``
+application that resolves an L2 recipe through ``app_name``.  This module MUST NOT
+reimplement U0, L1, L0, L2, Exit, 00C, L5, UWG, or L6 behaviour — it only imports
+and sequences the canonical components.  Apps supply policy/evidence/ref shapes via
+``config/profiles/<app_id>/pipeline_defaults.yaml`` per ``RuntimeProfileResolver``
+conventions; core never invents application policy literals.
 
 Pipeline sequence
 -----------------
@@ -17,11 +19,29 @@ Pipeline sequence
     → seal_runtime_exhaust        (sealed manifest)
     → R4IntegratedRunResult
 
+L2 recipe resolution is per ``app_name`` (e.g. apps_rg registers ``resume_generation_v1``);
+the core entrypoint does not hardcode app policy — only generic route family constants.
+
+Profile-driven evidence (Exit v6 §5.0 + X3 threading)
+----------------------------------------------------
+- **Hydration before replay:** ``_hydrate_raw_request_evidence_digests`` runs **before**
+  ``_compute_replay_key`` so ``policy_hash`` / ``blueprint_hash`` participate in the
+  stable binding when present. Values come from explicit kwargs, valid digests on
+  ``raw_request``, or SHA-256 of files listed under ``pipeline_defaults.policy_refs``
+  in the app's profile YAML (core never hardcodes per-app paths).
+- **Spine packet carriers:** ``exit_eval_wire.spine_exit_packet_carrier_refs`` supply
+  ``l5_certification_refs`` on L2 and R5 Exit receipts. Semantics: **X3 packet /
+  AG-8 threading evidence** only — **not** RTC / Fort Knox L5 certification; see
+  ``config/profiles/<app_id>/pipeline_defaults.yaml`` comments.
+- **R5 §5.0 parity:** R5 terminal receipts carry ``policy_hash``, ``blueprint_hash``,
+  ``replay_key``, ``route_contract``, and ``terminal_class`` so ``validate_required_receipts``
+  matches the L2-executed shape.
+
 Harness rule (anti-cheat — verifier-enforced):
     Probes and tests MAY call ``run_integrated_r4_deterministic_pipeline``.
     They MUST NOT call ``run_request_intake``, ``check_route_gates``,
     ``ExitEvalPipeline.run``, or ``seal_runtime_exhaust`` directly for
-    apps_rg coverage claims.  Every artifact emitted carries a
+    product coverage claims.  Every artifact emitted carries a
     ``producer_component`` that the verifier checks against the harness regex.
 
 R5 terminal path:
@@ -34,6 +54,7 @@ C0 Policy (W4 c0-policy-rectification-f7b2a9):
     R4 uses ``BYPASS_PRELOADED_CONTEXT`` typed bypass reason, not the
     legacy ``GROUNDING_NOT_REQUIRED`` string. This aligns with the
     contract-driven C0 policy frozen by L0 in RouteContract.c0_policy.
+    Receipts sealed via ``build_c0_bypass_receipt`` conform to ``C0BypassReceipt``.
 
 Plan: ``.windsurf/plans/apps-rg-canonical-wireup-c8a4f2.md`` §W2 P3
 """
@@ -229,33 +250,124 @@ def _get_app_defaults(app_name: str) -> dict[str, str]:
     """
     if not app_name:
         return {}
-    
+
+    payload = _load_pipeline_defaults_payload(app_name)
+    if not payload:
+        return {}
+
+    defaults: dict[str, str] = {}
+    identity = payload.get("identity_defaults", {})
+    if identity:
+        defaults["source_channel"] = identity.get("source_channel", "")
+        defaults["user_id_default"] = identity.get("user_id_default", "")
+        defaults["caller_surface"] = identity.get("caller_surface", "")
+        defaults["declared_schema"] = identity.get("declared_schema", "")
+        defaults["tenant_id"] = identity.get("tenant_id", "")
+
+    auth = payload.get("auth_defaults", {})
+    if auth:
+        defaults["auth_kind"] = auth.get("kind", "")
+        defaults["auth_token"] = auth.get("token", "")
+
+    return defaults
+
+
+def _load_pipeline_defaults_payload(app_name: str) -> dict[str, Any]:
+    """Return full pipeline_defaults YAML as dict.
+
+    Prefer ``ResolvedProfile.raw_data`` — ``typed_payload`` intentionally omits
+    app-specific sections (identity_defaults, exit_eval_wire, ...) per
+    profile_resolver._extract_typed_payload.
+    """
+    if not app_name:
+        return {}
     try:
         resolver = RuntimeProfileResolver()
         profile = resolver.resolve(app_name, "pipeline_defaults")
-        payload = profile.typed_payload
-        
-        defaults: dict[str, str] = {}
-        identity = payload.get("identity_defaults", {})
-        if identity:
-            defaults["source_channel"] = identity.get("source_channel", "")
-            defaults["user_id_default"] = identity.get("user_id_default", "")
-            defaults["caller_surface"] = identity.get("caller_surface", "")
-            defaults["declared_schema"] = identity.get("declared_schema", "")
-            defaults["tenant_id"] = identity.get("tenant_id", "")
-        
-        auth = payload.get("auth_defaults", {})
-        if auth:
-            defaults["auth_kind"] = auth.get("kind", "")
-            defaults["auth_token"] = auth.get("token", "")
-        
-        return defaults
+        raw = getattr(profile, "raw_data", None)
+        return dict(raw) if isinstance(raw, dict) else {}
     except (UnknownAppError, MissingProfileError, InvalidProfileError):
-        # Fail-closed: return empty dict on profile resolution failure
         return {}
     except Exception:
-        # Fail-closed: any unexpected error returns empty defaults
         return {}
+
+
+def _resolve_exit_eval_wire(app_name: str) -> dict[str, Any]:
+    """§X1A wiring: non-empty roster + truthy threshold_profile inside grader_composition.
+
+    Resolved from ``pipeline_defaults.exit_eval_wire`` (app SSOT YAML under
+    ``config/profiles/<app>/pipeline_defaults.yaml``).  Missing or partial
+    config returns {} so callers keep prior behaviour (X1A may still fail).
+    """
+    payload = _load_pipeline_defaults_payload(app_name)
+    ee = payload.get("exit_eval_wire") or {}
+    if not isinstance(ee, dict):
+        return {}
+
+    roster_raw = ee.get("grader_roster") or ee.get("roster") or []
+    roster: list[str] = []
+    if isinstance(roster_raw, list):
+        for item in roster_raw:
+            s = str(item).strip()
+            if s:
+                roster.append(s)
+
+    threshold_profile = ee.get("threshold_profile")
+    if isinstance(threshold_profile, str):
+        threshold_profile = threshold_profile.strip() or None
+
+    if not roster:
+        _log.warning(
+            "[R4] exit_eval_wire.grader_roster missing/empty app=%s — X1A may fail",
+            app_name,
+        )
+        return {}
+    if threshold_profile is None:
+        _log.warning(
+            "[R4] exit_eval_wire.threshold_profile missing app=%s — X1A may fail",
+            app_name,
+        )
+        return {}
+
+    return {"roster": roster, "threshold_profile": threshold_profile}
+
+
+def _resolve_spine_exit_packet_carrier_refs(app_name: str) -> tuple[str, ...]:
+    """AG-8 threading tuple for ``l5_certification_refs`` on Exit receipts.
+
+    Loaded from ``pipeline_defaults.exit_eval_wire.spine_exit_packet_carrier_refs``.
+    These are **application binding / packet-carrier tokens** for the Exit v6
+    X3 builder — **not** Fort Knox ``RTC-REQ-*`` production certifications.
+    """
+    payload = _load_pipeline_defaults_payload(app_name)
+    ee = payload.get("exit_eval_wire") or {}
+    if not isinstance(ee, dict):
+        return ()
+    raw = ee.get("spine_exit_packet_carrier_refs") or ee.get(
+        "spine_l5_packet_carrier_refs",
+    )
+    if not isinstance(raw, list):
+        return ()
+    out: list[str] = []
+    for item in raw:
+        s = str(item).strip()
+        if s:
+            out.append(s)
+    return tuple(out)
+
+
+def _apply_pipeline_exit_carriers(receipts: dict[str, Any], app_name: str) -> None:
+    """Attach Exit v6 carriers from resolved ``pipeline_defaults`` (app SSOT)."""
+    wire = _resolve_exit_eval_wire(app_name)
+    if wire:
+        receipts["grader_composition"] = dict(wire)
+        tp = wire.get("threshold_profile")
+        if isinstance(tp, str) and tp.strip():
+            receipts["threshold_profile_ref"] = tp.strip()
+
+    spine_refs = _resolve_spine_exit_packet_carrier_refs(app_name)
+    if spine_refs:
+        receipts["l5_certification_refs"] = spine_refs
 
 
 def _sha256_file(path: Path) -> str | None:
@@ -267,6 +379,72 @@ def _sha256_file(path: Path) -> str | None:
         return f"sha256:{hashlib.sha256(content).hexdigest()}"
     except OSError:
         return None
+
+
+def _looks_like_content_sha256_digest(val: str) -> bool:
+    s = (val or "").strip()
+    if s.startswith("sha256:") and len(s) == 71:
+        tail = s[7:]
+        return all(c in "0123456789abcdefABCDEF" for c in tail)
+    if len(s) == 64:
+        return all(c in "0123456789abcdefABCDEF" for c in s)
+    return False
+
+
+def _normalize_digest_literal(val: str) -> str:
+    s = (val or "").strip()
+    if s.startswith("sha256:"):
+        return s
+    return f"sha256:{s.lower()}" if s else ""
+
+
+def _hydrate_raw_request_evidence_digests(
+    raw_request: dict[str, Any],
+    *,
+    app_name: str,
+    policy_override: str,
+    blueprint_override: str,
+) -> None:
+    """Populate ``policy_hash`` / ``blueprint_hash`` when caller omits content digests.
+
+    Resolution order per field: explicit run kwargs → already-valid content digest
+    on ``raw_request`` → SHA-256 of files named in ``pipeline_defaults.policy_refs``.
+    Paths are **only** read from the app's profile YAML (never hardcoded per app
+    in core).
+    """
+    if not app_name:
+        return
+
+    payload = _load_pipeline_defaults_payload(app_name)
+    prefs = payload.get("policy_refs")
+    prefs = prefs if isinstance(prefs, dict) else {}
+
+    def _fill(field: str, override: str, current: Any, rel_path: str | None) -> None:
+        ov = (override or "").strip()
+        if _looks_like_content_sha256_digest(ov):
+            raw_request[field] = _normalize_digest_literal(ov)
+            return
+        cur = str(current or "").strip()
+        if _looks_like_content_sha256_digest(cur):
+            raw_request[field] = _normalize_digest_literal(cur)
+            return
+        if rel_path:
+            d = _sha256_file(Path(str(rel_path)))
+            if d:
+                raw_request[field] = d
+
+    _fill(
+        "policy_hash",
+        policy_override,
+        raw_request.get("policy_hash"),
+        str(prefs.get("l0_policy") or "").strip() or None,
+    )
+    _fill(
+        "blueprint_hash",
+        blueprint_override,
+        raw_request.get("blueprint_hash"),
+        str(prefs.get("agent_spec") or "").strip() or None,
+    )
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> str:
@@ -339,19 +517,63 @@ def _build_r5_exit_receipts(
     request_id: str,
     trace_root: str,
     reason_code: str,
+    app_name: str = "",
+    effective_route_id: str = "",
+    route_contract_id: str = "",
+    replay_key: str = "",
+    policy_digest: str = "",
+    blueprint_digest: str = "",
 ) -> dict[str, Any]:
-    """Minimal receipts dict for an R5 terminal path through Exit V6."""
-    return {
+    """Receipts dict for an L0 R5 terminal path through Exit V6 (§5.0 fields)."""
+    rid = (effective_route_id or "").strip() or ROUTE_ID
+    rcid = (route_contract_id or "").strip() or rid
+    out: dict[str, Any] = {
         "run_id": run_id,
         "request_id": request_id,
         "trace_root": trace_root,
-        "route_id": ROUTE_ID,
+        "route_id": rid,
         "chain_kind": CHAIN_KIND,
         "terminal_r5": True,
         "r5_reason_code": reason_code,
         "l2_executed": False,
         "producer_component": _PRODUCER_COMPONENT,
+        "policy_hash": policy_digest,
+        "blueprint_hash": blueprint_digest,
+        "replay_key": replay_key,
+        "route_contract": _r4_exit_route_contract_shard(
+            effective_route_id=rid,
+            route_contract_id=rcid,
+            request_id=request_id,
+            trace_root=trace_root,
+            app_name=app_name,
+        ),
+        "terminal_class": "failure",
     }
+    _apply_pipeline_exit_carriers(out, app_name)
+    return out
+
+
+def _r4_exit_route_contract_shard(
+    *,
+    effective_route_id: str,
+    route_contract_id: str,
+    request_id: str,
+    trace_root: str,
+    app_name: str,
+) -> dict[str, Any]:
+    """Minimal RouteContract-compatible mapping for Exit v6 §5.0 preflight + N2."""
+    rid = (effective_route_id or "").strip() or ROUTE_ID
+    cid = (route_contract_id or "").strip() or rid
+    shard: dict[str, Any] = {
+        "route_id": rid,
+        "route_contract_id": cid,
+        "chain_kind": CHAIN_KIND,
+        "request_id": request_id,
+        "trace_root": trace_root,
+    }
+    if app_name:
+        shard["app_id"] = app_name
+    return shard
 
 
 def _build_l2_exit_receipts(
@@ -361,20 +583,47 @@ def _build_l2_exit_receipts(
     trace_root: str,
     c0_bypass_digest: str,
     l2_result: Any,
+    effective_route_id: str,
+    route_contract_id: str,
+    replay_key: str,
+    policy_digest: str,
+    blueprint_digest: str,
+    terminal_class: str,
+    app_name: str,
 ) -> dict[str, Any]:
-    """Receipts dict for a successful L2-executed path through Exit V6."""
-    return {
+    """Receipts dict for an L2-executed path through Exit V6 §5.0 onward.
+
+    Carries hashes, replay binding, RouteContract shard, and terminal_class
+    from the live R4 context so ``validate_required_receipts`` can pass without
+    weakening §5.0 law.
+    """
+    out: dict[str, Any] = {
         "run_id": run_id,
         "request_id": request_id,
         "trace_root": trace_root,
-        "route_id": ROUTE_ID,
+        "route_id": (effective_route_id or "").strip() or ROUTE_ID,
         "chain_kind": CHAIN_KIND,
         "terminal_r5": False,
         "c0_bypass_receipt_digest": c0_bypass_digest,
         "l2_executed": True,
         "l2_result_summary": str(l2_result)[:256] if l2_result is not None else "",
         "producer_component": _PRODUCER_COMPONENT,
+        # Exit v6 §5.0 mandatory wiring (preflight.validate_required_receipts)
+        "policy_hash": policy_digest,
+        "replay_key": replay_key,
+        "route_contract": _r4_exit_route_contract_shard(
+            effective_route_id=effective_route_id,
+            route_contract_id=route_contract_id,
+            request_id=request_id,
+            trace_root=trace_root,
+            app_name=app_name,
+        ),
+        "terminal_class": terminal_class,
+        # Coherent hashes for ExitReviewPacket (identity envelope uses same lineage)
+        "blueprint_hash": blueprint_digest,
     }
+    _apply_pipeline_exit_carriers(out, app_name)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -491,6 +740,12 @@ def run_integrated_r4_deterministic_pipeline(
     run_id = str(uuid.uuid4())
     started_at = _utc_now_iso()
     git_commit, git_dirty = git_commit_and_dirty()
+    _hydrate_raw_request_evidence_digests(
+        raw_request,
+        app_name=app_name or "",
+        policy_override=policy_hash,
+        blueprint_override=blueprint_hash,
+    )
     replay_key = _compute_replay_key(raw_request)
 
     # ------------------------------------------------------------------
@@ -532,11 +787,18 @@ def run_integrated_r4_deterministic_pipeline(
     # L0 terminal (R5_FATAL / R5_FALLBACK) — route through Exit V6 before return
     if getattr(gate_result, "terminal", False) or getattr(gate_result, "r5_terminal", False):
         r5_reason = str(getattr(gate_result, "reason_code", "R5_TERMINAL"))
+        route_contract_id_r5 = str(getattr(plan_contract, "contract_id", "") or run_id)
         receipts = _build_r5_exit_receipts(
             run_id=run_id,
             request_id=request_id,
             trace_root=trace_root,
             reason_code=r5_reason,
+            app_name=app_name or "",
+            effective_route_id=effective_route_id,
+            route_contract_id=route_contract_id_r5,
+            replay_key=replay_key,
+            policy_digest=str(raw_request.get("policy_hash", "") or ""),
+            blueprint_digest=str(raw_request.get("blueprint_hash", "") or ""),
         )
         exit_pipeline = ExitEvalPipeline()
         exit_result: ExitEvalResult = exit_pipeline.run(receipts)
@@ -692,12 +954,22 @@ def run_integrated_r4_deterministic_pipeline(
     # ------------------------------------------------------------------
     # Exit V6 — exactly one X3 disposition per run
     # ------------------------------------------------------------------
+    _policy_digest = (policy_hash or str(raw_request.get("policy_hash", "") or "")).strip()
+    _blueprint_digest = (blueprint_hash or str(raw_request.get("blueprint_hash", "") or "")).strip()
+    _terminal_cls = "failure" if l2_fault.strip() else "success"
     receipts = _build_l2_exit_receipts(
         run_id=run_id,
         request_id=request_id,
         trace_root=trace_root,
         c0_bypass_digest=c0_hash,
         l2_result=l2_result,
+        effective_route_id=effective_route_id,
+        route_contract_id=route_contract_id,
+        replay_key=replay_key,
+        policy_digest=_policy_digest,
+        blueprint_digest=_blueprint_digest,
+        terminal_class=_terminal_cls,
+        app_name=app_name,
     )
     if l2_fault:
         receipts["l2_fault"] = l2_fault
@@ -705,6 +977,11 @@ def run_integrated_r4_deterministic_pipeline(
     exit_pipeline = ExitEvalPipeline()
     exit_result: ExitEvalResult = exit_pipeline.run(receipts)
     x3 = exit_result.disposition.value
+    # Exit v6 may still aggregate X3D ALLOW on minimal R4 receipt shapes even when
+    # ``terminal_class=failure`` — that would contradict ``l2_fault`` on the same run.
+    # Product/spine truth: an L2 recipe fault is never an ALLOW-class completion.
+    if str(l2_fault).strip():
+        x3 = V6Disposition.DENY.value
 
     # ------------------------------------------------------------------
     # D2 semantic cache writeback — learn from successful runs only
@@ -791,7 +1068,7 @@ def run_integrated_r4_deterministic_pipeline(
 
     # NOTE: HowTrace builder treats R4_SINGLE_ACTION as part of the R1B family
     # (terminal-shortcircuit shape).  R4 actually executes a deterministic
-    # static-DAG L2 callable (apps_rg hops), but at the spine level the L2 work
+    # static-DAG L2 callable (resolved per ``app_name``), but at the spine level the L2 work
     # is sealed via the L2 callable's own outputs (e.g. generated_resume.json,
     # run_report.json) rather than a model/tool-call sealed_artifact.  We
     # therefore emit a terminal_ret_packet that asserts no_l2_execution=True

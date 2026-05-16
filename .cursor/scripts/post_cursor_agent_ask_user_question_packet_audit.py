@@ -37,7 +37,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "windsurf" / "ask_user_question_packet_violations.jsonl"
+    REPO_ROOT / "artifacts" / "cursor" / "ask_user_question_packet_violations.jsonl"
 )
 MAX_RESPONSE_BYTES = 1_048_576
 

@@ -39,8 +39,9 @@ except ImportError:
     pass  # dotenv not installed, rely on system env
 
 from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summary_prompt
+from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
@@ -329,7 +330,7 @@ def retry_qwen_for_synthesis(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages}
-    result = call_qwen_vllm(repair_payload)
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed, ""
     new_raw = result.raw_model_output
@@ -453,6 +454,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             input_payload_hash=input_payload_hash,
             temperature=args.temperature,
         )
+        provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
         provider_request_data = provider_req.to_dict()
         write_json(artifact_dir / "provider_request.json", provider_request_data)
         result = call_qwen_vllm(provider_payload)
@@ -543,6 +545,12 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
         "compiler_template_id": section_compiled.artifact.template_id,
     }
+    trace = attach_reasoning_to_prompt_trace(
+        trace,
+        provider=args.provider,
+        lane_key=LANE_KEY,
+        provider_result_data=provider_result_data if isinstance(provider_result_data, dict) else None,
+    )
     write_json(artifact_dir / "prompt_selection_trace.json", trace)
     write_json(artifact_dir / "fact_check_result.json", {"passed": False, "failed_gates": [], "status": "pending"})
     write_json(

@@ -26,7 +26,7 @@ class TestMissingRecipeFailsClosed:
     @pytest.fixture()
     def raw_request(self):
         return {
-            "transport": "cli",
+            "transport": "ui",
             "method": "POST",
             "content_type": "application/json",
             "source_channel": "apps_rg_cli",

@@ -47,6 +47,38 @@ from agentic_core.runtime.contracts.l3_to_l2_step_contract import L3ToL2StepCont
 _LOGGER = logging.getLogger(__name__)
 
 
+def _resolve_local_vllm_base_url(profile: ProviderProfile) -> Optional[str]:
+    """Resolve OpenAI-compatible base URL for LOCAL_VLLM (trailing ``/v1`` stripped for client)."""
+    raw = (profile.endpoint_url or "").strip()
+    if raw:
+        return raw.rstrip("/")
+    env_name = (profile.endpoint_env_var or "").strip()
+    if env_name:
+        from_env = (os.environ.get(env_name) or "").strip()
+        if from_env:
+            return from_env.rstrip("/")
+    return None
+
+
+def _local_vllm_temperature(request: ProviderRequest, profile: ProviderProfile) -> float:
+    """Preserve ``0.0`` — do not treat falsy float as missing."""
+    if request.temperature is not None:
+        return float(request.temperature)
+    return 0.7
+
+
+def _local_vllm_max_tokens(request: ProviderRequest, profile: ProviderProfile) -> int:
+    if request.max_tokens is not None and int(request.max_tokens) > 0:
+        return int(request.max_tokens)
+    return int(profile.max_tokens or 4096)
+
+
+def _local_vllm_top_p(request: ProviderRequest, profile: ProviderProfile) -> float:
+    if request.top_p is not None:
+        return float(request.top_p)
+    return 1.0
+
+
 class ProviderGateway:
     """Generic provider gateway for LLM generation.
     
@@ -167,6 +199,7 @@ class ProviderGateway:
             receipt=receipt,
             error_message=response.error_message,
             model_used=response.model_used,
+            invocation_meta=getattr(response, "invocation_meta", None),
         )
     
     def _check_provider_mode(self, profile: ProviderProfile) -> None:
@@ -265,33 +298,82 @@ class ProviderGateway:
                 QwenInferenceRequest,
             )
             
-            gateway = QwenInferenceGateway()
-            inference_req = QwenInferenceRequest(
-                app_name=request.run_id or "provider_gateway",
-                prompt=request.prompt_text,
-                max_tokens=request.max_tokens or profile.max_tokens,
-                temperature=request.temperature or 0.7,
-            )
-            
-            # Note: infer is async, but we call synchronously here
-            # The caller should handle async appropriately
+            base_url = _resolve_local_vllm_base_url(profile)
+
+            async def _invoke_once():
+                gateway = QwenInferenceGateway(
+                    model_id=profile.model_id,
+                    base_url=base_url,
+                )
+                try:
+                    inference_req = QwenInferenceRequest(
+                        app_name=request.run_id or "provider_gateway",
+                        prompt=request.prompt_text,
+                        max_tokens=_local_vllm_max_tokens(request, profile),
+                        temperature=_local_vllm_temperature(request, profile),
+                        top_p=_local_vllm_top_p(request, profile),
+                        response_format=request.openai_response_format,
+                    )
+                    return await gateway.infer(inference_req)
+                finally:
+                    await gateway.aclose()
+
             import asyncio
-            response = asyncio.run(gateway.infer(inference_req))
+
+            response = asyncio.run(_invoke_once())
             
+            def _vllm_invocation_meta(qwen_resp: Any) -> dict[str, Any]:
+                from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+                    QWEN_LOCAL_MAX_MODEL_LEN,
+                )
+
+                inv_meta: dict[str, Any] = {
+                    "provider_profile_id": str(profile.profile_id),
+                    "model_id": str(profile.model_id or ""),
+                    "base_url_redacted": _resolve_local_vllm_base_url(profile) or "",
+                    "max_model_len": int(QWEN_LOCAL_MAX_MODEL_LEN),
+                }
+                if inv_meta["base_url_redacted"]:
+                    from urllib.parse import urlsplit, urlunsplit
+
+                    parts = urlsplit(str(inv_meta["base_url_redacted"]))
+                    netloc = parts.netloc
+                    if "@" in netloc:
+                        netloc = "<redacted-credentials>@" + netloc.split("@", 1)[-1]
+                    else:
+                        host = netloc.split(":")[0] if netloc else ""
+                        if host:
+                            netloc = netloc.replace(host, "<redacted-host>", 1)
+                    inv_meta["base_url_redacted"] = urlunsplit(
+                        (parts.scheme, netloc, parts.path, parts.query, parts.fragment)
+                    )
+                vd = getattr(qwen_resp, "vllm_diagnostics", None)
+                if isinstance(vd, dict):
+                    inv_meta.update(vd)
+                return inv_meta
+
             if response.success:
+                inv_meta = _vllm_invocation_meta(response)
                 return ProviderResponse(
                     success=True,
                     text=response.response or "",
                     receipt=None,
                     model_used=response.model_used or profile.model_id,
+                    invocation_meta=inv_meta,
                 )
             else:
+                inv_meta = _vllm_invocation_meta(response)
+                if response.error_message and "HTTP 400" in response.error_message:
+                    low = response.error_message.lower()
+                    if "response_format" in low or "response format" in low:
+                        inv_meta["response_format_supported"] = False
                 return ProviderResponse(
                     success=False,
                     text="",
                     receipt=None,
                     error_message=response.error_message or "vLLM inference failed",
                     model_used=response.model_used,
+                    invocation_meta=inv_meta,
                 )
         except ImportError as exc:
             _LOGGER.error("QwenInferenceGateway not available: %s", exc)

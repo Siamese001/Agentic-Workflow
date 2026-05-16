@@ -108,7 +108,7 @@ class TestAppIngressRunnerProfilePath:
 
     def test_runner_clarification_on_missing_slug(self):
         from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-        from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+        from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired
         from apps_qna.runtime.profile_builder import build_app_runtime_contract
 
         profile = build_app_runtime_contract()
@@ -120,7 +120,7 @@ class TestAppIngressRunnerProfilePath:
 
     def test_runner_clarification_on_empty_slug(self):
         from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-        from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+        from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired
         from apps_qna.runtime.profile_builder import build_app_runtime_contract
 
         profile = build_app_runtime_contract()

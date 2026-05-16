@@ -19,15 +19,15 @@ class TestL2StepsOnlyViaCore:
     """L2 step adapters are registered implementations, not standalone scripts."""
 
     def test_step_classes_exist_in_l2_recipe(self):
-        """All three step classes exist in apps_rg.l2_recipe.steps."""
+        """Recipe step classes exist and expose STEP_NAME."""
         from apps_rg.l2_recipe.steps import (
             DocxExportStep,
             GenerateResumeStep,
             NarrativePassStep,
         )
-        assert GenerateResumeStep.STEP_ID == "hop_4_generate_resume"
-        assert NarrativePassStep.STEP_ID == "hop_5_narrative_pass"
-        assert DocxExportStep.STEP_ID == "hop_6_docx_export"
+        assert GenerateResumeStep.STEP_NAME == "generate_resume"
+        assert NarrativePassStep.STEP_NAME == "narrative_pass"
+        assert DocxExportStep.STEP_NAME == "docx_export"
 
     def test_step_classes_are_callable(self):
         """Step instances implement __call__(context) -> dict."""
@@ -95,14 +95,13 @@ class TestL2StepsOnlyViaCore:
 
         step = NarrativePassStep()
         result = step({"target_company": "", "target_role": "Eng"})
-        assert result["skipped"] is True
-        assert result["exit_code"] == 0
+        assert result.get("status") == "skipped"
 
-    def test_docx_step_fails_without_run_dir(self):
-        """DocxExportStep returns error when no run_dir in context."""
+    def test_docx_step_fails_without_artifact_dir(self):
+        """DocxExportStep returns error when no artifact_dir in context."""
         from apps_rg.l2_recipe.steps import DocxExportStep
 
         step = DocxExportStep()
         result = step({"target_company": "X", "target_role": "Y"})
-        assert result["exit_code"] == 1
-        assert "no run_dir" in result.get("error", "")
+        assert result.get("status") == "error"
+        assert "artifact_dir" in result.get("error", "")

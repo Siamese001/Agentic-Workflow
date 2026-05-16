@@ -19,6 +19,24 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     SourceType,
 )
 
+
+def _coerce_l5_cert_refs_tuple(raw: Any) -> tuple[str, ...]:
+    """Normalize receipts['l5_certification_refs'] to a string tuple."""
+    if raw is None:
+        return ()
+    if isinstance(raw, str):
+        s = raw.strip()
+        return (s,) if s else ()
+    if isinstance(raw, (list, tuple)):
+        out: list[str] = []
+        for x in raw:
+            sx = str(x).strip()
+            if sx:
+                out.append(sx)
+        return tuple(out)
+    return ()
+
+
 # Spec §5.0 - immediate fail codes (lookup map: receipt field -> reason code)
 IMMEDIATE_FAIL_CODES: dict[str, str] = {
     "policy_hash": "POLICY_HASH_MISSING",
@@ -305,6 +323,9 @@ def normalize_to_packet(receipts: dict[str, Any]) -> ExitReviewPacket:
         grader_roster_ref=str(
             receipts.get("grader_roster_ref")
             or rc.get("grader_roster_ref", "")
+        ),
+        l5_certification_refs=_coerce_l5_cert_refs_tuple(
+            receipts.get("l5_certification_refs"),
         ),
     )
 

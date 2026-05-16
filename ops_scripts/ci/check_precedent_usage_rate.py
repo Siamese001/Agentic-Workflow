@@ -25,7 +25,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER_DB = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_DB = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "precedent_usage_violations.jsonl"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "precedent_usage_bypass.jsonl"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ledgers" / "precedent_usage_report.json"

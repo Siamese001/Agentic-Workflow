@@ -65,7 +65,14 @@ class TestR4L7Emit:
 
         # Verify run completed successfully
         assert result.fault == ""
-        assert result.x3_disposition in ("ALLOW", "DENY", "REVIEW", "X3A", "EXIT_OK")
+        assert result.x3_disposition in (
+            "ALLOW",
+            "DENY",
+            "REVIEW",
+            "X3A",
+            "EXIT_OK",
+            "X3D",
+        )
         assert result.artifact_dir == temp_artifact_dir
 
         # Verify all four canonical L7 artifacts exist

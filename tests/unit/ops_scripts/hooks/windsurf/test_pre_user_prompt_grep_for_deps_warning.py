@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOK = REPO_ROOT / ".windsurf" / "scripts" / "pre_user_prompt_grep_for_deps_warning.py"
+HOOK = REPO_ROOT / ".cursor" / "scripts" / "pre_user_prompt_grep_for_deps_warning.py"
 
 
 def _run(stdin: str, env_overrides: dict[str, str] | None = None) -> subprocess.CompletedProcess:

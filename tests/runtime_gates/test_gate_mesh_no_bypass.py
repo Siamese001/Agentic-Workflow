@@ -31,7 +31,7 @@ from agentic_core.L5_safety.runtime_gates.dispatch import (
     run_layer,
 )
 from agentic_core.L5_safety.runtime_gates.mesh_result import build_mesh_result
-from agentic_core.L5_safety.runtime_gates.types import Disposition, GateDecision
+from agentic_core.L5_safety.runtime_gates.contracts import Disposition, GateDecision
 
 # 00C.8 — every owner layer that may admit packets MUST require its gate set.
 REQUIRED_BY_LAYER: dict[str, frozenset[str]] = {
@@ -115,7 +115,7 @@ def test_hard_fail_aggregates_to_deny_summary():
 
 def test_unknown_material_aggregates_to_escalate():
     """Material UNKNOWN escalates to ESCALATE_HITL (00C.7 aggregation)."""
-    from agentic_core.L5_safety.runtime_gates.types import Result, Severity
+    from agentic_core.L5_safety.runtime_gates.contracts import Result, Severity
 
     decisions = [
         GateDecision(gate_id="G01", disposition=Disposition.ALLOW),

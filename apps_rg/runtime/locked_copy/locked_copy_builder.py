@@ -23,9 +23,28 @@ def write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def build_locked_copy(repo: Path | None = None) -> dict[str, Any]:
+def build_locked_copy(
+    repo: Path | None = None,
+    *,
+    modular_output_root: Path | None = None,
+) -> dict[str, Any]:
+    """Build locked-copy artifacts.
+
+    Parameters
+    ----------
+    repo:
+        Repository root (defaults to ``find_repo_root()``).
+    modular_output_root:
+        When set (Phase 0 / R4 modular), write under
+        ``modular_output_root / \"locked_copy\"`` instead of the legacy
+        ``artifacts/apps_rg/runtime_proofs/locked_copy`` path.
+    """
     root = repo or find_repo_root()
-    artifact_dir = root / ARTIFACT_REL
+    artifact_dir = (
+        (modular_output_root / "locked_copy").resolve()
+        if modular_output_root is not None
+        else (root / ARTIFACT_REL)
+    )
     artifact_dir.mkdir(parents=True, exist_ok=True)
 
     base, base_path, base_hash = load_base_resume(root)

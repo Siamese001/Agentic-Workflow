@@ -1,0 +1,112 @@
+{
+  "candidate_name": "Amit Ayer",
+  "header": {
+    "name": "Amit Ayer"
+  },
+  "facts": {
+    "employment": [
+      {
+        "fact_id": "exp_unify_001",
+        "employer": "Unify Consulting",
+        "title": "SVP Engineering, Agentic AI Platforms",
+        "location": "Boca Raton, FL",
+        "start_date": "2023-02",
+        "end_date": "present",
+        "is_current": true,
+        "bullets": [
+          {
+            "bullet_id": "bul_unify_001",
+            "text": "Designed and operationalized governed agentic AI platform for regulated enterprise workflows, combining deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces",
+            "has_metric": false
+          },
+          {
+            "bullet_id": "bul_unify_002",
+            "text": "Built and applied software dependency graph intelligence to accelerate legacy system analysis to governed agentic deployment",
+            "has_metric": false
+          },
+          {
+            "bullet_id": "bul_unify_003",
+            "text": "Strengthened enterprise retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards",
+            "has_metric": false
+          }
+        ]
+      },
+      {
+        "fact_id": "exp_ibm_001",
+        "employer": "IBM",
+        "title": "Lead Client Partner",
+        "location": "Edgewater, NJ",
+        "start_date": "2017-04",
+        "end_date": "2022-10",
+        "is_current": false,
+        "bullets": [
+          {
+            "bullet_id": "bul_ibm_001",
+            "text": "Architected cloud-native AI and analytics platforms that enabled governed enterprise decision systems operating at 99.9% uptime across regulated financial environments",
+            "has_metric": true
+          },
+          {
+            "bullet_id": "bul_ibm_002",
+            "text": "Led migration from legacy on-prem environments to scalable cloud-native architectures, reducing infrastructure overhead by 30%",
+            "has_metric": true
+          },
+          {
+            "bullet_id": "bul_ibm_003",
+            "text": "Converted bespoke regulatory and analytics workflows into reusable SaaS-like platforms, improving renewal rates by 25%",
+            "has_metric": true
+          }
+        ]
+      },
+      {
+        "fact_id": "exp_insurtech_001",
+        "employer": "InsurTech Cloud Solutions",
+        "title": "Chief Technology Officer",
+        "location": "New York, NY",
+        "start_date": "2014-04",
+        "end_date": "2017-03",
+        "is_current": false,
+        "bullets": [
+          {
+            "bullet_id": "bul_insurtech_001",
+            "text": "Led end-to-end modernization of monolithic policy administration systems into AWS-based architectures, reducing total cost of ownership by 40%",
+            "has_metric": true
+          },
+          {
+            "bullet_id": "bul_insurtech_002",
+            "text": "Designed SOC 2-aligned cloud control frameworks enabling regulated insurers to adopt modern analytics and ML capabilities",
+            "has_metric": false
+          },
+          {
+            "bullet_id": "bul_insurtech_003",
+            "text": "Re-architected underwriting and operational systems for high availability, achieving 99.99% uptime",
+            "has_metric": true
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "fact_id": "edu_columbia_ms_001",
+        "degree": "Master of Science in Biostatistics",
+        "institution": "Columbia University",
+        "year": null,
+        "honors": "Graduated with Distinction"
+      },
+      {
+        "fact_id": "edu_brown_ba_001",
+        "degree": "Bachelor of Arts in Biology",
+        "institution": "Brown University",
+        "year": null,
+        "honors": "Graduated Cum Laude"
+      }
+    ],
+    "certifications": [
+      {
+        "fact_id": "cert_aws_cml_001",
+        "name": "Certified Machine Learning Engineer – Associate",
+        "issuing_organization": "AWS",
+        "year": "2025"
+      }
+    ]
+  }
+}

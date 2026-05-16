@@ -17,7 +17,7 @@ from agentic_core.L5_safety.runtime_gates.ctx_builders import (
     merge_ctx,
 )
 from agentic_core.L5_safety.runtime_gates.dispatch import LAYER_U0, run_layer
-from agentic_core.L5_safety.runtime_gates.types import GateContext
+from agentic_core.L5_safety.runtime_gates.contracts import GateContext
 
 
 def test_build_u0_ctx_runs_layer_clean() -> None:

@@ -30,7 +30,7 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
 
 from post_mcp_audit import _mark_memory_recalled, main
 
@@ -44,7 +44,7 @@ class TestMain:
     def _run(self, payload: dict, log_path: Path) -> int:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
-            with patch("post_mcp_audit.AUDIT_LOG", log_path):
+            with patch("post_mcp_audit.audit_log", log_path):
                 return main()
 
     # Always exits 0
@@ -58,7 +58,7 @@ class TestMain:
     def test_empty_stdin_exits_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
         with patch("sys.stdin", StringIO("")):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -66,7 +66,7 @@ class TestMain:
     def test_malformed_json_exits_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
         with patch("sys.stdin", StringIO("{bad json")):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -74,7 +74,7 @@ class TestMain:
     def test_whitespace_stdin_exits_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
         with patch("sys.stdin", StringIO("   \n  ")):
-            with patch("post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.audit_log", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -222,7 +222,7 @@ class TestMain:
         log = tmp_path / "audit.jsonl"
         state = tmp_path / "session_state.json"
         payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": "mem_recall_session_start"}}
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             self._run(payload, log)
         data = json.loads(state.read_text(encoding="utf-8"))
         assert data["memory_recalled"] is True
@@ -232,7 +232,7 @@ class TestMain:
         log = tmp_path / "audit.jsonl"
         state = tmp_path / "session_state.json"
         payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": "search_nodes"}}
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             self._run(payload, log)
         assert not state.exists() or "memory_recalled" not in json.loads(state.read_text(encoding="utf-8"))
 
@@ -243,7 +243,7 @@ class TestMain:
         payload = {
             "tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "mem_recall_session_start"}
         }
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             self._run(payload, log)
         assert not state.exists() or "memory_recalled" not in json.loads(state.read_text(encoding="utf-8"))
 
@@ -256,7 +256,7 @@ class TestMain:
 class TestMarkMemoryRecalled:
     def test_creates_state_file_with_flag(self, tmp_path):
         state = tmp_path / "session_state.json"
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             _mark_memory_recalled()
         data = json.loads(state.read_text(encoding="utf-8"))
         assert data["memory_recalled"] is True
@@ -264,7 +264,7 @@ class TestMarkMemoryRecalled:
     def test_sets_flag_in_existing_state(self, tmp_path):
         state = tmp_path / "session_state.json"
         state.write_text(json.dumps({"current_tier": "T2", "task_created": True}), encoding="utf-8")
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             _mark_memory_recalled()
         data = json.loads(state.read_text(encoding="utf-8"))
         assert data["memory_recalled"] is True
@@ -273,7 +273,7 @@ class TestMarkMemoryRecalled:
     def test_overwrites_false_with_true(self, tmp_path):
         state = tmp_path / "session_state.json"
         state.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             _mark_memory_recalled()
         data = json.loads(state.read_text(encoding="utf-8"))
         assert data["memory_recalled"] is True
@@ -281,5 +281,5 @@ class TestMarkMemoryRecalled:
     def test_fail_open_on_corrupt_json(self, tmp_path):
         state = tmp_path / "session_state.json"
         state.write_text("{bad json", encoding="utf-8")
-        with patch("post_mcp_audit.SESSION_STATE", state):
+        with patch("post_mcp_audit.session_state", state):
             _mark_memory_recalled()  # must not raise

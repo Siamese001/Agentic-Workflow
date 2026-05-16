@@ -17,7 +17,7 @@ from agentic_core.L5_safety.runtime_gates.dispatch import (
     gates_for_layer,
     run_layer,
 )
-from agentic_core.L5_safety.runtime_gates.types import Disposition
+from agentic_core.L5_safety.runtime_gates.contracts import Disposition
 
 from tests.unit.agentic_core.L5_safety.runtime_gates._ctx_fixtures import clean_ctx
 

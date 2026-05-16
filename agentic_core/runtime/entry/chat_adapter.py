@@ -11,7 +11,7 @@ import time
 import uuid
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.ingress_envelope_check import (
+from agentic_core.L5_safety.enforcement.ingress import (
     ClarificationRequired,
     IngressEnvelopeCheck,
     IngressRejected,

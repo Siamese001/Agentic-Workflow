@@ -30,7 +30,7 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
 
 from post_write_audit import lint_mcp_config, main
 
@@ -42,7 +42,7 @@ from post_write_audit import lint_mcp_config, main
 
 class TestLintMcpConfig:
     def _write(self, tmp_path, config: dict) -> str:
-        p = tmp_path / "mcp_config.json"
+        p = tmp_path / "mcp.json"
         p.write_text(json.dumps(config), encoding="utf-8")
         return str(p)
 
@@ -140,7 +140,7 @@ class TestLintMcpConfig:
         assert findings == []
 
     def test_invalid_json_in_file_reports_finding(self, tmp_path):
-        p = tmp_path / "mcp_config.json"
+        p = tmp_path / "mcp.json"
         p.write_text("{invalid json!}", encoding="utf-8")
         findings = lint_mcp_config(str(p), [])
         assert len(findings) > 0
@@ -173,7 +173,7 @@ class TestMain:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
             if log_path is not None:
-                with patch("post_write_audit.AUDIT_LOG", log_path):
+                with patch("post_write_audit.audit_log", log_path):
                     return main()
             return main()
 
@@ -199,14 +199,14 @@ class TestMain:
             assert main() == 0
 
     def test_mcp_config_with_findings_still_exits_0(self, tmp_path):
-        config_path = tmp_path / "mcp_config.json"
+        config_path = tmp_path / "mcp.json"
         config_path.write_text(json.dumps({"version": 1}), encoding="utf-8")
         log = tmp_path / "mcp_lint_audit.jsonl"
         payload = {"tool_info": {"file_path": str(config_path), "edits": []}}
         assert self._run(payload, log) == 0
 
     def test_mcp_config_clean_exits_0(self, tmp_path):
-        config_path = tmp_path / "mcp_config.json"
+        config_path = tmp_path / "mcp.json"
         config_path.write_text(json.dumps({"mcpServers": {"svc": {"command": "python"}}}), encoding="utf-8")
         log = tmp_path / "mcp_lint_audit.jsonl"
         payload = {"tool_info": {"file_path": str(config_path), "edits": []}}
@@ -214,7 +214,7 @@ class TestMain:
 
     # Audit log content
     def test_audit_log_written_on_mcp_config(self, tmp_path):
-        config_path = tmp_path / "mcp_config.json"
+        config_path = tmp_path / "mcp.json"
         config_path.write_text(json.dumps({"mcpServers": {}}), encoding="utf-8")
         log = tmp_path / "mcp_lint_audit.jsonl"
         payload = {"tool_info": {"file_path": str(config_path), "edits": []}}
@@ -233,7 +233,7 @@ class TestMain:
         assert not log.exists()
 
     def test_audit_log_appended_across_calls(self, tmp_path):
-        config_path = tmp_path / "mcp_config.json"
+        config_path = tmp_path / "mcp.json"
         config_path.write_text(json.dumps({"mcpServers": {}}), encoding="utf-8")
         log = tmp_path / "mcp_lint_audit.jsonl"
         payload = {"tool_info": {"file_path": str(config_path), "edits": []}}
@@ -243,7 +243,7 @@ class TestMain:
         assert len(lines) == 2
 
     def test_finding_count_matches_findings_list(self, tmp_path):
-        config_path = tmp_path / "mcp_config.json"
+        config_path = tmp_path / "mcp.json"
         config_path.write_text(json.dumps({"version": 1}), encoding="utf-8")
         log = tmp_path / "mcp_lint_audit.jsonl"
         payload = {"tool_info": {"file_path": str(config_path), "edits": []}}

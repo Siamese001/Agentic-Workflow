@@ -214,7 +214,7 @@ class TestRgResumeOrchestratorLocalFirstRouting:
             _adapter_patch(),
         ):
             with pytest.raises(RuntimeError, match="LOCAL_VLLM selected but Qwen init failed"):
-                asyncio.run(orch.run("Python engineer role"))
+                orch.run("Python engineer role")
 
     def test_run_skips_qwen_call_when_gateway_is_none_and_no_init_error(self):
         """Edge case: gateway is None but no init error (qwen_enabled=False) → no Qwen call, no raise."""
@@ -349,7 +349,7 @@ class TestRgResumeOrchestratorAdapterDisposition:
             ),
         ):
             with pytest.raises(RuntimeError, match="Qwen down"):
-                asyncio.run(orch.run("Python engineer role"))
+                orch.run("Python engineer role")
 
         mock_adapter.record_local_failure.assert_called_once_with(severity="medium")
         mock_adapter.record_local_success.assert_not_called()

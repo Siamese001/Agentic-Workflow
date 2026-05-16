@@ -73,6 +73,15 @@ def pytest_configure(config):
     """Configure pytest with custom settings."""
     config.addinivalue_line("markers", "data: marks tests as data-dependent")
 
+    import os
+
+    if os.environ.get("PYTEST_APPS_RG_LIVE_L2", "").strip().lower() not in (
+        "1",
+        "true",
+        "yes",
+    ):
+        os.environ["APPS_RG_L2_PROVIDER_MODE"] = "stub_only"
+
 
 def _install_integration_compat_shims() -> None:
     """Provide lightweight shims for integration root-package imports."""
@@ -314,8 +323,8 @@ _install_integration_compat_shims()
 # W3.2 — Author-Gate meta-learning: pytest signal writer.
 # =====================================================================
 # Writes {ts, exit_code, passed, failed, errors, duration_s} to
-# artifacts/windsurf/last_test_signal.json at session end so the
-# post_cursor_agent_author_gate_capture hook can populate decision_outcomes.tests_passed.
+# artifacts/cursor/last_test_signal.json (and mirrors under artifacts/windsurf/ for
+# legacy readers) at session end so post_cursor_agent_author_gate_capture can bind tests_passed.
 
 
 def pytest_sessionstart(session):  # noqa: ARG001 — pytest hook signature
@@ -349,18 +358,20 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
     except (AttributeError, KeyError):
         passed = failed = errors = 0
 
-    out_path = Path(_REPO_ROOT) / "artifacts" / "windsurf" / "last_test_signal.json"
-    try:
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "ts": _dt.now(_tz.utc).isoformat(timespec="seconds"),
-            "exit_code": int(exitstatus),
-            "passed": passed,
-            "failed": failed,
-            "errors": errors,
-            "duration_s": duration_s,
-        }
-        out_path.write_text(_json.dumps(payload, indent=2), encoding="utf-8")
-    except OSError:
-        # guardian: allow-silent-swallow -- signal write is non-critical meta-learning aid
-        pass
+    payload = {
+        "ts": _dt.now(_tz.utc).isoformat(timespec="seconds"),
+        "exit_code": int(exitstatus),
+        "passed": passed,
+        "failed": failed,
+        "errors": errors,
+        "duration_s": duration_s,
+    }
+    text = _json.dumps(payload, indent=2)
+    for sub in ("cursor", "windsurf"):
+        out_path = Path(_REPO_ROOT) / "artifacts" / sub / "last_test_signal.json"
+        try:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(text, encoding="utf-8")
+        except OSError:
+            # guardian: allow-silent-swallow -- signal write is non-critical meta-learning aid
+            pass

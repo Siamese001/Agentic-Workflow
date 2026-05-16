@@ -1,11 +1,39 @@
-# Pipeline Defaults Profile for apps_rg
-# Default values for R4 deterministic pipeline
+# =============================================================================
+# apps_rg — pipeline_defaults (RuntimeProfileResolver SSOT)
+# -----------------------------------------------------------------------------
+# OWNERSHIP (constitutional app/core split):
+#   - This file: apps_rg product defaults for R4 integrated spine + Exit v6 carriers.
+#   - Core (`integrated_r4_deterministic_pipeline_run`): reads this profile via
+#     `RuntimeProfileResolver` only; it MUST NOT embed apps_rg policy literals.
+#   - Schema: `.windsurf/schemas/pipeline_defaults.schema.yaml` (required:
+#     app_id, pipeline_config, namespace_defaults).
+# =============================================================================
 
 schema_version: "1.0"
 app_id: "apps_rg"
 profile_type: "pipeline_defaults"
 
-# Identity defaults for envelope construction
+# --- pipeline_config: bounded execution posture for the integrated R4 runner ---
+pipeline_config:
+  default_timeout_seconds: 900
+  max_retries: 2
+  retry_backoff_seconds: 8
+  parallel_stage_execution: false
+  stage_failure_behavior: "fail_fast"
+
+# --- namespace_defaults: artifact + telemetry lanes (aligns with apps_rg runs) ---
+namespace_defaults:
+  artifact_namespace: "artifacts/apps_rg/runs"
+  log_namespace: "apps_rg/pipeline_logs"
+  telemetry_prefix: "apps_rg.r4_integrated"
+
+# --- routing_hints: advisory; L0/Exit remain authoritative ---
+routing_hints:
+  preferred_l2_provider: "stub"
+  require_c0_ingest: false
+  l6_writeback_enabled: true
+
+# --- identity_defaults: U0 / envelope construction (also used by RawIngressEnvelope path) ---
 identity_defaults:
   source_channel: "apps_rg_cli"
   user_id_default: "u-apps_rg"
@@ -13,15 +41,12 @@ identity_defaults:
   caller_surface: "apps_rg_cli"
   tenant_id: "apps_rg"
 
-# Auth defaults
 auth_defaults:
   kind: "internal"
   token: "apps-rg-internal"
 
-# Artifact directory prefix
 artifact_prefix: "apps_rg_r4"
 
-# Replay key derivation fields
 replay_key_fields:
   - "jd_hash"
   - "brief_hash"
@@ -29,17 +54,29 @@ replay_key_fields:
   - "policy_hash"
   - "blueprint_hash"
 
-# Default policy and blueprint refs (for runtime validation)
+# policy_refs — keys consumed by integrated_r4 `_hydrate_raw_request_evidence_digests`
+# (`l0_policy`, `agent_spec`). Paths MUST exist on disk during runs that omit hashes.
 policy_refs:
-  prompt_registry: "apps_rg/prompt_assembly/prompt_registry.yaml"
-  hitl_policy: "apps_rg/config/hitl_trigger_policy.yaml"
-  l0_policy: "apps_rg/config/l0_policy.yaml"
-  agent_spec: "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml"
-  thresholds: "apps_rg/config/rg_thresholds.yaml"
+  l0_policy: "apps_rg/prompt_assembly/prompt_registry.yaml"
+  agent_spec: "apps_rg/config/domain_contract/route_profiles.yaml"
 
-# Quality thresholds
 quality_defaults:
   min_quality: 0.75
   min_ats: 70
   word_min: 400
   word_max: 1200
+
+# -----------------------------------------------------------------------------
+# exit_eval_wire — Exit v6 §X1A + AG-8 packet threading (refs only, no PA/judge IDs)
+#   - grader_roster / threshold_profile: required by eval_x1a (code-based gates).
+#   - spine_exit_packet_carrier_refs: threaded as receipts["l5_certification_refs"].
+#     **SEMANTICS:** application binding tokens for the Exit X3 builder / packet field
+#     shape — **NOT** Fort Knox `RTC-REQ-*` production L5 certifications. Auditors must
+#     not promote these strings to certification bundles as proof of runtime sign-off.
+# -----------------------------------------------------------------------------
+exit_eval_wire:
+  grader_roster:
+    - "apps_rg::exit_v6::code_based_roster::resume_generation::v1"
+  threshold_profile: "apps_rg::threshold_profile::resume_generation_exit_v6::v1"
+  spine_exit_packet_carrier_refs:
+    - "apps_rg::spine:r4:l5_packet_carrier::exit_eval_v6::v1"

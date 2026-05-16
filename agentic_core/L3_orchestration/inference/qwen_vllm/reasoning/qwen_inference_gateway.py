@@ -38,6 +38,8 @@ class QwenInferenceRequest:
     confidence_threshold: float = 0.7
     max_tokens: int = 2048
     temperature: float = 0.1
+    top_p: float = 1.0
+    response_format: dict[str, Any] | None = None
     use_cache: bool = True  # Enable response caching
 
 
@@ -53,6 +55,7 @@ class QwenInferenceResponse:
     error_message: str | None = None
     cached: bool = False  # Whether response was from cache
     tokens_used: int = 0
+    vllm_diagnostics: dict[str, Any] | None = None
 
 
 class QwenInferenceGateway:
@@ -106,7 +109,16 @@ class QwenInferenceGateway:
             )
             await self._vllm_client.start()
             self._initialized = True
-            logger.info("QwenInferenceGateway initialized: model=%s, url=%s", self.model_id, self.base_url)
+            logger.info("QwenInferenceGateway initialized: model=%s,url=%s", self.model_id, self.base_url)
+
+    async def aclose(self) -> None:
+        """Release pooled HTTP session (call after short-lived gateway use)."""
+        if self._vllm_client is not None:
+            try:
+                await self._vllm_client.stop()
+            finally:
+                self._vllm_client = None
+                self._initialized = False
 
     async def infer(self, request: QwenInferenceRequest) -> QwenInferenceResponse:
         """Perform Qwen inference for apps request.
@@ -128,11 +140,22 @@ class QwenInferenceGateway:
                 prompt=request.prompt,
                 max_tokens=request.max_tokens,
                 temperature=request.temperature,
+                top_p=request.top_p,
+                response_format=request.response_format,
                 request_id=f"{request.app_name}_{int(start_time * 1000)}",
             )
 
             # Execute inference
             vllm_response = await self._vllm_client.infer(vllm_request)
+
+            vdiag = {
+                "http_status": vllm_response.http_status,
+                "prompt_chars_in": vllm_response.prompt_chars_in,
+                "prompt_chars_after_truncate": vllm_response.prompt_chars_after_truncate,
+                "prompt_truncated": vllm_response.prompt_truncated,
+                "effective_max_tokens": vllm_response.effective_max_tokens,
+                "completion_budget_used": vllm_response.completion_budget_used,
+            }
 
             # Calculate confidence based on response quality
             confidence = self._calculate_confidence(vllm_response, request)
@@ -154,6 +177,7 @@ class QwenInferenceGateway:
                     latency_ms=latency_ms,
                     cached=vllm_response.cached,
                     tokens_used=vllm_response.tokens_used,
+                    vllm_diagnostics=vdiag,
                 )
             else:
                 _emit_records_telemetry_event(
@@ -171,6 +195,7 @@ class QwenInferenceGateway:
                     error_message=vllm_response.error_message or "Inference failed",
                     cached=False,
                     tokens_used=0,
+                    vllm_diagnostics=vdiag,
                 )
 
         except (ValueError, TypeError, RuntimeError) as e:

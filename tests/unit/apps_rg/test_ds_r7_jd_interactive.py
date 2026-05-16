@@ -1,16 +1,18 @@
 """DS-R7 — apps_rg interactive JD prompt hardening.
 
 Tests:
-1. _prompt_jd_interactive raises SystemExit when stdin is not a TTY.
-2. _prompt_jd_interactive returns the entered path when stdin IS a TTY.
-3. --non-interactive flag on args prevents interactive prompt from being called.
-4. jd_payload in raw_request is always a dict (assert guard).
-5. raw_request["jd_payload"] key is present and forwarded to the pipeline.
+1. _prompt_jd_interactive raises SystemExit when stdin is not a TTY and batch stdin is not enabled.
+2. _prompt_jd_interactive reads stdin when APPS_RG_INTERACTIVE_STDIN=1 even if not a TTY.
+3. _prompt_jd_interactive returns the entered path when stdin IS a TTY.
+4. --non-interactive flag on args prevents interactive prompt from being called.
+5. jd_payload in raw_request is always a dict (assert guard).
+6. raw_request["jd_payload"] key is present and forwarded to the pipeline.
 """
 from __future__ import annotations
 
 import io
 import json
+import os
 import types
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -44,18 +46,33 @@ def _args(**kwargs):
 
 
 # ---------------------------------------------------------------------------
-# 1. _prompt_jd_interactive raises SystemExit when stdin is not a TTY
+# 1. _prompt_jd_interactive raises SystemExit when stdin is not a TTY (no batch)
 # ---------------------------------------------------------------------------
 
-def test_prompt_jd_non_tty_raises():
+def test_prompt_jd_non_tty_raises_without_batch_env(monkeypatch, capsys):
+    monkeypatch.delenv("APPS_RG_INTERACTIVE_STDIN", raising=False)
     with patch("sys.stdin", new=io.StringIO("some/path.json")):
         # StringIO.isatty() returns False
-        with pytest.raises(SystemExit, match="non-interactive mode"):
+        with pytest.raises(SystemExit) as excinfo:
             _prompt_jd_interactive()
+    assert excinfo.value.code == 2
+    err = capsys.readouterr().err
+    assert "APPS_RG_INTERACTIVE_STDIN" in err
 
 
 # ---------------------------------------------------------------------------
-# 2. _prompt_jd_interactive returns entered path when stdin IS a TTY
+# 2. _prompt_jd_interactive reads stdin when batch env is set (non-TTY)
+# ---------------------------------------------------------------------------
+
+def test_prompt_jd_non_tty_reads_when_batch_env():
+    with patch.dict(os.environ, {"APPS_RG_INTERACTIVE_STDIN": "1"}):
+        with patch("sys.stdin", new=io.StringIO("some/path.json\n")):
+            result = _prompt_jd_interactive()
+    assert result == "some/path.json"
+
+
+# ---------------------------------------------------------------------------
+# 3. _prompt_jd_interactive returns entered path when stdin IS a TTY
 # ---------------------------------------------------------------------------
 
 def test_prompt_jd_tty_returns_path():
@@ -68,7 +85,7 @@ def test_prompt_jd_tty_returns_path():
 
 
 # ---------------------------------------------------------------------------
-# 3. --non-interactive flag prevents interactive prompt
+# 4. --non-interactive flag prevents interactive prompt
 # ---------------------------------------------------------------------------
 
 def test_non_interactive_skips_prompt():
@@ -87,7 +104,7 @@ def test_non_interactive_skips_prompt():
 
 
 # ---------------------------------------------------------------------------
-# 4. jd_payload is always a dict — assert guard fires on bad input
+# 5. jd_payload is always a dict — assert guard fires on bad input
 # ---------------------------------------------------------------------------
 
 def test_jd_payload_is_always_dict(tmp_path):
@@ -100,7 +117,7 @@ def test_jd_payload_is_always_dict(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# 5. jd_payload is present in raw_request and forwarded
+# 6. jd_payload is present in raw_request and forwarded
 # ---------------------------------------------------------------------------
 
 def test_jd_payload_key_present_when_no_file():

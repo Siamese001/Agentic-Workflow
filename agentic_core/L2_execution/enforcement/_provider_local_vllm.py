@@ -116,6 +116,13 @@ class LocalVLLMProvider:
             confidence_threshold=float(kwargs.get("confidence_threshold", 0.7)),
         )
 
+        observed_transport = {
+            "max_tokens": request.max_tokens,
+            "temperature": request.temperature,
+            "use_cache": request.use_cache,
+            "confidence_threshold": request.confidence_threshold,
+        }
+
         async def _run() -> Any:
             gateway = await get_qwen_inference_gateway(model_id=self._model)
             return await gateway.infer(request)
@@ -135,7 +142,13 @@ class LocalVLLMProvider:
             "cached": response.cached,
             "latency_ms": response.latency_ms,
             "confidence": response.confidence,
+            "_reasoning_transport_observed": observed_transport,
         }
+
+    def reasoning_transport_kw_forwarded(self) -> frozenset[str]:
+        """Names forwarded into ``QwenInferenceRequest`` (transport proof surface)."""
+
+        return frozenset({"max_tokens", "temperature", "use_cache", "confidence_threshold"})
 
     def get_token_count(self, text: str) -> int:
         """Estimate token count for ``text``.

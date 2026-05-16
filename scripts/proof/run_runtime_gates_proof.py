@@ -72,7 +72,7 @@ from agentic_core.L5_safety.runtime_gates.otel_spans import (
     SPAN_MESH_START,
     get_recorder,
 )
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     Disposition,
     GateContext,
     GateDecision,

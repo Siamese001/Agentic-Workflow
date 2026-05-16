@@ -18,7 +18,7 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L5_safety.runtime_gates.digest import verdict_digest
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     SCHEMA_VERSION,
     Disposition,
     GateDecision,

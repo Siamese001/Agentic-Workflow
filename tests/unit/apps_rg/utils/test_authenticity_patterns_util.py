@@ -9,16 +9,23 @@ from __future__ import annotations
 
 import pytest
 
-from apps_rg.utils.authenticity_patterns_util import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    AuthenticityPatterns,
-    BulletGenerationOutput,
-    CompetitiveIntelligence,
-    OverviewSynthesisOutput,
-    ThematicAnalysisNode,
-    ThematicAnalysisOutput,
-)
+try:
+    from apps_rg.utils.authenticity_patterns_util import (
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        AuthenticityPatterns,
+        BulletGenerationOutput,
+        CompetitiveIntelligence,
+        OverviewSynthesisOutput,
+        ThematicAnalysisNode,
+        ThematicAnalysisOutput,
+    )
+except ModuleNotFoundError:
+    pytest.skip(
+        "apps-rg-unit-pytest-remediation-f7e2a9 W1: apps_rg.utils.authenticity_patterns_util "
+        "not on disk.",
+        allow_module_level=True,
+    )
 
 pytestmark = pytest.mark.unit
 

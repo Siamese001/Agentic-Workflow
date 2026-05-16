@@ -39,7 +39,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-VIOLATION_LOG = REPO_ROOT / "artifacts" / "windsurf" / "ag_queue_drain_violations.jsonl"
+VIOLATION_LOG = REPO_ROOT / "artifacts" / "cursor" / "ag_queue_drain_violations.jsonl"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB
 
 # Completion-marker patterns — detect the response just flipped a wave/phase done.
@@ -60,7 +60,7 @@ _PACKET_PRESENT = (
 
 def _load_queue_helper():
     """Lazy-import the SSOT helper via importlib (avoids sys.path fiddling)."""
-    helper_path = REPO_ROOT / ".windsurf" / "scripts" / "_author_gate_queue.py"
+    helper_path = REPO_ROOT / ".cursor" / "scripts" / "_author_gate_queue.py"
     if not helper_path.exists():
         return None
     try:

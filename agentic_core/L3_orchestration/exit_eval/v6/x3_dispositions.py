@@ -71,6 +71,11 @@ _X3F_MAX_DURATION_MS: int = 60 * 60 * 1000  # 60 minutes
 # v4_hardening §H3.3 — post-mortem deadline
 _X3F_POST_MORTEM_OFFSET_MS: int = 24 * 60 * 60 * 1000  # 24 hours
 
+# Preflight / early deny only (§5.0 fail before ExitReviewPacket). Not RTC L5.
+SPINE_EXIT_V6_PREFLIGHT_DENIAL_CARRIER_REF = (
+    "spine:exit_v6:preflight_denial_packet_carrier_not_rtc"
+)
+
 
 def _commit_request_id(packet: ExitReviewPacket) -> str:
     """Deterministic commit_request_id derived from replay+run identity."""
@@ -443,6 +448,7 @@ def _build_x3_packet_impl(
 
 __all__ = [
     "MissingL5CertificationRef",
+    "SPINE_EXIT_V6_PREFLIGHT_DENIAL_CARRIER_REF",
     "build_x3a_deny",
     "build_x3b_escalate",
     "build_x3c_commit_request",

@@ -15,7 +15,7 @@ from agentic_core.L5_safety.runtime_gates.orchestrator import (
     MeshResult,
     run_mesh,
 )
-from agentic_core.L5_safety.runtime_gates.types import GateContext
+from agentic_core.L5_safety.runtime_gates.contracts import GateContext
 
 # Layer name constants.
 LAYER_U0 = "U0"

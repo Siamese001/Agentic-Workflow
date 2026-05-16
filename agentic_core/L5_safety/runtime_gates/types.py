@@ -1,5 +1,8 @@
 """Runtime Gate Mesh — shared types.
 
+Prefer importing these symbols from :mod:`agentic_core.L5_safety.runtime_gates.contracts`
+for new code (W3C fan-in hygiene); definitions remain authoritative here.
+
 Implements the canonical types defined in
 ``docs/reference/05_Exit_Evaluation_&_Control/Evaluation_Runtime_Gates.md``.
 

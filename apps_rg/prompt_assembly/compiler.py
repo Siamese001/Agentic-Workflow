@@ -1,5 +1,6 @@
 # apps_rg Prompt Assembly Compiler
-# Local compile/validation path — no runtime wiring, no agentic_core imports
+# Local compile/validation path — minimal runtime wiring: model id is read from
+# L0 ``QWEN_LOCAL_MODEL_ID`` SSOT so PA manifests match vLLM serve name.
 
 from __future__ import annotations
 
@@ -10,6 +11,8 @@ from pathlib import Path
 from typing import Any, Optional
 
 import yaml
+
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 
 from .contracts import (
     AUTHORITY_PRECEDENCE,
@@ -494,10 +497,12 @@ class PromptCompiler:
         }
         
         # Build manifests
+        pc = template_yaml.get("provider_control", {}) or {}
         provider_render_manifest = {
-            "model": "unspecified",  # Not wired to runtime
+            "model": QWEN_LOCAL_MODEL_ID,
             "max_tokens": template_yaml.get("compilation_constraints", {}).get("max_response_tokens", 200),
-            "temperature": template_yaml.get("provider_control", {}).get("temperature", 0.7),
+            "temperature": float(pc.get("temperature", 0.1)),
+            "top_p": float(pc.get("top_p", 0.8)),
         }
         
         replay_manifest = {

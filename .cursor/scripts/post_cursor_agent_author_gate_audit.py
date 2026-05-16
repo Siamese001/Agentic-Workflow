@@ -44,16 +44,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Violation log paths (preserved from original hooks)
 VIOLATION_LOGS = {
-    "ui": REPO_ROOT / "artifacts" / "windsurf" / "author_gate_ui_violations.jsonl",
-    "schema": REPO_ROOT / "artifacts" / "windsurf" / "author_gate_schema_violations.jsonl",
-    "pipeline": REPO_ROOT / "artifacts" / "windsurf" / "author_gate_pipeline_violations.jsonl",
-    "miss": REPO_ROOT / "artifacts" / "windsurf" / "author_gate_misses.jsonl",
-    "ask_packet": REPO_ROOT / "artifacts" / "windsurf" / "ask_user_question_packet_violations.jsonl",
-    "queue_drain": REPO_ROOT / "artifacts" / "windsurf" / "ag_queue_drain_violations.jsonl",
+    "ui": REPO_ROOT / "artifacts" / "cursor" / "author_gate_ui_violations.jsonl",
+    "schema": REPO_ROOT / "artifacts" / "cursor" / "author_gate_schema_violations.jsonl",
+    "pipeline": REPO_ROOT / "artifacts" / "cursor" / "author_gate_pipeline_violations.jsonl",
+    "miss": REPO_ROOT / "artifacts" / "cursor" / "author_gate_misses.jsonl",
+    "ask_packet": REPO_ROOT / "artifacts" / "cursor" / "ask_user_question_packet_violations.jsonl",
+    "queue_drain": REPO_ROOT / "artifacts" / "cursor" / "ag_queue_drain_violations.jsonl",
 }
 
 # Ledger path for capture subcommand
-LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB cap
 

@@ -69,7 +69,10 @@ from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import (
     AggregateDecision,
     aggregate_decision,
 )
-from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3_packet
+from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import (
+    SPINE_EXIT_V6_PREFLIGHT_DENIAL_CARRIER_REF,
+    build_x3_packet,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +130,12 @@ def _preflight_deny_packet(
     """Build an X3A packet for receipts that fail §5.0 immediate-fail checks."""
     reason_codes = sorted({f.reason_code for f in failures})
     failed_fields = sorted({f.field for f in failures})
+    refs = receipts.get("l5_certification_refs")
+    carriers: list[str] = []
+    if isinstance(refs, (list, tuple)):
+        carriers = [str(x).strip() for x in refs if str(x).strip()]
+    carrier0 = str(receipts.get("l5_certification_ref") or "").strip()
+    l5_ref = carrier0 or (carriers[0] if carriers else SPINE_EXIT_V6_PREFLIGHT_DENIAL_CARRIER_REF)
     return X3DenyPacket(
         sub_disposition="DENY_STOP",
         reason_codes=reason_codes,
@@ -140,9 +149,7 @@ def _preflight_deny_packet(
             "details": [{"field": f.field, "code": f.reason_code, "detail": f.detail} for f in failures],
         },
         trace_root=str(receipts.get("trace_root", "")),
-        l5_certification_ref=str(
-            receipts.get("l5_certification_ref") or "test:valid:w6"
-        ),
+        l5_certification_ref=l5_ref,
     )
 
 

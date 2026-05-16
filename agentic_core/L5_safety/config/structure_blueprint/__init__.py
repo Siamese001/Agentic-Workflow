@@ -107,59 +107,63 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (
 # ---------------------------------------------------------------------------
 # ssot.py — remaining constants not yet migrated to L0
 # ---------------------------------------------------------------------------
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    APPS_CONTRACT_BASE,
-    APPS_TEST_INTEGRATION_BASE,
-    AUTONOMOUS_AGENT_WHITELIST,
-    BLUEPRINT_SOVEREIGN_DIR,
-    CODE_TERRITORIES,
-    COVERAGE_HTML_DIR,
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    DOCS_REPORTS_PLANS,
-    ENFORCED_TERRITORIES,
-    FORBIDDEN_PATTERNS,
-    FORENSIC_DISCOVERY_INTEGRITY_HASH,
-    FORENSIC_DISCOVERY_SCRIPT,
-    L5_SUBPROCESS_ALLOWLIST,
-    L6_HYBRID_ALLOWLIST,
-    LEAF_DOMAINS_NO_LCD,
-    NAMING_EXEMPT_DIRS,
-    NAMING_EXEMPT_FILES,
-    PROMPT_GOVERNANCE_DIR,
-    PYTHON_STDLIB_MODULES,
-    REPORTS_DIR,
-    REQUIRED_LCD_SUBFOLDERS,
-    RUNTIME_DIR,
-    SCHEMAS_DIR,
-    SCOPE_SUMMARY_EXCLUSIONS,
-    SCRIPTS_FORBIDDEN_PATTERNS,
-    STANDARD_LAYER_STRUCTURE,
-    TEST_CANONICAL_LOCATION_MAP,
-    TEST_MIRROR_BASE,
-    TEST_MIRROR_ROOTS,
-    TESTS_AUTOGEN_DIR,
-    TESTS_E2E_DIR,
-    TESTS_INTEGRATION_DIR,
-    TESTS_ROOT_FILE_WHITELIST,
-    UTILS_DIR,
-    VALIDATED_FILE_EXTENSIONS,
-    VOLATILE_TERRITORIES,
-    get_apps_lic_subfolder_map,
-    get_apps_rg_subfolder_map,
-    get_apps_shared_subfolder_map,
-    get_canonical_test_path,
-    get_core_subfolder_map,
-    get_sovereign_territories,
-    get_subfolder_metadata,
-    ignore_dirs,
-    is_allowed_subfolder,
-    is_l4_approved,
-    is_layer_root,
-    protected_folders,
-    safe_prefixed_filename,
-    sovereign_ignored_folders,
-    validate_no_duplicate_prefix,
-    validate_no_nested_lcd,
+# W3A (l5-fanin): avoid ~50 static `from ssot import name` edges (ADG fan-in).
+# Re-export via PEP 562 __getattr__ + __dir__ so `from pkg import X` stays valid.
+_SSOT_LAZY_NAMES: frozenset[str] = frozenset(
+    {
+        "APPS_CONTRACT_BASE",
+        "APPS_TEST_INTEGRATION_BASE",
+        "AUTONOMOUS_AGENT_WHITELIST",
+        "BLUEPRINT_SOVEREIGN_DIR",
+        "CODE_TERRITORIES",
+        "COVERAGE_HTML_DIR",
+        "DISCOVERY_EXCLUDED_TERRITORIES",
+        "DOCS_REPORTS_PLANS",
+        "ENFORCED_TERRITORIES",
+        "FORBIDDEN_PATTERNS",
+        "FORENSIC_DISCOVERY_INTEGRITY_HASH",
+        "FORENSIC_DISCOVERY_SCRIPT",
+        "L5_SUBPROCESS_ALLOWLIST",
+        "L6_HYBRID_ALLOWLIST",
+        "LEAF_DOMAINS_NO_LCD",
+        "NAMING_EXEMPT_DIRS",
+        "NAMING_EXEMPT_FILES",
+        "PROMPT_GOVERNANCE_DIR",
+        "PYTHON_STDLIB_MODULES",
+        "REPORTS_DIR",
+        "REQUIRED_LCD_SUBFOLDERS",
+        "RUNTIME_DIR",
+        "SCHEMAS_DIR",
+        "SCOPE_SUMMARY_EXCLUSIONS",
+        "SCRIPTS_FORBIDDEN_PATTERNS",
+        "STANDARD_LAYER_STRUCTURE",
+        "TEST_CANONICAL_LOCATION_MAP",
+        "TEST_MIRROR_BASE",
+        "TEST_MIRROR_ROOTS",
+        "TESTS_AUTOGEN_DIR",
+        "TESTS_E2E_DIR",
+        "TESTS_INTEGRATION_DIR",
+        "TESTS_ROOT_FILE_WHITELIST",
+        "UTILS_DIR",
+        "VALIDATED_FILE_EXTENSIONS",
+        "VOLATILE_TERRITORIES",
+        "get_apps_lic_subfolder_map",
+        "get_apps_rg_subfolder_map",
+        "get_apps_shared_subfolder_map",
+        "get_canonical_test_path",
+        "get_core_subfolder_map",
+        "get_sovereign_territories",
+        "get_subfolder_metadata",
+        "ignore_dirs",
+        "is_allowed_subfolder",
+        "is_l4_approved",
+        "is_layer_root",
+        "protected_folders",
+        "safe_prefixed_filename",
+        "sovereign_ignored_folders",
+        "validate_no_duplicate_prefix",
+        "validate_no_nested_lcd",
+    }
 )
 
 # ---------------------------------------------------------------------------
@@ -174,6 +178,10 @@ from agentic_core.L5_safety.config.structure_blueprint.territories import (
 
 def __getattr__(name: str):
     """Lazy load cold module exports on first access."""
+    if name in _SSOT_LAZY_NAMES:
+        from agentic_core.L5_safety.config.structure_blueprint import ssot as _ssot_mod
+
+        return getattr(_ssot_mod, name)
     if name in {
         "CANONICAL_LOCATION_PRIORITY",
         "CLASSIFICATION_SUFFIX_PATTERNS",
@@ -480,3 +488,10 @@ __all__ = [
     "validate_no_nested_lcd",
     "validate_path_within_project",
 ]
+
+
+def __dir__() -> list[str]:
+    """Expose lazy re-exports in dir() (PEP 562)."""
+    seen: set[str] = {k for k in globals() if not k.startswith("_")}
+    seen.update(__all__)
+    return sorted(seen)

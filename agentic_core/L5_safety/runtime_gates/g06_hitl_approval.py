@@ -12,7 +12,7 @@ Stop condition: human approval MUST NOT bypass L5 re-clearance or UWG write path
 from __future__ import annotations
 
 from agentic_core.L5_safety.runtime_gates.base import escalate, register_gate
-from agentic_core.L5_safety.runtime_gates.types import (
+from agentic_core.L5_safety.runtime_gates.contracts import (
     DecisionAlias,
     Disposition,
     GateContext,

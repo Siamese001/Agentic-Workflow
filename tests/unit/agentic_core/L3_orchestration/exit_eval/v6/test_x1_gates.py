@@ -17,7 +17,7 @@ from agentic_core.L3_orchestration.exit_eval.v6 import (
     run_all_x1_gates,
 )
 
-from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import base_packet
+from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import base_packet, base_receipts
 
 
 # ---- X1A ----
@@ -142,6 +142,145 @@ def test_x1d_pass_with_evidence() -> None:
         )
     )
     assert v.result is GateResult.PASS
+
+
+def test_x1d_warn_when_reasoning_quality_certification_denied() -> None:
+    et = dict(base_receipts()["exec_trace"])
+    et["reasoning_execution_receipt"] = {
+        "aggregate_warn": False,
+        "aggregate_review": False,
+        "aggregate_blocked": False,
+        "quality_certification_denied": True,
+        "ledger": [],
+    }
+    v = eval_x1d(
+        base_packet(
+            evidence_bundle={"sources": ["doc-1"]},
+            final_evidence_contract={"c0_status": "PASS"},
+            exec_trace=et,
+            output={
+                "text": "x",
+                "groundedness": 0.95,
+                "faithfulness": 0.95,
+                "citation_precision": 0.95,
+            },
+        )
+    )
+    assert v.result is GateResult.WARN
+    assert "REASONING_QUALITY_NOT_CERTIFIABLE" in v.reason_codes
+
+
+def test_x1d_warn_when_reasoning_quality_certification_denied_exec_summary_lane() -> None:
+    et = dict(base_receipts()["exec_trace"])
+    et["reasoning_section_lane"] = "executive_summary"
+    et["reasoning_execution_receipt"] = {
+        "aggregate_warn": False,
+        "aggregate_review": False,
+        "aggregate_blocked": False,
+        "quality_certification_denied": True,
+        "ledger": [],
+    }
+    v = eval_x1d(
+        base_packet(
+            evidence_bundle={"sources": ["doc-1"]},
+            final_evidence_contract={"c0_status": "PASS"},
+            exec_trace=et,
+            output={
+                "text": "x",
+                "groundedness": 0.95,
+                "faithfulness": 0.95,
+                "citation_precision": 0.95,
+            },
+        )
+    )
+    assert v.result is GateResult.WARN
+    assert "REASONING_EXECUTIVE_SUMMARY_QUALITY_NOT_CERTIFIABLE" in v.reason_codes
+
+
+def test_x1d_pass_when_reasoning_receipt_allows_quality_cert() -> None:
+    et = dict(base_receipts()["exec_trace"])
+    et["reasoning_execution_receipt"] = {
+        "aggregate_warn": False,
+        "aggregate_review": False,
+        "aggregate_blocked": False,
+        "quality_certification_denied": False,
+        "ledger": [],
+    }
+    v = eval_x1d(
+        base_packet(
+            evidence_bundle={"sources": ["doc-1"]},
+            final_evidence_contract={"c0_status": "PASS"},
+            exec_trace=et,
+            output={
+                "text": "x",
+                "groundedness": 0.95,
+                "faithfulness": 0.95,
+                "citation_precision": 0.95,
+            },
+        )
+    )
+    assert v.result is GateResult.PASS
+
+
+def test_x1d_invalid_reasoning_receipt_ignored_keeps_pass() -> None:
+    et = dict(base_receipts()["exec_trace"])
+    et["reasoning_execution_receipt"] = {"not_a_receipt": True}
+    v = eval_x1d(
+        base_packet(
+            evidence_bundle={"sources": ["doc-1"]},
+            final_evidence_contract={"c0_status": "PASS"},
+            exec_trace=et,
+            output={
+                "text": "x",
+                "groundedness": 0.95,
+                "faithfulness": 0.95,
+                "citation_precision": 0.95,
+            },
+        )
+    )
+    assert v.result is GateResult.PASS
+
+
+def test_x1d_warn_executive_lane_invalid_reasoning_receipt() -> None:
+    et = dict(base_receipts()["exec_trace"])
+    et["reasoning_section_lane"] = "executive_summary"
+    et["reasoning_execution_receipt"] = {"not_a_receipt": True}
+    v = eval_x1d(
+        base_packet(
+            evidence_bundle={"sources": ["doc-1"]},
+            final_evidence_contract={"c0_status": "PASS"},
+            exec_trace=et,
+            output={
+                "text": "x",
+                "groundedness": 0.95,
+                "faithfulness": 0.95,
+                "citation_precision": 0.95,
+            },
+        )
+    )
+    assert v.result is GateResult.WARN
+    assert "REASONING_EXECUTIVE_SUMMARY_PROOF_MISSING" in v.reason_codes
+
+
+def test_x1d_warn_executive_lane_missing_proof() -> None:
+    et = dict(base_receipts()["exec_trace"])
+    et["reasoning_section_lane"] = "executive_summary"
+    assert "reasoning_execution_receipt" not in et
+    v = eval_x1d(
+        base_packet(
+            evidence_bundle={"sources": ["doc-1"]},
+            final_evidence_contract={"c0_status": "PASS"},
+            exec_trace=et,
+            output={
+                "text": "x",
+                "groundedness": 0.95,
+                "faithfulness": 0.95,
+                "citation_precision": 0.95,
+            },
+        )
+    )
+    assert v.result is GateResult.WARN
+    assert "REASONING_EXECUTIVE_SUMMARY_PROOF_MISSING" in v.reason_codes
 
 
 def test_x1d_unknown_on_judge_abstain() -> None:

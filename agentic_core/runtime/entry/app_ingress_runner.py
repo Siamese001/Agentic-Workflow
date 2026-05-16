@@ -38,7 +38,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping
 
-from agentic_core.L5_safety.enforcement.ingress_envelope_check import (
+from agentic_core.L5_safety.enforcement.ingress import (
     ClarificationRequired,
     IngressEnvelopeCheck,
     StampedRequest,

@@ -7,6 +7,7 @@ Pointers: latest_real_run.json (latest real-bucket attempt), latest_successful_r
 from __future__ import annotations
 
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,6 +16,52 @@ from typing import Any, Literal
 Bucket = Literal["real", "mock"]
 
 LATEST_SUCCESSFUL_REAL_FILENAME = "latest_successful_real_run.json"
+
+# When set (absolute or repo-relative), lane prepare/finalize and optional dependency
+# resolution use ``<root>/<lane>/{mock|real}/<run_id>/`` instead of runtime_proofs.
+MODULAR_R4_SECTIONS_ROOT_ENV = "APPS_RG_MODULAR_R4_SECTIONS_ROOT"
+
+
+def modular_sections_root_from_env(repo: Path) -> Path | None:
+    raw = os.environ.get(MODULAR_R4_SECTIONS_ROOT_ENV, "").strip()
+    if not raw:
+        return None
+    cand = Path(raw).expanduser()
+    if not cand.is_absolute():
+        cand = (repo / cand).resolve()
+    return cand.resolve()
+
+
+def resolve_modular_latest_l2(repo: Path, lane: str) -> Path | None:
+    """Path to ``l2_output.json`` from modular R4 section pointers (Phase 1+), if env is set."""
+    msr = modular_sections_root_from_env(repo)
+    if msr is None:
+        return None
+    lane_base = msr / lane
+    for ptr_name in (
+        "latest_mock_run.json",
+        "latest_real_run.json",
+        LATEST_SUCCESSFUL_REAL_FILENAME,
+    ):
+        data = _read_json_dict(lane_base / ptr_name)
+        if not data:
+            continue
+        rel = data.get("run_dir")
+        if not isinstance(rel, str):
+            continue
+        rd = (repo / rel).resolve()
+        l2 = rd / "l2_output.json"
+        if l2.is_file():
+            return l2
+    return None
+
+
+def resolve_effective_lane_l2_path(repo: Path, lane: str) -> Path | None:
+    """Prefer modular per-lane pointers when ``APPS_RG_MODULAR_R4_SECTIONS_ROOT`` is active."""
+    hit = resolve_modular_latest_l2(repo, lane)
+    if hit is not None:
+        return hit
+    return resolve_latest_real_l2(repo, lane)
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -43,6 +90,11 @@ def rel_posix(path: Path, repo: Path) -> str:
 
 def prepare_runtime_proof_run_dir(repo: Path, lane: str, provider: str, run_id: str) -> Path:
     bucket = proof_bucket_for_provider(provider)
+    msr = modular_sections_root_from_env(repo)
+    if msr is not None:
+        rd = msr / lane / bucket / run_id
+        rd.mkdir(parents=True, exist_ok=True)
+        return rd
     rd = run_dir(repo, lane, bucket, run_id)
     rd.mkdir(parents=True, exist_ok=True)
     return rd
@@ -72,6 +124,11 @@ def _provider_requested_lower(run_dir: Path) -> str:
             if pq:
                 return pq
     return ""
+
+
+def is_accepted_real_llm_qwen_bundle(run_dir: Path) -> bool:
+    """Public: REAL_LLM + provider_requested qwen_vllm under ``run_dir``."""
+    return _is_accepted_real_llm_qwen_bundle(run_dir)
 
 
 def _is_accepted_real_llm_qwen_bundle(run_dir: Path) -> bool:
@@ -143,14 +200,16 @@ def finalize_runtime_proof_run(
         "section_id": section_id,
     }
     ptr_name = "latest_real_run.json" if bucket == "real" else "latest_mock_run.json"
-    _write_json(lane_root(repo, lane) / ptr_name, pointer)
+    msr = modular_sections_root_from_env(repo)
+    ptr_root = (msr / lane) if msr is not None else lane_root(repo, lane)
+    _write_json(ptr_root / ptr_name, pointer)
     if _should_write_latest_successful_real(
         bucket,
         provider_requested,
         runtime_generation_status,
         artifact_dir,
     ):
-        _write_json(lane_root(repo, lane) / LATEST_SUCCESSFUL_REAL_FILENAME, pointer)
+        _write_json(ptr_root / LATEST_SUCCESSFUL_REAL_FILENAME, pointer)
 
 
 def load_latest_pointer(repo: Path, lane: str, bucket: Bucket) -> dict[str, Any] | None:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-post_cursor_agent_author_gate_capture.py — Windsurf post_cursor_agent_response Author-Gate capture hook.
+post_cursor_agent_author_gate_capture.py — Cursor afterAgentResponse Author-Gate capture hook.
 
 Reads the cursor agent response payload from stdin.
 Detects surfaced Author-Gate decision packets via the mandatory PACKET HEADER format
@@ -49,7 +49,7 @@ except ImportError:  # pragma: no cover — validator optional; capture must sti
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[2]
-DB_DIR = repo_root / ".windsurf" / "state" / "refactor_decisions"
+DB_DIR = repo_root / ".cursor" / "state" / "refactor_decisions"
 DB_PATH = DB_DIR / "refactor_decision_ledger.sqlite"
 _log_path = DB_DIR / "author_gate_capture.log"
 # Lowercase aliases preserved for back-compat with any external importer.
@@ -229,38 +229,40 @@ def _infer_layer(repo_area: str) -> str:
     return ""
 
 
-# Sidecar precedent file written by emit_packet.py / precedent_injector.py.
-# When a DECISION_CAPTURED marker arrives without an explicit precedent= field
-# (back-compat for older rule versions), the capture hook falls back to this
-# file IF it is fresh (default 60 min) AND its files_in_scope overlap the
-# decision's repo_area. Marker takes priority — sidecar is auxiliary signal.
-_PRECEDENT_SIDECAR_PATH = repo_root / "artifacts" / "windsurf" / "author_gate_precedent.json"
+# Sidecar precedent: Cursor harness writes ``artifacts/cursor/`` (see pre_author_gate.py).
+# Legacy Windsurf path retained as secondary read for older working copies.
+_PRECEDENT_SIDECAR_PATHS = (
+    repo_root / "artifacts" / "cursor" / "author_gate_precedent.json",
+    repo_root / "artifacts" / "windsurf" / "author_gate_precedent.json",
+)
 _PRECEDENT_FRESH_WINDOW_S = 3600
 
 
 def _read_precedent_sidecar() -> dict | None:
-    """Return the sidecar payload if it exists and is fresh (<60 min), else None.
+    """Return the newest-fresh sidecar payload from Cursor then legacy paths.
 
-    Fail-soft: any read/parse error returns None so capture continues.
+    Fail-soft: any read/parse error skips that path; none fresh → None.
     """
-    if not _PRECEDENT_SIDECAR_PATH.exists():
-        return None
-    try:
-        raw = _PRECEDENT_SIDECAR_PATH.read_text(encoding="utf-8")
-        data = json.loads(raw)
-    except (OSError, json.JSONDecodeError):
-        return None
-    ts_raw = data.get("generated_at") if isinstance(data, dict) else None
-    if not isinstance(ts_raw, str):
-        return None
-    try:
-        ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    age = (datetime.now(timezone.utc) - ts).total_seconds()
-    if age > _PRECEDENT_FRESH_WINDOW_S:
-        return None
-    return data if isinstance(data, dict) else None
+    for path in _PRECEDENT_SIDECAR_PATHS:
+        if not path.exists():
+            continue
+        try:
+            raw = path.read_text(encoding="utf-8")
+            data = json.loads(raw)
+        except (OSError, json.JSONDecodeError):
+            continue
+        ts_raw = data.get("generated_at") if isinstance(data, dict) else None
+        if not isinstance(ts_raw, str):
+            continue
+        try:
+            ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        age = (datetime.now(timezone.utc) - ts).total_seconds()
+        if age > _PRECEDENT_FRESH_WINDOW_S:
+            continue
+        return data if isinstance(data, dict) else None
+    return None
 
 
 def _derive_precedent_from_sidecar(sidecar: dict) -> tuple[str | None, int | None]:
@@ -282,32 +284,35 @@ def _derive_precedent_from_sidecar(sidecar: dict) -> tuple[str | None, int | Non
     return verdict, len(matches)
 
 
-# W3.2 — pytest signal location. The conftest plugin writes {exit_code, passed,
-# failed, ts, duration_s} every pytest run. Binder consults this file when
-# binding within FRESH_TEST_WINDOW_S of the signal timestamp.
-_TEST_SIGNAL_PATH = repo_root / "artifacts" / "windsurf" / "last_test_signal.json"
+# W3.2 — pytest signal: conftest prefers ``artifacts/cursor`` (see tests/conftest.py).
+_TEST_SIGNAL_PATHS = (
+    repo_root / "artifacts" / "cursor" / "last_test_signal.json",
+    repo_root / "artifacts" / "windsurf" / "last_test_signal.json",
+)
 _FRESH_TEST_WINDOW_S = 1800  # 30 minutes
 
 
 def _read_fresh_test_signal() -> dict[str, object] | None:
     """Return pytest signal if one was written in the last 30 min, else None."""
-    if not _TEST_SIGNAL_PATH.exists():
-        return None
-    try:
-        data = json.loads(_TEST_SIGNAL_PATH.read_text(encoding="utf-8"))
-    except (OSError, ValueError, json.JSONDecodeError):
-        return None
-    ts_str = data.get("ts") if isinstance(data, dict) else None
-    if not isinstance(ts_str, str):
-        return None
-    try:
-        ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    age = (datetime.now(timezone.utc) - ts).total_seconds()
-    if age > _FRESH_TEST_WINDOW_S:
-        return None
-    return data if isinstance(data, dict) else None
+    for path in _TEST_SIGNAL_PATHS:
+        if not path.exists():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, json.JSONDecodeError):
+            continue
+        ts_str = data.get("ts") if isinstance(data, dict) else None
+        if not isinstance(ts_str, str):
+            continue
+        try:
+            ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        age = (datetime.now(timezone.utc) - ts).total_seconds()
+        if age > _FRESH_TEST_WINDOW_S:
+            continue
+        return data if isinstance(data, dict) else None
+    return None
 
 
 def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str, commit_sha: str, status: str) -> None:

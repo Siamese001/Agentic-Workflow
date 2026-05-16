@@ -25,7 +25,7 @@ from typing import Any
 
 from agentic_core.L5_safety.runtime_gates.dispatch import run_layer
 from agentic_core.L5_safety.runtime_gates.orchestrator import MeshResult
-from agentic_core.L5_safety.runtime_gates.types import GateContext
+from agentic_core.L5_safety.runtime_gates.contracts import GateContext
 
 logger = logging.getLogger(__name__)
 

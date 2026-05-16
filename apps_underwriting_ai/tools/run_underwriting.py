@@ -57,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
 
     from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
-    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired  # noqa: PLC0415
+    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired  # noqa: PLC0415
     from apps_underwriting_ai.runtime.bindings.u0_binding import U0ValidationError  # noqa: PLC0415
     from apps_underwriting_ai.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
 

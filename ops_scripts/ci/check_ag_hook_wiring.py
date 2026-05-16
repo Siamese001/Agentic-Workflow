@@ -42,8 +42,10 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HOOKS_PATH = REPO_ROOT / ".windsurf" / "hooks.json"
-VIOLATIONS_OUT = REPO_ROOT / "artifacts" / "windsurf" / "ag_hook_wiring_violations.json"
+HOOKS_PATH = REPO_ROOT / ".cursor" / "hooks.json"
+VIOLATIONS_OUT = REPO_ROOT / "artifacts" / "cursor" / "ag_hook_wiring_violations.json"
+CURSOR_AG_CHAIN_HOOK = REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py"
+CURSOR_AG_CHAIN_NAME = "after_agent_author_gate_audits.py"
 
 BYPASS_ENV = "AG_HOOK_WIRING_BYPASS"
 FAIL_CLOSED_ENV = "AG_HOOK_WIRING_FAIL_CLOSED"
@@ -73,13 +75,14 @@ REQUIRED_POST_CURSOR_AGENT_HOOKS: list[dict[str, Any]] = [
 # Hook that MUST be in pre_user_prompt with show_output=true (AG-WIRE-1)
 REQUIRED_PRE_PROMPT_HOOK = "pre_user_prompt_author_gate_reminder.py"
 
-# Any of these in post_cursor_agent_response triggers the wiring check
+# Any of these in post_cursor_agent_response / afterAgentResponse triggers the wiring check
 AG_AUDIT_TRIGGER_SCRIPTS = {
     "post_cursor_agent_author_gate_miss_detector.py",
     "post_cursor_agent_author_gate_ui_audit.py",
     "post_cursor_agent_author_gate_schema_audit.py",
     "post_cursor_agent_ask_user_question_packet_audit.py",
     "post_cursor_agent_author_gate_capture.py",
+    "after_agent_author_gate_audits.py",
 }
 
 
@@ -102,8 +105,46 @@ def _load_hooks() -> dict[str, Any]:
         sys.exit(2)
 
 
-def _hooks_for_event(hooks_data: dict[str, Any], event: str) -> list[dict[str, Any]]:
-    return hooks_data.get("hooks", {}).get(event, [])
+def _hooks_for_post_agent_response(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Merge Windsurf and Cursor hook buckets that fire after the agent responds."""
+    h = hooks_data.get("hooks", {})
+    merged: list[dict[str, Any]] = []
+    for ev in ("post_cursor_agent_response", "afterAgentResponse"):
+        chunk = h.get(ev)
+        if isinstance(chunk, list):
+            merged.extend(chunk)
+    return merged
+
+
+def _hooks_for_pre_user_prompt(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Merge pre-prompt hook buckets (Windsurf + Cursor beforeSubmitPrompt)."""
+    h = hooks_data.get("hooks", {})
+    merged: list[dict[str, Any]] = []
+    for ev in ("pre_user_prompt", "beforeSubmitPrompt"):
+        chunk = h.get(ev)
+        if isinstance(chunk, list):
+            merged.extend(chunk)
+    return merged
+
+
+def _cursor_ag_chain_covers(script: str, post_by_name: dict[str, dict[str, Any]]) -> bool:
+    """True if the unified Cursor chain hook is wired and enumerates ``script``."""
+    if CURSOR_AG_CHAIN_NAME not in post_by_name:
+        return False
+    try:
+        text = CURSOR_AG_CHAIN_HOOK.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return script in text
+
+
+def _effective_show_output(hook: dict[str, Any], req_show: bool) -> bool:
+    """Cursor hooks omit ``show_output``; treat absent as visible (passes AG-WIRE checks)."""
+    if not req_show:
+        return True
+    if "show_output" not in hook:
+        return True
+    return bool(hook.get("show_output"))
 
 
 def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -113,8 +154,8 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
     """
     violations: list[dict[str, Any]] = []
 
-    post_cascade = _hooks_for_event(hooks_data, "post_cursor_agent_response")
-    pre_prompt = _hooks_for_event(hooks_data, "pre_user_prompt")
+    post_cascade = _hooks_for_post_agent_response(hooks_data)
+    pre_prompt = _hooks_for_pre_user_prompt(hooks_data)
 
     # Build lookup maps: script_name → hook entry
     post_by_name: dict[str, dict[str, Any]] = {}
@@ -142,12 +183,12 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
             "invariant": "AG-WIRE-1",
             "severity": "ERROR",
             "message": (
-                f"pre_user_prompt does not contain {REQUIRED_PRE_PROMPT_HOOK}. "
+                f"pre_prompt hook chain does not contain {REQUIRED_PRE_PROMPT_HOOK}. "
                 "AG audit hooks are wired but the pre-composition reminder is missing. "
-                "Add pre_user_prompt_author_gate_reminder.py to pre_user_prompt with show_output=true."
+                "Add pre_user_prompt_author_gate_reminder.py to beforeSubmitPrompt (or pre_user_prompt)."
             ),
         })
-    elif not reminder_hook.get("show_output", False):
+    elif not _effective_show_output(reminder_hook, True):
         violations.append({
             "invariant": "AG-WIRE-1",
             "severity": "ERROR",
@@ -158,27 +199,33 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
             ),
         })
 
-    # AG-WIRE-2/3/4: required post_cascade audit hooks must be present and visible
+    # AG-WIRE-2/3/4: required post-response audit hooks must be present and visible
+    # (or satisfied by ``after_agent_author_gate_audits.py`` chain that enumerates them).
     for req in REQUIRED_POST_CURSOR_AGENT_HOOKS:
         script = req["script"]
         inv_id = req["id"]
         hook = post_by_name.get(script)
-        if hook is None:
+        chain_ok = hook is None and _cursor_ag_chain_covers(script, post_by_name)
+        if hook is None and not chain_ok:
             violations.append({
                 "invariant": inv_id,
                 "severity": "ERROR",
                 "message": (
-                    f"post_cursor_agent_response does not contain {script}. "
+                    f"post-response hooks do not contain {script} "
+                    f"and `.cursor/hooks/after_agent_author_gate_audits.py` does not cover it. "
                     f"{req['description']}."
                 ),
             })
-        elif req["show_output"] and not hook.get("show_output", False):
+            continue
+        if chain_ok:
+            continue
+        if req["show_output"] and not _effective_show_output(hook, True):
             violations.append({
                 "invariant": inv_id,
                 "severity": "ERROR",
                 "message": (
-                    f"{script} is present in post_cursor_agent_response but "
-                    f"show_output=false — violations will be silently swallowed. "
+                    f"{script} is present in post-response hooks but "
+                    f"show_output=false — violations may be invisible. "
                     f"Set show_output=true. ({req['description']})"
                 ),
             })

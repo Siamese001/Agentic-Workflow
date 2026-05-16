@@ -62,7 +62,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "windsurf" / "author_gate_schema_violations.jsonl"
+    REPO_ROOT / "artifacts" / "cursor" / "author_gate_schema_violations.jsonl"
 )
 
 # Shared canonical schema loader (plan author-gate-ssot-consolidation-b7c3e1 W3.P3.1).

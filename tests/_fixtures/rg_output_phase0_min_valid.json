@@ -1,0 +1,62 @@
+{
+  "schema_version": "master_resume_v2.16",
+  "candidate_name": "Ada Lovelace",
+  "target_role": "SVP Engineering",
+  "target_company": "Example Corp",
+  "generated_at": "2026-05-16T12:00:00+00:00",
+  "sections": {
+    "summary": {
+      "text": "Executive summary prose here for candidate role fit and leadership.",
+      "word_count": 11
+    },
+    "experience": [
+      {
+        "title": "Director Engineering",
+        "company": "Example Corp",
+        "location": "Remote",
+        "dates": "Jan 2020 – Present",
+        "bullets": [
+          {
+            "text": "Led platform modernization with measurable reliability gains for enterprise customers."
+          },
+          {
+            "text": "Scaled engineering organization practices including reviews and operational excellence."
+          },
+          {
+            "text": "Partnered with product leadership on roadmap execution across multiple quarters steadily."
+          }
+        ]
+      }
+    ],
+    "skills": {
+      "categories": [
+        {
+          "name": "Other",
+          "items": ["Python", "Leadership"]
+        }
+      ]
+    },
+    "education": [
+      {
+        "degree": "BS Computer Science",
+        "institution": "State University",
+        "year": "2010"
+      }
+    ],
+    "certifications": []
+  },
+  "citations": [],
+  "gaps": [],
+  "metadata": {
+    "generation_mode": "tailor_existing",
+    "template_id": "phase0_fixture",
+    "slot_fingerprints": {
+      "S0": "phase0",
+      "I0": "phase0",
+      "C0": "phase0",
+      "U0": "phase0",
+      "Y0": "phase0",
+      "R0": "phase0"
+    }
+  }
+}

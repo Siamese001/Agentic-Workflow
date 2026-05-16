@@ -20,12 +20,32 @@ validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
 import hashlib
 import json
+import os
 import time
 import uuid
 from types import SimpleNamespace
 from typing import Any, Optional
 
 from agentic_core.runtime.providers.provider_gateway import ProviderGateway
+from agentic_core.runtime.providers.provider_types import ProviderModeBlockedError
+
+from apps_rg.l2_recipe.raw_text_json_unwrap import try_unwrap_raw_text_to_resume
+from apps_rg.l2_recipe.prompt_budget import PromptBudgetError, prepare_prompt_for_local_vllm
+from apps_rg.l2_recipe.provider_run_diagnostics import write_provider_generation_diagnostics
+from apps_rg.l2_recipe.resume_output_shape import (
+    BLOCKED_PROVIDER_LANE,
+    FAILED_PROVIDER,
+    STUB_RECEIPT,
+    STRUCTURED_RESUME_OK,
+    classify_resume_payload,
+)
+from apps_rg.runtime.providers.provider_run_mode import (
+    AppsRgEnvelopeProviderResolutionError,
+    ProviderAuthenticityViolation,
+    ProviderRunMode,
+    assert_provider_authentic_for_full_resume,
+    classify_provider_run_mode,
+)
 
 __all__ = [
     "run_apps_rg_l2_envelope",
@@ -346,10 +366,109 @@ def _validate_work_order(prep_output: Any, cpa: Any) -> Any:
     )
 
 
-def _provider_profile_for_cpa(cpa: Any) -> Any:
-    from agentic_core.runtime.providers.provider_types import ProviderKind, ProviderProfile
+def _resolve_l2_envelope_provider_mode() -> Any:
+    """How E3 may invoke models — driven by ``APPS_RG_L2_PROVIDER_MODE``.
+
+    - ``stub_only`` — deterministic stub JSON (CI default via ``tests/conftest.py``).
+    - ``local_only`` — local vLLM + stub; **default when env is unset** (CLI resumes).
+    - ``live_allowed`` — local vLLM + external APIs + stub.
+
+    External keys: ``live``, ``external``, ``all`` map to ``live_allowed``.
+    """
+    from agentic_core.runtime.providers.provider_types import ProviderMode
+
+    if os.environ.get("APPS_RG_L2_FORCE_STUB", "").strip() == "1":
+        return ProviderMode.STUB_ONLY
+    raw = (os.environ.get("APPS_RG_L2_PROVIDER_MODE") or "").strip().lower()
+    if raw in ("stub_only", "stub", "off", "0", "false", "no"):
+        return ProviderMode.STUB_ONLY
+    if raw in ("live_allowed", "live", "external", "all"):
+        return ProviderMode.LIVE_ALLOWED
+    return ProviderMode.LOCAL_ONLY
+
+
+def _provider_profile_for_cpa(
+    cpa: Any, *, provider_mode: Any, run_mode: ProviderRunMode
+) -> Any:
+    from agentic_core.runtime.providers.provider_types import (
+        ProviderKind,
+        ProviderMode,
+        ProviderProfile,
+    )
 
     mid = str(getattr(cpa, "target_model", "") or "").strip() or None
+    tp = str(getattr(cpa, "target_provider", "") or "").strip().lower()
+
+    if provider_mode == ProviderMode.STUB_ONLY:
+        return ProviderProfile(
+            profile_id="apps_rg_envelope_stub",
+            provider_kind=ProviderKind.STUB,
+            model_id=mid,
+            capabilities=("text_generation", "structured_json_generation"),
+            sandbox_safe=True,
+            requires_network=False,
+        )
+
+    local_lane = tp in (
+        "local_vllm",
+        "vllm",
+        "local",
+        "vllm_local",
+    )
+    if local_lane:
+        return ProviderProfile(
+            profile_id="apps_rg_envelope_local_vllm",
+            provider_kind=ProviderKind.LOCAL_VLLM,
+            model_id=mid or "Qwen/Qwen2.5-32B-Instruct-AWQ",
+            capabilities=("text_generation", "structured_json_generation"),
+            sandbox_safe=True,
+            requires_network=True,
+        )
+
+    if provider_mode == ProviderMode.LIVE_ALLOWED:
+        if tp in ("anthropic", "claude"):
+            return ProviderProfile(
+                profile_id="apps_rg_envelope_anthropic",
+                provider_kind=ProviderKind.EXTERNAL_API,
+                model_id=mid or "claude-sonnet-4-20250514",
+                api_key_env_var="ANTHROPIC_API_KEY",
+                vendor="anthropic",
+                capabilities=("text_generation", "structured_json_generation"),
+                sandbox_safe=False,
+                requires_network=True,
+            )
+        if tp in ("openai", "gpt", "azure_openai"):
+            return ProviderProfile(
+                profile_id="apps_rg_envelope_openai",
+                provider_kind=ProviderKind.EXTERNAL_API,
+                model_id=mid or "gpt-4o-mini",
+                api_key_env_var="OPENAI_API_KEY",
+                vendor="openai",
+                capabilities=("text_generation", "structured_json_generation"),
+                sandbox_safe=False,
+                requires_network=True,
+            )
+        if tp in ("google_gemini", "gemini", "google"):
+            return ProviderProfile(
+                profile_id="apps_rg_envelope_gemini",
+                provider_kind=ProviderKind.EXTERNAL_API,
+                model_id=mid or "gemini-2.0-flash",
+                api_key_env_var="GOOGLE_API_KEY",
+                vendor="google_gemini",
+                capabilities=("text_generation", "structured_json_generation"),
+                sandbox_safe=False,
+                requires_network=True,
+            )
+        if run_mode == ProviderRunMode.LIVE_REQUIRED:
+            raise AppsRgEnvelopeProviderResolutionError(
+                f"LIVE_REQUIRED: unknown external target_provider={tp!r} for live_allowed mode"
+            )
+
+    elif run_mode == ProviderRunMode.LIVE_REQUIRED:
+        raise AppsRgEnvelopeProviderResolutionError(
+            f"LIVE_REQUIRED: target_provider={tp!r} is not a resolved live lane under {provider_mode}"
+        )
+
     return ProviderProfile(
         profile_id="apps_rg_envelope_stub",
         provider_kind=ProviderKind.STUB,
@@ -360,19 +479,124 @@ def _provider_profile_for_cpa(cpa: Any) -> Any:
     )
 
 
-def _execute_approved_work_order(
+def _attempt_from_provider_resolution_error(
     *,
     cpa: Any,
     approved_work_order: Any,
     prep_output: Any,
     attempt_number: int,
+    exc: AppsRgEnvelopeProviderResolutionError,
 ) -> Any:
     from agentic_core.L2_execution.types.l2_v3_receipts import (
         AttemptReceipt,
         ExecutionLane,
         ResultClass,
     )
-    from agentic_core.runtime.providers.provider_types import ProviderMode, ProviderRequest
+
+    proposed: dict[str, Any] = {
+        "provider_resolution_error": True,
+        "generation_status": BLOCKED_PROVIDER_LANE,
+        "full_resume_generated": False,
+        "decisive_reason": str(exc),
+    }
+    local_check: dict[str, Any] = {
+        "generation_status": BLOCKED_PROVIDER_LANE,
+        "full_resume_generated": False,
+        "outcome_authorized": False,
+        "terminal_class": "BLOCKED",
+        "provider_error": {"kind": "resolution", "message": str(exc)},
+    }
+    return AttemptReceipt(
+        attempt_receipt_id=AttemptReceipt.new_id(),
+        validation_packet_id=str(approved_work_order.validation_packet_id),
+        attempt_count=attempt_number,
+        determinism=prep_output.replay_bindings.determinism,
+        lineage=prep_output.lineage_root,
+        trace_id=cpa.trace_id,
+        span_id=f"e3-attempt-{attempt_number}",
+        latency_ms=0.0,
+        tokens_used=0,
+        return_code=10,
+        result_class=ResultClass.FAIL_TERMINAL,
+        error_summary=str(exc),
+        execution_lane=ExecutionLane.MODEL,
+        decisive_reason_code="E3_PROVIDER_PROFILE_UNRESOLVED",
+        proposed_state_diff=proposed,
+        local_check_results=local_check,  # type: ignore[arg-type]
+    )
+
+
+def _attempt_from_authenticity_violation(
+    *,
+    cpa: Any,
+    approved_work_order: Any,
+    prep_output: Any,
+    attempt_number: int,
+    viol: ProviderAuthenticityViolation,
+) -> Any:
+    from agentic_core.L2_execution.types.l2_v3_receipts import (
+        AttemptReceipt,
+        ExecutionLane,
+        ResultClass,
+    )
+
+    proposed: dict[str, Any] = {
+        "provider_authenticity_block": True,
+        "generation_status": viol.generation_status,
+        "full_resume_generated": viol.full_resume_generated,
+        "decisive_reason": viol.decisive_reason,
+    }
+    local_check: dict[str, Any] = {
+        "generation_status": viol.generation_status,
+        "full_resume_generated": viol.full_resume_generated,
+        "outcome_authorized": False,
+        "terminal_class": "BLOCKED",
+    }
+    return AttemptReceipt(
+        attempt_receipt_id=AttemptReceipt.new_id(),
+        validation_packet_id=str(approved_work_order.validation_packet_id),
+        attempt_count=attempt_number,
+        determinism=prep_output.replay_bindings.determinism,
+        lineage=prep_output.lineage_root,
+        trace_id=cpa.trace_id,
+        span_id=f"e3-attempt-{attempt_number}",
+        latency_ms=0.0,
+        tokens_used=0,
+        return_code=11,
+        result_class=ResultClass.FAIL_TERMINAL,
+        error_summary=viol.decisive_reason,
+        execution_lane=ExecutionLane.MODEL,
+        decisive_reason_code=viol.decisive_reason_code,
+        proposed_state_diff=proposed,
+        local_check_results=local_check,  # type: ignore[arg-type]
+    )
+
+
+def _execute_approved_work_order(
+    *,
+    cpa: Any,
+    approved_work_order: Any,
+    prep_output: Any,
+    attempt_number: int,
+    resume_artifact_contract_mode: Any | None = None,
+    artifact_dir: str | None = None,
+) -> Any:
+    from agentic_core.L2_execution.types.l2_v3_receipts import (
+        AttemptReceipt,
+        ExecutionLane,
+        ResultClass,
+    )
+    from agentic_core.runtime.providers.provider_types import (
+        ProviderKind,
+        ProviderRequest,
+    )
+
+    def _emit_diagnostics(payload: dict[str, Any], raw_text: str | None = None) -> None:
+        write_provider_generation_diagnostics(
+            artifact_dir,
+            payload,
+            raw_provider_text=raw_text,
+        )
 
     if approved_work_order is None:
         return AttemptReceipt(
@@ -392,14 +616,113 @@ def _execute_approved_work_order(
             decisive_reason_code="E3_REJECTED",
         )
 
-    gateway = ProviderGateway(provider_mode=ProviderMode.STUB_ONLY)
-    profile = _provider_profile_for_cpa(cpa)
+    run_mode = classify_provider_run_mode(
+        resume_artifact_contract_mode=resume_artifact_contract_mode,
+    )
+    mode = _resolve_l2_envelope_provider_mode()
+    gateway = ProviderGateway(provider_mode=mode)
+
+    try:
+        profile = _provider_profile_for_cpa(cpa, provider_mode=mode, run_mode=run_mode)
+    except AppsRgEnvelopeProviderResolutionError as exc:
+        return _attempt_from_provider_resolution_error(
+            cpa=cpa,
+            approved_work_order=approved_work_order,
+            prep_output=prep_output,
+            attempt_number=attempt_number,
+            exc=exc,
+        )
+
+    viol = assert_provider_authentic_for_full_resume(
+        run_mode=run_mode,
+        profile=profile,
+        invoker_class_name=gateway.__class__.__name__,
+    )
+    if viol is not None:
+        return _attempt_from_authenticity_violation(
+            cpa=cpa,
+            approved_work_order=approved_work_order,
+            prep_output=prep_output,
+            attempt_number=attempt_number,
+            viol=viol,
+        )
+
     prompt_text = _cpa_prompt_text(cpa)
+    max_req_tok = int(getattr(cpa, "max_tokens", 4096) or 4096)
+    temp_val = float(getattr(cpa, "temperature", 0.1))
+    top_p_val = float(getattr(cpa, "top_p", 0.8))
+    json_object_response_format = None
+    if os.environ.get("APPS_RG_VLLM_RESPONSE_FORMAT_JSON_OBJECT", "").strip() == "1":
+        json_object_response_format = {"type": "json_object"}
+
+    packed_prompt = prompt_text
+    prompt_budget_meta: dict[str, Any] = {}
+    if profile.provider_kind == ProviderKind.LOCAL_VLLM:
+        try:
+            packed_prompt, prompt_budget_meta = prepare_prompt_for_local_vllm(
+                prompt_text,
+                requested_max_tokens=max_req_tok,
+            )
+        except PromptBudgetError as exc:
+            proposed_budget: dict[str, Any] = {
+                "generation_status": FAILED_PROVIDER,
+                "full_resume_generated": False,
+                "prompt_budget_block": True,
+                "e3_error_summary": str(exc.message),
+                "e3_decisive_reason_code": str(exc.code),
+            }
+            lc_budget: dict[str, Any] = {
+                "provider_profile": str(profile.profile_id),
+                "model_id": str(getattr(cpa, "target_model", "") or profile.model_id or ""),
+                "response_format_sent": json_object_response_format is not None,
+                "temperature": temp_val,
+                "top_p": top_p_val,
+                "max_tokens_requested": max_req_tok,
+                "failure_stage": "pre_invoke",
+                "decisive_reason_code": str(exc.code),
+                "prompt_budget": prompt_budget_meta,
+                "parsed_output_shape": "none_pre_invoke",
+                "resume_shape_status": "",
+                "schema_validation_status": "",
+                # Mirror FAILED_PROVIDER disposition into local telemetry (Wave W4 /
+                # provider authenticity): same semantics as ``proposed_state_diff``.
+                "generation_status": FAILED_PROVIDER,
+                "full_resume_generated": False,
+                "outcome_authorized": False,
+            }
+            _emit_diagnostics(
+                {
+                    "schema_version": "apps_rg.provider_generation_diagnostics.v1",
+                    **lc_budget,
+                    "input_prompt_chars": len(prompt_text),
+                },
+            )
+            return AttemptReceipt(
+                attempt_receipt_id=AttemptReceipt.new_id(),
+                validation_packet_id=str(approved_work_order.validation_packet_id),
+                attempt_count=attempt_number,
+                determinism=prep_output.replay_bindings.determinism,
+                lineage=prep_output.lineage_root,
+                trace_id=cpa.trace_id,
+                span_id=f"e3-attempt-{attempt_number}",
+                latency_ms=0.0,
+                tokens_used=0,
+                return_code=12,
+                result_class=ResultClass.FAIL_TERMINAL,
+                error_summary=str(exc.message),
+                execution_lane=ExecutionLane.MODEL,
+                decisive_reason_code=str(exc.code),
+                proposed_state_diff=proposed_budget,
+                local_check_results=lc_budget,  # type: ignore[arg-type]
+            )
+
     req = ProviderRequest(
-        prompt_text=prompt_text,
+        prompt_text=packed_prompt,
         provider_profile=profile,
-        max_tokens=int(getattr(cpa, "max_tokens", 4096) or 4096),
-        temperature=float(getattr(cpa, "temperature", 0.0) or 0.0),
+        max_tokens=max_req_tok,
+        temperature=temp_val,
+        top_p=top_p_val,
+        openai_response_format=json_object_response_format,
         request_id=str(getattr(cpa, "request_id", "") or ""),
         run_id=str(getattr(cpa, "run_id", "") or ""),
         trace_root=str(getattr(cpa, "trace_id", "") or ""),
@@ -407,7 +730,26 @@ def _execute_approved_work_order(
         prompt_artifact_ref=str(getattr(cpa, "compilation_hash", "") or ""),
     )
     started = time.perf_counter()
-    resp = gateway.invoke(req)
+    try:
+        resp = gateway.invoke(req)
+    except ProviderModeBlockedError as exc:
+        latency = (time.perf_counter() - started) * 1000.0
+        return AttemptReceipt(
+            attempt_receipt_id=AttemptReceipt.new_id(),
+            validation_packet_id=str(approved_work_order.validation_packet_id),
+            attempt_count=attempt_number,
+            determinism=prep_output.replay_bindings.determinism,
+            lineage=prep_output.lineage_root,
+            trace_id=cpa.trace_id,
+            span_id=f"e3-attempt-{attempt_number}",
+            latency_ms=float(latency),
+            tokens_used=0,
+            return_code=9,
+            result_class=ResultClass.FAIL_TERMINAL,
+            error_summary=str(exc),
+            execution_lane=ExecutionLane.MODEL,
+            decisive_reason_code="E3_PROVIDER_MODE_BLOCKED",
+        )
     latency = (time.perf_counter() - started) * 1000.0
     tok = 0
     try:
@@ -420,7 +762,42 @@ def _execute_approved_work_order(
         "provider_lane": "vllm-local",
         "model_or_tool_name": "qwen-32b",
         "span_ids": [f"span-{attempt_number:03d}"],
+        "response_format_sent": json_object_response_format is not None,
+        "response_format_json_object": bool(
+            json_object_response_format
+            and json_object_response_format.get("type") == "json_object"
+        ),
+        "vllm_temperature": temp_val,
+        "vllm_top_p": top_p_val,
     }
+    tm = str(getattr(cpa, "target_model", "") or "").strip()
+    if tm:
+        local_check["model_id"] = tm
+
+    local_check["provider_profile"] = str(profile.profile_id)
+    local_check["max_tokens_requested"] = max_req_tok
+    local_check["prompt_budget"] = prompt_budget_meta
+    local_check["input_prompt_chars"] = len(prompt_text)
+    local_check["packed_prompt_chars"] = len(packed_prompt)
+    if prompt_budget_meta:
+        local_check["max_model_len"] = prompt_budget_meta.get("max_model_len")
+        local_check["estimated_output_budget"] = prompt_budget_meta.get("completion_meta", {}).get(
+            "effective_max_tokens"
+        )
+    inv0 = getattr(resp, "invocation_meta", None)
+    if isinstance(inv0, dict):
+        local_check["vllm_invocation"] = inv0
+        if inv0.get("http_status") is not None:
+            local_check["http_status"] = inv0.get("http_status")
+        if inv0.get("effective_max_tokens"):
+            local_check["effective_max_tokens"] = inv0.get("effective_max_tokens")
+        if inv0.get("prompt_truncated") is not None:
+            local_check["prompt_truncated"] = inv0.get("prompt_truncated")
+        if inv0.get("prompt_chars_after_truncate") is not None:
+            local_check["input_prompt_tokens_est"] = max(
+                1,
+                int(inv0.get("prompt_chars_after_truncate") or 0) // 2,
+            )
 
     text = str(resp.text or "")
     proposed: dict[str, Any] = {}
@@ -428,6 +805,10 @@ def _execute_approved_work_order(
     err_summary: str | None = None
     ret_code = 0
     drc = "E3_SUCCESS"
+    local_check["raw_text_wrapper_seen"] = False
+    local_check["raw_text_unwrap_applied"] = False
+    local_check["schema_validation_status"] = ""
+
     try:
         parsed = json.loads(text)
         if isinstance(parsed, dict):
@@ -443,11 +824,157 @@ def _execute_approved_work_order(
             drc = "E3_JSON_PARSE_ERROR"
             ret_code = 3
 
+    gr_check = proposed.get("generated_resume")
+    raw_only_top = set(proposed.keys()) == {"raw_text"}
+    raw_only_nested = isinstance(gr_check, dict) and set(gr_check.keys()) == {"raw_text"}
+
+    if raw_only_nested or raw_only_top:
+        local_check["raw_text_wrapper_seen"] = True
+        rt_source = None
+        if raw_only_nested and isinstance(gr_check, dict):
+            rt_source = gr_check.get("raw_text")
+        elif raw_only_top:
+            rt_source = proposed.get("raw_text")
+        inner = None
+        rcp: dict[str, Any] = {}
+        if isinstance(rt_source, str):
+            inner, rcp = try_unwrap_raw_text_to_resume(rt_source)
+        proposed["raw_text_unwrap_receipt"] = rcp
+        if (
+            inner is not None
+            and rcp.get("repair_applied") is True
+            and rcp.get("validation_status") == "PASS"
+        ):
+            proposed["generated_resume"] = inner
+            gr_check = inner
+            raw_only_nested = False
+            raw_only_top = False
+            result_class = ResultClass.SUCCESS
+            err_summary = None
+            drc = "E3_SUCCESS"
+            ret_code = 0
+            local_check["raw_text_unwrap_applied"] = True
+            local_check["schema_validation_status"] = "PASS"
+            proposed["raw_text_unwrap_applied"] = True
+            proposed["schema_validation_status"] = "PASS"
+        else:
+            local_check["raw_text_unwrap_applied"] = False
+            local_check["schema_validation_status"] = "FAIL"
+            result_class = ResultClass.FAIL_TERMINAL
+            err_summary = (
+                "MALFORMED_MODEL_OUTPUT: resume payload is raw_text-only wrapper "
+                "(missing structured headline, summary, competencies, experience, education, certifications)"
+            )
+            drc = "E3_MALFORMED_MODEL_OUTPUT"
+            ret_code = 7
+
+    effective_payload: dict[str, Any] | None = None
+    if isinstance(gr_check, dict):
+        effective_payload = gr_check
+    elif raw_only_top:
+        rt0 = proposed.get("raw_text")
+        effective_payload = {"raw_text": rt0} if rt0 is not None else {"raw_text": ""}
+
+    if effective_payload is not None:
+        shape_rep = classify_resume_payload(effective_payload)
+        local_check["generation_status"] = shape_rep.generation_status
+        local_check["full_resume_generated"] = shape_rep.full_resume_generated
+        local_check["resume_shape"] = shape_rep.resume_shape
+
+    if resp.success and run_mode == ProviderRunMode.EXPLICIT_STUB:
+        if profile.provider_kind == ProviderKind.STUB:
+            local_check["generation_status"] = STUB_RECEIPT
+            local_check["full_resume_generated"] = False
+
+    if (
+        resp.success
+        and result_class == ResultClass.SUCCESS
+        and run_mode != ProviderRunMode.EXPLICIT_STUB
+        and local_check.get("generation_status")
+        and local_check["generation_status"] != STRUCTURED_RESUME_OK
+    ):
+        gs = str(local_check.get("generation_status") or "")
+        result_class = ResultClass.FAIL_TERMINAL
+        err_summary = f"INVALID_RESUME_STRUCTURE: generation_status={gs}"
+        drc = "E3_MALFORMED_MODEL_OUTPUT"
+        ret_code = 7
+        local_check["outcome_authorized"] = False
+        local_check["terminal_class"] = "FAILURE"
+
     if not resp.success:
         result_class = ResultClass.FAIL_TERMINAL
         err_summary = str(resp.error_message or "provider_failed")
-        drc = "E3_PROVIDER_FAIL"
+        drc = "E3_FAILED_PROVIDER"
         ret_code = 8
+        pk = profile.provider_kind
+        pk_val = pk.value if hasattr(pk, "value") else str(pk)
+        pe = {
+            "success": False,
+            "message": err_summary,
+            "profile_id": str(profile.profile_id),
+            "provider_kind": pk_val,
+        }
+        local_check["generation_status"] = FAILED_PROVIDER
+        local_check["full_resume_generated"] = False
+        local_check["outcome_authorized"] = False
+        local_check["terminal_class"] = "FAILURE"
+        local_check["provider_error"] = pe
+        proposed["generation_status"] = FAILED_PROVIDER
+        proposed["full_resume_generated"] = False
+        proposed["provider_error"] = pe
+
+    gs_lc = local_check.get("generation_status") if isinstance(local_check, dict) else None
+    if gs_lc and "generation_status" not in proposed:
+        proposed["generation_status"] = gs_lc
+    if err_summary:
+        proposed["e3_error_summary"] = err_summary
+    proposed["e3_decisive_reason_code"] = drc
+    proposed["prompt_budget"] = prompt_budget_meta
+
+    if not resp.success:
+        local_check["failure_stage"] = "post_provider"
+        local_check["parsed_output_shape"] = "none_provider_failure"
+    else:
+        local_check["failure_stage"] = "post_parse"
+        if "generated_resume" in proposed and isinstance(proposed.get("generated_resume"), dict):
+            local_check["parsed_output_shape"] = "top_level_dict"
+        elif proposed.get("raw_text") is not None:
+            local_check["parsed_output_shape"] = "raw_text_only"
+        else:
+            local_check["parsed_output_shape"] = "unknown"
+
+    inv_rf = getattr(resp, "invocation_meta", None) or {}
+    if json_object_response_format is None:
+        local_check["response_format_supported"] = "not_requested"
+    elif isinstance(inv_rf, dict) and inv_rf.get("response_format_supported") is False:
+        local_check["response_format_supported"] = False
+    elif resp.success:
+        local_check["response_format_supported"] = True
+    else:
+        em = str(resp.error_message or "")
+        if "400" in em and "response_format" in em.lower():
+            local_check["response_format_supported"] = False
+        else:
+            local_check["response_format_supported"] = "unknown"
+
+    local_check["resume_shape_status"] = str(local_check.get("resume_shape", "") or "")
+    local_check["decisive_reason_code"] = drc
+
+    diag_payload: dict[str, Any] = {
+        "schema_version": "apps_rg.provider_generation_diagnostics.v1",
+        "decisive_reason_code": drc,
+        "failure_stage": local_check.get("failure_stage"),
+        "local_check": local_check,
+        "provider_error_snippet": (str(resp.error_message or "")[:4000]) if not resp.success else "",
+        "apps_rg_env_flags": {
+            "APPS_RG_DIAGNOSTIC_MIN_CONTEXT": os.environ.get("APPS_RG_DIAGNOSTIC_MIN_CONTEXT"),
+            "APPS_RG_VLLM_RESPONSE_FORMAT_JSON_OBJECT": os.environ.get(
+                "APPS_RG_VLLM_RESPONSE_FORMAT_JSON_OBJECT"
+            ),
+        },
+    }
+    raw_snip = text if (not resp.success or drc != "E3_SUCCESS") else None
+    _emit_diagnostics(diag_payload, raw_text=raw_snip)
 
     return AttemptReceipt(
         attempt_receipt_id=AttemptReceipt.new_id(),
@@ -819,6 +1346,8 @@ def run_apps_rg_l2_envelope(
     enable_heal: bool = False,
     max_heal_attempts: int = 3,
     budget: Optional[dict] = None,
+    resume_artifact_contract_mode: Any | None = None,
+    artifact_dir: str | None = None,
 ) -> Any:
     """Run E1→E2→(E3↔E4)→E5 for apps_rg."""
     del route_contract, validated_request, budget
@@ -836,6 +1365,8 @@ def run_apps_rg_l2_envelope(
         approved_work_order=val.approved_work_order,
         prep_output=prep,
         attempt_number=attempt_number,
+        resume_artifact_contract_mode=resume_artifact_contract_mode,
+        artifact_dir=artifact_dir,
     )
     heal_r: Any | None = None
     heals_used = 0
@@ -862,6 +1393,8 @@ def run_apps_rg_l2_envelope(
             approved_work_order=val.approved_work_order,
             prep_output=prep,
             attempt_number=attempt_number + heals_used,
+            resume_artifact_contract_mode=resume_artifact_contract_mode,
+            artifact_dir=artifact_dir,
         )
 
     return _seal_l2_artifact(

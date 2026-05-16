@@ -34,7 +34,7 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
 
 from pre_write_gate import (
     check_mcp_config,
@@ -282,35 +282,35 @@ class TestCheckPythonSyntax:
 
 class TestCheckMcpConfig:
     def test_deletion_blocked(self):
-        block, msgs = check_mcp_config("path/to/mcp_config.json", [])
+        block, msgs = check_mcp_config("path/to/.cursor/mcp.json", [])
         assert block is True
         assert any("deletion" in m.lower() for m in msgs)
 
     def test_deletion_detection_by_suffix(self):
-        block, _ = check_mcp_config("/home/user/.codeium/windsurf/mcp_config.json", [])
+        block, _ = check_mcp_config("/home/user/.cursor/mcp.json", [])
         assert block is True
 
     def test_risky_edit_mcp_servers_warns(self):
         edits = [{"old_string": "", "new_string": '"mcpServers": {"newServer": {}}'}]
-        block, msgs = check_mcp_config("mcp_config.json", edits)
+        block, msgs = check_mcp_config("mcp.json", edits)
         assert block is False
         assert len(msgs) > 0
 
     def test_server_removal_warns(self):
         edits = [{"old_string": '"myServer": {"command": "python"}', "new_string": ""}]
-        block, msgs = check_mcp_config("mcp_config.json", edits)
+        block, msgs = check_mcp_config("mcp.json", edits)
         assert block is False
         assert any("removed" in m for m in msgs)
 
     def test_env_change_warns(self):
         edits = [{"old_string": "", "new_string": '"env": {"KEY": "val"}'}]
-        block, msgs = check_mcp_config("mcp_config.json", edits)
+        block, msgs = check_mcp_config("mcp.json", edits)
         assert block is False
         assert len(msgs) > 0
 
     def test_clean_edit_no_block_no_warnings(self):
         edits = [{"old_string": "version_1", "new_string": "version_2"}]
-        block, msgs = check_mcp_config("mcp_config.json", edits)
+        block, msgs = check_mcp_config("mcp.json", edits)
         assert block is False
         assert msgs == []
 
@@ -320,10 +320,10 @@ class TestCheckMcpConfig:
         assert msgs == []
 
     def test_similar_filename_not_matched(self):
-        # 'my_mcp_config.json' should not be treated as mcp_config.json
-        block, msgs = check_mcp_config("my_mcp_config.json", [])
-        # endswith("mcp_config.json") → this DOES match; verify no crash
-        assert isinstance(block, bool)
+        # Cursor gate only applies when path endswith "mcp.json" (not legacy mcp_config.json).
+        block, msgs = check_mcp_config("mcp_config.json", [])
+        assert block is False
+        assert msgs == []
 
 
 # ---------------------------------------------------------------------------
@@ -400,9 +400,10 @@ class TestMain:
         assert self._run(payload) == 2
 
     def test_subprocess_with_timeout_allowed(self):
+        safe_py = str(Path(__file__).resolve().parent / "_pre_write_gate_payload_dummy.py")
         payload = {
             "tool_info": {
-                "file_path": "runner.py",
+                "file_path": safe_py,
                 "edits": [{"old_string": "", "new_string": "subprocess.run(['git', 'log'], timeout=30)\n"}],
             },
         }
@@ -431,15 +432,15 @@ class TestMain:
         }
         assert self._run(payload) == 0
 
-    # --- mcp_config.json ---
+    # --- .cursor/mcp.json ---
     def test_mcp_deletion_blocked(self):
-        payload = {"tool_info": {"file_path": "mcp_config.json", "edits": []}}
+        payload = {"tool_info": {"file_path": ".cursor/mcp.json", "edits": []}}
         assert self._run(payload) == 2
 
     def test_mcp_risky_edit_warns_allows(self):
         payload = {
             "tool_info": {
-                "file_path": "mcp_config.json",
+                "file_path": ".cursor/mcp.json",
                 "edits": [{"old_string": "v1", "new_string": '"env": {"KEY": "val"}'}],
             },
         }

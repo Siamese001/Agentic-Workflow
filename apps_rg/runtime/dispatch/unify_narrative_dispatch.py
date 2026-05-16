@@ -34,14 +34,19 @@ except ImportError:
     pass
 
 from apps_rg.runtime.dispatch.unify_narrative_pa import compile_unify_narrative_prompt
+from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.exit.unify_narrative_x3 import aggregate_x3
 from apps_rg.runtime.judges.unify_narrative_x1d import run_unify_narrative_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.shadow.unify_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
-from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir, resolve_latest_real_l2
+from apps_rg.runtime.runtime_proof_layout import (
+    finalize_runtime_proof_run,
+    prepare_runtime_proof_run_dir,
+    resolve_effective_lane_l2_path,
+)
 
 PROMPT_ID = "unify_position_narrative_v1"
 NARRATIVE_TEMP_DEFAULT = 0.45
@@ -141,7 +146,7 @@ def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def load_companion_bullets_text() -> str:
-    path = resolve_latest_real_l2(REPO_ROOT, "unify_bullets")
+    path = resolve_effective_lane_l2_path(REPO_ROOT, "unify_bullets")
     if path is None or not path.is_file():
         return ""
     try:
@@ -268,7 +273,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(repair_payload)
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -331,7 +336,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
     unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
     selected_fact_plan = build_selected_fact_plan(unify_facts)
     companion_text = load_companion_bullets_text()
-    bullets_l2 = resolve_latest_real_l2(REPO_ROOT, "unify_bullets")
+    bullets_l2 = resolve_effective_lane_l2_path(REPO_ROOT, "unify_bullets")
     companion_ref = (
         str(bullets_l2.relative_to(REPO_ROOT))
         if bullets_l2 is not None and companion_text
@@ -396,7 +401,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         )
         provider_request_data = provider_req.to_dict()
         write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(provider_payload)
+        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
         provider_result_data = result.to_dict()
         raw_output = result.raw_model_output
         runtime_generation_status = result.runtime_generation_status
@@ -491,15 +496,20 @@ def run_dispatch(args: argparse.Namespace) -> int:
 
     write_json(
         artifact_dir / "prompt_selection_trace.json",
-        {
-            "runtime_path": "apps_rg.runtime.dispatch.unify_narrative_dispatch",
-            "prompt_id": PROMPT_ID,
-            "provider": args.provider,
-            "temperature": args.temperature if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT,
-            "section_prompt_adapter": True,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-        },
+        attach_reasoning_to_prompt_trace(
+            {
+                "runtime_path": "apps_rg.runtime.dispatch.unify_narrative_dispatch",
+                "prompt_id": PROMPT_ID,
+                "provider": args.provider,
+                "temperature": args.temperature if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT,
+                "section_prompt_adapter": True,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+            },
+            provider=args.provider,
+            lane_key=LANE_KEY,
+            provider_result_data=provider_result_data if isinstance(provider_result_data, dict) else None,
+        ),
     )
 
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)

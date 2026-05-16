@@ -2684,12 +2684,40 @@ class TestW7Integration:
         cpa = _make_minimal_cpa()
         
         # Mock ProviderGateway to simulate successful provider call
+        import json
+
+        valid_resume = {
+            "schema_version": "master_resume_v2.16",
+            "candidate_name": "Test User",
+            "target_role": "Engineer",
+            "target_company": "Co",
+            "generated_at": "2026-01-01T00:00:00Z",
+            "sections": {
+                "summary": {"text": "Summary here for contract test.", "word_count": 5},
+                "experience": [
+                    {
+                        "title": "Engineer",
+                        "company": "Acme",
+                        "dates": "2020-present",
+                        "bullets": ["Shipped features."],
+                    }
+                ],
+                "skills": {"categories": [{"name": "Other", "items": ["Python"]}]},
+                "education": [{"degree": "BS", "institution": "State", "year": "2010"}],
+                "certifications": [],
+            },
+            "citations": [],
+            "gaps": [],
+            "metadata": {},
+        }
         mock_response = MagicMock()
         mock_response.success = True
-        mock_response.text = '{"resume": "test output"}'
+        mock_response.text = json.dumps(valid_resume)
         mock_response.receipt = MagicMock()
         mock_response.receipt.token_usage = None
         mock_response.receipt.error = None
+        mock_response.error_message = None
+        mock_response.invocation_meta = {"http_status": 200, "max_model_len": 16384}
         
         with patch('apps_rg.runtime.bindings.l2_envelope_adapter.ProviderGateway') as mock_gateway_class:
             mock_gateway = MagicMock()

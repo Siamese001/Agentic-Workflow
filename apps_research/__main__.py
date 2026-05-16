@@ -263,7 +263,7 @@ def _run_spine_dispatch(argv: list[str]) -> int:
         sys.stdout.write("DRY RUN\n")
 
     from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
-    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired  # noqa: PLC0415
+    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired  # noqa: PLC0415
     from apps_research.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
 
     payload: dict = {

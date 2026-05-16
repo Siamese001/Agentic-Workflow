@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HELPER_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_author_gate_queue.py"
+HELPER_PATH = REPO_ROOT / ".cursor" / "scripts" / "_author_gate_queue.py"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB
 
 # Capture marker — accepts both raw AG_QUEUE_SEED and leading whitespace

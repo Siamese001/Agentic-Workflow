@@ -18,6 +18,9 @@ from apps_rg.runtime.package.resume_package_manifest import (
     repo_root_default,
     resolve_resume_package_paths,
 )
+from apps_rg.runtime.package.apps_rg_full_resume_x3_eligibility import (
+    evaluate_apps_rg_full_success_eligibility,
+)
 from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
 
 from apps_rg.runtime.package.resume_package_l6_audit import audit_l6_shadow_packet_for_lane
@@ -169,6 +172,7 @@ def evaluate_resume_package(
         "final_resume_x2": [],
         "docx_manifest_x2": [],
         "docx_render_x2": [],
+        "apps_rg_l2_product_w3": [],
         "deterministic_gate_failures_aggregate": [],
     }
 
@@ -349,6 +353,38 @@ def evaluate_resume_package(
     if not docx_ok:
         block_notes.append("rendered_docx_absent_on_disk")
 
+    apps_rg_w3_enforced = False
+    apps_rg_w3_eligible = True
+    apps_rg_w3_reasons: list[str] = []
+    apps_rg_manifest_rel: str | None = None
+    am_path = paths.apps_rg_output_manifest_json
+    if am_path.is_file():
+        apps_rg_w3_enforced = True
+        apps_rg_manifest_rel = _repo_rel(rr, am_path)
+        try:
+            am_blob = load_json(am_path)
+            if not isinstance(am_blob, dict):
+                apps_rg_w3_eligible = False
+                apps_rg_w3_reasons.append("apps_rg_output_manifest_not_object")
+            else:
+                run_root = am_path.parent.resolve()
+                apps_rg_w3_eligible, apps_rg_w3_reasons = evaluate_apps_rg_full_success_eligibility(
+                    manifest=am_blob,
+                    run_root=run_root,
+                )
+        except (OSError, json.JSONDecodeError) as exc:
+            apps_rg_w3_eligible = False
+            apps_rg_w3_reasons.append(f"apps_rg_output_manifest_unreadable:{exc}")
+        if not apps_rg_w3_eligible:
+            deterministic_failed_ids["apps_rg_l2_product_w3"].extend(apps_rg_w3_reasons)
+            block_notes.append(
+                "apps_rg_w3_full_resume_product_ineligible:" + ";".join(apps_rg_w3_reasons)
+            )
+
+    prev_agg = list(deterministic_failed_ids["deterministic_gate_failures_aggregate"])
+    extra = [f"apps_rg_l2_product_w3:{r}" for r in deterministic_failed_ids["apps_rg_l2_product_w3"]]
+    deterministic_failed_ids["deterministic_gate_failures_aggregate"] = sorted(set(prev_agg + extra))
+
     deterministic_blocked = (
         any(
             deterministic_failed_ids[k]
@@ -358,6 +394,7 @@ def evaluate_resume_package(
                 "final_resume_x2",
                 "docx_manifest_x2",
                 "docx_render_x2",
+                "apps_rg_l2_product_w3",
             )
         )
         or not guarantees_ok
@@ -458,6 +495,8 @@ def evaluate_resume_package(
         "every_lane_l6_handoff_audited": len(per_lane_l6_audit) == len(GENERATED_LANES),
         "l6_handoff_agg_checks_all_true": len(agg_l6_checks) > 0 and all(agg_l6_checks.values()),
         "l6_handoff_hard_pass_aggregate": bool(not l6_handoff_blocked),
+        "apps_rg_l2_product_w3_enforced": apps_rg_w3_enforced,
+        "apps_rg_l2_product_w3_eligible": apps_rg_w3_eligible,
     }
 
     disposition["deterministic_blocked_explain_if_true"] = {
@@ -468,6 +507,7 @@ def evaluate_resume_package(
             "final_resume_x2",
             "docx_manifest_x2",
             "docx_render_x2",
+            "apps_rg_l2_product_w3",
         )
         if deterministic_failed_ids[k]
     }
@@ -475,6 +515,27 @@ def evaluate_resume_package(
     disposition["aggregate_pass_under_policy_no_waivers_yet"] = final_code == X3_ALLOW_CODE
     disposition["explicit_waiver_needed_for_allow_when_section_review"] = (
         deterministic_blocked is False and not l6_handoff_blocked and not all_sections_x3_allow
+    )
+
+    disposition["apps_rg_full_resume_product_gate"] = {
+        "w3_enforced": apps_rg_w3_enforced,
+        "eligible_for_package_x3_allow": apps_rg_w3_eligible,
+        "reasons": list(apps_rg_w3_reasons),
+        "manifest_path_repo_relative": apps_rg_manifest_rel,
+    }
+    disposition["apps_rg_full_resume_outcome_authorized"] = bool(final_code == X3_ALLOW_CODE)
+    if final_code == X3_ALLOW_CODE:
+        apps_rg_prod_terminal = "SUCCESS"
+    elif final_code == X3_BLOCKED_DETERMINISTIC:
+        apps_rg_prod_terminal = "BLOCKED"
+    elif final_code == X3_BLOCK_L6_HANDOFF_INCOMPLETE:
+        apps_rg_prod_terminal = "BLOCKED"
+    else:
+        apps_rg_prod_terminal = "FAILURE"
+    disposition["apps_rg_product_terminal_class"] = apps_rg_prod_terminal
+    disposition["apps_rg_package_x3_disposition"] = final_code
+    disposition["apps_rg_full_resume_decisive_reason"] = (
+        "; ".join(apps_rg_w3_reasons) if apps_rg_w3_reasons else None
     )
 
     disposition["prior_final_resume_manifest_rollups_rollforward_note"] = final_manifest.get(

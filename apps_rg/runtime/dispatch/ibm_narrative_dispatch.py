@@ -37,7 +37,7 @@ from apps_rg.runtime.dispatch.ibm_narrative_pa import compile_ibm_narrative_prom
 from apps_rg.runtime.exit.ibm_narrative_x3 import aggregate_x3
 from apps_rg.runtime.judges.ibm_narrative_x1d import run_ibm_narrative_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.shadow.ibm_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 from apps_rg.runtime.validators.ibm_narrative_x2 import (
@@ -45,7 +45,11 @@ from apps_rg.runtime.validators.ibm_narrative_x2 import (
     count_ibm_narrative_metric_hits,
     run_ibm_narrative_x2_gates,
 )
-from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir, resolve_latest_real_l2
+from apps_rg.runtime.runtime_proof_layout import (
+    finalize_runtime_proof_run,
+    prepare_runtime_proof_run_dir,
+    resolve_effective_lane_l2_path,
+)
 
 PROMPT_ID = "ibm_position_narrative_dispatch_v1"
 NARRATIVE_TEMP_DEFAULT = 0.45
@@ -145,7 +149,7 @@ def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def load_companion_ibm_bullets_text() -> str:
-    path = resolve_latest_real_l2(REPO_ROOT, "ibm_bullets")
+    path = resolve_effective_lane_l2_path(REPO_ROOT, "ibm_bullets")
     if path is None or not path.is_file():
         return ""
     try:
@@ -355,7 +359,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(repair_payload)
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -391,7 +395,7 @@ def retry_qwen_for_metric_budget(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(repair_payload)
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed
     new_raw = result.raw_model_output
@@ -462,7 +466,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
     ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
     selected_fact_plan = build_selected_fact_plan(ibm_facts)
     companion_text = load_companion_ibm_bullets_text()
-    ibm_bullets_l2 = resolve_latest_real_l2(REPO_ROOT, "ibm_bullets")
+    ibm_bullets_l2 = resolve_effective_lane_l2_path(REPO_ROOT, "ibm_bullets")
     companion_ref = (
         str(ibm_bullets_l2.relative_to(REPO_ROOT))
         if ibm_bullets_l2 is not None and companion_text
@@ -529,7 +533,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         )
         provider_request_data = provider_req.to_dict()
         write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(provider_payload)
+        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
         provider_result_data = result.to_dict()
         raw_output = result.raw_model_output
         runtime_generation_status = result.runtime_generation_status

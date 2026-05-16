@@ -34,10 +34,11 @@ except ImportError:
     pass
 
 from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prompt
+from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.shadow.unify_bullets_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.unify_bullets_x2 import (
@@ -296,7 +297,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": UNIFY_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(repair_payload)
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -442,7 +443,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         )
         provider_request_data = provider_req.to_dict()
         write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(provider_payload)
+        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
         provider_result_data = result.to_dict()
         raw_output = result.raw_model_output
         runtime_generation_status = result.runtime_generation_status
@@ -523,15 +524,20 @@ def run_dispatch(args: argparse.Namespace) -> int:
 
     write_json(
         artifact_dir / "prompt_selection_trace.json",
-        {
-            "runtime_path": "apps_rg.runtime.dispatch.unify_bullets_dispatch",
-            "prompt_id": PROMPT_ID,
-            "provider": args.provider,
-            "temperature": args.temperature if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT,
-            "section_prompt_adapter": True,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-        },
+        attach_reasoning_to_prompt_trace(
+            {
+                "runtime_path": "apps_rg.runtime.dispatch.unify_bullets_dispatch",
+                "prompt_id": PROMPT_ID,
+                "provider": args.provider,
+                "temperature": args.temperature if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT,
+                "section_prompt_adapter": True,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+            },
+            provider=args.provider,
+            lane_key=LANE_KEY,
+            provider_result_data=provider_result_data if isinstance(provider_result_data, dict) else None,
+        ),
     )
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
 

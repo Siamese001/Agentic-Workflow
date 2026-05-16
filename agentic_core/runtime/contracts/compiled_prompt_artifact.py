@@ -87,6 +87,7 @@ class CompiledPromptArtifact:
     # Constraints
     max_tokens: int = 4096
     temperature: float = 0.7
+    top_p: float = 1.0
     # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
     otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
     audit_refs: tuple[str, ...] = field(default_factory=tuple)

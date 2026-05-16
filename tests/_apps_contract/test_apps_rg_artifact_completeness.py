@@ -60,7 +60,7 @@ def fake_artifact_dir(tmp_path):
     (d / "u0_validated_request.json").write_text(json.dumps({
         "request_id": "test-req-001",
         "trace_root": "trace-001",
-        "transport": "cli",
+        "transport": "ui",
         "validated": True,
     }))
 

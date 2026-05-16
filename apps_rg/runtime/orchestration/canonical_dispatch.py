@@ -20,7 +20,8 @@ from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run i
     run_integrated_r4_deterministic_pipeline,
 )
 
-_SUCCESS_X3 = frozenset({"EXIT_OK", "EXIT_PARTIAL"})
+# V6 terminal codes short values (integrated R4); legacy strings retained.
+_SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
 _BRIEF_FETCH_MAX_BYTES = 2_000_000
 
 
@@ -130,7 +131,8 @@ def build_raw_request_for_r4(
     )
 
     return {
-        "transport": "cli",
+        # E1 intake allowlist excludes "cli"; local CLI runs are user-driven → "ui".
+        "transport": "ui",
         "method": "POST",
         "content_type": "application/json",
         "source_channel": "apps_rg_cli",
@@ -146,8 +148,6 @@ def build_raw_request_for_r4(
         "jd_hash": jd_hash,
         "brief_hash": brief_hash,
         "resume_hash": resume_hash,
-        "policy_hash": "policy_v1",
-        "blueprint_hash": "blueprint_v1",
         "flow_route": "tailor_existing",
         "body_text": jd_blob,
     }
@@ -167,6 +167,78 @@ def _default_artifact_dir(explicit: str) -> Path:
     out = root / "artifacts" / "apps_rg" / "runs" / f"cli_{rid}"
     out.mkdir(parents=True, exist_ok=True)
     return out
+
+
+def _augment_integrated_manifest_with_apps_rg_docx(artifact_dir: Path) -> None:
+    """Add DOCX pointer fields when ``outputs/resume.docx`` exists.
+
+    Does not modify ``artifact_filenames`` — SSOT chain enumerations stay stable.
+    """
+    docx = artifact_dir / "outputs" / "resume.docx"
+    manifest_path = artifact_dir / "integrated_runtime_artifact_manifest.json"
+    if not docx.is_file() or not manifest_path.is_file():
+        return
+    try:
+        digest = hashlib.sha256(docx.read_bytes()).hexdigest()
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        data["apps_rg_resume_docx_relpath"] = "outputs/resume.docx"
+        data["apps_rg_resume_docx_sha256"] = f"sha256:{digest}"
+        manifest_path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    except (OSError, json.JSONDecodeError, TypeError):
+        return
+
+
+def _augment_r4_run_manifest_for_apps_rg_l2_fault(
+    artifact_dir: Path,
+    *,
+    fault: str,
+    x3_disposition: str,
+) -> None:
+    """Align ``r4_run_manifest.json`` with apps_rg full-résumé product truth when L2 faults.
+
+    Core R4 already coerces ``x3_disposition`` to DENY (X3A) when ``l2_fault`` is set;
+    this adds explicit product fields so operators are not misled by envelope-only X3
+    history and records missing résumé artifacts.
+    """
+    if not str(fault).strip():
+        return
+    path = artifact_dir / "r4_run_manifest.json"
+    if not path.is_file():
+        return
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return
+
+    gen_status = "L2_EXECUTION_FAILED"
+    if "BLOCKED_STUB_PROVIDER" in fault:
+        gen_status = "BLOCKED_STUB_PROVIDER"
+    elif "BLOCKED_PROVIDER_LANE" in fault:
+        gen_status = "BLOCKED_PROVIDER_LANE"
+    elif "FAILED_PROVIDER" in fault:
+        gen_status = "FAILED_PROVIDER"
+    elif "FAILED_ARTIFACT_GATE" in fault:
+        gen_status = "FAILED_ARTIFACT_GATE"
+
+    data["x3_disposition"] = x3_disposition
+    data["apps_rg_terminal_class"] = "failure"
+    data["apps_rg_product_outcome_authorized"] = False
+    data["apps_rg_generation_status"] = gen_status
+    data["apps_rg_full_resume_generated"] = False
+    data["apps_rg_required_resume_artifacts"] = {
+        "outputs/generated_resume.json": "missing",
+        "outputs/resume.docx": "missing",
+    }
+    try:
+        path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    except OSError:
+        return
 
 
 def run_canonical_apps_rg_from_cli_primitives(
@@ -196,6 +268,12 @@ def run_canonical_apps_rg_from_cli_primitives(
         raw_request=raw_request,
         app_name="apps_rg",
         artifact_dir=art,
+    )
+    _augment_integrated_manifest_with_apps_rg_docx(art)
+    _augment_r4_run_manifest_for_apps_rg_l2_fault(
+        art,
+        fault=result.fault,
+        x3_disposition=result.x3_disposition,
     )
 
     l7_path = art / "agentic_core_how_trace.json"

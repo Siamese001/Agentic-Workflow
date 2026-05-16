@@ -1,0 +1,9 @@
+# Canonical R4 route handle for resume_generation runs (picked by lowest priority field).
+version: v1
+
+app_name: apps_rg
+
+routes:
+  - route_id: apps_rg.resume_generation_v1
+    priority: 1
+    label: rg_resume_generation_primary

@@ -37,12 +37,12 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "windsurf" / "author_gate_pipeline_violations.jsonl"
+    REPO_ROOT / "artifacts" / "cursor" / "author_gate_pipeline_violations.jsonl"
 )
 MAX_RESPONSE_BYTES = 1_048_576
 
 # Import the pure helper (same directory).
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
 from _author_gate_pipeline_check import Violation, decide  # noqa: E402
 
 
