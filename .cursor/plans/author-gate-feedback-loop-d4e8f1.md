@@ -8,7 +8,7 @@ touches_plan_templates: false
 core_addition_author_gate_required: false
 author_gate_receipt_ref: "artifacts/governance/migration_receipts/20260517_043100_author_gate_feedback_w1.json"
 w13_null_bind_gate_receipt: "artifacts/governance/author_gate_feedback_loop/20260517_044212_w13_null_bind_gate.json"
-contract_gates_run_evidence: "artifacts/governance/author_gate_feedback_loop/20260517_045115_run_contract_gates_evidence.txt"
+contract_gates_run_evidence: "artifacts/governance/author_gate_feedback_loop/20260517_contract_gates_after_adg_touch.txt"
 ledger_schema_alignment_proof: "artifacts/governance/author_gate_feedback_loop/20260517_044731_ledger_schema_alignment_proof.json"
 ledger_integrity_diagnostic: "artifacts/governance/author_gate_feedback_loop/20260517_045057_ledger_integrity_diagnostic.json"
 ledger_integrity_repair_receipt: "artifacts/governance/author_gate_feedback_loop/20260517_045057_ledger_integrity_repair_receipt.json"
@@ -318,15 +318,16 @@ Concrete module paths (2026-05-17 reconciliation). Use `PYTEST_DISABLE_PLUGIN_AU
 | W2 | `python -m pytest -p pytest_timeout tests/unit/windsurf/scripts/test_post_cursor_agent_author_gate_capture.py -q --tb=short` | Green | Capture hook / `precedent_agreement` writer fails |
 | W3 | `python -m pytest -p pytest_timeout tests/unit/windsurf/skills/test_lookup_refactor_decisions.py tests/unit/tools/refactor_decisions/test_author_gate_lookup_w3.py -q --tb=short` | Green | Lookup reason taxonomy / stability fails |
 | W4 | `python -m pytest -p pytest_timeout tests/unit/ops_scripts/calibration/test_author_gate_learning_join_report.py tests/unit/ops_scripts/calibration/test_calibration_min_n_degenerate.py -q --tb=short` | Green; join `advisory_only`; calibrator NOOP paths | Join or calibrator safeguard regression |
-| Final | `python ops_scripts/ci/run_contract_gates.py` | **2026-05-17 run: exit code 1** — log `contract_gates_run_evidence` (`20260517_045115`). **Author-Gate ledger:** `check_ledger_integrity` **PASS** (17/17) after documented `rebuild_chain` receipt (`ledger_integrity_repair_receipt`). **Remaining blocker:** **ADG snapshot graph-layer completeness** (`mv_*` / `v_p*` / infra / projection stale per gate output). **Blocks `PLAN_COMPLETE`.** | Any gate failure or undocumented weakening |
+| Final | `python ops_scripts/ci/run_contract_gates.py` | **2026-05-17 run: exit code 1** — log `contract_gates_run_evidence`. **Snapshot graph-layer completeness:** **PASS** (canonical indexed snapshot `adg_indexed_05172026_0055.sqlite`, projection `adg_graph_05172026_0055.sqlite`). **Remaining blocker:** **W4d-4 10C pilot proof-evidence** — mass **P4b** failures: `proof_status=EVIDENCE_PRESENT` but bundle `git_head` **`ef555f5a`** ≠ current **`0fdb5213`** (rebuild proof bundles or staged downgrade per gate text). **Blocks `PLAN_COMPLETE`.** | Any gate failure or undocumented weakening |
 
 ## Plan closure status (`PLAN_STATUS: POST_W4_PARTIAL`)
 
 - **W1.3** — **DONE** via read-only **`w13_null_bind_gate`** (`tools/governance/w13_null_bind_gate.py`) + JSON receipt (`w13_null_bind_gate_receipt` in frontmatter). Live ledger result **WARN** (`high_churn_null_bind_count` 9, threshold fail &gt; 25 not tripped). No backfill executed; no waiver.
 - **Ledger schema alignment** — **`python .cursor/scripts/apply_ledger_schema.py`** applied **`decision_outcomes.promotion_quarantine_started_at`** additively (see `ledger_schema_alignment_proof` in frontmatter); `decision_outcomes` row count unchanged (11).
 - **Ledger integrity** — **Triaged** `dec_4c9f4c38c632`: chronologic first sealed row had **stale `row_hash`** vs current `canonicalize_row` / `compute_row_hash` (genesis `prev_hash` correct); **not** caused by `decision_outcomes` schema alignment. **Remediation:** documented **`python .cursor/scripts/author_gate_ledger_integrity.py --rebuild --confirm`** (`rebuild_chain`) — integrity fields only on `decisions`; row counts preserved (17 decisions, 11 outcomes). Evidence: `ledger_integrity_diagnostic`, `ledger_integrity_repair_receipt`. Sub-gate: **`python ops_scripts/ci/author_gate/check_ledger_integrity.py` → exit 0** (17/17).
-- **Final governance proof** — **`run_contract_gates.py`** after integrity repair **still exit 1** — fails at **ADG snapshot graph-layer completeness** (see `contract_gates_run_evidence`), not Author-Gate ledger. Plan remains **`POST_W4_PARTIAL`** — not **`PLAN_COMPLETE`**.
-- **`PLAN_COMPLETE`** prerequisites remaining: (1) regenerate / refresh ADG snapshot + projection per gate remediation (**e.g.** `python tools/generate_full_adg.py` and verify `mv_*` / `v_p*` / infra materialization); (2) **`run_contract_gates.py` exit 0**; (3) DoD-7 signoff only after (2).
+- **ADG snapshot graph-layer (§22)** — **Root cause:** `check_snapshot_has_mvs.py` picks **newest mtime** `adg_indexed_*.sqlite` with a `nodes` table; **`adg_indexed_05172026_0107.sqlite`** was **incomplete** (only **4** `mv_*` vs min 30) yet **newer** than the **complete** run **`adg_indexed_05172026_0055.sqlite`** (**69** `mv_*`, projection fresh). **Regen:** `python tools/generate/generate_full_adg.py --force` (canonical path; gate banner `tools/generate_full_adg.py` is shorthand). **Local ordering fix:** refresh **`05172026_0055`** file mtime so the resolver prefers it over **`0107`** until the partial **`0107`** WAL/SQLite can be removed. **Contract-gates sub-gate:** “Snapshot graph-layer completeness gate” **PASS** (see latest `contract_gates_run_evidence`).
+- **Final governance proof** — **`run_contract_gates.py` → exit 1** at **W4d-4** (**10C** pilot proof-evidence / **P4b** `git_head` drift vs **`0fdb5213`**). Plan remains **`POST_W4_PARTIAL`** — not **`PLAN_COMPLETE`**.
+- **`PLAN_COMPLETE`** prerequisites remaining: (1) **refresh Fort Knox 10C proof bundles** at current **`HEAD`** (or follow gate-approved staged downgrade path)—**out of Author-Gate ledger scope**; (2) **`run_contract_gates.py` exit 0**; (3) DoD-7 signoff only after (2).
 
 ---
 
@@ -352,7 +353,7 @@ Concrete module paths (2026-05-17 reconciliation). Use `PYTEST_DISABLE_PLUGIN_AU
 | DoD-3 | Each wave ends with **tests or gates** + short receipt in plan or `artifacts/` | DONE — W0 baseline, W1 schema attestation + W1.3 gate, W3/W4 pytest slices, contract-gates evidence path |
 | DoD-4 | No Author-Gate or CI gate weakened (diff review) | **Unproven** until `run_contract_gates.py` green; this closure pass **added** audit tooling only |
 | DoD-5 | **Feedback Loop Safety Laws** enforced by tests or **static review** with written attestation | PARTIAL — code+tests align; formal gated proof pending **Final** green |
-| DoD-6 | **Proof Matrix** concrete paths for W0–W4 + W1.3 + Final | **DONE** for W0–W4 + W1.3; **Final** row documents **failed** full contract run (post–integrity repair: **ADG snapshot**, not Author-Gate ledger) |
+| DoD-6 | **Proof Matrix** concrete paths for W0–W4 + W1.3 + Final | **DONE** for W0–W4 + W1.3; **Final** row documents **failed** run (**10C P4b** bundle `git_head` vs **`0fdb5213`**) |
 | DoD-7 | Final diff review confirms **no** Author-Gate / HITL / CI weakening | **OPEN** — needs human reviewer + green `run_contract_gates.py` |
 | DoD-8 | Calibration **`NOOP_DEGENERATE_LABELS`** path tested | DONE |
 | DoD-9 | Lookup reasons **stable** / tested | DONE |
