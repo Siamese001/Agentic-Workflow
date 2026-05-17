@@ -211,7 +211,7 @@ BS Computer Science, UC Berkeley (2018)
             "source_resume_text": fixture["resume_text"],
             "job_description_ref": None,
             "job_description_text": fixture["jd_text"],
-            "manual_brief_path": None,
+            "briefing_artifact_ref": None,
             "auto_research_internal": False,
             "auto_research_tavily": False,
             "research_via": None,

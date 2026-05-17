@@ -38,8 +38,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LEDGER = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DEFAULT_LEDGER = REFACTOR_DECISION_LEDGER_DB
 DEFAULT_THRESHOLD_H = 24.0
 
 # Actionable guidance emitted with the BLOCK message so the user knows exactly

@@ -11,10 +11,15 @@ from agentic_core.L0_routing.config import path_constants
 class TestPathConstants:
     """Test suite for path constants module."""
 
-    def test_healing_confidence_thresholds(self):
-        """Test healing tier confidence thresholds are defined."""
-        assert path_constants.HEALING_CONFIDENCE_X == 0.80
-        assert path_constants.HEALING_CONFIDENCE_Y == 0.50
+    def test_heal_confidence_defaults(self):
+        """High / medium paired SSOT defaults satisfy ordering invariant."""
+        from agentic_core.L2_execution.healers.routing_thresholds_ssot import (
+            DEFAULT_HEAL_CONFIDENCE_HIGH,
+            DEFAULT_HEAL_CONFIDENCE_MEDIUM,
+        )
+
+        assert DEFAULT_HEAL_CONFIDENCE_MEDIUM < DEFAULT_HEAL_CONFIDENCE_HIGH
+        assert hasattr(path_constants, "SSOT_SCORE_THRESHOLD_DET")
 
     def test_ssot_score_thresholds(self):
         """Test SSOT score thresholds for routing."""

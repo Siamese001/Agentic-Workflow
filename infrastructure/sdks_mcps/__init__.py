@@ -96,7 +96,7 @@ def create_gemini_model(model_name: str):
 
     Returns:
         A ``google.generativeai.GenerativeModel`` configured with the
-        ``GEMINI_API_KEY`` or ``GOOGLE_API_KEY`` environment variable.
+        ``GOOGLE_API_KEY`` environment variable (``GEMINI_API_KEY`` deprecated).
 
     Raises:
         ValueError: if neither env var is set.

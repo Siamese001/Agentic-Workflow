@@ -43,6 +43,11 @@ from pathlib import Path
 from typing import Final
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+
+# Subprocess invocations from contract gates may not inherit repo PYTHONPATH.
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 ARTIFACTS_DIR: Final[Path] = REPO_ROOT / "artifacts" / "adg"
 KEYS_DIR: Final[Path] = ARTIFACTS_DIR / "keys"
 GATE_REPORT_PATH: Final[Path] = (

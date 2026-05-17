@@ -57,9 +57,14 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tools.refactor_decisions.ledger_paths import (
+    REFACTOR_DECISION_LEDGER_DB,
+    REFACTOR_DECISIONS_DIR_SSO,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SQLITE_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-WATERMARK_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "notion_sync_watermark.txt"
+SQLITE_PATH = REFACTOR_DECISION_LEDGER_DB
+WATERMARK_PATH = REFACTOR_DECISIONS_DIR_SSO / "notion_sync_watermark.txt"
 AUDIT_LOG = REPO_ROOT / "artifacts" / "maintenance" / "decision_ledger_sync.jsonl"
 
 NOTION_API = "https://api.notion.com/v1"

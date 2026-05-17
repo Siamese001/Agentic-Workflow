@@ -1,0 +1,15 @@
+{
+  "applies_to_real_llm_generation": true,
+  "finish_reason_normalized": null,
+  "clean_completion": null,
+  "hop_finish_records": [
+    {
+      "stage": "L2_primary_generation",
+      "finish_reason": null
+    }
+  ],
+  "generation_completion_warning": "Missing finish_reason on one or more REAL_LLM Qwen completions; clean_completion is unknown.",
+  "generation_completion_notes": [
+    "Missing finish_reason on one or more REAL_LLM Qwen completions; clean_completion is unknown."
+  ]
+}

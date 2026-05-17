@@ -1,0 +1,21 @@
+{
+  "run_id": "exec_summary_20260517_134125",
+  "generated_at_utc": "2026-05-17T13:41:25.273642+00:00",
+  "provider_requested": "qwen_vllm",
+  "provider_attempted": true,
+  "runtime_generation_status": "REAL_LLM",
+  "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\pytest tests/_apps_contract/test_exec_summary_runtime_slice.py -q --tb=short -o addopts=",
+  "section_id": "executive_summary",
+  "generation_completion": {
+    "finish_reason_normalized": "length",
+    "clean_completion": false,
+    "generation_completion_warning": "At least one Qwen completion finished with finish_reason=length (max_tokens ceiling)."
+  },
+  "proof_eligible": false,
+  "proof_scope": "generation_only_judge_plumbing",
+  "runtime_certification": false,
+  "x1d_runtime_status": "MOCKED",
+  "judge_proof_eligible": false,
+  "provider_proof_eligible": false,
+  "test_only_mock_judges": true
+}

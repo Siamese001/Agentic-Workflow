@@ -203,12 +203,26 @@ def run_orchestration(
     x1d_judges: str,
     allow_non_allow_exit_zero: bool,
     mock_judges: bool,
+    allow_test_mock_judges: bool,
+    allow_test_mock_provider: bool,
     jd_text: str | None,
     briefing: str | None,
     base_resume: Path | None,
     output_docx: Path | None,
 ) -> dict[str, Any]:
     repo = repo.resolve()
+    pv = str(provider or "").strip().lower()
+    if pv == "mock" and not allow_test_mock_provider:
+        raise ValueError(
+            "`--provider mock` requires `--allow-test-mock-provider` for orchestrated lane subprocesses. "
+            "Mock provider is test-only plumbing evidence and is not runtime proof. "
+            "Runtime proof requires REAL_LLM generation (`--provider qwen_vllm`)."
+        )
+    if mock_judges and not allow_test_mock_judges:
+        raise ValueError(
+            "`--mock-judges` requires `--allow-test-mock-judges` for orchestrated lane subprocesses. "
+            "Mock judges are test-only evaluator plumbing and cannot produce runtime proof."
+        )
     eff_abs, default_used, base_resume_path_posix, base_resume_hash = validate_base_resume_for_orchestration(repo, base_resume)
     restore_pointer = _merge_active_resume_pointer(repo, eff_abs)
     try:
@@ -222,10 +236,13 @@ def run_orchestration(
                 "--x1d-judges",
                 x1d_judges,
             ]
+            if pv == "mock":
+                lane_argv.append("--allow-test-mock-provider")
             if allow_non_allow_exit_zero:
                 lane_argv.append("--allow-non-allow-exit-zero")
             if mock_judges:
                 lane_argv.append("--mock-judges")
+                lane_argv.append("--allow-test-mock-judges")
             if jd_text is not None:
                 lane_argv.extend(["--jd-text", jd_text])
             if briefing is not None:
@@ -349,7 +366,23 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="apps_rg end-to-end resume proof + DOCX refresh (seven lanes → package X3).")
     parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="qwen_vllm")
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
-    parser.add_argument("--mock-judges", action="store_true", help="Forward to lanes (typically with --provider mock).")
+    parser.add_argument("--mock-judges", action="store_true", help="Forward to lanes (requires `--allow-test-mock-judges`).")
+    parser.add_argument(
+        "--allow-test-mock-judges",
+        action="store_true",
+        help=(
+            "Required when using `--mock-judges`: forwards test-only hatch to each lane subprocess. "
+            "Mock judges cannot produce runtime proof."
+        ),
+    )
+    parser.add_argument(
+        "--allow-test-mock-provider",
+        action="store_true",
+        help=(
+            "Required when using `--provider mock`: forwards `--allow-test-mock-provider` to each lane subprocess. "
+            "Plumbing-only; not REAL_LLM runtime proof."
+        ),
+    )
     parser.add_argument("--allow-non-allow-exit-zero", action="store_true")
     parser.add_argument(
         "--base-resume",
@@ -381,6 +414,8 @@ def main(argv: list[str] | None = None) -> int:
             x1d_judges=args.x1d_judges,
             allow_non_allow_exit_zero=args.allow_non_allow_exit_zero,
             mock_judges=args.mock_judges,
+            allow_test_mock_judges=args.allow_test_mock_judges,
+            allow_test_mock_provider=args.allow_test_mock_provider,
             jd_text=jd_txt,
             briefing=br_txt,
             base_resume=args.base_resume,

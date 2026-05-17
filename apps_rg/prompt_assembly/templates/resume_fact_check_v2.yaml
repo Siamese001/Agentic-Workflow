@@ -31,7 +31,7 @@ input_contract:
       description: "Map of all candidate facts with sources"
     - verified_skill_inventory
       schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id]}]}"
-      description: "Skills verified from canonical JSON"
+      description: "Engineering & platform competency inventory verified from canonical JSON (`facts.skills`)"
     - canonical_base_resume_json_ref
       value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
     - base_section_hashes

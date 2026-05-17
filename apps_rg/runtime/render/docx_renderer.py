@@ -206,6 +206,33 @@ def build_docx_from_final_resume(paths: DocxRendererPaths | None = None) -> dict
     paths.output_dir.mkdir(parents=True, exist_ok=True)
     doc = Document()
 
+    ident = fb.get("candidate_identity") if isinstance(fb.get("candidate_identity"), dict) else {}
+    cname = str(ident.get("candidate_name") or "").strip()
+    hc_raw = ident.get("header_contact") if isinstance(ident.get("header_contact"), dict) else {}
+    order_ct = ("phone", "email", "linkedin", "github", "location")
+    contact_bits = [str(hc_raw[k]).strip() for k in order_ct if hc_raw.get(k) and str(hc_raw[k]).strip()]
+    contact_line = " | ".join(contact_bits) if contact_bits else ""
+    prem_blocks: list[str] = []
+    if cname:
+        prem_blocks.append(cname)
+    if contact_line:
+        prem_blocks.append(contact_line)
+    if cname:
+        _paragraph_safe(doc, cname, style_name=_heading_style_name(1))
+    if contact_line:
+        _paragraph_safe(doc, contact_line, style_name="Normal")
+    if cname or contact_line:
+        doc.add_paragraph()
+        render_evidence.append(
+            {
+                "section_id": "candidate_identity",
+                "section_kind": "base_resume_verbatim",
+                "outline_level_emitted_for_section_heading": 1,
+                "block_count": len(prem_blocks),
+                "expected_plaintext_blocks": prem_blocks,
+            },
+        )
+
     for sid in narrative_order:
         section_blob = by_section_id.get(sid)
         if section_blob is None:

@@ -1,7 +1,7 @@
 """W12 — Author-Gate decision -> hitl_decision edge ingester.
 
 Reads the existing Author-Gate decision ledger
-(`.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`)
+(``.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite``, SSOT)
 and writes one `hitl_decision` edge per recorded decision into the
 ADG SQLite snapshot.
 
@@ -38,11 +38,9 @@ from tools.adg.integration.common import (
     insert_edge_idempotent,
     latest_snapshot,
 )
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB
 
-
-LEDGER_PATH = (
-    ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-)
+LEDGER_PATH = REFACTOR_DECISION_LEDGER_DB
 VIRTUAL_LEDGER_NODE = "agentic_core/runtime/governance/__virtual_author_gate_ledger__"
 
 

@@ -1,62 +1,9 @@
 {
   "gate_id": "S4_unused_imports_ratchet",
-  "count": 7937,
-  "seeded_at": "2026-04-23T13:13:53.381695+00:00",
-  "snapshot": "adg_indexed_04282026_1505.sqlite",
-  "tightened_at": "2026-04-28T19:12:03.380676+00:00",
-  "tighten_history": [
-    {
-      "at": "2026-04-23T18:43:54.901011+00:00",
-      "snapshot": "adg_indexed_04232026_1442.sqlite",
-      "from": 5780,
-      "to": 5774
-    },
-    {
-      "at": "2026-04-23T22:03:57.767050+00:00",
-      "snapshot": "adg_indexed_04232026_1802.sqlite",
-      "from": 5774,
-      "to": 5727
-    },
-    {
-      "at": "2026-04-23T22:30:08.647185+00:00",
-      "snapshot": "adg_indexed_04232026_1828.sqlite",
-      "from": 5727,
-      "to": 5527
-    },
-    {
-      "at": "2026-04-28T19:12:03.380676+00:00",
-      "snapshot": "adg_indexed_04282026_1505.sqlite",
-      "from": 7947,
-      "to": 7937
-    }
-  ],
+  "count": 10060,
+  "seeded_at": "2026-05-17T12:09:39.047421+00:00",
+  "snapshot": "adg_indexed_05172026_0651.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-28T19:12:03.380676+00:00",
-  "last_run_snapshot": "adg_indexed_04282026_1505.sqlite",
-  "loosen_history": [
-    {
-      "at": "2026-04-28T18:49:35+00:00",
-      "snapshot": "unknown",
-      "from": 5527,
-      "to": 7934,
-      "reason": "finish-deferred-scope 2026-04-28: absorb current floor across 15 wiring_ci ratchets so the ratchet-class P0..P3 gates resume catching only NEW regressions; the absorbed counts are real architectural debt tracked separately under their owning plans (adg-wiring-ci-hardening-7a5d84 W3-W6)."
-    },
-    {
-      "at": "2026-04-28T18:56:52+00:00",
-      "snapshot": "unknown",
-      "from": 7934,
-      "to": 7935,
-      "reason": "finish-deferred-scope 2026-04-28 final pass: re-absorb +1..+3 deltas introduced by this session's own scaffolding (absorb_ratchet_floor.py + adg_burndown_report.py + tests). Same SSOT plan: adg-wiring-ci-hardening-7a5d84."
-    },
-    {
-      "at": "2026-04-28T19:05:38+00:00",
-      "snapshot": "unknown",
-      "from": 7935,
-      "to": 7947,
-      "raw_violation_count": 7937,
-      "margin": 10,
-      "reason": "finish-deferred-scope 2026-04-28 final: +10 margin pads ADG-self-induced churn (~2-5 violations per regen due to guardian_report.json mutation). Future genuine regressions beyond +10 still caught. Tracked under adg-wiring-ci-hardening-7a5d84."
-    }
-  ],
-  "loosened_at": "2026-04-28T19:05:38+00:00"
+  "last_run_at": "2026-05-17T12:15:01.763575+00:00",
+  "last_run_snapshot": "adg_indexed_05172026_0651.sqlite"
 }

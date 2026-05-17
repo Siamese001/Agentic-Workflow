@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "failed_gates": [
+    "x2_executive_summary_synthesis_quality"
+  ]
+}

@@ -13,6 +13,7 @@ from apps_rg.runtime.assembly.final_resume_x2 import (
     LOCKED_EMBEDDED_ORDER_IDS,
 )
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
+from apps_rg.runtime.section_display_labels import ENGINEERING_PLATFORM_COMPETENCIES_HEADING
 from apps_rg.runtime.render.docx_manifest_x2 import (
     failures,
     gate_records_to_blob,
@@ -104,6 +105,7 @@ SECTION_BLUEPRINT_V1: dict[str, dict[str, Any]] = {
         "paragraph_primary_style": "RG_CompactCategoryHeading",
         "section_heading_outline_level": 2,
         "bullet_list_style_external_id": "competencies_category_bullet",
+        "human_section_title_hint": ENGINEERING_PLATFORM_COMPETENCIES_HEADING,
         "notes": "Eight-category lattice; deterministic layout mirrors l2 competency blocks",
     },
     "education": {
@@ -232,12 +234,13 @@ def build_docx_manifest(paths: DocxManifestPaths | None = None) -> dict[str, Any
             "section_heading_outline_level": blueprint["section_heading_outline_level"],
             "bullet_list_style_external_id": blueprint["bullet_list_style_external_id"],
         }
+        title_hint = blueprint.get("human_section_title_hint") or sid.replace("_", " ").title()
         profiles.append(
             {
                 "section_id": sid,
                 "assemble_order": int(sec_block.get("assemble_order", -1)),
                 "final_resume_section_kind": sec_block.get("section_kind"),
-                "human_section_title_hint": sid.replace("_", " ").title(),
+                "human_section_title_hint": title_hint,
                 "layout_role": blueprint.get("notes"),
                 "style_mapping": style_mapping,
             },

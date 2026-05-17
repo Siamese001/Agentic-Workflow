@@ -27,18 +27,22 @@ def _fact_lines(runtime_payload: dict[str, Any]) -> str:
 
 def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
     header = runtime_payload["ibm_header"]
-    cand = str(runtime_payload.get("candidate_name") or "").strip()
-    cand_line = f"Executive name from resume (optional, at most once, natural third person): {cand}.\n" if cand else ""
     return (
         "You write exactly ONE polished IBM employment narrative sentence. "
         "Return RAW JSON only: first character {, last character }. No markdown fences.\n\n"
         f"READ-ONLY CONTEXT (not copy-paste openers): employer={header['employer']}, title={header['title']}, "
         f"location={header['location']}, dates={header['start_date']} to {header['end_date']}.\n"
-        f"{cand_line}"
+        "IDENTITY (mandatory):\n"
+        "- Do not include the candidate's given name, surname, initials, or full name — the résumé header already identifies them.\n"
+        "- Use implied subject or role-first framing (e.g. \"At IBM, architected …\" / \"While at IBM, …\") without naming the person.\n\n"
         "VOICE (mandatory):\n"
         "- Include the exact text \"IBM\" once as the employer anchor (company name).\n"
         "- Third person or implied subject only. No first person. No em dash. No inline source tags.\n"
         "- IBM should read as supporting enterprise and platform credibility, not current agentic runtime ownership.\n\n"
+        "LANE ORDER (mandatory when U-tier companion bullets exist):\n"
+        "- Those ACCEPTED_IBM_BULLETS are the finalized JD-tailored bullet set from the prior lane.\n"
+        "- Write narrative_sentence as the capstone after that tailoring: match their strategic emphasis and vocabulary, "
+        "do not contradict them, and do not paste their sentences.\n\n"
         "SCOPE: Use ONLY bul_ibm_001..005 facts for proof. No Unify, InsurTech, EY, education, certification, or early-career facts.\n"
         "Never use Unify-era runtime vocabulary (agentic AI, GraphRAG, multi-agent orchestration, deterministic routing, "
         "sandboxed execution, replayable traces, governed AI runtime, prompt assembly, C0, L2, Exit, UWG).\n"

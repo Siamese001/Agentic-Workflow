@@ -98,9 +98,9 @@ slot_bodies:
        - Verify candidate role on project
        - Verify technologies used are explicitly listed
     
-    4. SKILLS SECTION
-       - Every listed skill must appear in <candidate_facts>
-       - Do NOT infer skills from job titles
+    4. ENGINEERING & PLATFORM COMPETENCIES SECTION (JSON key skills)
+       - Every listed competency term must appear in <candidate_facts>
+       - Do NOT infer competencies from job titles
     
     5. EDUCATION SECTION
        - Verify degrees, institutions, dates against <candidate_facts>

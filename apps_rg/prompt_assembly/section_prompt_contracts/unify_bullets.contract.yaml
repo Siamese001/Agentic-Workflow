@@ -8,6 +8,8 @@ display_text_source_tags_allowed: false
 jd_as_proof_allowed: false
 companion_context_allowed: false
 companion_context_authority: NONE
+emits_companion_context_for: unify_narrative
+required_generation_order: 1
 x2_gate_profile_ref: apps_rg/runtime/validators/unify_bullets_x2.py
 x1d_judge_profile_ref: apps_rg/runtime/judges/unify_bullets_x1d.py
 locked_fields: []
@@ -16,4 +18,5 @@ notes: >
   W8 ledger-only citations: resume display text must not contain inline source/citation tags.
   Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
   jd_requirements / company_brief are targeting only, not proof.
-  W7 mechanical migration.
+  W7 mechanical migration hardened for SVP Engineering targeting. This lane must complete before unify_narrative.
+  JD, target title, target company, and briefing may guide emphasis but never proof.

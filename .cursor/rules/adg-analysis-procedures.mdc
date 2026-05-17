@@ -53,6 +53,8 @@ adg_p0_wave_plan(limit=100)
 
 Use wave-based ordering. P0 blockers MUST resolve before P1 waves.
 
+**Wave execution tone** (minimal narration while burning down P0 → P1 → P2): `adg-p-band-burn-down-discipline.mdc`.
+
 ### Step 3 — Fan-In Ranking (P1 Hotspots)
 
 **PRIMARY**: Query materialized views directly:

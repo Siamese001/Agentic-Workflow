@@ -22,10 +22,13 @@
 #
 # Ports are non-standard (6390 / 26390) to avoid clashing with a local
 # dev Redis a developer might already be running on 6379/26379.
+#
+# Image pin (supply-chain): redis:7-alpine@
+#   sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
 
 services:
   redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
     container_name: exit_eval_redis
     command: ["redis-server", "--appendonly", "yes", "--port", "6390"]
     ports:
@@ -40,7 +43,7 @@ services:
   # the bare master, so the default `up` does not pay the sentinel cost.
   redis-replica:
     profiles: ["sentinel"]
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
     container_name: exit_eval_redis_replica
     command:
       - "redis-server"
@@ -59,7 +62,7 @@ services:
 
   redis-sentinel:
     profiles: ["sentinel"]
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
     container_name: exit_eval_redis_sentinel
     entrypoint: ["sh", "-c"]
     command:

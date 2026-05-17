@@ -1,0 +1,20 @@
+{
+  "run_id": "exec_summary_20260517_143314",
+  "lane_id": "executive_summary",
+  "prompt_id": "executive_summary.generate_scratch_v1",
+  "prompt_hash": "87aa06cf23ff024c",
+  "input_payload_hash": "e7534b5c101879db",
+  "output_payload_hash": "fe69877da787009c",
+  "claim_ledger_hash": "e172ca6f4db786db",
+  "runtime_generation_status": "REAL_LLM",
+  "product_quality_status": "PARTIAL",
+  "x2_failed_gates": [],
+  "x3_code": "X3_REVIEW_MOCKED_PLUMBING_ONLY",
+  "proof_eligible": false,
+  "proof_scope": "generation_only_judge_plumbing",
+  "runtime_certification": false,
+  "x1d_runtime_status": "MOCKED",
+  "judge_proof_eligible": false,
+  "provider_proof_eligible": false,
+  "test_only_mock_judges": true
+}

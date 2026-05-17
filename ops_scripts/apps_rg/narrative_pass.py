@@ -5,7 +5,7 @@ Pipeline:
   HOP-2.6 — Extract company facets
   HOP-4A — Headline (Ensemble+Judge)
   HOP-4B — Exec Summary (Ensemble+Judge)
-  HOP-4C — Competencies (Ensemble+Judge, set-level)
+  HOP-4C — ENGINEERING & PLATFORM COMPETENCIES (Ensemble+Judge, set-level)
   HOP-4D — Unify per-bullet (Ensemble+Judge, critical)
   HOP-4E — IBM per-bullet (Ensemble+Judge, critical)
   HOP-4F — TraderSense per-bullet (Judge-only, medium)
@@ -245,7 +245,7 @@ def _run_narrative_pipeline(
     report.add_verdict(_verdict_from(exec_res.section_id, "critical", exec_res))
     _abort_if_critical(exec_res, fail_critical_on_unaccepted)
 
-    # HOP-4C Competencies.
+    # HOP-4C ENGINEERING & PLATFORM COMPETENCIES.
     comp_res = generate_competencies(
         company=company,
         jd_facets=jd_facets,

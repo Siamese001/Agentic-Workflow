@@ -3,7 +3,7 @@
 generate_calibration_report.py — Weekly Author-Gate calibration report.
 
 Reads:
-    - .windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite
+    - .cursor/state/refactor_decisions/refactor_decision_ledger.sqlite (SSOT)
     - artifacts/windsurf/author_gate_violations.jsonl (falls back to legacy hitl_violations.jsonl)
 
 Writes:
@@ -64,7 +64,9 @@ from tools.calibration.loop_metrics import (  # noqa: E402
     render_calibration_curve,
     render_precedent_block,
 )
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
+
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
 VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_violations.jsonl"
 # Back-compat: legacy name pre-2026-04-21 rename. Read-fallback if canonical missing.
 _LEGACY_VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "hitl_violations.jsonl"

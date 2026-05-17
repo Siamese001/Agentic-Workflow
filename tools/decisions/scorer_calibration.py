@@ -16,8 +16,10 @@ from typing import Any
 
 import statistics
 
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_PATH = REFACTOR_DECISION_LEDGER_DB
 
 
 @dataclass

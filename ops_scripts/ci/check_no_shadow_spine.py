@@ -404,12 +404,16 @@ def _run_negative_controls() -> list[Finding]:
                 f"NEGATIVE CONTROL FAILED — {msg}"))
 
     pb_findings: list[Finding] = []
-    for pb in REPO_ROOT.glob("apps_*/runtime/profile_builder.py"):
-        if _is_deferred(pb):
-            continue
-        for f in _scan_profile_builder(pb, deferred=False):
-            if f.rule_id == "PB-1":
-                pb_findings.append(f)
+    for pattern in (
+        "apps_*/runtime/profile_builder.py",
+        "apps_*/runtime/profile_builder_adapter.py",
+    ):
+        for pb in REPO_ROOT.glob(pattern):
+            if _is_deferred(pb):
+                continue
+            for f in _scan_profile_builder(pb, deferred=False):
+                if f.rule_id == "PB-1":
+                    pb_findings.append(f)
     if pb_findings:
         findings.append(Finding("ERROR", "NC-5", "profile_builder.py scan", 0,
             f"NC-5 FAILED: {len(pb_findings)} profile_builder(s) have stage-symbol calls in build_app_runtime_contract"))
@@ -433,7 +437,10 @@ def main() -> int:
     for path in files:
         deferred = _is_deferred(path)
         rel = str(path.relative_to(REPO_ROOT))
-        is_profile_builder = path.name == "profile_builder.py"
+        is_profile_builder = path.name in (
+            "profile_builder.py",
+            "profile_builder_adapter.py",
+        )
         is_binding = "/bindings/" in rel or "\\bindings\\" in rel
 
         if is_profile_builder:

@@ -270,6 +270,7 @@ def _run_spine_dispatch(argv: list[str]) -> int:
         "target_company": args.target_company,
         "target_role": args.target_role,
         "depth": args.depth,
+        "briefing_artifact_ref": args.manual_brief_path,
         "manual_brief_path": args.manual_brief_path,
     }
 

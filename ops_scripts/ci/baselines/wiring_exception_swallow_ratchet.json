@@ -1,0 +1,9 @@
+{
+  "gate_id": "S3_exception_swallow_ratchet",
+  "count": 1448,
+  "seeded_at": "2026-05-17T11:49:35.683383+00:00",
+  "snapshot": "adg_indexed_05172026_0651.sqlite",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-05-17T12:15:01.654459+00:00",
+  "last_run_snapshot": "adg_indexed_05172026_0651.sqlite"
+}

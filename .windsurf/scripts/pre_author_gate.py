@@ -59,6 +59,10 @@ except ImportError:
     sys.exit(5)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
+
 TRIGGERS_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_triggers.yaml"
 ADG_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "adg"
 
@@ -74,7 +78,7 @@ try:
     _ADG_BACKEND_AVAILABLE = True
 except ImportError:
     _ADG_BACKEND_AVAILABLE = False
-LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_PATH = REFACTOR_DECISION_LEDGER_DB
 STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
 SESSION_STATE_PATH = STATE_DIR / "author_gate_session_state.json"
 VIOLATIONS_PATH = STATE_DIR / "author_gate_violations.jsonl"

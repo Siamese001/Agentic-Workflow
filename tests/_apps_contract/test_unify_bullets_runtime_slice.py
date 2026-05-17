@@ -33,14 +33,14 @@ def load_json(name: str):
 
 
 def test_mock_dispatch_executes():
-    result = run_cmd("--provider", "mock", "--mock-judges")
+    result = run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     assert result.returncode == 0, result.stderr
     assert "UNIFY_BULLETS_OUTPUT:" in result.stdout
     assert "X3_DISPOSITION:" in result.stdout
 
 
 def test_mock_outputs_six_bullets():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l2 = load_json("l2_output.json")
     assert len(l2["bullets"]) == 6
     assert {b["bullet_id"] for b in l2["bullets"]} == {
@@ -49,7 +49,7 @@ def test_mock_outputs_six_bullets():
 
 
 def test_rewrite_distribution_default():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     dist = load_json("rewrite_distribution.json")
     assert dist["HEAVY"] == 2
     assert dist["MODERATE"] == 3
@@ -58,21 +58,21 @@ def test_rewrite_distribution_default():
 
 
 def test_mocked_judges_review_only():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     x3 = load_json("x3_disposition.json")
     assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
     assert x3["proceed_to_runtime"] is False
 
 
 def test_x2_all_gates_pass_on_mock():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     x2 = load_json("x2_gate_outputs.json")
     assert x2["x2_failed"] == 0
     assert x2["total_x2_gates"] >= 20
 
 
 def test_l6_shadow_offline_only():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l6 = load_json("l6_shadow_eval_package.json")
     assert l6["offline_only"] is True
     assert l6["promotion_allowed"] is False

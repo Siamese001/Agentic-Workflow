@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MIGRATOR = REPO_ROOT / ".windsurf" / "scripts" / "apply_ledger_schema.py"
+MIGRATOR = REPO_ROOT / ".cursor" / "scripts" / "apply_ledger_schema.py"
 
 
 def main() -> int:

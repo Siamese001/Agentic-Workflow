@@ -1,7 +1,8 @@
 """Headline: PromptAssemblyInput from headline_tailor_v1.yaml + section_prompt_adapter (W6).
 
 C0 carries canonical employment bullets, forbidden employer names, and selected_fact_plan stub.
-JD/title/company/briefing are non-proof in ``c0_jd_requirements``. Companion lanes are U-tier only.
+JD/title/company/briefing are non-proof in ``c0_jd_requirements`` (targeting / prioritization only;
+must not keyword-stuff). Companion lanes are U-tier only.
 Compile failures propagate (no silent inline fallback).
 """
 
@@ -55,14 +56,30 @@ _HEADLINE_OUTPUT_SCHEMA_JSON = json.dumps(
         "properties": {
             "headline_line": {
                 "type": "string",
-                "description": "Single line X | Y | Z, 8-11 words, no metrics, no employer names",
+                "description": (
+                    "Single line: SVP Engineering | X | Y | Z — exactly three ' | ' separators, "
+                    "four segments, 10–13 words, no metrics, no employer or target company names"
+                ),
             },
             "selected_fact_plan": {"type": "object"},
             "claim_ledger": {"type": "array"},
-            "jd_alignment": {"type": "object"},
+            "jd_alignment": {
+                "type": "object",
+                "description": (
+                    "Must include targeting_only true, jd_used_as_proof false, briefing_used_as_proof false, "
+                    "selected_theme, anti_stuffing_check; JD/briefing are ranking only"
+                ),
+            },
             "gap_notes": {"type": "array"},
             "change_log": {"type": "array"},
-            "self_check": {"type": "object"},
+            "self_check": {
+                "type": "object",
+                "description": (
+                    "Dispatch-normalized booleans/counts: fixed_prefix, segment_count 4, separator_count 3, "
+                    "word_count, word_count_in_range, no_metrics, no_company_names, no_employer_names, "
+                    "no_jd_phrase_lift, base_identity_preserved, jd_used_as_targeting_only"
+                ),
+            },
         },
     },
     sort_keys=True,
@@ -114,18 +131,22 @@ def build_headline_assembly_input(
         f"TARGET_TITLE (NOT PROOF — framing only): {t_title}\n"
         f"TARGET_COMPANY (NOT PROOF): {t_company}\n"
         f"JD_TEXT (ranking/targeting only — NOT PROOF): {jd}\n"
-        f"BRIEFING (NOT PROOF): {briefing}\n"
-        "These lines may shape wording but cannot prove claims."
+        f"BRIEFING (ranking/targeting only — NOT PROOF): {briefing}\n"
+        "Use JD_TEXT and BRIEFING to prioritize which evidenced themes from candidate_facts to foreground. "
+        "Do not treat JD_TEXT as a keyword checklist; avoid stuffing JD nouns into segments.\n"
+        "These lines may shape emphasis but cannot prove claims."
     )
 
     u0 = (
         "Produce exactly ONE resume headline per R0 schema.\n"
         "Return RAW JSON only: first character {, last character }. No markdown fences.\n"
-        "headline_line MUST be exactly: SegmentOne | SegmentTwo | SegmentThree "
-        "(single spaces around pipes), 8-11 words total, no metrics, no employer names, "
-        "no inline source tags, no first person, no em dash.\n"
+        "headline_line MUST be exactly: SVP Engineering | X | Y | Z — exact prefix 'SVP Engineering | ', "
+        "exactly three ' | ' separators (four non-empty segments), 10–13 words total, "
+        "no metrics, no employer or target company names, no inline source tags, no first person, no em dash.\n"
         "claim_ledger: bul_* source_fact_ids only from C0.\n"
-        "jd_alignment must include jd_used_as_proof: false.\n"
+        "jd_alignment must include jd_used_as_proof: false and briefing_used_as_proof: false.\n"
+        "self_check must match R0 (segment_count, separator_count, word_count, word_count_in_range, "
+        "no_employer_names, jd_used_as_targeting_only, etc.).\n"
     )
 
     return PromptAssemblyInput(

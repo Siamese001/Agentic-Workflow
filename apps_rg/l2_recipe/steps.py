@@ -239,6 +239,7 @@ class GenerateResumeStep(BaseRecipeStep):
 
     def _modular_section_lanes_generation(self, context: dict[str, Any]) -> dict[str, Any]:
         """Seven-lane modular path (no ``run_apps_rg_l2_envelope``)."""
+        from apps_rg.l2_recipe.modular_lane_adapter import modular_lane_targeting_from_recipe_context
         from apps_rg.l2_recipe.modular_resume_generation import (
             ModularResumeInputPackage,
             ModularResumeProfile,
@@ -274,7 +275,13 @@ class GenerateResumeStep(BaseRecipeStep):
             run_phase0_synthetic_assembly=False,
             validate_rg_output_fixture=False,
         )
-        mr = run_modular_resume_generation(inp, art_dir, run_token, prof)
+        mr = run_modular_resume_generation(
+            inp,
+            art_dir,
+            run_token,
+            prof,
+            lane_targeting=modular_lane_targeting_from_recipe_context(context),
+        )
         write_modular_generate_step_receipt(art_dir, modular_result=mr)
 
         if not mr.ok_for_recipe_context():
@@ -423,17 +430,22 @@ class DocxExportStep(BaseRecipeStep):
             }
         try:
             from apps_rg.runtime.render.json_resume_docx import render_resume_dict_to_docx
+            from apps_rg.runtime.render.resume_export_enrich import enrich_generated_resume_for_docx
 
             out_dir = base / "outputs"
             out_dir.mkdir(parents=True, exist_ok=True)
             json_path = out_dir / "generated_resume.json"
+            enriched = enrich_generated_resume_for_docx(
+                payload,
+                str(context.get("master_resume_data") or "") or None,
+            )
             json_path.write_text(
-                json.dumps(payload, ensure_ascii=False, indent=2),
+                json.dumps(enriched, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
             docx_path = out_dir / "resume.docx"
             render_resume_dict_to_docx(
-                payload,
+                enriched,
                 docx_path,
                 target_role=str(context.get("target_role") or ""),
                 target_company=str(context.get("target_company") or ""),

@@ -8,14 +8,113 @@ from __future__ import annotations
 
 import importlib
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 
-def lane_argv_for_provider(*, provider: str) -> list[str]:
+@dataclass(frozen=True)
+class ModularLaneTargeting:
+    """JD / briefing / title context passed to every section dispatch (mirrors PA U0 ``jd_requirements``)."""
+
+    target_company: str = ""
+    target_title: str = ""
+    jd_text: str = ""
+    jd_source: str = ""
+    jd_digest: str = ""
+    jd_ref_used: str = ""
+    briefing_text: str = ""
+    briefing_source: str = ""
+    briefing_digest: str = ""
+    briefing_ref_used: str = ""
+
+
+def _recipe_briefing_ref(context: dict[str, Any]) -> str | None:
+    ref = str(
+        context.get("briefing_artifact_ref")
+        or context.get("manual_brief")
+        or context.get("manual_brief_path")
+        or ""
+    ).strip()
+    return ref or None
+
+
+def _recipe_job_description_ref(context: dict[str, Any]) -> str | None:
+    r = str(context.get("job_description_ref") or "").strip()
+    return r or None
+
+
+def _recipe_job_description_text(context: dict[str, Any]) -> str | None:
+    t = str(
+        context.get("job_description_text") or context.get("jd_text") or ""
+    ).strip()
+    return t or None
+
+
+def _recipe_jd_data(context: dict[str, Any]) -> str | None:
+    d = str(context.get("jd_data") or "").strip()
+    return d or None
+
+
+def modular_lane_targeting_from_recipe_context(context: dict[str, Any]) -> ModularLaneTargeting:
+    """Derive CLI targeting flags from ``resolve_l2_recipe`` context (``jd_data``, ``briefing_artifact_ref``, etc.)."""
+    tc = str(context.get("target_company") or "").strip()
+    tr = str(context.get("target_role") or "").strip()
+    from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
+    from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
+
+    jd_resolved = resolve_jd_for_lanes(
+        job_description_ref=_recipe_job_description_ref(context),
+        job_description_text=_recipe_job_description_text(context),
+        jd_data=_recipe_jd_data(context),
+        target_company=tc,
+        target_role=tr,
+    )
+    title = jd_resolved.title or tr
+    resolved = resolve_briefing_for_lanes(briefing_artifact_ref=_recipe_briefing_ref(context))
+    return ModularLaneTargeting(
+        target_company=jd_resolved.company or tc,
+        target_title=title,
+        jd_text=jd_resolved.description,
+        jd_source=jd_resolved.jd_source.value,
+        jd_digest=jd_resolved.jd_digest,
+        jd_ref_used=jd_resolved.ref_used,
+        briefing_text=resolved.text,
+        briefing_source=resolved.briefing_source.value,
+        briefing_digest=resolved.briefing_digest,
+        briefing_ref_used=resolved.ref_used,
+    )
+
+
+def build_modular_lane_argv(*, provider: str, targeting: ModularLaneTargeting | None = None) -> list[str]:
+    """Argv for ``python -m apps_rg.runtime.dispatch.<lane>_dispatch`` (in-process ``main``)."""
     if provider == "mock":
-        return ["--provider", "mock", "--mock-judges", "--allow-non-allow-exit-zero"]
-    return ["--provider", provider, "--allow-non-allow-exit-zero"]
+        argv: list[str] = [
+            "--provider",
+            "mock",
+            "--allow-test-mock-provider",
+            "--mock-judges",
+            "--allow-test-mock-judges",
+            "--allow-non-allow-exit-zero",
+        ]
+    else:
+        argv = ["--provider", provider, "--allow-non-allow-exit-zero"]
+    if targeting is None:
+        return argv
+    if targeting.target_company:
+        argv.extend(["--target-company", targeting.target_company])
+    if targeting.target_title:
+        argv.extend(["--target-title", targeting.target_title])
+    if targeting.jd_text:
+        argv.extend(["--jd-text", targeting.jd_text])
+    if targeting.briefing_text:
+        argv.extend(["--briefing", targeting.briefing_text])
+    return argv
+
+
+def lane_argv_for_provider(*, provider: str) -> list[str]:
+    """Backward-compatible: provider flags only (no JD/brief — dispatch defaults apply)."""
+    return build_modular_lane_argv(provider=provider, targeting=None)
 
 
 def run_dispatch_main(module_qualname: str, argv: list[str]) -> int:
@@ -180,8 +279,11 @@ def build_section_provider_call_record(
 
 
 __all__ = [
+    "ModularLaneTargeting",
+    "build_modular_lane_argv",
     "build_section_provider_call_record",
     "lane_argv_for_provider",
+    "modular_lane_targeting_from_recipe_context",
     "resolve_latest_lane_run_dir",
     "run_dispatch_main",
 ]

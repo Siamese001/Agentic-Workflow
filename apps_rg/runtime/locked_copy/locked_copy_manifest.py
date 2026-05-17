@@ -7,6 +7,9 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+
+
 LOCKED_SECTION_IDS: tuple[str, ...] = (
     "insurtech",
     "ey",
@@ -18,9 +21,6 @@ LOCKED_SECTION_IDS: tuple[str, ...] = (
     "locations",
     "dates",
 )
-
-BASE_POINTER_REL = Path("apps_rg/resume/base/active_base_resume_pointer.json")
-BASE_JSON_DEFAULT_REL = Path("apps_rg/resume/base/amit_ayer_base_resume_v1.json")
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -40,20 +40,7 @@ def canonical_json(value: Any) -> str:
 
 
 def load_base_resume(repo: Path) -> tuple[dict[str, Any], Path, str]:
-    pointer = repo / BASE_POINTER_REL
-    default = repo / BASE_JSON_DEFAULT_REL
-    if pointer.is_file():
-        ref_obj = json.loads(pointer.read_text(encoding="utf-8"))
-        ref = (
-            ref_obj.get("active_resume_path")
-            or ref_obj.get("base_resume_json_ref")
-            or str(BASE_JSON_DEFAULT_REL).replace("\\", "/")
-        )
-        path = repo / ref
-    else:
-        path = default
-    raw = path.read_text(encoding="utf-8")
-    return json.loads(raw), path, sha256_hex(raw)
+    return load_lane_base_resume_json(repo_root=repo)
 
 
 def _facts(base: dict[str, Any]) -> dict[str, Any]:
@@ -179,6 +166,7 @@ def build_manifest(
     base_path: Path,
     base_file_hash: str,
 ) -> dict[str, Any]:
+    """``base_file_hash`` must be UTF-8 sha256(raw file body), matching :func:`assemble_final_resume`."""
     sections = build_locked_sections(base)
     return {
         "manifest_id": "locked_copy_manifest_v1",

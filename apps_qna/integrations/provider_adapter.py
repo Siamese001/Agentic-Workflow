@@ -221,11 +221,10 @@ def build_provider_context(
 _JUDGE_PROVIDER_VAR = "JUDGE_PROVIDER"
 _VLLM_MODEL_VAR = "VLLM_MODEL_NAME"
 _ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
-_GEMINI_PRO_MODEL_VAR = "GEMINI_PRO_MODEL"
 _OPENAI_MODEL_VAR = "OPENAI_MODEL"
 
 _DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6"
-_DEFAULT_GEMINI_MODEL = "gemini-3.1-pro-preview"
+_DEFAULT_GOOGLE_AI_JUDGE_MODEL = "gemini-3.1-pro-preview"
 _DEFAULT_OPENAI_MODEL = "gpt-5.4-mini"
 _DEFAULT_VLLM_MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 
@@ -237,7 +236,7 @@ def build_judge_provider_context_from_env() -> QnaProviderContext | None:
       1. ``JUDGE_PROVIDER`` explicit override: anthropic | openai | gemini | qwen | vllm
       2. ``ANTHROPIC_API_KEY`` set → anthropic (``ANTHROPIC_MODEL`` or default)
       3. ``OPENAI_API_KEY`` set → openai (``OPENAI_MODEL`` or default)
-      4. ``GOOGLE_API_KEY`` set → gemini (``GEMINI_PRO_MODEL`` or default)
+      4. ``GOOGLE_API_KEY`` set → gemini (``GOOGLE_AI_PRO_MODEL`` or deprecated ``GEMINI_PRO_MODEL``)
       5. vLLM endpoint reachable at ``VLLM_BASE_URL`` → qwen (``VLLM_MODEL_NAME`` or default)
 
     Returns:
@@ -245,6 +244,13 @@ def build_judge_provider_context_from_env() -> QnaProviderContext | None:
         if no provider credentials are available.
     """
     import os as _os  # noqa: PLC0415
+
+    def _resolved_google_ai_judge_pro_model() -> str:
+        raw = (
+            _os.getenv("GOOGLE_AI_PRO_MODEL", "").strip()
+            or _os.getenv("GEMINI_PRO_MODEL", "").strip()
+        )
+        return raw if raw else _DEFAULT_GOOGLE_AI_JUDGE_MODEL
 
     override = _os.getenv(_JUDGE_PROVIDER_VAR, "").strip().lower()
     anthropic_key = _os.getenv("ANTHROPIC_API_KEY", "").strip()
@@ -269,7 +275,7 @@ def build_judge_provider_context_from_env() -> QnaProviderContext | None:
         return _make(model, "openai")
 
     if override in ("gemini", "google") and google_key:
-        model = _os.getenv(_GEMINI_PRO_MODEL_VAR, "").strip() or _DEFAULT_GEMINI_MODEL
+        model = _resolved_google_ai_judge_pro_model()
         return _make(model, "gemini")
 
     if override in ("qwen", "vllm"):
@@ -284,7 +290,7 @@ def build_judge_provider_context_from_env() -> QnaProviderContext | None:
             model = _os.getenv(_OPENAI_MODEL_VAR, "").strip() or _DEFAULT_OPENAI_MODEL
             return _make(model, "openai")
         if google_key:
-            model = _os.getenv(_GEMINI_PRO_MODEL_VAR, "").strip() or _DEFAULT_GEMINI_MODEL
+            model = _resolved_google_ai_judge_pro_model()
             return _make(model, "gemini")
         vllm_model = _os.getenv(_VLLM_MODEL_VAR, "").strip() or _DEFAULT_VLLM_MODEL
         return _make(vllm_model, "vllm")

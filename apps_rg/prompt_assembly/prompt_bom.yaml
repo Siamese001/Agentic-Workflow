@@ -139,13 +139,13 @@ template_registry_refs:
   - bullet_diversity_repair_v1
   - unify_v1
   - docx_manifest_v1
-  # W9 — section PA + shared shell (see prompt_registry.yaml)
+  # W9 section PA + shared shell (see prompt_registry.yaml)
   - "executive_summary.generate_scratch_v1"
   - headline_tailor_v1
   - competency_selector_v2
   - competency_selector_v2_pa_slots
-  - unify_position_narrative_v1
   - unify_bullet_tailor_v1
+  - unify_position_narrative_v1
   - ibm_position_narrative_v1
   - ibm_bullet_tailor_v1
   - w7_strategic_tailor_shell_slots

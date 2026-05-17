@@ -21,7 +21,22 @@ JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
 DEFAULT_THRESHOLD = 0.80
 VALID_SCORE_SCALES = frozenset({"0_to_1", "0_to_5"})
 JUDGE_REQUIRED_FIELDS = ("score_scale", "score", "threshold", "pass")
-GEMINI_JUDGE_MAX_OUTPUT_TOKENS = int(os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "4096"))
+def _resolved_apps_rg_google_judge_max_output_tokens() -> int:
+    raw = (
+        os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
+        or os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
+    )
+    default = os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "4096").strip()
+    use = raw or default
+    try:
+        return max(1, int(use))
+    except ValueError:
+        return 4096
+
+
+GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS = _resolved_apps_rg_google_judge_max_output_tokens()
+# Back-compat alias for tests and external imports (same resolution as Google AI judge path).
+GEMINI_JUDGE_MAX_OUTPUT_TOKENS = GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
 ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS = int(os.environ.get("APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS", "1024"))
 
 JUDGE_COMPACT_OUTPUT = """
@@ -124,11 +139,13 @@ class JudgeOutput:
 PROVIDERS = {
     "gemini_pro": {
         "provider_name": "Gemini Pro",
-        "env": "GEMINI_API_KEY",
-        # Matches Google AI Studio / GenAI SDK parity: GEMINI_API_KEY primary, GOOGLE_API_KEY alternate.
-        "env_fallbacks": ("GOOGLE_API_KEY",),
-        "model_env": "APPS_RG_GEMINI_JUDGE_MODEL",
-        "fallback_env": "GEMINI_MODEL",
+        "env": "GOOGLE_API_KEY",
+        # GEMINI_API_KEY is a deprecated legacy alias (same credential as Google AI Gemini).
+        "env_fallbacks": ("GEMINI_API_KEY",),
+        "model_env": "APPS_RG_GOOGLE_JUDGE_MODEL",
+        "model_env_aliases": ("APPS_RG_GEMINI_JUDGE_MODEL",),
+        "fallback_env": "GOOGLE_AI_MODEL",
+        "fallback_env_aliases": ("GEMINI_MODEL",),
         "default_model": "gemini-2.0-flash",
     },
     "openai_chatgpt": {
@@ -155,7 +172,7 @@ def resolve_x1d_provider_credentials(provider_key: str, environ: Mapping[str, st
     primary = str(meta.get("env") or "")
     consulted: list[str] = []
 
-    # Gemini accepts the standard key or the documented Google AI Studio alternate.
+    # Gemini: canonical GOOGLE_API_KEY; GEMINI_API_KEY is a deprecated alias.
     if provider_key == "gemini_pro":
         for name in (primary, *[str(x) for x in (meta.get("env_fallbacks") or ())]):
             if not name or name in consulted:
@@ -225,13 +242,24 @@ def _compute_normalized(
 
 
 def _resolve_gemini_model(meta: dict[str, Any]) -> tuple[str, str]:
-    """Resolve Gemini judge model; APPS_RG_GEMINI_JUDGE_MODEL overrides GEMINI_MODEL."""
-    judge_model = os.environ.get("APPS_RG_GEMINI_JUDGE_MODEL", "").strip()
-    if judge_model:
-        return judge_model, "APPS_RG_GEMINI_JUDGE_MODEL"
-    general = os.environ.get("GEMINI_MODEL", "").strip()
-    if general:
-        return general, "GEMINI_MODEL"
+    """Resolve Google AI judge model; APPS_RG_GOOGLE_JUDGE_* overrides tier env."""
+    google_j = os.environ.get("APPS_RG_GOOGLE_JUDGE_MODEL", "").strip()
+    if google_j:
+        return google_j, "APPS_RG_GOOGLE_JUDGE_MODEL"
+    legacy_j = os.environ.get("APPS_RG_GEMINI_JUDGE_MODEL", "").strip()
+    if legacy_j:
+        return legacy_j, "APPS_RG_GEMINI_JUDGE_MODEL"
+    tier_flash = (
+        os.environ.get("GOOGLE_AI_MODEL", "").strip()
+        or os.environ.get("GEMINI_MODEL", "").strip()
+    )
+    if tier_flash:
+        src = (
+            "GOOGLE_AI_MODEL"
+            if os.environ.get("GOOGLE_AI_MODEL", "").strip()
+            else "GEMINI_MODEL"
+        )
+        return tier_flash, src
     return str(meta.get("default_model", "gemini-2.0-flash")), "default"
 
 
@@ -302,7 +330,7 @@ def _gemini_generation_config() -> dict[str, Any]:
     """Gemini generationConfig for compact schema-valid judge JSON."""
     return {
         "temperature": 0.1,
-        "maxOutputTokens": GEMINI_JUDGE_MAX_OUTPUT_TOKENS,
+        "maxOutputTokens": GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
         "responseMimeType": "application/json",
         "responseSchema": GEMINI_JUDGE_RESPONSE_SCHEMA,
     }
@@ -320,7 +348,10 @@ def _extract_anthropic_message_text(data: dict[str, Any]) -> str:
 
 
 def _gemini_judge_max_retries() -> int:
-    raw = os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_RETRIES", "4").strip()
+    raw = (
+        os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_RETRIES", "").strip()
+        or os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_RETRIES", "4").strip()
+    )
     try:
         return max(0, min(12, int(raw)))
     except ValueError:
@@ -1203,7 +1234,7 @@ def run_llm_judges(
                 "BLOCKED_PROVIDER_UNAVAILABLE",
                 (
                     f"No non-empty API credential in {env_checked}; "
-                    f"Gemini resolves GEMINI_API_KEY then GOOGLE_API_KEY for parity with Google AI Studio."
+                    f"Gemini resolves GOOGLE_API_KEY then deprecated GEMINI_API_KEY alias."
                     if key == "gemini_pro"
                     else f"{meta['env']} environment variable not set"
                 ),

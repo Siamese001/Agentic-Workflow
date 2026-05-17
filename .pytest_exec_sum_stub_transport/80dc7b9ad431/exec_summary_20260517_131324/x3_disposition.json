@@ -1,0 +1,45 @@
+{
+  "x3_code": "X3_BLOCK",
+  "decisive_reason": "X2 deterministic gate failure",
+  "review_reason": "",
+  "authorization_scope": "PLUMBING_ONLY",
+  "proceed_to_runtime": false,
+  "runtime_generation_status": "STUBBED",
+  "x1d_evaluator_mode": "MOCKED",
+  "product_quality_status": "FAIL",
+  "x2_failed_gates": [
+    "x2_schema_valid",
+    "x2_claim_ledger_present",
+    "x2_sentence_coverage_pass",
+    "x2_source_fact_coverage_100",
+    "x2_unsupported_claim_zero",
+    "x2_exec_summary_colon_stitch_zero",
+    "x2_executive_summary_synthesis_quality",
+    "x2_claim_coverage_accounting_consistent",
+    "x2_required_fields_complete",
+    "x2_json_parse_valid",
+    "x2_no_extra_unrecognized_fields",
+    "x2_material_clause_coverage_100",
+    "x2_metric_fact_id_granularity",
+    "x2_no_silent_mock_fallback",
+    "x2_qwen_provider_stub_transport_zero",
+    "x2_model_name_allowed",
+    "x2_input_output_hashes_present"
+  ],
+  "blocked_judges": [],
+  "mocked_judges": [
+    "gemini_pro",
+    "openai_chatgpt",
+    "anthropic_claude"
+  ],
+  "soft_failed_judges": [],
+  "decisive_judge_failures": [],
+  "final_summary_hash": "1978884bc1e94f23",
+  "claim_ledger_hash": "4f53cda18c2baa0c",
+  "required_remediation": [
+    "Fix failed X2 gates: x2_schema_valid, x2_claim_ledger_present, x2_sentence_coverage_pass, x2_source_fact_coverage_100, x2_unsupported_claim_zero, x2_exec_summary_colon_stitch_zero, x2_executive_summary_synthesis_quality, x2_claim_coverage_accounting_consistent, x2_required_fields_complete, x2_json_parse_valid, x2_no_extra_unrecognized_fields, x2_material_clause_coverage_100, x2_metric_fact_id_granularity, x2_no_silent_mock_fallback, x2_qwen_provider_stub_transport_zero, x2_model_name_allowed, x2_input_output_hashes_present",
+    "Replace mocked judges with model-backed or approved calibrated judges.",
+    "Product quality must be PASS, currently FAIL."
+  ],
+  "pass": false
+}

@@ -64,7 +64,7 @@ def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
             target_company=target_company or None,
             target_role=payload.get("target_role") or None,
             target_level=payload.get("target_level") or None,
-            manual_brief_path=payload.get("manual_brief_path") or None,
+            briefing_artifact_ref=payload.get("briefing_artifact_ref") or payload.get("manual_brief_path") or None,
             user_constraints=user_constraints,
             output_preferences=payload.get("output_preferences") or {},
             idempotency_key=payload.get("idempotency_key"),

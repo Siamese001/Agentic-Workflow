@@ -86,7 +86,9 @@ class TestThreeProviderLLMJudges:
         if not gemini_judge["provider_available"]:
             assert gemini_judge["evaluator_mode"] == "BLOCKED_PROVIDER_UNAVAILABLE"
             assert gemini_judge["exact_provider_error"] is not None
-            assert "GEMINI_API_KEY" in gemini_judge["exact_provider_error"] or "not set" in gemini_judge["exact_provider_error"]
+            assert "GEMINI_API_KEY" in gemini_judge["exact_provider_error"] or (
+                "GOOGLE_API_KEY" in gemini_judge["exact_provider_error"]
+            ) or "not set" in gemini_judge["exact_provider_error"]
     
     def test_missing_openai_config_blocked(self):
         """Test 3b: Missing OpenAI config produces BLOCKED_PROVIDER_UNAVAILABLE."""

@@ -85,3 +85,6 @@ def test_headline_template_yaml_has_slot_bodies():
 
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert raw.get("slot_bodies", {}).get("S0")
+    txt = path.read_text(encoding="utf-8")
+    assert "SVP Engineering | X | Y | Z" in txt or "SVP Engineering |" in txt
+    assert raw.get("version") == "1.2"

@@ -299,7 +299,7 @@ templates:
 
   competency_selector_v2:
     template_id: competency_selector_v2
-    description: Competencies section PA SSOT path (W5)
+    description: "ENGINEERING & PLATFORM COMPETENCIES section PA SSOT path (W5)"
     path: templates/competency_selector_v2.yaml
     version: "1.0"
     allowed_stage: L2_EXEC
@@ -314,7 +314,7 @@ templates:
 
   competency_selector_v2_pa_slots:
     template_id: competency_selector_v2_pa_slots
-    description: Competencies PA slot-body pack (merged at compile)
+    description: "ENGINEERING & PLATFORM COMPETENCIES PA slot-body pack (merged at compile)"
     path: templates/competency_selector_v2.pa_slots.yaml
     version: "1.0"
     allowed_stage: L2_EXEC
@@ -327,35 +327,42 @@ templates:
       schema_ref: rg_output_schema.json
       sections: [competencies]
 
-  unify_position_narrative_v1:
-    template_id: unify_position_narrative_v1
-    description: Unify narrative section PA (W7)
-    path: templates/unify_position_narrative_v1.yaml
-    version: "1.0"
-    allowed_stage: L2_EXEC
-    w9_classification: ACTIVE
-    runtime_dispatch_reachable: true
-    required_slots: [S0, D0, I0, C0, U0, R0]
-    optional_slots: [E0, Y0, H0, M0]
-    output_contract:
-      format: json
-      schema_ref: rg_output_schema.json
-      sections: [unify_narrative]
-
   unify_bullet_tailor_v1:
     template_id: unify_bullet_tailor_v1
-    description: Unify bullets section PA (W7)
+    description: Unify bullets section PA (W7, hardened for SVP Engineering targeting)
     path: templates/unify_bullet_tailor_v1.yaml
-    version: "1.0"
+    version: "1.1"
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
     required_slots: [S0, D0, I0, C0, U0, R0]
     optional_slots: [E0, Y0, H0, M0]
+    generation_order: 1
+    emits_dependency_for: [unify_position_narrative_v1]
     output_contract:
       format: json
       schema_ref: rg_output_schema.json
       sections: [unify_bullets]
+
+  unify_position_narrative_v1:
+    template_id: unify_position_narrative_v1
+    description: Unify narrative section PA (W7, runs after finalized Unify bullets)
+    path: templates/unify_position_narrative_v1.yaml
+    version: "1.1"
+    allowed_stage: L2_EXEC
+    w9_classification: ACTIVE
+    runtime_dispatch_reachable: true
+    required_slots: [S0, D0, I0, C0, U0, R0]
+    optional_slots: [E0, Y0, H0, M0]
+    generation_order: 2
+    depends_on:
+      - template_id: unify_bullet_tailor_v1
+        section_id: unify_bullets
+        required_status: ACCEPTED_FINALIZED
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections: [unify_narrative]
 
   ibm_position_narrative_v1:
     template_id: ibm_position_narrative_v1

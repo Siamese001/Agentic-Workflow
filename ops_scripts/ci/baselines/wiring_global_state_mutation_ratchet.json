@@ -1,0 +1,9 @@
+{
+  "gate_id": "S1_global_state_mutation_ratchet",
+  "count": 2598,
+  "seeded_at": "2026-05-17T11:49:35.471689+00:00",
+  "snapshot": "adg_indexed_05172026_0651.sqlite",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-05-17T12:15:01.369143+00:00",
+  "last_run_snapshot": "adg_indexed_05172026_0651.sqlite"
+}

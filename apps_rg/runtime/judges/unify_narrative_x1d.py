@@ -20,7 +20,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     resolve_x1d_provider_credentials,
 )
 
-JUDGE_RUBRIC_VERSION = "unify_narrative_x1d_v1"
+JUDGE_RUBRIC_VERSION = "unify_narrative_x1d_v1_1"
 
 NARRATIVE_RUBRIC = """
 You are evaluating one Unify Consulting role narrative sentence (complement to six bullets).
@@ -31,16 +31,20 @@ Score contract:
 
 Rubric dimensions:
 1. factual_support: claims align with claim_ledger and bul_unify_* source facts.
-2. executive_signal: SVP-level platform leadership and operating discipline without hype.
-3. complementarity_vs_bullets: adds framing or synthesis; does not mechanically summarize all bullets.
-4. resume_voice: third person or implied subject; credible executive tone.
-5. ats_alignment_without_stuffing: relevant without JD dumping.
-6. anti_overfit: no JD-as-proof, no briefing-as-proof, no cross-employer facts.
+2. bullet_first_dependency: narrative clearly behaves as a capstone to accepted finalized bullets, not a standalone rewrite.
+3. executive_signal: SVP-level platform leadership, operating discipline, commercialization, and delivery momentum without hype.
+4. complementarity_vs_bullets: adds framing or synthesis; does not mechanically summarize all bullets.
+5. current_role_attention: Unify reads as the candidate's strongest current-position proof point for SVP Engineering screens.
+6. resume_voice: third person or implied subject; credible executive tone.
+7. ats_alignment_without_stuffing: relevant without JD dumping.
+8. anti_overfit: no JD-as-proof, no briefing-as-proof, no cross-employer facts.
 
 Decisive failure triggers:
 - first person or target employer misused as proof context for wrong company
 - unsupported metrics or IBM/InsurTech/EY leakage
 - multiple sentences or obvious six-bullet recap
+- missing or ignored finalized-bullets dependency
+- target company or briefing converted into candidate experience
 """.strip()
 
 
@@ -130,7 +134,7 @@ def run_unify_narrative_judges(
         if not api_key:
             detail = (
                 f"No non-empty API credential in {env_checked}; "
-                f"(Gemini: GEMINI_API_KEY then GOOGLE_API_KEY)."
+                f"(Gemini: GOOGLE_API_KEY, then deprecated GEMINI_API_KEY alias)."
                 if key == "gemini_pro"
                 else f"{meta['env']} environment variable not set"
             )

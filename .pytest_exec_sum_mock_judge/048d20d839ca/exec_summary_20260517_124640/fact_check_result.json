@@ -1,0 +1,10 @@
+{
+  "passed": false,
+  "failed_gates": [
+    "x2_sentence_coverage_pass",
+    "x2_unsupported_claim_zero",
+    "x2_claim_coverage_accounting_consistent",
+    "x2_material_clause_coverage_100",
+    "x2_model_name_allowed"
+  ]
+}

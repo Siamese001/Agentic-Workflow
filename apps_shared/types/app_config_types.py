@@ -298,12 +298,14 @@ class CompetitiveAnalysisConfig:
 
 try:
     GEMINI_AVAILABLE = True
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
     if api_key:
         genai.configure(api_key=api_key)
         logging.info("✓ Gemini API configured successfully in config.py")
     else:
-        logging.warning("⚠️ GEMINI_API_KEY not found in environment. API calls will fail.")
+        logging.warning(
+            "⚠️ GOOGLE_API_KEY not found in environment (GEMINI_API_KEY deprecated). API calls will fail."
+        )
         GEMINI_AVAILABLE = False
 except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     GEMINI_AVAILABLE = False

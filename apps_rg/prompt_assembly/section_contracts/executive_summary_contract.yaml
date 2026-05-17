@@ -53,5 +53,11 @@ proof_authority:
 
 jd_mirror_guidance_fraction: 0.20
 jd_mirror_note: >
-  Prompt instructs model to keep JD phrasing below ~20% of sentence content.
-  Not a compile-time gate.
+  Prompt instructs model to keep verbatim JD phrasing low; JD_TEXT + BRIEFING are for
+  prioritizing and framing among **selected** candidate facts only (not proof). Executive
+  summary voice should match the canonical base résumé register—dense, concrete stack/governance
+  nouns from facts—without JD keyword stuffing. Not a compile-time gate.
+
+briefing_targeting_note: >
+  Operator briefing steers emphasis (regulated context, modernization, governance, etc.) the same
+  way as JD_TEXT: targeting only; all substantive claims remain candidate_facts-backed.

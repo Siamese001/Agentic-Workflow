@@ -12,6 +12,7 @@ from apps_rg.runtime.locked_copy.locked_copy_manifest import (
     build_manifest,
     find_repo_root,
     load_base_resume,
+    sha256_hex,
 )
 from apps_rg.runtime.locked_copy.locked_copy_x2 import run_locked_copy_x2_gates, write_x2_gate_outputs
 
@@ -47,8 +48,10 @@ def build_locked_copy(
     )
     artifact_dir.mkdir(parents=True, exist_ok=True)
 
-    base, base_path, base_hash = load_base_resume(root)
-    manifest = build_manifest(base, base_path, base_hash)
+    base, base_path, _canonical_digest_unused = load_base_resume(root)
+    # Assembler checks sha256_utf8(read_text()); keep manifest hash aligned with that (not canonical_resume_digest).
+    base_utf8 = base_path.read_text(encoding="utf-8")
+    manifest = build_manifest(base, base_path, sha256_hex(base_utf8))
     manifest_path = artifact_dir / "locked_copy_manifest.json"
     write_json(manifest_path, manifest)
 

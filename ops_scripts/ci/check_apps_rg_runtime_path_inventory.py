@@ -39,7 +39,7 @@ CANONICAL_ACTIVE_PATHS: set[str] = {
     "apps_rg/runtime/bindings/l0_binding.py",
     "apps_rg/runtime/bindings/c0_binding.py",
     "apps_rg/runtime/bindings/pa_binding.py",
-    "apps_rg/runtime/bindings/l2_binding.py",
+    "apps_rg/runtime/bindings/l2_binding_adapter.py",
     "apps_rg/runtime/bindings/exit_binding.py",
     "apps_rg/runtime/bindings/l2_envelope_adapter.py",
     "apps_rg/runtime/bindings/c0_minimum_safety.py",

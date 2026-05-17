@@ -36,44 +36,44 @@ def load_json(name: str):
 
 
 def test_mock_dispatch_executes():
-    result = run_cmd("--provider", "mock", "--mock-judges")
+    result = run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     assert result.returncode == 0, result.stderr
     assert "HEADLINE_OUTPUT:" in result.stdout
     assert "WORD_COUNT:" in result.stdout
 
 
 def test_mock_headline_format():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l2 = load_json("l2_output.json")
     hl = l2["headline_line"].strip()
-    assert hl.count("|") == 2
+    assert hl.count("|") == 3
     assert "\n" not in hl
 
 
 def test_x2_gate_count():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     x2 = load_json("x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 21
+    assert x2["total_x2_gates"] == 24
     assert x2["x2_failed"] == 0
 
 
 def test_mock_word_count_range():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l2 = load_json("l2_output.json")
     from apps_rg.runtime.validators.headline_x2 import headline_word_count
 
     wc = headline_word_count(l2["headline_line"])
-    assert 8 <= wc <= 11
+    assert 10 <= wc <= 13
 
 
 def test_mock_x3_review_plumbing():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     x3 = load_json("x3_disposition.json")
     assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
 
 
 def test_l6_shadow_offline_only():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l6 = load_json("l6_shadow_eval_package.json")
     assert l6["offline_only"] is True
     assert l6["section_id"] == "headline"

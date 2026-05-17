@@ -317,13 +317,16 @@ def retry_qwen_for_synthesis(
             "role": "user",
             "content": (
                 f"SYNTHESIS REJECTED: {reject_reason}. "
+                "Internally compare at least two supported repair options; choose the densest rewrite still faithful to facts. "
                 "Return a NEW complete JSON object (RAW JSON only; first char {{, last char }}). "
-                "Rewrite resume_display_text as exactly TWO synthesized sentences using ONLY the selected facts "
-                "already shown in the user message; do not introduce metrics or outcomes absent from those facts. "
-                "(1) executive identity + commercial or scope arc grounded in the fact lines. "
-                "(2) technical governance and delivery arc in active voice (never passive 'cycle time was reduced'). "
+                "Rewrite resume_display_text as a dense executive paragraph using sentence role goals from the template; "
+                "use ONLY the selected facts already shown in the user message; do not introduce metrics or outcomes absent from those facts. "
+                "Combine roles across facts; never one sentence per source fact. "
+                "Where facts support it, cover executive identity plus commercial or scope arc, and technical governance plus delivery arc "
+                "in active voice (never passive 'cycle time was reduced'). "
                 "Collapse comma-separated capability lists. "
                 "THIRD PERSON ONLY — remove all I/me/my/we/our; never 'As an X, I...'. "
+                "Keep jd_used_as_proof=false when JD is targeting-only. "
                 "Forbidden: one sentence per claim-ledger row; Generated/Integrated/Enhanced as three parallel proofs; "
                 "'This was achieved while/through/by'; Productized/Designed/Strengthened/Standardized opener chain."
             ),
@@ -709,7 +712,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg executive_summary runtime seam.")
-    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="mock")
+    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="qwen_vllm")
     parser.add_argument("--temperature", type=float, default=EXEC_SUMMARY_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
     parser.add_argument("--mock-judges", action="store_true", help="Use mocked judge rows for plumbing tests only.")

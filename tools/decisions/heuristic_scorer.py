@@ -209,7 +209,9 @@ def _query_precedent(
     
     Returns dict with verdict (strong/suggestive/none) and confidence adjustment.
     """
-    skill_path = REPO_ROOT / ".windsurf" / "skills" / "refactor-decision-memory"
+    skill_path = (
+        REPO_ROOT / ".cursor" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
+    )
     
     try:
         import subprocess
@@ -222,7 +224,7 @@ def _query_precedent(
         }
         
         result = subprocess.run(
-            [sys.executable, str(skill_path / "lookup_refactor_decisions.py")],
+            [sys.executable, str(skill_path)],
             input=json.dumps(query),
             capture_output=True,
             text=True,

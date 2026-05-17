@@ -158,6 +158,22 @@ def build_doc(generated_path: Path, master_path: Path, out_path: Path) -> None:
             if text:
                 _add_bullet(doc, text)
 
+    # ENGINEERING & PLATFORM COMPETENCIES (matches base ``facts.skills`` order after employment)
+    comps = master.get("competencies", {})
+    if comps:
+        _add_heading(doc, "ENGINEERING & PLATFORM COMPETENCIES")
+        for category, items in comps.items():
+            p = doc.add_paragraph()
+            run = p.add_run(f"{category}: ")
+            run.bold = True
+            run.font.size = Pt(10)
+            if isinstance(items, list):
+                run2 = p.add_run("; ".join(items))
+            else:
+                run2 = p.add_run(str(items))
+            run2.font.size = Pt(10)
+            p.paragraph_format.space_after = Pt(2)
+
     # Education
     education = master.get("education", [])
     if education:
@@ -186,22 +202,6 @@ def build_doc(generated_path: Path, master_path: Path, out_path: Path) -> None:
             year_c = c.get("year", "")
             line = f"{name_c}" + (f", {year_c}" if year_c else "")
             _add_para(doc, line, size=10)
-
-    # Competencies (from master) — render the categorized dict
-    comps = master.get("competencies", {})
-    if comps:
-        _add_heading(doc, "ENGINEERING & PLATFORM COMPETENCIES")
-        for category, items in comps.items():
-            p = doc.add_paragraph()
-            run = p.add_run(f"{category}: ")
-            run.bold = True
-            run.font.size = Pt(10)
-            if isinstance(items, list):
-                run2 = p.add_run("; ".join(items))
-            else:
-                run2 = p.add_run(str(items))
-            run2.font.size = Pt(10)
-            p.paragraph_format.space_after = Pt(2)
 
     doc.save(out_path)
     print(f"OK Wrote: {out_path}")

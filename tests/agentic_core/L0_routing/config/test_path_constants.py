@@ -11,8 +11,6 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
-    HEALING_CONFIDENCE_X,
-    HEALING_CONFIDENCE_Y,
     SSOT_SCORE_THRESHOLD_DET,
     SSOT_SCORE_THRESHOLD_QWEN,
     consensus_majority_threshold,
@@ -92,23 +90,22 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 
-class TestHealingThresholds:
-    """Tests for healing tier threshold constants."""
+class TestHealingRoutingSsot:
+    """Heal *float* cutoffs migrated out of ``path_constants`` — SSOT-backed."""
 
-    def test_healing_confidence_x(self):
-        """Test HEALING_CONFIDENCE_X is a float in valid range."""
-        assert isinstance(HEALING_CONFIDENCE_X, float)
-        assert 0.0 <= HEALING_CONFIDENCE_X <= 1.0
+    def test_path_constants_does_not_expose_deprecated_float_aliases(self):
+        import agentic_core.L0_routing.config.path_constants as pc
 
-    def test_healing_confidence_y(self):
-        """Test HEALING_CONFIDENCE_Y is a float in valid range."""
-        assert isinstance(HEALING_CONFIDENCE_Y, float)
-        assert 0.0 <= HEALING_CONFIDENCE_Y <= 1.0
+        assert not hasattr(pc, "HEALING_CONFIDENCE_X")
+        assert not hasattr(pc, "HEALING_CONFIDENCE_Y")
 
-    def test_healing_confidence_x_greater_than_y(self):
-        """Test X threshold is greater than Y threshold."""
-        assert HEALING_CONFIDENCE_X > HEALING_CONFIDENCE_Y
+    def test_heal_defaults_pair_ordering(self):
+        from agentic_core.L2_execution.healers.routing_thresholds_ssot import (
+            DEFAULT_HEAL_CONFIDENCE_HIGH,
+            DEFAULT_HEAL_CONFIDENCE_MEDIUM,
+        )
 
+        assert DEFAULT_HEAL_CONFIDENCE_MEDIUM < DEFAULT_HEAL_CONFIDENCE_HIGH
     def test_ssot_score_threshold_det(self):
         """Test SSOT_SCORE_THRESHOLD_DET is an int."""
         assert isinstance(SSOT_SCORE_THRESHOLD_DET, int)

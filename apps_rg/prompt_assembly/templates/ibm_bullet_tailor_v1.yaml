@@ -20,7 +20,11 @@ sovereign_oath: |
   I may NOT copy JD phrases beyond 4 consecutive words.
   I may NOT use em dash character anywhere.
   I may NOT output narrative text — bullets only.
-  
+
+  QUALITY BAR — BASE RESUME PARITY: Preserve the information density of the locked IBM bullets in the
+  canonical base resume. Do not replace regulated-financials, uptime, migration, or partnership specifics
+  with generic "cloud AI" wording unless change_log documents the simplification with claim_ledger support.
+
   FORBIDDEN TERMS unless explicitly in IBM source facts:
   - agentic AI, GraphRAG, multi-agent orchestration
   - deterministic routing, sandboxed execution, replayable traces

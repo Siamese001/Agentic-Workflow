@@ -1,0 +1,34 @@
+{
+  "x3_code": "X3_BLOCK",
+  "decisive_reason": "X2 deterministic gate failure",
+  "review_reason": "",
+  "authorization_scope": "PLUMBING_ONLY",
+  "proceed_to_runtime": false,
+  "runtime_generation_status": "REAL_LLM",
+  "x1d_evaluator_mode": "MOCKED",
+  "product_quality_status": "FAIL",
+  "x2_failed_gates": [
+    "x2_sentence_coverage_pass",
+    "x2_unsupported_claim_zero",
+    "x2_claim_coverage_accounting_consistent",
+    "x2_material_clause_coverage_100",
+    "x2_model_name_allowed"
+  ],
+  "blocked_judges": [],
+  "mocked_judges": [
+    "gemini_pro",
+    "openai_chatgpt",
+    "anthropic_claude"
+  ],
+  "soft_failed_judges": [],
+  "decisive_judge_failures": [],
+  "final_summary_hash": "2f9e7e56379728c0",
+  "claim_ledger_hash": "250959fbad53213f",
+  "required_remediation": [
+    "Fix failed X2 gates: x2_sentence_coverage_pass, x2_unsupported_claim_zero, x2_claim_coverage_accounting_consistent, x2_material_clause_coverage_100, x2_model_name_allowed",
+    "Replace mocked judges with model-backed or approved calibrated judges.",
+    "REAL_LLM generation proven; X1D proof blocked because judges were mocked.",
+    "Product quality must be PASS, currently FAIL."
+  ],
+  "pass": false
+}

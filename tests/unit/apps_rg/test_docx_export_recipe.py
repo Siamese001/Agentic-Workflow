@@ -49,6 +49,47 @@ def test_docx_export_step_writes_docx_and_apps_rg_manifest(tmp_path: Path) -> No
     assert man.get("docx_verified") is True
 
 
+def test_docx_export_merges_contact_from_master_resume_data(tmp_path: Path) -> None:
+    step = DocxExportStep()
+    resume = {
+        "candidate_name": "Taylor Example",
+        "target_role": "SVP Example",
+        "target_company": "Example Co",
+        "sections": {
+            "summary": {"text": "Summary for docx export test.", "word_count": 5},
+            "experience": [],
+            "skills": [],
+            "education": [],
+        },
+    }
+    master = json.dumps(
+        {
+            "header": {"email": "enriched@example.com", "phone": "+1999", "linkedin": "in/x"},
+            "facts": {"employment": [], "skills": [], "certifications": []},
+        },
+    )
+    out = step(
+        {
+            "artifact_dir": str(tmp_path / "enriched_run"),
+            "generated_resume": resume,
+            "target_role": "SVP Example",
+            "target_company": "Example Co",
+            "master_resume_data": master,
+        },
+    )
+    assert out.get("status") == "ok"
+    base = tmp_path / "enriched_run"
+    docx = base / "outputs" / "resume.docx"
+    assert docx.is_file()
+    from docx import Document
+
+    text = "\n".join(p.text for p in Document(str(docx)).paragraphs if p.text.strip())
+    assert "enriched@example.com" in text
+
+    disk = json.loads((base / "outputs" / "generated_resume.json").read_text(encoding="utf-8"))
+    assert disk.get("contact_info", {}).get("email") == "enriched@example.com"
+
+
 def test_augment_integrated_manifest_only_when_docx_exists(tmp_path: Path) -> None:
     integ = tmp_path / "integrated_runtime_artifact_manifest.json"
     integ.write_text(json.dumps({"artifact_filenames": ["agentic_core_how_trace.json"]}), encoding="utf-8")

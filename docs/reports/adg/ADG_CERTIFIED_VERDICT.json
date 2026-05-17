@@ -3,8 +3,8 @@
   "tier": "B",
   "verdict": "ADG_NOT_CERTIFIED",
   "strict_mode": false,
-  "timestamp": "2026-05-15T19:37:07.426887+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
+  "timestamp": "2026-05-17T12:21:58.002872+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05172026_0651.sqlite",
   "blockers": [
     "consumer mode declared"
   ],
@@ -12,15 +12,15 @@
     {
       "label": "triplet completeness (read-time)",
       "ok": true,
-      "details": "all 957562 edges have populated triplet",
+      "details": "all 978039 edges have populated triplet",
       "null_triplet_count": 0,
-      "total_edges": 957562
+      "total_edges": 978039
     },
     {
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "=========================================================\nsnapshot   : adg_indexed_05152026_1118.sqlite\nmv_*       :   69 (min 30)\nv_p*       :   15 (min 3)\ninfra      :    6 (min 1)\nbase       :   26\nprojection : pass (mode=strict)\n             adg_graph_05152026_1118.sqlite\n========================================================================\n[PASS] snapshot contains full graph-layer overlay\n",
+      "stdout_tail": "=========================================================\nsnapshot   : adg_indexed_05172026_0651.sqlite\nmv_*       :   69 (min 30)\nv_p*       :   15 (min 3)\ninfra      :    6 (min 1)\nbase       :   26\nprojection : pass (mode=strict)\n             adg_graph_05172026_0651.sqlite\n========================================================================\n[PASS] snapshot contains full graph-layer overlay\n",
       "label": "graph-layer evidence (snapshot)",
       "script": "ops_scripts/ci/check_snapshot_has_mvs.py",
       "contributes_to_certification": true
@@ -29,7 +29,7 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "[runtime_proof_view] snapshot=adg_indexed_05152026_1118.sqlite rows=3410 violations=0 strict=True\n",
+      "stdout_tail": "[runtime_proof_view] snapshot=adg_indexed_05172026_0651.sqlite rows=3410 violations=0 strict=True\n",
       "label": "runtime proof view well-formed",
       "script": "ops_scripts/ci/check_runtime_proof_view_well_formed.py",
       "contributes_to_certification": true

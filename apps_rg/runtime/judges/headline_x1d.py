@@ -20,26 +20,35 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     resolve_x1d_provider_credentials,
 )
 
-JUDGE_RUBRIC_VERSION = "headline_x1d_v1"
+JUDGE_RUBRIC_VERSION = "headline_x1d_v2"
 
 HEADLINE_RUBRIC = """
-You are evaluating a single resume headline line formatted as: SegmentOne | SegmentTwo | SegmentThree.
+You are evaluating a single resume headline formatted exactly as: SVP Engineering | X | Y | Z
+(space-pipe-space separators; exactly four segments; first segment exactly "SVP Engineering"; 10-13 total words).
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
 Score contract:
 - score_scale must be "0_to_1" or "0_to_5" only.
 
 Rubric dimensions:
-1. factual_support: headline aligns with claim_ledger and bul_* resume facts only.
-2. format_compliance: exactly three pipe-separated segments; 8-11 total words; no metrics; no employer names.
-3. executive_signal: reads as SVP-level scope, not IC task list.
-4. ats_alignment: concise keyword clusters without stuffing or JD-as-proof.
-5. anti_overfit: no JD-only or briefing-only claims; no target-company framing as past employment.
-6. complementarity: fits with accepted executive summary and generated sections without repeating them verbatim.
+1. factual_support: every substantive phrase in X/Y/Z is supported by claim_ledger bul_* facts only (JD/briefing are never proof).
+2. fixed_prefix_compliance: headline_line starts with "SVP Engineering | " and uses exactly three " | " separators.
+3. base_identity_fidelity: authentic to the base resume headline anchor; not rewritten to chase the JD.
+4. anti_keyword_stuffing: no ATS keyword bags, list-like segments, or multi-domain laundry lists.
+5. JD targeting discipline: JD relevance without copying JD phrasing or treating JD as authority.
+6. executive_authenticity: reads as a senior platform/engineering leader, not generic leadership filler.
+7. no_title_inflation: first segment is not replaced or subverted; no "SVP at TargetCo" framing.
+8. natural human resume sound: concise, human, resume-native phrasing.
 
-Decisive failure triggers:
-- unsupported proof, employer names, metrics, or first person
-- format break (not exactly three segments or word count out of range)
+Decisive failure triggers (if any, set decisive_failure true and pass false):
+- missing fixed prefix "SVP Engineering" as segment 1
+- not exactly four non-empty segments or not exactly three " | " separators
+- word count outside 10-13 (inclusive)
+- unsupported proof relative to claim_ledger / resume facts
+- employer names, target company names, or candidate personal name tokens
+- metrics or numeric proof in headline_line
+- first person
+- copied JD phrases or briefing-only / JD-only claims without fact support
 """.strip()
 
 
@@ -129,7 +138,7 @@ def run_headline_judges(
         if not api_key:
             detail = (
                 f"No non-empty API credential in {env_checked}; "
-                f"(Gemini: GEMINI_API_KEY then GOOGLE_API_KEY)."
+                f"(Gemini: GOOGLE_API_KEY, then deprecated GEMINI_API_KEY alias)."
                 if key == "gemini_pro"
                 else f"{meta['env']} environment variable not set"
             )

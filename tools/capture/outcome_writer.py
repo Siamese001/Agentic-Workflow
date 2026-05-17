@@ -33,8 +33,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
 
 
 _OUTCOME_MARKER_RE = re.compile(

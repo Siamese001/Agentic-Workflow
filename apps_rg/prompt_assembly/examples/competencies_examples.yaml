@@ -87,7 +87,7 @@ examples:
     section: competencies
     xml_wrapped: true
     before: |
-      Skills: Python, AWS, Leadership, Kubernetes, Terraform, Databricks,
+      ENGINEERING & PLATFORM COMPETENCIES: Python, AWS, Leadership, Kubernetes, Terraform, Databricks,
               Azure Synapse, dbt, Spark, Flink, Iceberg, Delta Lake
     after: |
       Data Engineering: Spark, dbt, Kafka

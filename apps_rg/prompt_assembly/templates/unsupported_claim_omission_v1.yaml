@@ -125,10 +125,10 @@ slot_bodies:
     - Preserve verified achievements with ledger binding (not inline resume tags)
     - Bullets with partial support: trim to verified portion only
     
-    ## Skills
-    - Remove skills not in candidate_facts
-    - Preserve verified skills exactly
-    - Do NOT infer related skills
+    ## ENGINEERING & PLATFORM COMPETENCIES
+    - Remove competency terms not in candidate_facts
+    - Preserve verified ENGINEERING & PLATFORM COMPETENCIES exactly
+    - Do NOT infer related competency terms
     
     ## Projects
     - Remove projects not in candidate_facts

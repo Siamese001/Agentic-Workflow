@@ -19,6 +19,19 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 from datetime import datetime, timezone
 
+# Wiring probes intentionally degrade to WiringStatus — narrow catches for ADG P2 hygiene.
+_WIRING_VERIFY_EXCEPTIONS = (
+    ImportError,
+    ModuleNotFoundError,
+    AttributeError,
+    TypeError,
+    ValueError,
+    KeyError,
+    RuntimeError,
+    OSError,
+    AssertionError,
+)
+
 
 # -----------------------------------------------------------------------------
 # Wiring Status
@@ -170,7 +183,7 @@ class SpineWiringVerifier:
                     "adapter": TouchStateUWGAdapter.__name__,
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="touch_state_uwg",
                 connected=False,
@@ -188,7 +201,7 @@ class SpineWiringVerifier:
                 connected=True,
                 details={"fabric": type(fabric).__name__},
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="coordination_fabric",
                 connected=False,
@@ -213,7 +226,7 @@ class SpineWiringVerifier:
                     "scheduler": type(scheduler).__name__,
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="touch_scheduler",
                 connected=False,
@@ -239,7 +252,7 @@ class SpineWiringVerifier:
                     "rules_count": len(policy.rules),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="hitl_policy",
                 connected=False,
@@ -260,7 +273,7 @@ class SpineWiringVerifier:
                 connected=True,
                 details={"evaluator": type(evaluator).__name__},
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="hitl_evaluator",
                 connected=False,
@@ -284,7 +297,7 @@ class SpineWiringVerifier:
                     "schema_version": FEC_SCHEMA_VERSION,
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="fec_producer",
                 connected=False,
@@ -306,7 +319,7 @@ class SpineWiringVerifier:
                 connected=True,
                 details={"service": type(service).__name__},
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="identity_service",
                 connected=False,
@@ -335,7 +348,7 @@ class SpineWiringVerifier:
                 connected=True,
                 details={"bridge": type(bridge).__name__},
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="carry_forward_bridge",
                 connected=False,
@@ -419,7 +432,7 @@ class SpineWiringVerifier:
                     "total_dimensions": len(dim_ids),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="p2_rubric_dims",
                 connected=False,
@@ -468,7 +481,7 @@ class SpineWiringVerifier:
                     "registry_size": len(SEQUENCE_REGISTRY),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="sequence_definitions",
                 connected=False,
@@ -519,7 +532,7 @@ class SpineWiringVerifier:
                     "p2_slots_bound": list(result.p2_slots_bound.keys()),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="touch_propagation",
                 connected=False,
@@ -572,7 +585,7 @@ class SpineWiringVerifier:
                     "active_sequences": len(machine.get_active_sequences()),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="sequence_state_machine",
                 connected=False,
@@ -632,7 +645,7 @@ class SpineWiringVerifier:
                     "signal_sources": len(SignalSource),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="signal_types",
                 connected=False,
@@ -666,7 +679,7 @@ class SpineWiringVerifier:
                     "detection_result": "initialized" if result.error else "ready",
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="signal_detector",
                 connected=False,
@@ -723,7 +736,7 @@ class SpineWiringVerifier:
                     "confidence": decision.trigger_confidence,
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="trigger_wake_mapper",
                 connected=False,
@@ -755,7 +768,7 @@ class SpineWiringVerifier:
                     "supported_capabilities": len(bridge.SUPPORTED_CAPABILITIES),
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="research_bridge",
                 connected=False,
@@ -813,7 +826,7 @@ class SpineWiringVerifier:
                     "c0_path_works": True,
                 },
             )
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             return WiringStatus(
                 component="c0_retrieval_wiring",
                 connected=False,
@@ -854,7 +867,7 @@ class SpineInitializer:
         try:
             from apps_lic.state.touch_state_registration import initialize_touch_state
             results["touch_state"] = initialize_touch_state()
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             results["touch_state"] = f"error: {e}"
         
         # Step 2: Coordination-touch integration
@@ -863,7 +876,7 @@ class SpineInitializer:
                 initialize_coordination_touch_integration,
             )
             results["coordination"] = initialize_coordination_touch_integration()
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             results["coordination"] = f"error: {e}"
         
         # Step 3: HITL policy
@@ -875,21 +888,21 @@ class SpineInitializer:
             policy = ReengagementHITLPolicy()
             HITLPolicyRegistry.register(policy)
             results["hitl_policy"] = True
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             results["hitl_policy"] = f"error: {e}"
         
         # Step 4: FEC producer (import triggers registration)
         try:
             import apps_lic.cert  # noqa: F401
             results["fec_producer"] = True
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             results["fec_producer"] = f"error: {e}"
         
         # Step 5: Identity integration
         try:
             from apps_lic.identity.integration import initialize_identity_integration
             results["identity"] = initialize_identity_integration()
-        except Exception as e:
+        except _WIRING_VERIFY_EXCEPTIONS as e:
             results["identity"] = f"error: {e}"
         
         # Verify wiring

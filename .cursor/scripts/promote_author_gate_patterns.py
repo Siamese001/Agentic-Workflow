@@ -6,39 +6,29 @@ Flips ``decision_outcomes.promote_to_pattern = 1`` on decisions that qualify as
 reusable patterns, and backfills ``decision_outcomes.outcome_label`` on rows that
 were bound before the label column existed.
 
-PROMOTION CRITERIA
-------------------
-A decision is promoted when ALL hold:
-
-    - Its outcome is bound (``execution_completed = 1``)
-    - No regression (``regression_found = 0`` AND ``rollback_required = 0``)
-    - ``outcome_label`` is not ``"rollback"`` and not ``"rework"``
-    - At least one OTHER decision exists with the same ``decision_type`` AND an
-      FTS match on ``normalized_intent`` (≥1 shared token, rank > threshold)
-    - The sibling's outcome is also clean (or unbound but recent)
-
-Intuition: two independent successful decisions on semantically similar intents
-within the same decision_type constitute a reusable precedent, so the injector
-can upgrade the verdict to "strong".
+PROMOTION CRITERIA (W3)
+-----------------------
+    - Outcome bound, clean, **high** bind confidence (or legacy NULL unless
+      ``--strict-bind-promotion``), not **bind_disputed**
+    - Semantically similar **sibling** decision (FTS) with clean outcome
+    - **Recency** window (default 365d) for both candidate and sibling
+    - **Quarantine** (default 7d) after eligibility before ``promote_to_pattern``
+      unless ``--skip-quarantine`` (column ``promotion_quarantine_started_at``)
 
 LABEL BACKFILL
 --------------
-For decisions with ``execution_completed = 1`` but ``outcome_label IS NULL``,
-re-run ``classify_outcome`` against the bound commit subject and write the
-inferred label (``success`` / ``rework`` / ``rollback`` / ``undecided``).
+    For ``outcome_label IS NULL`` on bound rows, infer from git subject.
 
 USAGE
 -----
-    python .cursor/scripts/promote_author_gate_patterns.py            # promote + backfill
-    python .cursor/scripts/promote_author_gate_patterns.py --dry-run  # report only
-    python .cursor/scripts/promote_author_gate_patterns.py --backfill-only
-    python .cursor/scripts/promote_author_gate_patterns.py --promote-only
+    python .cursor/scripts/promote_author_gate_patterns.py
+    python .cursor/scripts/promote_author_gate_patterns.py --dry-run
+    python .cursor/scripts/promote_author_gate_patterns.py --skip-quarantine
 
 CONSTITUTIONAL
     - No shell, no subprocess (except git via helper)
     - Specific exceptions: sqlite3.Error, OSError
     - UTF-8 stdio
-    - Idempotent — safe to run repeatedly
 """
 from __future__ import annotations
 
@@ -49,17 +39,16 @@ import sqlite3
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
 
-# Hyphens are intentionally excluded from the keep-set: FTS5 parses ``foo-bar``
-# as the column filter ``foo NOT bar`` which raises OperationalError unless
-# ``foo`` names an indexed column. Tokenizing hyphens as whitespace makes
-# hyphenated intents (meta-learning, anti-pattern, multi-file) match as
-# bag-of-words tokens. Mirrors the fix in
-# .cursor/skills/refactor-decision-memory/lookup_refactor_decisions.py.
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
+
 _FTS_SAFE_RE = re.compile(r"[^a-zA-Z0-9_ ]")
 
 
@@ -70,7 +59,6 @@ def _sanitize_fts(text: str) -> str:
 
 
 def _classify_outcome(subject: str) -> str:
-    """Mirror of post_commit_outcome_binder.classify_outcome, label-only."""
     lower = (subject or "").lower()
     if any(tok in lower for tok in ("revert ", "rollback", "hotfix revert")):
         return "rollback"
@@ -78,9 +66,6 @@ def _classify_outcome(subject: str) -> str:
         return "rework"
     if any(tok in lower for tok in ("fix ", "bugfix")):
         return "rework"
-    # Default: no evidence of regression → treat as success (was "undecided" pre-W4).
-    # Reasoning: outcome_binder sets execution_completed=1 only on clean commits, so
-    # the default for bound-without-regression-signal rows is success, not undecided.
     return "success"
 
 
@@ -110,6 +95,9 @@ class Report:
     patterns_promoted: int = 0
     candidates_considered: int = 0
     skipped_no_sibling: int = 0
+    quarantine_started: int = 0
+    awaiting_quarantine: int = 0
+    skipped_recency: int = 0
 
 
 def _open_db() -> sqlite3.Connection | None:
@@ -123,8 +111,38 @@ def _open_db() -> sqlite3.Connection | None:
         return None
 
 
+def _outcome_columns(conn: sqlite3.Connection) -> set[str]:
+    try:
+        return {r[1] for r in conn.execute("PRAGMA table_info(decision_outcomes)").fetchall()}
+    except sqlite3.Error:
+        return set()
+
+
+def _within_recency(created_at: str | None, max_days: int) -> bool:
+    if max_days <= 0 or not created_at:
+        return True
+    try:
+        dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+    except ValueError:
+        return True
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) - dt <= timedelta(days=max_days)
+
+
+def _quarantine_elapsed(started_at: str | None, days: int) -> bool:
+    if not started_at or days <= 0:
+        return True
+    try:
+        dt = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+    except ValueError:
+        return True
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) - dt >= timedelta(days=days)
+
+
 def backfill_labels(conn: sqlite3.Connection, dry_run: bool) -> int:
-    """Populate decision_outcomes.outcome_label where it is NULL."""
     rows = conn.execute(
         """
         SELECT o.outcome_id, o.decision_id, o.commit_shas_json, d.commit_sha
@@ -165,49 +183,116 @@ def backfill_labels(conn: sqlite3.Connection, dry_run: bool) -> int:
     return updated
 
 
-def promote_patterns(conn: sqlite3.Connection, dry_run: bool) -> Report:
-    """Flip promote_to_pattern=1 for decisions meeting the pattern criteria."""
+def promote_patterns(
+    conn: sqlite3.Connection,
+    dry_run: bool,
+    *,
+    strict_bind_promotion: bool = False,
+    quarantine_days: int = 7,
+    skip_quarantine: bool = False,
+    recency_days: int = 365,
+) -> Report:
     rep = Report()
-    # Candidate set: clean, executed, not already promoted
+    o_cols = _outcome_columns(conn)
+    bind_clause = "o.bind_confidence = 'high'"
+    if not strict_bind_promotion:
+        bind_clause = "(o.bind_confidence = 'high' OR o.bind_confidence IS NULL)"
+    quarantine_col = "promotion_quarantine_started_at" in o_cols
+    q_sel = (
+        "o.promotion_quarantine_started_at"
+        if quarantine_col
+        else "NULL AS promotion_quarantine_started_at"
+    )
+
+    recency_sql = ""
+    if recency_days > 0:
+        recency_sql = f"AND datetime(d.created_at) >= datetime('now', '-{int(recency_days)} days')"
+
     candidates = conn.execute(
-        """
-        SELECT d.decision_id, d.decision_type, d.normalized_intent,
-               o.outcome_id, o.outcome_label, o.regression_found, o.rollback_required
+        f"""
+        SELECT d.decision_id, d.decision_type, d.normalized_intent, d.created_at,
+               o.outcome_id, o.outcome_label, o.regression_found, o.rollback_required,
+               {q_sel}
           FROM decisions d
           JOIN decision_outcomes o ON o.decision_id = d.decision_id
          WHERE o.execution_completed = 1
            AND COALESCE(o.regression_found, 0) = 0
            AND COALESCE(o.rollback_required, 0) = 0
            AND COALESCE(o.promote_to_pattern, 0) = 0
+           AND COALESCE(o.bind_disputed, 0) = 0
            AND COALESCE(o.outcome_label, 'success') NOT IN ('rollback', 'rework')
+           AND ({bind_clause})
+           {recency_sql}
         """
     ).fetchall()
     rep.candidates_considered = len(candidates)
 
+    sibling_recency_sql = ""
+    if recency_days > 0:
+        sibling_recency_sql = (
+            f"AND datetime(d2.created_at) >= datetime('now', '-{int(recency_days)} days')"
+        )
+
+    iso_now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
     for cand in candidates:
+        if not _within_recency(cand["created_at"], recency_days):
+            rep.skipped_recency += 1
+            continue
         intent = cand["normalized_intent"] or ""
         safe = _sanitize_fts(intent)
         if not safe:
             rep.skipped_no_sibling += 1
             continue
-        sibling = conn.execute(
-            """
-            SELECT d2.decision_id
-              FROM decisions_fts fts
-              JOIN decisions d2 ON d2.decision_id = fts.decision_id
-              LEFT JOIN decision_outcomes o2 ON o2.decision_id = d2.decision_id
-             WHERE decisions_fts MATCH ?
-               AND d2.decision_id != ?
-               AND d2.decision_type = ?
-               AND COALESCE(o2.regression_found, 0) = 0
-               AND COALESCE(o2.rollback_required, 0) = 0
-             LIMIT 1
-            """,
-            (safe, cand["decision_id"], cand["decision_type"]),
-        ).fetchone()
+        try:
+            sibling = conn.execute(
+                f"""
+                SELECT d2.decision_id, d2.created_at
+                  FROM decisions_fts fts
+                  JOIN decisions d2 ON d2.decision_id = fts.decision_id
+                  LEFT JOIN decision_outcomes o2 ON o2.decision_id = d2.decision_id
+                 WHERE fts MATCH ?
+                   AND d2.decision_id != ?
+                   AND d2.decision_type = ?
+                   AND COALESCE(o2.regression_found, 0) = 0
+                   AND COALESCE(o2.rollback_required, 0) = 0
+                   {sibling_recency_sql}
+                 ORDER BY fts.rank
+                 LIMIT 1
+                """,
+                (safe, cand["decision_id"], cand["decision_type"]),
+            ).fetchone()
+        except sqlite3.Error:
+            sibling = None
         if sibling is None:
             rep.skipped_no_sibling += 1
             continue
+        if not _within_recency(sibling["created_at"], recency_days):
+            rep.skipped_recency += 1
+            continue
+
+        use_quarantine = quarantine_col and not skip_quarantine and quarantine_days > 0
+        q_start = cand["promotion_quarantine_started_at"] if quarantine_col else None
+
+        if use_quarantine:
+            if not q_start:
+                rep.quarantine_started += 1
+                if dry_run:
+                    print(
+                        f"[dry-run] would start quarantine decision={cand['decision_id']} "
+                        f"sibling={sibling['decision_id']}"
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE decision_outcomes SET promotion_quarantine_started_at = ? "
+                        "WHERE outcome_id = ?",
+                        (iso_now, cand["outcome_id"]),
+                    )
+                continue
+            if not _quarantine_elapsed(q_start, quarantine_days):
+                rep.awaiting_quarantine += 1
+                continue
+
         if dry_run:
             print(
                 f"[dry-run] would promote decision={cand['decision_id']} type={cand['decision_type']} "
@@ -221,6 +306,7 @@ def promote_patterns(conn: sqlite3.Connection, dry_run: bool) -> Report:
                 (cand["outcome_id"],),
             )
         rep.patterns_promoted += 1
+
     if not dry_run:
         conn.commit()
     return rep
@@ -231,7 +317,28 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Report without writing")
     parser.add_argument("--backfill-only", action="store_true", help="Skip promotion step")
     parser.add_argument("--promote-only", action="store_true", help="Skip label backfill")
-    parser.add_argument("--verbose", "-v", action="store_true")
+    parser.add_argument(
+        "--strict-bind-promotion",
+        action="store_true",
+        help="Require bind_confidence=high (exclude legacy NULL_BIND rows)",
+    )
+    parser.add_argument(
+        "--quarantine-days",
+        type=int,
+        default=7,
+        help="W3: days a candidate waits before promote_to_pattern (0=immediate if skip not set)",
+    )
+    parser.add_argument(
+        "--skip-quarantine",
+        action="store_true",
+        help="W3: bypass quarantine (set promote_to_pattern on first eligible pass)",
+    )
+    parser.add_argument(
+        "--recency-days",
+        type=int,
+        default=365,
+        help="W3: max age (days) for candidate and sibling decisions (0=unlimited)",
+    )
     args = parser.parse_args()
 
     conn = _open_db()
@@ -245,14 +352,24 @@ def main() -> int:
             backfilled = backfill_labels(conn, dry_run=args.dry_run)
         rep = Report()
         if not args.backfill_only:
-            rep = promote_patterns(conn, dry_run=args.dry_run)
+            rep = promote_patterns(
+                conn,
+                dry_run=args.dry_run,
+                strict_bind_promotion=args.strict_bind_promotion,
+                quarantine_days=max(0, args.quarantine_days),
+                skip_quarantine=bool(args.skip_quarantine),
+                recency_days=max(0, args.recency_days),
+            )
 
         verb = "would-" if args.dry_run else ""
         print(
             f"[promote_author_gate_patterns] {verb}backfilled={backfilled} "
             f"{verb}promoted={rep.patterns_promoted} "
             f"candidates={rep.candidates_considered} "
-            f"skipped_no_sibling={rep.skipped_no_sibling}"
+            f"skipped_no_sibling={rep.skipped_no_sibling} "
+            f"quarantine_started={rep.quarantine_started} "
+            f"awaiting_quarantine={rep.awaiting_quarantine} "
+            f"skipped_recency={rep.skipped_recency}"
         )
     finally:
         conn.close()

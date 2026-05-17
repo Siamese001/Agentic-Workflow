@@ -1,4 +1,4 @@
-"""Deterministic X2 gates for headline runtime slice (single X | Y | Z line)."""
+"""Deterministic X2 gates for headline runtime slice (SVP Engineering | X | Y | Z)."""
 from __future__ import annotations
 
 import json
@@ -21,6 +21,14 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 # Metrics and numeric proof patterns (headline must avoid all).
 _METRIC_RE = re.compile(
     r"(\$\s*\d|\d+\s*%|%\d|\b\d{1,3}\s*m\b|\d+\s*→\s*\d+|\b99\.|\b\d{1,2}\.\d+\s*%)",
+    re.IGNORECASE,
+)
+
+# Obvious ATS keyword-bag / stuffing patterns (deterministic reject; prefer false positives over stuffing).
+_KEYWORD_STUFF_RE = re.compile(
+    r"(?:\bai\s+ml\s+cloud\s+data\b|\bai\s+ml\s+cloud\b|\bdigital\s+transformation\b|"
+    r"\binnovation\s+leadership\b|\btechnology\s+evangelist\b|\bthought\s+leader\b|\bai\s+evangelist\b|"
+    r"\bstrategic\s+leader\b)",
     re.IGNORECASE,
 )
 
@@ -118,30 +126,45 @@ def run_headline_x2_gates(
         None if h and one_line else "Headline must be a single line.",
     )
 
+    _sep = " | "
     pipe_ok = False
     pipe_reason = None
-    if h.count("|") != 2:
-        pipe_reason = "must have exactly two pipe separators"
+    if h.count(_sep) != 3:
+        pipe_reason = f'must have exactly three {_sep!r} separators (four segments)'
+    elif not h.startswith("SVP Engineering | "):
+        pipe_reason = 'headline_line must start with exact prefix "SVP Engineering | "'
     else:
-        parts = [p.strip() for p in h.split("|")]
-        pipe_ok = len(parts) == 3 and all(parts) and all("|" not in p for p in parts)
-        if not pipe_ok:
-            pipe_reason = "three non-empty segments required"
+        parts = [p.strip() for p in h.split(_sep)]
+        if len(parts) != 4 or not all(parts):
+            pipe_reason = "four non-empty segments required when splitting on ' | '"
+        elif parts[0] != "SVP Engineering":
+            pipe_reason = "first segment must be exactly SVP Engineering"
+        else:
+            pipe_ok = True
     add(
-        "x2_headline_pipe_three_segments",
+        "x2_headline_pipe_four_segments",
         pipe_ok,
         pipe_reason or "ok",
-        "X | Y | Z",
+        "SVP Engineering | X | Y | Z",
         None if pipe_ok else pipe_reason,
     )
 
-    wc = headline_word_count(h) if h else 0
-    wc_ok = 8 <= wc <= 11
+    stuff_hit = _KEYWORD_STUFF_RE.search(h)
     add(
-        "x2_headline_word_count_8_to_11",
+        "x2_headline_no_keyword_stuffing_heuristic",
+        stuff_hit is None,
+        stuff_hit.group(0) if stuff_hit else "ok",
+        "no banned filler patterns",
+        None if stuff_hit is None else "Keyword-stuffing or banned filler phrase detected in headline.",
+    )
+
+    wc = headline_word_count(h) if h else 0
+    wc_ok = 10 <= wc <= 13
+    add(
+        "x2_headline_word_count_10_to_13",
         wc_ok,
         wc,
-        "8..11",
+        "10..13",
         None if wc_ok else "Word count out of range (count words with pipes as spaces).",
     )
 
@@ -167,6 +190,35 @@ def run_headline_x2_gates(
         company_hit or "ok",
         "no employers",
         None if company_hit is None else "Employer or company name appears in headline.",
+    )
+
+    name_tokens: set[str] = set()
+    rs = (resume_support_blob or "").strip()
+    if rs.startswith("{"):
+        try:
+            cand = json.loads(rs)
+        except json.JSONDecodeError:
+            cand = None
+        if isinstance(cand, dict):
+            cn = str(cand.get("candidate_name") or "").strip()
+            hdr_nm = ""
+            hdr_obj = cand.get("header")
+            if isinstance(hdr_obj, dict):
+                hdr_nm = str(hdr_obj.get("name") or "").strip()
+            for nm in (cn, hdr_nm):
+                if not nm:
+                    continue
+                for part in nm.split():
+                    tok = re.sub(r"^[^\w]+|[^\w]+$", "", part)
+                    if len(tok) >= 3:
+                        name_tokens.add(tok.lower())
+    leaked = sorted(t for t in name_tokens if t and t in hl)
+    add(
+        "x2_headline_no_candidate_name_tokens",
+        len(leaked) == 0,
+        leaked or "ok",
+        "no personal-name tokens",
+        None if not leaked else f"Personal name token(s) in headline: {leaked}",
     )
 
     add(
@@ -291,6 +343,15 @@ def run_headline_x2_gates(
         jd_al if isinstance(jd_al, dict) else "missing",
         "jd_used_as_proof=false",
         None if jd_pf else "jd_used_as_proof must be exactly false",
+    )
+
+    br_pf = isinstance(jd_al, dict) and jd_al.get("briefing_used_as_proof") is False
+    add(
+        "x2_headline_briefing_context_not_proof",
+        br_pf,
+        jd_al if isinstance(jd_al, dict) else "missing",
+        "briefing_used_as_proof=false",
+        None if br_pf else "briefing_used_as_proof must be exactly false",
     )
 
     cc = (companion_context or "").strip()

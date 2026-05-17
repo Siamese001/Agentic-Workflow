@@ -169,7 +169,7 @@ def test_render_markdown_with_alert():
     assert "⚠️" in md
     assert "LOW" in md
     assert "0.30" in md
-    assert "HEALING_CONFIDENCE_X" in md
+    assert "HEALING_CONFIDENCE_HIGH" in md
     assert "0.85" in md
 
 
@@ -207,4 +207,4 @@ def test_main_sufficient_data_exits_zero(tmp_path):
     assert exit_code == 0
     content = out.read_text(encoding="utf-8")
     assert "**Events:** 30" in content
-    assert "HEALING_CONFIDENCE_X" in content
+    assert "HEALING_CONFIDENCE_MEDIUM" in content

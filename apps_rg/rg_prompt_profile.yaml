@@ -191,7 +191,7 @@ ats_compatibility:
   standard_headers:
     - "Professional Summary"  # Not "About Me"
     - "Professional Experience"  # Not "Career Journey"
-    - "Technical Skills"  # Not "Tech Stack"
+    - "ENGINEERING & PLATFORM COMPETENCIES"  # Not "Tech Stack" or generic "Skills"
     - "Projects"  # Not "Cool Stuff I Built"
     - "Education"  # Not "Learning"
     - "Certifications"  # Not "Badges"

@@ -93,7 +93,7 @@ slot_bodies:
         CONSISTENCY_CHECKS:
           - Employment dates in header vs experience bullets must match
           - Metrics referenced across sections must use identical figures
-          - Skills list must be consistent with skills mentioned in experience bullets
+          - ENGINEERING & PLATFORM COMPETENCIES list must be consistent with terms mentioned in experience bullets
       </unify_pass>
 
       <naturalness_guidance>

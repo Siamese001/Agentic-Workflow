@@ -116,6 +116,8 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
+            allow_test_mock_judges=True,
+            allow_test_mock_provider=True,
             jd_text=None,
             briefing=None,
             base_resume=None,
@@ -146,6 +148,9 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
         "ibm_narrative",
         "competencies",
     ]
+    headline_argv = next(av for av in recorded if any(x.endswith("headline_dispatch") for x in av))
+    hi = headline_argv.index("--mock-judges")
+    assert headline_argv[hi + 1] == "--allow-test-mock-judges"
     assert rollup_hit and locked_hit and assembler_hit
     assert out["orchestrator_status"] == "PASS"
     assert out["package_x3_code"] == "X3_ALLOW"
@@ -220,6 +225,8 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
+            allow_test_mock_judges=True,
+            allow_test_mock_provider=True,
             jd_text=None,
             briefing=None,
             base_resume=alt_rel,
@@ -229,6 +236,46 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     assert out["base_resume_default_used"] is False
     assert out["base_resume_path"] == alt_rel.as_posix()
     assert out["base_resume_hash"] == sha256_hex(alt_txt)
+
+
+def test_orchestrator_rejects_mock_without_allow_test_provider(tmp_path: Path) -> None:
+    repo = tmp_path.resolve()
+    canon_text = '{"stub":true}\n'
+    _stub_canonical_base_resume(repo, text=canon_text)
+    with pytest.raises(ValueError, match="allow-test-mock-provider"):
+        ofr.run_orchestration(
+            repo=repo,
+            provider="mock",
+            x1d_judges="gemini_pro",
+            allow_non_allow_exit_zero=False,
+            mock_judges=True,
+            allow_test_mock_judges=False,
+            allow_test_mock_provider=False,
+            jd_text=None,
+            briefing=None,
+            base_resume=None,
+            output_docx=None,
+        )
+
+
+def test_orchestrator_rejects_mock_judges_without_allow_test_hatch(tmp_path: Path) -> None:
+    repo = tmp_path.resolve()
+    canon_text = '{"stub":true}\n'
+    _stub_canonical_base_resume(repo, text=canon_text)
+    with pytest.raises(ValueError, match="allow-test-mock-judges"):
+        ofr.run_orchestration(
+            repo=repo,
+            provider="qwen_vllm",
+            x1d_judges="gemini_pro",
+            allow_non_allow_exit_zero=False,
+            mock_judges=True,
+            allow_test_mock_judges=False,
+            allow_test_mock_provider=False,
+            jd_text=None,
+            briefing=None,
+            base_resume=None,
+            output_docx=None,
+        )
 
 
 def test_missing_default_base_resume_fails_before_subprocess(tmp_path: Path) -> None:
@@ -243,6 +290,8 @@ def test_missing_default_base_resume_fails_before_subprocess(tmp_path: Path) -> 
                 x1d_judges="gemini_pro",
                 allow_non_allow_exit_zero=False,
                 mock_judges=True,
+                allow_test_mock_judges=True,
+                allow_test_mock_provider=True,
                 jd_text=None,
                 briefing=None,
                 base_resume=None,
@@ -268,7 +317,15 @@ def test_main_allow_non_allow_exit_zero_returns_zero_on_partial(monkeypatch) -> 
     monkeypatch.setattr(ofr, "run_orchestration", lambda **_: partial)
     monkeypatch.setattr(ofr, "find_repo_root", lambda: REPO_ROOT)
     code = ofr.main(
-        ["--provider", "mock", "--x1d-judges", "gemini_pro", "--mock-judges", "--allow-non-allow-exit-zero"],
+        [
+            "--provider",
+            "mock",
+            "--allow-test-mock-provider",
+            "--x1d-judges",
+            "gemini_pro",
+            "--mock-judges",
+            "--allow-non-allow-exit-zero",
+        ],
     )
     assert code == 0
 

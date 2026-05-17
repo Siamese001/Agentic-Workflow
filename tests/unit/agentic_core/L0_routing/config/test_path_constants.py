@@ -11,8 +11,6 @@ pytestmark = pytest.mark.unit
 PATH_CONSTANTS_MODULE = "agentic_core.L0_routing.config.path_constants"
 CONFIG_MODULE = "agentic_core.L0_routing.config"
 EXPECTED_VALUES = {
-    "HEALING_CONFIDENCE_X": 0.80,
-    "HEALING_CONFIDENCE_Y": 0.50,
     "SSOT_SCORE_THRESHOLD_DET": 13,
     "SSOT_SCORE_THRESHOLD_QWEN": 26,
 }
@@ -44,10 +42,12 @@ def test_expected_constants_are_exported(path_constants):
 
 
 def test_threshold_relationships_are_sane(path_constants):
-    assert path_constants.HEALING_CONFIDENCE_X > path_constants.HEALING_CONFIDENCE_Y
-    assert 0.0 < path_constants.HEALING_CONFIDENCE_Y < 1.0
-    assert 0.0 < path_constants.HEALING_CONFIDENCE_X < 1.0
+    from agentic_core.L2_execution.healers.routing_thresholds_ssot import (
+        DEFAULT_HEAL_CONFIDENCE_HIGH,
+        DEFAULT_HEAL_CONFIDENCE_MEDIUM,
+    )
 
+    assert DEFAULT_HEAL_CONFIDENCE_MEDIUM < DEFAULT_HEAL_CONFIDENCE_HIGH
 
 def test_config_helpers_exist_and_are_callable(config_pkg):
     for name in ["get_validated_project_root", "get_apps_directories"]:

@@ -1,9 +1,9 @@
 {
   "gate_id": "A1_orphan_module_ratchet",
-  "count": 3109,
-  "seeded_at": "2026-05-15T19:13:56.320822+00:00",
-  "snapshot": "adg_indexed_05152026_1118.sqlite",
+  "count": 3219,
+  "seeded_at": "2026-05-17T11:04:02.089846+00:00",
+  "snapshot": "adg_indexed_05172026_0651.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-15T21:16:47.392327+00:00",
-  "last_run_snapshot": "adg_indexed_05152026_1118.sqlite"
+  "last_run_at": "2026-05-17T12:14:55.459953+00:00",
+  "last_run_snapshot": "adg_indexed_05172026_0651.sqlite"
 }

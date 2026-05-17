@@ -124,6 +124,20 @@ def test_builder_positive_writes_schema_valid_final_resume(tmp_path: Path) -> No
     assert out.is_file()
     disk_ok, disk_err = validate_rg_output_object(json.loads(out.read_text(encoding="utf-8")))
     assert disk_ok is True and disk_err == ""
+    out_j = res.rg_output
+    assert out_j.get("headline_line")
+    assert out_j.get("contact_info", {}).get("email") == "amit.ayer@example.com"
+    unify = next(x for x in out_j["sections"]["experience"] if x.get("company") == "Unify Consulting")
+    ibm = next(x for x in out_j["sections"]["experience"] if x.get("company") == "IBM")
+    insur = next(x for x in out_j["sections"]["experience"] if x.get("company") == "InsurTech Cloud Solutions")
+    assert "At Unify" in (unify.get("role_narrative") or "")
+    assert "At IBM" in (ibm.get("role_narrative") or "")
+    insur_n = str(insur.get("role_narrative") or "").strip()
+    assert len(insur_n) >= 20
+    assert "AWS" in insur_n and "SOC 2" in insur_n
+    skill_cat = out_j["sections"]["skills"]["categories"][0]
+    assert skill_cat["name"] == "Platforms"
+    assert "Agentic orchestration" in skill_cat["items"]
 
 
 def test_missing_executive_summary_fails() -> None:
@@ -295,8 +309,8 @@ def test_ok_for_recipe_requires_lane_outputs_and_schema() -> None:
     assert no_schema.ok_for_recipe_context() is False
 
 
-def test_compact_early_career_excluded_when_insufficient_locked_bullets(tmp_path: Path) -> None:
-    """Canonical ``exp_early_career_001`` is one narrative line; omit from experience (Option B)."""
+def test_early_career_included_with_single_locked_bullet(tmp_path: Path) -> None:
+    """``exp_early_career_001`` may carry one SSOT bullet and still map into rg_output."""
     repo = find_repo_root()
     art = tmp_path / "run_ec"
     art.mkdir()
@@ -319,14 +333,16 @@ def test_compact_early_career_excluded_when_insufficient_locked_bullets(tmp_path
     rec = res.merge_receipt
     assert rec.get("no_synthetic_bullets_assertion") is True
     assert rec.get("locked_employment_source_count") == 4
-    assert rec.get("locked_employment_mapped_count") == 3
-    assert rec.get("compact_early_career_excluded_count") == 1
-    assert any(r.get("fact_id") == "exp_early_career_001" for r in (rec.get("excluded_locked_roles") or []))
+    assert rec.get("locked_employment_mapped_count") == 4
+    assert rec.get("compact_early_career_excluded_count") == 0
+    assert not (rec.get("excluded_locked_roles") or [])
     assert res.rg_output is not None
     exp = res.rg_output["sections"]["experience"]
-    assert len(exp) == 3
+    assert len(exp) == 4
     companies = {str(x.get("company")) for x in exp}
-    assert "Early Career Roles" not in companies
+    assert "Early Career Roles" in companies
+    early = next(x for x in exp if str(x.get("company")) == "Early Career Roles")
+    assert len(early.get("bullets") or []) == 1
 
 
 def test_compact_early_career_maps_when_three_base_bullets(tmp_path: Path) -> None:

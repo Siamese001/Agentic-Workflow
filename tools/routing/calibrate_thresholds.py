@@ -7,7 +7,9 @@ Reads HealClassifierTelemetry events from a JSONL feed and produces:
 
 The tool is pure-Python (no sklearn dependency) and is safe to run against
 an empty feed — with no data it returns a no-op report. Callers should
-regenerate thresholds by updating `path_constants.HEALING_CONFIDENCE_X/Y`
+regenerate thresholds by updating ``HEALING_CONFIDENCE_HIGH`` /
+``HEALING_CONFIDENCE_MEDIUM`` env defaults via
+``routing_thresholds_ssot.py`` (after SVP review)
 via a manual PR after reviewing the recommendation.
 
 Usage (via `python -m tools.routing.calibrate_thresholds`):
@@ -199,17 +201,18 @@ def render_markdown(report: CalibrationReport) -> str:
     lines.append("## Recommended Thresholds")
     lines.append("")
     lines.append(
-        f"- **HEALING_CONFIDENCE_X** (HIGH cutoff, target success ≥ 0.85): "
+        f"- **HEALING_CONFIDENCE_HIGH** (HIGH cutoff, target success ≥ 0.85): "
         f"`{report.recommended_high_threshold}`"
     )
     lines.append(
-        f"- **HEALING_CONFIDENCE_Y** (MEDIUM cutoff, target success ≥ 0.50): "
+        f"- **HEALING_CONFIDENCE_MEDIUM** (MEDIUM cutoff, target success ≥ 0.50): "
         f"`{report.recommended_medium_threshold}`"
     )
     lines.append("")
     lines.append(
-        "To apply, update `agentic_core/L0_routing/config/path_constants.py`"
-        " with the recommended values after SVP review."
+        "To apply after review: set paired env knobs `HEALING_CONFIDENCE_HIGH` / "
+        "`HEALING_CONFIDENCE_MEDIUM` (validated in "
+        "`agentic_core/L2_execution/healers/routing_thresholds_ssot.py`)."
     )
     lines.append("")
     lines.append("## Alerts")

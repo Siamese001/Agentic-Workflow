@@ -34,18 +34,18 @@ from tools.certification.safety.rtc_req_056_panel import (
 
 class TestResolveApiKey:
     def test_returns_primary_when_set(self):
-        with patch.dict(os.environ, {"GEMINI_API_KEY": "g-test"}, clear=True):
+        with patch.dict(os.environ, {"GOOGLE_API_KEY": "g-test"}, clear=True):
             assert resolve_api_key(GEMINI_JUROR) == "g-test"
 
-    def test_returns_alias_when_primary_missing(self):
-        with patch.dict(os.environ, {"GOOGLE_API_KEY": "g-alias"}, clear=True):
-            assert resolve_api_key(GEMINI_JUROR) == "g-alias"
+    def test_returns_deprecated_alias_when_primary_missing(self):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "g-legacy"}, clear=True):
+            assert resolve_api_key(GEMINI_JUROR) == "g-legacy"
 
-    def test_prefers_primary_over_alias(self):
+    def test_prefers_primary_over_deprecated_alias(self):
         with patch.dict(os.environ, {
-            "GEMINI_API_KEY": "primary", "GOOGLE_API_KEY": "alias"
+            "GOOGLE_API_KEY": "canonical", "GEMINI_API_KEY": "legacy"
         }, clear=True):
-            assert resolve_api_key(GEMINI_JUROR) == "primary"
+            assert resolve_api_key(GEMINI_JUROR) == "canonical"
 
     def test_returns_none_when_nothing_set(self):
         with patch.dict(os.environ, {}, clear=True):
@@ -72,14 +72,36 @@ class TestResolveModelId:
             assert reject is None
 
     def test_empty_override_treated_as_unset(self):
+        with patch.dict(os.environ, {"GOOGLE_AI_MODEL": ""}, clear=True):
+            model, reject = resolve_model_id(GEMINI_JUROR)
+            assert model == GEMINI_JUROR.model_id
+            assert reject is None
+
         with patch.dict(os.environ, {"GEMINI_MODEL": ""}, clear=True):
             model, reject = resolve_model_id(GEMINI_JUROR)
             assert model == GEMINI_JUROR.model_id
             assert reject is None
 
-    def test_matching_override_accepted(self):
+    def test_matching_override_accepted_via_legacy_gemini_env(self):
         with patch.dict(os.environ, {
             "GEMINI_MODEL": "gemini-3.1-pro-preview"
+        }, clear=True):
+            model, reject = resolve_model_id(GEMINI_JUROR)
+            assert model == "gemini-3.1-pro-preview"
+            assert reject is None
+
+    def test_matching_override_accepted_via_google_ai_env(self):
+        with patch.dict(os.environ, {
+            "GOOGLE_AI_MODEL": "gemini-3.1-pro-preview"
+        }, clear=True):
+            model, reject = resolve_model_id(GEMINI_JUROR)
+            assert model == "gemini-3.1-pro-preview"
+            assert reject is None
+
+    def test_google_ai_model_override_precedes_legacy_gemini(self):
+        with patch.dict(os.environ, {
+            "GOOGLE_AI_MODEL": "gemini-3.1-pro-preview",
+            "GEMINI_MODEL": "gemini-2.5-flash",
         }, clear=True):
             model, reject = resolve_model_id(GEMINI_JUROR)
             assert model == "gemini-3.1-pro-preview"

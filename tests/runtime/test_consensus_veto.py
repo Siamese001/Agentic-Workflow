@@ -219,22 +219,21 @@ class TestDefaultJurorsFromRegistry:
 
 
 class TestIsAvailable:
-    def test_available_when_all_keys_set(self):
+    def test_available_when_google_api_key_set(self):
+        with patch.dict(os.environ, {
+            "OPENAI_API_KEY": "sk-test",
+            "ANTHROPIC_API_KEY": "sk-ant-test",
+            "GOOGLE_API_KEY": "g-test",
+        }, clear=False):
+            veto = ConsensusVeto()
+            assert veto.is_available() is True
+
+    def test_available_with_deprecated_gemini_env_alias(self):
         with patch.dict(os.environ, {
             "OPENAI_API_KEY": "sk-test",
             "ANTHROPIC_API_KEY": "sk-ant-test",
             "GEMINI_API_KEY": "g-test",
         }, clear=False):
-            veto = ConsensusVeto()
-            assert veto.is_available() is True
-
-    def test_available_with_google_api_key_alias(self):
-        # GEMINI_API_KEY is primary, GOOGLE_API_KEY is alias
-        with patch.dict(os.environ, {
-            "OPENAI_API_KEY": "sk-test",
-            "ANTHROPIC_API_KEY": "sk-ant-test",
-            "GOOGLE_API_KEY": "g-test",  # alias path
-        }, clear=True):
             veto = ConsensusVeto()
             assert veto.is_available() is True
 

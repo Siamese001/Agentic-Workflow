@@ -40,6 +40,23 @@
       "format": "date-time",
       "description": "ISO8601 timestamp of generation"
     },
+    "headline_line": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Professional headline from headline lane (export / merge enrichment)"
+    },
+    "contact_info": {
+      "type": "object",
+      "description": "Contact row aligned with base resume header (DOCX / parity)",
+      "properties": {
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "github": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
     "sections": {
       "type": "object",
       "required": ["summary", "experience", "skills", "education"],
@@ -68,53 +85,80 @@
           "maxItems": 5,
           "description": "Professional experience roles (chronological)",
           "items": {
-            "type": "object",
-            "required": ["title", "company", "dates", "bullets"],
-            "properties": {
-              "title": {
-                "type": "string",
-                "minLength": 2
-              },
-              "company": {
-                "type": "string",
-                "minLength": 2
-              },
-              "location": {
-                "type": "string",
-                "description": "City, State or 'Remote'"
-              },
-              "dates": {
-                "type": "string",
-                "pattern": "^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{4}\\s*[-–—]\\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?\\s*(\\d{4}|Present|Current)$|^\\d{4}\\s*[-–—]\\s*(\\d{4}|Present|Current)$",
-                "description": "Employment period (e.g., 'Jan 2020 – Mar 2022')"
-              },
-              "bullets": {
-                "type": "array",
-                "minItems": 3,
-                "maxItems": 5,
-                "description": "Achievement bullets per role",
-                "items": {
-                  "type": "object",
-                  "required": ["text"],
-                  "properties": {
-                    "text": {
-                      "type": "string",
-                      "minLength": 20,
-                      "maxLength": 250,
-                      "description": "Bullet text (one achievement)"
-                    },
-                    "source_id": {
-                      "type": "string",
-                      "description": "Reference to C0 fact_id (optional but preferred)"
-                    },
-                    "has_metric": {
-                      "type": "boolean",
-                      "description": "Whether bullet contains quantified outcome"
+            "allOf": [
+              {
+                "type": "object",
+                "required": ["title", "company", "dates", "bullets"],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "company": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "location": {
+                    "type": "string",
+                    "description": "City, State or 'Remote'"
+                  },
+                  "dates": {
+                    "type": "string",
+                    "pattern": "^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{4}\\s*[-–—]\\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?\\s*(\\d{4}|Present|Current)$|^\\d{4}\\s*[-–—]\\s*(\\d{4}|Present|Current)$|^Pre-2002\\s*[-–—]\\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{4}$",
+                    "description": "Employment period (e.g. 'Jan 2020 – Mar 2022', '2002 – 2009', or aggregated early block 'Pre-2002 – Sep 2002')"
+                  },
+                  "role_narrative": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 800,
+                    "description": "Optional one-paragraph role narrative (LLM lanes for Unify/IBM; else copied from base resume when present)"
+                  },
+                  "bullets": {
+                    "type": "array",
+                    "maxItems": 6,
+                    "description": "Achievement bullets per role (minimum three for standard roles; Early Career Roles may use one)",
+                    "items": {
+                      "type": "object",
+                      "required": ["text"],
+                      "properties": {
+                        "text": {
+                          "type": "string",
+                          "minLength": 20,
+                          "maxLength": 250,
+                          "description": "Bullet text (one achievement)"
+                        },
+                        "source_id": {
+                          "type": "string",
+                          "description": "Reference to C0 fact_id (optional but preferred)"
+                        },
+                        "has_metric": {
+                          "type": "boolean",
+                          "description": "Whether bullet contains quantified outcome"
+                        }
+                      }
                     }
                   }
                 }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "company": { "const": "Early Career Roles" }
+                  },
+                  "required": ["company"]
+                },
+                "then": {
+                  "properties": {
+                    "bullets": { "minItems": 1 }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "bullets": { "minItems": 3 }
+                  }
+                }
               }
-            }
+            ]
           }
         },
         "projects": {
@@ -156,6 +200,7 @@
         },
         "skills": {
           "type": "object",
+          "description": "Engineering and platform competencies. Résumé and export section title: ENGINEERING & PLATFORM COMPETENCIES (JSON key remains skills for compatibility).",
           "required": ["categories"],
           "properties": {
             "categories": {
@@ -168,7 +213,9 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "enum": ["Languages", "Frameworks", "Cloud & Infrastructure", "Data & ML", "Tools & Platforms", "Databases", "Mobile", "DevOps", "Other"]
+                    "minLength": 2,
+                    "maxLength": 120,
+                    "description": "Skill grouping label (matches base resume facts.skills[].category and lane category_label). Suggested buckets: Languages, Frameworks, Cloud & Infrastructure, Data & ML, Tools & Platforms, Databases, Mobile, DevOps, Other; JD-tailored headings are allowed."
                   },
                   "items": {
                     "type": "array",
@@ -205,6 +252,10 @@
                 "type": "string",
                 "pattern": "^\\d{4}$"
               },
+              "honors": {
+                "type": "string",
+                "description": "Graduation distinction or honors (e.g. shown after institution in DOCX)"
+              },
               "gpa": {
                 "type": "number",
                 "minimum": 0,
@@ -223,7 +274,7 @@
           "description": "Professional certifications (optional)",
           "items": {
             "type": "object",
-            "required": ["name", "issuer"],
+            "required": ["name"],
             "properties": {
               "name": { "type": "string" },
               "issuer": { "type": "string" },
@@ -338,7 +389,7 @@
         },
         "experience": {
           "max_roles": 5,
-          "bullets_per_role": { "min": 3, "max": 5 },
+          "bullets_per_role": { "min": 1, "max": 6 },
           "metric_percentage_min": 60,
           "bullet_pattern": "PowerVerb + Action + Metric + Scope"
         },

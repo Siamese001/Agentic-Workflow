@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import secrets
 import subprocess
@@ -155,12 +156,15 @@ def _find_latest_adg_snapshot() -> str:
     return candidates[0].name if candidates else "none"
 
 
-def _fetch_precedent(decision_type: str, intent: str, repo_area: str | None) -> dict[str, Any]:
+def _fetch_precedent(decision_type: str, intent: str, spec: dict[str, Any]) -> dict[str, Any]:
+    degraded = os.environ.get("AG_PRECEDENT_SCOPE_DEGRADED", "").strip().lower() in ("1", "true", "yes")
     query = {
         "decision_type": decision_type,
         "normalized_intent": intent or "",
-        "repo_area": repo_area or "",
+        "repo_area": (spec.get("repo_area") or "") or "",
+        "layer": (spec.get("layer") or "") or "",
         "limit": 3,
+        "degraded_scope": degraded,
     }
     raw = _run(
         [sys.executable, str(PRECEDENT_SCRIPT)],
@@ -381,7 +385,7 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
         else:
             opt["surface_description"] = floor
 
-    precedent = _fetch_precedent(decision_type, intent, spec.get("repo_area"))
+    precedent = _fetch_precedent(decision_type, intent, spec)
     fingerprint = _context_fingerprint(files_in_scope)
 
     # W2.P2.1 — attach signal vector per surfaced candidate when signal_collector

@@ -79,7 +79,9 @@ CREATE TABLE IF NOT EXISTS decision_outcomes (
     rollback_required     INTEGER DEFAULT 0,
     followup_decision_id  TEXT,
     promote_to_pattern    INTEGER DEFAULT 0,
-    outcome_notes         TEXT
+    outcome_notes         TEXT,
+    bind_confidence       TEXT,
+    bind_disputed         INTEGER DEFAULT 0
 );
 
 CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
@@ -122,10 +124,11 @@ def _seeded_db_path(tmp_path: Path, promoted: bool = False) -> Path:
     conn.execute(
         """
         INSERT INTO decision_outcomes
-            (decision_id, tests_passed, regression_found, rollback_required, promote_to_pattern)
-        VALUES ('dec_aabbccdd0001', 1, 0, 0, ?)
+            (decision_id, tests_passed, regression_found, rollback_required, promote_to_pattern,
+             bind_confidence, bind_disputed)
+        VALUES ('dec_aabbccdd0001', 1, 0, 0, ?, ?, 0)
         """,
-        (1 if promoted else 0,),
+        (1 if promoted else 0, "high" if promoted else None),
     )
     conn.execute(
         """
@@ -186,12 +189,15 @@ class TestLookupNoDb:
         assert result["verdict"] == "none"
         assert result["matches"] == []
         assert "reason" in result
+        assert result.get("reason_codes") == []
+        assert result.get("lookup_policy_version")
 
     def test_empty_normalized_intent_returns_none_verdict(self, tmp_path, monkeypatch):
         monkeypatch.setattr(_m, "DB_PATH", tmp_path / "nonexistent.sqlite")
         result = lookup({"decision_type": "refactor_scope", "normalized_intent": ""})
         assert result["verdict"] == "none"
         assert "reason" in result
+        assert result.get("reason_codes") == []
 
     def test_missing_normalized_intent_key_returns_none_verdict(self, tmp_path, monkeypatch):
         monkeypatch.setattr(_m, "DB_PATH", tmp_path / "nonexistent.sqlite")
@@ -275,6 +281,8 @@ class TestMain:
         parsed = json.loads(out)
         assert "verdict" in parsed
         assert parsed["verdict"] == "none"  # no DB → none
+        assert "reason_codes" in parsed
+        assert parsed["reason_codes"] == []
 
     def test_empty_stdin_exits_0(self, monkeypatch, capsys):
         monkeypatch.setattr(sys, "stdin", StringIO(""))
@@ -316,8 +324,9 @@ def _seeded_db_with_area(tmp_path: Path, row_area: str = "agentic_core/L2_execut
     )
     conn.execute(
         """INSERT INTO decision_outcomes
-               (decision_id, tests_passed, regression_found, rollback_required, promote_to_pattern)
-           VALUES ('dec_area000001', 1, 0, 0, 0)"""
+               (decision_id, tests_passed, regression_found, rollback_required, promote_to_pattern,
+                bind_confidence, bind_disputed)
+           VALUES ('dec_area000001', 1, 0, 0, 0, 'medium', 0)"""
     )
     conn.execute(
         """INSERT INTO decisions_fts
@@ -488,6 +497,60 @@ class TestScopeOutcomesJoins:
 
 
 # ---------------------------------------------------------------------------
+# W3 — bind + degraded_scope + layer guards
+# ---------------------------------------------------------------------------
+
+
+class TestW3ScopeGuards:
+    def test_promoted_without_high_bind_is_only_suggestive(self, tmp_path, monkeypatch):
+        db = _seeded_db_path(tmp_path, promoted=True)
+        conn = sqlite3.connect(str(db))
+        conn.execute(
+            "UPDATE decision_outcomes SET bind_confidence = NULL WHERE decision_id = 'dec_aabbccdd0001'"
+        )
+        conn.commit()
+        conn.close()
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract execution adapter single responsibility",
+            }
+        )
+        assert result["verdict"] == "suggestive"
+        assert all(m["strength"] != "strong" for m in result["matches"])
+        assert "OUTCOME_TIER_BOOST_APPLIED" in result["reason_codes"]
+        assert "MATCHED_UNKNOWN_BIND" in result["reason_codes"]
+
+    def test_degraded_scope_never_strong(self, tmp_path, monkeypatch):
+        db = _seeded_db_path(tmp_path, promoted=True)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract execution adapter single responsibility",
+                "degraded_scope": True,
+            }
+        )
+        assert result["verdict"] == "suggestive"
+        assert result["query_echo"]["degraded_scope"] is True
+        assert "DEGRADED_SCOPE_NOT_STRONG" in result["reason_codes"]
+        assert "OUTCOME_TIER_BOOST_APPLIED" not in result["reason_codes"]
+
+    def test_layer_mismatch_excludes_match(self, tmp_path, monkeypatch):
+        db = _seeded_db_path(tmp_path, promoted=False)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract execution adapter",
+                "layer": "L999",
+            }
+        )
+        assert result["verdict"] == "none"
+
+
+# ---------------------------------------------------------------------------
 # TestFtsEdgeCases — sanitization and FTS5 error handling
 # ---------------------------------------------------------------------------
 
@@ -542,8 +605,8 @@ class TestFtsEdgeCases:
         conn.execute(
             """INSERT INTO decision_outcomes
                    (decision_id, tests_passed, regression_found,
-                    rollback_required, promote_to_pattern)
-               VALUES ('dec_meta00000001', 1, 0, 0, 0)"""
+                    rollback_required, promote_to_pattern, bind_confidence, bind_disputed)
+               VALUES ('dec_meta00000001', 1, 0, 0, 0, 'medium', 0)"""
         )
         conn.execute(
             """INSERT INTO decisions_fts
@@ -567,3 +630,156 @@ class TestFtsEdgeCases:
             f"Expected precedent to surface for hyphenated intent, got {result!r}"
         )
         assert any(m["decision_id"] == "dec_meta00000001" for m in result["matches"])
+
+
+# ---------------------------------------------------------------------------
+# W3 — self-exclude, dedup, tie-break, stability
+# ---------------------------------------------------------------------------
+
+
+def _dup_seed_db(tmp_path: Path) -> Path:
+    """Two decisions with identical dedup key; newer row is 'dec_dup_newer'."""
+    db = tmp_path / "ledger_dup.sqlite"
+    conn = sqlite3.connect(str(db))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(_SEED_DDL)
+    intent = "duplicate scope collapse unique phrase z9y8x7"
+    for did, created in (
+        ("dec_dup_older", "2026-04-01T10:00:00+00:00"),
+        ("dec_dup_newer", "2026-05-01T10:00:00+00:00"),
+    ):
+        conn.execute(
+            """INSERT INTO decisions
+                   (decision_id, created_at, decision_type, request_summary,
+                    normalized_intent, recommended_option_id, status)
+               VALUES (?, ?, 'refactor_scope', 'dup test', ?, 'x', 'resolved')""",
+            (did, created, intent),
+        )
+        conn.execute(
+            """INSERT INTO decision_scope (decision_id, repo_area, layer)
+               VALUES (?, 'agentic_core/L2_execution', 'L2')""",
+            (did,),
+        )
+        conn.execute(
+            """INSERT INTO decision_outcomes
+                   (decision_id, tests_passed, regression_found, rollback_required,
+                    promote_to_pattern, bind_confidence, bind_disputed)
+               VALUES (?, 1, 0, 0, 1, 'high', 0)""",
+            (did,),
+        )
+        conn.execute(
+            """INSERT INTO decisions_fts
+                   (decision_id, normalized_intent, request_summary, user_goal, selection_rationale)
+               VALUES (?, ?, 'dup test', '', '')""",
+            (did, intent),
+        )
+    conn.commit()
+    conn.close()
+    return db
+
+
+def _tiebreak_seed_db(tmp_path: Path) -> Path:
+    """Same FTS text, distinct dedup keys; SQL orders newer created_at first."""
+    db = tmp_path / "ledger_tie.sqlite"
+    conn = sqlite3.connect(str(db))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(_SEED_DDL)
+    intent = "tiebreak order phrase q7w6e5"
+    rows = (
+        ("dec_tie_old", "2026-04-01T10:00:00+00:00", "agentic_core/L2_a"),
+        ("dec_tie_new", "2026-06-01T10:00:00+00:00", "agentic_core/L2_b"),
+    )
+    for did, created, area in rows:
+        conn.execute(
+            """INSERT INTO decisions
+                   (decision_id, created_at, decision_type, request_summary,
+                    normalized_intent, recommended_option_id, status)
+               VALUES (?, ?, 'refactor_scope', 'tie test', ?, 'x', 'resolved')""",
+            (did, created, intent),
+        )
+        conn.execute(
+            "INSERT INTO decision_scope (decision_id, repo_area, layer) VALUES (?, ?, 'L2')",
+            (did, area),
+        )
+        conn.execute(
+            """INSERT INTO decision_outcomes
+                   (decision_id, tests_passed, regression_found, rollback_required,
+                    promote_to_pattern, bind_confidence, bind_disputed)
+               VALUES (?, 1, 0, 0, 1, 'high', 0)""",
+            (did,),
+        )
+        conn.execute(
+            """INSERT INTO decisions_fts
+                   (decision_id, normalized_intent, request_summary, user_goal, selection_rationale)
+               VALUES (?, ?, 'tie test', '', '')""",
+            (did, intent),
+        )
+    conn.commit()
+    conn.close()
+    return db
+
+
+class TestW3SelfExcludeDedupTiebreak:
+    def test_self_exclude_drops_only_hit_and_below_threshold(self, tmp_path, monkeypatch):
+        db = _seeded_db_path(tmp_path, promoted=True)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract execution adapter single responsibility",
+                "exclude_decision_id": "dec_aabbccdd0001",
+            }
+        )
+        assert result["verdict"] == "none"
+        assert result["matches"] == []
+        assert "SELF_MATCH_EXCLUDED" in result["reason_codes"]
+        assert "BELOW_THRESHOLD" in result["reason_codes"]
+
+    def test_duplicate_scope_collapsed_keeps_one_strong(self, tmp_path, monkeypatch):
+        db = _dup_seed_db(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "duplicate scope collapse unique phrase",
+            }
+        )
+        assert len(result["matches"]) == 1
+        assert result["matches"][0]["decision_id"] == "dec_dup_newer"
+        assert result["verdict"] == "strong"
+        assert "DUPLICATE_SCOPE_COLLAPSED" in result["reason_codes"]
+
+    def test_tiebreak_prefers_newer_created_at_first_in_matches(self, tmp_path, monkeypatch):
+        db = _tiebreak_seed_db(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "tiebreak order phrase",
+            }
+        )
+        assert len(result["matches"]) >= 1
+        assert result["matches"][0]["decision_id"] == "dec_tie_new"
+
+    def test_identical_lookup_twice_same_reason_codes(self, tmp_path, monkeypatch):
+        db = _seeded_db_path(tmp_path, promoted=True)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        q = {
+            "decision_type": "refactor_scope",
+            "normalized_intent": "extract execution adapter single responsibility",
+        }
+        a = lookup(q)
+        b = lookup(q)
+        assert a["reason_codes"] == b["reason_codes"]
+
+    def test_strong_verdict_includes_matched_strong_bind_code(self, tmp_path, monkeypatch):
+        db = _seeded_db_path(tmp_path, promoted=True)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract execution adapter single responsibility",
+            }
+        )
+        assert result["verdict"] == "strong"
+        assert "MATCHED_STRONG_BIND" in result["reason_codes"]

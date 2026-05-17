@@ -31,7 +31,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
+
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
 SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "decision_ledger.schema.sql"
 
 

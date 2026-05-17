@@ -19,6 +19,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     split_sentences,
 )
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, UNIFY_RUNTIME_TERM_PATTERNS
+from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
 
 
 @dataclass
@@ -109,6 +110,7 @@ def run_ibm_narrative_x2_gates(
     jd_text: str,
     runtime_generation_status: str,
     companion_bullet_texts: str | None,
+    candidate_name: str = "",
     provider_requested: str | None = None,
     provider_attempted: str | None = None,
     model_name: str | None = None,
@@ -144,6 +146,15 @@ def run_ibm_narrative_x2_gates(
         len(sentences),
         1,
         "Must be exactly one sentence.",
+    )
+
+    leaks_name, name_hit = narrative_leaks_candidate_name_tokens(narrative_sentence, candidate_name)
+    add(
+        "x2_ibm_narrative_no_candidate_name_tokens",
+        not leaks_name,
+        name_hit or "none",
+        "absent",
+        "Candidate name must not appear in the role narrative sentence.",
     )
 
     ledger_ids = _ledger_fact_ids(claim_ledger)

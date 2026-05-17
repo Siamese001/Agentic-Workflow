@@ -149,7 +149,11 @@ def build_prompt_assembly_input_from_l2_context(context: dict[str, Any]) -> Prom
         y0 = _render_slot_bodies(str(bodies.get("Y0") or ""), render_vars)
         e0_raw = bodies.get("E0")
         e0 = _render_slot_bodies(str(e0_raw), render_vars) if e0_raw else None
-        mb_path = str(context.get("manual_brief") or "").strip()
+        mb_path = str(
+            context.get("briefing_artifact_ref")
+            or context.get("manual_brief")
+            or ""
+        ).strip()
         if mb_path:
             p = Path(mb_path)
             if p.is_file():

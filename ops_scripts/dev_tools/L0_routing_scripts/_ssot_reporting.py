@@ -10,12 +10,6 @@ from collections import Counter
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.L0_routing.config.path_constants import (
-    HEALING_CONFIDENCE_X as _CONF_X,
-)
-from agentic_core.L0_routing.config.path_constants import (
-    HEALING_CONFIDENCE_Y as _CONF_Y,
-)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -184,6 +178,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger("UnifiedSovereign")
 
 DEFAULT_TIMEOUT = 10
+
+
+def _confidence_band_axes() -> tuple[float, float]:
+    """Return (HIGH cutoff, MEDIUM cutoff) from heal routing SSOT."""
+
+    from agentic_core.L2_execution.healers.routing_thresholds_ssot import (  # noqa: PLC0415
+        load_healing_confidence_thresholds,
+    )
+
+    th = load_healing_confidence_thresholds()
+    return float(th.high), float(th.medium)
 
 
 def assert_no_persistent_write(layer: str, operation: str) -> None:
@@ -570,6 +575,7 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
     ]
     plan_only = [a for a in healing_actions if "plan" in str(a.get("outcome", "")).lower()]
     conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
+    _band_high, _band_medium = _confidence_band_axes()
     tier_counts: Counter = Counter()
     for d in decisions:
         if d.get("decision"):
@@ -654,11 +660,11 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
                 "min": round(min(conf_vals), 4) if conf_vals else None,
                 "avg": round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None,
                 "max": round(max(conf_vals), 4) if conf_vals else None,
-                f"band_local_gte{int(_CONF_X * 100):03d}": sum(1 for c in conf_vals if c >= _CONF_X),
-                f"band_qwen_{int(_CONF_Y * 100):03d}_{int(_CONF_X * 100) - 1:03d}": sum(
-                    1 for c in conf_vals if _CONF_Y <= c < _CONF_X
+                f"band_local_gte{int(_band_high * 100):03d}": sum(1 for c in conf_vals if c >= _band_high),
+                f"band_qwen_{int(_band_medium * 100):03d}_{int(_band_high * 100) - 1:03d}": sum(
+                    1 for c in conf_vals if _band_medium <= c < _band_high
                 ),
-                f"band_gemini_lt{int(_CONF_Y * 100):03d}": sum(1 for c in conf_vals if c < _CONF_Y),
+                f"band_gemini_lt{int(_band_medium * 100):03d}": sum(1 for c in conf_vals if c < _band_medium),
             },
             "tier_routing": dict(tier_counts),
             "strategy_weights": ml.get("strategy_weights", {}),

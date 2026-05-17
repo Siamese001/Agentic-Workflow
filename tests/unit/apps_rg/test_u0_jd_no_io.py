@@ -1,0 +1,45 @@
+"""U0 must forward job_description_ref without opening the referenced file."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from unittest.mock import patch
+
+from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
+    AppsRgIngressPayload,
+    RequestEnvelope,
+)
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+
+
+def test_u0_validate_apps_rg_does_not_open_job_description_file(tmp_path: Path) -> None:
+    jd = tmp_path / "probe_jd.txt"
+    jd.write_text("U0 must not read this JD body.\n", encoding="utf-8")
+
+    payload = AppsRgIngressPayload(
+        target_company="Co",
+        target_role="Role",
+        source_resume_text="resume body",
+        job_description_ref=str(jd),
+        job_description_text="",
+        l5_certification_ref="test:valid:w6",
+    )
+    env = RequestEnvelope(payload=payload)
+
+    opened: list[Path] = []
+    orig_open = Path.open
+
+    def _track_open(self: Path, *args: object, **kwargs: object):  # type: ignore[no-untyped-def]
+        try:
+            if self.resolve() == jd.resolve():
+                opened.append(self)
+        except OSError:
+            pass
+        return orig_open(self, *args, **kwargs)
+
+    with patch.object(Path, "open", _track_open):
+        vr = u0_validate_apps_rg(env)
+
+    assert opened == [], "U0 must not open the job_description_ref path"
+    ap = dict(vr.app_payload)
+    assert ap.get("job_description_ref") == str(jd)

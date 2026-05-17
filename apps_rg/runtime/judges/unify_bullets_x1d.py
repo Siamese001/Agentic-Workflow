@@ -20,7 +20,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     resolve_x1d_provider_credentials,
 )
 
-JUDGE_RUBRIC_VERSION = "unify_bullets_x1d_v1"
+JUDGE_RUBRIC_VERSION = "unify_bullets_x1d_v1_1"
 
 UNIFY_RUBRIC = """
 You are evaluating exactly six Unify Consulting employment bullets (bul_unify_001..006).
@@ -32,11 +32,12 @@ Score contract:
 
 Rubric dimensions:
 1. factual_support: each bullet maps to bul_unify_* source_fact_ids in the claim ledger; metrics supported.
-2. executive_platform_signal: platform architecture, governance, commercial impact where evidenced.
-3. bullet_impact_clarity: concise, high-impact bullets; no narrative paragraphs.
-4. ats_alignment_without_stuffing: relevant to target role without JD keyword dumping.
-5. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience.
-6. rewrite_quality: respects rewrite distribution (2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED default); bul_unify_006 protected commercial metrics preserved.
+2. executive_platform_signal: platform architecture, governance, operating model, commercial impact, and engineering scale where evidenced.
+3. current_role_attention: Unify reads like the candidate's strongest current-position proof point for SVP Engineering screens.
+4. bullet_impact_clarity: concise, high-impact bullets; no narrative paragraphs.
+5. ats_alignment_without_stuffing: relevant to target role without JD keyword dumping or briefing-as-proof.
+6. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience.
+7. rewrite_quality: respects rewrite distribution (2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED default); bul_unify_006 protected commercial metrics preserved.
 
 Decisive failure triggers:
 - unsupported metric or cross-employer fact leakage (IBM/InsurTech/EY)
@@ -44,6 +45,7 @@ Decisive failure triggers:
 - wrong bullet count or invalid rewrite distribution
 - protected bul_unify_006 metrics missing or split incorrectly
 - JD phrase copied as proof (>4 consecutive words)
+- generic executive filler that loses Unify-specific mechanisms or protected metrics
 """.strip()
 
 
@@ -127,7 +129,7 @@ def run_unify_bullets_judges(
         if not api_key:
             detail = (
                 f"No non-empty API credential in {env_checked}; "
-                f"(Gemini: GEMINI_API_KEY then GOOGLE_API_KEY)."
+                f"(Gemini: GOOGLE_API_KEY, then deprecated GEMINI_API_KEY alias)."
                 if key == "gemini_pro"
                 else f"{meta['env']} environment variable not set"
             )

@@ -9,11 +9,16 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 repo_root = Path(__file__).resolve().parents[2]
-db_path = repo_root / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
+
+db_path = REFACTOR_DECISION_LEDGER_DB
 ddl = """
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS decisions (

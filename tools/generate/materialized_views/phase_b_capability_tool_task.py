@@ -76,6 +76,10 @@ _GATEWAY_APPROVED_PATHS = (
     # it is a local inference server whose health is checked before each call.
     "apps_lic/engines/",
     "apps_underwriting_ai/engines/",
+    # 2026-05-17 C2 unblock — Gemini HTTP shim (canonical L2 adapter; httpx egress only here).
+    "agentic_core/L2_execution/providers/gemini_provider.py",
+    # 2026-05-17 C2 unblock — apps_qna interview engines (mirrors apps_eval/engines/ exemption).
+    "apps_qna/engines/",
 )
 
 

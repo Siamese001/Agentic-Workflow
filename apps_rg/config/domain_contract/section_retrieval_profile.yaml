@@ -89,7 +89,7 @@ sections:
 
   - retrieval_profile_id: apps_rg.competencies.c0_profile
     section_id: competencies
-    display_name: Competencies
+    display_name: "ENGINEERING & PLATFORM COMPETENCIES"
     sparse_enabled: false
     sparse_lane_id: apps_rg.competencies.sparse
     sparse_collection_ref: fact_vectors

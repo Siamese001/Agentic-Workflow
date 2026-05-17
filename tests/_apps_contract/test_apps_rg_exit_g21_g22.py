@@ -1,7 +1,8 @@
 """W6 integration tests: G21/G22 Exit evidence — combined receipt validation.
 
 Plan 02 W6 acceptance criteria:
-- G21 gates ACTIVE via apps-owned receipts: headline X|Y|Z, bullet counts, all P0 sections
+- G21 gates ACTIVE via apps-owned receipts: headline SVP Engineering | X | Y | Z (fixed prefix + X/Y/Z
+  segments), bullet counts, all P0 sections
 - G22 gates ACTIVE via apps-owned receipts: metrics preserved from source, verbatim sections hash-match
 - NO canonical G21/G22 changes: all evidence is app-specific, consumed by generic Exit eval
 - UNKNOWN is never PASS
@@ -26,9 +27,9 @@ def _make_section_receipt(
 ) -> AppsRgSectionValidationReceipt:
     return AppsRgSectionValidationReceipt(
         headline_format_valid=headline_valid,
-        headline_x="Insurance Technology Executive",
-        headline_y="AI Strategy & Automation",
-        headline_z="Operational Excellence",
+        headline_x="Agentic AI Platforms",
+        headline_y="Distributed AI Systems",
+        headline_z="Enterprise Governance Architecture",
         section_count_expected=7,
         section_count_actual=7 if sections_valid else 5,
         sections_valid=sections_valid,
@@ -108,10 +109,10 @@ def _make_claim_support_map(*, has_unsupported: bool = False) -> AppsRgClaimSupp
 
 
 class TestG21GatesActiveViaReceipts(unittest.TestCase):
-    """G21: Schema/Completeness — headline X|Y|Z, section counts, bullet counts."""
+    """G21: Schema/Completeness, headline SVP Engineering | X | Y | Z style, section counts, bullet counts."""
 
     def test_g21_headline_xyz_format_valid(self) -> None:
-        """G21 PASS: Headline is in X|Y|Z format with all three parts populated."""
+        """G21 PASS: Headline has fixed SVP Engineering prefix plus X/Y/Z populated."""
         receipt = _make_section_receipt()
         self.assertTrue(receipt.headline_format_valid)
         self.assertNotEqual(receipt.headline_x, "")
@@ -119,7 +120,7 @@ class TestG21GatesActiveViaReceipts(unittest.TestCase):
         self.assertNotEqual(receipt.headline_z, "")
 
     def test_g21_headline_xyz_format_invalid_blocks(self) -> None:
-        """G21 FAIL: Missing headline parts means invalid — cannot be treated as PASS."""
+        """G21 FAIL: Missing headline parts means invalid and cannot be treated as PASS."""
         receipt = _make_section_receipt(headline_valid=False)
         self.assertFalse(receipt.headline_format_valid)
         self.assertFalse(receipt.all_valid)

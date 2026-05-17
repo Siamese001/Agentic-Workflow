@@ -612,20 +612,21 @@ def generate_full_adg(
     print("[ADG] Starting full scan...")
 
     # Capture provenance information.
-    # W7 (plan adg-pipeline-simplification-e2e-9b4c27): the two startup
-    # `_git_rev_parse(...)` calls are bundled here. The end-of-run third
-    # call at line ~1240 (`end_repo_state_hash`) intentionally remains a
-    # separate invocation because it must capture state AFTER the run.
+    # W7 (plan adg-pipeline-simplification-e2e-9b4c27): commit SHA at run
+    # start for artifact provenance. Tree hash is re-captured immediately
+    # after `scanner.scan()` so the hard guard only fails when HEAD moves
+    # during the AST scan itself; commits during Tier-1/Tier-2 (long tail)
+    # are handled at end-of-run (warning by default; strict opt-in below).
     commit_sha = _git_rev_parse("HEAD")
-    repo_state_hash = _git_rev_parse("HEAD^{tree}")
+    repo_state_hash_before_scan = _git_rev_parse("HEAD^{tree}")
     if commit_sha:
         print(f"[ADG] Captured commit SHA: {commit_sha}")
     else:
         print("[ADG] Warning: Git commit SHA unavailable; continuing without provenance commit id")
-    if repo_state_hash:
-        print(f"[ADG] Captured repo state hash: {repo_state_hash}")
+    if repo_state_hash_before_scan:
+        print(f"[ADG] Pre-scan repo tree hash: {repo_state_hash_before_scan}")
     else:
-        print("[ADG] Warning: Git repo state hash unavailable; concurrent-change guard will be skipped")
+        print("[ADG] Warning: Git repo tree hash unavailable; in-scan concurrent-change guard is skipped")
 
     cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
     cache_path.parent.mkdir(exist_ok=True)
@@ -639,7 +640,23 @@ def generate_full_adg(
         print("[ERROR] Fix the syntax error above and re-run ADG generation")
         sys.exit(1)
 
-    # Set repo_state_hash in the result
+    repo_state_hash = _git_rev_parse("HEAD^{tree}")
+    if (
+        repo_state_hash_before_scan
+        and repo_state_hash
+        and repo_state_hash_before_scan != repo_state_hash
+    ):
+        print("\n[ERROR] Repository state changed during AST scan (HEAD tree mismatch)")
+        print(f"[ERROR]   Before scan: {repo_state_hash_before_scan}")
+        print(f"[ERROR]   After scan:  {repo_state_hash}")
+        print("[ERROR] Re-run ADG after ensuring no concurrent commits/checkout during the scan")
+        sys.exit(1)
+    if repo_state_hash:
+        print(f"[ADG] Post-scan repo tree hash: {repo_state_hash}")
+    else:
+        print("[ADG] Warning: Git repo tree hash unavailable after scan; end-of-run drift check skipped")
+
+    # Set repo_state_hash in the result (post-scan anchor)
     result.repo_state_hash = repo_state_hash
 
     print(f"[ADG] Scan complete. Digest: {result.digest}")
@@ -1580,7 +1597,10 @@ def generate_full_adg(
     # is resolved (above, ~L764) so it fires regardless of any Tier-2 gate
     # sys.exit. Do not re-add a call here.
 
-    # --- Fail-fast: Repo state change check (before auto-commit so ADG's own commit is excluded) ---
+    # --- Post-scan HEAD drift check (before ADG auto-commit so that commit is excluded) ---
+    # Default: warn only — HEAD often moves during the long Tier-1/2 tail (docs
+    # commits, parallel agents) without affecting the already-finished AST scan.
+    # Set ADG_STRICT_END_REPO_STATE=1 to fail closed on any post-scan drift.
     end_repo_state_hash = _git_rev_parse("HEAD^{tree}")
 
     # --- Auto-commit artifacts to git ---
@@ -1593,12 +1613,18 @@ def generate_full_adg(
         )
 
     if repo_state_hash and end_repo_state_hash and repo_state_hash != end_repo_state_hash:
-        print("\n[ERROR] Repository state changed during ADG generation")
-        print(f"[ERROR]   Start state: {repo_state_hash}")
-        print(f"[ERROR]   End state:   {end_repo_state_hash}")
-        print("[ERROR] This indicates concurrent modifications during generation")
-        print("[ERROR] Re-run ADG generation in a stable repository state")
-        sys.exit(1)
+        _drift_msg = (
+            "HEAD tree changed after AST scan (provenance drift). "
+            f"Post-scan: {repo_state_hash} → end: {end_repo_state_hash}. "
+            "Tier-1/2 stages used SQLite from the scan above; parallel commits "
+            "may desync artifact metadata from the current working tree."
+        )
+        if _env_flag("ADG_STRICT_END_REPO_STATE"):
+            print("\n[ERROR] Repository state changed during ADG generation (strict end guard)")
+            print(f"[ERROR] {_drift_msg}")
+            print("[ERROR] Re-run in a stable repo state or omit ADG_STRICT_END_REPO_STATE")
+            sys.exit(1)
+        print(f"\n[WARNING] {_drift_msg}")
 
     # W4.2 (plan adg-pipeline-simplification-e2e-9b4c27): end-of-run
     # pipeline-skip summary. The per-stage skip lines are scattered in the

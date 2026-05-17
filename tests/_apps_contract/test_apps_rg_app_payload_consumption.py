@@ -58,7 +58,7 @@ def _thin_payload(**overrides: Any) -> dict[str, Any]:
         "target_level": "EXECUTIVE",
         "source_resume_text": "Amit Ayer — leadership profile content.",
         "job_description_text": "Senior Director of AI Engineering — applied research.",
-        "manual_brief_path": None,
+        "briefing_artifact_ref": None,
         "auto_research_internal": False,
         "auto_research_tavily": False,
         "research_via": None,

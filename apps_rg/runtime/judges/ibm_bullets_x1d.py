@@ -128,7 +128,7 @@ def run_ibm_bullets_judges(
         if not api_key:
             detail = (
                 f"No non-empty API credential in {env_checked}; "
-                f"(Gemini: GEMINI_API_KEY then GOOGLE_API_KEY)."
+                f"(Gemini: GOOGLE_API_KEY, then deprecated GEMINI_API_KEY alias)."
                 if key == "gemini_pro"
                 else f"{meta['env']} environment variable not set"
             )

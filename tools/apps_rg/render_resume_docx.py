@@ -130,6 +130,13 @@ def render(template_path: str, json_path: str, output_path: str) -> Path:
             else:
                 _add_bullet_with_label(doc, "", str(bullet))
 
+    # --- SKILLS / COMPETENCIES (matches base ``facts.skills`` after experience) ---
+    skills = data.get("skills", [])
+    if skills:
+        _add_heading(doc, "ENGINEERING & PLATFORM COMPETENCIES", level=2)
+        for skill in skills:
+            _add_normal_bold(doc, skill)
+
     # --- EDUCATION ---
     education = data.get("education", [])
     if education:
@@ -163,13 +170,6 @@ def render(template_path: str, json_path: str, output_path: str) -> Path:
                 _add_heading(doc, ", ".join(parts), level=3)
             else:
                 _add_heading(doc, str(cert), level=3)
-
-    # --- SKILLS / COMPETENCIES ---
-    skills = data.get("skills", [])
-    if skills:
-        _add_heading(doc, "ENGINEERING & PLATFORM COMPETENCIES", level=2)
-        for skill in skills:
-            _add_normal_bold(doc, skill)
 
     # Save
     out = Path(output_path)

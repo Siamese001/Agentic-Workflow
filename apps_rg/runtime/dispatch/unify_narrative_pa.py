@@ -1,7 +1,7 @@
 """Unify narrative: PA compile via section_prompt_adapter (W7 mechanical).
 
 Legacy prompt semantics preserved: I0 matches prior inline system; C0 carries CANONICAL UNIFY FACTS;
-jd_requirements carries targeting only; companion bullets are U-tier only when present.
+jd_requirements carries targeting only; accepted companion bullets are required U-tier read-only sequencing context for production.
 Compile failures propagate (no inline fallback).
 """
 
@@ -29,69 +29,71 @@ def _fact_lines(runtime_payload: dict[str, Any]) -> str:
 
 def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
     header = runtime_payload["unify_header"]
-    cand = str(runtime_payload.get("candidate_name") or "").strip()
-    cand_line = f"Executive name from resume (optional, at most once, natural third person): {cand}.\n" if cand else ""
+    dep_status = str(runtime_payload.get("companion_unify_bullets_status") or "UNKNOWN")
+    dep_reason = str(runtime_payload.get("companion_unify_bullets_reason") or "")
     return (
-        "You write exactly ONE polished Unify Consulting role narrative sentence. "
-        "Return RAW JSON only: first character {, last character }. No markdown fences.\n\n"
-        f"READ-ONLY CONTEXT (not copy-paste openers): employer={header['employer']}, title={header['title']}, "
-        f"location={header['location']}, dates={header['start_date']} to {header['end_date']}.\n"
-        f"{cand_line}"
-        "VOICE AND OPENERS (mandatory):\n"
-        "- Do NOT begin with \"At Unify Consulting, the\" or \"At Unify, the\".\n"
-        "- Do NOT write \"the SVP Engineering\", \"the Senior Vice President\", or any \"the <job title>\" stack before a verb.\n"
-        "- Prefer subject-first or implied-subject executive arc: who shaped what outcome at Unify Consulting.\n"
-        "- Include the exact text \"Unify Consulting\" once as the employer anchor (never omit the company name).\n"
-        "- Frame Unify as the current agentic AI platform leadership proof point, not a generic job summary.\n\n"
-        "ARC (one flowing sentence):\n"
-        "- Weave governed agentic platform execution, reusable AI primitives, retrieval and lifecycle operating discipline, "
-        "and enterprise delivery momentum without sounding like a task list.\n"
-        "- Paraphrase each idea; do NOT paste contiguous phrases from CANONICAL UNIFY FACTS claim_text (especially avoid "
-        "copying the opening clause of bul_unify_001 verbatim).\n"
-        "- Banned substrings (case-insensitive rewrite required if any appear): "
-        "\"designed and operationalized\", \"governed agentic ai platform for regulated enterprise workflows\", "
-        "\"architected a governed\".\n"
-        "- Optionally nod once to dependency intelligence (002) and retrieval quality (003) with short fresh wording, "
-        "without a technical inventory.\n"
-        "- When citing cycle-time improvement, use the supported literal: "
-        "\"reducing lab-to-production cycle time from six months to three weeks\" (bul_unify_004). "
-        "Do NOT use vague phrases like \"reduce cycle times significantly\" or \"faster time to market\" as substitutes.\n"
-        "- If companion bullets already carry $22M, 20%, 8-to-28 headcount, and six-months-to-three-weeks, "
-        "the narrative_sentence must mention AT MOST ONE of those metric clusters, and it should be "
-        "\"reducing lab-to-production cycle time from six months to three weeks\" (no $22M, no 20%, no 8-to-28 in that sentence).\n"
-        "- You may still reference bul_unify_006 themes qualitatively (productized primitives, IP-led revenue momentum, "
-        "margin discipline, specialist bench scaling) without dollar signs, percent figures, or numeric headcount.\n"
-        "- Add SVP-level operating signal: enterprise scale, delivery cadence, operating discipline, or cross-team "
-        "engineering momentum, synthesized across facts rather than chaining two claim_text fragments.\n"
-        "FORBIDDEN LISTS (do not string these as a comma checklist in the sentence):\n"
-        "deterministic routing, multi-agent orchestration, GraphRAG, sandboxed execution, policy gating, replayable traces.\n"
-        "You may refer to the governed platform at a high level without enumerating that full stack.\n\n"
-        "LENGTH AND SHAPE (mandatory):\n"
-        "- Aim for roughly 32 to 44 words; stay under 52 words so the line reads as one executive clause, not a bullet rollup.\n"
-        "- At most one comma spine before the cycle clause; avoid \"while also\", \"along with\", or three-part conjunction stacks.\n"
-        "- One strategic through-line (why the platform operating model mattered) plus the exact cycle clause; "
-        "do not mirror four bullet domains in one sentence.\n\n"
-        "SCOPE: Use ONLY bul_unify_* facts for proof. No IBM, InsurTech, EY, education, or early-career facts.\n"
-        "JD and briefing are targeting context only, never proof.\n"
-        "Third person or implied subject only. No first person. No em dash. No inline source tags. No generic filler.\n"
-        "Complement the six bullets with connective synthesis; do not summarize each bullet.\n\n"
-        "Required JSON keys: narrative_sentence, selected_fact_plan, claim_ledger, jd_alignment, gap_notes, change_log, self_check.\n"
-        "claim_ledger: array of {claim_text, source_fact_ids}. Each ID must be EXACTLY one of "
-        "bul_unify_001, bul_unify_002, bul_unify_003, bul_unify_004, bul_unify_005, bul_unify_006 "
-        "(single underscore only; never bul_unify__006 or other typos).\n"
-        "Every substantive clause in narrative_sentence must appear as claim_text in claim_ledger with matching bul_unify_* IDs."
+        "# Role and Objective\n"
+        "You are a senior executive resume editor writing exactly ONE Unify Consulting role narrative sentence. "
+        "This sentence must sit above finalized Unify bullets and position the current role as the candidate's strongest "
+        "SVP Engineering proof point.\n\n"
+        "# Output Contract\n"
+        "Return RAW JSON only: first character {, last character }. No markdown fences.\n"
+        "Required JSON keys: narrative_sentence, selected_fact_plan, claim_ledger, jd_alignment, gap_notes, change_log, self_check.\n\n"
+        "# Required Upstream Dependency\n"
+        f"companion_unify_bullets_status={dep_status}; reason={dep_reason}.\n"
+        "Production narrative requires accepted finalized Unify bullets from the prior lane. If status is not ACCEPTED_FINALIZED, "
+        "produce a safe JSON object that records the dependency gap in gap_notes and self_check; do not pretend the bullets are finalized.\n\n"
+        "# Read-Only Role Header\n"
+        f"employer={header['employer']}; title={header['title']}; location={header['location']}; "
+        f"dates={header['start_date']} to {header['end_date']}.\n"
+        "Include the exact text Unify Consulting once as the employer anchor. Never name the candidate.\n\n"
+        "# Source Authority Hierarchy\n"
+        "1. Proof sources: canonical bul_unify_* facts and accepted Unify bullets only.\n"
+        "2. Targeting context: target title, target company, JD, and briefing influence angle and vocabulary only.\n"
+        "3. JD, company brief, and target company are never proof of candidate experience.\n"
+        "4. No IBM, InsurTech, EY, education, certification, or early-career facts.\n\n"
+        "# Private Drafting Process\n"
+        "Think privately before writing JSON. Do not expose reasoning.\n"
+        "Step 1: Read accepted bullets and identify what they already prove.\n"
+        "Step 2: Choose one complementary angle: platform mandate, governed operating model, commercialization, delivery cadence, or engineering scale.\n"
+        "Step 3: Use JD/company/briefing only to pick emphasis, not proof.\n"
+        "Step 4: Draft one sentence and self-repair for repetition, unsupported claims, JD mirroring, and executive readability.\n\n"
+        "# Voice and Openers\n"
+        "Do NOT begin with At Unify Consulting, the or At Unify, the.\n"
+        "Do NOT write the SVP Engineering, the Senior Vice President, or any the <job title> stack before a verb.\n"
+        "Prefer a subject-first or implied-subject executive arc.\n"
+        "Frame Unify as current agentic AI platform leadership proof, not a generic job summary.\n\n"
+        "# Narrative Shape\n"
+        "One flowing sentence, roughly 32 to 44 words and under 52 words.\n"
+        "One strategic through-line plus one supported proof cue if needed.\n"
+        "Complement the six bullets; do not recap each bullet.\n"
+        "Do not paste contiguous phrases from CANONICAL UNIFY FACTS or accepted bullets.\n"
+        "No first person. No candidate name. No em dash. No inline source tags. No generic filler.\n\n"
+        "# Metric Repetition\n"
+        "If accepted bullets already carry $22M, 20%, 8-to-28 headcount, and six-months-to-three-weeks, "
+        "the narrative may mention at most one metric cluster. Prefer conceptual language such as commercialization, "
+        "platform economics, organization scaling, or deployment acceleration.\n"
+        "When citing cycle-time improvement, use the supported literal: reducing lab-to-production cycle time from six months to three weeks.\n\n"
+        "# Forbidden Checklist Sentence\n"
+        "Do not string these as a list: deterministic routing, multi-agent orchestration, GraphRAG, sandboxed execution, policy gating, replayable traces."
     )
 
 
-def _u0(companion_nonempty: bool) -> str:
+def _u0(companion_nonempty: bool, dependency_status: str) -> str:
     closing = (
         "Write one narrative_sentence only: strong platform-leadership arc for Unify Consulting, third person, "
-        "one period at the end, under 52 words, no \"while also\" stack."
+        "one period at the end, under 52 words, no while also stack."
     )
+    if dependency_status != "ACCEPTED_FINALIZED":
+        return (
+            "Finalized Unify bullets are not accepted yet. Return JSON that marks dependency_not_finalized in "
+            "gap_notes and self_check. Do not fabricate a production-ready narrative.\n\n"
+            + closing
+        )
     if companion_nonempty:
         return closing
     return (
-        "(No companion unify_bullets artifact; still avoid repeating every metric in one list.)\n\n"
+        "Accepted dependency metadata exists but no companion bullet text was supplied; mark this as a dependency gap.\n\n"
         + closing
     )
 
@@ -132,7 +134,7 @@ def compile_unify_narrative_prompt(
             confidence=0.0,
             source_tag="jd_requirements",
         ),
-        u0_user_task=_u0(companion_nonempty),
+        u0_user_task=_u0(companion_nonempty, str(runtime_payload.get("companion_unify_bullets_status") or "UNKNOWN")),
         r0_response_schema=NARRATIVE_R0,
         render_context={
             "section_id": "unify_narrative",

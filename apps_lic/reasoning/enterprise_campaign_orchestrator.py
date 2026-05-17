@@ -203,7 +203,7 @@ class EnterpriseLicOrchestrator:
         Produces a personalized outreach message + QA summary in the result shape
         expected by ``print_results()``.
 
-        Uses Gemini when ``GEMINI_API_KEY`` is present (loaded from .env); otherwise
+        Uses Gemini when ``GOOGLE_API_KEY`` (or deprecated ``GEMINI_API_KEY``) is present (loaded from .env); otherwise
         emits a deterministic templated fallback so the pipeline remains runnable
         offline.
         """
@@ -249,7 +249,7 @@ class EnterpriseLicOrchestrator:
 
     @staticmethod
     def _load_env_file() -> None:
-        """Best-effort load of repo .env so GEMINI_API_KEY is available."""
+        """Best-effort load of repo .env so GOOGLE_API_KEY / GEMINI_API_KEY is available."""
         import os
         from pathlib import Path
 
@@ -305,12 +305,16 @@ class EnterpriseLicOrchestrator:
     ) -> tuple[str, bool, str]:
         import os
 
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
         if not api_key:
             return self._template_message(sender, recipient, job, route), False, "no_api_key"
 
         prompt = self._build_prompt(sender, recipient, job, route)
-        model_name = (os.environ.get("GEMINI_MODEL") or "gemini-2.0-flash").split()[0]
+        from agentic_core.config.google_ai_env_reads import (  # noqa: PLC0415
+            google_ai_flash_model_env,
+        )
+
+        model_name = google_ai_flash_model_env(legacy_default="gemini-2.0-flash").split()[0]
         # Known-good default if .env model is a preview slug not yet GA
         if "preview" in model_name or model_name == "gemini-2.0-flash-exp":
             model_name = "gemini-2.0-flash"

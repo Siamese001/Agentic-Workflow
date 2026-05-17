@@ -47,13 +47,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MAX = 18
 DEFAULT_EXEMPT = (
     "apps_shared/proof/scenario_base.py",
-    "apps_rfp/u0_intake.py",
-    "apps_lic/runtime/profile_builder.py",
-    "apps_research/runtime/profile_builder.py",
-    "apps_research/engines/company_brief_engine.py",
+    "apps_rfp/integrations/u0_intake_adapter.py",
+    "apps_lic/runtime/profile_builder_adapter.py",
+    "apps_research/runtime/profile_builder_adapter.py",
+    "apps_research/integrations/qwen_strict_probe.py",
     "apps_rg/runtime/bindings/u0_binding.py",
-    # apps_rg L2 package-driven bridge (symmetric to u0_binding / profile_builder).
-    "apps_rg/runtime/bindings/l2_binding.py",
+    "apps_rg/runtime/bindings/l2_binding_adapter.py",
+    "apps_rg/enforcement/cli_prerequisite_gate.py",
 )
 
 

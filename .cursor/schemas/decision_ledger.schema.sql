@@ -113,6 +113,14 @@ CREATE TABLE IF NOT EXISTS decision_outcomes (
     pattern_promotion_eligible INTEGER DEFAULT 0,             -- promote candidacy flag
     outcome_label         TEXT,                               -- success | rework | rollback | undecided
 
+    -- W1 bind confidence (plan author-gate-learning-harden-f4e8a2)
+    bind_confidence       TEXT,                               -- high | medium | low | disputed | NULL legacy
+    ci_receipt_status     TEXT,                               -- full | partial | absent
+    bind_disputed         INTEGER DEFAULT 0,                  -- 1 = operator/ evidence dispute
+
+    -- W3 promotion quarantine (plan author-gate-learning-harden-f4e8a2)
+    promotion_quarantine_started_at TEXT,                     -- ISO-8601 when candidate entered quarantine
+
     -- Freeform + timing
     bound_at              TEXT,                               -- ISO-8601 UTC when this row was written
     outcome_notes         TEXT
@@ -145,5 +153,8 @@ INSERT OR IGNORE INTO schema_version(version, applied_at, description)
 VALUES (2, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
         'W2: outcome binding, scoring telemetry, didactic fields, hash chain placeholders');
 INSERT OR IGNORE INTO schema_version(version, applied_at, description)
-VALUES (3, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
-        'meta-learning W1 (plan c8f4a2): precedent_verdict, precedent_match_count');
+VALUES (4, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
+        'W1 bind confidence: bind_confidence, ci_receipt_status, bind_disputed on decision_outcomes');
+INSERT OR IGNORE INTO schema_version(version, applied_at, description)
+VALUES (5, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
+        'W3 promotion quarantine: promotion_quarantine_started_at on decision_outcomes');

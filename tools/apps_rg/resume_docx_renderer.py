@@ -127,6 +127,28 @@ def render(resume_json: dict, output_path: Path, template_path: Path) -> None:
 
             doc.add_paragraph(style="Normal")  # spacer between roles
 
+    # Skills / competencies (base SSOT order: after employment, before education)
+    skills = resume_json.get("skills", [])
+    competencies = resume_json.get("competencies", resume_json.get("engineering_competencies", []))
+    if skills or competencies:
+        _add(doc, "Heading 2", "ENGINEERING & PLATFORM COMPETENCIES")
+        for skill in skills:
+            if isinstance(skill, dict):
+                label = skill.get("label", skill.get("name", ""))
+                detail = skill.get("detail", skill.get("description", ""))
+                text = f"{label}: {detail}" if detail else label
+                _add(doc, "Normal", text, bold_prefix=True)
+            else:
+                _add(doc, "Normal", str(skill))
+        for comp in competencies:
+            if isinstance(comp, dict):
+                label = comp.get("label", comp.get("name", ""))
+                detail = comp.get("detail", comp.get("description", ""))
+                text = f"{label}: {detail}" if detail else label
+                _add(doc, "Normal", text, bold_prefix=True)
+            else:
+                _add(doc, "Normal", str(comp))
+
     # Education
     education = resume_json.get("education", [])
     if education:
@@ -153,28 +175,6 @@ def render(resume_json: dict, output_path: Path, template_path: Path) -> None:
             else:
                 _add(doc, "Heading 3", str(cert))
         doc.add_paragraph(style="Body Text")
-
-    # Skills
-    skills = resume_json.get("skills", [])
-    competencies = resume_json.get("competencies", resume_json.get("engineering_competencies", []))
-    if skills or competencies:
-        _add(doc, "Heading 2", "ENGINEERING & PLATFORM COMPETENCIES")
-        for skill in skills:
-            if isinstance(skill, dict):
-                label = skill.get("label", skill.get("name", ""))
-                detail = skill.get("detail", skill.get("description", ""))
-                text = f"{label}: {detail}" if detail else label
-                _add(doc, "Normal", text, bold_prefix=True)
-            else:
-                _add(doc, "Normal", str(skill))
-        for comp in competencies:
-            if isinstance(comp, dict):
-                label = comp.get("label", comp.get("name", ""))
-                detail = comp.get("detail", comp.get("description", ""))
-                text = f"{label}: {detail}" if detail else label
-                _add(doc, "Normal", text, bold_prefix=True)
-            else:
-                _add(doc, "Normal", str(comp))
 
     doc.save(output_path)
     print(f"Saved: {output_path}")

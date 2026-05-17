@@ -31,6 +31,11 @@ stub JSON (CI / dry runs). Use ``APPS_RG_L2_PROVIDER_MODE=live_allowed`` when th
 CPA targets an external API lane (``anthropic``, ``openai``, ``google_gemini``) and keys
 are present.
 
+**JD normalization:** integrated dispatch uses ``build_raw_request_for_r4`` →
+``build_canonical_jd_payload``. ``_build_raw_request`` (DS-R7, dry-run preview) now
+delegates to the same helper for all real JD paths; only the DS-R7 stub for a missing
+``.json`` path returns empty ``jd_payload`` / ``body_text`` (no digest parity).
+
 Cross-company contamination guard:
     _assert_artifact_matches_company(path, target_company, artifact_type)
     raises SystemExit if the artifact's declared `company` does not match the
@@ -58,6 +63,9 @@ from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run i
     run_integrated_r4_deterministic_pipeline,
 )
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
+from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
+from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
+from apps_rg.runtime.runtime_proof_layout import find_repo_root
 
 __all__ = [
     "_assert_artifact_matches_company",
@@ -149,13 +157,7 @@ def _repo_root_for_cli_inputs() -> Path:
 
 def _default_resume_path() -> str:
     """Absolute path to canonical base resume JSON, or ``""`` if missing."""
-    p = (
-        _repo_root_for_cli_inputs()
-        / "apps_rg"
-        / "resume"
-        / "base"
-        / "amit_ayer_base_resume_v1.json"
-    )
+    p = DEFAULT_RESUME_SSOT_PATH
     return str(p.resolve()) if p.is_file() else ""
 
 
@@ -377,11 +379,14 @@ def _gather_interactive_fields(args: argparse.Namespace) -> None:
 
 
 def _build_raw_request(args: Any) -> dict[str, Any]:
-    """Build raw_request for DS-R7 contract tests and diagnostics.
+    """Build raw_request for DS-R7, CLI dry-run preview, and diagnostics.
 
-    Mirrors :func:`build_raw_request_for_r4` except when ``jd`` names a missing
-    ``.json`` path (returns empty ``jd_payload``) or a JSON file (forwards parsed
-    dict into ``jd_payload`` / ``body_text``).
+    **Certified JD parity:** after interactive JD resolution, this always delegates
+    to :func:`apps_rg.runtime.orchestration.canonical_dispatch.build_raw_request_for_r4`
+    (shared :func:`apps_rg.runtime.jd_resolution.build_canonical_jd_payload` /
+    :func:`~apps_rg.runtime.jd_resolution.canonical_jd_digest`), except the DS-R7 stub
+    when ``jd`` looks like a missing ``.json`` path only — that branch returns empty
+    ``jd_payload`` / ``body_text`` and does **not** claim digest parity.
     """
     from apps_rg.runtime.orchestration.canonical_dispatch import build_raw_request_for_r4
 
@@ -407,25 +412,6 @@ def _build_raw_request(args: Any) -> dict[str, Any]:
         p = Path(jd_val)
         if p.suffix.lower() == ".json" and not p.is_file() and not st.lstrip().startswith("{"):
             return {"jd_payload": {}, "body_text": ""}
-
-        if p.is_file() and p.suffix.lower() == ".json":
-            try:
-                data = json.loads(p.read_text(encoding="utf-8"))
-                if isinstance(data, dict):
-                    base = build_raw_request_for_r4(
-                        target_company=tc,
-                        target_role=tr,
-                        target_level=tl,
-                        jd="",
-                        manual_brief=manual_brief,
-                        resume_path=resume,
-                        generation_mode=generation_mode,
-                    )
-                    base["jd_payload"] = data
-                    base["body_text"] = json.dumps(data)
-                    return base
-            except (OSError, json.JSONDecodeError):
-                pass
 
     return build_raw_request_for_r4(
         target_company=tc,
@@ -457,13 +443,13 @@ def _run_with_args(
     CLI production path uses ``dispatch_apps_rg_run``. This shim mirrors the legacy
     L0 remediation tests that assert pre/post-flight cache bookkeeping.
     """
-    from agentic_core.L0_routing.gates.apps_rg_prerequisite_gate import (
-        check_apps_rg_prerequisites,
+    from apps_rg.enforcement.cli_prerequisite_gate import (
+        check_apps_rg_cli_prerequisites,
     )
     from apps_rg.cache import r1b_adapter as _r1b_mod
     from apps_rg.runtime.orchestration.canonical_dispatch import build_raw_request_for_r4
 
-    check_apps_rg_prerequisites(
+    check_apps_rg_cli_prerequisites(
         target_company=str(getattr(args, "target_company", "") or ""),
         target_role=str(getattr(args, "target_role", "") or ""),
         policy_hash=os.environ.get("APPS_RG_POLICY_HASH", ""),
@@ -523,6 +509,14 @@ def _run_with_args(
         raw_request=raw_request,
         app_name="apps_rg",
         artifact_dir=artifact_root,
+    )
+
+    rid = str(getattr(outcome, "run_id", "") or "").strip()
+    emit_integrated_run_bundle_index(
+        find_repo_root(),
+        Path(outcome.artifact_dir),
+        run_id=rid or None,
+        correlation_id=rid or None,
     )
 
     fault_txt = str(getattr(outcome, "fault", "") or "").strip()

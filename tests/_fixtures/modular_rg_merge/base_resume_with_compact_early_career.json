@@ -86,15 +86,15 @@
       {
         "fact_id": "exp_early_career_001",
         "employer": "Early Career Roles",
-        "title": "Quantitative Analyst and Systems Developer",
+        "title": "Actuarial Consultant and Quantitative Roles",
         "location": "Philadelphia, PA",
-        "start_date": "pre-2002",
-        "end_date": "2002-09",
+        "start_date": "2002-10",
+        "end_date": "2009-09",
         "is_current": false,
         "bullets": [
           {
             "bullet_id": "bul_early_career_001",
-            "text": "Built high-performance valuation frameworks and deterministic modeling systems for insurance and risk analysis, developing the quantitative rigor, control discipline, and systems thinking that now underpin AI platform architecture and runtime governance work",
+            "text": "Foundational Engineering: Built high-performance valuation frameworks and deterministic modeling systems for insurance and risk analysis, developing the quantitative rigor, control discipline, and systems thinking that now underpin my work in AI platform architecture and runtime governance.",
             "has_metric": false,
             "technologies": ["valuation frameworks", "deterministic modeling"],
             "domain": "foundational engineering"

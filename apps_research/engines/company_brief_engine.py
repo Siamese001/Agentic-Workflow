@@ -362,15 +362,11 @@ class CompanyBriefEngine(BaseResearchEngine):
         # Docker Desktop down vs vLLM container down vs model not loaded so the
         # error message is actionable. Cloud/stub fallbacks are intentionally
         # bypassed in strict mode.
-        try:
-            from agentic_core.L2_execution.healers.qwen_strict_diagnostic import (  # noqa: PLC0415
-                require_qwen_or_raise,
-                strict_mode_enabled,
-            )
-            if strict_mode_enabled():
-                require_qwen_or_raise()
-        except ImportError:
-            pass
+        from apps_research.integrations.qwen_strict_probe import (
+            maybe_enforce_qwen_strict_requirement,
+        )
+
+        maybe_enforce_qwen_strict_requirement()
 
         qwen_payload = self._qwen_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
         if qwen_payload is not None:
@@ -392,16 +388,17 @@ class CompanyBriefEngine(BaseResearchEngine):
         """Synthesize via Google Gemini 3.1 Pro Preview (cloud cascade tier 2).
 
         Mirrors :meth:`_qwen_synthesize`. Reads `GOOGLE_API_KEY` and
-        `GEMINI_PRO_MODEL` (default ``gemini-3.1-pro-preview``) from the
+        ``GOOGLE_AI_PRO_MODEL`` (deprecated alias ``GEMINI_PRO_MODEL``,
+        default ``gemini-3.1-pro-preview``) from the
         environment. Returns the parsed synthesis dict on success, ``None``
         when any guard rejects (SDK absent, key missing, API exception,
         empty response, parse failure). The ``None`` return signals
         :meth:`_synthesize` to fall through to the deterministic stub.
 
-        Per `.env.example` doctrine, ``GEMINI_PRO_MODEL`` is the
+        Per `.env.example` doctrine, ``GOOGLE_AI_PRO_MODEL`` is the
         synthesis-quality / structural-novel-failure escalation tier;
-        ``GEMINI_MODEL`` (flash) is for cheap healing and is intentionally
-        NOT used here.
+        ``GOOGLE_AI_MODEL`` / ``GEMINI_MODEL`` (flash) is for cheap fallback
+        when Pro is exhausted or mismatched vs Pro.
         """
         import os  # noqa: PLC0415 — local import keeps module cold-load cheap
 
@@ -419,11 +416,14 @@ class CompanyBriefEngine(BaseResearchEngine):
         # Try Pro first (synthesis-quality tier) then Flash (cheap-fast). Free-tier
         # Google AI Studio accounts have limit:0 for Pro models so the cascade
         # resolves to Flash; paid-tier accounts hit Pro and never reach Flash.
-        # Order matches `.env.example` doctrine: GEMINI_PRO_MODEL is the
-        # synthesis-quality tier; GEMINI_MODEL (flash) is the cheap fallback.
+        from agentic_core.config.google_ai_env_reads import (  # noqa: PLC0415
+            google_ai_flash_model_env,
+            google_ai_pro_model_env,
+        )
+
         candidates: list[str] = []
-        pro_model = os.environ.get("GEMINI_PRO_MODEL", "gemini-3.1-pro-preview").strip()
-        flash_model = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview").strip()
+        pro_model = google_ai_pro_model_env(legacy_default="gemini-3.1-pro-preview").strip()
+        flash_model = google_ai_flash_model_env(legacy_default="gemini-3-flash-preview").strip()
         if pro_model:
             candidates.append(pro_model)
         if flash_model and flash_model != pro_model:

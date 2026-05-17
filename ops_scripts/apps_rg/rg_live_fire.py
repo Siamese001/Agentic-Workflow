@@ -214,7 +214,7 @@ async def main():
         else:
             Logger.error("❌ HOP-2 FAILED.")
         k9 = ctx.buffer.read("k9_competencies")
-        Logger.info(f"✅ HOP-3 K9 Competencies: {(len(k9) if k9 else 0)}/6")
+        Logger.info(f"✅ HOP-3 K9 ENGINEERING & PLATFORM COMPETENCIES: {(len(k9) if k9 else 0)}/6")
         ranked = ctx.buffer.read("ranked_content")
         if ranked:
             Logger.info(f"✅ HOP-4 Ranked Sections: {list(ranked.keys())}")

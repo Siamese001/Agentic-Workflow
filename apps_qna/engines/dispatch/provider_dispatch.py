@@ -36,12 +36,26 @@ _ANTHROPIC_API_KEY_VAR = "ANTHROPIC_API_KEY"
 _GOOGLE_API_KEY_VAR = "GOOGLE_API_KEY"
 _JUDGE_PROVIDER_VAR = "JUDGE_PROVIDER"
 _ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
-_GEMINI_PRO_MODEL_VAR = "GEMINI_PRO_MODEL"
-_GEMINI_MODEL_VAR = "GEMINI_MODEL"
 
 _DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6"
 _DEFAULT_GEMINI_PRO_MODEL = "gemini-3.1-pro-preview"
 _DEFAULT_GEMINI_FLASH_MODEL = "gemini-3-flash-preview"
+
+
+def _google_ai_flash_from_env() -> str:
+    raw = (
+        os.environ.get("GOOGLE_AI_MODEL", "").strip()
+        or os.environ.get("GEMINI_MODEL", "").strip()
+    )
+    return raw if raw else _DEFAULT_GEMINI_FLASH_MODEL
+
+
+def _google_ai_pro_from_env() -> str:
+    raw = (
+        os.environ.get("GOOGLE_AI_PRO_MODEL", "").strip()
+        or os.environ.get("GEMINI_PRO_MODEL", "").strip()
+    )
+    return raw if raw else _DEFAULT_GEMINI_PRO_MODEL
 
 _DISPATCH_TIMEOUT = 30
 
@@ -243,9 +257,9 @@ class ProviderDispatcher:
             model = os.environ.get(_ANTHROPIC_MODEL_VAR, "").strip() or _DEFAULT_ANTHROPIC_MODEL
         else:
             if tier == "flash":
-                model = os.environ.get(_GEMINI_MODEL_VAR, "").strip() or _DEFAULT_GEMINI_FLASH_MODEL
+                model = _google_ai_flash_from_env()
             else:
-                model = os.environ.get(_GEMINI_PRO_MODEL_VAR, "").strip() or _DEFAULT_GEMINI_PRO_MODEL
+                model = _google_ai_pro_from_env()
 
         try:
             if provider == ProviderName.ANTHROPIC:

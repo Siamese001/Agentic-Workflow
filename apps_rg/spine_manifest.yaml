@@ -97,7 +97,23 @@ templates:
     version: "1.0.0"
     slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
     required_slots: [S0, I0, C0, U0, R0]
-    description: "Competencies section PA SSOT path"
+    description: "ENGINEERING & PLATFORM COMPETENCIES lane — PA SSOT path (W5)"
+
+  - id: unify_bullet_tailor_v1
+    version: "1.1.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "Unify bullets lane, current-role SVP Engineering targeting"
+    generation_order: 1
+    emits_dependency_for: [unify_position_narrative_v1]
+
+  - id: unify_position_narrative_v1
+    version: "1.1.0"
+    slot_order: [S0, D0, I0, C0, E0, Y0, U0, R0]
+    required_slots: [S0, I0, C0, U0, R0]
+    description: "Unify narrative lane, requires finalized Unify bullets"
+    generation_order: 2
+    depends_on: [unify_bullet_tailor_v1]
 
   - id: strategic_tailor_v2
     version: "1.0.0"

@@ -2,6 +2,8 @@
 """author_gate_calibrator.py — Fit isotonic regression over Author-Gate outcomes.
 
 Plan: `.windsurf/plans/author-gate-hardening-a3b8f2.md` W2.P2.2 + W2.P2.3.
+W4 (author-gate-feedback-loop-d4e8f1): degenerate-label NOOP, disputed-derived-row
+exclusion, snapshot lineage, optional strict outcome-schema guard.
 
 Reads (decision, outcome) pairs from `refactor_decision_ledger.sqlite` grouped
 by `decision_type`. For each class with ≥30 closed outcomes, fits an isotonic
@@ -22,6 +24,11 @@ Success metric:
 Cold-start: classes with <30 closed outcomes get NO fit; their decisions keep
 NULL `confidence_calibrated` and carry a COLD_START tag in the snapshot.
 
+Degenerate labels (W4): all-success or all-failure (or below min positive/negative
+counts) → ``NOOP_DEGENERATE_LABELS`` — no isotonic fit, no persistence of fake
+calibrated scores. Rows with ``bind_disputed`` or ``outcome_bind_tier='disputed_bind'``
+are excluded from the training set when those columns exist.
+
 Usage:
     python ops_scripts/calibration/author_gate_calibrator.py --dry-run
     python ops_scripts/calibration/author_gate_calibrator.py --apply
@@ -34,20 +41,33 @@ ALL classes fail or DB is unreadable.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
-import math
 import sqlite3
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
 REPORT_DIR = REPO_ROOT / "artifacts" / "author_gate"
 
 DEFAULT_MIN_N = 30
 DEFAULT_CALIBRATOR_PREFIX = "iso_v1"
+
+# W4: bump when training policy / exclusions / lineage contract changes.
+CALIBRATOR_POLICY_VERSION = "author-gate-calibrator-w4-20260517"
+
+NOOP_DEGENERATE_LABELS = "NOOP_DEGENERATE_LABELS"
+NOOP_STALE_SCHEMA = "NOOP_STALE_SCHEMA"
+
+_REQUIRED_OUTCOME_COLUMNS = frozenset(
+    {"decision_id", "promote_to_pattern", "rollback_required", "regression_found"}
+)
 
 
 # --------------------------------------------------------------------------
@@ -172,13 +192,110 @@ def expected_calibration_error(
 # --------------------------------------------------------------------------
 
 
+def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=? LIMIT 1",
+        (name,),
+    ).fetchone()
+    return row is not None
+
+
+def _outcomes_schema_ready(conn: sqlite3.Connection) -> bool:
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(decision_outcomes)").fetchall()}
+    except sqlite3.Error:
+        return False
+    return _REQUIRED_OUTCOME_COLUMNS <= cols
+
+
+def _outcome_dispute_exclusion_sql(conn: sqlite3.Connection) -> str:
+    """Exclude disputed binds from calibration training when columns exist."""
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(decision_outcomes)").fetchall()}
+    except sqlite3.Error:
+        return ""
+    parts: list[str] = []
+    if "bind_disputed" in cols:
+        parts.append("COALESCE(o.bind_disputed, 0) = 0")
+    if "outcome_bind_tier" in cols:
+        parts.append("LOWER(COALESCE(o.outcome_bind_tier, '')) != 'disputed_bind'")
+    if not parts:
+        return ""
+    return " AND " + " AND ".join(parts)
+
+
+def _maybe_add_lineage_column(conn: sqlite3.Connection) -> None:
+    if not _table_exists(conn, "decision_calibration_snapshots"):
+        return
+    names = {r[1] for r in conn.execute("PRAGMA table_info(decision_calibration_snapshots)").fetchall()}
+    if "lineage_json" in names:
+        return
+    try:
+        conn.execute("ALTER TABLE decision_calibration_snapshots ADD COLUMN lineage_json TEXT")
+        conn.commit()
+    except sqlite3.Error:
+        pass
+
+
+def _git_sha_short() -> str:
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=6,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout:
+            return proc.stdout.strip()[:12]
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return ""
+
+
+def _dataset_digest(pairs: list[tuple[str, float, int]]) -> str:
+    body = "\n".join(f"{did}\t{x}\t{y}" for did, x, y in sorted(pairs, key=lambda p: p[0]))
+    return hashlib.sha256(body.encode()).hexdigest()[:16]
+
+
+def _build_lineage_json(
+    pairs: list[tuple[str, float, int]],
+    *,
+    decision_type: str,
+    min_positive: int,
+    min_negative: int,
+    dispute_filter_active: bool,
+) -> str:
+    ys = [p[2] for p in pairs]
+    payload = {
+        "policy_version": CALIBRATOR_POLICY_VERSION,
+        "dataset_digest_sha256_16": _dataset_digest(pairs),
+        "code_version_git": _git_sha_short(),
+        "utc_timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "decision_type": decision_type,
+        "n_rows": len(pairs),
+        "label_mean": round(sum(ys) / len(ys), 6) if pairs else None,
+        "min_positive_labels": min_positive,
+        "min_negative_labels": min_negative,
+        "split_policy": "full_dataset_isotonic_v1",
+        "leakage_guard": {
+            "method": "none",
+            "note": "No temporal holdout in v1; advisory / analytics-only calibration.",
+        },
+        "disputed_training_rows_excluded": dispute_filter_active,
+    }
+    return json.dumps(payload, sort_keys=True)
+
+
 def _load_closed_outcomes(conn: sqlite3.Connection, decision_type: str) -> list[tuple[str, float, int]]:
     """Return [(decision_id, confidence_top, success_0_or_1), ...].
 
     Success = promote_to_pattern=1 AND rollback_required=0 AND regression_found=0.
     """
+    filt = _outcome_dispute_exclusion_sql(conn)
     rows = conn.execute(
-        """
+        f"""
         SELECT d.decision_id, d.confidence_top,
                COALESCE(o.promote_to_pattern, 0) AS prom,
                COALESCE(o.rollback_required, 0) AS roll,
@@ -187,6 +304,7 @@ def _load_closed_outcomes(conn: sqlite3.Connection, decision_type: str) -> list[
           JOIN decision_outcomes o USING (decision_id)
          WHERE d.decision_type = ?
            AND d.confidence_top IS NOT NULL
+           {filt}
         """,
         (decision_type,),
     ).fetchall()
@@ -217,48 +335,121 @@ def _make_version() -> str:
 
 
 def fit_class(
-    conn: sqlite3.Connection, decision_type: str, version: str, min_n: int, *, apply: bool
+    conn: sqlite3.Connection,
+    decision_type: str,
+    version: str,
+    min_n: int,
+    *,
+    apply: bool,
+    min_positive: int,
+    min_negative: int,
+    strict_schema: bool,
 ) -> dict[str, object]:
     """Fit one decision_type. Returns a summary dict for the report."""
+    dispute_sql = _outcome_dispute_exclusion_sql(conn)
+    dispute_active = bool(dispute_sql)
+    schema_ok = _outcomes_schema_ready(conn)
+
+    summary: dict[str, object] = {
+        "decision_type": decision_type,
+        "n_outcomes": 0,
+        "version": version,
+        "fitted": False,
+        "cold_start": False,
+    }
+
+    if strict_schema and not schema_ok:
+        summary["noop_reason"] = NOOP_STALE_SCHEMA
+        summary["reason"] = "required decision_outcomes columns missing (--strict-schema)"
+        return summary
+
     data = _load_closed_outcomes(conn, decision_type)
     n = len(data)
-    summary: dict[str, object] = {
-        "decision_type": decision_type, "n_outcomes": n,
-        "version": version, "fitted": False, "cold_start": False,
-    }
+    summary["n_outcomes"] = n
+    summary["calibrator_policy_version"] = CALIBRATOR_POLICY_VERSION
+
     if n < min_n:
         summary["cold_start"] = True
         summary["reason"] = f"insufficient_outcomes (n={n} < min_n={min_n})"
         return summary
 
-    xs = [p[1] for p in data]
     ys = [p[2] for p in data]
+    n_succ = int(sum(ys))
+    n_fail = n - n_succ
+    if n_succ < min_positive or n_fail < min_negative:
+        summary["noop_reason"] = NOOP_DEGENERATE_LABELS
+        summary["reason"] = (
+            f"degenerate_binary_labels (success={n_succ}, failure={n_fail}; "
+            f"need min_positive={min_positive}, min_negative={min_negative})"
+        )
+        summary["n_success_labels"] = n_succ
+        summary["n_failure_labels"] = n_fail
+        return summary
+
+    xs = [p[1] for p in data]
     points = isotonic_fit(xs, ys)
     calibrated = [isotonic_apply(points, x) for x in xs]
     brier = round(brier_score(calibrated, ys), 4)
     ece, bins = expected_calibration_error(calibrated, ys, n_bins=10)
+    lineage_json = _build_lineage_json(
+        data,
+        decision_type=decision_type,
+        min_positive=min_positive,
+        min_negative=min_negative,
+        dispute_filter_active=dispute_active,
+    )
     summary.update({
-        "fitted": True, "brier": brier, "ece": ece,
-        "n_anchors": len(points), "reliability_bins": len(bins),
+        "fitted": True,
+        "brier": brier,
+        "ece": ece,
+        "n_anchors": len(points),
+        "reliability_bins": len(bins),
+        "n_success_labels": n_succ,
+        "n_failure_labels": n_fail,
+        "lineage_json": lineage_json,
     })
 
     if not apply:
         return summary
 
-    # Persist snapshot
-    conn.execute(
-        """INSERT INTO decision_calibration_snapshots
-               (created_at, calibrator_version, decision_type, n_outcomes,
-                brier_score, ece_score, reliability_json, isotonic_points_json)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-        (
-            datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            version, decision_type, n, brier, ece,
-            json.dumps(bins), json.dumps(points),
-        ),
-    )
-    # Write calibrated score back onto each decision in this class.
-    # Uses executemany batched in 500s to avoid huge single statements.
+    created = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    try:
+        conn.execute(
+            """INSERT INTO decision_calibration_snapshots
+                   (created_at, calibrator_version, decision_type, n_outcomes,
+                    brier_score, ece_score, reliability_json, isotonic_points_json,
+                    lineage_json)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                created,
+                version,
+                decision_type,
+                n,
+                brier,
+                ece,
+                json.dumps(bins),
+                json.dumps(points),
+                lineage_json,
+            ),
+        )
+    except sqlite3.OperationalError:
+        conn.execute(
+            """INSERT INTO decision_calibration_snapshots
+                   (created_at, calibrator_version, decision_type, n_outcomes,
+                    brier_score, ece_score, reliability_json, isotonic_points_json)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                created,
+                version,
+                decision_type,
+                n,
+                brier,
+                ece,
+                json.dumps(bins),
+                json.dumps(points),
+            ),
+        )
+
     updates = [
         (round(cal, 4), version, did)
         for (did, _x, _y), cal in zip(data, calibrated)
@@ -274,12 +465,27 @@ def fit_class(
     return summary
 
 
+def _class_terminal_ok(s: dict[str, object]) -> bool:
+    return bool(
+        s.get("fitted")
+        or s.get("cold_start")
+        or s.get("noop_reason") in (NOOP_DEGENERATE_LABELS, NOOP_STALE_SCHEMA)
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     p.add_argument("--db", default=str(DB_PATH))
     p.add_argument("--apply", action="store_true", help="Persist results; without this, dry-run")
     p.add_argument("--dry-run", action="store_true", help="(default) compute but do not persist")
     p.add_argument("--min-n", type=int, default=DEFAULT_MIN_N)
+    p.add_argument("--min-positive", type=int, default=1, help="Minimum success labels per class")
+    p.add_argument("--min-negative", type=int, default=1, help="Minimum failure labels per class")
+    p.add_argument(
+        "--strict-schema",
+        action="store_true",
+        help="NOOP classes when decision_outcomes is missing required columns",
+    )
     p.add_argument("--version", default=None, help="Calibrator version stamp (default: iso_v1_<YYYYwWW>)")
     args = p.parse_args(argv)
 
@@ -287,6 +493,9 @@ def main(argv: list[str] | None = None) -> int:
         print("[calibrator] error: --apply and --dry-run are mutually exclusive", file=sys.stderr)
         return 2
     apply = args.apply and not args.dry_run
+    if args.min_positive < 1 or args.min_negative < 1:
+        print("[calibrator] error: --min-positive and --min-negative must be >= 1", file=sys.stderr)
+        return 2
 
     db = Path(args.db)
     if not db.exists():
@@ -297,10 +506,23 @@ def main(argv: list[str] | None = None) -> int:
 
     conn = sqlite3.connect(str(db), timeout=15)
     try:
+        if apply:
+            _maybe_add_lineage_column(conn)
         classes = _distinct_decision_types(conn)
         summaries: list[dict[str, object]] = []
         for dt in classes:
-            summaries.append(fit_class(conn, dt, version, args.min_n, apply=apply))
+            summaries.append(
+                fit_class(
+                    conn,
+                    dt,
+                    version,
+                    args.min_n,
+                    apply=apply,
+                    min_positive=args.min_positive,
+                    min_negative=args.min_negative,
+                    strict_schema=args.strict_schema,
+                )
+            )
     finally:
         conn.close()
 
@@ -310,14 +532,19 @@ def main(argv: list[str] | None = None) -> int:
     out_path = REPORT_DIR / f"reliability_{yw}.json"
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "version": version, "apply": apply, "min_n": args.min_n,
+        "calibrator_policy_version": CALIBRATOR_POLICY_VERSION,
+        "version": version,
+        "apply": apply,
+        "min_n": args.min_n,
+        "min_positive": args.min_positive,
+        "min_negative": args.min_negative,
+        "strict_schema": args.strict_schema,
         "classes": summaries,
     }
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps({"report": str(out_path), "applied": apply, "classes": len(summaries)}))
-    # Exit 0 if at least one class fit, OR all were cold-start (explicit insufficient-data is OK).
     fitted_any = any(s.get("fitted") for s in summaries)
-    if not fitted_any and not all(s.get("cold_start") for s in summaries):
+    if not fitted_any and not all(_class_terminal_ok(s) for s in summaries):
         return 1
     return 0
 

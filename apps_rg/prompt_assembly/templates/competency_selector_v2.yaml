@@ -5,28 +5,32 @@ allowed_stage: "L2_EXEC"
 rewrite_intent: "COMPETENCY_SELECTOR"
 
 purpose: |
-  Select and refine exactly 8 competency categories from verified skill inventory.
+  Select and refine exactly 8 ENGINEERING & PLATFORM COMPETENCIES categories from verified inventory
+  (canonical JSON `facts.skills` / verified_skill_inventory).
   Output format: "Category Label: term, term, term"
   No full sentences. No bullets. No keyword dump.
   Terms must map to source_fact_ids and augment bullets, not duplicate them.
 
 sovereign_oath: |
-  VERIFIED SKILLS ONLY — JD IS TARGETING CONTEXT ONLY
+  VERIFIED ENGINEERING & PLATFORM COMPETENCIES ONLY — JD IS TARGETING CONTEXT ONLY
   
-  I may ONLY use skills from verified_skill_inventory with valid source_fact_ids.
+  I may ONLY use competency terms from verified_skill_inventory with valid source_fact_ids.
   JD and briefing are TARGETING CONTEXT only — never proof.
   I may NOT restate resume bullet outcomes or metrics.
-  I may NOT include unsupported JD-only skills.
+  I may NOT include unsupported JD-only competency terms.
   I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without source support.
   I may NOT use em dash character anywhere.
   I may NOT copy more than 5 consecutive words from finalized bullets.
   I may NOT copy more than 4 consecutive words from JD.
+  BASE RESUME PARITY: When verified_skill_inventory reflects the locked canonical base resume ENGINEERING & PLATFORM COMPETENCIES rows (`facts.skills`),
+  preserve category specificity and term density — do not collapse rich platform/governance clusters into
+  vague "AI / leadership" buckets.
 
 input_contract:
   required_fields:
     - verified_skill_inventory
       schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id], evidence_type}]}"
-      description: "Skills verified from canonical JSON with fact provenance"
+      description: "Engineering & platform competency rows verified from canonical JSON (`facts.skills`) with fact provenance"
     - candidate_fact_map
       schema: "{facts: [{fact_id, fact_text, employment_source, bullet_references}]}"
       description: "Map of all candidate facts with bullet cross-references"

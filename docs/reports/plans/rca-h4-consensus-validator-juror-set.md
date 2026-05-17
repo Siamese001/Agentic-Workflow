@@ -24,8 +24,8 @@ Class: `ConsensusEngine` (used across L1 cognitive safety checks). Method `_call
 
 - **Routing SSOT (Wave 1):** all model IDs flow from `@c:\Git\Agentic-Workflow\agentic_core\L0_routing\config\model_registry.py`. `consensus_validator.py` imports these model IDs correctly (✅ per code read — uses `OPENAI_MODEL_ID` etc., not hardcoded strings).
 - **Routing dispatch SSOT (Wave 2):** all model-dispatch decisions should flow through `HealingRouter`. `consensus_validator.py` maintains its own dispatch loop bypassing the router.
-- **Confidence-threshold SSOT:** `path_constants.HEALING_CONFIDENCE_X/Y` (the W1 SSOT) are separate from `MAJORITY_THRESHOLD = 0.66` because they answer different questions:
-  - `HEALING_CONFIDENCE_*` = confidence-based tier selection
+- **Confidence routing SSOT:** ``routing_thresholds_ssot.HealingConfidenceThresholds`` drives heal-float cutoffs via paired env knobs documented in `.env.example`, independent of juror-majority thresholds:
+  - paired heal env knobs answer **confidence-band routing for heals**
   - `MAJORITY_THRESHOLD` = consensus threshold for juror voting
 
 The **0.66** value is not arbitrary — it's 2-of-3 majority for a 3-juror set. It is internally consistent for consensus voting but still represents a **duplicate confidence-threshold surface** per parent §6 H4.

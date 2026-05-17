@@ -36,8 +36,9 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+# Canonical lookup implementation (SSOT under .cursor/skills).
 LOOKUP_SCRIPT = (
-    REPO_ROOT / ".windsurf" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
+    REPO_ROOT / ".cursor" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
 )
 
 

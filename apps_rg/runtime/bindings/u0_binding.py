@@ -269,6 +269,7 @@ def _coerce_envelope_to_app_payload(envelope: Any) -> tuple[dict[str, Any], dict
         p: AppsRgIngressPayload = envelope.payload
         uc = dict(p.user_constraints or {})
         gm = uc.pop("_generation_mode", None)
+        bref = p.briefing_artifact_ref
         app_payload: dict[str, Any] = {
             "app_id": p.app_id,
             "task_class": p.task_class,
@@ -279,7 +280,8 @@ def _coerce_envelope_to_app_payload(envelope: Any) -> tuple[dict[str, Any], dict
             "source_resume_ref": p.source_resume_ref,
             "job_description_text": p.job_description_text or "",
             "job_description_ref": p.job_description_ref,
-            "manual_brief_path": p.manual_brief_path,
+            "briefing_artifact_ref": bref,
+            "manual_brief_path": bref,
             "auto_research_internal": p.auto_research_internal,
             "auto_research_tavily": p.auto_research_tavily,
             "research_via": p.research_via,
@@ -303,7 +305,11 @@ def _coerce_envelope_to_app_payload(envelope: Any) -> tuple[dict[str, Any], dict
 
     raw = getattr(envelope, "app_payload", None)
     if isinstance(raw, Mapping):
-        return dict(raw), {
+        raw_dict = dict(raw)
+        bref = raw_dict.get("briefing_artifact_ref") or raw_dict.get("manual_brief_path")
+        raw_dict["briefing_artifact_ref"] = bref
+        raw_dict["manual_brief_path"] = bref
+        return raw_dict, {
             "request_id": getattr(envelope, "request_id", "") or "",
             "run_id": getattr(envelope, "run_id", "") or "",
             "trace_id": getattr(envelope, "trace_id", "") or "",

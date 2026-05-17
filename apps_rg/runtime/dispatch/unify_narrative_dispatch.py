@@ -1,6 +1,6 @@
 """App-local unify_narrative runtime seam.
 
-Canonical JSON + optional accepted unify_bullets artifact -> one role sentence -> X2 -> X1D -> X3 -> L6.
+Canonical JSON + accepted finalized unify_bullets artifact -> one role sentence -> X2 -> X1D -> X3 -> L6.
 Does not activate registry or touch agentic_core.
 
 **W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
@@ -42,22 +42,35 @@ from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_rea
 from apps_rg.runtime.shadow.unify_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
+from apps_rg.runtime.dispatch.mock_runtime_proof_policy import (
+    MOCK_JUDGES_REJECT_EXIT_CODE,
+    MOCK_PROVIDER_REJECT_EXIT_CODE,
+    allow_non_allow_exit_zero_ok,
+    attach_lane_proof_bundle_fields,
+    compute_lane_proof_bundle,
+    emit_mock_blocked_stderr,
+    emit_mock_judges_blocked_stderr,
+    infer_product_quality_blocked_or_mock,
+    mock_blocked_before_run,
+    mock_judges_blocked_before_run,
+)
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
     resolve_effective_lane_l2_path,
 )
+from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
+from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
+from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 
 PROMPT_ID = "unify_position_narrative_v1"
 NARRATIVE_TEMP_DEFAULT = 0.45
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
-JD_TEXT_DEFAULT = (
-    "enterprise AI platform leadership, agentic AI systems, runtime governance, "
-    "LLMOps, retrieval, production reliability, engineering leadership"
-)
-BRIEFING_DEFAULT = "regulated enterprise environment, platform modernization, AI governance, scalable delivery"
+JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
+BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
 NARRATIVE_QWEN_MAX_TOKENS = 1200
+ACCEPTED_COMPANION_STATUS = "ACCEPTED_FINALIZED"
 
 
 def _find_repo_root() -> Path:
@@ -69,8 +82,6 @@ def _find_repo_root() -> Path:
 
 
 REPO_ROOT = _find_repo_root()
-BASE_POINTER = REPO_ROOT / "apps_rg" / "resume" / "base" / "active_base_resume_pointer.json"
-BASE_JSON_DEFAULT = REPO_ROOT / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
 LANE_KEY = "unify_narrative"
 
 
@@ -85,14 +96,7 @@ def write_json(path: Path, data: Any) -> None:
 
 
 def load_base_resume() -> tuple[dict[str, Any], Path, str]:
-    if BASE_POINTER.exists():
-        pointer = json.loads(BASE_POINTER.read_text(encoding="utf-8"))
-        ref = pointer.get("active_resume_path") or pointer.get("base_resume_json_ref") or "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
-        path = REPO_ROOT / ref
-    else:
-        path = BASE_JSON_DEFAULT
-    raw = path.read_text(encoding="utf-8")
-    return json.loads(raw), path, hashlib.sha256(raw.encode()).hexdigest()
+    return load_lane_base_resume_json(repo_root=REPO_ROOT)
 
 
 def extract_unify_employment(base_resume: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], set[str]]:
@@ -145,16 +149,73 @@ def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def load_companion_bullets_text() -> str:
+def load_companion_bullets_context() -> dict[str, Any]:
+    """Resolve finalized Unify bullets before narrative generation.
+
+    The narrative lane must not silently proceed as a production-quality lane when
+    bullets are absent, mocked, failed, or not X3-allowed. This keeps the Unify
+    workflow bullet-first: bullets -> X2/X1D/X3 -> narrative.
+    """
     path = resolve_effective_lane_l2_path(REPO_ROOT, "unify_bullets")
+    base: dict[str, Any] = {
+        "status": "MISSING",
+        "reason": "unify_bullets_l2_output_not_found",
+        "text": "",
+        "l2_ref": None,
+        "x3_ref": None,
+        "bullet_ids": [],
+        "product_quality_status": "UNKNOWN",
+        "x3_code": "UNKNOWN",
+    }
     if path is None or not path.is_file():
-        return ""
+        return base
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return ""
+    except (json.JSONDecodeError, OSError) as exc:
+        return {**base, "status": "INVALID", "reason": f"unify_bullets_l2_unreadable:{type(exc).__name__}", "l2_ref": str(path)}
+
     bullets = data.get("bullets") or []
-    return "\n".join(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}" for b in bullets)
+    bullet_ids = [str(b.get("bullet_id")) for b in bullets if isinstance(b, dict)]
+    text = "\n".join(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}" for b in bullets if isinstance(b, dict))
+    product_quality_status = str(data.get("product_quality_status") or "UNKNOWN")
+    x3_path = path.parent / "x3_disposition.json"
+    x3_code = "UNKNOWN"
+    if x3_path.is_file():
+        try:
+            x3 = json.loads(x3_path.read_text(encoding="utf-8"))
+            x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
+        except (json.JSONDecodeError, OSError):
+            x3_code = "UNREADABLE"
+
+    expected_ids = list(UNIFY_BULLET_IDS)
+    status = ACCEPTED_COMPANION_STATUS
+    reasons: list[str] = []
+    if data.get("section_id") != "unify_bullets":
+        reasons.append("section_id_not_unify_bullets")
+    if bullet_ids != expected_ids:
+        reasons.append("bullet_ids_not_exact_bul_unify_001_to_006")
+    if product_quality_status != "PASS":
+        reasons.append(f"product_quality_status_not_PASS:{product_quality_status}")
+    if x3_code != "X3_ALLOW":
+        reasons.append(f"x3_not_ALLOW:{x3_code}")
+    if reasons:
+        status = "NOT_FINALIZED"
+
+    rel_l2 = str(path.relative_to(REPO_ROOT)) if path.is_relative_to(REPO_ROOT) else str(path)
+    x3_ref_val: str | None = None
+    if x3_path.is_file():
+        x3_ref_val = str(x3_path.relative_to(REPO_ROOT)) if x3_path.is_relative_to(REPO_ROOT) else str(x3_path)
+
+    return {
+        "status": status,
+        "reason": ";".join(reasons) if reasons else "ok",
+        "text": text,
+        "l2_ref": rel_l2,
+        "x3_ref": x3_ref_val,
+        "bullet_ids": bullet_ids,
+        "product_quality_status": product_quality_status,
+        "x3_code": x3_code,
+    }
 
 
 def build_runtime_payload(
@@ -165,6 +226,11 @@ def build_runtime_payload(
     selected_fact_plan: dict[str, Any],
     allowed_fact_ids: set[str],
     companion_bullets_ref: str | None,
+    companion_bullets_status: str,
+    companion_bullets_reason: str,
+    companion_bullet_ids: list[str],
+    companion_x3_code: str,
+    companion_product_quality_status: str,
     target_title: str,
     target_company: str,
     jd_text: str,
@@ -180,6 +246,11 @@ def build_runtime_payload(
         "unify_header": unify_header,
         "candidate_name": candidate_name,
         "companion_unify_bullets_ref": companion_bullets_ref,
+        "companion_unify_bullets_status": companion_bullets_status,
+        "companion_unify_bullets_reason": companion_bullets_reason,
+        "companion_unify_bullet_ids": companion_bullet_ids,
+        "companion_unify_bullets_x3_code": companion_x3_code,
+        "companion_unify_bullets_product_quality_status": companion_product_quality_status,
         "target_title": target_title,
         "target_company": target_company,
         "jd_text": jd_text,
@@ -282,10 +353,8 @@ def retry_qwen_for_parse(
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    name = str(runtime_payload.get("candidate_name") or "").strip()
-    lead = f"{name} " if name else ""
     narrative = (
-        f"{lead}shaped governed agentic AI platform delivery at Unify Consulting by weaving reusable primitives, "
+        "Shaped governed agentic AI platform delivery at Unify Consulting by weaving reusable primitives, "
         "retrieval rigor, and disciplined lifecycle governance into one enterprise operating lane, "
         "reducing lab-to-production cycle time from six months to three weeks."
     )
@@ -307,11 +376,11 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 
 def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[str, Any]]) -> tuple[str, str]:
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    if failed:
-        return "FAIL", f"X2 failed gates: {failed}"
-    if runtime_generation_status != "REAL_LLM":
-        return "PARTIAL", "Mocked or blocked generation proves plumbing only."
-    return "PASS", "REAL_LLM output passed all deterministic unify_narrative gates."
+    return infer_product_quality_blocked_or_mock(
+        runtime_generation_status=runtime_generation_status,
+        x2_failed_gate_ids=failed,
+        pass_reason="REAL_LLM output passed all deterministic unify_narrative gates.",
+    )
 
 
 def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
@@ -329,19 +398,22 @@ def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
 
 
 def run_dispatch(args: argparse.Namespace) -> int:
+    if mock_blocked_before_run(args):
+        emit_mock_blocked_stderr(dispatcher_label="unify_narrative_dispatch")
+        return MOCK_PROVIDER_REJECT_EXIT_CODE
+    if mock_judges_blocked_before_run(args):
+        emit_mock_judges_blocked_stderr(dispatcher_label="unify_narrative_dispatch")
+        return MOCK_JUDGES_REJECT_EXIT_CODE
+
     base, base_path, base_hash = load_base_resume()
     candidate_name = str(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
     unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
     selected_fact_plan = build_selected_fact_plan(unify_facts)
-    companion_text = load_companion_bullets_text()
-    bullets_l2 = resolve_effective_lane_l2_path(REPO_ROOT, "unify_bullets")
-    companion_ref = (
-        str(bullets_l2.relative_to(REPO_ROOT))
-        if bullets_l2 is not None and companion_text
-        else None
-    )
+    companion_context = load_companion_bullets_context()
+    companion_text = str(companion_context.get("text") or "")
+    companion_ref = companion_context.get("l2_ref") if companion_text else None
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
         base_hash=base_hash,
@@ -349,6 +421,11 @@ def run_dispatch(args: argparse.Namespace) -> int:
         selected_fact_plan=selected_fact_plan,
         allowed_fact_ids=allowed_fact_ids,
         companion_bullets_ref=companion_ref,
+        companion_bullets_status=str(companion_context.get("status") or "UNKNOWN"),
+        companion_bullets_reason=str(companion_context.get("reason") or ""),
+        companion_bullet_ids=list(companion_context.get("bullet_ids") or []),
+        companion_x3_code=str(companion_context.get("x3_code") or "UNKNOWN"),
+        companion_product_quality_status=str(companion_context.get("product_quality_status") or "UNKNOWN"),
         target_title=args.target_title,
         target_company=args.target_company,
         jd_text=args.jd_text,
@@ -356,7 +433,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
         candidate_name=candidate_name,
     )
     artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
-    write_json(artifact_dir / "companion_unify_bullets_context.txt", companion_text or "(none)\n")
+    write_json(artifact_dir / "companion_unify_bullets_context.json", companion_context)
+    (artifact_dir / "companion_unify_bullets_context.txt").write_text((companion_text or "(none)") + "\n", encoding="utf-8")
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_unify_narrative_prompt(
@@ -440,7 +518,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
         model_name = provider_request_data.get("model")
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
-    judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
+    judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
+    judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
     x1d = [
         j.to_dict()
         for j in run_unify_narrative_judges(
@@ -462,6 +541,9 @@ def run_dispatch(args: argparse.Namespace) -> int:
             jd_text=args.jd_text,
             runtime_generation_status=runtime_generation_status,
             companion_bullet_texts=companion_text or None,
+            companion_bullets_status=str(companion_context.get("status") or "UNKNOWN"),
+            companion_bullets_reason=str(companion_context.get("reason") or ""),
+            candidate_name=candidate_name,
             provider_requested=args.provider,
             provider_attempted=args.provider,
             model_name=model_name,
@@ -476,6 +558,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "runtime_generation_status": runtime_generation_status,
         "product_quality_status": "PENDING",
         "unify_header": unify_header,
+        "companion_unify_bullets_context": companion_context,
         "narrative_sentence": narrative,
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
@@ -490,7 +573,6 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
-    write_json(artifact_dir / "l2_output.json", l2_output)
     (artifact_dir / "unify_narrative_output.txt").write_text(narrative + "\n", encoding="utf-8")
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
 
@@ -519,9 +601,6 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
 
     product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
-    l2_output["product_quality_status"] = product_quality_status
-    l2_output["product_quality_reason"] = product_quality_reason
-    write_json(artifact_dir / "l2_output.json", l2_output)
 
     x3 = aggregate_x3(
         resume_display_text=narrative or raw_output,
@@ -532,6 +611,22 @@ def run_dispatch(args: argparse.Namespace) -> int:
         product_quality_status=product_quality_status,
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+
+    bundle = compute_lane_proof_bundle(
+        args,
+        runtime_generation_status=runtime_generation_status,
+        x1d_judges=x1d,
+        x2_gates=x2,
+        x3=x3,
+    )
+    l2_output["product_quality_status"] = product_quality_status
+    l2_output["product_quality_reason"] = product_quality_reason
+    attach_lane_proof_bundle_fields(
+        l2_output,
+        runtime_generation_status=runtime_generation_status,
+        bundle=bundle,
+    )
+    write_json(artifact_dir / "l2_output.json", l2_output)
 
     l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT
     l6_max = NARRATIVE_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
@@ -544,18 +639,25 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
 
+    rl2 = {
+        "provider_attempted": args.provider,
+        "runtime_generation_status": runtime_generation_status,
+        "prompt_hash": prompt_hash,
+        "model": model_name,
+        "raw_model_output": raw_output,
+        "narrative_sentence": narrative,
+        "product_quality_status": product_quality_status,
+        "x3_code": x3.x3_code,
+    }
+    attach_lane_proof_bundle_fields(
+        rl2,
+        runtime_generation_status=runtime_generation_status,
+        bundle=bundle,
+    )
+
     write_json(
         artifact_dir / "real_l2_generation_result.json",
-        {
-            "provider_attempted": args.provider,
-            "runtime_generation_status": runtime_generation_status,
-            "prompt_hash": prompt_hash,
-            "model": model_name,
-            "raw_model_output": raw_output,
-            "narrative_sentence": narrative,
-            "product_quality_status": product_quality_status,
-            "x3_code": x3.x3_code,
-        },
+        rl2,
     )
 
     lines = [
@@ -591,21 +693,61 @@ def run_dispatch(args: argparse.Namespace) -> int:
         provider_requested=prq,
         provider_attempted=pratt,
         command=" ".join(sys.argv),
+        proof_eligible=bundle["proof_eligible"],
+        proof_scope=bundle["proof_scope"],
+        test_only_mock_provider=bundle["test_only_mock_provider"],
+        runtime_certification=bundle["runtime_certification"],
+        x1d_runtime_status=bundle["x1d_runtime_status"],
+        judge_proof_eligible=bundle["judge_proof_eligible"],
+        provider_proof_eligible=bundle["provider_proof_eligible"],
+        test_only_mock_judges=bundle["test_only_mock_judges"],
+        proof_closeout_note=bundle["proof_closeout_note"] if bundle.get("proof_closeout_note") else None,
     )
-    return 0 if args.allow_non_allow_exit_zero else (0 if x3.x3_code == "X3_ALLOW" else 2)
+    if allow_non_allow_exit_zero_ok(args):
+        return 0
+    return 0 if x3.x3_code == "X3_ALLOW" else 2
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg unify_narrative runtime seam.")
-    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="mock")
+    parser.add_argument(
+        "--provider",
+        choices=["mock", "qwen_vllm"],
+        default="qwen_vllm",
+        help="Generation provider. mock requires `--allow-test-mock-provider` (plumbing-only).",
+    )
     parser.add_argument("--temperature", type=float, default=NARRATIVE_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
-    parser.add_argument("--mock-judges", action="store_true")
+    parser.add_argument(
+        "--mock-judges",
+        action="store_true",
+        help=(
+            "Use mocked judge rows for contract-test plumbing only. Blocked unless paired with "
+            "`--allow-test-mock-judges`."
+        ),
+    )
+    parser.add_argument(
+        "--allow-test-mock-judges",
+        action="store_true",
+        help=(
+            "Test-only hatch: allow `--mock-judges`. Emits judge_proof_eligible=false and proof_eligible=false "
+            "(never runtime certification)."
+        ),
+    )
+    parser.add_argument(
+        "--allow-test-mock-provider",
+        action="store_true",
+        help="Test-only: allow mock provider for plumbing artifacts (proof_eligible=false).",
+    )
     parser.add_argument("--target-title", default=TARGET_TITLE_DEFAULT)
     parser.add_argument("--target-company", default=TARGET_COMPANY_DEFAULT)
     parser.add_argument("--jd-text", default=JD_TEXT_DEFAULT)
     parser.add_argument("--briefing", default=BRIEFING_DEFAULT)
-    parser.add_argument("--allow-non-allow-exit-zero", action="store_true")
+    parser.add_argument(
+        "--allow-non-allow-exit-zero",
+        action="store_true",
+        help="Exit 0 for inspection despite X3≠ALLOW — qwen_vllm or mock+hatch only.",
+    )
     return parser
 
 

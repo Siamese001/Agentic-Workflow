@@ -34,7 +34,7 @@ input_contract:
       description: "Candidate facts with JD coverage mapping"
     - verified_skill_inventory
       schema: "{skills: [{skill_id, coverage_status: enum[verified, partial, unsupported]}]}"
-      description: "Skills with JD alignment status"
+      description: "Engineering & platform competencies with JD alignment status"
     - briefing_gaps
       schema: "array[{topic, gap_description}]"
       description: "Gaps identified in briefing analysis"

@@ -59,6 +59,32 @@ def _ordered_find(haystack: str, needles: list[str]) -> bool:
     return True
 
 
+def candidate_identity_docx_verdict(hay: str, id_blob: Any) -> tuple[bool, str | None, Any]:
+    """Check DOCX plaintext contains assembled ``candidate_identity`` strings verbatim.
+
+    Returns ``(pass, failure_reason, observed)``. Skips (pass) when ``candidate_identity`` is
+    absent (legacy ``final_resume``) or has no name/contact to verify.
+    """
+    if not isinstance(id_blob, dict):
+        return True, None, "skipped_no_candidate_identity"
+    cname = str(id_blob.get("candidate_name") or "").strip()
+    hc_raw = id_blob.get("header_contact")
+    hc = hc_raw if isinstance(hc_raw, dict) else {}
+    if not cname and not hc:
+        return True, None, "skipped_empty_identity_fields"
+    if not (hay or "").strip():
+        return False, "empty_docx_plaintext", {"candidate_name": cname, "has_contact": bool(hc)}
+    if cname and cname not in hay:
+        return False, "candidate_name not found verbatim", cname
+    needles: list[str] = []
+    if hc:
+        order_ct = ("phone", "email", "linkedin", "github", "location")
+        needles = [str(hc[k]).strip() for k in order_ct if hc.get(k) and str(hc[k]).strip()]
+        if needles and not _ordered_find(hay, needles):
+            return False, "header_contact fields not found in document order", needles
+    return True, None, {"candidate_name_set": bool(cname), "contact_field_count": len(needles)}
+
+
 def run_docx_render_x2_gates(
     *,
     repo_root: Path,
@@ -151,6 +177,16 @@ def run_docx_render_x2_gates(
             hay = _doc_plaintext(docx_output_path)
         except (OSError, RuntimeError, ValueError):
             hay = ""
+
+    id_ok, id_fail, id_obs = candidate_identity_docx_verdict(hay, final_resume_blob.get("candidate_identity"))
+    _add(
+        gates,
+        "x2_docx_candidate_identity_verbatim",
+        id_ok,
+        id_obs,
+        None,
+        id_fail,
+    )
 
     gen_blocks: list[str] = []
     for sid in GENERATED_LANE_IDS:

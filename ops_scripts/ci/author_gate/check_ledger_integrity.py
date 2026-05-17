@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
 
 try:
     from author_gate_ledger_integrity import DB_PATH, verify_chain

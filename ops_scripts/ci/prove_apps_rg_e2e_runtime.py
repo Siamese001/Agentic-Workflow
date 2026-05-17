@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 from typing import Any, Mapping
 
+from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT_PATH = REPO_ROOT / "artifacts/ci/apps_rg_e2e_runtime_proof.json"
 
@@ -354,10 +356,7 @@ def main() -> int:
             }
         )
 
-    briefing_core = (
-        "regulated enterprise environment; platform modernization; AI governance; scalable delivery; "
-        "cross-functional leadership."
-    )
+    briefing_core = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
     full_briefing = briefing_core.strip() + "\n\n" + _fec_briefing_extension(fec)
 
     request_id = getattr(fec, "request_id", "prove-apps-rg-e2e-runtime")
@@ -420,6 +419,8 @@ def main() -> int:
         "tests/_apps_contract/test_apps_rg_whole_run_exit.py",
         "tests/_apps_contract/test_apps_rg_e2e_boundary_hygiene.py",
         "tests/_apps_contract/test_apps_rg_l2_envelope.py",
+        "tests/_apps_contract/test_exec_summary_pa_compiled_prompt.py",
+        "tests/_apps_contract/test_exec_summary_runtime_slice.py",
         "tests/_apps_contract/test_c0_no_answer_generation.py",
         "-q",
         "--tb=short",

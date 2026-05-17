@@ -175,3 +175,25 @@ G4b is the canonical owner of the config-knob catalogue. The 154 env keys enumer
 2. Add each key's **default** (from `os.getenv("KEY", default)` calls where available) — G2b did not catalogue defaults.
 3. Cross-reference env-key names against v1.4 atoms that assume their presence.
 4. Identify keys read by tests only (not production) and exclude from the runtime config-knob set.
+
+## 11. L2 heal-confidence SSOT (paired env)
+
+| Env key | Consumer module(s) | Notes |
+|---|---|---|
+| `HEALING_CONFIDENCE_HIGH` | `agentic_core/L2_execution/healers/routing_thresholds_ssot.py` | Inclusive HIGH band floor (`score ≥ HIGH`); fail-closed domain + ordering pairing with MEDIUM |
+| `HEALING_CONFIDENCE_MEDIUM` | `agentic_core/L2_execution/healers/routing_thresholds_ssot.py` | Inclusive MEDIUM band floor; must satisfy `0 ≤ MEDIUM < HIGH ≤ 1` |
+
+Executor-level thresholds remain separate:
+
+| Env key | Consumer module(s) | Notes |
+|---|---|---|
+| `PRIMARY_HIGH_CONFIDENCE` | `agentic_core/L2_execution/healers/confidence_aware_executor.py` | PRIMARY-tier executor knobs — orthogonal to heal SSOT pairing |
+| `PRIMARY_MEDIUM_CONFIDENCE` | `agentic_core/L2_execution/healers/confidence_aware_executor.py` | PRIMARY-tier executor knobs — orthogonal |
+
+| Env key | Consumer module(s) | Notes |
+|---|---|---|
+| `DISABLE_QWEN_FALLBACK` | `agentic_core/L2_execution/healers/healing_router.py` | MEDIUM-tier fallback semantics |
+| `ROUTING_POSTERIOR_N_FLOOR` | `agentic_core/L2_execution/healers/healing_router.py` | Posterior ledger n-floor |
+| `ROUTING_POSTERIOR_DISABLED` | `agentic_core/L2_execution/healers/healing_router.py` | Posterior ledger opt-out |
+
+Signal enhancer knobs (`SIGNAL_*`) are documented under `signal_quality_config` — they tune signal layers and do **not** retarget heal band math (see `.env.example` commentary).

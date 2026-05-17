@@ -59,6 +59,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
+from tools.refactor_decisions.bind_confidence import (
+    BIND_DISPUTED,
+    BIND_HIGH,
+    BindConfidenceInput,
+    classify_bind_confidence,
+    default_binding_window_seconds,
+    dispute_id_set_from_env,
+    parse_ci_receipt,
+    refine_outcome_label_with_ci,
+    ci_receipt_path_from_env,
+)
+
 try:
     from tqdm import tqdm
 except ImportError:  # pragma: no cover — tqdm is a project dep but allow degradation
@@ -194,6 +206,30 @@ def _commit_subject(sha: str) -> str:
     return r.stdout.strip() if r.returncode == 0 else ""
 
 
+def _commit_files(sha: str) -> list[str]:
+    if not sha:
+        return []
+    files_raw = _git(["diff-tree", "--no-commit-id", "--name-only", "-r", sha])
+    return [f for f in files_raw.splitlines() if f]
+
+
+def _commit_iso_date(sha: str) -> str:
+    if not sha:
+        return ""
+    raw = _git(["show", "-s", "--format=%cI", sha])
+    return raw.strip() if raw else ""
+
+
+def _count_overlapping_commits(scope_files: set[str], commits: list[dict], created_at: str) -> int:
+    n = 0
+    for c in commits:
+        if c["ts"] <= created_at:
+            continue
+        if _overlap(scope_files, c["files"]):
+            n += 1
+    return n
+
+
 def decision_files(conn: sqlite3.Connection, decision_id: str) -> set[str]:
     cur = conn.execute(
         "SELECT file_path FROM decision_scope WHERE decision_id = ? AND file_path IS NOT NULL",
@@ -247,7 +283,13 @@ def classify_outcome(subject: str) -> tuple[str, dict[str, int]]:
 # --------------------------------------------------------------------- #
 
 
-def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
+def bind(
+    conn: sqlite3.Connection,
+    commits: list[dict],
+    dry_run: bool,
+    *,
+    ci_receipt_file: str | None = None,
+) -> int:
     decisions = unbound_decisions(conn)
     if not decisions:
         _LOG.info("No unbound decisions.")
@@ -258,31 +300,33 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
 
     bound_count = 0
     now = datetime.now(timezone.utc)
+    dispute_ids = dispute_id_set_from_env()
+    receipt_path = Path(ci_receipt_file) if ci_receipt_file else ci_receipt_path_from_env()
+    ci_status, ci_meta = parse_ci_receipt(receipt_path)
+    window_s = default_binding_window_seconds()
 
     for dec in iterator:
         decision_id = dec["decision_id"]
         created_at = dec["created_at"]
         scope_files = decision_files(conn, decision_id)
+        operator_disputed = decision_id in dispute_ids
 
-        # Direct-bind path: the v2 capture hook pre-populates decisions.commit_sha
-        # from the DECISION_CAPTURED marker's commit context, so file-intersection
-        # is unnecessary — the SHA is already correct. Prefer this when present.
         direct_sha = dec["commit_sha"] if "commit_sha" in dec.keys() else None
-        best = None
+        best: dict | None = None
+        used_direct = False
         if direct_sha:
             subject = _commit_subject(direct_sha)
             if subject:
-                best = {
-                    "sha": direct_sha,
-                    "subject": subject,
-                    "files": [],  # unknown without full walk; empty is fine for overlap JSON
-                    "ts": created_at,
-                }
+                files = _commit_files(direct_sha)
+                cts = _commit_iso_date(direct_sha) or created_at
+                best = {"sha": direct_sha, "subject": subject, "files": files, "ts": cts}
+                used_direct = True
 
+        overlapping_n = 1
         if best is None:
             if not scope_files:
                 continue
-            # Fallback: find the first commit AFTER decision.created_at that touches a scope file
+            overlapping_n = _count_overlapping_commits(scope_files, commits, created_at)
             for c in commits:
                 if c["ts"] <= created_at:
                     continue
@@ -291,8 +335,31 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
                     break
             if best is None:
                 continue
+        elif used_direct:
+            overlapping_n = 1
 
+        commit_file_set = set(best["files"])
         label, flags = classify_outcome(best["subject"])
+        label, flags = refine_outcome_label_with_ci(label, flags, ci_status, ci_meta)
+
+        bc_in = BindConfidenceInput(
+            scope_files=frozenset(scope_files),
+            commit_files=frozenset(commit_file_set),
+            decision_created_at_iso=created_at,
+            commit_timestamp_iso=str(best["ts"]),
+            binding_window_seconds=window_s,
+            ci_receipt_status=ci_status,
+            direct_sha_bind=used_direct,
+            overlapping_commit_count=overlapping_n,
+            operator_disputed=operator_disputed,
+        )
+        bind_tier, ci_echo = classify_bind_confidence(bc_in)
+        _ = ci_echo  # same as ci_status unless classifier echoes
+
+        promotion_eligible = 1 if bind_tier == BIND_HIGH else 0
+        bind_disputed = 1 if (bind_tier == BIND_DISPUTED or operator_disputed) else 0
+        overlap_paths = sorted(_overlap(scope_files, commit_file_set))
+
         try:
             dec_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
         except ValueError:
@@ -300,17 +367,24 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
         latency_s = int((now - dec_dt).total_seconds())
 
         _LOG.info(
-            "Bind %s ← commit %s (%s) label=%s latency=%ss",
+            "Bind %s ← commit %s (%s) label=%s bind=%s ci=%s latency=%ss",
             decision_id,
             best["sha"][:8],
             best["subject"][:50],
             label,
+            bind_tier,
+            ci_status,
             latency_s,
         )
 
         if dry_run:
             bound_count += 1
             continue
+
+        notes = (
+            f"auto-bound: {best['subject'][:160]} | bind_confidence={bind_tier} "
+            f"ci_receipt={ci_status} direct={used_direct}"
+        )
 
         try:
             conn.execute(
@@ -321,9 +395,10 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
                     rollback_required, promote_to_pattern,
                     commit_shas_json, files_written_json, tests_run_json,
                     latency_to_outcome_s, pattern_promotion_eligible,
-                    outcome_label, bound_at, outcome_notes
+                    outcome_label, bound_at, outcome_notes,
+                    bind_confidence, ci_receipt_status, bind_disputed
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     decision_id,
@@ -333,13 +408,16 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
                     flags["rollback_required"],
                     flags["promote_to_pattern"],
                     json.dumps([best["sha"]]),
-                    json.dumps(sorted(_overlap(scope_files, best["files"]))),
+                    json.dumps(overlap_paths),
                     json.dumps([]),
                     latency_s,
-                    flags["pattern_promotion_eligible"],
+                    promotion_eligible,
                     label,
                     now.isoformat(timespec="seconds"),
-                    f"auto-bound from commit subject: {best['subject'][:200]}",
+                    notes,
+                    bind_tier,
+                    ci_status,
+                    bind_disputed,
                 ),
             )
             conn.execute(
@@ -349,10 +427,9 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
             conn.commit()
             bound_count += 1
 
-            # W1.2 — refactor_outcome ledger: emit a bound row when a
-            # refactor-class Author-Gate decision is tied to a commit.
             try:
                 from tools.ledgers.hook_helpers import emit_ledger_event
+
                 dec_type = dec["decision_type"] if "decision_type" in dec.keys() else "unknown"
                 emit_ledger_event(
                     ledger="refactor_outcome",
@@ -366,6 +443,7 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
                         "commit_subject": best["subject"][:200],
                         "outcome_label": label,
                         "latency_to_outcome_s": latency_s,
+                        "bind_confidence": bind_tier,
                     },
                     score_band=label if label in ("success", "rework", "rollback") else "partial",
                     commit_sha=best["sha"],
@@ -396,6 +474,12 @@ def main() -> int:
         "--head", action="store_true", help="Bind only the HEAD commit (git post-commit hook mode)"
     )
     parser.add_argument("--dry-run", action="store_true", help="Report without writing")
+    parser.add_argument(
+        "--ci-receipt",
+        type=str,
+        default="",
+        help="CI receipt JSON path (overrides AG_BIND_CI_RECEIPT_PATH)",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
 
@@ -414,7 +498,12 @@ def main() -> int:
             _LOG.info("No commits returned from git log.")
             return 0
         _LOG.info("Scanning %d commit(s)…", len(commits))
-        bound = bind(conn, commits, dry_run=args.dry_run)
+        bound = bind(
+            conn,
+            commits,
+            dry_run=args.dry_run,
+            ci_receipt_file=args.ci_receipt.strip() or None,
+        )
         verb = "Would bind" if args.dry_run else "Bound"
         _LOG.info("%s %d outcome(s).", verb, bound)
     finally:

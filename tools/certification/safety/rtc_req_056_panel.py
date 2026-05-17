@@ -122,7 +122,7 @@ GEMINI_JUROR: Final[JurorSpec] = JurorSpec(
     model_id="gemini-3.1-pro-preview",
     env_key="GOOGLE_API_KEY",
     env_key_aliases=("GEMINI_API_KEY",),  # GEMINI_API_KEY deprecated — use GOOGLE_API_KEY
-    model_env_override="GEMINI_MODEL",
+    model_env_override="GOOGLE_AI_MODEL",
     model_aliases=("gemini-3.1-pro-preview",),
 )
 

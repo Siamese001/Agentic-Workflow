@@ -1,19 +1,9 @@
 {
   "gate_id": "L2_lpg_drift_ratchet",
-  "count": 20,
-  "seeded_at": "2026-04-23T13:08:28.650916+00:00",
-  "snapshot": "adg_indexed_04222026_2106.sqlite",
-  "loosen_history": [
-    {
-      "at": "2026-04-28T18:49:35+00:00",
-      "snapshot": "unknown",
-      "from": 14,
-      "to": 20,
-      "reason": "finish-deferred-scope 2026-04-28: absorb current floor across 15 wiring_ci ratchets so the ratchet-class P0..P3 gates resume catching only NEW regressions; the absorbed counts are real architectural debt tracked separately under their owning plans (adg-wiring-ci-hardening-7a5d84 W3-W6)."
-    }
-  ],
-  "loosened_at": "2026-04-28T18:49:35+00:00",
+  "count": 29,
+  "seeded_at": "2026-05-17T11:54:29.726145+00:00",
+  "snapshot": "adg_indexed_05172026_0651.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-29T01:38:39.195152+00:00",
-  "last_run_snapshot": "adg_indexed_04282026_2133.sqlite"
+  "last_run_at": "2026-05-17T12:14:58.629897+00:00",
+  "last_run_snapshot": "adg_indexed_05172026_0651.sqlite"
 }

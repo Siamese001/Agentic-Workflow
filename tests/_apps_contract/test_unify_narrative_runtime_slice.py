@@ -33,13 +33,13 @@ def load_json(name: str):
 
 
 def test_mock_dispatch_runs():
-    result = run_cmd("--provider", "mock", "--mock-judges")
+    result = run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     assert result.returncode == 0, result.stderr
     assert "UNIFY_NARRATIVE_OUTPUT:" in result.stdout
 
 
 def test_mock_one_sentence():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l2 = load_json("l2_output.json")
     assert l2["narrative_sentence"].count(".") >= 1
     text = l2["narrative_sentence"].strip()
@@ -47,20 +47,20 @@ def test_mock_one_sentence():
 
 
 def test_x2_gate_count():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     x2 = load_json("x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 19
+    assert x2["total_x2_gates"] == 21
     assert x2["x2_failed"] == 0
 
 
 def test_mock_x3_review_plumbing():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     x3 = load_json("x3_disposition.json")
     assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
 
 
 def test_l6_flags():
-    run_cmd("--provider", "mock", "--mock-judges")
+    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
     l6 = load_json("l6_shadow_eval_package.json")
     assert l6["offline_only"] is True
     assert l6["human_label_required"] is True

@@ -74,6 +74,7 @@ def aggregate_x3(
     x1d_judges: list[dict[str, Any]],
     runtime_generation_status: str,
     product_quality_status: str,
+    canonical_claims_for_hash: list[dict[str, Any]] | None = None,
 ) -> X3Disposition:
     failed_gates = [g["gate_id"] for g in x2_gates if not g.get("pass")]
 
@@ -103,6 +104,10 @@ def aggregate_x3(
         remediation.append(f"Configure blocked judge providers: {', '.join(blocked)}")
     if mocked:
         remediation.append("Replace mocked judges with model-backed or approved calibrated judges.")
+        if runtime_generation_status == "REAL_LLM":
+            remediation.append(
+                "REAL_LLM generation proven; X1D proof blocked because judges were mocked."
+            )
     if soft_failed:
         remediation.append(f"Address soft-failed judges below threshold: {', '.join(soft_failed)}")
     if decisive:
@@ -111,7 +116,8 @@ def aggregate_x3(
         remediation.append(f"Product quality must be PASS, currently {product_quality_status}.")
 
     summary_hash = hashlib.sha256(resume_display_text.encode()).hexdigest()[:16]
-    ledger_hash = hashlib.sha256(json.dumps(claim_ledger, sort_keys=True).encode()).hexdigest()[:16]
+    ledger_payload = canonical_claims_for_hash if canonical_claims_for_hash is not None else claim_ledger
+    ledger_hash = hashlib.sha256(json.dumps(ledger_payload, sort_keys=True).encode()).hexdigest()[:16]
 
     review_reason = ""
     if failed_gates:

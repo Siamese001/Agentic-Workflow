@@ -1,0 +1,205 @@
+{
+  "schema_version": "1",
+  "run_id": "exec_summary_20260517_133550",
+  "correlation_id": null,
+  "created_at": "2026-05-17T13:35:50.991302+00:00",
+  "bundle_kind": "lane_runtime_proof",
+  "lane": "executive_summary",
+  "root_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550",
+  "artifact_namespace": "artifacts/apps_rg/runs",
+  "log_namespace": "apps_rg/pipeline_logs",
+  "entries": [
+    {
+      "role": "lane_run_manifest",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/run_manifest.json",
+      "content_type": "application/json",
+      "required": true,
+      "exists": true,
+      "producer": "runtime_proof_layout.finalize_runtime_proof_run",
+      "notes": "lane=executive_summary"
+    },
+    {
+      "role": "lane_l2_output",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/l2_output.json",
+      "content_type": "application/json",
+      "required": true,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch",
+      "notes": "lane=executive_summary"
+    },
+    {
+      "role": "lane_runtime_payload",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/runtime_payload.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "prompt_compiled_text",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/compiled_prompt.txt",
+      "content_type": "text/plain",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "prompt_compiled_artifact",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/compiled_prompt_artifact.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "provider_request",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/provider_request.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "provider_response",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/provider_response.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "judge_x1d_outputs",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/x1d_llm_judge_outputs.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "gate_x2_outputs",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/x2_gate_outputs.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "disposition_x3",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/x3_disposition.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "l6_shadow_eval_package",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/l6_shadow_eval_package.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "fact_check_result",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/fact_check_result.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "repair_receipt",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/repair_receipt.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "section_metric_receipt",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/section_metric_receipt.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "claim_ledger",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/claim_ledger.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "text_claim_coverage",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/text_claim_coverage.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "selected_fact_plan",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/selected_fact_plan.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch"
+    },
+    {
+      "role": "lane_executive_summary_emitted_canonical_claim_ledger_v2.json",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/canonical_claim_ledger_v2.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch_or_tests",
+      "notes": "discovered_at_index_time"
+    },
+    {
+      "role": "lane_executive_summary_emitted_command_output.txt",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/command_output.txt",
+      "content_type": "text/plain",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch_or_tests",
+      "notes": "discovered_at_index_time"
+    },
+    {
+      "role": "lane_executive_summary_emitted_normalized_generation.json",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/normalized_generation.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch_or_tests",
+      "notes": "discovered_at_index_time"
+    },
+    {
+      "role": "lane_executive_summary_emitted_prompt_selection_trace.json",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/prompt_selection_trace.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch_or_tests",
+      "notes": "discovered_at_index_time"
+    },
+    {
+      "role": "lane_executive_summary_emitted_real_l2_generation_result.json",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/real_l2_generation_result.json",
+      "content_type": "application/json",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch_or_tests",
+      "notes": "discovered_at_index_time"
+    },
+    {
+      "role": "lane_executive_summary_emitted_resume_display_text.txt",
+      "relative_path": ".pytest_exec_sum_stub_transport/d1d551a8d81a/exec_summary_20260517_133550/resume_display_text.txt",
+      "content_type": "text/plain",
+      "required": false,
+      "exists": true,
+      "producer": "apps_rg_section_dispatch_or_tests",
+      "notes": "discovered_at_index_time"
+    }
+  ]
+}

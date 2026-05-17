@@ -1,0 +1,91 @@
+{
+  "judges": [
+    {
+      "judge_id": "x1d_gemini_pro_exec_summary",
+      "provider_name": "Gemini Pro",
+      "provider_key": "gemini_pro",
+      "evaluator_mode": "MOCKED",
+      "provider_status": "MOCKED",
+      "model_name": "gemini-2.0-flash",
+      "provider_available": false,
+      "provider_blocked": false,
+      "exact_provider_error": null,
+      "raw_response_ref": null,
+      "original_model": null,
+      "fallback_model": null,
+      "rubric_version": "executive_summary_x1d_v1",
+      "input_hash": "771da4bacf6860e2",
+      "output_hash": "mocked-output",
+      "score": 0.8,
+      "score_scale": "0_to_1",
+      "normalized_score": 0.8,
+      "threshold": 0.8,
+      "normalized_threshold": 0.8,
+      "decisive_failure": false,
+      "findings": [
+        "MOCKED plumbing judge. Not valid for X3_ALLOW."
+      ],
+      "cited_sentence_indexes": [],
+      "remediation_suggestions": [],
+      "pass": true
+    },
+    {
+      "judge_id": "x1d_openai_chatgpt_exec_summary",
+      "provider_name": "OpenAI ChatGPT",
+      "provider_key": "openai_chatgpt",
+      "evaluator_mode": "MOCKED",
+      "provider_status": "MOCKED",
+      "model_name": "gpt-4o",
+      "provider_available": false,
+      "provider_blocked": false,
+      "exact_provider_error": null,
+      "raw_response_ref": null,
+      "original_model": null,
+      "fallback_model": null,
+      "rubric_version": "executive_summary_x1d_v1",
+      "input_hash": "771da4bacf6860e2",
+      "output_hash": "mocked-output",
+      "score": 0.8,
+      "score_scale": "0_to_1",
+      "normalized_score": 0.8,
+      "threshold": 0.8,
+      "normalized_threshold": 0.8,
+      "decisive_failure": false,
+      "findings": [
+        "MOCKED plumbing judge. Not valid for X3_ALLOW."
+      ],
+      "cited_sentence_indexes": [],
+      "remediation_suggestions": [],
+      "pass": true
+    },
+    {
+      "judge_id": "x1d_anthropic_claude_exec_summary",
+      "provider_name": "Anthropic Claude",
+      "provider_key": "anthropic_claude",
+      "evaluator_mode": "MOCKED",
+      "provider_status": "MOCKED",
+      "model_name": "claude-3-5-sonnet-20241022",
+      "provider_available": false,
+      "provider_blocked": false,
+      "exact_provider_error": null,
+      "raw_response_ref": null,
+      "original_model": null,
+      "fallback_model": null,
+      "rubric_version": "executive_summary_x1d_v1",
+      "input_hash": "771da4bacf6860e2",
+      "output_hash": "mocked-output",
+      "score": 0.8,
+      "score_scale": "0_to_1",
+      "normalized_score": 0.8,
+      "threshold": 0.8,
+      "normalized_threshold": 0.8,
+      "decisive_failure": false,
+      "findings": [
+        "MOCKED plumbing judge. Not valid for X3_ALLOW."
+      ],
+      "cited_sentence_indexes": [],
+      "remediation_suggestions": [],
+      "pass": true
+    }
+  ]
+}

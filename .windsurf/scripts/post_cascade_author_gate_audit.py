@@ -41,6 +41,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
 
 # Violation log paths (preserved from original hooks)
 VIOLATION_LOGS = {
@@ -53,7 +56,7 @@ VIOLATION_LOGS = {
 }
 
 # Ledger path for capture subcommand
-LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_PATH = REFACTOR_DECISION_LEDGER_DB
 
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB cap
 

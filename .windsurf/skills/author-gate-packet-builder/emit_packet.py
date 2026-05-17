@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import secrets
 import subprocess
@@ -62,6 +63,8 @@ try:
     from tools.author_gate.schema_loader import validate as _schema_validate  # noqa: E402
 except ImportError:  # guardian: allow-broad -- schema loader optional at boot
     _schema_validate = None  # type: ignore
+
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
 
 SURFACE_THRESHOLD = 0.72
 DOMINANCE_SCORE = 0.85
@@ -155,12 +158,15 @@ def _find_latest_adg_snapshot() -> str:
     return candidates[0].name if candidates else "none"
 
 
-def _fetch_precedent(decision_type: str, intent: str, repo_area: str | None) -> dict[str, Any]:
+def _fetch_precedent(decision_type: str, intent: str, spec: dict[str, Any]) -> dict[str, Any]:
+    degraded = os.environ.get("AG_PRECEDENT_SCOPE_DEGRADED", "").strip().lower() in ("1", "true", "yes")
     query = {
         "decision_type": decision_type,
         "normalized_intent": intent or "",
-        "repo_area": repo_area or "",
+        "repo_area": (spec.get("repo_area") or "") or "",
+        "layer": (spec.get("layer") or "") or "",
         "limit": 3,
+        "degraded_scope": degraded,
     }
     raw = _run(
         [sys.executable, str(PRECEDENT_SCRIPT)],
@@ -386,7 +392,7 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
         else:
             opt["surface_description"] = floor
 
-    precedent = _fetch_precedent(decision_type, intent, spec.get("repo_area"))
+    precedent = _fetch_precedent(decision_type, intent, spec)
     fingerprint = _context_fingerprint(files_in_scope)
 
     # W2.P2.1 — attach signal vector per surfaced candidate when signal_collector
@@ -499,7 +505,7 @@ def _latest_calibrator_version(decision_type: str) -> str | None:
     try:
         import sqlite3 as _sqlite3  # pylint: disable=import-outside-toplevel
 
-        db = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+        db = REFACTOR_DECISION_LEDGER_DB
         if not db.exists():
             return None
         with _sqlite3.connect(str(db), timeout=3) as conn:

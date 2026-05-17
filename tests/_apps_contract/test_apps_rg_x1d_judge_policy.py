@@ -41,10 +41,12 @@ class TestPrefetchX1dJudgePolicy(unittest.TestCase):
             repo_dotenv_loaded=True,
         )
         self.assertTrue(p["quorum_satisfied"])
+        gem_candidates = p["per_provider"]["gemini_pro"]["credential_env_candidates"]
+        self.assertEqual(gem_candidates, ["GOOGLE_API_KEY", "GEMINI_API_KEY"])
         self.assertIn("credential_vs_runtime_capability_disclaimer", p)
         self.assertIn("RPM", str(p["credential_vs_runtime_capability_disclaimer"]))
 
-    def test_google_api_key_satisfies_gemini_preflight_when_gemini_primary_empty(self) -> None:
+    def test_google_api_key_satisfies_gemini_preflight(self) -> None:
         env = {
             "GOOGLE_API_KEY": "studio-style-key",
             "OPENAI_API_KEY": "fake-openai",
@@ -59,7 +61,7 @@ class TestPrefetchX1dJudgePolicy(unittest.TestCase):
         self.assertTrue(p["quorum_satisfied"])
         gem_pp = p["per_provider"]["gemini_pro"]
         self.assertTrue(gem_pp["credential_env_non_empty"])
-        self.assertEqual(gem_pp["credential_env_candidates"], ["GEMINI_API_KEY", "GOOGLE_API_KEY"])
+        self.assertEqual(gem_pp["credential_env_candidates"], ["GOOGLE_API_KEY"])
 
 
 if __name__ == "__main__":

@@ -174,7 +174,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
     if judge_override == "openai" and openai_key:
         return True, f"openai ({os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')})"
     if judge_override in ("gemini", "google") and google_key:
-        return True, f"gemini ({os.getenv('GEMINI_PRO_MODEL', 'gemini-3.1-pro-preview')})"
+        return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
     if judge_override in ("qwen", "vllm"):
         return True, f"vllm ({os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
 
@@ -184,7 +184,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
         if openai_key:
             return True, f"openai ({os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')})"
         if google_key:
-            return True, f"gemini ({os.getenv('GEMINI_PRO_MODEL', 'gemini-3.1-pro-preview')})"
+            return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
 
     # Fall back: check vLLM endpoint reachability
     try:

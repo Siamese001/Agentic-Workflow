@@ -38,9 +38,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tools.refactor_decisions.ledger_paths import (
+    REFACTOR_DECISION_LEDGER_DB,
+    REFACTOR_DECISIONS_DIR_SSO,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-STATE_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "bandit_state.json"
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
+STATE_PATH = REFACTOR_DECISIONS_DIR_SSO / "bandit_state.json"
 
 
 def _success(row: sqlite3.Row) -> bool:

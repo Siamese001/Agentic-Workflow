@@ -6,7 +6,7 @@ and prints a structured markdown summary covering:
   * Run identity (run_id, route, commit, replay_key, started_at)
   * L2 sub-stages (E1..E5) with PASS/FAIL/BYPASSED status and timing
   * HOP checkpoints (HOP-0.5 .. HOP-5) reached during the run
-  * Per-section narrative verdicts (headline, exec_summary, competencies, role bullets)
+  * Per-section narrative verdicts (headline, exec_summary, ENGINEERING & PLATFORM COMPETENCIES, role bullets)
     with composite score, accepted status, and first failed gate
   * Gate failures with reason text
   * L7 route family certification matrix (1/9 certified for R4 path is the norm)
@@ -34,6 +34,10 @@ from typing import Any, Dict, List, Optional, Tuple
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RUNS_ROOT = REPO_ROOT / "artifacts" / "apps_rg" / "runs"
 
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from apps_rg.runtime.section_display_labels import summary_section_label
 
 # ----------------------------------------------------------------- read helpers
 
@@ -173,7 +177,7 @@ def _render_section_verdicts(run_report: Optional[Dict[str, Any]]) -> List[str]:
     lines.append("| Section | Tier | Source | Composite | Accepted | First failed gate |")
     lines.append("|---|---|---|---|---|---|")
     for v in verdicts:
-        section = v.get("section_id", "?")
+        section = summary_section_label(str(v.get("section_id", "?")))
         tier = v.get("tier", "?")
         source = v.get("chosen_source", "?")
         comp = v.get("composite", 0.0)
@@ -197,10 +201,14 @@ def _render_gate_failures(run_report: Optional[Dict[str, Any]]) -> List[str]:
         lines.append("")
         return lines
     for i, f in enumerate(failures, 1):
-        section = f.get("section_id", "—")
+        section_raw = str(f.get("section_id", "—"))
+        section = summary_section_label(section_raw)
         gate = f.get("failed_gate") or f.get("reason") or "—"
         detail = f.get("detail") or ""
-        lines.append(f"**{i}.** section=`{section}` gate=`{gate}`")
+        if section != section_raw:
+            lines.append(f"**{i}.** section=`{section}` (id=`{section_raw}`) gate=`{gate}`")
+        else:
+            lines.append(f"**{i}.** section=`{section}` gate=`{gate}`")
         if detail:
             lines.append(f"   - detail: {detail}")
     lines.append("")

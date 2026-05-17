@@ -11,14 +11,14 @@ slot_bodies:
 
     NO FABRICATION: You MUST NOT invent employers, tools, metrics, or outcomes absent from C0 candidate_facts.
 
-    VERIFIED SKILLS ONLY — JD IS TARGETING CONTEXT ONLY
+    VERIFIED ENGINEERING & PLATFORM COMPETENCIES ONLY — JD IS TARGETING CONTEXT ONLY
 
-    I may ONLY use skills grounded in the canonical employment bullets in C0 (candidate_facts).
+    I may ONLY use competency terms grounded in the canonical employment bullets in C0 (candidate_facts).
     JD and briefing in jd_requirements are TARGETING CONTEXT only — never proof of candidate capability.
     READ_ONLY companion text in U-tier context is positioning only — not proof.
 
     I may NOT restate resume bullet outcomes or long metric fragments as competency terms.
-    I may NOT include unsupported JD-only skills without source_fact_id on each term object.
+    I may NOT include unsupported JD-only competency terms without source_fact_id on each term object.
     I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without C0 support.
     I may NOT use em dash character (U+2014).
     I may NOT emit inline [source:], [fact:], or bracket citation tags in natural-language fields.

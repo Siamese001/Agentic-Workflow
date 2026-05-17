@@ -1,23 +1,31 @@
 schema_version: "prompt_template_v1"
 template_id: "unify_bullet_tailor_v1"
-version: "1.0"
+version: "1.1"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "UNIFY_BULLET"
 
 purpose: |
-  Rewrite Unify Consulting employment bullets only using Unify facts from canonical base resume.
+  Rewrite Unify Consulting employment bullets for an SVP Engineering target while preserving the canonical Unify facts.
+  Balance candidate truth from the base resume with targeting signals from JD, target company, target title, and briefing.
   Outputs exactly 6 bullets with constrained rewrite distribution.
-  No narrative text. No unsupported claims. No JD copying.
+  No narrative text. No unsupported claims. No JD or briefing copying.
+  This lane must run before unify_position_narrative_v1.
 
 sovereign_oath: |
-  UNIFY FACTS ONLY — NO CROSS-CONTAMINATION
+  UNIFY FACTS ONLY - NO CROSS-CONTAMINATION
   
   I may ONLY use facts from the Unify Consulting employment entry (fact_id: exp_unify_001).
   I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
   I may NOT introduce claims beyond supported Unify facts.
   I may NOT copy JD phrases beyond 4 consecutive words.
   I may NOT use em dash character anywhere.
-  I may NOT output narrative text — bullets only.
+  I may NOT output narrative text - bullets only.
+
+  QUALITY BAR - BASE RESUME PARITY: Each bullet MUST preserve at least the same information density and
+  technical specificity as the corresponding bullet in the locked canonical base resume. Do not replace
+  concrete mechanism nouns (GraphRAG, policy gating, dependency graph intelligence, Databricks, API gateways)
+  with generic "AI platform" gloss. LIGHT_PROTECTED means minimal copy edit only; MODERATE/HEAVY may reorder
+  or compress but must retain the same causal claims, metrics, and technology nouns unless change_log documents removal with claim_ledger support.
 
 role_header_fields:
   company:
@@ -39,27 +47,27 @@ role_header_fields:
 
 input_contract:
   required_fields:
-    - selected_fact_plan
+    - name: selected_fact_plan
       schema: "{exp_unify_001: {priority: 1, allowed_bullets: [bul_unify_001..006], metrics: [...]}}"
-    - base_resume_json_ref
+    - name: base_resume_json_ref
       value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
-    - base_section_hash
+    - name: base_section_hash
       description: "SHA256 of Unify employment section for integrity"
-    - claim_ledger
+    - name: claim_ledger
       schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
-    - jd_alignment
+    - name: jd_alignment
       schema: "{alignment_score, matched_terms, gap_terms}"
-    - rewrite_intensity_request
+    - name: rewrite_intensity_request
       allowed_values: ["DEFAULT", "HEAVY", "MODERATE", "LIGHT_PROTECTED"]
       default: "DEFAULT"
-    - strategic_tailor_plan
+    - name: strategic_tailor_plan
       required_if: "rewrite_intensity_request != DEFAULT"
       schema: "{justified_distribution: {HEAVY: int, MODERATE: int, LIGHT_PROTECTED: int}}"
 
 output_contract:
   format: "JSON"
   required_fields:
-    - bullets
+    - name: bullets
       type: "array"
       min_items: 6
       max_items: 6
@@ -70,7 +78,7 @@ output_contract:
         has_metric: "boolean"
         metric_raw: "string or null"
         source_fact_ids: "array[string]"
-    - rewrite_distribution
+    - name: rewrite_distribution
       type: "object"
       schema:
         HEAVY: "integer (0-3, max 3)"
@@ -85,19 +93,19 @@ output_contract:
         - "HEAVY <= 3"
         - "LIGHT_PROTECTED >= 1"
         - "HEAVY + MODERATE + LIGHT_PROTECTED == 6"
-    - claim_ledger
+    - name: claim_ledger
       type: "array"
       item_schema:
         claim_text: "string"
         source_fact_id: "string (must be bul_unify_*)"
         supported: "boolean"
-    - gap_notes
+    - name: gap_notes
       type: "array"
       description: "List of unsupported JD requirements or gaps"
-    - change_log
+    - name: change_log
       type: "array"
       description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale}"
-    - self_check
+    - name: self_check
       type: "object"
       schema:
         bullet_count_valid: "boolean (must be true)"
@@ -116,7 +124,7 @@ rewrite_rules:
       MODERATE: 3
       LIGHT_PROTECTED: 1
       protected_bullet_default: "bul_unify_006"
-      protected_bullet_rationale: "Platform Commercialization and Engineering Leadership — contains compound metrics ($22M, 20%, 8→28) that should not be split"
+      protected_bullet_rationale: "Platform Commercialization and Engineering Leadership contains compound metrics ($22M, 20%, 8 to 28) that should not be split"
     CUSTOM:
       requires_strategic_justification: true
       max_HEAVY: 3
@@ -168,7 +176,7 @@ metric_preservation_rules:
 
 forbidden_patterns:
   - pattern: "em dash"
-    check: "character U+2014 or U+2013 not allowed"
+    check: "characters U+2014 and U+2013 not allowed"
     action: "REJECT"
   - pattern: "narrative paragraph"
     check: "output.bullets must not contain paragraph breaks or narrative flow"
@@ -217,7 +225,7 @@ validation_rules:
 temperature_profile:
   range: "0.35 - 0.50"
   default: 0.40
-  rationale: "Rewrite variation — heavier rewriting needs more controlled creativity"
+  rationale: "Rewrite variation - heavier rewriting needs more controlled creativity"
   sweep_validation: "Must pass at 0.35, 0.425, 0.50 with consistent structure"
 
 payload_scope:
@@ -228,5 +236,5 @@ payload_scope:
 
 metadata:
   produced_at: "2026-05-14"
-  produced_by: "W2B STOP 5 — Unify Bullet Tailor"
+  produced_by: "W2B STOP 5 - Unify Bullet Tailor"
   receipt_path: "artifacts/apps_rg/prompt_reset/w2b_outputs/stop_5_unify_bullet_receipt.json"

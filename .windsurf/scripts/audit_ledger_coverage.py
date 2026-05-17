@@ -43,7 +43,11 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
+
+DB_PATH = REFACTOR_DECISION_LEDGER_DB
 VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_capture_violations.jsonl"
 
 _REFACTOR_CLASS_TYPES = frozenset({

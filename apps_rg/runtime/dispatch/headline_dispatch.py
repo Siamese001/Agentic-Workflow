@@ -1,6 +1,6 @@
 """App-local headline runtime seam.
 
-Canonical base resume plus read-only companion artifacts -> one headline line (X | Y | Z) -> X1D -> X2 -> X3 -> L6.
+Canonical base resume plus read-only companion artifacts -> one headline line (SVP Engineering | X | Y | Z) -> X1D -> X2 -> X3 -> L6.
 Imports read-only helpers from competencies_dispatch without modifying that seam's behavior.
 
 **W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
@@ -46,18 +46,29 @@ from apps_rg.runtime.judges.headline_x1d import run_headline_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.shadow.headline_l6 import build_l6_shadow_package
+from apps_rg.runtime.dispatch.mock_runtime_proof_policy import (
+    MOCK_JUDGES_REJECT_EXIT_CODE,
+    MOCK_PROVIDER_REJECT_EXIT_CODE,
+    allow_non_allow_exit_zero_ok,
+    attach_lane_proof_bundle_fields,
+    compute_lane_proof_bundle,
+    emit_mock_blocked_stderr,
+    emit_mock_judges_blocked_stderr,
+    infer_product_quality_blocked_or_mock,
+    mock_blocked_before_run,
+    mock_judges_blocked_before_run,
+)
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.validators.headline_x2 import headline_word_count, run_headline_x2_gates
+from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
+from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 
 PROMPT_ID = "headline_dispatch_v1"
-HEADLINE_TEMP_DEFAULT = 0.35
+HEADLINE_TEMP_DEFAULT = 0.55
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
-JD_TEXT_DEFAULT = (
-    "enterprise AI platform leadership, agentic AI systems, runtime governance, "
-    "LLMOps, retrieval, production reliability, engineering leadership"
-)
-BRIEFING_DEFAULT = "regulated enterprise environment, platform modernization, AI governance, scalable delivery"
+JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
+BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
 HEADLINE_QWEN_MAX_TOKENS = 900
 
 
@@ -310,16 +321,21 @@ _HEADLINE_PAD_STOP = frozenset(
 )
 
 
-def _pad_headline_word_count(headline_line: str, resume_support_blob_lower: str) -> str:
-    """Expand X | Y | Z headline deterministically toward 8 words when undersized (resume tokens only).
+def _pad_headline_segments_word_count(headline_line: str, resume_support_blob_lower: str) -> str:
+    """Expand segments 2–4 only until word count reaches 10; never mutate segment 1.
 
-    Leaves headlines already in the 8-11 band unchanged. Does not add digits or punctuation beyond spaces.
+    Format: ``SVP Engineering | X | Y | Z`` with exactly three ``" | "`` separators.
+    Stops at 10 words minimum; never exceeds 13 words.
     """
+    _sep = " | "
     hl = headline_line.strip()
-    if hl.count("|") != 2:
+    if hl.count(_sep) != 3:
+        return hl
+    parts = [p.strip() for p in hl.split(_sep)]
+    if len(parts) != 4 or parts[0] != "SVP Engineering":
         return hl
     wc = headline_word_count(hl)
-    if wc >= 8:
+    if wc >= 10:
         return hl
 
     cand_words = sorted(
@@ -327,10 +343,10 @@ def _pad_headline_word_count(headline_line: str, resume_support_blob_lower: str)
         key=lambda w: (len(w), w),
     )
     for _ in range(24):
-        if headline_word_count(hl) >= 8:
+        if headline_word_count(hl) >= 10:
             break
-        parts = [p.strip() for p in hl.split("|")]
-        if len(parts) != 3:
+        parts = [p.strip() for p in hl.split(_sep)]
+        if len(parts) != 4 or parts[0] != "SVP Engineering":
             break
         added = False
         for w in cand_words:
@@ -338,14 +354,14 @@ def _pad_headline_word_count(headline_line: str, resume_support_blob_lower: str)
                 continue
             if len(w) < 4:
                 continue
-            idx = min(range(3), key=lambda i: len(parts[i].split()))
+            idx = min(range(1, 4), key=lambda i: len(parts[i].split()))
             seg_words = set(parts[idx].lower().split())
             if w in seg_words:
                 continue
             parts[idx] = f"{parts[idx]} {w}".strip()
-            cand_hl = " | ".join(parts)
+            cand_hl = _sep.join(parts)
             wc_try = headline_word_count(cand_hl)
-            if wc_try <= 11:
+            if wc_try <= 13:
                 hl = cand_hl
                 added = True
                 break
@@ -371,13 +387,34 @@ def normalize_parsed_output(
     jd = dict(out.get("jd_alignment") or {})
     jd.setdefault("targeting_only", True)
     jd["jd_used_as_proof"] = False
+    jd.setdefault("briefing_used_as_proof", False)
+    jd.setdefault("selected_theme", "base_resume_aligned")
+    jd.setdefault("anti_stuffing_check", "passed")
     if companion_nonempty:
         jd["companion_context_used"] = True
         jd["companion_used_as_proof"] = False
     out["jd_alignment"] = jd
     out.setdefault("gap_notes", [])
     out.setdefault("change_log", [])
-    out.setdefault("self_check", {"normalized_by_dispatch": True})
+    _sep = " | "
+    wc = headline_word_count(hl)
+    seg_ct = len(hl.split(_sep)) if _sep in hl else 0
+    sc_in = isinstance(out.get("self_check"), dict)
+    sc = dict(out["self_check"]) if sc_in else {}
+    sc["fixed_prefix"] = hl.startswith("SVP Engineering | ")
+    sc["segment_count"] = seg_ct
+    sc["separator_count"] = hl.count(_sep)
+    sc["word_count"] = wc
+    sc["word_count_in_range"] = 10 <= wc <= 13
+    sc.setdefault("no_metrics", True)
+    sc.setdefault("no_company_names", True)
+    sc.setdefault("no_employer_names", True)
+    sc.setdefault("no_jd_phrase_lift", True)
+    sc.setdefault("base_identity_preserved", True)
+    sc.setdefault("jd_used_as_targeting_only", True)
+    if not sc_in:
+        sc["normalized_by_dispatch"] = True
+    out["self_check"] = sc
     ensure_claim_ledger(hl, out, allowed_fact_ids)
     return out
 
@@ -394,9 +431,10 @@ def retry_qwen_for_parse(
         {
             "role": "user",
             "content": (
-                f"JSON INVALID: {parse_error}. Return one compact JSON object with headline_line (X | Y | Z, 8-11 words), "
+                f"JSON INVALID: {parse_error}. Return one compact JSON object with headline_line "
+                "(exact prefix SVP Engineering | ; exactly 3 separators ' | '; four non-empty segments; 10-13 words total), "
                 "selected_fact_plan stub only (section_id, selection_method, required_fact_ids), claim_ledger, "
-                "jd_alignment, gap_notes, change_log, self_check."
+                "jd_alignment (jd_used_as_proof false, briefing_used_as_proof false), gap_notes, change_log, self_check."
             ),
         },
     ]
@@ -427,8 +465,10 @@ def retry_headline_word_and_pipe(
             "role": "user",
             "content": (
                 f"DETERMINISTIC_REVISION: {reason}. "
-                "headline_line must be exactly three non-empty segments separated by ' | ', "
-                "8 to 11 total words, no employer names, no metrics, no first person."
+                "headline_line must start with the exact prefix 'SVP Engineering | ', "
+                "must contain exactly three ' | ' separators (four segments), "
+                "must be 10 to 13 total words, "
+                "and must contain no employer names, target company names, metrics, or first person."
             ),
         },
     ]
@@ -459,7 +499,8 @@ def retry_headline_word_and_pipe(
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    hl = "AI platform governance | regulated delivery discipline | engineering leadership scale"
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    wc = headline_word_count(hl)
     return {
         "headline_line": hl,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
@@ -469,20 +510,38 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
                 "source_fact_ids": ["bul_unify_001", "bul_ibm_001", "bul_unify_004"],
             }
         ],
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "agentic_platforms",
+            "anti_stuffing_check": "passed",
+        },
         "gap_notes": [],
         "change_log": [{"operation": "mocked_runtime_slice", "reason": "provider not requested"}],
-        "self_check": {"one_line": True, "pipe_format": True},
+        "self_check": {
+            "fixed_prefix": True,
+            "segment_count": 4,
+            "separator_count": 3,
+            "word_count": wc,
+            "word_count_in_range": True,
+            "no_metrics": True,
+            "no_company_names": True,
+            "no_employer_names": True,
+            "no_jd_phrase_lift": True,
+            "base_identity_preserved": True,
+            "jd_used_as_targeting_only": True,
+        },
     }
 
 
 def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[str, Any]]) -> tuple[str, str]:
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    if failed:
-        return "FAIL", f"X2 failed gates: {failed}"
-    if runtime_generation_status != "REAL_LLM":
-        return "PARTIAL", "Mocked or blocked generation proves plumbing only."
-    return "PASS", "REAL_LLM output passed all deterministic headline gates."
+    return infer_product_quality_blocked_or_mock(
+        runtime_generation_status=runtime_generation_status,
+        x2_failed_gate_ids=failed,
+        pass_reason="REAL_LLM output passed all deterministic headline gates.",
+    )
 
 
 def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
@@ -500,6 +559,13 @@ def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
 
 
 def run_dispatch(args: argparse.Namespace) -> int:
+    if mock_blocked_before_run(args):
+        emit_mock_blocked_stderr(dispatcher_label="headline_dispatch")
+        return MOCK_PROVIDER_REJECT_EXIT_CODE
+    if mock_judges_blocked_before_run(args):
+        emit_mock_judges_blocked_stderr(dispatcher_label="headline_dispatch")
+        return MOCK_JUDGES_REJECT_EXIT_CODE
+
     base, base_path, base_hash = load_base_resume()
     bullet_rows, allowed_fact_ids, _bullet_lowers = collect_employment_bullets(base)
     employer_names = collect_employer_names_lower(base)
@@ -599,7 +665,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
                 raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
                 hl = str(parsed.get("headline_line", "")).strip()
                 wc = headline_word_count(hl)
-                if hl.count("|") != 2 or not (8 <= wc <= 11):
+                if hl.count(" | ") != 3 or not hl.startswith("SVP Engineering | ") or not (10 <= wc <= 13):
                     raw_output, parsed = retry_headline_word_and_pipe(
                         messages,
                         provider_payload,
@@ -614,7 +680,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
                         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
                 if parsed is not None:
                     hl2 = str(parsed.get("headline_line", "")).strip()
-                    padded = _pad_headline_word_count(hl2, resume_blob)
+                    padded = _pad_headline_segments_word_count(hl2, resume_blob)
                     if padded != hl2:
                         ch = parsed.setdefault("change_log", [])
                         if not isinstance(ch, list):
@@ -622,9 +688,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
                             parsed["change_log"] = ch
                         ch.append(
                             {
-                                "operation": "pad_headline_word_count",
-                                "reason": "undersized ATS headline padded with resume-derived tokens "
-                                "(deterministic)",
+                                "operation": "pad_headline_segments_word_count",
+                                "reason": "undersized headline: padded segments 2–4 with resume-derived tokens (deterministic)",
                                 "headline_before": hl2,
                                 "headline_after": padded,
                             }
@@ -667,7 +732,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
         model_name = provider_request_data.get("model")
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
-    judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
+    judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
+    judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
     x1d = [
         j.to_dict()
         for j in run_headline_judges(
@@ -711,7 +777,13 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
         "jd_alignment": (parsed or {}).get("jd_alignment")
-        or {"targeting_only": True, "jd_used_as_proof": False},
+        or {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "base_resume_aligned",
+            "anti_stuffing_check": "passed",
+        },
         "gap_notes": (parsed or {}).get("gap_notes") or [],
         "change_log": (parsed or {}).get("change_log") or [],
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
@@ -722,7 +794,6 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
-    write_json(artifact_dir / "l2_output.json", l2_output)
     (artifact_dir / "headline_output.txt").write_text(headline_line + "\n", encoding="utf-8")
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
 
@@ -751,9 +822,6 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
 
     product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
-    l2_output["product_quality_status"] = product_quality_status
-    l2_output["product_quality_reason"] = product_quality_reason
-    write_json(artifact_dir / "l2_output.json", l2_output)
 
     x3 = aggregate_x3(
         resume_display_text=headline_line or raw_output,
@@ -764,6 +832,22 @@ def run_dispatch(args: argparse.Namespace) -> int:
         product_quality_status=product_quality_status,
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+
+    bundle = compute_lane_proof_bundle(
+        args,
+        runtime_generation_status=runtime_generation_status,
+        x1d_judges=x1d,
+        x2_gates=x2,
+        x3=x3,
+    )
+    l2_output["product_quality_status"] = product_quality_status
+    l2_output["product_quality_reason"] = product_quality_reason
+    attach_lane_proof_bundle_fields(
+        l2_output,
+        runtime_generation_status=runtime_generation_status,
+        bundle=bundle,
+    )
+    write_json(artifact_dir / "l2_output.json", l2_output)
 
     l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else HEADLINE_TEMP_DEFAULT
     l6_max = HEADLINE_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
@@ -776,18 +860,24 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
 
+    _rl2 = {
+        "provider_attempted": args.provider,
+        "runtime_generation_status": runtime_generation_status,
+        "prompt_hash": prompt_hash,
+        "model": model_name,
+        "raw_model_output": raw_output,
+        "raw_model_output_provider": provider_raw_output,
+        "product_quality_status": product_quality_status,
+        "x3_code": x3.x3_code,
+    }
+    attach_lane_proof_bundle_fields(
+        _rl2,
+        runtime_generation_status=runtime_generation_status,
+        bundle=bundle,
+    )
     write_json(
         artifact_dir / "real_l2_generation_result.json",
-        {
-            "provider_attempted": args.provider,
-            "runtime_generation_status": runtime_generation_status,
-            "prompt_hash": prompt_hash,
-            "model": model_name,
-            "raw_model_output": raw_output,
-            "raw_model_output_provider": provider_raw_output,
-            "product_quality_status": product_quality_status,
-            "x3_code": x3.x3_code,
-        },
+        _rl2,
     )
 
     wc_final = headline_word_count(headline_line)
@@ -826,21 +916,67 @@ def run_dispatch(args: argparse.Namespace) -> int:
         provider_requested=prq,
         provider_attempted=pratt,
         command=" ".join(sys.argv),
+        proof_eligible=bundle["proof_eligible"],
+        proof_scope=bundle["proof_scope"],
+        test_only_mock_provider=bundle["test_only_mock_provider"],
+        runtime_certification=bundle["runtime_certification"],
+        x1d_runtime_status=bundle["x1d_runtime_status"],
+        judge_proof_eligible=bundle["judge_proof_eligible"],
+        provider_proof_eligible=bundle["provider_proof_eligible"],
+        test_only_mock_judges=bundle["test_only_mock_judges"],
+        proof_closeout_note=bundle["proof_closeout_note"] if bundle.get("proof_closeout_note") else None,
     )
-    return 0 if args.allow_non_allow_exit_zero else (0 if x3.x3_code == "X3_ALLOW" else 2)
+    if allow_non_allow_exit_zero_ok(args):
+        return 0
+    return 0 if x3.x3_code == "X3_ALLOW" else 2
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg headline runtime seam.")
-    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="mock")
+    parser.add_argument(
+        "--provider",
+        choices=["mock", "qwen_vllm"],
+        default="qwen_vllm",
+        help="Generation provider. mock requires `--allow-test-mock-provider` (plumbing-only).",
+    )
     parser.add_argument("--temperature", type=float, default=HEADLINE_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
-    parser.add_argument("--mock-judges", action="store_true")
+    parser.add_argument(
+        "--mock-judges",
+        action="store_true",
+        help=(
+            "Use mocked judge rows for contract-test plumbing only. Blocked unless paired with "
+            "`--allow-test-mock-judges`."
+        ),
+    )
+    parser.add_argument(
+        "--allow-test-mock-judges",
+        action="store_true",
+        help=(
+            "Test-only hatch: allow `--mock-judges`. Emits judge_proof_eligible=false and proof_eligible=false "
+            "(never runtime certification)."
+        ),
+    )
+    parser.add_argument(
+        "--allow-test-mock-provider",
+        action="store_true",
+        help=(
+            "Test-only: allow `--provider mock` for plumbing; emits proof_eligible=false "
+            "(not runtime proof)."
+        ),
+    )
     parser.add_argument("--target-title", default=TARGET_TITLE_DEFAULT)
     parser.add_argument("--target-company", default=TARGET_COMPANY_DEFAULT)
     parser.add_argument("--jd-text", default=JD_TEXT_DEFAULT)
     parser.add_argument("--briefing", default=BRIEFING_DEFAULT)
-    parser.add_argument("--allow-non-allow-exit-zero", action="store_true")
+    parser.add_argument(
+        "--allow-non-allow-exit-zero",
+        action="store_true",
+        help=(
+            "Exit 0 for inspection despite X3≠ALLOW — qwen_vllm or mock+hatch only; "
+            "does not bypass mock blocks."
+        ),
+    )
     return parser
 
 

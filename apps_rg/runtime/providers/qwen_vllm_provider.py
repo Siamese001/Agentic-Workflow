@@ -14,10 +14,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, asdict
 from typing import Any
+
+from apps_rg.runtime.validators.executive_summary_x2 import ALLOWED_MODELS
 
 
 DEFAULT_QWEN_BASE_URL = os.environ.get("VLLM_BASE_URL", "http://localhost:8000/v1")
@@ -48,7 +51,7 @@ class ProviderResult:
     provider_attempted: bool
     provider_available: bool
     exact_provider_error: str | None
-    runtime_generation_status: str  # REAL_LLM | BLOCKED | MOCKED
+    runtime_generation_status: str  # REAL_LLM | BLOCKED | MOCKED | STUBBED
     model: str
     raw_model_output: str
     provider_response: dict[str, Any] | None
@@ -65,6 +68,59 @@ def assert_temperature_in_profile(
 ) -> None:
     if not (low <= temperature <= high):
         raise ValueError(f"temperature {temperature} outside allowed bounds [{low}, {high}]")
+
+
+def _normalize_model_key(model: str) -> str:
+    return re.sub(r"\s+", "", str(model).strip().lower())
+
+
+def _resolved_model_from_completion(response_data: dict[str, Any], fallback: str) -> str:
+    m = response_data.get("model")
+    if m is not None and str(m).strip():
+        return str(m).strip()
+    return str(fallback).strip()
+
+
+_SYNTHETIC_MODEL_MARKERS = (
+    "synthetic",
+    "intest",
+    "unittest",
+    "unit-test",
+    "dummy",
+    "placeholder",
+)
+
+
+def classify_exec_summary_qwen_generation(
+    *,
+    requested_model: str,
+    response_data: dict[str, Any] | None,
+) -> tuple[str, str]:
+    """Classify generation proof for executive_summary Qwen slice.
+
+    Returns (runtime_generation_status, resolved_model_to_record).
+    STUBBED: test harness / synthetic identity / allowlist mismatch / explicit stub flag.
+    """
+    req = str(requested_model).strip()
+    body = response_data if isinstance(response_data, dict) else {}
+    resolved = _resolved_model_from_completion(body, req)
+
+    if body.get("stub") is True:
+        return "STUBBED", resolved
+
+    low = resolved.lower()
+    for mk in _SYNTHETIC_MODEL_MARKERS:
+        if mk in low:
+            return "STUBBED", resolved
+
+    allow = set(ALLOWED_MODELS)
+    if resolved not in allow:
+        return "STUBBED", resolved
+
+    if _normalize_model_key(req) != _normalize_model_key(resolved):
+        return "STUBBED", resolved
+
+    return "REAL_LLM", resolved
 
 
 def build_qwen_request(
@@ -142,13 +198,18 @@ def call_qwen_vllm(
                 provider_response=response_data,
             )
         text = choices[0].get("message", {}).get("content", "")
+        req_model = str(payload.get("model", DEFAULT_QWEN_MODEL))
+        gen_status, resolved_model = classify_exec_summary_qwen_generation(
+            requested_model=req_model,
+            response_data=response_data,
+        )
         return ProviderResult(
             provider_requested="qwen_vllm",
             provider_attempted=True,
             provider_available=True,
             exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model=str(payload.get("model", DEFAULT_QWEN_MODEL)),
+            runtime_generation_status=gen_status,
+            model=resolved_model,
             raw_model_output=text,
             provider_response=response_data,
         )

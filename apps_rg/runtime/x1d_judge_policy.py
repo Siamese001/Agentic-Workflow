@@ -138,12 +138,12 @@ def preflight_x1d_judge_policy(
         decisive_reason = (
             "X1D_PREFLIGHT_QUORUM_SATISFIED: all required providers have a non-empty resolved credential "
             "per resolve_x1d_provider_credentials / run_llm_judges "
-            "(Gemini: GEMINI_API_KEY then GOOGLE_API_KEY)."
+            "(Gemini: GOOGLE_API_KEY, then deprecated GEMINI_API_KEY alias)."
         )
 
     remediation_parts: list[str] = [
         "Credential resolver: apps_rg.runtime.judges.executive_summary_x1d.resolve_x1d_provider_credentials — "
-        "same chain as lane judges (Gemini prefers GEMINI_API_KEY, then GOOGLE_API_KEY).",
+        "same chain as lane judges (Gemini prefers GOOGLE_API_KEY, then deprecated GEMINI_API_KEY).",
         f"Checked env vars (non-secret): {env_vars_checked!r}",
     ]
     if unavailable:
@@ -162,7 +162,7 @@ def preflight_x1d_judge_policy(
         )
     elif not repo_dotenv_path_existed:
         remediation_parts.append(
-            "No repo-root .env file found — export GEMINI_API_KEY (or GOOGLE_API_KEY for Gemini), "
+            "No repo-root .env file found — export GOOGLE_API_KEY (Gemini/Google AI Studio; GEMINI_API_KEY is deprecated), "
             "OPENAI_API_KEY, ANTHROPIC_API_KEY for judges, "
             "or add them to .env at the repository root (dispatch modules call load_dotenv() at import)."
         )
@@ -172,7 +172,7 @@ def preflight_x1d_judge_policy(
     return {
         "credential_vs_runtime_capability_disclaimer": (
             "Quorum preflight validates the same credential resolver as lane judges: "
-            "resolve_x1d_provider_credentials (Gemini tries GEMINI_API_KEY then GOOGLE_API_KEY). "
+            "resolve_x1d_provider_credentials (Gemini tries GOOGLE_API_KEY then deprecated GEMINI_API_KEY). "
             "It does not prove live quota tiers, RPM/RPD limits, billing state, OAuth/network egress, "
             "SDK availability, allowed model catalogs, or that judge HTTP calls succeed."
         ),

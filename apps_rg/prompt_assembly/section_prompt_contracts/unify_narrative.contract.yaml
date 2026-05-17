@@ -8,6 +8,11 @@ display_text_source_tags_allowed: false
 jd_as_proof_allowed: false
 companion_context_allowed: true
 companion_context_authority: U_TIER_CONTEXT_ONLY
+required_generation_order: 2
+requires_finalized_companion_context:
+  section_id: unify_bullets
+  required_status: ACCEPTED_FINALIZED
+  fail_closed_if_missing: true
 x2_gate_profile_ref: apps_rg/runtime/validators/unify_narrative_x2.py
 x1d_judge_profile_ref: apps_rg/runtime/judges/unify_narrative_x1d.py
 locked_fields: []
@@ -17,4 +22,5 @@ notes: >
   Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
   jd_requirements / company_brief are targeting only, not proof.
   Companion context is U-tier only, not proof.
-  W7 mechanical migration; template filename is representative until inventory hardens paths.
+  Production narrative must run only after unify_bullets has X2/X1D/X3 evidence and product_quality_status PASS.
+  W7 mechanical migration hardened with bullet-first dependency enforcement.

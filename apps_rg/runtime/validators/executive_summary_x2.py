@@ -26,6 +26,73 @@ GENERIC_FILLER = [
     "transformative",
 ]
 
+EXEC_SUMMARY_FORBIDDEN_META_PHRASES = [
+    "across the scope described in selected facts",
+    "with active-voice delivery and governance discipline",
+    "active-voice delivery",
+    "governance discipline",
+    "same fact plan",
+    "canonical facts used as proof",
+]
+
+EXEC_SUMMARY_FORBIDDEN_META_PHRASES_LOOSE = [
+    "selected facts",
+]
+
+
+def check_exec_summary_meta_filler_patterns(resume_display_text: str) -> tuple[bool, str | None]:
+    lowered = resume_display_text.lower()
+    hits: list[str] = []
+    for phrase in EXEC_SUMMARY_FORBIDDEN_META_PHRASES:
+        if phrase in lowered:
+            hits.append(phrase)
+    for phrase in EXEC_SUMMARY_FORBIDDEN_META_PHRASES_LOOSE:
+        if phrase in lowered:
+            hits.append(phrase)
+    if hits:
+        return False, f"Executive summary meta or filler scaffolding: {hits}"
+    return True, None
+
+
+def check_resume_display_colon_space_discipline(resume_display_text: str) -> tuple[bool, str | None]:
+    """Block colon-space clause stitching (claim-title : prose) in user-visible summary."""
+    if ": " in resume_display_text:
+        return False, "Colon-space clause stitching is forbidden in resume_display_text."
+    return True, None
+
+
+def check_qwen_transport_envelope_stub_false(
+    artifacts_dir: Path | None,
+    provider_requested: str | None,
+) -> tuple[bool, str | None]:
+    """Reject synthetic harness responses that set stub:true on the vLLM JSON envelope."""
+    if str(provider_requested or "").strip().lower() != "qwen_vllm":
+        return True, None
+    if artifacts_dir is None:
+        return True, None
+    path = artifacts_dir / "provider_response.json"
+    if not path.is_file():
+        return True, None
+    try:
+        envelope = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return False, f"provider_response.json unreadable for stub check: {exc}"
+    nested: dict[str, Any] | None = None
+    if isinstance(envelope, dict):
+        pr = envelope.get("provider_response")
+        nested = pr if isinstance(pr, dict) else None
+        if nested is None and envelope.get("stub") is True:
+            nested = envelope
+    if nested is None:
+        return True, None
+    if nested.get("stub") is True:
+        return (
+            False,
+            "provider_response.stub is true — synthetic/test harness; not REAL_LLM transport proof.",
+        )
+    return True, None
+
+
 # Action verbs that indicate bullet-pattern sentence stacking
 ACTION_VERB_OPENERS = (
     "designed", "strengthened", "generated", "reduced", "architected",
@@ -91,6 +158,7 @@ REQUIRED_ARTIFACTS = [
     "runtime_payload.json",
     "prompt_selection_trace.json",
     "claim_ledger.json",
+    "canonical_claim_ledger_v2.json",
     "text_claim_coverage.json",
     "fact_check_result.json",
     "x2_gate_outputs.json",
@@ -289,9 +357,9 @@ def _ledger_claim_tokens(claim_text: str) -> list[str]:
 
 def ledger_row_materialized_in_display(claim: dict[str, Any], resume_display_text: str) -> bool:
     """Rough token-overlap check: claim corroborated by resume body (mirrors sentence coverage heuristics)."""
-    ct = str(claim.get("claim_text") or claim.get("claim_summary") or "").strip()
+    ct = str(claim.get("claim_text") or "").strip()
     if not ct:
-        return True
+        return False
     resume_l = resume_display_text.lower()
     tokens = _ledger_claim_tokens(ct)
     if not tokens:
@@ -310,10 +378,29 @@ def gap_notes_excuse_ledger_claim(claim: dict[str, Any], gap_notes: list[Any]) -
         base = str(sid).split("_metric_")[0].lower()
         if len(base) > 3 and base in blob:
             return True
-    for t in _ledger_claim_tokens(str(claim.get("claim_text") or ""))[:8]:
+    for t in _ledger_claim_tokens(str(claim.get("claim_text") or "").strip())[:8]:
         if len(t) >= 8 and t in blob:
             return True
     return False
+
+
+def check_claim_ledger_claim_text_non_empty(claim_ledger: list[dict[str, Any]]) -> tuple[bool, str | None]:
+    """Each ledger row must carry non-empty material claim prose (post normalize: claim_text only).
+
+    Rows with only source_fact_ids and no claim/claim_text fail here before coverage gates.
+    """
+    bad_parts: list[str] = []
+    for i, row in enumerate(claim_ledger):
+        if not isinstance(row, dict):
+            bad_parts.append(f"idx={i} source_fact_ids=[] reason=not_a_dict")
+            continue
+        ct = str(row.get("claim_text") or "").strip()
+        if not ct:
+            ids = list(row.get("source_fact_ids") or [])
+            bad_parts.append(f"idx={i} source_fact_ids={ids!r}")
+    if bad_parts:
+        return False, "claim_ledger rows missing non-empty claim_text: " + "; ".join(bad_parts)
+    return True, None
 
 
 def check_claim_ledger_materialized_or_gap_excused(
@@ -686,7 +773,7 @@ def build_sentence_claim_coverage(
         matching_claims = []
         sentence_lower = sentence.lower()
         for claim in claim_ledger:
-            claim_text = str(claim.get("claim_text") or claim.get("claim_summary") or "")
+            claim_text = str(claim.get("claim_text") or "").strip()
             if not claim_text:
                 continue
             claim_tokens = [t for t in re.findall(r"[A-Za-z0-9$%]+", claim_text.lower()) if len(t) > 3]
@@ -714,7 +801,7 @@ def build_sentence_claim_coverage(
                     sentence_pass = False
                     overall_pass = False
                 material_claims.append({
-                    "claim_text": claim.get("claim_text") or claim.get("claim_summary"),
+                    "claim_text": claim_text,
                     "source_fact_ids": source_ids,
                     "support_status": status,
                     "reason": "Mapped from claim_ledger.",
@@ -774,6 +861,15 @@ def run_x2_gates(
     orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(claim_ledger, allowed_fact_ids)
     add("x2_claim_ledger_orphan_zero", orphan_ok, orphan_reason or "ok", "no_orphans", orphan_reason)
 
+    ledger_text_ok, ledger_text_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
+    add(
+        "x2_claim_ledger_claim_text_non_empty",
+        ledger_text_ok,
+        ledger_text_reason or "all_rows_non_empty",
+        "non_empty_claim_text_each_row",
+        ledger_text_reason,
+    )
+
     unsupported = []
     mixed = []
     overbroad = []
@@ -807,6 +903,22 @@ def run_x2_gates(
     add("x2_target_company_as_experience_zero", not target_company_as_experience, target_company_as_experience, False, "Target company used as candidate experience/employer.")
     filler_hits = [phrase for phrase in GENERIC_FILLER if phrase in resume_display_text.lower()]
     add("x2_generic_filler_zero", not filler_hits, filler_hits, [], "Generic filler found.")
+    meta_filler_ok, meta_filler_reason = check_exec_summary_meta_filler_patterns(resume_display_text)
+    add(
+        "x2_exec_summary_meta_filler_zero",
+        meta_filler_ok,
+        meta_filler_reason or "ok",
+        [],
+        meta_filler_reason,
+    )
+    colon_stitch_ok, colon_stitch_reason = check_resume_display_colon_space_discipline(resume_display_text)
+    add(
+        "x2_exec_summary_colon_stitch_zero",
+        colon_stitch_ok,
+        colon_stitch_reason or "ok",
+        [],
+        colon_stitch_reason,
+    )
     stacked, stack_reason, _ = detect_bullet_like_stacking(resume_display_text)
     add("x2_sentence_stacking_zero", not stacked, stack_reason, None, "Bullet-like sentence stacking detected.")
     
@@ -889,12 +1001,40 @@ def run_x2_gates(
     add("x2_provider_requested_attempted", provider_attempted_ok, f"requested={provider_requested}, attempted={provider_attempted}", "must match", "Provider requested does not match provider attempted.")
 
     # Gate 13: x2_no_silent_mock_fallback
-    no_mock_fallback_ok = not (provider_requested == "qwen_vllm" and runtime_generation_status == "MOCKED")
-    add("x2_no_silent_mock_fallback", no_mock_fallback_ok, f"provider={provider_requested}, status={runtime_generation_status}", "no silent mock", "Silent mock fallback detected.")
+    no_mock_fallback_ok = not (
+        provider_requested == "qwen_vllm" and runtime_generation_status in ("MOCKED", "STUBBED")
+    )
+    add("x2_no_silent_mock_fallback", no_mock_fallback_ok, f"provider={provider_requested}, status={runtime_generation_status}", "no silent mock", "Silent mock or stub fallback detected.")
 
-    # Gate 14: x2_model_name_allowed
-    model_allowed_ok = model_name in ALLOWED_MODELS if model_name else False
-    add("x2_model_name_allowed", model_allowed_ok, model_name or "unknown", ALLOWED_MODELS, "Model name not in allowed list.")
+    stub_env_ok, stub_env_reason = check_qwen_transport_envelope_stub_false(artifacts_dir, provider_requested)
+    add(
+        "x2_qwen_provider_stub_transport_zero",
+        stub_env_ok,
+        stub_env_reason or "ok",
+        "stub_transport_absent",
+        stub_env_reason,
+    )
+
+    # Gate 14: x2_model_name_allowed — exercised only for qwen_vllm (REAL_LLM provider proof lane).
+    qwen_proof_lane = str(provider_requested or "").strip().lower() == "qwen_vllm"
+    model_allowed_ok = (
+        not qwen_proof_lane
+        or (
+            runtime_generation_status == "REAL_LLM"
+            and bool(model_name)
+            and model_name in ALLOWED_MODELS
+        )
+    )
+    model_observed = (
+        "skipped_provider_not_qwen_vllm" if not qwen_proof_lane else (model_name or "unknown")
+    )
+    add(
+        "x2_model_name_allowed",
+        model_allowed_ok,
+        model_observed,
+        ALLOWED_MODELS,
+        "Model name must match allowlist when qwen_vllm asserts REAL_LLM provider proof.",
+    )
 
     # Gate 15: x2_prompt_hash_known
     prompt_hash_ok = bool(prompt_hash and prompt_hash != "")

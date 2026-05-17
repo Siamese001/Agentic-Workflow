@@ -6,7 +6,7 @@ Validates the apps_rg L2 v4 envelope (E1-E2-E3-E4-E5) plus W7B feature flag brid
 Uses AST-based scanning to avoid false positives from comments/docstrings.
 
 Hard-fail scope:
-- apps_rg/runtime/bindings/l2_binding.py
+- apps_rg/runtime/bindings/l2_binding_adapter.py
 - apps_rg/runtime/bindings/l2_envelope_adapter.py
 
 Checks:
@@ -44,7 +44,7 @@ TEST_FILE = REPO_ROOT / "tests" / "_apps_contract" / "test_apps_rg_l2_envelope.p
 
 # Hard-fail scope: L2 v4 envelope files only
 HARD_FAIL_FILES = [
-    APPS_RG_PATH / "runtime" / "bindings" / "l2_binding.py",
+    APPS_RG_PATH / "runtime" / "bindings" / "l2_binding_adapter.py",
     APPS_RG_PATH / "runtime" / "bindings" / "l2_envelope_adapter.py",
 ]
 
@@ -247,11 +247,11 @@ def check_b_feature_flag_bridge() -> dict:
     
     results = {"pass": True, "details": []}
     
-    l2_binding = HARD_FAIL_FILES[0]  # l2_binding.py
+    l2_binding = HARD_FAIL_FILES[0]  # l2_binding_adapter.py
     
     if not l2_binding.exists():
         results["pass"] = False
-        results["details"].append(f"FAIL: l2_binding.py not found")
+        results["details"].append(f"FAIL: l2_binding_adapter.py not found")
         return results
     
     source = l2_binding.read_text(encoding="utf-8")
@@ -509,11 +509,11 @@ def check_g_feature_flag_bridge() -> dict:
     
     results = {"pass": True, "details": []}
     
-    l2_binding = HARD_FAIL_FILES[0]  # l2_binding.py
+    l2_binding = HARD_FAIL_FILES[0]  # l2_binding_adapter.py
     
     if not l2_binding.exists():
         results["pass"] = False
-        results["details"].append(f"FAIL: l2_binding.py not found")
+        results["details"].append(f"FAIL: l2_binding_adapter.py not found")
         return results
     
     source = l2_binding.read_text(encoding="utf-8")

@@ -4,7 +4,7 @@ W5: Strict precedence-based classification of the company-brief sourcing path.
 No agentic_core imports — this is apps_rg-owned logic.
 
 Canonical briefing modes (must match profile YAML):
-  UPLOADED_BRIEFING        — caller supplied a manual_brief_path
+  UPLOADED_BRIEFING        — caller supplied a briefing_artifact_ref (policy_refs)
   DELEGATED_APPS_RESEARCH  — research_via == "apps_research"
   NATIVE_C0                — chroma_path is resolved (local vector retrieval)
   NONE                     — no brief; no retrieval
@@ -69,7 +69,7 @@ def classify_briefing_mode(
     """Classify the briefing mode from the payload using strict precedence.
 
     Precedence order (highest → lowest):
-    1. UPLOADED_BRIEFING  — policy_refs.manual_brief_path is non-empty
+    1. UPLOADED_BRIEFING  — policy_refs.briefing_artifact_ref or legacy manual_brief_path is non-empty
     2. DELEGATED_APPS_RESEARCH — research_via == "apps_research" (caller arg
        or payload["research_via"] or payload["briefing"]["research_via"])
     3. NATIVE_C0          — chroma_path_resolved is non-empty
@@ -95,7 +95,10 @@ def classify_briefing_mode(
     briefing: dict[str, Any] = app_payload.get("briefing", {}) or {}
 
     # 1. Uploaded briefing
-    manual_path = policy_refs.get("manual_brief_path") or ""
+    manual_path = (
+        str(policy_refs.get("briefing_artifact_ref") or "")
+        or str(policy_refs.get("manual_brief_path") or "")
+    ).strip()
     if manual_path:
         provenance: Optional[dict] = {
             "source": "uploaded_brief",
@@ -107,7 +110,7 @@ def classify_briefing_mode(
             retrieval_mode=BRIEFING_MODE_UPLOADED,
             briefing_source_type=BRIEFING_MODE_UPLOADED,
             company_brief_provenance=provenance,
-            classified_from="policy_refs.manual_brief_path",
+            classified_from="policy_refs.briefing_artifact_ref|manual_brief_path",
         )
 
     # 2. Delegated apps_research

@@ -1,25 +1,26 @@
 schema_version: "prompt_template_v1"
 template_id: "unify_position_narrative_v1"
-version: "1.0"
+version: "1.1"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "UNIFY_NARRATIVE"
 execution_order: "AFTER_UNIFY_BULLET_FACT_CHECK"
 
 purpose: |
-  Write exactly one sentence position narrative for Unify Consulting.
-  Uses finalized Unify bullets as read-only anti-repetition context.
+  Write exactly one sentence position narrative for Unify Consulting after the Unify bullets are finalized.
+  Uses accepted Unify bullets as read-only sequencing context and canonical Unify facts as proof.
+  Balances target JD, title, company, and briefing as positioning context only.
   Complements bullets without summarizing or repeating them.
-  No new claims beyond Unify facts or fact-checked bullets.
+  No new claims beyond Unify facts or finalized bullets.
 
 sovereign_oath: |
-  UNIFY NARRATIVE ONLY — BULLETS ARE READ-ONLY CONTEXT
+  UNIFY NARRATIVE ONLY - BULLETS ARE READ-ONLY CONTEXT
   
   I may ONLY reference finalized Unify bullets as anti-repetition context.
   I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
   I may NOT introduce claims beyond supported Unify facts or fact-checked bullets.
   I may NOT repeat bullet metrics or labels unless explicitly justified.
   I may NOT copy bullet sentence structure.
-  I may NOT output bullet-list format — exactly one sentence only.
+  I may NOT output bullet-list format - exactly one sentence only.
   I may NOT use numbers unless present in base narrative or explicitly supported.
 
 role_header_fields:
@@ -42,29 +43,83 @@ role_header_fields:
 
 input_contract:
   required_fields:
-    - finalized_unify_bullets
+    - name: finalized_unify_bullets
       schema: "{bullets: [{bullet_id, bullet_text, source_fact_id}]}"
       access_level: "READ_ONLY_ANTI_REPETITION"
       constraints:
         - "May not copy bullet_text"
         - "May not mirror bullet sentence structure"
         - "May not repeat bullet metrics without justification"
-    - selected_fact_plan
+    - name: selected_fact_plan
       schema: "{exp_unify_001: {priority: 1, narrative_angle: string}}"
-    - base_resume_json_ref
+    - name: base_resume_json_ref
       value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
-    - base_section_hash
+    - name: base_section_hash
       description: "SHA256 of Unify employment section"
-    - claim_ledger_from_bullets
+    - name: claim_ledger_from_bullets
       schema: "{claims: [{claim_text, source_fact_id, supported: bool, used_in_narrative: bool}]}"
-    - narrative_intent
+    - name: narrative_intent
       allowed_values: ["COMPLEMENT_BULLETS", "ROLE_POSITIONING", "TRANSITION_NARRATIVE"]
       default: "COMPLEMENT_BULLETS"
+
+required_runtime_dependency:
+  dependency_lane: "unify_bullets"
+  required_status: "ACCEPTED_FINALIZED"
+  required_evidence:
+    - "unify_bullets l2_output.json"
+    - "six bullets with IDs bul_unify_001..006"
+    - "unify_bullets product_quality_status PASS"
+    - "unify_bullets x3_disposition X3_ALLOW evidence"
+  fail_closed_rule: "If finalized bullets are missing, mocked, blocked, failed X2, or not X3-cleared, do not produce a production narrative."
+
+source_authority_hierarchy:
+  proof_sources:
+    - "canonical Unify facts"
+    - "finalized Unify bullets, read-only and only after acceptance"
+  targeting_context_only:
+    - "target_title"
+    - "target_company"
+    - "jd_text"
+    - "briefing"
+  authority_rules:
+    - "Candidate facts and finalized bullets decide what can be claimed."
+    - "JD, title, company, and briefing decide the narrative angle, vocabulary, and priority, not proof."
+    - "Do not introduce target-company facts as candidate experience."
+
+prompt_engineering_hardening:
+  role_and_objective: |
+    Act as a senior executive resume editor writing the role narrative that sits above the Unify bullets.
+    The narrative should make the Unify role feel like the candidate's strongest SVP Engineering proof point.
+  private_process:
+    - "Read the finalized bullets first and identify what they already prove."
+    - "Choose one complementary positioning angle, such as platform mandate, operating model, commercialization, or governed delivery."
+    - "Use JD/company/briefing themes only to choose emphasis."
+    - "Draft one sentence, then self-repair for repetition, unsupported claims, JD mirroring, and executive readability."
+    - "Keep reasoning private. Output only the required JSON."
+  sentence_shape_targets:
+    - "One strategic through-line, not a six-bullet summary."
+    - "Concrete enough to feel real, broad enough not to duplicate bullet detail."
+    - "Strong current-role signal for SVP Engineering hiring screens."
+    - "No first person, no candidate name, no em dash, no source tags."
+
+few_shot_patterns:
+  positive:
+    - id: unify_narrative_positive_capstone
+      context: "Bullets already carry detailed platform mechanisms and commercial metrics."
+      output_pattern: "At Unify Consulting, shaped the operating model for governed agentic AI platforms, turning reusable engineering primitives and disciplined delivery controls into a production path for enterprise AI adoption."
+      why_it_works: "Provides executive positioning without repeating bullet metrics or copying bullet structure."
+  negative:
+    - id: unify_narrative_negative_bullet_summary
+      bad_output: "Built GraphRAG, deterministic routing, policy gates, Databricks integrations, API gateways, and $22M revenue while scaling from 8 to 28 specialists."
+      violation: "Lists bullet topics and repeats protected metrics."
+    - id: unify_narrative_negative_target_company_invention
+      bad_output: "At the target company, led the global AI strategy required by the JD."
+      violation: "Turns target context into candidate proof and names the wrong employer."
 
 output_contract:
   format: "JSON"
   required_fields:
-    - position_narrative
+    - name: position_narrative
       type: "string"
       constraints:
         - "Exactly one sentence"
@@ -79,7 +134,7 @@ output_contract:
         - "Listing bullet topics"
         - "Copying bullet sentence structure"
         - "Introducing new metrics not in bullets or base"
-    - claim_ledger
+    - name: claim_ledger
       type: "array"
       item_schema:
         claim_text: "string"
@@ -87,21 +142,21 @@ output_contract:
         supported: "boolean"
         narrative_usage: "enum[direct, inferred, avoided]"
         repetition_risk: "enum[none, low, medium, high]"
-    - anti_repetition_check
+    - name: anti_repetition_check
       type: "object"
       schema:
-        bullet_metrics_repeated: "array[string] — metrics that appear in both bullets and narrative (should be empty or justified)"
-        bullet_labels_repeated: "array[string] — labels/topics that overlap (should be minimal)"
+        bullet_metrics_repeated: "array[string] - metrics that appear in both bullets and narrative (should be empty or justified)"
+        bullet_labels_repeated: "array[string] - labels/topics that overlap (should be minimal)"
         sentence_structure_similarity: "float 0.0-1.0 (should be < 0.3)"
         complement_score: "float 0.0-1.0 (should be > 0.7)"
         check_passed: "boolean"
-    - gap_notes
+    - name: gap_notes
       type: "array"
       description: "Unsupported narrative angles or gaps"
-    - change_log
+    - name: change_log
       type: "array"
       description: "Narrative construction decisions: {draft, revision, rationale}"
-    - self_check
+    - name: self_check
       type: "object"
       schema:
         exactly_one_sentence: "boolean (must be true)"
@@ -128,7 +183,7 @@ narrative_complement_guidance:
     - bad: "Led the ML engineering organization from 8 to 28 engineers while generating $22M in revenue and expanding margins by 20%."
       reason: "Repeats all three metrics from bul_unify_006 verbatim"
     - bad: "• Architected cloud-native platforms • Built dependency graphs • Standardized AI lifecycle"
-      reason: "Bullet list format forbidden — must be one sentence"
+      reason: "Bullet list format forbidden, must be one sentence"
     - bad: "SVP Engineering responsible for agentic AI platforms, governance, and commercialization with proven results."
       reason: "Vague, sounds like JD buzzword stuffing, no specific positioning angle"
     - good: "Built the organization's first dedicated agentic AI practice from emerging technology experiments into a governed production platform serving multiple Fortune 500 programs."
@@ -160,23 +215,23 @@ forbidden_patterns:
 metric_handling_rules:
   from_bullets:
     - metric: "$22M IP-led revenue"
-      allowed_usage: "NONE — mention 'commercialization' or 'revenue generation' conceptually only"
+      allowed_usage: "NONE, mention 'commercialization' or 'revenue generation' conceptually only"
     - metric: "20% gross margin expansion"
-      allowed_usage: "NONE — mention 'margin improvement' or 'economics' conceptually only"
+      allowed_usage: "NONE, mention 'margin improvement' or 'economics' conceptually only"
     - metric: "8 to 28 specialists"
-      allowed_usage: "NONE — mention 'team building' or 'organization scaling' conceptually only"
+      allowed_usage: "NONE, mention 'team building' or 'organization scaling' conceptually only"
     - metric: "6 months to 3 weeks"
-      allowed_usage: "NONE — mention 'acceleration' or 'speed' conceptually only"
+      allowed_usage: "NONE, mention 'acceleration' or 'speed' conceptually only"
     - metric: "99.9% uptime"  # IBM metric
-      allowed_usage: "FORBIDDEN — not a Unify fact"
+      allowed_usage: "FORBIDDEN, not a Unify fact"
     - metric: "40% TCO reduction"  # InsurTech metric
-      allowed_usage: "FORBIDDEN — not a Unify fact"
+      allowed_usage: "FORBIDDEN, not a Unify fact"
   
   conceptual_references_allowed:
-    - "commercialization" (instead of "$22M")
-    - "platform economics" (instead of "20% margin")
-    - "organization scaling" (instead of "8→28")
-    - "deployment acceleration" (instead of "6mo→3wk")
+    - "commercialization (instead of $22M)"
+    - "platform economics (instead of 20% margin)"
+    - "organization scaling (instead of 8 to 28)"
+    - "deployment acceleration (instead of 6mo to 3wk)"
 
 validation_rules:
   pre_output:
@@ -213,5 +268,5 @@ execution_context:
 
 metadata:
   produced_at: "2026-05-14"
-  produced_by: "W2B STOP 6 — Unify Position Narrative"
+  produced_by: "W2B STOP 6 - Unify Position Narrative"
   receipt_path: "artifacts/apps_rg/prompt_reset/w2b_outputs/stop_6_unify_narrative_receipt.json"

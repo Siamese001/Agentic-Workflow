@@ -67,6 +67,9 @@ PROMPT_TEMPLATE_PATH = (
     REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / 
     "executive_summary.generate_scratch_v1.yaml"
 )
+# Canonical production path compiles YAML via ``compile_executive_summary_prompt`` (PA). This harness
+# keeps simplified inline prompts for ad-hoc vLLM smoke only; doctrinal cues match generate_scratch_v1
+# (sentence roles, raw JSON elsewhere in pipeline, fit-to-evidence, no fixed sentence count).
 
 PROMPT_ID = "executive_summary.generate_scratch_v1"
 RUN_ID = f"exec_summary_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
@@ -482,7 +485,14 @@ def generate_prompt_payload(selected_fact_plan: dict, target_role: str, target_c
         "messages": [
             {
                 "role": "system",
-                "content": "You are an expert executive resume writer. Generate a senior executive summary that synthesizes facts into a flowing narrative. Do not output bullet-like sentence stacking. Every sentence must add distinct signal. Use fit_to_evidence only — no word count targets."
+                "content": (
+                    "Executive summary synthesizer only: reorganize Selected Facts into one dense "
+                    "third-person executive paragraph. Evidence-first fit_to_evidence: no fixed word count, "
+                    "no fixed sentence count. Use sentence role goals where facts support identity, governance "
+                    "/ platform depth, lifecycle or commercialization, quantified proof, credentials; combine "
+                    "roles when thin, split when comma-heavy; never one clause per stacked proof line. "
+                    "No bullet-like sentence stacking."
+                ),
             },
             {
                 "role": "user",
@@ -492,14 +502,13 @@ Selected Facts:
 {chr(10).join(facts_text)}
 
 Requirements:
-- Synthesize into flowing narrative (situation→challenge→action→impact→scale)
-- No bullet-like sentence stacking
-- Every sentence adds distinct signal
-- No word count targets — fit to evidence only
-- Preserve technical richness and commercial credibility
-- No em dashes
+- Synthesize flowing executive prose (sentence roles, no pad for length).
+- No bullet-like sentence stacking; each clause should add composite signal across facts where possible.
+- No word count optimization; evidence density beats brevity.
+- Preserve technical richness and commercial credibility.
+- ASCII punctuation only for dashes when needed (no Unicode em dash)
 """
-            }
+            },
         ],
         "temperature": 0.45,
         "max_tokens": 400,
@@ -837,12 +846,16 @@ def run_x1d_negative_controls() -> list[X1DJudgeOutput]:
 
 
 # =============================================================================
-# X1D THREE-PROVIDER LLM JUDGES — GEMINI PRO, OPENAI CHATGPT, ANTHROPIC CLAUDE
+# X1D THREE-PROVIDER LLM JUDGES — GOOGLE AI (GEMINI PRO), OPENAI CHATGPT, ANTHROPIC CLAUDE
 # =============================================================================
 
-# Provider configurations from environment
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = "gemini-1.5-pro"
+# Provider configurations from environment (canonical GOOGLE_API_KEY; GEMINI_* deprecated alias)
+def _google_ai_gemini_key() -> str:
+    return (os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY") or "").strip()
+
+
+# Demo fixed model slug for Google AI generateContent harness (does not read .env tiers).
+EXEC_SUMMARY_DEMO_GOOGLE_MODEL = "gemini-1.5-pro"
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_MODEL = "gpt-4-turbo-preview"
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -873,8 +886,10 @@ Return JSON with: score, threshold, pass, decisive_failure, findings[], remediat
 
 def check_gemini_pro_available() -> tuple[bool, str | None]:
     """Check if Gemini Pro provider is available."""
-    if not GEMINI_API_KEY:
-        return False, "GEMINI_API_KEY environment variable not set"
+    if not _google_ai_gemini_key():
+        return False, (
+            "GOOGLE_API_KEY environment variable not set (GEMINI_API_KEY is a deprecated alias)"
+        )
     return True, None
 
 
@@ -912,7 +927,7 @@ def call_gemini_pro_judge(resume_text: str, rubric: str) -> tuple[bool, str | No
             }
         }
         
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{EXEC_SUMMARY_DEMO_GOOGLE_MODEL}:generateContent?key={_google_ai_gemini_key()}"
         
         req = urllib.request.Request(
             url,
@@ -1050,7 +1065,7 @@ def run_x1d_llm_judges(l2_output: L2ExecutiveSummaryOutput, use_real_judges: boo
         {
             "key": "gemini_pro",
             "name": "Gemini Pro",
-            "model": GEMINI_MODEL,
+            "model": EXEC_SUMMARY_DEMO_GOOGLE_MODEL,
             "check_fn": check_gemini_pro_available,
             "call_fn": call_gemini_pro_judge,
         },
@@ -2330,8 +2345,11 @@ def run_executive_summary_demo() -> int:
         # Determine product_quality_status based on all checks
         quality_failures = []
         
-        if has_bullets or sentence_count <= 2:
-            quality_failures.append("bullet-like patterns or insufficient sentence count")
+        if sentence_count < 1:
+            quality_failures.append("resume_display_text parses to no sentences")
+
+        if has_bullets:
+            quality_failures.append("bullet-like patterns in prose")
         
         if first_person_found:
             quality_failures.append("first-person references found")

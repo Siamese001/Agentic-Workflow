@@ -294,10 +294,14 @@ async def main():
 if __name__ == "__main__":
     # Entry point for command-line execution.
     # Usage: python -m apps_lic  (or: python apps_lic/tools/run_workflow_lic.py)
-    # Environment variables: GEMINI_API_KEY (required), GOOGLE_API_KEY, GOOGLE_CSE_ID (optional).
+    # Environment variables: GOOGLE_API_KEY (canonical for Gemini/Google AI); GEMINI_API_KEY is deprecated alias.
+    # Optional: GOOGLE_CSE_ID for search.
+    missing_env_vars: list[str] = []
+    if not (
+        os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    ):
+        missing_env_vars = ["GOOGLE_API_KEY"]
     # Required files: mission_input_LIC.json; optional: master_resume.json, sender_knowledge_base.json, manual_rag_input.json.
-    required_env_vars = ["GEMINI_API_KEY"]
-    missing_env_vars = [var for var in required_env_vars if not os.environ.get(var)]
     if missing_env_vars:
         print(f"\n⚠️  WARNING: Missing environment variables: {', '.join(missing_env_vars)}")
         print("\nSome features may not work without these variables.")

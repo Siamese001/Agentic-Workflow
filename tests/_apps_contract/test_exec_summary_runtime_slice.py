@@ -157,7 +157,37 @@ def test_provider_prompt_forbids_markdown_fences():
     assert "begin with {" in combined
 
 
-def test_provider_prompt_requires_two_sentence_narrative_arc():
+def test_provider_prompt_includes_allowed_source_fact_ids_contract_and_spacing_examples():
+    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_prompt_messages
+
+    messages = build_prompt_messages(
+        {
+            "run_id": "slice_allowed_ids_contract",
+            "target_title": "SVP Engineering",
+            "target_company": "Synthetic Enterprise Corp.",
+            "jd_text": "enterprise AI",
+            "briefing": "platform",
+            "allowed_fact_ids": ["bul_unify_001", "bul_unify_003"],
+            "selected_fact_plan": {
+                "facts": [
+                    {"fact_id": "bul_unify_001", "claim_text": "Governed AI platform delivery."},
+                    {"fact_id": "bul_unify_003", "claim_text": "Operating cadence improvements."},
+                ],
+                "required_fact_ids": ["bul_unify_001", "bul_unify_003"],
+            },
+        }
+    )
+    combined = "\n".join(m["content"] for m in messages)
+    assert "ALLOWED_SOURCE_FACT_IDS (authoritative list" in combined
+    assert "  - bul_unify_001" in combined
+    assert "  - bul_unify_003" in combined
+    assert "bul_unify_ 003" in combined
+    assert "bul_unify_003" in combined
+    assert "x2_claim_ledger_orphan_zero" in combined
+    assert "Copy each ID character-for-character" in combined
+
+
+def test_provider_prompt_requires_dense_paragraph_narrative_arc():
     from apps_rg.runtime.dispatch.executive_summary_dispatch import build_prompt_messages
 
     messages = build_prompt_messages(
@@ -170,9 +200,11 @@ def test_provider_prompt_requires_two_sentence_narrative_arc():
         }
     )
     combined = "\n".join(m["content"] for m in messages)
-    assert "exactly TWO sentences" in combined or "exactly TWO synthesized sentences" in combined
-    assert "enterprise AI platform leader" in combined or "executive identity" in combined
-    assert "Collapse enumerations" in combined or "grouped phrases" in combined
+    cl = combined.lower()
+    assert "exactly two synthesized" not in cl
+    assert "sentence role" in cl
+    assert "no fixed sentence" in cl or "fixed sentence-count" in cl or "word-count target" in cl
+    assert "enterprise ai platform leader" in cl or "executive identity" in cl
 
 
 def test_narrative_shape_rejects_sentence_stacked_proof():
@@ -934,6 +966,140 @@ def test_x3_review_mocked_judge():
         product_quality_status="PASS",
     )
     assert x3.x3_code == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+
+
+def test_ledger_row_materialized_in_display_false_for_empty_or_whitespace_claim_text():
+    from apps_rg.runtime.validators.executive_summary_x2 import ledger_row_materialized_in_display
+
+    resume = "Engineering executive led governed platform delivery for enterprise."
+    assert ledger_row_materialized_in_display({"claim_text": "", "source_fact_ids": ["a"]}, resume) is False
+    assert ledger_row_materialized_in_display({"source_fact_ids": ["a"]}, resume) is False
+    assert ledger_row_materialized_in_display({"claim_text": "   \t\n", "source_fact_ids": ["a"]}, resume) is False
+
+
+def test_ledger_row_materialized_in_display_true_when_claim_text_overlaps_resume():
+    from apps_rg.runtime.validators.executive_summary_x2 import ledger_row_materialized_in_display
+
+    resume = "Engineering executive led governed platform delivery for enterprise."
+    assert (
+        ledger_row_materialized_in_display(
+            {"claim_text": "governed platform delivery", "source_fact_ids": ["bul_unify_001"]},
+            resume,
+        )
+        is True
+    )
+
+
+def test_x2_claim_ledger_claim_text_non_empty_fails_only_source_fact_ids():
+    from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import normalize_exec_summary_claim_ledger
+    from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
+
+    ledger = normalize_exec_summary_claim_ledger([{"source_fact_ids": ["bul_unify_001"]}])
+    gates = run_x2_gates(
+        resume_display_text="Some prose with platform tokens.",
+        parsed_output={"resume_display_text": "Some prose with platform tokens."},
+        claim_ledger=ledger,
+        text_claim_coverage={"sentences": [], "overall_pass": False},
+        allowed_fact_ids={"bul_unify_001"},
+        target_company="Acme Corp.",
+        jd_text="enterprise AI",
+        temperature=0.45,
+        runtime_generation_status="REAL_LLM",
+        monolithic_prompt_invoked=False,
+        strategic_tailor_v1_invoked=False,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_claim_ledger_claim_text_non_empty"].pass_ is False
+    assert "idx=0" in (by_id["x2_claim_ledger_claim_text_non_empty"].failure_reason or "")
+    assert "bul_unify_001" in (by_id["x2_claim_ledger_claim_text_non_empty"].failure_reason or "")
+
+
+def test_x2_claim_ledger_claim_text_non_empty_fails_whitespace_only():
+    from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import normalize_exec_summary_claim_ledger
+    from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
+
+    ledger = normalize_exec_summary_claim_ledger(
+        [{"claim_text": "  \t  ", "source_fact_ids": ["bul_unify_001"]}]
+    )
+    gates = run_x2_gates(
+        resume_display_text="Some prose.",
+        parsed_output={"resume_display_text": "Some prose."},
+        claim_ledger=ledger,
+        text_claim_coverage={"sentences": [], "overall_pass": False},
+        allowed_fact_ids={"bul_unify_001"},
+        target_company="Acme Corp.",
+        jd_text="enterprise AI",
+        temperature=0.45,
+        runtime_generation_status="REAL_LLM",
+        monolithic_prompt_invoked=False,
+        strategic_tailor_v1_invoked=False,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_claim_ledger_claim_text_non_empty"].pass_ is False
+
+
+def test_x2_claim_ledger_claim_text_non_empty_passes_when_claim_alias_normalized():
+    from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import normalize_exec_summary_claim_ledger
+    from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
+
+    ledger = normalize_exec_summary_claim_ledger(
+        [{"claim": "Material claim prose here.", "source_fact_ids": ["bul_unify_001"]}]
+    )
+    assert ledger[0]["claim_text"] == "Material claim prose here."
+    gates = run_x2_gates(
+        resume_display_text="Material claim prose here and more.",
+        parsed_output={"resume_display_text": "Material claim prose here and more."},
+        claim_ledger=ledger,
+        text_claim_coverage={"sentences": [{"sentence_index": 1, "material_claims": [], "sentence_pass": True}], "overall_pass": True},
+        allowed_fact_ids={"bul_unify_001"},
+        target_company="Acme Corp.",
+        jd_text="enterprise AI",
+        temperature=0.45,
+        runtime_generation_status="REAL_LLM",
+        monolithic_prompt_invoked=False,
+        strategic_tailor_v1_invoked=False,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_claim_ledger_claim_text_non_empty"].pass_ is True
+
+
+def test_x3_block_lists_claim_text_gate_when_ledger_text_missing():
+    from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import normalize_exec_summary_claim_ledger
+    from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
+    from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
+
+    ledger = normalize_exec_summary_claim_ledger([{"source_fact_ids": ["bul_unify_001"]}])
+    gates = run_x2_gates(
+        resume_display_text="Alpha beta.",
+        parsed_output={"resume_display_text": "Alpha beta."},
+        claim_ledger=ledger,
+        text_claim_coverage={"sentences": [], "overall_pass": False},
+        allowed_fact_ids={"bul_unify_001"},
+        target_company="Acme Corp.",
+        jd_text="enterprise AI",
+        temperature=0.45,
+        runtime_generation_status="REAL_LLM",
+        monolithic_prompt_invoked=False,
+        strategic_tailor_v1_invoked=False,
+    )
+    x3 = aggregate_x3(
+        resume_display_text="Alpha beta.",
+        claim_ledger=ledger,
+        x2_gates=[g.to_dict() for g in gates],
+        x1d_judges=[
+            {
+                "provider_key": "openai_chatgpt",
+                "evaluator_mode": "MODEL_BACKED",
+                "pass": True,
+                "decisive_failure": False,
+                "provider_status": "MODEL_BACKED_PASS",
+            }
+        ],
+        runtime_generation_status="REAL_LLM",
+        product_quality_status="PASS",
+    )
+    assert x3.x3_code == "X3_BLOCK"
+    assert "x2_claim_ledger_claim_text_non_empty" in x3.x2_failed_gates
 
 
 def test_x2_target_company_gate_catches_bad_text():

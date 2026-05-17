@@ -1,31 +1,9 @@
 {
   "gate_id": "G_REACH_ARCHIVAL_orphans",
-  "count": 1480,
-  "seeded_at": "2026-04-23T17:00:00+00:00",
-  "snapshot": "adg_indexed_04232026_2225.sqlite",
-  "notes": "W4 baseline. Subset of G_REACH (1993) after filtering dynamic-dispatch anchors in config/wiring_dynamic_dispatch_anchors.yaml. These 1784 modules are real archival/deletion candidates. Monotone auto-tighten + R->B auto-promotion enabled via W1 harness.",
+  "count": 2196,
+  "seeded_at": "2026-05-17T11:14:49.049604+00:00",
+  "snapshot": "adg_indexed_05172026_0651.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-24T02:34:39.648106+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_2225.sqlite",
-  "tightened_at": "2026-04-24T02:31:03.915541+00:00",
-  "tighten_history": [
-    {
-      "at": "2026-04-23T19:00:51.088920+00:00",
-      "snapshot": "adg_indexed_04232026_1442.sqlite",
-      "from": 1784,
-      "to": 1652
-    },
-    {
-      "at": "2026-04-23T22:39:35.579238+00:00",
-      "snapshot": "adg_indexed_04232026_1832.sqlite",
-      "from": 1652,
-      "to": 1583
-    },
-    {
-      "at": "2026-04-24T02:31:03.915541+00:00",
-      "snapshot": "adg_indexed_04232026_2225.sqlite",
-      "from": 1583,
-      "to": 1480
-    }
-  ]
+  "last_run_at": "2026-05-17T12:14:56.572122+00:00",
+  "last_run_snapshot": "adg_indexed_05172026_0651.sqlite"
 }

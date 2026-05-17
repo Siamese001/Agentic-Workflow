@@ -374,6 +374,7 @@ def test_mock_slice_still_passes_x2_source_mapping() -> None:
             "apps_rg.runtime.dispatch.competencies_dispatch",
             "--provider",
             "mock",
+            "--allow-test-mock-provider",
             "--mock-judges",
             "--allow-non-allow-exit-zero",
         ],

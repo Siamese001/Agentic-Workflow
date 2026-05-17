@@ -49,6 +49,21 @@ except ImportError:  # pragma: no cover — validator optional; capture must sti
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[2]
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
+
+from tools.refactor_decisions.author_gate_w1_bind import (  # noqa: E402
+    merge_precedent_verdict,
+    outcome_bind_tier,
+)
+from tools.refactor_decisions.ledger_w1_schema import ensure_w1_feedback_loop_columns  # noqa: E402
+from tools.refactor_decisions.ledger_w2_schema import ensure_w2_decision_signal_columns  # noqa: E402
+from tools.refactor_decisions.precedent_capture_metadata import (  # noqa: E402
+    compute_precedent_capture_metadata,
+)
+from tools.refactor_decisions.author_gate_w2_signals import (  # noqa: E402
+    replace_decision_signals_for_capture,
+)
 DB_DIR = repo_root / ".cursor" / "state" / "refactor_decisions"
 DB_PATH = DB_DIR / "refactor_decision_ledger.sqlite"
 _log_path = DB_DIR / "author_gate_capture.log"
@@ -315,7 +330,17 @@ def _read_fresh_test_signal() -> dict[str, object] | None:
     return None
 
 
-def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str, commit_sha: str, status: str) -> None:
+def _direct_bind_outcome(
+    conn: sqlite3.Connection,
+    decision_id: str,
+    commit_sha: str,
+    status: str,
+    *,
+    precedent_verdict: str | None = None,
+    override_vs_recommendation: int | None = None,
+    reason_code: str | None = None,
+    degraded_scope: bool = False,
+) -> None:
     """W3.3 — Bind an outcome row IMMEDIATELY at capture time.
 
     Runs only when the marker carried status='executed' AND a commit SHA is
@@ -380,14 +405,32 @@ def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str, commit_sha:
         else:
             notes_suffix = f" | test_signal=fail (exit={exit_code})"
 
+    ov = override_vs_recommendation
+    if ov is not None and not isinstance(ov, int):
+        try:
+            ov = int(ov)
+        except (TypeError, ValueError):
+            ov = None
+
+    bind_tier = outcome_bind_tier(
+        precedent_verdict=precedent_verdict,
+        override_vs_recommendation=ov,
+        reason_code=str(reason_code) if reason_code else None,
+        degraded_scope=degraded_scope,
+        tests_passed=tests_passed,
+        regression_found=regression_found,
+        rollback_required=rollback_required,
+    )
+
     try:
         conn.execute(
             """INSERT INTO decision_outcomes
                    (decision_id, execution_completed, tests_passed, regression_found,
                     rollback_required, promote_to_pattern, commit_shas_json,
                     files_written_json, tests_run_json, latency_to_outcome_s,
-                    pattern_promotion_eligible, outcome_label, bound_at, outcome_notes)
-               VALUES (?, 1, ?, ?, ?, 0, ?, '[]', '[]', 0, 0, ?, ?, ?)""",
+                    pattern_promotion_eligible, outcome_label, bound_at, outcome_notes,
+                    outcome_bind_tier)
+               VALUES (?, 1, ?, ?, ?, 0, ?, '[]', '[]', 0, 0, ?, ?, ?, ?)""",
             (
                 decision_id,
                 tests_passed,
@@ -397,6 +440,7 @@ def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str, commit_sha:
                 label,
                 datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 f"direct-bound at capture: {subject[:150]}{notes_suffix}",
+                bind_tier,
             ),
         )
         conn.commit()
@@ -588,6 +632,16 @@ def _init_db() -> Optional[sqlite3.Connection]:
         except sqlite3.Error:
             # guardian: allow-silent-swallow -- additive migration: non-fatal
             pass
+        try:
+            ensure_w1_feedback_loop_columns(conn)
+        except sqlite3.Error:
+            # guardian: allow-silent-swallow -- W1 additive columns: non-fatal
+            pass
+        try:
+            ensure_w2_decision_signal_columns(conn)
+        except sqlite3.Error:
+            # guardian: allow-silent-swallow -- W2 additive columns: non-fatal
+            pass
         conn.commit()
         return conn
     except (
@@ -707,17 +761,34 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
     outcome = m.group("outcome").strip()
     tail = m.groupdict().get("tail") or ""
     v2 = _parse_v2_tail(tail)
+    marker_precedent_raw = v2.get("precedent_verdict")
+    marker_precedent: str | None = None
+    if isinstance(marker_precedent_raw, str):
+        s = marker_precedent_raw.strip().lower()
+        if s in ("strong", "suggestive", "none"):
+            marker_precedent = s
 
-    # Precedent telemetry: marker takes priority; sidecar is fallback when
-    # the marker did not carry an explicit precedent= field (legacy clients).
-    if "precedent_verdict" not in v2:
-        sidecar = _read_precedent_sidecar()
-        if sidecar is not None:
-            verdict, match_count = _derive_precedent_from_sidecar(sidecar)
-            if verdict is not None:
-                v2["precedent_verdict"] = verdict
-            if match_count is not None:
-                v2["precedent_match_count"] = match_count
+    sidecar = _read_precedent_sidecar()
+    sidecar_verdict, sidecar_count = (
+        _derive_precedent_from_sidecar(sidecar) if sidecar is not None else (None, None)
+    )
+
+    layer_guess = _infer_layer(area)
+    meta = compute_precedent_capture_metadata(
+        dtype,
+        area[:200],
+        area.strip()[:200],
+        layer=layer_guess,
+        degraded_scope=False,
+        sidecar=sidecar,
+    )
+    lookup_verdict = meta.get("precedent_verdict_from_lookup")
+    merged = merge_precedent_verdict(marker_precedent, lookup_verdict, sidecar_verdict)
+    v2["precedent_verdict"] = merged
+    pmc = meta.get("precedent_match_count")
+    if pmc is None and sidecar_count is not None:
+        pmc = sidecar_count
+    v2["precedent_match_count"] = pmc
 
     ts = datetime.now(timezone.utc).isoformat()
     decision_id = _make_decision_id(f"marker:{area}:{selected}", ts)
@@ -741,7 +812,9 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
              precedent_verdict, precedent_match_count, exit_criteria_json,
              reason_code, confidence_calibrated, calibrator_version,
              adg_hotspot_rank, blast_radius_hops, surface_intersections_json,
-             decision_class_tier)
+             decision_class_tier,
+             precedent_top_match_ids_json, precedent_lookup_query_digest,
+             precedent_lookup_policy_version, precedent_capture_utc)
         VALUES
             (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
              :request_summary, :normalized_intent, :recommended_option_id,
@@ -751,7 +824,9 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
              :precedent_verdict, :precedent_match_count, :exit_criteria_json,
              :reason_code, :confidence_calibrated, :calibrator_version,
              :adg_hotspot_rank, :blast_radius_hops, :surface_intersections_json,
-             :decision_class_tier)
+             :decision_class_tier,
+             :precedent_top_match_ids_json, :precedent_lookup_query_digest,
+             :precedent_lookup_policy_version, :precedent_capture_utc)
         """,
         {
             "decision_id": decision_id,
@@ -780,6 +855,10 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
             "blast_radius_hops": v2.get("blast_radius_hops"),
             "surface_intersections_json": v2.get("surface_intersections_json"),
             "decision_class_tier": v2.get("decision_class_tier"),
+            "precedent_top_match_ids_json": meta.get("precedent_top_match_ids_json"),
+            "precedent_lookup_query_digest": meta.get("precedent_lookup_query_digest"),
+            "precedent_lookup_policy_version": meta.get("precedent_lookup_policy_version"),
+            "precedent_capture_utc": meta.get("precedent_capture_utc"),
         },
     )
     conn.execute(
@@ -789,9 +868,33 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
         (decision_id, area[:200], context_window[:500]),
     )
     _insert_scope_row(conn, decision_id, area)
+    opt_labels = [selected]
+    meta_dict = dict(meta) if isinstance(meta, dict) else {}
+    replace_decision_signals_for_capture(
+        conn,
+        decision_id,
+        opt_labels,
+        recommended_label=selected,
+        merged_verdict=merged,
+        meta=meta_dict,
+        v2=dict(v2),
+    )
     conn.commit()
     # W3.3 — direct-bind outcome row NOW, before any rebase can orphan the SHA.
-    _direct_bind_outcome(conn, decision_id, sha, status)
+    rc_raw = v2.get("reason_code")
+    rc_s = str(rc_raw) if rc_raw is not None else None
+    _direct_bind_outcome(
+        conn,
+        decision_id,
+        sha,
+        status,
+        precedent_verdict=merged,
+        override_vs_recommendation=v2.get("override_vs_recommendation")
+        if isinstance(v2.get("override_vs_recommendation"), int)
+        else None,
+        reason_code=rc_s,
+        degraded_scope=False,
+    )
     if _ensure_row_hash is not None:
         try:
             _ensure_row_hash(conn, decision_id)
@@ -836,16 +939,40 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     options = _extract_options(text)
     branch, sha = _get_git_info()
 
+    sidecar_h = _read_precedent_sidecar()
+    sidecar_verdict_h, sidecar_count_h = (
+        _derive_precedent_from_sidecar(sidecar_h) if sidecar_h is not None else (None, None)
+    )
+    layer_h = _infer_layer(normalized_intent)
+    meta_h = compute_precedent_capture_metadata(
+        decision_type,
+        normalized_intent[:200],
+        normalized_intent.strip()[:200],
+        layer=layer_h,
+        degraded_scope=False,
+        sidecar=sidecar_h,
+    )
+    merged_h = merge_precedent_verdict(None, meta_h.get("precedent_verdict_from_lookup"), sidecar_verdict_h)
+    pmc_h = meta_h.get("precedent_match_count")
+    if pmc_h is None and sidecar_count_h is not None:
+        pmc_h = sidecar_count_h
+
     conn.execute(
         """
         INSERT OR IGNORE INTO decisions
             (decision_id, created_at, branch, commit_sha, decision_type,
              request_summary, normalized_intent, recommended_option_id,
-             options_json, status)
+             options_json, status,
+             precedent_verdict, precedent_match_count,
+             precedent_top_match_ids_json, precedent_lookup_query_digest,
+             precedent_lookup_policy_version, precedent_capture_utc)
         VALUES
             (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
              :request_summary, :normalized_intent, :recommended_option_id,
-             :options_json, :status)
+             :options_json, :status,
+             :precedent_verdict, :precedent_match_count,
+             :precedent_top_match_ids_json, :precedent_lookup_query_digest,
+             :precedent_lookup_policy_version, :precedent_capture_utc)
         """,
         {
             "decision_id": decision_id,
@@ -858,6 +985,12 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
             "recommended_option_id": recommended,
             "options_json": json.dumps(options),
             "status": "surfaced",
+            "precedent_verdict": merged_h,
+            "precedent_match_count": pmc_h,
+            "precedent_top_match_ids_json": meta_h.get("precedent_top_match_ids_json"),
+            "precedent_lookup_query_digest": meta_h.get("precedent_lookup_query_digest"),
+            "precedent_lookup_policy_version": meta_h.get("precedent_lookup_policy_version"),
+            "precedent_capture_utc": meta_h.get("precedent_capture_utc"),
         },
     )
 
@@ -871,6 +1004,19 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     )
     # normalized_intent is the best repo-area proxy available in the v1 packet-header path
     _insert_scope_row(conn, decision_id, normalized_intent)
+    opt_labels = options if options else ([recommended] if recommended else [])
+    if not opt_labels:
+        opt_labels = ["(author_gate_capture)"]
+    meta_h_dict = dict(meta_h) if isinstance(meta_h, dict) else {}
+    replace_decision_signals_for_capture(
+        conn,
+        decision_id,
+        opt_labels,
+        recommended_label=recommended,
+        merged_verdict=merged_h,
+        meta=meta_h_dict,
+        v2={},
+    )
     conn.commit()
     if _ensure_row_hash is not None:
         try:

@@ -172,8 +172,15 @@ def resolve_model_id(juror: JurorSpec) -> tuple[str, str | None]:
     """
     if not juror.model_env_override:
         return juror.model_id, None
-    override = os.environ.get(juror.model_env_override)
-    if override is None or override.strip() == "":
+    ov_key = juror.model_env_override
+    if ov_key in ("GEMINI_MODEL", "GOOGLE_AI_MODEL"):
+        override_raw = (
+            os.environ.get("GOOGLE_AI_MODEL") or os.environ.get("GEMINI_MODEL")
+        )
+    else:
+        override_raw = os.environ.get(juror.model_env_override)
+    override = None if override_raw is None else override_raw.strip()
+    if override is None or override == "":
         return juror.model_id, None
     if override == juror.model_id or override in juror.model_aliases:
         return override, None

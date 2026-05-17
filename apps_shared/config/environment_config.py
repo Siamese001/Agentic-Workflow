@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from agentic_core.L0_routing.config import model_registry as _MR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -77,16 +77,24 @@ class EnvironmentConfig(BaseModel):
     FIGMA_TOKEN: str | None = Field(default=None, description="Figma API token")
 
     # Model Configuration — defaults sourced from L0 model_registry SSOT.
-    # To change a model, set the env var (GEMINI_MODEL / GEMINI_PRO_MODEL / OPENAI_MODEL)
-    # OR update agentic_core/L0_routing/config/model_registry.py.
-    GEMINI_MODEL: str = Field(default=_MR.GEMINI_FLASH_MODEL_ID, description="Gemini model name")
-    GEMINI_PRO_MODEL: str = Field(default=_MR.GEMINI_PRO_MODEL_ID, description="Gemini Pro model name")
+    # Google AI: canonical ``GOOGLE_AI_*``; ``GEMINI_*`` env names are deprecated aliases.
+    GOOGLE_AI_MODEL: str = Field(
+        default=_MR.GEMINI_FLASH_MODEL_ID,
+        description="Google AI (Gemini) flash-tier model identifier",
+        validation_alias=AliasChoices("GOOGLE_AI_MODEL", "GEMINI_MODEL"),
+    )
+    GOOGLE_AI_PRO_MODEL: str = Field(
+        default=_MR.GEMINI_PRO_MODEL_ID,
+        description="Google AI (Gemini) pro-tier model identifier",
+        validation_alias=AliasChoices("GOOGLE_AI_PRO_MODEL", "GEMINI_PRO_MODEL"),
+    )
     OPENAI_MODEL: str = Field(default=_MR.OPENAI_MODEL_ID, description="OpenAI model name")
 
     # Thresholds and Limits
-    # NOTE: Routing/healing confidence thresholds are NOT here. Canonical SSOT is
-    # agentic_core/L0_routing/config/path_constants.py (HEALING_CONFIDENCE_X/Y,
-    # SSOT_SCORE_THRESHOLD_DET/QWEN). Do not re-add SOVEREIGN_* here.
+    # NOTE: heal *confidence* floats are routed through
+    # `agentic_core/L2_execution/healers/routing_thresholds_ssot.py` via
+    # `HEALING_CONFIDENCE_HIGH` / `HEALING_CONFIDENCE_MEDIUM`. Integer score
+    # SSOT knobs remain under `agentic_core.L0_routing.config.path_constants`.
     RAG_SIMILARITY_THRESHOLD: float = Field(default=0.8, ge=0.0, le=1.0)
     GOVERNOR_SAFETY_THRESHOLD: float = Field(default=0.95, ge=0.0, le=1.0)
 

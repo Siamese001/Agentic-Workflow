@@ -1,7 +1,11 @@
 {
   "candidate_name": "Amit Ayer",
   "header": {
-    "name": "Amit Ayer"
+    "name": "Amit Ayer",
+    "phone": "+1-555-0100",
+    "email": "amit.ayer@example.com",
+    "linkedin": "https://linkedin.com/in/example",
+    "github": "https://github.com/example"
   },
   "facts": {
     "employment": [
@@ -65,6 +69,7 @@
         "start_date": "2014-04",
         "end_date": "2017-03",
         "is_current": false,
+        "role_narrative": "As Chief Technology Officer, led regulated insurers through AWS-native modernization of core policy and underwriting systems with SOC 2–aligned controls, high-availability operations, and a path to cloud analytics and ML without weakening compliance posture.",
         "bullets": [
           {
             "bullet_id": "bul_insurtech_001",

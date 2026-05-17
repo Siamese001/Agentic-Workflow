@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
+from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 
 
 @dataclass
@@ -33,12 +34,13 @@ DEFAULT_OUTPUT_REL = Path("artifacts/apps_rg/runtime_proofs/final_resume_assembl
 def resolve_default_paths(repo: Path | None = None) -> FinalResumePaths:
     root = repo or find_repo_root()
     locked = root / DEFAULT_LOCKED_REL
+    _, base_resume_path, _digest = load_lane_base_resume_json(repo_root=root)
     return FinalResumePaths(
         repo_root=root,
         rollup_json=root / DEFAULT_ROLLUP_REL,
         locked_manifest=locked / "locked_copy_manifest.json",
         locked_x2=locked / "locked_copy_x2_gate_outputs.json",
-        base_resume=root / "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+        base_resume=base_resume_path,
         output_dir=root / DEFAULT_OUTPUT_REL,
     )
 

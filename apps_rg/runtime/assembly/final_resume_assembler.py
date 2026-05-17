@@ -23,6 +23,7 @@ from apps_rg.runtime.assembly.final_resume_x2 import (
     sha256_utf8,
 )
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root, sha256_hex
+from apps_rg.runtime.render.resume_export_enrich import verbatim_identity_from_base_resume
 
 
 ASSEMBLER_OBJECT_ID = "final_resume_assembled_v1"
@@ -60,6 +61,7 @@ def assemble_final_resume(paths: FinalResumePaths | None = None) -> dict[str, An
 
     base_raw = paths.base_resume.read_text(encoding="utf-8")
     base_digest = sha256_hex(base_raw)
+    base_blob: dict[str, Any] = json.loads(base_raw)
     expected_locked = str(locked_blob.get("base_resume_json_hash") or "")
     if expected_locked and base_digest != expected_locked:
         msg = (
@@ -184,6 +186,8 @@ def assemble_final_resume(paths: FinalResumePaths | None = None) -> dict[str, An
         recomputed_lines.append(f"invariant_{ik}:{sub.get('section_hash')}")
     final_hash = sha256_utf8("\n".join(recomputed_lines))
 
+    candidate_identity = verbatim_identity_from_base_resume(base_blob)
+
     final_resume: dict[str, Any] = {
         "assembled_object_id": ASSEMBLER_OBJECT_ID,
         "assembled_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -197,6 +201,7 @@ def assemble_final_resume(paths: FinalResumePaths | None = None) -> dict[str, An
         "locked_manifest_id": str(locked_blob.get("manifest_id") or ""),
         "canonical_base_resume_sha256_hex": base_digest,
         "verified_base_resume_hash_matches_locked_manifest": bool(expected_locked) and base_digest == expected_locked,
+        "candidate_identity": candidate_identity,
         "sections": sections_out,
         "locked_copy_invariants": locked_invariants,
         "final_resume_hash": final_hash,

@@ -107,7 +107,7 @@ slot_bodies:
     2. Professional Summary
     3. Experience (reverse chronological)
     4. Projects (if separate from experience)
-    5. Skills
+    5. ENGINEERING & PLATFORM COMPETENCIES (JSON key `skills`; categorized competency rows)
     6. Education
     7. Certifications (optional)
     8. Additional sections
@@ -130,7 +130,7 @@ slot_bodies:
     - Bullets: Standard or compact spacing
     - Bullet style: Round, square, or dash
     
-    ### Skills
+    ### ENGINEERING & PLATFORM COMPETENCIES
     - Categorized or flat list
     - Column layout or inline
     - Separator: commas, bullets, or pipes
@@ -182,7 +182,7 @@ slot_bodies:
       }
     }
     
-    Example 2 - Skills section layout:
+    Example 2 - ENGINEERING & PLATFORM COMPETENCIES section layout:
     Content: "Python, AWS, Kubernetes, Docker"
     Manifest entry:
     {

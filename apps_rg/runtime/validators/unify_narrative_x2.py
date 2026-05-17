@@ -19,6 +19,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     split_sentences,
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
 
 
 @dataclass
@@ -74,6 +75,9 @@ def run_unify_narrative_x2_gates(
     jd_text: str,
     runtime_generation_status: str,
     companion_bullet_texts: str | None,
+    companion_bullets_status: str | None = None,
+    companion_bullets_reason: str | None = None,
+    candidate_name: str = "",
     provider_requested: str | None = None,
     provider_attempted: str | None = None,
     model_name: str | None = None,
@@ -111,6 +115,15 @@ def run_unify_narrative_x2_gates(
         "Must be exactly one sentence.",
     )
 
+    leaks_name, name_hit = narrative_leaks_candidate_name_tokens(narrative_sentence, candidate_name)
+    add(
+        "x2_unify_narrative_no_candidate_name_tokens",
+        not leaks_name,
+        name_hit or "none",
+        "absent",
+        "Candidate name must not appear in the role narrative sentence.",
+    )
+
     ledger_ids = _ledger_fact_ids(claim_ledger)
     unify_roots = set(UNIFY_BULLET_IDS)
     supported = bool(claim_ledger) and bool(ledger_ids)
@@ -141,6 +154,33 @@ def run_unify_narrative_x2_gates(
     add("x2_no_jd_only_claims", not jd_copy, jd_phrase or "none", "no long JD copy", "JD phrase copied as proof.")
 
     companion = companion_bullet_texts or ""
+    if runtime_generation_status == "MOCKED":
+        add(
+            "x2_unify_narrative_requires_finalized_bullets",
+            True,
+            {
+                "status": companion_bullets_status or "UNKNOWN",
+                "reason": companion_bullets_reason or "",
+                "has_companion_text": bool(companion.strip()),
+                "skipped": "MOCKED_runtime_plumbing",
+            },
+            "skipped for MOCKED provider",
+            None,
+        )
+    else:
+        finalized_dependency_ok = bool(companion.strip()) and companion_bullets_status == "ACCEPTED_FINALIZED"
+        add(
+            "x2_unify_narrative_requires_finalized_bullets",
+            finalized_dependency_ok,
+            {
+                "status": companion_bullets_status or "UNKNOWN",
+                "reason": companion_bullets_reason or "",
+                "has_companion_text": bool(companion.strip()),
+            },
+            "ACCEPTED_FINALIZED with companion bullet text",
+            "Narrative must run only after finalized Unify bullets are accepted.",
+        )
+
     metric_hits = _count_metric_hits(narrative_sentence)
     if companion and _companion_bullets_have_metrics(companion):
         repetition_ok = metric_hits <= 1

@@ -64,6 +64,25 @@ class TestStop1CanonicalBaseResumeJSON:
         assert "skills" in data["facts"]
         assert "education" in data["facts"]
     
+    def test_canonical_header_contact_verbatim(self):
+        """Locked base header matches operator contact line (verbatim strings)."""
+        json_path = REPO_ROOT / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        h = data.get("header") or {}
+        assert h.get("phone") == "+1-917-239-3830"
+        assert h.get("email") == "amitayer1@gmail.com"
+        assert h.get("linkedin") == "linkedin.com/in/amitayer1"
+        assert h.get("github") == "github.com/Siamese001/Agentic-Workflow"
+        assert h.get("location") == "Boca Raton, FL"
+    
+    def test_canonical_base_has_no_static_headline_line(self):
+        """Headline is JIT from briefing + JD via headline lane — not stored on locked base."""
+        json_path = REPO_ROOT / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        assert not str(data.get("headline_line") or "").strip()
+    
     def test_fact_ids_unique(self):
         """All fact_ids in canonical JSON are unique"""
         json_path = REPO_ROOT / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
@@ -83,7 +102,7 @@ class TestStop1CanonicalBaseResumeJSON:
             fact_ids.append(cert["fact_id"])
         
         assert len(fact_ids) == len(set(fact_ids)), "Duplicate fact_ids found"
-        # Updated for corrected canonical JSON: 37 total facts (5 employment + 18 bullets + 8 skills + 2 education + 4 certifications)
+        # 5 employment + 18 bullets + 8 skills + 2 education + 4 certifications
         assert len(fact_ids) == 37, f"Expected 37 facts, found {len(fact_ids)}"
     
     def test_active_pointer_exists(self):

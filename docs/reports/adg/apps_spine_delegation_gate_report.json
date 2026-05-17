@@ -1,10 +1,10 @@
 {
   "gate": "G-APPS-SPINE-DELEGATION",
   "tier": "B",
-  "timestamp": "2026-05-15T19:37:06.323230+00:00",
+  "timestamp": "2026-05-17T12:21:56.854333+00:00",
   "mode": "strict",
-  "snapshot": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
-  "snapshot_mtime_utc": "2026-05-15T15:28:12.490549+00:00",
+  "snapshot": "artifacts\\adg\\adg_indexed_05172026_0651.sqlite",
+  "snapshot_mtime_utc": "2026-05-17T11:01:40.421472+00:00",
   "packages_scanned": 11,
   "violations": 0,
   "allowlist_active": 2,
@@ -44,7 +44,7 @@
     {
       "package": "apps_lic",
       "spine_imports": 40,
-      "total_imports": 4006,
+      "total_imports": 4011,
       "is_violation": false,
       "allowlisted": false,
       "allowlist_reason": "",
@@ -74,7 +74,7 @@
     {
       "package": "apps_research",
       "spine_imports": 30,
-      "total_imports": 1129,
+      "total_imports": 1135,
       "is_violation": false,
       "allowlisted": false,
       "allowlist_reason": "",
@@ -93,8 +93,8 @@
     },
     {
       "package": "apps_rg",
-      "spine_imports": 27,
-      "total_imports": 800,
+      "spine_imports": 39,
+      "total_imports": 1953,
       "is_violation": false,
       "allowlisted": false,
       "allowlist_reason": "",
@@ -104,7 +104,7 @@
     {
       "package": "apps_shared",
       "spine_imports": 132,
-      "total_imports": 8637,
+      "total_imports": 8638,
       "is_violation": false,
       "allowlisted": false,
       "allowlist_reason": "",

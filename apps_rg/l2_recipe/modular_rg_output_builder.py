@@ -18,9 +18,10 @@ from typing import Any, Final, Mapping
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
 from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
 
-# Canonical base entries that aggregate multiple early roles into one narrative line
-# cannot satisfy rg_output ``experience[*].bullets`` minItems=3 without extra base facts.
-_COMPACT_EARLY_CAREER_FACT_IDS: Final[frozenset[str]] = frozenset({"exp_early_career_001"})
+# Locked roles that are not driven by generated lanes must provide enough base bullets to
+# populate ``rg_output.sections.experience[*].bullets``. Default minimum is three (schema);
+# ``exp_early_career_001`` is allowed one bullet per résumé SSOT.
+_MIN_LOCKED_BULLETS_BY_FACT_ID: Final[Mapping[str, int]] = {"exp_early_career_001": 1}
 
 _MONTHS: Final[tuple[str, ...]] = (
     "Jan",
@@ -71,6 +72,8 @@ def _format_rg_dates(start_date: str, end_date: str, *, is_current: bool) -> str
         start_part = f"{_MONTHS[mo - 1]} {y}"
     elif re.match(r"^\d{4}$", start_date.strip()):
         start_part = start_date.strip()
+    elif re.match(r"^pre[- ]?2002$", start_date.strip(), re.I):
+        start_part = "Pre-2002"
     else:
         start_part = start_date.strip() or "Jan 2020"
 
@@ -127,7 +130,7 @@ def _competencies_to_skills(competencies: Any) -> dict[str, Any] | None:
     for cat in competencies[:6]:
         if not isinstance(cat, dict):
             continue
-        _ = str(cat.get("category_label") or "Capabilities").strip() or "Capabilities"
+        cat_name = str(cat.get("category_label") or "").strip() or "Capabilities"
         terms_raw = cat.get("terms") or []
         items: list[str] = []
         if isinstance(terms_raw, list):
@@ -140,7 +143,7 @@ def _competencies_to_skills(competencies: Any) -> dict[str, Any] | None:
                     items.append(txt)
         if not items:
             continue
-        categories.append({"name": "Other", "items": items[:8]})
+        categories.append({"name": cat_name, "items": items[:8]})
     if not categories:
         return None
     return {"categories": categories}
@@ -168,6 +171,9 @@ def _education_from_base(base: dict[str, Any]) -> list[dict[str, Any]]:
         maj = e.get("major")
         if isinstance(maj, str) and maj.strip():
             rec["major"] = maj.strip()
+        hon = e.get("honors")
+        if isinstance(hon, str) and hon.strip():
+            rec["honors"] = hon.strip()
         out.append(rec)
     return out
 
@@ -179,10 +185,12 @@ def _certs_from_base(base: dict[str, Any]) -> list[dict[str, Any]]:
         if not isinstance(c, dict):
             continue
         name = str(c.get("name") or "").strip()
-        issuer = str(c.get("issuer") or c.get("issuing_organization") or "").strip()
-        if not name or not issuer:
+        if not name:
             continue
-        row: dict[str, Any] = {"name": name, "issuer": issuer}
+        issuer = str(c.get("issuer") or c.get("issuing_organization") or "").strip()
+        row: dict[str, Any] = {"name": name}
+        if issuer:
+            row["issuer"] = issuer
         yr = c.get("year") or c.get("date")
         if yr is not None and str(yr).strip():
             row["date"] = str(yr).strip()
@@ -199,6 +207,23 @@ def _candidate_name(base: dict[str, Any]) -> str:
         if n:
             return n
     return ""
+
+
+def _contact_from_base(base: dict[str, Any]) -> dict[str, str]:
+    """Header contact fields aligned with base resume (phone, email, linkedin, github)."""
+    facts = _facts(base)
+    hdr_top = base.get("header") if isinstance(base.get("header"), dict) else {}
+    hdr_facts = facts.get("header") if isinstance(facts.get("header"), dict) else {}
+    merged: dict[str, Any] = {**hdr_facts, **hdr_top}
+    out: dict[str, str] = {}
+    for k in ("phone", "email", "linkedin", "github"):
+        raw = merged.get(k)
+        if raw is None:
+            continue
+        s = str(raw).strip()
+        if s:
+            out[k] = s
+    return out
 
 
 @dataclass
@@ -306,6 +331,9 @@ def build_rg_output_from_modular_sections(
             receipt["failure"] = f"lane_payload_invalid:{label}"
             return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
+    uni_narrative_sentence = str(uni_n.get("narrative_sentence") or "").strip()
+    ibm_narrative_sentence = str(ibm_n.get("narrative_sentence") or "").strip()
+
     hl = str(headline.get("headline_line") or "").strip()
     if not hl:
         receipt["failure"] = "missing_headline_line"
@@ -320,8 +348,10 @@ def build_rg_output_from_modular_sections(
         receipt["failure"] = "executive_summary_out_of_rg_bounds"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
-    for lab, narr in (("unify_narrative", uni_n), ("ibm_narrative", ibm_n)):
-        sent = str(narr.get("narrative_sentence") or "").strip()
+    for lab, sent in (
+        ("unify_narrative", uni_narrative_sentence),
+        ("ibm_narrative", ibm_narrative_sentence),
+    ):
         if len(sent) < 20:
             receipt["failure"] = f"missing_or_short_{lab}"
             return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
@@ -331,12 +361,15 @@ def build_rg_output_from_modular_sections(
         receipt["failure"] = "missing_competencies"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
-    uni_lane_bullets, uerr = _lane_bullets_to_rg(list(uni_b.get("bullets") or []))
+    uni_lane_bullets, uerr = _lane_bullets_to_rg(
+        list(uni_b.get("bullets") or []),
+        max_bullets=6,
+    )
     if uni_lane_bullets is None:
         receipt["failure"] = f"unify_bullets_invalid:{uerr}"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
-    ibm_lane_bullets, ierr = _lane_bullets_to_rg(list(ibm_b.get("bullets") or []))
+    ibm_lane_bullets, ierr = _lane_bullets_to_rg(list(ibm_b.get("bullets") or []), max_bullets=5)
     if ibm_lane_bullets is None:
         receipt["failure"] = f"ibm_bullets_invalid:{ierr}"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
@@ -350,7 +383,7 @@ def build_rg_output_from_modular_sections(
 
     def _locked_bullet_rows(emp_row: dict[str, Any]) -> list[dict[str, Any]]:
         out_rows: list[dict[str, Any]] = []
-        for b in list(emp_row.get("bullets") or [])[:5]:
+        for b in list(emp_row.get("bullets") or [])[:6]:
             if not isinstance(b, dict):
                 continue
             txt = _norm_bullet_text(str(b.get("text") or ""))
@@ -368,7 +401,6 @@ def build_rg_output_from_modular_sections(
         return out_rows
 
     experience_out: list[dict[str, Any]] = []
-    excluded: list[dict[str, Any]] = []
     for emp in employment:
         if not isinstance(emp, dict):
             continue
@@ -381,44 +413,36 @@ def build_rg_output_from_modular_sections(
             str(emp.get("end_date") or ""),
             is_current=bool(emp.get("is_current")),
         )
+        role_narrative: str | None = None
         if fact_id == "exp_unify_001":
             bullets = uni_lane_bullets
+            role_narrative = uni_narrative_sentence
         elif fact_id == "exp_ibm_001":
             bullets = ibm_lane_bullets
+            role_narrative = ibm_narrative_sentence
         else:
             bullets = _locked_bullet_rows(emp)
-            if fact_id in _COMPACT_EARLY_CAREER_FACT_IDS and len(bullets) < 3:
-                excluded.append(
-                    {
-                        "fact_id": fact_id or "(missing_fact_id)",
-                        "reason": (
-                            "compact_early_career_row omitted from rg_output.experience: "
-                            "locked base has fewer than three schema-length bullets "
-                            "(rg_output_schema requires minItems 3 per role); no synthetic bullets added"
-                        ),
-                        "locked_bullets_found": len(bullets),
-                        "employer": company,
-                        "title": title,
-                    },
-                )
-                continue
-            if len(bullets) < 3:
+            locked_rn = str(emp.get("role_narrative") or "").strip()
+            role_narrative = locked_rn if len(locked_rn) >= 20 else None
+            min_locked = _MIN_LOCKED_BULLETS_BY_FACT_ID.get(fact_id, 3)
+            if len(bullets) < min_locked:
                 receipt["failure"] = f"locked_employment_insufficient_bullets:{fact_id}"
-                receipt["excluded_locked_roles"] = excluded
+                receipt["excluded_locked_roles"] = []
                 return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
-        experience_out.append(
-            {
-                "title": title or "Role",
-                "company": company or "Company",
-                "location": location,
-                "dates": dates,
-                "bullets": bullets,
-            },
-        )
+        row: dict[str, Any] = {
+            "title": title or "Role",
+            "company": company or "Company",
+            "location": location,
+            "dates": dates,
+            "bullets": bullets,
+        }
+        if role_narrative:
+            row["role_narrative"] = role_narrative
+        experience_out.append(row)
 
-    receipt["excluded_locked_roles"] = excluded
-    receipt["compact_early_career_excluded_count"] = len(excluded)
+    receipt["excluded_locked_roles"] = []
+    receipt["compact_early_career_excluded_count"] = 0
     receipt["locked_employment_mapped_count"] = len(experience_out)
 
     if len(experience_out) < 1 or len(experience_out) > 5:
@@ -442,12 +466,16 @@ def build_rg_output_from_modular_sections(
     uni_b_json = json.dumps(uni_lane_bullets, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     ibm_b_json = json.dumps(ibm_lane_bullets, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
+    hl_out = hl if len(hl) <= 240 else hl[:240]
+    contact_info = _contact_from_base(base_resume)
+
     rg: dict[str, Any] = {
         "schema_version": "master_resume_v2.16",
         "candidate_name": cname,
         "target_role": t_role,
         "target_company": t_co,
         "generated_at": gen_at,
+        "headline_line": hl_out,
         "sections": {
             "summary": {"text": exec_text, "word_count": wc},
             "experience": experience_out,
@@ -470,16 +498,15 @@ def build_rg_output_from_modular_sections(
             },
         },
     }
+    if contact_info:
+        rg["contact_info"] = contact_info
 
     ok_schema, err = validate_rg_output_object(rg)
     receipt["headline_line_preview"] = hl[:120]
     receipt["experience_roles"] = len(experience_out)
     receipt["schema_valid"] = ok_schema
     receipt["schema_error"] = err
-    receipt["unmapped_lane_note"] = (
-        "headline_line is required for merge eligibility but rg_output_schema has no headline field; "
-        "value captured in merge receipt only."
-    )
+    receipt["headline_line_exported"] = True
     out_dir = modular_root / "outputs"
     out_dir.mkdir(parents=True, exist_ok=True)
     if not ok_schema:

@@ -23,7 +23,7 @@ environment variables or the live SDK. Production code uses
 
 Environment requirements
 ------------------------
-One of ``GEMINI_API_KEY`` or ``GOOGLE_API_KEY`` must be set. The
+One of ``GOOGLE_API_KEY`` (canonical) or ``GEMINI_API_KEY`` (deprecated) must be set. The
 ``from_env`` factory reads these via the existing ``create_gemini_model``
 function so there is a single source of truth for credential resolution.
 """

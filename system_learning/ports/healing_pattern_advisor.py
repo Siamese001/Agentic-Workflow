@@ -5,7 +5,7 @@ Provides advisory metadata that can append reason_codes and adjust
 confidence for audit, but CANNOT change tier selection or heal_confidence.
 
 C0 Informational-Only Contract:
-- MUST NOT modify routing thresholds (HEALING_CONFIDENCE_X/Y).
+- MUST NOT modify heal routing thresholds (``routing_thresholds_ssot`` pairing).
 - MUST NOT change tier selection.
 - MUST NOT mutate heal_confidence used for routing.
 - MAY append reason_codes for audit.

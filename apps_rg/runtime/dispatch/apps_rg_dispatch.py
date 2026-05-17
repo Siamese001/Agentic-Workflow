@@ -9,13 +9,47 @@ These helpers are the thin app-side counterparts to
 """
 from __future__ import annotations
 
+import dataclasses
 from types import SimpleNamespace
 from typing import Any
+
+from agentic_core.runtime.contracts.apps_rg_ingress_payload import AppsRgIngressPayload
+
+from apps_rg.runtime.resume_resolution import (
+    ResumeResolutionError,
+    resolve_resume_for_lanes,
+    u0_inline_text_from_payload,
+)
 
 # Minimum keys for a well-formed apps_rg thin payload (parse + U0 reflection gates).
 APPS_RG_REQUIRED_FIELDS: tuple[str, ...] = ("target_company", "target_role")
 
-__all__ = ["APPS_RG_REQUIRED_FIELDS", "apps_rg_dispatch", "apps_rg_parse"]
+__all__ = [
+    "APPS_RG_REQUIRED_FIELDS",
+    "apps_rg_dispatch",
+    "apps_rg_parse",
+    "enrich_ingress_resume_inline_text",
+]
+
+
+def enrich_ingress_resume_inline_text(payload: AppsRgIngressPayload) -> AppsRgIngressPayload:
+    """When ``source_resume_text`` is empty, resolve resume SSOT and set canonical inline text.
+
+    U0 remains file-I/O-free: enrichment happens in apps_rg ingress only.
+    """
+    if str(payload.source_resume_text or "").strip():
+        return payload
+    try:
+        rr = resolve_resume_for_lanes(
+            source_resume_text=None,
+            source_resume_ref=payload.source_resume_ref,
+            require_run_specific=False,
+            require_json_document=True,
+        )
+    except ResumeResolutionError:
+        return payload
+    canonical = u0_inline_text_from_payload(rr.resume_payload)
+    return dataclasses.replace(payload, source_resume_text=canonical)
 
 
 def _as_dispatch_view(raw: dict[str, Any]) -> SimpleNamespace:
@@ -40,10 +74,7 @@ def apps_rg_parse(payload: dict[str, Any]) -> Any:
     RequestEnvelope
         A validated `agentic_core` RequestEnvelope ready for U0 validation.
     """
-    from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
-        AppsRgIngressPayload,
-        RequestEnvelope,
-    )
+    from agentic_core.runtime.contracts.apps_rg_ingress_payload import RequestEnvelope
 
     app_id = str(payload.get("app_id", "apps_rg"))
     task_class = str(payload.get("task_class", "resume_generation"))
@@ -51,6 +82,9 @@ def apps_rg_parse(payload: dict[str, Any]) -> Any:
     if "generation_mode" in payload:
         user_constraints["_generation_mode"] = str(payload["generation_mode"])
 
+    bar = (payload.get("briefing_artifact_ref") or payload.get("manual_brief_path") or None)
+    if bar is not None:
+        bar = str(bar).strip() or None
     ingress = AppsRgIngressPayload(
         app_id=app_id,
         task_class=task_class,
@@ -61,7 +95,7 @@ def apps_rg_parse(payload: dict[str, Any]) -> Any:
         source_resume_text=payload.get("source_resume_text"),
         job_description_ref=payload.get("job_description_ref"),
         job_description_text=payload.get("job_description_text"),
-        manual_brief_path=payload.get("manual_brief_path"),
+        briefing_artifact_ref=bar,
         auto_research_internal=bool(payload.get("auto_research_internal", False)),
         auto_research_tavily=bool(payload.get("auto_research_tavily", False)),
         research_via=payload.get("research_via"),
@@ -71,6 +105,7 @@ def apps_rg_parse(payload: dict[str, Any]) -> Any:
         user_constraints=user_constraints,
         output_preferences=payload.get("output_preferences") or {},
     )
+    ingress = enrich_ingress_resume_inline_text(ingress)
 
     replay_key = str(
         payload.get("replay_key")
@@ -116,8 +151,16 @@ def apps_rg_dispatch(envelope: Any) -> SimpleNamespace:
                 target_role=str(p.target_role or ""),
                 target_level=str(p.target_level or ""),
                 jd=str(p.job_description_text or ""),
-                manual_brief=str(p.manual_brief_path or "") or "",
+                job_description_ref=str(p.job_description_ref or "") or "",
+                job_description_text=str(p.job_description_text or "") or "",
+                manual_brief=str(
+                    getattr(p, "briefing_artifact_ref", None)
+                    or getattr(p, "manual_brief_path", None)
+                    or ""
+                )
+                or "",
                 resume_path=str(p.source_resume_ref or "") or "",
+                source_resume_text=str(p.source_resume_text or "") or "",
                 generation_mode=gm,
                 artifact_dir="",
             )
@@ -128,9 +171,22 @@ def apps_rg_dispatch(envelope: Any) -> SimpleNamespace:
                 target_company=app_payload.get("target_company", ""),
                 target_role=app_payload.get("target_role", ""),
                 target_level=app_payload.get("target_level", ""),
-                jd=app_payload.get("job_description_text", ""),
-                manual_brief=app_payload.get("manual_brief_path", "") or "",
-                resume_path=app_payload.get("source_resume_path", "") or "",
+                jd=str(app_payload.get("job_description_text", "") or ""),
+                job_description_ref=str(app_payload.get("job_description_ref") or "") or "",
+                job_description_text=str(app_payload.get("job_description_text") or "") or "",
+                manual_brief=str(
+                    app_payload.get("briefing_artifact_ref")
+                    or app_payload.get("manual_brief_path")
+                    or ""
+                )
+                or "",
+                resume_path=str(
+                    app_payload.get("source_resume_ref")
+                    or app_payload.get("source_resume_path")
+                    or ""
+                )
+                or "",
+                source_resume_text=str(app_payload.get("source_resume_text") or "") or "",
                 generation_mode=app_payload.get("generation_mode", "strategic_tailor"),
                 artifact_dir=app_payload.get("output_directory", ""),
             )

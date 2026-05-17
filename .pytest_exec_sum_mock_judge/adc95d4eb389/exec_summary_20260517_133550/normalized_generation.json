@@ -1,0 +1,17 @@
+{
+  "applies_to_real_llm_generation": true,
+  "finish_reason_normalized": "stop",
+  "clean_completion": true,
+  "hop_finish_records": [
+    {
+      "stage": "L2_primary_generation",
+      "finish_reason": "stop"
+    },
+    {
+      "stage": "synthesis_voice_repair_via_qwen_once",
+      "finish_reason": "stop"
+    }
+  ],
+  "generation_completion_warning": "",
+  "generation_completion_notes": []
+}

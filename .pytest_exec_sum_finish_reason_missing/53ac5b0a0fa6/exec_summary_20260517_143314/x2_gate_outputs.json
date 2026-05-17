@@ -1,0 +1,424 @@
+{
+  "gates": [
+    {
+      "gate_id": "x2_schema_valid",
+      "gate_type": "deterministic",
+      "observed_value": true,
+      "threshold": true,
+      "failure_reason": null,
+      "evidence_ref": "x2_schema_valid",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_claim_ledger_present",
+      "gate_type": "deterministic",
+      "observed_value": 4,
+      "threshold": ">0",
+      "failure_reason": null,
+      "evidence_ref": "x2_claim_ledger_present",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_sentence_coverage_present",
+      "gate_type": "deterministic",
+      "observed_value": 2,
+      "threshold": ">0",
+      "failure_reason": null,
+      "evidence_ref": "x2_sentence_coverage_present",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_sentence_coverage_pass",
+      "gate_type": "deterministic",
+      "observed_value": true,
+      "threshold": true,
+      "failure_reason": null,
+      "evidence_ref": "x2_sentence_coverage_pass",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_source_fact_coverage_100",
+      "gate_type": "deterministic",
+      "observed_value": "100%",
+      "threshold": "100%",
+      "failure_reason": null,
+      "evidence_ref": "x2_source_fact_coverage_100",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_claim_ledger_orphan_zero",
+      "gate_type": "deterministic",
+      "observed_value": "ok",
+      "threshold": "no_orphans",
+      "failure_reason": null,
+      "evidence_ref": "x2_claim_ledger_orphan_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_unsupported_claim_zero",
+      "gate_type": "deterministic",
+      "observed_value": 0,
+      "threshold": 0,
+      "failure_reason": null,
+      "evidence_ref": "x2_unsupported_claim_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_mixed_claim_zero",
+      "gate_type": "deterministic",
+      "observed_value": 0,
+      "threshold": 0,
+      "failure_reason": null,
+      "evidence_ref": "x2_mixed_claim_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_overbroad_claim_zero",
+      "gate_type": "deterministic",
+      "observed_value": 0,
+      "threshold": 0,
+      "failure_reason": null,
+      "evidence_ref": "x2_overbroad_claim_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_jd_phrase_copy_violation_zero",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_jd_phrase_copy_violation_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_em_dash_count_zero",
+      "gate_type": "deterministic",
+      "observed_value": 0,
+      "threshold": 0,
+      "failure_reason": null,
+      "evidence_ref": "x2_em_dash_count_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_inline_source_tags_absent",
+      "gate_type": "deterministic",
+      "observed_value": false,
+      "threshold": false,
+      "failure_reason": null,
+      "evidence_ref": "x2_inline_source_tags_absent",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_no_word_count_target",
+      "gate_type": "deterministic",
+      "observed_value": "fit_to_evidence",
+      "threshold": "fit_to_evidence",
+      "failure_reason": null,
+      "evidence_ref": "x2_no_word_count_target",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_no_monolithic_prompt",
+      "gate_type": "deterministic",
+      "observed_value": false,
+      "threshold": false,
+      "failure_reason": null,
+      "evidence_ref": "x2_no_monolithic_prompt",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_no_strategic_tailor_v1",
+      "gate_type": "deterministic",
+      "observed_value": false,
+      "threshold": false,
+      "failure_reason": null,
+      "evidence_ref": "x2_no_strategic_tailor_v1",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_temperature_in_profile",
+      "gate_type": "deterministic",
+      "observed_value": 0.45,
+      "threshold": "0.35-0.55",
+      "failure_reason": null,
+      "evidence_ref": "x2_temperature_in_profile",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_first_person_zero",
+      "gate_type": "deterministic",
+      "observed_value": false,
+      "threshold": false,
+      "failure_reason": null,
+      "evidence_ref": "x2_first_person_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_target_company_as_experience_zero",
+      "gate_type": "deterministic",
+      "observed_value": false,
+      "threshold": false,
+      "failure_reason": null,
+      "evidence_ref": "x2_target_company_as_experience_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_generic_filler_zero",
+      "gate_type": "deterministic",
+      "observed_value": [],
+      "threshold": [],
+      "failure_reason": null,
+      "evidence_ref": "x2_generic_filler_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_exec_summary_meta_filler_zero",
+      "gate_type": "deterministic",
+      "observed_value": "ok",
+      "threshold": [],
+      "failure_reason": null,
+      "evidence_ref": "x2_exec_summary_meta_filler_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_exec_summary_colon_stitch_zero",
+      "gate_type": "deterministic",
+      "observed_value": "ok",
+      "threshold": [],
+      "failure_reason": null,
+      "evidence_ref": "x2_exec_summary_colon_stitch_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_sentence_stacking_zero",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_sentence_stacking_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_executive_summary_synthesis_quality",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_executive_summary_synthesis_quality",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_claim_coverage_accounting_consistent",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_claim_coverage_accounting_consistent",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_claim_ledger_materialized_or_gap_excused",
+      "gate_type": "deterministic",
+      "observed_value": "ok",
+      "threshold": "materialized_or_gap",
+      "failure_reason": null,
+      "evidence_ref": "x2_claim_ledger_materialized_or_gap_excused",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_source_sensitive_phrases_supported",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_source_sensitive_phrases_supported",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_required_fields_complete",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_required_fields_complete",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_required_artifacts_written",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_required_artifacts_written",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_json_parse_valid",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_json_parse_valid",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_no_extra_unrecognized_fields",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_no_extra_unrecognized_fields",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_material_clause_coverage_100",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_material_clause_coverage_100",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_metric_fact_id_granularity",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_metric_fact_id_granularity",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_no_inferred_bridge_claims",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_no_inferred_bridge_claims",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_jd_as_proof_zero",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_jd_as_proof_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_briefing_as_proof_zero",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_briefing_as_proof_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_target_title_inflation_zero",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_target_title_inflation_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_unsupported_industry_claim_zero",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_unsupported_industry_claim_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_provider_requested_attempted",
+      "gate_type": "deterministic",
+      "observed_value": "requested=qwen_vllm, attempted=qwen_vllm",
+      "threshold": "must match",
+      "failure_reason": null,
+      "evidence_ref": "x2_provider_requested_attempted",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_no_silent_mock_fallback",
+      "gate_type": "deterministic",
+      "observed_value": "provider=qwen_vllm, status=REAL_LLM",
+      "threshold": "no silent mock",
+      "failure_reason": null,
+      "evidence_ref": "x2_no_silent_mock_fallback",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_qwen_provider_stub_transport_zero",
+      "gate_type": "deterministic",
+      "observed_value": "ok",
+      "threshold": "stub_transport_absent",
+      "failure_reason": null,
+      "evidence_ref": "x2_qwen_provider_stub_transport_zero",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_model_name_allowed",
+      "gate_type": "deterministic",
+      "observed_value": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+      "threshold": [
+        "Qwen/Qwen2.5-32B-Instruct-AWQ"
+      ],
+      "failure_reason": null,
+      "evidence_ref": "x2_model_name_allowed",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_prompt_hash_known",
+      "gate_type": "deterministic",
+      "observed_value": "87aa06cf23ff024c",
+      "threshold": "valid hash",
+      "failure_reason": null,
+      "evidence_ref": "x2_prompt_hash_known",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_input_output_hashes_present",
+      "gate_type": "deterministic",
+      "observed_value": true,
+      "threshold": true,
+      "failure_reason": null,
+      "evidence_ref": "x2_input_output_hashes_present",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_x1d_required_judges_present",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_x1d_required_judges_present",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_x1d_raw_responses_written",
+      "gate_type": "deterministic",
+      "observed_value": null,
+      "threshold": null,
+      "failure_reason": null,
+      "evidence_ref": "x2_x1d_raw_responses_written",
+      "pass": true
+    },
+    {
+      "gate_id": "x2_x1d_schema_valid",
+      "gate_type": "deterministic",
+      "observed_value": [],
+      "threshold": [],
+      "failure_reason": null,
+      "evidence_ref": "x2_x1d_schema_valid",
+      "pass": true
+    }
+  ],
+  "failed_gates": [],
+  "x2_passed": 46,
+  "x2_failed": 0,
+  "total_x2_gates": 46
+}

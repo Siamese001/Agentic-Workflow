@@ -63,8 +63,16 @@ _NO_HITL_TEXT = "This is a normal response with no HITL decision packet."
 
 def _make_in_memory_conn():
     """Open an in-memory SQLite DB and initialise the schema."""
+    root = Path(__file__).resolve().parents[4]
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from tools.refactor_decisions.ledger_w1_schema import ensure_w1_feedback_loop_columns
+    from tools.refactor_decisions.ledger_w2_schema import ensure_w2_decision_signal_columns
+
     conn = sqlite3.connect(":memory:")
     conn.executescript(_ddl)
+    ensure_w1_feedback_loop_columns(conn)
+    ensure_w2_decision_signal_columns(conn)
     conn.commit()
     return conn
 
@@ -407,6 +415,57 @@ class TestStructuredMarkerCapture:
         row = conn.execute("SELECT recommended_option_id, selected_option_id FROM decisions").fetchone()
         assert row[0] == "Minimal scope refactor"
         assert row[1] == "Minimal scope refactor"
+        conn.close()
+
+    def test_marker_persists_w1_precedent_metadata_columns(self, monkeypatch):
+        def fake_meta(*_a, **_kw):
+            return {
+                "precedent_lookup_query_digest": "deadbeef",
+                "precedent_lookup_policy_version": "test-policy-v1",
+                "precedent_capture_utc": "2026-05-16T12:00:00+00:00",
+                "precedent_match_count": 0,
+                "precedent_top_match_ids_json": "[]",
+                "precedent_verdict_from_lookup": "none",
+                "precedent_lookup_ok": True,
+            }
+
+        monkeypatch.setattr(_m, "compute_precedent_capture_metadata", fake_meta)
+        conn = _make_in_memory_conn()
+        assert detect_and_capture(_MARKER_TEXT, conn) is True
+        digest, pol, cap = conn.execute(
+            "SELECT precedent_lookup_query_digest, precedent_lookup_policy_version, "
+            "precedent_capture_utc FROM decisions"
+        ).fetchone()
+        assert digest == "deadbeef"
+        assert pol == "test-policy-v1"
+        assert "2026-05-16" in cap
+        conn.close()
+
+    def test_marker_inserts_w2_decision_signals(self, monkeypatch):
+        def fake_meta(*_a, **_kw):
+            return {
+                "precedent_lookup_query_digest": "ab",
+                "precedent_lookup_policy_version": "pv",
+                "precedent_capture_utc": "2026-05-16T12:00:00+00:00",
+                "precedent_match_count": 1,
+                "precedent_top_match_ids_json": '["dec_old"]',
+                "precedent_verdict_from_lookup": "strong",
+                "precedent_lookup_ok": True,
+            }
+
+        monkeypatch.setattr(_m, "compute_precedent_capture_metadata", fake_meta)
+        conn = _make_in_memory_conn()
+        assert detect_and_capture(_MARKER_TEXT, conn) is True
+        n = conn.execute(
+            "SELECT COUNT(*) FROM decision_signals WHERE signal_name = 'precedent_agreement'"
+        ).fetchone()[0]
+        assert n >= 1
+        row = conn.execute(
+            "SELECT signal_value FROM decision_signals WHERE signal_name = 'precedent_agreement' "
+            "AND option_id LIKE 'o0_%'"
+        ).fetchone()
+        assert row is not None
+        assert abs(float(row[0]) - 0.85) < 1e-5
         conn.close()
 
 

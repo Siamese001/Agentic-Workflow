@@ -78,11 +78,11 @@ Notes:
 |-------|-----------|
 | **Base resume** | **Default:** `apps_rg/resume/base/amit_ayer_base_resume_v1.json` (merged into `active_base_resume_pointer.json` for the run). **Override:** `--base-resume <path under repo>`. |
 | **Job description** | Optional `--job-description path` → forwarded to lanes as JD text (`--jd-text` internally). |
-| **Briefing** | Optional `--briefing path` → forwarded to lanes as briefing text. |
+| **Briefing** | Optional `--briefing path` → forwarded to lanes as briefing text. **U0 / ingress** carries an optional pointer only: `AppsRgIngressPayload.briefing_artifact_ref` (legacy alias `manual_brief_path` on the dataclass). **Downstream** `apps_rg.runtime.briefing_resolution.resolve_briefing_for_lanes` opens local paths or https URIs, validates allowed extensions / response content types, stamps `RUN_SPECIFIC` vs `DEFAULT_SSOT`, and emits `briefing_digest` (sha256 of UTF-8 briefing text). **Default** when the ref is empty: committed `apps_rg/config/default_targeting_briefing.txt` via `DEFAULT_SSOT` (also used for `--briefing` CLI defaults in section dispatches). |
+
+**Previously:** The runbook referred to `artifacts/apps_rg/runtime_inputs/...` for Brown and Brown fixtures; those paths are optional local inputs, not the repo default briefing SSOT.
 
 The orchestrator JSON output includes `base_resume_path`, `base_resume_default_used`, `base_resume_exists`, and `base_resume_hash` (SHA-256 of UTF-8 file contents, same convention as locked-copy manifest hashing).
-
-Lane-specific defaults still apply where optional files are omitted (see individual dispatch modules).
 
 ---
 
