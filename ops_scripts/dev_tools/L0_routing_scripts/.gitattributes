@@ -1,17 +1,4 @@
-# .gitattributes — FINAL 2025
-# Track only manifests with LFS, everything else normal
-# Large raw data files - use LFS
-data/raw/* filter=lfs diff=lfs merge=lfs -text
-data/**/*.parquet filter=lfs diff=lfs merge=lfs -text
-data/**/*.npy filter=lfs diff=lfs merge=lfs -text
-# Binary files
-data/**/*.bin filter=lfs diff=lfs merge=lfs -text
-data/**/*.gz filter=lfs diff=lfs merge=lfs -text
-# Git LFS tracking for large binary files in semantic cache (existing)
-*.embedding filter=lfs diff=lfs merge=lfs -text
-*.ast filter=lfs diff=lfs merge=lfs -text
-# Keep JSON files in regular git (text-based, compressible)
-*.json text
-06_data/semantic_cache/**/*.json filter=lfs diff=lfs merge=lfs -text
-# Force LF line endings for all text files (especially Python)
+# Nested routing dev subtree — no Git LFS (2026-05-17 policy).
+# Large / generated data must live outside git (.gitignore, artifacts policy, object storage).
 * text=auto eol=lf
+*.json text
