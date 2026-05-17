@@ -343,6 +343,16 @@ def main():
     print("✅ Author-gate ledger schema validated")
 
     returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_refactor_decision_ledger_ssot.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Refactor decision ledger SSOT check failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Refactor decision ledger SSOT validated")
+
+    returncode, stdout, stderr = run_cmd(
         [sys.executable, str(_script("ops_scripts/ci/author_gate/check_outcome_coverage.py"))],
         cwd=ROOT,
     )
@@ -420,6 +430,36 @@ def main():
         sys.exit(1)
     print("✅ Author-gate v2 completeness check ran")
     print("✅ Author-gate ledger integrity validated")
+
+    # W4.1 — Author-Gate ledger anomaly heuristics (advisory by default).
+    # AUTHOR_GATE_ANOMALY_FAIL_CLOSED=1 fails on high-severity findings.
+    # AUTHOR_GATE_ANOMALY_BYPASS=1 skips.
+    returncode, stdout, stderr = run_cmd(
+        [
+            sys.executable,
+            str(_script("ops_scripts/ci/author_gate/detect_author_gate_ledger_anomalies.py")),
+        ],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Author-gate ledger anomaly detector failed (fail-closed mode?)")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Author-gate ledger anomaly detector ran")
+
+    # W4.2 — governance bypass JSONL rollup (advisory; always exit 0 from script).
+    returncode, stdout, stderr = run_cmd(
+        [
+            sys.executable,
+            str(_script("ops_scripts/ci/author_gate/rollup_governance_bypass_logs.py")),
+        ],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Governance bypass rollup failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Governance bypass rollup refreshed")
 
     # Gate: P0 two-pass (preflight + full ADG enforcement)
     # Bypass: P0_TWO_PASS_BYPASS=1 — skips this gate (log warning only).
@@ -999,6 +1039,14 @@ def main():
             "APPS-E2E-SMOKE apps_rg runtime smoke test (advisory)",
             "ops_scripts/ci/check_apps_rg_e2e_smoke.py",
         ),
+        # RG-SMOKE-BUNDLE — pinned smoke dirs carry RUN_BUNDLE_INDEX (+ RUN_LINKS on integrated).
+        # apps-rg-run-evidence-consolidation-d2c8e4 DoD-4. Advisory when roots absent on fresh clones.
+        # Bypass: APPS_RG_SMOKE_BUNDLE_INDEX_BYPASS=1.
+        # Strict (require dirs exist): APPS_RG_SMOKE_BUNDLE_INDEX_FAIL_CLOSED=1.
+        (
+            "RG-SMOKE-BUNDLE apps_rg smoke RUN_BUNDLE_INDEX + RUN_LINKS (advisory)",
+            "ops_scripts/ci/check_apps_rg_smoke_bundle_indexes.py",
+        ),
         (
             "APPS-TYPE-VALID apps_rg type contract validation (advisory)",
             "ops_scripts/ci/check_apps_rg_type_validation.py",
@@ -1365,7 +1413,7 @@ def main():
         # Operator directive 2026-05-01.
         (
             "Control-surface separation (healing vs llm_as_judge)",
-            "scripts/verify_control_surface_separation.py",
+            "ops_scripts/ci/verify_control_surface_separation.py",
         ),
         # DS-R5 — fail-closed Spearman promotion gate for LLM-judge calibration.
         # Advisory by default; JUDGE_SPEARMAN_FAIL_CLOSED=1 activates blocking.
@@ -1393,6 +1441,15 @@ def main():
         # Bypass: NP_LIFECYCLE_GUARD_BYPASS=1.
         # Plan: notion-plan-status-hardening-e5f3a1 (W3.P1).
         ("NP-GUARD Notion plan lifecycle Completed guard (advisory)", "ops_scripts/ci/check_notion_plan_lifecycle_guard.py"),
+        # RG-JD0 — apps_rg JD resolution / default JD SSOT must not appear under agentic_core/.
+        ("RG-JD0 agentic_core JD SSOT boundary", "ops_scripts/ci/check_agentic_core_no_apps_rg_jd_ssot.py"),
+        # RG-RESUME0 — apps_rg resume resolution / default resume SSOT must not appear under agentic_core/.
+        ("RG-RESUME0 agentic_core resume SSOT boundary", "ops_scripts/ci/check_agentic_core_no_apps_rg_resume_ssot.py"),
+        # HEAL-SSOT — L2 heal-confidence band bounds must resolve via routing_thresholds_ssot;
+        # forbid legacy HEALING_CONFIDENCE_X/Y path_constants imports in prod code (tests exempt);
+        # docs + .env.example must not advertise SOVEREIGN_*_CONFIDENCE; env_key_consumer_map
+        # cites HEALING_CONFIDENCE_HIGH/MEDIUM. Bypass: HEAL_ROUTING_SSOT_BYPASS=1.
+        ("HEAL-SSOT heal confidence routing thresholds (fail-closed)", "ops_scripts/ci/check_heal_routing_threshold_ssot.py"),
         # WG1 — ADG wiring gap detector (4 modes: registry-gaps,
         # instantiation-orphans, port-adapter-gaps, dead-imports).
         # Advisory by default (--gate flag not passed); activates blocking via

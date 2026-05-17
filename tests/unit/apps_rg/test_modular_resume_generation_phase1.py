@@ -17,6 +17,10 @@ from apps_rg.l2_recipe.modular_resume_generation import (
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+from apps_rg.runtime.sections_root_manifest import (
+    SECTIONS_ROOT_MANIFEST_FILENAME,
+    assert_sections_root_manifest_document_shape,
+)
 
 
 def test_phase1_runs_seven_lanes_mock_provider_no_envelope() -> None:
@@ -47,6 +51,11 @@ def test_phase1_runs_seven_lanes_mock_provider_no_envelope() -> None:
     assert res.locked_sections_provider_calls_detected is False
     sections = art / "modular_r4" / "sections"
     assert sections.is_dir()
+    manifest_path = sections / SECTIONS_ROOT_MANIFEST_FILENAME
+    assert manifest_path.is_file(), "W4.1 manifest must accompany scoped modular sections root"
+    mf_doc = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert_sections_root_manifest_document_shape(mf_doc)
+    assert mf_doc["source_env_var"] == MODULAR_R4_SECTIONS_ROOT_ENV
     for lane in GENERATED_LANES:
         assert (sections / lane).is_dir(), f"missing section tree for {lane}"
     assert res.merge_receipt_ref is not None

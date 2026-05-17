@@ -13,6 +13,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
+
+from apps_rg.runtime.sections_root_manifest import require_manifest_for_modular_sections_root
+
 Bucket = Literal["real", "mock"]
 
 LATEST_SUCCESSFUL_REAL_FILENAME = "latest_successful_real_run.json"
@@ -26,10 +29,23 @@ def modular_sections_root_from_env(repo: Path) -> Path | None:
     raw = os.environ.get(MODULAR_R4_SECTIONS_ROOT_ENV, "").strip()
     if not raw:
         return None
+    norm = raw.replace("\\", "/")
+    if any(part == ".." for part in norm.split("/")):
+        raise ValueError(f"{MODULAR_R4_SECTIONS_ROOT_ENV} must not contain .. segments ({raw!r})")
     cand = Path(raw).expanduser()
     if not cand.is_absolute():
         cand = (repo / cand).resolve()
-    return cand.resolve()
+    else:
+        cand = cand.resolve()
+    rr = repo.resolve()
+    try:
+        cand.relative_to(rr)
+    except ValueError as exc:
+        raise ValueError(
+            f"{MODULAR_R4_SECTIONS_ROOT_ENV} must resolve inside repo_root {rr}; "
+            f"outside-repo modular roots are not supported ({cand})."
+        ) from exc
+    return cand
 
 
 def resolve_modular_latest_l2(repo: Path, lane: str) -> Path | None:
@@ -37,6 +53,7 @@ def resolve_modular_latest_l2(repo: Path, lane: str) -> Path | None:
     msr = modular_sections_root_from_env(repo)
     if msr is None:
         return None
+    require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
     lane_base = msr / lane
     for ptr_name in (
         "latest_mock_run.json",
@@ -92,6 +109,7 @@ def prepare_runtime_proof_run_dir(repo: Path, lane: str, provider: str, run_id: 
     bucket = proof_bucket_for_provider(provider)
     msr = modular_sections_root_from_env(repo)
     if msr is not None:
+        require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
         rd = msr / lane / bucket / run_id
         rd.mkdir(parents=True, exist_ok=True)
         return rd
@@ -201,6 +219,8 @@ def finalize_runtime_proof_run(
     }
     ptr_name = "latest_real_run.json" if bucket == "real" else "latest_mock_run.json"
     msr = modular_sections_root_from_env(repo)
+    if msr is not None:
+        require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
     ptr_root = (msr / lane) if msr is not None else lane_root(repo, lane)
     _write_json(ptr_root / ptr_name, pointer)
     if _should_write_latest_successful_real(

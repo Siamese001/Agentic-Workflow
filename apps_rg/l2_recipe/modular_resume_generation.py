@@ -10,14 +10,15 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Final
 
 from apps_rg.l2_recipe.modular_lane_adapter import (
+    ModularLaneTargeting,
+    build_modular_lane_argv,
     build_section_provider_call_record,
-    lane_argv_for_provider,
     resolve_latest_lane_run_dir,
     run_dispatch_main,
 )
@@ -35,7 +36,10 @@ from apps_rg.runtime.reports.generated_lane_rollup import (
     GENERATED_LANES,
     build_modular_lane_rollup,
 )
+from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.run_bundle_index import repo_relative_posix
 from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
 
 # Same seven modules as ``apps_rg.runtime.orchestrate_full_resume`` (single SSOT).
 LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
@@ -324,6 +328,8 @@ def run_modular_resume_generation(
     artifact_dir: Path | str,
     run_id: str,
     profile: ModularResumeProfile | None = None,
+    *,
+    lane_targeting: ModularLaneTargeting | None = None,
 ) -> ModularR4GenerationResult:
     """Run Phase 0 modular pipeline under ``artifact_dir/modular_r4`` (R4-local).
 
@@ -368,14 +374,31 @@ def run_modular_resume_generation(
     if profile.phase1_invoke_real_lanes:
         sections_root = modular_root / "sections"
         sections_root.mkdir(parents=True, exist_ok=True)
+        try:
+            emit_sections_root_manifest(
+                repo_root=repo,
+                sections_root_abs=sections_root,
+                source_env_literal=MODULAR_R4_SECTIONS_ROOT_ENV,
+                correlation_id=None,
+                integrated_run_ref=repo_relative_posix(repo, art.resolve()),
+                run_links_ref=None,
+                notes=f"scoped Phase 1 sections root modular_r4/{rel_mod}/sections (run_id={run_id})",
+            )
+        except OSError as exc:
+            log_sections_manifest_write_failed("run_modular_resume_generation_phase1", exc)
+            raise
         prev_env = os.environ.get(MODULAR_R4_SECTIONS_ROOT_ENV)
         os.environ[MODULAR_R4_SECTIONS_ROOT_ENV] = str(sections_root.resolve())
-        lane_argv = lane_argv_for_provider(provider=profile.phase1_lane_provider)
+        lane_argv = build_modular_lane_argv(
+            provider=profile.phase1_lane_provider,
+            targeting=lane_targeting,
+        )
         lane_run_dirs: dict[str, Path] = {}
         try:
             for lane, mod in zip(GENERATED_LANES, LANE_DISPATCH_MODULES):
                 try:
-                    rc = run_dispatch_main(mod, lane_argv)
+                    argv_lane = list(lane_argv)
+                    rc = run_dispatch_main(mod, argv_lane)
                     lane_exec_status[lane] = "ok" if rc == 0 else f"exit_{rc}"
                 except Exception as exc:
                     lane_exec_status[lane] = f"error:{exc!s}"
@@ -390,9 +413,16 @@ def run_modular_resume_generation(
                 except FileNotFoundError as exc:
                     lane_exec_status[lane] = lane_exec_status.get(lane, "") + f"|missing_pointer:{exc}"
 
+            inv_extra: dict[str, Any] = {
+                "run_id": run_id,
+                "lane_status": lane_exec_status,
+                "sections_root_rel": _rel_under_repo(sections_root, repo),
+            }
+            if lane_targeting is not None:
+                inv_extra["lane_argv_targeting"] = asdict(lane_targeting)
             _write_json(
                 modular_root / "phase1_lane_inventory.json",
-                {"run_id": run_id, "lane_status": lane_exec_status, "sections_root_rel": _rel_under_repo(sections_root, repo)},
+                inv_extra,
             )
 
             if len(lane_run_dirs) == len(GENERATED_LANES):
@@ -414,13 +444,13 @@ def run_modular_resume_generation(
                 build_locked_copy(repo, modular_output_root=modular_root)
 
                 locked_dir = modular_root / "locked_copy"
-                base_json = repo / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
+                _, canonical_base_resume_path, _ = load_lane_base_resume_json(repo_root=repo)
                 paths = FinalResumePaths(
                     repo_root=repo,
                     rollup_json=rollup_dir / "generated_lane_rollup.json",
                     locked_manifest=locked_dir / "locked_copy_manifest.json",
                     locked_x2=locked_dir / "locked_copy_x2_gate_outputs.json",
-                    base_resume=base_json,
+                    base_resume=canonical_base_resume_path,
                     output_dir=modular_root / "final_resume_assembly",
                 )
                 asm = assemble_final_resume(paths)
@@ -483,13 +513,13 @@ def run_modular_resume_generation(
         build_locked_copy(repo, modular_output_root=modular_root)
 
         locked_dir = modular_root / "locked_copy"
-        base_json = repo / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
+        _, canonical_base_resume_path, _ = load_lane_base_resume_json(repo_root=repo)
         paths = FinalResumePaths(
             repo_root=repo,
             rollup_json=rollup_dir / "generated_lane_rollup.json",
             locked_manifest=locked_dir / "locked_copy_manifest.json",
             locked_x2=locked_dir / "locked_copy_x2_gate_outputs.json",
-            base_resume=base_json,
+            base_resume=canonical_base_resume_path,
             output_dir=modular_root / "final_resume_assembly",
         )
         asm = assemble_final_resume(paths)
@@ -531,8 +561,7 @@ def run_modular_resume_generation(
         final_schema_valid = False
         if assembly_gates_ok is True and assembled_path.is_file():
             final_merge_attempted = True
-            canonical_base = repo / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
-            base_resume_obj = json.loads(canonical_base.read_text(encoding="utf-8"))
+            base_resume_obj, _, _ = load_lane_base_resume_json(repo_root=repo)
             lane_map = extract_lane_l2_from_assembled_final(assembled_path)
             build = build_rg_output_from_modular_sections(
                 lane_l2_by_id=lane_map,
