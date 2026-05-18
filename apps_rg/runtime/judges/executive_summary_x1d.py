@@ -11,6 +11,8 @@ import hashlib
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -68,7 +70,7 @@ GEMINI_JUDGE_RESPONSE_SCHEMA: dict[str, Any] = {
 }
 
 JUDGE_SCORE_SCHEMA = """
-Score contract (mandatory — every judge response MUST comply):
+Score contract (mandatory - every judge response MUST comply):
 - Include score_scale as exactly one of: "0_to_1" or "0_to_5". Do not omit score_scale.
 - If score_scale is "0_to_1": score and threshold MUST each be a number from 0.0 through 1.0 inclusive.
 - If score_scale is "0_to_5": score and threshold MUST each be a number from 0.0 through 5.0 inclusive.
@@ -77,26 +79,32 @@ Score contract (mandatory — every judge response MUST comply):
 """.strip()
 
 RUBRIC = f"""
-You are evaluating one executive resume summary. Use the same rubric for every provider.
+You are evaluating one executive resume **executive summary paragraph** against the same bar as the
+``executive_summary.generate_scratch_v1`` north star: **polished SVP / agentic-AI-platform synthesis**, not bullet stacks,
+not internal label/colon stitching, not one-sentence-per-fact proof, not meta narration.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
 {JUDGE_SCORE_SCHEMA}
 
 Rubric dimensions:
-1. factual_support: claims appear supported by the provided claim ledger and source fact IDs.
-2. executive_signal: SVP/CTO-level leadership, commercial impact, technical depth, and platform scale.
-3. resume_voice: concise, credible, human-written executive style. No first person, filler, hype, or generic AI prose.
-4. ats_alignment_without_keyword_stuffing: relevant to target role without stuffing or copying JD language.
-5. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience.
-6. synthesis_quality: synthesizes facts into an executive summary, not bullet claims pasted into sentences.
+1. factual_support: claims appear supported by the provided claim ledger and source fact IDs (no JD/briefing-as-proof).
+2. executive_signal: SVP/CTO-level narrative - platform, runtime, governance, retrieval, orchestration, evaluation, commercialization **woven**, not listed.
+3. resume_voice: concise, credible, human executive style; **synthesis**, not recruiter filler, hype, or generic AI prose.
+4. ats_alignment_without_keyword_stuffing: relevant to target role via emphasis only; no JD mirroring or stuffing.
+5. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience, no **copy-paste of style-example metrics/credentials** absent from claim ledger support.
+6. synthesis_quality: **executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, visible process language
+   (e.g. “selected facts”, “active-voice delivery”, “governance discipline” as filler), and excessive naked capability lists without narrative.
+
+**Target shape:** default **2–3 dense sentences**; commercially aware technical platform story; metrics/credentials only when ledger-backed.
 
 Decisive failure triggers:
-- unsupported business metric
+- unsupported business metric or credential (including pasted gold-example numbers/titles not in ledger)
 - target company presented as candidate experience
 - first-person narrative
 - copied JD phrase longer than four words
 - generic opener or hype/filler
 - summary is mechanically sentence-stacked proof rather than narrative synthesis
+- obvious colon-label / fact-title stitching in prose
 """.strip()
 
 
@@ -189,10 +197,22 @@ def resolve_x1d_provider_credentials(provider_key: str, environ: Mapping[str, st
     return "", consulted
 
 
-def _artifact_path(provider_key: str, suffix: str) -> Path:
-    """Generate artifact path for provider artifacts."""
+def _artifact_path(
+    provider_key: str,
+    suffix: str,
+    *,
+    artifact_base: Path | None = None,
+) -> Path:
+    """Generate artifact path for provider artifacts.
+
+    When ``artifact_base`` is set, files are written under that directory (per-run bundle).
+    Otherwise preserve legacy layout under ``artifacts/.../executive_summary/``.
+    """
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")[:-3]
-    base = Path("artifacts/apps_rg/runtime_proofs/executive_summary")
+    if artifact_base is not None:
+        base = artifact_base
+    else:
+        base = Path("artifacts/apps_rg/runtime_proofs/executive_summary")
     base.mkdir(parents=True, exist_ok=True)
     return base / f"x1d_{provider_key}_{suffix}_{ts}.json"
 
@@ -358,6 +378,50 @@ def _gemini_judge_max_retries() -> int:
         return 4
 
 
+# Query parameter names whose values must never appear in X1D provider_request URL artifacts.
+_SENSITIVE_URL_QUERY_KEYS = frozenset(
+    {
+        "key",
+        "api_key",
+        "access_token",
+        "token",
+        "authorization",
+        "auth",
+        "client_secret",
+    }
+)
+
+
+def _sanitize_request_url_for_x1d_artifact(url: str) -> tuple[str, tuple[str, ...]]:
+    """Strip credential-bearing query keys entirely (omit names and values from serialized URL).
+
+    Returns ``(safe_url, omitted_param_names_sorted_unique)``. Host, path, scheme unchanged.
+    Non-sensitive query pairs are preserved for observability.
+    """
+    stripped = str(url or "").strip()
+    if not stripped:
+        return "", ()
+    try:
+        parsed = urlparse(stripped)
+    except ValueError:
+        return stripped, ()
+    if not parsed.query:
+        return stripped, ()
+    pairs = parse_qsl(parsed.query, keep_blank_values=True)
+    omitted: list[str] = []
+    kept: list[tuple[str, str]] = []
+    for name, value in pairs:
+        lk = name.lower()
+        if lk in _SENSITIVE_URL_QUERY_KEYS:
+            omitted.append(name)
+            continue
+        kept.append((name, value))
+    new_query = urlencode(kept)
+    safe = urlunparse(parsed._replace(query=new_query))
+    uniq = tuple(sorted({str(x) for x in omitted}))
+    return safe, uniq
+
+
 def _parse_gemini_retry_delay_seconds(error_body: str) -> float | None:
     """Best-effort parse of RetryInfo / prose retry hints from Gemini error JSON."""
     delay: float | None = None
@@ -479,6 +543,42 @@ def _extract_json_from_text(text: str) -> dict[str, Any] | None:
         pass
     
     return None
+
+
+_NETWORK_TESTS_TRUTHY = frozenset({"1", "true", "yes", "on"})
+
+
+def _judge_live_https_allowed_under_pytest() -> bool:
+    """Under pytest, outbound judge HTTPS is opt-in to avoid hanging unit runs on real sockets.
+
+    Production and non-pytest entrypoints do not set ``PYTEST_CURRENT_TEST`` and are unaffected.
+    """
+    if not os.environ.get("PYTEST_CURRENT_TEST"):
+        return True
+    return (
+        str(os.environ.get("APPS_RG_ENABLE_NETWORK_TESTS", "") or "").strip().lower() in _NETWORK_TESTS_TRUTHY
+    )
+
+
+def _pytest_network_disabled_blocked_output(
+    *,
+    provider_key: str,
+    input_hash: str,
+    model: str,
+    service_label: str,
+) -> JudgeOutput:
+    return _make_blocked_output(
+        provider_key,
+        input_hash,
+        "BLOCKED_PROVIDER_UNAVAILABLE",
+        "NETWORK_TESTS_NOT_ENABLED",
+        (
+            f"{service_label} judge HTTPS is disabled under pytest "
+            "(set APPS_RG_ENABLE_NETWORK_TESTS=1 to enable live network for judge calls)."
+        ),
+        raw_response_ref=None,
+        model_name=model,
+    )
 
 
 def _make_blocked_output(
@@ -609,7 +709,15 @@ def _make_model_backed_output(
     )
 
 
-def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provider_key: str) -> JudgeOutput:
+def _call_openai(
+    api_key: str,
+    prompt: str,
+    model: str,
+    input_hash: str,
+    provider_key: str,
+    *,
+    artifact_base: Path | None = None,
+) -> JudgeOutput:
     """Call OpenAI API with full artifact preservation."""
     # Build request payload
     payload: dict[str, Any] = {
@@ -634,7 +742,7 @@ def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provide
         payload["response_format"] = {"type": "json_object"}
     
     # Write request artifact
-    req_path = _artifact_path(provider_key, "provider_request")
+    req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
     _write_artifact(req_path, {"payload": payload, "input_hash": input_hash, "timestamp": datetime.now(timezone.utc).isoformat()})
     
     req = urllib.request.Request(
@@ -643,14 +751,22 @@ def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provide
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
         method="POST",
     )
-    
+
+    if not _judge_live_https_allowed_under_pytest():
+        return _pytest_network_disabled_blocked_output(
+            provider_key=provider_key,
+            input_hash=input_hash,
+            model=model,
+            service_label="OpenAI",
+        )
+
     try:
         with urllib.request.urlopen(req, timeout=60) as response:
             raw_response = response.read().decode()
     except urllib.error.HTTPError as e:
         error_body = e.read().decode()
         # Write error response artifact
-        err_path = _artifact_path(provider_key, "provider_response_raw")
+        err_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
         _write_artifact(err_path, {"error": True, "status_code": e.code, "body": error_body, "input_hash": input_hash})
         return _make_blocked_output(
             provider_key, input_hash, "BLOCKED_PROVIDER_UNAVAILABLE",
@@ -659,7 +775,7 @@ def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provide
         )
     
     # Write raw response artifact
-    raw_path = _artifact_path(provider_key, "provider_response_raw")
+    raw_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
     _write_artifact(raw_path, {"raw_response": raw_response, "input_hash": input_hash})
     
     # Parse response
@@ -668,7 +784,7 @@ def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provide
         content = data["choices"][0]["message"]["content"]
     except (json.JSONDecodeError, KeyError) as e:
         # Write parse error artifact
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {"error": "response_structure", "detail": str(e), "raw_response_ref": str(raw_path)})
         return _make_blocked_output(
             provider_key, input_hash, "BLOCKED_RESPONSE_PARSE_ERROR",
@@ -681,7 +797,7 @@ def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provide
     
     if result is None:
         # Write extraction error artifact
-        extract_err_path = _artifact_path(provider_key, "provider_parse_result")
+        extract_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(extract_err_path, {
             "error": "json_extraction",
             "content_preview": content[:500],
@@ -694,12 +810,12 @@ def _call_openai(api_key: str, prompt: str, model: str, input_hash: str, provide
         )
     
     blocked = _validate_judge_parse_result(
-        provider_key, input_hash, model, result, str(raw_path)
+        provider_key, input_hash, model, result, str(raw_path), artifact_base=artifact_base
     )
     if blocked is not None:
         return blocked
 
-    parse_path = _artifact_path(provider_key, "provider_parse_result")
+    parse_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
     _write_artifact(parse_path, {"result": result, "raw_response_ref": str(raw_path)})
 
     return _make_model_backed_output(provider_key, input_hash, model, result, raw_response_ref=str(raw_path))
@@ -711,11 +827,13 @@ def _validate_judge_parse_result(
     model_name: str,
     result: dict[str, Any],
     raw_response_ref: str,
+    *,
+    artifact_base: Path | None = None,
 ) -> JudgeOutput | None:
     """Return a blocked JudgeOutput when required judge fields are missing; else None."""
     missing = [f for f in JUDGE_REQUIRED_FIELDS if f not in result]
     if missing:
-        schema_err_path = _artifact_path(provider_key, "provider_parse_result")
+        schema_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(
             schema_err_path,
             {
@@ -745,6 +863,7 @@ def _call_anthropic(
     provider_key: str,
     *,
     model_source: str = "unknown",
+    artifact_base: Path | None = None,
 ) -> JudgeOutput:
     """Call Anthropic API with full artifact preservation and model fallback handling."""
     original_model = model
@@ -762,7 +881,7 @@ def _call_anthropic(
     }
     
     # Write request artifact
-    req_path = _artifact_path(provider_key, "provider_request")
+    req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
     _write_artifact(req_path, {
         "payload": payload,
         "input_hash": input_hash,
@@ -783,6 +902,14 @@ def _call_anthropic(
         method="POST",
     )
 
+    if not _judge_live_https_allowed_under_pytest():
+        return _pytest_network_disabled_blocked_output(
+            provider_key=provider_key,
+            input_hash=input_hash,
+            model=model,
+            service_label="Anthropic",
+        )
+
     try:
         with urllib.request.urlopen(req, timeout=60) as response:
             raw_response = response.read().decode()
@@ -791,7 +918,7 @@ def _call_anthropic(
 
         # Check for 404 model not found
         if e.code == 404 or "not_found_error" in error_body:
-            err_path = _artifact_path(provider_key, "provider_response_raw")
+            err_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
             _write_artifact(err_path, {
                 "error": True,
                 "status_code": e.code,
@@ -816,6 +943,7 @@ def _call_anthropic(
                             original_model,
                             fallback,
                             "APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK=true after 404 not_found",
+                            artifact_base=artifact_base,
                         )
             
             return _make_blocked_output(
@@ -826,7 +954,7 @@ def _call_anthropic(
             )
         
         # Other HTTP errors
-        err_path = _artifact_path(provider_key, "provider_response_raw")
+        err_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
         _write_artifact(err_path, {"error": True, "status_code": e.code, "body": error_body, "input_hash": input_hash})
         return _make_blocked_output(
             provider_key, input_hash, "BLOCKED_PROVIDER_UNAVAILABLE",
@@ -836,14 +964,14 @@ def _call_anthropic(
         )
     
     # Write raw response artifact
-    raw_path = _artifact_path(provider_key, "provider_response_raw")
+    raw_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
     _write_artifact(raw_path, {"raw_response": raw_response, "input_hash": input_hash})
     
     try:
         data = json.loads(raw_response)
         text = _extract_anthropic_message_text(data)
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
             "error": "response_structure",
             "detail": str(exc),
@@ -869,6 +997,7 @@ def _call_anthropic(
         text=text,
         original_model=original_model,
         fallback_model=fallback_model,
+        artifact_base=artifact_base,
     )
 
 
@@ -881,6 +1010,8 @@ def _call_anthropic_fallback(
     original_model: str,
     fallback_model: str,
     fallback_reason: str,
+    *,
+    artifact_base: Path | None = None,
 ) -> JudgeOutput:
     """Fallback call for Anthropic when original model not found."""
     payload = {
@@ -891,7 +1022,7 @@ def _call_anthropic_fallback(
         "temperature": 0.1,
     }
 
-    req_path = _artifact_path(provider_key, "provider_request")
+    req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
     _write_artifact(req_path, {
         "payload": payload,
         "input_hash": input_hash,
@@ -912,12 +1043,20 @@ def _call_anthropic_fallback(
         method="POST",
     )
 
+    if not _judge_live_https_allowed_under_pytest():
+        return _pytest_network_disabled_blocked_output(
+            provider_key=provider_key,
+            input_hash=input_hash,
+            model=model,
+            service_label="Anthropic",
+        )
+
     try:
         with urllib.request.urlopen(req, timeout=60) as response:
             raw_response = response.read().decode()
     except urllib.error.HTTPError as e:
         error_body = e.read().decode()
-        err_path = _artifact_path(provider_key, "provider_response_raw")
+        err_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
         _write_artifact(err_path, {
             "error": True,
             "status_code": e.code,
@@ -934,7 +1073,7 @@ def _call_anthropic_fallback(
             original_model=original_model, fallback_model=fallback_model
         )
 
-    raw_path = _artifact_path(provider_key, "provider_response_raw")
+    raw_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
     _write_artifact(raw_path, {
         "raw_response": raw_response,
         "original_model": original_model,
@@ -946,7 +1085,7 @@ def _call_anthropic_fallback(
         data = json.loads(raw_response)
         text = _extract_anthropic_message_text(data)
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
             "error": "response_structure",
             "detail": str(exc),
@@ -972,6 +1111,7 @@ def _call_anthropic_fallback(
         text=text,
         original_model=original_model,
         fallback_model=fallback_model,
+        artifact_base=artifact_base,
     )
 
 
@@ -985,10 +1125,11 @@ def _finish_judge_text_parse(
     finish_reason: str | None = None,
     original_model: str | None = None,
     fallback_model: str | None = None,
+    artifact_base: Path | None = None,
 ) -> JudgeOutput:
     """Parse extracted judge text into JudgeOutput or blocked status."""
     if finish_reason and str(finish_reason).upper() not in ("STOP",):
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
             "error": "finish_reason",
             "finish_reason": finish_reason,
@@ -1008,7 +1149,7 @@ def _finish_judge_text_parse(
         )
 
     if not str(text).strip():
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {"error": "empty_text", "raw_response_ref": str(raw_path)})
         return _make_blocked_output(
             provider_key,
@@ -1024,7 +1165,7 @@ def _finish_judge_text_parse(
 
     result = _extract_json_from_text(text)
     if result is None:
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
             "error": "json_extraction",
             "text_preview": text[:500],
@@ -1042,11 +1183,13 @@ def _finish_judge_text_parse(
             fallback_model=fallback_model,
         )
 
-    blocked = _validate_judge_parse_result(provider_key, input_hash, model_name, result, str(raw_path))
+    blocked = _validate_judge_parse_result(
+        provider_key, input_hash, model_name, result, str(raw_path), artifact_base=artifact_base
+    )
     if blocked is not None:
         return blocked
 
-    parse_path = _artifact_path(provider_key, "provider_parse_result")
+    parse_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
     _write_artifact(parse_path, {
         "result": result,
         "raw_response_ref": str(raw_path),
@@ -1073,6 +1216,7 @@ def _call_gemini(
     provider_key: str,
     *,
     model_source: str = "unknown",
+    artifact_base: Path | None = None,
 ) -> JudgeOutput:
     """Call Gemini API with full artifact preservation."""
     payload = {
@@ -1082,22 +1226,38 @@ def _call_gemini(
 
     endpoint_version = "v1beta" if "preview" in model or model.startswith("gemini-2") or model.startswith("gemini-3") else "v1"
     url = f"https://generativelanguage.googleapis.com/{endpoint_version}/models/{model}:generateContent?key={api_key}"
-    
-    # Write request artifact
-    req_path = _artifact_path(provider_key, "provider_request")
-    _write_artifact(req_path, {
-        "payload": payload,
-        "url": url,
-        "resolved_model": model,
-        "resolved_model_source": model_source,
-        "input_hash": input_hash,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    })
-    
-    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
 
     retries = _gemini_judge_max_retries()
+    safe_url, omitted_q = _sanitize_request_url_for_x1d_artifact(url)
+
+    # Write request artifact (never persist raw API keys in URLs or elsewhere).
+    req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
+    artifact_body: dict[str, Any] = {
+        "payload": payload,
+        "url": safe_url,
+        "resolved_model": model,
+        "resolved_model_source": model_source,
+        "provider_key": provider_key,
+        "request_timeout_seconds": 60,
+        "gemini_max_retries_configured": retries,
+        "input_hash": input_hash,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    if omitted_q:
+        artifact_body["redacted_query_param_names"] = list(omitted_q)
+    _write_artifact(req_path, artifact_body)
+
+    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
     raw_response = ""
+
+    if not _judge_live_https_allowed_under_pytest():
+        return _pytest_network_disabled_blocked_output(
+            provider_key=provider_key,
+            input_hash=input_hash,
+            model=model,
+            service_label="Gemini",
+        )
+
     for attempt in range(retries + 1):
         try:
             with urllib.request.urlopen(req, timeout=60) as response:
@@ -1114,7 +1274,7 @@ def _call_gemini(
                 continue
 
             eval_mode, prov_status, msg = _classify_gemini_http_block(e.code, body)
-            err_path = _artifact_path(provider_key, "provider_response_raw")
+            err_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
             _write_artifact(
                 err_path,
                 {
@@ -1137,13 +1297,13 @@ def _call_gemini(
             )
     
     # Write raw response artifact
-    raw_path = _artifact_path(provider_key, "provider_response_raw")
+    raw_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
     _write_artifact(raw_path, {"raw_response": raw_response, "input_hash": input_hash})
     
     try:
         data = json.loads(raw_response)
     except json.JSONDecodeError as e:
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result")
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
             "error": "response_structure",
             "detail": str(e),
@@ -1163,6 +1323,7 @@ def _call_gemini(
         raw_path=raw_path,
         text=text,
         finish_reason=finish_reason,
+        artifact_base=artifact_base,
     )
 
 
@@ -1202,6 +1363,7 @@ def run_llm_judges(
     claim_ledger: list[dict[str, Any]],
     judge_keys: list[str],
     mode: str = "blocked_if_unavailable",
+    artifact_base: Path | None = None,
 ) -> list[JudgeOutput]:
     """Run or block the requested provider judges.
 
@@ -1256,14 +1418,28 @@ def run_llm_judges(
 
         try:
             if key == "openai_chatgpt":
-                output = _call_openai(api_key, prompt, model, input_hash, key)
+                output = _call_openai(
+                    api_key, prompt, model, input_hash, key, artifact_base=artifact_base
+                )
             elif key == "anthropic_claude":
                 output = _call_anthropic(
-                    api_key, prompt, model, input_hash, key, model_source=model_source
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
                 )
             else:
                 output = _call_gemini(
-                    api_key, prompt, model, input_hash, key, model_source=model_source
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
                 )
             outputs.append(output)
         except Exception as exc:  # noqa: BLE001

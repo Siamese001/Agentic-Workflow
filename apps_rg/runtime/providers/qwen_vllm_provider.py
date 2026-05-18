@@ -12,14 +12,17 @@ Ownership unchanged: apps_rg-local seam; not FEC and not a pseudo-FEC surface.
 """
 from __future__ import annotations
 
+import errno
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, asdict
 from typing import Any
 
+from apps_rg.runtime.artifact_secret_redaction import redact_sensitive_mapping
 from apps_rg.runtime.validators.executive_summary_x2 import ALLOWED_MODELS
 
 
@@ -42,7 +45,7 @@ class ProviderRequest:
     mock_fallback_allowed: bool
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return redact_sensitive_mapping(asdict(self))
 
 
 @dataclass
@@ -56,6 +59,9 @@ class ProviderResult:
     raw_model_output: str
     provider_response: dict[str, Any] | None
     reasoning_execution_receipt: dict[str, Any] | None = None
+    stub: bool = False
+    apps_rg_qwen_preflight_blocked: bool = False
+    apps_rg_last_probe_snapshot: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -170,68 +176,344 @@ def call_qwen_vllm(
 ) -> ProviderResult:
     """Call Qwen/vLLM using an OpenAI-compatible endpoint.
 
-    If unavailable, returns BLOCKED. It never silently falls back to mock.
-    Timeout defaults to payload['timeout_seconds'] or DEFAULT_QWEN_TIMEOUT_SECONDS.
+    Bounded W3 retries apply **only** to transient transport failures on chat/completions
+    (timeouts, narrow 5xx, connection refused/reset). Semantic failures (empty choices,
+    JSON parse, STUBBED model classification, 4xx auth/not-found) are not retried.
+
+    If unavailable after retries, returns BLOCKED. It never silently falls back to mock.
     """
+    from apps_rg.runtime import qwen_transport_diag as qtd
+
     if timeout is None:
         timeout = payload.get("timeout_seconds", DEFAULT_QWEN_TIMEOUT_SECONDS)
-    try:
-        body = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(
-            f"{base_url.rstrip('/')}/chat/completions",
-            data=body,
-            headers={"Content-Type": "application/json", "Accept": "application/json"},
-            method="POST",
+    req_model = str(payload.get("model", DEFAULT_QWEN_MODEL))
+    max_att = qtd.max_transport_attempts()
+    attempts_trace: list[dict[str, Any]] = []
+    retry_reasons: list[str] = []
+
+    def _trace(
+        *,
+        attempt_num: int,
+        error_category: str,
+        http_status: int | None,
+        exception: BaseException | None,
+        body_fragment: str,
+        note: str | None = None,
+    ) -> None:
+        attempts_trace.append(
+            {
+                "attempt_index": attempt_num,
+                "phase": "chat_completions",
+                "error_category": error_category,
+                "http_status": http_status,
+                "exception_type": None if exception is None else type(exception).__name__,
+                "redacted_message": qtd.redacted_exception_message(exception, body_fragment)[:500],
+                "note": note,
+            }
         )
-        with urllib.request.urlopen(req, timeout=timeout) as response:
-            response_data = json.loads(response.read().decode("utf-8"))
-        choices = response_data.get("choices") or []
-        if not choices:
-            return ProviderResult(
+
+    for attempt_idx in range(max_att):
+        attempt_num = attempt_idx + 1
+        try:
+            body = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(
+                f"{base_url.rstrip('/')}/chat/completions",
+                data=body,
+                headers={"Content-Type": "application/json", "Accept": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                response_data = json.loads(response.read().decode("utf-8"))
+            choices = response_data.get("choices") or []
+            if not choices:
+                out = ProviderResult(
+                    provider_requested="qwen_vllm",
+                    provider_attempted=True,
+                    provider_available=False,
+                    exact_provider_error="Qwen/vLLM returned no choices",
+                    runtime_generation_status="BLOCKED",
+                    model=req_model,
+                    raw_model_output="",
+                    provider_response=response_data,
+                )
+                _trace(
+                    attempt_num=attempt_num,
+                    error_category=qtd.ERR_MALFORMED_RESPONSE,
+                    http_status=None,
+                    exception=None,
+                    body_fragment="",
+                    note="empty_choices",
+                )
+                qtd.persist_failure_for_provider_result(
+                    result=out,
+                    base_url=base_url,
+                    timeout_seconds=int(timeout),
+                    exception=None,
+                    http_status=None,
+                    body_fragment="",
+                    error_category=qtd.ERR_MALFORMED_RESPONSE,
+                    probe_snapshot=None,
+                    attempt_count=attempt_num,
+                    retry_reasons=retry_reasons,
+                    attempts=attempts_trace,
+                    final_error_category=qtd.ERR_MALFORMED_RESPONSE,
+                    retried=len(retry_reasons) > 0,
+                    model=req_model,
+                )
+                return out
+            text = choices[0].get("message", {}).get("content", "")
+            gen_status, resolved_model = classify_exec_summary_qwen_generation(
+                requested_model=req_model,
+                response_data=response_data,
+            )
+            out = ProviderResult(
+                provider_requested="qwen_vllm",
+                provider_attempted=True,
+                provider_available=True,
+                exact_provider_error=None,
+                runtime_generation_status=gen_status,
+                model=resolved_model,
+                raw_model_output=text,
+                provider_response=response_data,
+                stub=gen_status == "STUBBED",
+            )
+            if gen_status == "REAL_LLM" and retry_reasons:
+                qtd.persist_success_after_transport_retries(
+                    base_url=base_url,
+                    timeout_seconds=int(timeout),
+                    attempt_count=attempt_num,
+                    retry_reasons=retry_reasons,
+                    attempts=attempts_trace,
+                    model=resolved_model,
+                )
+            return out
+        except urllib.error.HTTPError as exc:
+            try:
+                detail = exc.read().decode("utf-8", errors="replace")[:2000]
+            except OSError:
+                detail = ""
+            code_i = int(exc.code)
+            cat = qtd.classify_http_error(code=code_i) or qtd.ERR_UNKNOWN
+            _trace(
+                attempt_num=attempt_num,
+                error_category=cat,
+                http_status=code_i,
+                exception=exc,
+                body_fragment=detail,
+            )
+            transient = qtd.is_transient_chat_http_status(code_i)
+            if transient and attempt_idx < max_att - 1:
+                retry_reasons.append(f"transient_http_{code_i}")
+                time.sleep(qtd.transport_retry_backoff_seconds(attempt_idx))
+                continue
+            tail = f" {detail}" if detail else ""
+            out = ProviderResult(
                 provider_requested="qwen_vllm",
                 provider_attempted=True,
                 provider_available=False,
-                exact_provider_error="Qwen/vLLM returned no choices",
+                exact_provider_error=(
+                    f"Cannot reach Qwen/vLLM at {base_url}: HTTP {exc.code} {exc.reason}{tail}"
+                ),
                 runtime_generation_status="BLOCKED",
-                model=str(payload.get("model", DEFAULT_QWEN_MODEL)),
+                model=req_model,
                 raw_model_output="",
-                provider_response=response_data,
+                provider_response=None,
             )
-        text = choices[0].get("message", {}).get("content", "")
-        req_model = str(payload.get("model", DEFAULT_QWEN_MODEL))
-        gen_status, resolved_model = classify_exec_summary_qwen_generation(
-            requested_model=req_model,
-            response_data=response_data,
-        )
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status=gen_status,
-            model=resolved_model,
-            raw_model_output=text,
-            provider_response=response_data,
-        )
-    except urllib.error.URLError as exc:
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=False,
-            exact_provider_error=f"Cannot reach Qwen/vLLM at {base_url}: {getattr(exc, 'reason', exc)}",
-            runtime_generation_status="BLOCKED",
-            model=str(payload.get("model", DEFAULT_QWEN_MODEL)),
-            raw_model_output="",
-            provider_response=None,
-        )
-    except Exception as exc:  # noqa: BLE001
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=False,
-            exact_provider_error=f"Qwen/vLLM call failed: {type(exc).__name__}: {exc}",
-            runtime_generation_status="BLOCKED",
-            model=str(payload.get("model", DEFAULT_QWEN_MODEL)),
-            raw_model_output="",
-            provider_response=None,
-        )
+            qtd.persist_failure_for_provider_result(
+                result=out,
+                base_url=base_url,
+                timeout_seconds=int(timeout),
+                exception=exc,
+                http_status=code_i,
+                body_fragment=detail,
+                error_category=cat,
+                probe_snapshot=None,
+                attempt_count=attempt_num,
+                retry_reasons=retry_reasons,
+                attempts=attempts_trace,
+                final_error_category=cat,
+                retried=len(retry_reasons) > 0,
+                model=req_model,
+            )
+            return out
+        except urllib.error.URLError as exc:
+            cat = qtd.ERR_TCP_CONNECT
+            transient = qtd.is_transient_url_error(exc)
+            _trace(attempt_num=attempt_num, error_category=cat, http_status=None, exception=exc, body_fragment="")
+            if transient and attempt_idx < max_att - 1:
+                retry_reasons.append("transient_url_error")
+                time.sleep(qtd.transport_retry_backoff_seconds(attempt_idx))
+                continue
+            out = ProviderResult(
+                provider_requested="qwen_vllm",
+                provider_attempted=True,
+                provider_available=False,
+                exact_provider_error=f"Cannot reach Qwen/vLLM at {base_url}: {getattr(exc, 'reason', exc)}",
+                runtime_generation_status="BLOCKED",
+                model=req_model,
+                raw_model_output="",
+                provider_response=None,
+            )
+            qtd.persist_failure_for_provider_result(
+                result=out,
+                base_url=base_url,
+                timeout_seconds=int(timeout),
+                exception=exc,
+                http_status=None,
+                body_fragment="",
+                error_category=cat,
+                probe_snapshot=None,
+                attempt_count=attempt_num,
+                retry_reasons=retry_reasons,
+                attempts=attempts_trace,
+                final_error_category=cat,
+                retried=len(retry_reasons) > 0,
+                model=req_model,
+            )
+            return out
+        except TimeoutError as exc:
+            cat = qtd.ERR_CHAT_TIMEOUT
+            _trace(attempt_num=attempt_num, error_category=cat, http_status=None, exception=exc, body_fragment="")
+            if attempt_idx < max_att - 1:
+                retry_reasons.append("timeout")
+                time.sleep(qtd.transport_retry_backoff_seconds(attempt_idx))
+                continue
+            out = ProviderResult(
+                provider_requested="qwen_vllm",
+                provider_attempted=True,
+                provider_available=False,
+                exact_provider_error=f"Qwen/vLLM call failed: {type(exc).__name__}: {exc}",
+                runtime_generation_status="BLOCKED",
+                model=req_model,
+                raw_model_output="",
+                provider_response=None,
+            )
+            qtd.persist_failure_for_provider_result(
+                result=out,
+                base_url=base_url,
+                timeout_seconds=int(timeout),
+                exception=exc,
+                http_status=None,
+                body_fragment="",
+                error_category=cat,
+                probe_snapshot=None,
+                attempt_count=attempt_num,
+                retry_reasons=retry_reasons,
+                attempts=attempts_trace,
+                final_error_category=cat,
+                retried=len(retry_reasons) > 0,
+                model=req_model,
+            )
+            return out
+        except json.JSONDecodeError as exc:
+            cat = qtd.ERR_MALFORMED_RESPONSE
+            _trace(attempt_num=attempt_num, error_category=cat, http_status=None, exception=exc, body_fragment="")
+            out = ProviderResult(
+                provider_requested="qwen_vllm",
+                provider_attempted=True,
+                provider_available=False,
+                exact_provider_error=f"Qwen/vLLM call failed: {type(exc).__name__}: {exc}",
+                runtime_generation_status="BLOCKED",
+                model=req_model,
+                raw_model_output="",
+                provider_response=None,
+            )
+            qtd.persist_failure_for_provider_result(
+                result=out,
+                base_url=base_url,
+                timeout_seconds=int(timeout),
+                exception=exc,
+                http_status=None,
+                body_fragment="",
+                error_category=cat,
+                probe_snapshot=None,
+                attempt_count=attempt_num,
+                retry_reasons=retry_reasons,
+                attempts=attempts_trace,
+                final_error_category=cat,
+                retried=len(retry_reasons) > 0,
+                model=req_model,
+            )
+            return out
+        except OSError as exc:
+            cat = qtd.ERR_TCP_CONNECT
+            _wsa_reset = getattr(errno, "WSAECONNRESET", None)
+            _retryable_errno = (errno.ECONNRESET, errno.ECONNREFUSED, errno.ETIMEDOUT)
+            if _wsa_reset is not None:
+                _retryable_errno = _retryable_errno + (_wsa_reset,)
+            _en = getattr(exc, "errno", None)
+            transient = isinstance(exc, (ConnectionResetError, BrokenPipeError)) or _en in _retryable_errno
+            _trace(attempt_num=attempt_num, error_category=cat, http_status=None, exception=exc, body_fragment="")
+            if transient and attempt_idx < max_att - 1:
+                retry_reasons.append("transient_os_error")
+                time.sleep(qtd.transport_retry_backoff_seconds(attempt_idx))
+                continue
+            out = ProviderResult(
+                provider_requested="qwen_vllm",
+                provider_attempted=True,
+                provider_available=False,
+                exact_provider_error=f"Qwen/vLLM call failed: {type(exc).__name__}: {exc}",
+                runtime_generation_status="BLOCKED",
+                model=req_model,
+                raw_model_output="",
+                provider_response=None,
+            )
+            qtd.persist_failure_for_provider_result(
+                result=out,
+                base_url=base_url,
+                timeout_seconds=int(timeout),
+                exception=exc,
+                http_status=None,
+                body_fragment="",
+                error_category=cat,
+                probe_snapshot=None,
+                attempt_count=attempt_num,
+                retry_reasons=retry_reasons,
+                attempts=attempts_trace,
+                final_error_category=cat,
+                retried=len(retry_reasons) > 0,
+                model=req_model,
+            )
+            return out
+        except Exception as exc:  # noqa: BLE001
+            cat = qtd.ERR_UNKNOWN
+            _trace(attempt_num=attempt_num, error_category=cat, http_status=None, exception=exc, body_fragment="")
+            out = ProviderResult(
+                provider_requested="qwen_vllm",
+                provider_attempted=True,
+                provider_available=False,
+                exact_provider_error=f"Qwen/vLLM call failed: {type(exc).__name__}: {exc}",
+                runtime_generation_status="BLOCKED",
+                model=req_model,
+                raw_model_output="",
+                provider_response=None,
+            )
+            qtd.persist_failure_for_provider_result(
+                result=out,
+                base_url=base_url,
+                timeout_seconds=int(timeout),
+                exception=exc,
+                http_status=None,
+                body_fragment="",
+                error_category=cat,
+                probe_snapshot=None,
+                attempt_count=attempt_num,
+                retry_reasons=retry_reasons,
+                attempts=attempts_trace,
+                final_error_category=cat,
+                retried=len(retry_reasons) > 0,
+                model=req_model,
+            )
+            return out
+
+    # Exhausted (defensive — loop always returns)
+    return ProviderResult(
+        provider_requested="qwen_vllm",
+        provider_attempted=True,
+        provider_available=False,
+        exact_provider_error="Qwen/vLLM transport retry budget exhausted",
+        runtime_generation_status="BLOCKED",
+        model=req_model,
+        raw_model_output="",
+        provider_response=None,
+    )

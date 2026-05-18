@@ -1,0 +1,49 @@
+{
+  "schema": "apps_rg.qwen_vllm_reliability.w5_test_manifest.v1",
+  "status": "PASS",
+  "wave": "W5",
+  "wave_focus": "docs_and_infra_guidance_only",
+  "commit": "49876a83adb52d65bbbf68d2ebf73c51176e28b4",
+  "commit_note": "Pin exact commit after local changes are committed if reproducing this proof record matters.",
+  "generated_at_utc": "2026-05-18T22:00:00Z",
+  "files_changed": [
+    "docs/architecture/qwen-vllm-topology.md",
+    "docs/reports/apps_rg/qwen_vllm_reliability_w5_test_manifest.json",
+    "docs/reports/apps_rg/qwen_vllm_reliability_w0_w5_closeout_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py tests/unit/apps_rg/test_qwen_vllm_docker_restart.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "targeted_test_results": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "note": "W0-W4 structural/test slice unchanged by W5; rerun confirms baseline after doc-only edits."
+  },
+  "docs_updated": [
+    "docs/architecture/qwen-vllm-topology.md — W5 operator infra guidance: Compose healthcheck (HTTP /v1/models), image pinning, runbook, proof boundary"
+  ],
+  "proof_scope": [
+    "W5 documents operator-safe vLLM infra: HTTP-based healthcheck, no TCP-as-ready, optional model substring in checks",
+    "W5 documents image tag/digest pinning for proof/release-leaning lanes and rerun W0-W4 slice after material image changes",
+    "W5 documents pre-flight env/runbook and readiness artifact path when --artifact-dir is set",
+    "W5 explicitly bounds W0-W5 claims to transport/restart reliability structure — not product output or certification"
+  ],
+  "non_claims": [
+    "No claim of live Qwen output quality or production readiness",
+    "No claim of X3 ALLOW or final disposition",
+    "No claim of full apps_rg pytest tree green",
+    "No claim of release, Fort Knox, or certification",
+    "W5 does not change runtime behavior (docs + manifests only in this wave)"
+  ],
+  "docker_restart_default_assertion": "Topology and runbook state APPS_RG_QWEN_VLLM_DOCKER_RESTART is off unless explicitly set; not default-on.",
+  "image_pin_guidance_assertion": "Topology W5: avoid floating :latest for proof/release-leaning runs; record digest; isolate experimental bumps; rerun W0-W4 slice after material image changes.",
+  "healthcheck_guidance_assertion": "Topology W5: Compose example uses curl to GET /v1/models with interval/timeout/retries/start_period; states TCP-open is insufficient; recommends validating expected model substring in body where possible.",
+  "closeout_manifest": "docs/reports/apps_rg/qwen_vllm_reliability_w0_w5_closeout_manifest.json"
+}

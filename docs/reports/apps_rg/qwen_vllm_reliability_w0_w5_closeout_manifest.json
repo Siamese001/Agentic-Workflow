@@ -1,0 +1,53 @@
+{
+  "schema": "apps_rg.qwen_vllm_reliability.w0_w5_closeout_manifest.v1",
+  "status": "PASS",
+  "title": "apps_rg Qwen/vLLM reliability waves W0-W5 closeout",
+  "commit": "49876a83adb52d65bbbf68d2ebf73c51176e28b4",
+  "generated_at_utc": "2026-05-18T22:00:00Z",
+  "canonical_topology_doc": "docs/architecture/qwen-vllm-topology.md",
+  "wave_summaries": {
+    "W0": {
+      "summary": "Baseline slice and proof discipline for targeted Qwen/vLLM reliability tests (no broad apps_rg tree claim)."
+    },
+    "W1": {
+      "summary": "Transport diagnostics and artifact-safe sidecars (redaction, taxonomy) for live apps_rg Qwen paths."
+    },
+    "W2": {
+      "summary": "Shared HTTP GET /v1/models preflight semantics before live chat; competencies gate uses HTTP models probe, not TCP-only proof."
+    },
+    "W3": {
+      "summary": "Bounded transient-only retries on chat/completions (timeouts, narrow 5xx, transient URL/OS errors); no semantic/schema retry; attempt trace in diagnostics."
+    },
+    "W4": {
+      "summary": "Opt-in Docker restart path: post-restart readiness requires HTTP /v1/models with model id list and expected substring match; restart exit 0 alone is not ready; readiness JSON under --artifact-dir when set."
+    },
+    "W5": {
+      "summary": "Docs-only infra guidance: Docker Compose HTTP healthcheck example, image pinning policy, operator runbook, explicit proof boundary vs product/cert claims."
+    }
+  },
+  "manifest_refs": {
+    "W0_W2": "docs/reports/apps_rg/qwen_vllm_reliability_w0_w2_test_manifest.json",
+    "W3": "docs/reports/apps_rg/qwen_vllm_reliability_w3_test_manifest.json",
+    "W4": "docs/reports/apps_rg/qwen_vllm_reliability_w4_test_manifest.json",
+    "W5": "docs/reports/apps_rg/qwen_vllm_reliability_w5_test_manifest.json"
+  },
+  "combined_targeted_proof_command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py tests/unit/apps_rg/test_qwen_vllm_docker_restart.py -q --tb=short -p pytest_timeout",
+  "combined_targeted_result_last_run": {
+    "exit_code": 0,
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0
+  },
+  "proof_scope": [
+    "W0-W5 taken together cover documented and tested apps_rg Qwen/vLLM transport, diagnostics, bounded retries, and opt-in post-restart readiness plus operator infra guidance",
+    "Explicit non-goals: full resume pipeline proof, X3 outcome proof, full apps_rg test tree, release certification"
+  ],
+  "explicit_non_claims": [
+    "Does not prove live model narrative quality or end-user resume quality",
+    "Does not prove X3 ALLOW or any single final disposition",
+    "Does not prove the full tests/unit/apps_rg tree or full integration surface",
+    "Does not prove release certification, Fort Knox, or compliance sign-off",
+    "W5 wave: documentation and manifests only — no runtime behavior change in W5",
+    "No X2/X3 weakening; no agentic_core edits in these waves"
+  ]
+}

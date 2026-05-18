@@ -1,7 +1,7 @@
 # Qwen/vLLM Runtime Topology
 
 > Canonical reference for the supported Qwen inference path in this repo.
-> Last updated 2026-05-06 (Docker canonical-runtime declaration).
+> Last updated 2026-05-18 (W5 infra guidance and proof boundary).
 > Related: `docs/architecture/hardening_addendum.md`, `agentic_core/L2_execution/types/local_first_disposition.py`
 
 ---
@@ -14,7 +14,7 @@ For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
 | Field | Value |
 |---|---|
 | Container | `local-qwen-vllm` |
-| Image | `vllm/vllm-openai:latest` |
+| Image | `vllm/vllm-openai:latest` in examples below (**floating**); for **proof or release-leaning** runs, **pin** an explicit image tag or digest (see **W5 — Image tag and digest pinning**). |
 | Model | `Qwen/Qwen2.5-32B-Instruct-AWQ` (32B-AWQ) |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL` in `agentic_core/L0_routing/config/model_registry.py`) |
 | Port mapping | `0.0.0.0:8000->8000/tcp` |
@@ -48,6 +48,152 @@ Restart policy is `unless-stopped`. This means:
 **Restore default**:
 
     docker update --restart unless-stopped local-qwen-vllm
+
+### apps_rg opt-in pre-run container restart (added 2026-05-18)
+
+Unconditional `docker restart` before every run is **discouraged**: it hides
+intermittent health issues, costs a full model reload, and races other clients
+on the same endpoint. Prefer **probe-first** restart:
+
+| Env | Role |
+|-----|------|
+| `APPS_RG_QWEN_VLLM_DOCKER_RESTART=1` | Master switch (default off). |
+| `APPS_RG_QWEN_VLLM_DOCKER_RESTART_MODE=if_unhealthy` | Default — restart only when `GET /v1/models` probe fails. |
+| `APPS_RG_QWEN_VLLM_DOCKER_RESTART_MODE=always` | Restart even when healthy (operator workaround only). |
+| `APPS_RG_QWEN_VLLM_CONTAINER_NAME` | Override container name (default `local-qwen-vllm`). |
+
+Implementation: `apps_rg/runtime/qwen_vllm_docker_restart.py`, invoked from
+`python -m apps_rg` after `--dry-run` handling. Skipped for offline stub,
+`APPS_RG_L2_FORCE_STUB`, `APPS_RG_L2_PROVIDER_MODE=stub_only`, and section lanes
+with `--provider mock`.
+
+### Post-restart readiness validation (W4, 2026-05-18)
+
+When `APPS_RG_QWEN_VLLM_DOCKER_RESTART=1`, **ready** means: Docker restart succeeded (when invoked),
+**and** an HTTP `GET /v1/models` parsed successfully with **at least one** non-empty model `id` containing
+`APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING` (default **`Qwen`**; legacy alias `APPS_RG_QWEN_VLLM_MODEL_READY_SUBSTRING`).
+TCP reachability or “HTTP 200 with empty `data`” is **not** ready. Wrong-model-only lists fail closed
+(`readiness_status=model_mismatch`). After CLI startup, when `--artifact-dir` is set, a redacted
+`qwen_vllm_docker_restart_readiness.json` is written there (no headers, secrets, or prompts).
+
+### apps_rg live transport — failure taxonomy (2026-05-18)
+
+For **live** `qwen_vllm` runs, failures are classified (see
+`apps_rg/runtime/qwen_transport_diag.py` and `ProviderResult` paths) so
+operators can distinguish **TCP** issues from **HTTP probe** vs **chat**
+failures:
+
+| Category | Typical cause |
+| --- | --- |
+| **TCP / connect failure** | Host down, port closed, DNS failure, TLS handshake (reported as URL/connection errors on the client). |
+| **`/v1/models` HTTP probe failure** | Non-200, timeout, or unreadable models response on `GET …/v1/models` (preflight before first live chat POST). |
+| **Wrong / missing model id** | HTTP `GET /v1/models` ok but no model id contains the expected substring (`APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING`, else legacy `APPS_RG_QWEN_VLLM_MODEL_READY_SUBSTRING`, default **Qwen**), or empty / invalid ids. |
+| **Chat completion timeout** | `chat/completions` POST exceeded `APPS_RG_QWEN_TIMEOUT_SECONDS` (or payload `timeout_seconds`). |
+| **Chat 5xx** | Upstream vLLM/OpenAI-compatible server error on POST. |
+| **Chat non-retryable 4xx** | Client or server rejected the request (4xx) — not treated as a silent success. |
+| **Malformed response** | Empty `choices`, invalid JSON, or JSON that cannot be parsed as chat completions. |
+
+### apps_rg chat/completions — bounded transient retries (W3, 2026-05-18)
+
+After HTTP `/v1/models` preflight succeeds, **`POST …/chat/completions`** may retry **transient transport**
+failures only: timeouts, narrow **5xx** (`502`, `503`, `504`, plus `408` / `429`), connection reset/refused
+and similar `URLError` / `OSError` patterns. **No retry** for `4xx`, wrong model id / `STUBBED`
+classification, malformed body after HTTP success, or offline contract stub. **No** change to **base_url** or
+**model** between attempts; bounded attempts and backoff via `APPS_RG_QWEN_TRANSPORT_*` env vars (see
+`qwen_transport_diag.py`). On failure or on **REAL_LLM** success after retries, `qwen_transport_diagnostic.json`
+can record `attempt_count`, `attempts[]`, `retry_reasons[]`, and policy metadata (`retried`, policy name/version).
+
+On failure, apps_rg may persist a redacted sidecar
+`qwen_transport_diagnostic.json` under the section run artifact directory (no
+headers, secrets, or prompt text). Live runs print a greppable banner
+`APPS_RG_QWEN_LIVE` with redacted `base_url`, docker-restart disposition, and
+probe result.
+
+### Operator checklist (apps_rg live Qwen)
+
+| Variable | Purpose |
+| --- | --- |
+| `VLLM_BASE_URL` | OpenAI-compatible root (e.g. `http://localhost:8000/v1`). Drives probe URL and chat endpoint. |
+| `APPS_RG_QWEN_TIMEOUT_SECONDS` | Chat POST timeout budget (default in `qwen_vllm_provider`). |
+| `APPS_RG_QWEN_TRANSPORT_MAX_ATTEMPTS` | Total chat attempts (initial + retries); capped (default 3). |
+| `APPS_RG_QWEN_TRANSPORT_RETRY_BACKOFF_BASE_S` | Base backoff seconds before retry after transient failure. |
+| `APPS_RG_QWEN_TRANSPORT_RETRY_BACKOFF_CAP_S` | Max backoff cap per sleep. |
+| `APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_TIMEOUT_SECONDS` | Bounded timeout for competencies-only HTTP models preflight (capped, see `competencies_live_provider_gate`). |
+| `APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE` | If set, competencies lane skips HTTP preflight in the slice (**not recommended** for unattended runs); banner shows `probe=not_run`. |
+| `APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING` | Primary substring for model id readiness on `GET /v1/models` (default **Qwen**). |
+| `APPS_RG_QWEN_VLLM_MODEL_READY_SUBSTRING` | Legacy alias when the above is unset. |
+| `APPS_RG_QWEN_VLLM_DOCKER_RESTART` | **Opt-in** only — master switch for probe-first container restart (never unconditional). |
+| `APPS_RG_QWEN_VLLM_DOCKER_RESTART_MODE` | `if_unhealthy` (default) vs `always` — see table under “apps_rg opt-in pre-run container restart”. |
+| `APPS_RG_QWEN_VLLM_CONTAINER_NAME` | Override Docker container name (default `local-qwen-vllm`). |
+| `APPS_RG_QWEN_OFFLINE_CONTRACT_STUB` | Deterministic stub for contract/offline runs — **must not** satisfy live proof; pair with tests using `APPS_RG_QWEN_DISABLE_OFFLINE_STUB` when exercising real transport. |
+
+### W5 — Operator infra guidance (docs-only, 2026-05-18)
+
+This subsection is **guidance only** for operators and reviewers. It does not change runtime code. It aligns with apps_rg transport/restart behavior documented above (W3 transient retries, W4 HTTP+model readiness, opt-in Docker restart).
+
+#### Docker Compose `healthcheck` (HTTP `/v1/models`)
+
+A process **listening on the port** (TCP open) is **not** sufficient readiness: vLLM can bind before the served model is load-ready, or `/v1/models` can error while the port accepts connections. Prefer an **HTTP** check against **`GET /v1/models`** with a bounded timeout.
+
+`healthcheck` **cannot** read apps_rg env vars; embed the same **host**/**port** (or in-container URL) your compose service uses. Where possible, assert the **expected model id substring** in the JSON body (operator choice: `grep`, `jq`, or a tiny script) so “HTTP 200 + empty `data`” or “wrong model only” does not pass.
+
+Illustrative `compose` fragment (adjust port, path, and substring to match your stack):
+
+```yaml
+services:
+  qwen-vllm:
+    # image: vllm/vllm-openai:<PINNED_TAG_OR_DIGEST>   # see "Image tag and digest pinning" below
+    healthcheck:
+      # In-container: hit the same port vLLM binds (example 8000). Use HTTP, not raw TCP.
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS --max-time 8 http://127.0.0.1:8000/v1/models | grep -q Qwen",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 420s
+```
+
+Notes:
+
+- **`start_period`**: model load can take minutes; set generously on first boot or after image upgrades.
+- **`retries` / `timeout`**: short probes that flap on slow GPUs produce false “unhealthy”; tune for your hardware.
+- **Substring**: keep in sync with `APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING` (default **Qwen**) where you validate id text.
+
+#### Image tag and digest pinning
+
+| Practice | Rationale |
+| --- | --- |
+| **Do not rely on `:latest` for proof or release-style runs** | The digest behind `latest` moves without warning; regressions become non-reproducible. |
+| **Record tag and digest in operator notes** | E.g. from `docker inspect <container> --format '{{.Image}}'` or `docker image inspect --format '{{json .RepoDigests}}'`. Paste into run logs or an internal manifest. |
+| **Isolate experimental image bumps** | Try new vLLM images on a throwaway container or compose project; avoid swapping the proof lane image mid-baseline. |
+| **After any inference image / vLLM major version change** | Re-run the repo’s **W0–W4 targeted pytest slice** (see manifest `docs/reports/apps_rg/qwen_vllm_reliability_w5_test_manifest.json`) before treating transport/restart baselines as current. |
+
+Floating `latest` remains acceptable for **local experimentation** only—not as a silent assumption for structured proof.
+
+#### Operator runbook (pre-flight)
+
+1. **`VLLM_BASE_URL`**: Must be the OpenAI-compatible root actually serving chat (e.g. `http://localhost:8000/v1`). Mismatch here breaks probe URL and chat URL construction.
+2. **`APPS_RG_QWEN_TIMEOUT_SECONDS`**: Chat POST budget used by `qwen_vllm_provider`; too low causes false failures on slow hardware.
+3. **`APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING`**: Must match the model id you intend to gate on for `/v1/models` readiness (default **Qwen**); legacy `APPS_RG_QWEN_VLLM_MODEL_READY_SUBSTRING` applies when the new variable is unset.
+4. **`APPS_RG_QWEN_VLLM_DOCKER_RESTART`**: **Disabled by default** (unset or falsy). Do **not** treat enabling restart as normal operations—it reloads the model and can hide drift.
+5. **When opt-in restart is acceptable**: Workstation recovery after Docker Desktop restart, known `if_unhealthy` probe failures, or an explicit operator workaround with `APPS_RG_QWEN_VLLM_DOCKER_RESTART_MODE=always`—never as a blanket CI default.
+6. **Readiness artifact**: When you run `python -m apps_rg … --artifact-dir <path>`, a redacted **`qwen_vllm_docker_restart_readiness.json`** is written under that directory **if** Docker-restart audit ran on that invocation (opt-in path). It contains no headers, secrets, or prompts.
+
+#### Proof boundary: W0–W5 scope vs product claims
+
+The **W0–W5** work in this topology path documents and tests **apps_rg Qwen/vLLM transport and operator infra discipline**:
+
+| In scope for W0–W5 | **Not** claimed by W0–W5 |
+| --- | --- |
+| Diagnostics, HTTP `/v1/models` preflight semantics, bounded **transient-only** chat retries (W3) | **Live** model output quality, resume narrative quality, or “production suitability” |
+| Post-restart **HTTP + model substring** readiness when restart is opt-in (W4) | **X3 ALLOW** or any final disposition |
+| Opt-in Docker restart behavior and infra guidance (W5) | Full **apps_rg** pytest tree green; full end-to-end resume generation certified |
+| Targeted pytest slice listed in wave manifests | **Release certification**, Fort Knox, or any compliance sign-off |
+
+W0–W5 **does not** weaken X2/X3, does not modify gate logic, and does **not** substitute for product-level evaluation.
 
 ### Strict-mode preflight
 

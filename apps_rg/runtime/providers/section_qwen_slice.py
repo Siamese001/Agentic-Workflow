@@ -2,14 +2,23 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any, Final
 
 from agentic_core.runtime.reasoning.reasoning_control_resolver import resolve_gateway_receipt
 from agentic_core.runtime.reasoning.transport_capabilities import TransportCapabilities
 
-from apps_rg.runtime.reasoning.apps_rg_http_reasoning_plan import build_apps_rg_http_reasoning_plan
 from apps_rg.runtime.providers import qwen_vllm_provider
+from apps_rg.runtime.providers.competencies_live_provider_gate import (
+    REASON_PROVIDER_UNAVAILABLE,
+    STATUS_BLOCKED_LIVE_PROVIDER,
+    competencies_vllm_preflight_timeout_s,
+)
+from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
+from apps_rg.runtime.qwen_transport_diag import ensure_http_preflight_and_banner_for_slice
+from apps_rg.runtime.reasoning.apps_rg_http_reasoning_plan import build_apps_rg_http_reasoning_plan
 from apps_rg.runtime.reasoning.section_reasoning_intensity import (
     profile_to_requested_kw,
     section_reasoning_profile,
@@ -55,10 +64,25 @@ def _sanitize_transport_payload(pd: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
-def call_qwen_vllm(payload: dict[str, Any], /) -> qwen_vllm_provider.ProviderResult:
+def call_qwen_vllm(
+    payload: dict[str, Any],
+    /,
+    *,
+    artifact_dir: Path | str | None = None,
+    run_id: str | None = None,
+) -> qwen_vllm_provider.ProviderResult:
     envelope = dict(payload)
     lane_token = envelope.pop("_reasoning_section_lane", None)
     lane_s = str(lane_token).strip().lower() if lane_token else None
+
+    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+
+    if artifact_dir is not None:
+        merge_transport_context(artifact_dir=str(Path(artifact_dir).resolve()))
+    if run_id is not None:
+        merge_transport_context(run_id=str(run_id))
+    if lane_s:
+        merge_transport_context(section_lane=lane_s)
 
     profile = section_reasoning_profile(lane_s)
     prof_kw = profile_to_requested_kw(profile)
@@ -84,6 +108,32 @@ def call_qwen_vllm(payload: dict[str, Any], /) -> qwen_vllm_provider.ProviderRes
     except (ArithmeticError, TypeError, ValueError):
         receipt_prim = None
 
-    result = qwen_vllm_provider.call_qwen_vllm(http_body)
+    base_url = str(os.environ.get("VLLM_BASE_URL", qwen_vllm_provider.DEFAULT_QWEN_BASE_URL))
+    pre_timeout = float(competencies_vllm_preflight_timeout_s())
+    ok_pre, pre_snap, pre_code = ensure_http_preflight_and_banner_for_slice(
+        base_url=base_url,
+        timeout_seconds=pre_timeout,
+    )
+    if not ok_pre and not effective_offline_contract_stub_enabled():
+        msg = (
+            f"{STATUS_BLOCKED_LIVE_PROVIDER}: {REASON_PROVIDER_UNAVAILABLE} — "
+            f"HTTP /v1/models preflight failed for {base_url!r} ({pre_code}). "
+            "No chat/completions POST attempted."
+        )
+        return qwen_vllm_provider.ProviderResult(
+            provider_requested="qwen_vllm",
+            provider_attempted=True,
+            provider_available=False,
+            exact_provider_error=msg,
+            runtime_generation_status="BLOCKED",
+            model=str(http_body.get("model", qwen_vllm_provider.DEFAULT_QWEN_MODEL)),
+            raw_model_output="",
+            provider_response=None,
+            reasoning_execution_receipt=receipt_prim,
+            apps_rg_qwen_preflight_blocked=True,
+            apps_rg_last_probe_snapshot=pre_snap if isinstance(pre_snap, dict) else None,
+        )
+
+    result = qwen_vllm_provider.call_qwen_vllm(http_body, base_url=base_url)
     result.reasoning_execution_receipt = receipt_prim
     return result

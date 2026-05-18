@@ -1,0 +1,66 @@
+{
+  "schema": "apps_rg.qwen_vllm_reliability.w3_test_manifest.v1",
+  "status": "PASS",
+  "commit": "49876a83adb52d65bbbf68d2ebf73c51176e28b4",
+  "commit_note": "Proof run executed with uncommitted W3 changes on top of this base commit; re-run manifest after commit if an exact tree hash is required.",
+  "generated_at_utc": "2026-05-18T18:30:00Z",
+  "proof_scope": [
+    "W3 bounded transient-only retries on live chat/completions (timeouts, narrow 5xx, transient URLError/OSError)",
+    "No retry on 401/4xx, wrong model STUBBED path, malformed JSON after HTTP success",
+    "Diagnostic sidecar v2: attempt_count, attempts[], retry_reasons[], final_error_category, retried, policy name/version, stable base_url/model, REAL_LLM success-after-retry uses transport_recovered",
+    "Offline contract stub excluded from live proof paths; persist_failure skips OFFLINE_CONTRACT_STUB",
+    "No X2/X3 changes; no provider/base_url/model switching; docker restart remains env opt-in only"
+  ],
+  "non_proof_scope": [
+    "Full tests/unit/apps_rg tree",
+    "Broad tests/_apps_contract keyword competencies runs",
+    "Live integration against real vLLM (unit/contract use mocks)"
+  ],
+  "files_changed": [
+    "apps_rg/runtime/qwen_transport_diag.py",
+    "apps_rg/runtime/providers/qwen_vllm_provider.py",
+    "tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py",
+    "docs/architecture/qwen-vllm-topology.md",
+    "docs/reports/apps_rg/qwen_vllm_reliability_w3_test_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "totals_targeted_w3_slice": {
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0,
+    "note": "Sum of the three command runs in this manifest (6 + 7 + 7)."
+  },
+  "artifacts_verified": [
+    "qwen_transport_diagnostic.json under pytest tmp_path (failure + REAL_LLM after retry)",
+    "Manifest path: docs/reports/apps_rg/qwen_vllm_reliability_w3_test_manifest.json"
+  ],
+  "transient_retry_only_assertion": "Retries gated in qwen_vllm_provider via qwen_transport_diag.is_transient_chat_http_status, is_transient_url_error, TimeoutError, and transient OSError errno/classes only.",
+  "non_retryable_assertion": "401 and non-transient HTTP exit after one attempt; JSONDecodeError and empty choices persist once; STUBBED model id returns without transport retry loop extension for semantics.",
+  "artifact_visibility_assertion": "Failure path and success-after-retry path write v2 sidecar with attempts, retry_reasons, attempt_count, final_error_category, retry_policy_name/version when applicable.",
+  "no_stub_mock_fallback_assertion": "OFFLINE_CONTRACT_STUB persist short-circuit; mock_or_stub_used false on recorded diagnostics; REAL_LLM required for success retry trace.",
+  "no_gate_weakening_assertion": "No edits to X2/X3 validators or disposition aggregation in this wave.",
+  "docker_restart_opt_in_assertion": "Unchanged: APPS_RG_QWEN_VLLM_DOCKER_RESTART remains the master switch.",
+  "recommended_proof_slice_shell": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1\npython -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py -q --tb=short -p pytest_timeout"
+}

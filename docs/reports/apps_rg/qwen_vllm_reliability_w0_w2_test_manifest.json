@@ -1,0 +1,75 @@
+{
+  "schema": "apps_rg.qwen_vllm_reliability.w0_w2_test_manifest.v1",
+  "status": "PASS",
+  "commit": "49876a83adb52d65bbbf68d2ebf73c51176e28b4",
+  "generated_at_utc": "2026-05-18T17:04:00Z",
+  "proof_scope": [
+    "apps_rg Qwen/vLLM transport diagnostics (W1)",
+    "HTTP /v1/models preflight before live chat (W2)",
+    "competencies live provider gate HTTP semantics (not TCP-only proof)",
+    "offline contract stub vs APPS_RG_QWEN_DISABLE_OFFLINE_STUB (no silent live proof from stub)",
+    "docker restart opt-in banner semantics",
+    "pytest opt-in for judge outbound HTTPS (OpenAI/Anthropic/Gemini) via APPS_RG_ENABLE_NETWORK_TESTS"
+  ],
+  "non_proof_scope": [
+    "Full tests/unit/apps_rg tree",
+    "tests/_apps_contract -k \"qwen or vllm or competencies\" (noisy competencies drift)",
+    "W3+ reliability waves",
+    "X2/X3 gate logic changes",
+    "prompt templates",
+    "broad agentic_core refactors"
+  ],
+  "files_changed": [
+    "apps_rg/runtime/judges/executive_summary_x1d.py",
+    "pytest.ini",
+    "tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py",
+    "docs/reports/apps_rg/qwen_vllm_reliability_w0_w2_test_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_competencies_live_provider_gate.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_vllm_docker_restart.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "totals_targeted": {
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0
+  },
+  "unrelated_failures_observed": {
+    "full_tests_unit_apps_rg": "Previously: pytest-timeout during live urllib HTTPS in judge stack (unify_narrative -> _call_openai). Mitigation: _judge_live_https_allowed_under_pytest() blocks outbound judge HTTPS unless APPS_RG_ENABLE_NETWORK_TESTS=1 when PYTEST_CURRENT_TEST is set. Not re-run as full-tree proof in this manifest.",
+    "broad_apps_contract_keyword_competencies": "tests/_apps_contract -k \"qwen or vllm or competencies\" pulls broad competencies contract drift (43 failed in a prior run). Avoided; use test_apps_rg_qwen_vllm_reliability_contract.py only."
+  },
+  "artifacts_verified": [
+    "Temporary qwen_transport_diagnostic.json under pytest tmp_path (unit + contract functional tests)",
+    "Manifest path: docs/reports/apps_rg/qwen_vllm_reliability_w0_w2_test_manifest.json"
+  ],
+  "no_mock_stub_fallback_assertion": "Contract + unit tests: OFFLINE_CONTRACT_STUB != REAL_LLM; effective_offline false when APPS_RG_QWEN_DISABLE_OFFLINE_STUB=1; diagnostics use mock_or_stub_used false on live failure paths.",
+  "docker_restart_opt_in_assertion": "docker_restart_banner_label(None)==\"disabled\" when APPS_RG_QWEN_VLLM_DOCKER_RESTART unset; unit tests for docker restart pass.",
+  "network_tests_gated_assertion": "PYTEST_CURRENT_TEST set + APPS_RG_ENABLE_NETWORK_TESTS unset => _call_openai returns NETWORK_TESTS_NOT_ENABLED without urlopen; pytest.ini registers `network` marker for documentation.",
+  "recommended_proof_slice_shell": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1  # POSIX\n# Windows: $env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'\npython -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py tests/unit/apps_rg/test_competencies_live_provider_gate.py tests/unit/apps_rg/test_qwen_vllm_docker_restart.py tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py -q --tb=short -p pytest_timeout"
+}

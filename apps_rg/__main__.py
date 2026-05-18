@@ -644,6 +644,40 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 print(f"manual_brief ({src}): {mb[:120]}{'…' if len(mb) > 120 else ''}", flush=True)
         return 0
 
+    # Optional local Qwen vLLM Docker restart (opt-in — see qwen_vllm_docker_restart module).
+    from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
+
+    _qdr = maybe_restart_qwen_vllm_for_apps_rg_run(
+        running_section_lane=False,
+        cli_provider=None,
+    )
+    if _qdr.get("performed"):
+        print(
+            f"[apps_rg] qwen_vllm docker restart: container={_qdr.get('container')!r} "
+            f"ready={_qdr.get('ready')} probe={_qdr.get('probe_status')!r}",
+            flush=True,
+        )
+        if not _qdr.get("ready"):
+            print(
+                "[apps_rg] WARNING: vLLM not healthy after restart within "
+                f"{_qdr.get('wait_cap_seconds')}s: {_qdr.get('probe_error')}",
+                file=sys.stderr,
+                flush=True,
+            )
+    elif not _qdr.get("skipped") and _qdr.get("error"):
+        print(
+            f"[apps_rg] qwen_vllm docker restart error ({_qdr.get('reason')}): {_qdr.get('error')}",
+            file=sys.stderr,
+            flush=True,
+        )
+
+    from apps_rg.runtime.qwen_transport_diag import persist_docker_restart_readiness_artifact, set_docker_restart_audit
+
+    set_docker_restart_audit(dict(_qdr))
+    _ad = str(getattr(args, "artifact_dir", "") or "").strip()
+    if _ad:
+        persist_docker_restart_readiness_artifact(_ad, dict(_qdr))
+
     # Cross-company contamination guards
     if args.target_company:
         if args.manual_brief and not str(args.manual_brief).startswith(("http://", "https://")):

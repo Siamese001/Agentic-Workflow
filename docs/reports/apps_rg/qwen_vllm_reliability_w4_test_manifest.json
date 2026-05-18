@@ -1,0 +1,67 @@
+{
+  "schema": "apps_rg.qwen_vllm_reliability.w4_test_manifest.v1",
+  "status": "PASS",
+  "commit": "49876a83adb52d65bbbf68d2ebf73c51176e28b4",
+  "commit_note": "Re-run after local commit to pin an exact tree; proof executed with working-tree edits present.",
+  "generated_at_utc": "2026-05-18T20:15:00Z",
+  "proof_scope": [
+    "W4 post-restart readiness: HTTP GET /v1/models with full data[] id list, fail-closed on non-200/empty/wrong substring",
+    "APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING (default Qwen) with legacy APPS_RG_QWEN_VLLM_MODEL_READY_SUBSTRING when unset",
+    "Readiness audit: restart_requested, restart_outcome, post_restart_probe_status, expected_model_substring, observed_model_ids, readiness_status, decisive_reason, base_url (redacted banner), probe_timeout_seconds, attempt_count",
+    "Artifact: qwen_vllm_docker_restart_readiness.json under --artifact-dir when set (redacted, no mock/stub proof)",
+    "Docker restart remains APPS_RG_QWEN_VLLM_DOCKER_RESTART opt-in; no agentic_core source edits in W4"
+  ],
+  "non_proof_scope": [
+    "Full tests/unit/apps_rg tree",
+    "Live docker/vLLM integration (unit tests mock docker and HTTP)",
+    "X2/X3 validators"
+  ],
+  "files_changed": [
+    "apps_rg/runtime/qwen_vllm_docker_restart.py",
+    "apps_rg/runtime/qwen_transport_diag.py",
+    "apps_rg/__main__.py",
+    "tests/unit/apps_rg/test_qwen_vllm_docker_restart.py",
+    "docs/architecture/qwen-vllm-topology.md",
+    "docs/reports/apps_rg/qwen_vllm_reliability_w4_test_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_vllm_docker_restart.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py tests/unit/apps_rg/test_qwen_vllm_docker_restart.py -q --tb=short -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "totals_combined_slice": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0
+  },
+  "artifacts_verified": [
+    "qwen_vllm_docker_restart_readiness.json (pytest tmp_path + redaction test)",
+    "Manifest path: docs/reports/apps_rg/qwen_vllm_reliability_w4_test_manifest.json"
+  ],
+  "opt_in_restart_assertion": "maybe_restart early-returns unless APPS_RG_QWEN_VLLM_DOCKER_RESTART is truthy; unit test asserts subprocess.run not called when disabled.",
+  "not_ready_on_restart_only_assertion": "After docker exit 0, readiness uses fetch_openai_compatible_model_ids + classify_vllm_models_readiness; exhausted poll leaves ready=false and readiness_status != ready.",
+  "wrong_model_fail_closed_assertion": "HTTP 200 with ids not containing expected substring => readiness_status=model_mismatch, ready=false.",
+  "substring_config_assertion": "expected_qwen_model_substring() prefers APPS_RG_QWEN_EXPECTED_MODEL_SUBSTRING; custom value honored in audit and classification.",
+  "artifact_visible_assertion": "persist_docker_restart_readiness_artifact from __main__ when --artifact-dir non-empty; schema apps_rg.qwen_vllm_docker_restart_readiness.v1.",
+  "no_gate_weakening_assertion": "No edits to apps_rg X2/X3 modules in this wave.",
+  "no_core_edits_assertion": "agentic_core files unchanged; only existing imports from L0 VLLM_BASE_URL and L2 probe.",
+  "recommended_proof_slice_shell": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1\npython -m pytest tests/unit/apps_rg/test_qwen_transport_reliability_w0_w2.py tests/_apps_contract/test_apps_rg_qwen_vllm_reliability_contract.py tests/unit/apps_rg/test_qwen_transport_reliability_w3_retries.py tests/unit/apps_rg/test_qwen_vllm_docker_restart.py -q --tb=short -p pytest_timeout"
+}
