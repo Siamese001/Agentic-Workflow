@@ -210,6 +210,9 @@ def run_headline_x2_gates(
     artifacts_dir: Any | None = None,
     text_claim_coverage: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -676,20 +679,31 @@ def run_headline_x2_gates(
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
-    if srfs_source_fact_slice_gate_active:
+    if srfs_source_fact_slice_gate_active or proof_pool_metadata:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_pool_x2_gate_id,
+        )
 
         collected_srfs = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
-        ok_srfs, env_srfs, fail_srfs = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_srfs, env_srfs, fail_srfs = evaluate_proof_pool_source_fact_gate(
             section_id="headline",
             collected_ids=collected_srfs,
             allowed_fact_ids=set(allowed_fact_ids),
+            proof_pool_metadata=proof_pool_metadata,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
         )
         add(
-            "x2_headline_source_fact_ids_within_srfs_slice",
+            proof_pool_x2_gate_id(
+                "headline",
+                proof_pool_metadata=proof_pool_metadata,
+                srfs_slice_gate_active=srfs_source_fact_slice_gate_active,
+            ),
             ok_srfs,
             env_srfs,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_srfs,
         )
 

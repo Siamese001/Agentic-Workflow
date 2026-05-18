@@ -225,6 +225,9 @@ def run_ibm_narrative_x2_gates(
     artifacts_dir: Any | None = None,
     text_claim_coverage: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -266,17 +269,33 @@ def run_ibm_narrative_x2_gates(
         "Candidate name must not appear in the role narrative sentence.",
     )
 
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        is_id_in_active_proof_pool,
+        proof_source_from_metadata,
+        scope_ids_membership_only,
+    )
+
     ledger_ids = _ledger_fact_ids(claim_ledger)
-    ibm_roots = set(IBM_BULLET_IDS)
-    supported = bool(claim_ledger) and bool(ledger_ids)
-    supported = supported and ledger_ids <= ibm_roots
-    supported = supported and all(str(fid).startswith("bul_ibm_") for fid in ledger_ids)
+    proof_source = proof_source_from_metadata(proof_pool_metadata)
+    allow_runtime_set = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        supported = bool(claim_ledger) and bool(ledger_ids)
+        supported = supported and all(is_id_in_active_proof_pool(s, allow_runtime_set) for s in ledger_ids)
+        supported_threshold = "active_proof_pool_membership"
+        supported_fail = "claim_ledger must cite facts from the active IBM proof pool."
+    else:
+        ibm_roots = set(IBM_BULLET_IDS)
+        supported = bool(claim_ledger) and bool(ledger_ids)
+        supported = supported and ledger_ids <= ibm_roots
+        supported = supported and all(str(fid).startswith("bul_ibm_") for fid in ledger_ids)
+        supported_threshold = "bul_ibm_*"
+        supported_fail = "claim_ledger must map to IBM bullet facts only."
     add(
         "x2_ibm_narrative_source_supported",
         supported,
         sorted(ledger_ids),
-        "bul_ibm_*",
-        "claim_ledger must map to IBM bullet facts only.",
+        supported_threshold,
+        supported_fail,
     )
 
     allow_runtime = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
@@ -326,16 +345,32 @@ def run_ibm_narrative_x2_gates(
     )
 
     serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
-    scope_ids = _ledger_fact_ids(claim_ledger) | set(re.findall(r"bul_ibm_\d{3}", serialized))
-    scope_ok = all(s.startswith("bul_ibm_") for s in scope_ids) and not any(
-        p in serialized for p in ("bul_unify_", "bul_insurtech_", "bul_ey_", "bul_early_career_")
-    )
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        scope_ids = _ledger_fact_ids(claim_ledger)
+    else:
+        scope_ids = _ledger_fact_ids(claim_ledger) | set(re.findall(r"bul_ibm_\d{3}", serialized))
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        scope_ok, _, forbidden_hits, not_in_pool = scope_ids_membership_only(
+            scope_ids,
+            allowed_fact_ids=allow_runtime_set,
+            forbidden_prefixes=("bul_unify_", "bul_insurtech_", "bul_ey_", "bul_early_career_"),
+        )
+        scope_threshold = "active_proof_pool_membership"
+        scope_fail = "Non-IBM fact scope in payload."
+        if forbidden_hits or not_in_pool:
+            scope_fail += f" forbidden={forbidden_hits} out_of_pool={not_in_pool}"
+    else:
+        scope_ok = all(s.startswith("bul_ibm_") for s in scope_ids) and not any(
+            p in serialized for p in ("bul_unify_", "bul_insurtech_", "bul_ey_", "bul_early_career_")
+        )
+        scope_threshold = "bul_ibm_*"
+        scope_fail = "Non-IBM fact scope in payload."
     add(
         "x2_ibm_narrative_ibm_only_fact_scope",
         scope_ok,
         sorted(scope_ids),
-        "bul_ibm_*",
-        "Non-IBM fact scope in payload.",
+        scope_threshold,
+        scope_fail,
     )
 
     add(
@@ -363,18 +398,38 @@ def run_ibm_narrative_x2_gates(
     )
 
     theme_required = ibm_narrative_material_fact_ids_for_sentence(narrative_sentence)
-    missing_themes = sorted(theme_required - ledger_ids)
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        theme_ok = (not theme_required) or bool(
+            ledger_ids and all(is_id_in_active_proof_pool(s, allow_runtime_set) for s in ledger_ids)
+        )
+        theme_obs = {
+            "themes_detected": sorted(theme_required),
+            "ledger_ids": sorted(ledger_ids),
+            "proof_source": proof_source,
+        }
+        theme_fail = (
+            None
+            if theme_ok
+            else "Material themes require claim_ledger citations from the active IBM proof pool."
+        )
+    else:
+        missing_themes = sorted(theme_required - ledger_ids)
+        theme_ok = not missing_themes
+        theme_obs = {"themes_detected": sorted(theme_required), "missing_in_ledger_union": missing_themes}
+        theme_fail = (
+            None
+            if theme_ok
+            else (
+                "narrative_sentence material themes require matching bul_ibm_* in claim_ledger union; "
+                f"missing: {missing_themes}"
+            )
+        )
     add(
         "x2_ibm_narrative_claim_theme_coverage",
-        not missing_themes,
-        {"themes_detected": sorted(theme_required), "missing_in_ledger_union": missing_themes},
+        theme_ok,
+        theme_obs,
         "ledger_covers_all_detected_themes",
-        None
-        if not missing_themes
-        else (
-            "narrative_sentence material themes require matching bul_ibm_* in claim_ledger union; "
-            f"missing: {missing_themes}"
-        ),
+        theme_fail,
     )
 
     companion = companion_bullet_texts or ""
@@ -531,21 +586,32 @@ def run_ibm_narrative_x2_gates(
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
-    if srfs_source_fact_slice_gate_active and allowed_fact_ids:
+    if (srfs_source_fact_slice_gate_active or proof_pool_metadata) and allowed_fact_ids:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_pool_x2_gate_id,
+        )
 
         coll_inr = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
         allow_inr = {str(x).strip() for x in allowed_fact_ids if str(x).strip()}
-        ok_inr, env_inr, fail_inr = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_inr, env_inr, fail_inr = evaluate_proof_pool_source_fact_gate(
             section_id="ibm_narrative",
             collected_ids=coll_inr,
             allowed_fact_ids=allow_inr,
+            proof_pool_metadata=proof_pool_metadata,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
         )
         add(
-            "x2_ibm_narrative_source_fact_ids_within_srfs_slice",
+            proof_pool_x2_gate_id(
+                "ibm_narrative",
+                proof_pool_metadata=proof_pool_metadata,
+                srfs_slice_gate_active=srfs_source_fact_slice_gate_active,
+            ),
             ok_inr,
             env_inr,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_inr,
         )
 

@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "waves_completed": ["R1", "R2"],
+  "proof_level": "REPRESENTATIVE_SRFS_ACTIVE_RECEIPT_ONLY",
+  "timestamp_utc": "2026-05-18T19:15:00Z",
+  "files_changed": [
+    "docs/reports/apps_rg/srfs_active_rerun_ssot_r1.json",
+    "docs/reports/apps_rg/srfs_active_unify_bullets_r1_r2.md",
+    "docs/reports/apps_rg/srfs_active_unify_bullets_r1_r2_receipt.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "result": "empty diff"
+    },
+    {
+      "command": "python -m compileall apps_rg/runtime/sections apps_rg/runtime/dispatch apps_rg/audit -q",
+      "exit_code": 0,
+      "result": "compile succeeded"
+    },
+    {
+      "command": "python -c section counts and sha256 for w7_realistic_nested_facts.json and w7_realistic_bare_list.json",
+      "exit_code": 0,
+      "result": "both all_seven_non_empty; nested selected"
+    },
+    {
+      "command": "python -m apps_rg --section unify_bullets --selected-role-fact-set artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json --provider qwen_vllm --mock-judges --allow-test-mock-judges --allow-non-allow-exit-zero",
+      "exit_code": 0,
+      "result": "run_dir unify_bullets_20260518_191249; X3_BLOCK; SRFS-active receipt"
+    },
+    {
+      "command": "python inspection of run_manifest.json and section_metric_receipt.json",
+      "exit_code": 0,
+      "result": "all required SRFS-active proof checks true"
+    }
+  ],
+  "selected_srfs_path": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json",
+  "selected_srfs_sha256": "30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f",
+  "section_fact_counts": {
+    "headline": 1,
+    "executive_summary": 2,
+    "unify_bullets": 6,
+    "unify_narrative": 2,
+    "ibm_bullets": 5,
+    "ibm_narrative": 1,
+    "competencies": 2
+  },
+  "representative_lane": "unify_bullets",
+  "run_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_191249",
+  "receipt_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_191249/section_metric_receipt.json",
+  "proof_checks": {
+    "run_manifest_has_selected_role_fact_set": true,
+    "section_metric_receipt_exists": true,
+    "proof_pool_type_selected_role_fact_set": true,
+    "selected_role_fact_set_used": true,
+    "fallback_used_false": true,
+    "fallback_reason_empty": true,
+    "srfs_section_id_unify_bullets": true,
+    "x2_srfs_gate_status_not_not_applicable": true,
+    "x2_srfs_gate_status_value": "FAIL",
+    "prompt_hash_nonempty": true,
+    "full_resume_srfs_supported_false": true,
+    "srfs_active_receipt": true
+  },
+  "guardrail_violations": [],
+  "can_start_r3_batch": true,
+  "explicit_non_claims": [
+    "W7 fixture SRFS only; not production fact_inventory.",
+    "REAL_LLM generation with mock judges; not live judge proof.",
+    "X3_BLOCK and product_quality FAIL acceptable for structural SRFS receipt proof.",
+    "No aggregator trial v2; no remaining five-lane batch in this wave."
+  ],
+  "decisive_reason": "R1 pinned seven-section nested SRFS with non-empty all slices. R2 unify_bullets run with --selected-role-fact-set produced section_metric_receipt with proof_pool_type=selected_role_fact_set, selected_role_fact_set_used=true, fallback_used=false, x2_srfs_gate_status=FAIL (SRFS gate engaged). Confirms diagnosis: missing CLI SRFS input caused prior base_resume_fallback; wiring does not require lane patch before R3 batch."
+}

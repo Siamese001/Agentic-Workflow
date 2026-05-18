@@ -201,6 +201,9 @@ def run_unify_narrative_x2_gates(
     allowed_fact_ids: set[str] | None = None,
     artifacts_dir: Any | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -267,25 +270,48 @@ def run_unify_narrative_x2_gates(
         ledger_ct_reason,
     )
 
-    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
-    scope_ids = _ledger_fact_ids(claim_ledger) | set(
-        re.findall(
-            r"\b(?:bul_unify_\d{3}|unify_narrative_base_\d{3}|exp_unify_\d{3})\b",
-            serialized,
-        )
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        proof_source_from_metadata,
+        scope_ids_membership_only,
     )
-    scope_ok = (
-        all(
-            str(s).startswith(("bul_unify_", "unify_narrative_base_", "exp_unify_"))
-            for s in scope_ids
+
+    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
+    proof_source = proof_source_from_metadata(proof_pool_metadata)
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        scope_ids = _ledger_fact_ids(claim_ledger)
+    else:
+        scope_ids = _ledger_fact_ids(claim_ledger) | set(
+            re.findall(
+                r"\b(?:bul_unify_\d{3}|unify_narrative_base_\d{3}|exp_unify_\d{3})\b",
+                serialized,
+            )
         )
-    ) and not any(p in serialized for p in ("bul_ibm_", "bul_insurtech_", "bul_ey_"))
+    allow_runtime_set = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        scope_ok, _, forbidden_hits, not_in_pool = scope_ids_membership_only(
+            scope_ids,
+            allowed_fact_ids=allow_runtime_set,
+            forbidden_prefixes=("bul_ibm_", "bul_insurtech_", "bul_ey_"),
+        )
+        scope_threshold = "active_proof_pool_membership"
+        scope_fail = "Non-Unify fact scope."
+        if forbidden_hits or not_in_pool:
+            scope_fail += f" forbidden={forbidden_hits} out_of_pool={not_in_pool}"
+    else:
+        scope_ok = (
+            all(
+                str(s).startswith(("bul_unify_", "unify_narrative_base_", "exp_unify_"))
+                for s in scope_ids
+            )
+        ) and not any(p in serialized for p in ("bul_ibm_", "bul_insurtech_", "bul_ey_"))
+        scope_threshold = "bul_unify_*|unify_narrative_base_*|exp_unify_*"
+        scope_fail = "Non-Unify fact scope."
     add(
         "x2_unify_narrative_unify_only_fact_scope",
         scope_ok,
         sorted(scope_ids),
-        "bul_unify_*|unify_narrative_base_*|exp_unify_*",
-        "Non-Unify fact scope.",
+        scope_threshold,
+        scope_fail,
     )
 
     add("x2_no_ibm_fact_leakage", "bul_ibm_" not in serialized, "bul_ibm_", "absent", "IBM leakage.")
@@ -472,20 +498,31 @@ def run_unify_narrative_x2_gates(
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
-    if srfs_source_fact_slice_gate_active and allowed_fact_ids is not None:
+    if (srfs_source_fact_slice_gate_active or proof_pool_metadata) and allowed_fact_ids is not None:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_pool_x2_gate_id,
+        )
 
         coll_un = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
-        ok_un, env_un, fail_un = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_un, env_un, fail_un = evaluate_proof_pool_source_fact_gate(
             section_id="unify_narrative",
             collected_ids=coll_un,
             allowed_fact_ids=set(allowed_fact_ids),
+            proof_pool_metadata=proof_pool_metadata,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
         )
         add(
-            "x2_unify_narrative_source_fact_ids_within_srfs_slice",
+            proof_pool_x2_gate_id(
+                "unify_narrative",
+                proof_pool_metadata=proof_pool_metadata,
+                srfs_slice_gate_active=srfs_source_fact_slice_gate_active,
+            ),
             ok_un,
             env_un,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_un,
         )
 

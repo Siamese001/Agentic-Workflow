@@ -1,0 +1,60 @@
+{
+  "schema_version": "srfs_active_rerun_ssot_r1_v1",
+  "pinned_at_utc": "2026-05-18T20:00:00Z",
+  "selected_srfs_path": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json",
+  "shape": "nested_facts",
+  "sha256": "30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f",
+  "selection_id": "w7_nested_realistic_v1",
+  "section_fact_counts": {
+    "headline": 1,
+    "executive_summary": 2,
+    "unify_bullets": 6,
+    "unify_narrative": 2,
+    "ibm_bullets": 5,
+    "ibm_narrative": 1,
+    "competencies": 2
+  },
+  "all_seven_sections_non_empty": true,
+  "reason_selected": "Nested selected_facts_by_section shape matches production fact_inventory and W7 contract-test SRFS; all seven sections have non-empty fact slices. Bare-list twin (w7_realistic_bare_list.json) has identical counts but was not selected to avoid dual-SSOT drift for R3 batch.",
+  "candidates_evaluated": [
+    {
+      "path": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json",
+      "shape": "nested_facts",
+      "sha256": "30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f",
+      "section_fact_counts": {
+        "headline": 1,
+        "executive_summary": 2,
+        "unify_bullets": 6,
+        "unify_narrative": 2,
+        "ibm_bullets": 5,
+        "ibm_narrative": 1,
+        "competencies": 2
+      },
+      "selected": true
+    },
+    {
+      "path": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_bare_list.json",
+      "shape": "bare_list",
+      "sha256": "863916d92db526408dbe7f85ccbfbfa170a962d1083e069987ecb0f2dcb4f363",
+      "section_fact_counts": {
+        "headline": 1,
+        "executive_summary": 2,
+        "unify_bullets": 6,
+        "unify_narrative": 2,
+        "ibm_bullets": 5,
+        "ibm_narrative": 1,
+        "competencies": 2
+      },
+      "selected": false
+    }
+  ],
+  "explicit_non_claims": [
+    "Not production fact_inventory; W7 test fixture only.",
+    "Does not prove live Qwen generation quality or real judge outcomes.",
+    "Does not prove product ALLOW, runtime certification, or full résumé SRFS.",
+    "Does not replace explicit per-run receipt manifest paths for aggregator trials.",
+    "Do not use selected_role_fact_set_20260518T181200Z_exec_summary_srfs_cli_proof.json for non-exec lanes (exec-only facts)."
+  ],
+  "governed_cli_flag": "--selected-role-fact-set",
+  "representative_lane_r2": "unify_bullets"
+}

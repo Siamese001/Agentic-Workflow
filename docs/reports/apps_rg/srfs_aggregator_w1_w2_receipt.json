@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "waves_completed": ["W1", "W2"],
+  "proof_level": "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY",
+  "plan_slug": "apps-rg-srfs-aggregator-e7b2a1",
+  "timestamp_utc": "2026-05-18T20:00:00Z",
+  "files_changed": [
+    "docs/reports/apps_rg/srfs_aggregator_w1_receipt_inventory.md",
+    "docs/reports/apps_rg/srfs_aggregator_w2_schema_and_rules.md",
+    "docs/reports/apps_rg/srfs_aggregator_w1_w2_receipt.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "result": "empty diff (0 lines)"
+    },
+    {
+      "command": "git diff -- apps_rg",
+      "exit_code": 0,
+      "result": "pre-existing working-tree diffs present; no apps_rg edits in this W1-W2 pass"
+    },
+    {
+      "command": "python -m compileall apps_rg/runtime/sections apps_rg/runtime/reports -q",
+      "exit_code": 0,
+      "result": "compile succeeded"
+    },
+    {
+      "command": "rg section_metric_receipt apps_rg tests docs -n",
+      "exit_code": 1,
+      "result": "rg not available in shell; replaced by editor Grep static search"
+    }
+  ],
+  "inspected_files": [
+    "apps_rg/runtime/sections/headline_lane.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/sections/unify_bullets_lane.py",
+    "apps_rg/runtime/sections/unify_narrative_lane.py",
+    "apps_rg/runtime/sections/ibm_bullets_lane.py",
+    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+    "apps_rg/runtime/dispatch/competencies_dispatch.py",
+    "apps_rg/runtime/sections/selected_role_fact_set.py",
+    "apps_rg/runtime/reports/generated_lane_rollup.py",
+    "apps_rg/runtime/run_bundle_index.py",
+    "tests/_apps_contract/test_apps_rg_srfs_w6_reporting.py",
+    "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_173654/section_metric_receipt.json",
+    ".cursor/plans/apps-rg-srfs-aggregator-e7b2a1.md",
+    "docs/reports/apps_rg/srfs_aggregator_w1_plan.md"
+  ],
+  "deferred_items": [
+    "W3 aggregator implementation (apps_rg/audit/srfs_receipt_aggregator.py)",
+    "W4 CLI entrypoint",
+    "W5 contract tests and fixtures under artifacts/apps_rg/test_fixtures/srfs_aggregator/",
+    "W6 advisory LLM judge (optional, apps_rg-local)",
+    "W7 fixture-based aggregator artifacts",
+    "W8 closeout manifest",
+    "Explicit prompt_srfs_hierarchy_status receipt field (v1 uses prompt_hash proxy)",
+    "Harmonize unify_narrative proof_eligible fields on lane writers (optional; extensions suffice)"
+  ],
+  "guardrail_violations": [],
+  "can_start_w3": true,
+  "w1_verdict": "PASS",
+  "w2_verdict": "PASS",
+  "decisive_reason": "W1 inventory confirms two receipt shapes (pending stub, complete envelope+W6 block) across seven production write sites with stable normalizer semantics; W2 locks canonical row, manifest, audit report schema, PASS guard, and W5 test matrix with no schema blockers. No agentic_core or apps_rg production code changed; no latest_successful inference; proof_level SECTION_SRFS_STRUCTURAL_AUDIT_ONLY only."
+}

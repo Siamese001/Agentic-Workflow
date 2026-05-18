@@ -1,0 +1,83 @@
+{
+  "status": "PASS",
+  "trial_kind": "real_receipt_trial",
+  "proof_level": "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY",
+  "timestamp_utc": "2026-05-18T18:36:37Z",
+  "files_changed": [
+    "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/real_section_receipt_manifest.json",
+    "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/apps_rg_srfs_audit_report.json",
+    "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/apps_rg_srfs_audit_report.md",
+    "docs/reports/apps_rg/srfs_aggregator_real_receipt_trial_manifest.json"
+  ],
+  "receipt_paths_used": {
+    "headline": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_182333/section_metric_receipt.json",
+    "executive_summary": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_173654/section_metric_receipt.json",
+    "unify_bullets": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_182346/section_metric_receipt.json",
+    "unify_narrative": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_182352/section_metric_receipt.json",
+    "ibm_bullets": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_182358/section_metric_receipt.json",
+    "ibm_narrative": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_182405/section_metric_receipt.json",
+    "competencies": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_182432/section_metric_receipt.json"
+  },
+  "sections_found": [
+    "headline",
+    "executive_summary",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "sections_missing": [],
+  "srfs_active_on_disk": {
+    "headline": false,
+    "executive_summary": true,
+    "unify_bullets": false,
+    "unify_narrative": false,
+    "ibm_bullets": false,
+    "ibm_narrative": false,
+    "competencies": false
+  },
+  "selection_note": "Explicit paths only; no latest_successful inference. Six lanes' newest real/ receipts are base_resume_fallback (non-SRFS). Only executive_summary real receipt on disk has selected_role_fact_set_used=true. ibm_bullets has no real/ receipt; plumbing/ path used as explicit complete receipt.",
+  "commands_run": [
+    {
+      "command": "python -m compileall apps_rg/audit -q",
+      "exit_code": 0,
+      "result": "compile succeeded"
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_srfs_aggregator.py -q --tb=short --override-ini=addopts=",
+      "exit_code": 0,
+      "result": "20 passed in 0.23s"
+    },
+    {
+      "command": "python -m apps_rg.audit.srfs_receipt_aggregator --receipt-manifest artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/real_section_receipt_manifest.json --manifest docs/reports/apps_rg/srfs_per_section_w1_w7_closeout_manifest.json --out artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial",
+      "exit_code": 0,
+      "stdout": "report_path=.../apps_rg_srfs_audit_report.json deterministic_status=FAIL proof_level=SECTION_SRFS_STRUCTURAL_AUDIT_ONLY advisory_judge_status=NOT_RUN advisory_judge_mocked_or_live=not_run",
+      "result": "report written; CLI exit 0 (operational success)"
+    },
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "result": "empty diff (0 lines)"
+    }
+  ],
+  "deterministic_verdict": "FAIL",
+  "deterministic_verdict_expected": true,
+  "deterministic_fail_reason": "pass_guard_violation (G-srfs-required): six of seven on-disk real receipts are base_resume_fallback, not SRFS-active",
+  "advisory_judge_verdict": "NOT_RUN",
+  "explicit_non_claims": [
+    "proof_level is SECTION_SRFS_STRUCTURAL_AUDIT_ONLY only.",
+    "This report does not assert runtime certification.",
+    "This report does not assert live Qwen or vLLM output quality.",
+    "This report does not assert real-judge X3 ALLOW or product release.",
+    "This report does not assert full résumé R4 SRFS or modular_resume_generation wiring.",
+    "Section x3_code and product_quality_status are informational only, not aggregate PASS criteria.",
+    "Advisory LLM judge output does not override deterministic status."
+  ],
+  "artifacts": {
+    "input_manifest": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/real_section_receipt_manifest.json",
+    "audit_report_json": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/apps_rg_srfs_audit_report.json",
+    "audit_report_md": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/apps_rg_srfs_audit_report.md"
+  },
+  "decisive_reason": "Real-receipt trial completed: all seven lanes had explicit on-disk section_metric_receipt.json paths; aggregator ran without code changes and returned deterministic FAIL (expected) because only executive_summary receipt is SRFS-active under closeout srfs_required policy; trial operational PASS at SECTION_SRFS_STRUCTURAL_AUDIT_ONLY."
+}

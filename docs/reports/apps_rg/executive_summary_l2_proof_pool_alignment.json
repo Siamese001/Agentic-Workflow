@@ -1,0 +1,64 @@
+{
+  "report_id": "executive_summary_l2_proof_pool_alignment",
+  "generated_at_utc": "2026-05-18T20:45:00Z",
+  "status": "PASS",
+  "scope": "Unify executive_summary L2 generation with shared proof-pool resolver (SRFS → broad_skills_ledger → base_resume_fallback)",
+  "files_touched": [
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/dispatch/executive_summary_pa.py",
+    "tests/_apps_contract/test_apps_rg_executive_summary_l2_proof_pool_alignment.py",
+    "tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py"
+  ],
+  "resolution_order": [
+    "selected_role_fact_set",
+    "broad_skills_ledger",
+    "base_resume_fallback"
+  ],
+  "matrix": [
+    {
+      "path": "SRFS supplied",
+      "l2_proof_source": "srfs",
+      "x2_proof_source": "srfs",
+      "digest_match": true,
+      "jd_briefing_non_proof": true,
+      "fallback_explicit": false
+    },
+    {
+      "path": "no SRFS (ledger present)",
+      "l2_proof_source": "broad_skills_ledger",
+      "x2_proof_source": "broad_skills_ledger",
+      "digest_match": true,
+      "jd_briefing_non_proof": true,
+      "fallback_explicit": false
+    },
+    {
+      "path": "ledger missing",
+      "l2_proof_source": "base_resume_fallback",
+      "x2_proof_source": "base_resume_fallback",
+      "digest_match": true,
+      "jd_briefing_non_proof": true,
+      "fallback_explicit": true
+    }
+  ],
+  "artifacts": [
+    "section_input_usage_ledger.json",
+    "x2_source_fact_pool_receipt.json",
+    "compiled_prompt.txt",
+    "compiled_prompt_artifact.json",
+    "runtime_payload.json"
+  ],
+  "commands": [
+    "python -m compileall apps_rg -q",
+    "python -m pytest tests/_apps_contract -k \"executive_summary and (proof_pool or source_fact or section_input_usage or runtime_slice)\" -q",
+    "python -m pytest tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py -q"
+  ],
+  "test_results": {
+    "exec_l2_alignment": "6 passed",
+    "x2_ledger_primary": "19 passed (incl. exec mock receipt)",
+    "filtered_executive_summary": "12 passed, 1 skipped"
+  },
+  "non_claims": [
+    "No product ALLOW",
+    "No live provider proof"
+  ]
+}

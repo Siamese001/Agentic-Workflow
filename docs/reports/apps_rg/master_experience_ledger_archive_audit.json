@@ -1,0 +1,1004 @@
+{
+  "audit_version": "master_experience_ledger_archive_audit_v1",
+  "generated_at_utc": "2026-05-18T19:21:19Z",
+  "archive_source_zip": "C:\\Users\\amita\\Downloads\\Phase I Resumes Archive-20260518T101707Z-3-001.zip",
+  "archive_extract_path": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive",
+  "text_extract_path": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted",
+  "current_ledger_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+  "current_ledger_fact_count": 42,
+  "archive_file_count": 29,
+  "extracted_variant_count": 18,
+  "archive_inventory": [
+    {
+      "filename": "AI and Data Governance - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8476,
+      "line_count": 68,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\AI_and_Data_Governance_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Amit Ayer Resume - AI Financial Services.docx",
+      "format": "docx",
+      "char_count": 8041,
+      "line_count": 63,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Amit Ayer Resume - Chief Data & Analytics Officer v1.pdf",
+      "format": "pdf",
+      "char_count": 9110,
+      "line_count": 124,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Amit Ayer Resume - Partner Development Manager.docx",
+      "format": "docx",
+      "char_count": 9074,
+      "line_count": 69,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Amit Ayer Resume - Strategic Account Executive.docx",
+      "format": "docx",
+      "char_count": 8705,
+      "line_count": 66,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Amit Ayer Resume - VP Finance Sales & Marketing.docx",
+      "format": "docx",
+      "char_count": 8022,
+      "line_count": 65,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Chief AI Officer - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8166,
+      "line_count": 67,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Chief_AI_Officer_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Chief Technology Officer - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8687,
+      "line_count": 69,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Chief_Technology_Officer_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "CTO Resume - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 5264,
+      "line_count": 60,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\CTO_Resume_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Field CTO - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 9162,
+      "line_count": 69,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Field_CTO_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Head of Customer Success - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8072,
+      "line_count": 72,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Head of Data & Analytics - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8469,
+      "line_count": 69,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Head_of_Data_Analytics_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Industry Solutions - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8057,
+      "line_count": 66,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Industry_Solutions_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Partnerships & Alliances - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 9306,
+      "line_count": 73,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Partnerships_Alliances_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Quantitative Research & Trading - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8681,
+      "line_count": 67,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Quantitative_Research_Trading_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Revenue Operations - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8917,
+      "line_count": 66,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Revenue_Operations_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Sales - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 9838,
+      "line_count": 69,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Sales_-_Amit_Ayer.txt",
+      "extract_error": null
+    },
+    {
+      "filename": "Strategic Finance - Amit Ayer.docx",
+      "format": "docx",
+      "char_count": 8997,
+      "line_count": 71,
+      "extracted_path": "Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\phase_i_resumes_archive_extracted\\Strategic_Finance_-_Amit_Ayer.txt",
+      "extract_error": null
+    }
+  ],
+  "domain_pillars": [
+    "agentic_ai_platform_engineering",
+    "actuarial_quantitative_foundation",
+    "risk_management_regulatory_governance",
+    "derivatives_financial_engineering",
+    "capital_modeling_reserving_pricing",
+    "trading_hpc_market_forecasting",
+    "strategic_finance_saas_fp_a",
+    "partnerships_alliances_gtm",
+    "commercialization_reusable_ip",
+    "org_leadership_operating_model"
+  ],
+  "domain_pillars_found": {
+    "agentic_ai_platform_engineering": {
+      "variants_with_hits": 18,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Quantitative_Research_Trading_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "actuarial_quantitative_foundation": {
+      "variants_with_hits": 18,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Quantitative_Research_Trading_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "risk_management_regulatory_governance": {
+      "variants_with_hits": 18,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Quantitative_Research_Trading_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "derivatives_financial_engineering": {
+      "variants_with_hits": 17,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Quantitative_Research_Trading_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "capital_modeling_reserving_pricing": {
+      "variants_with_hits": 16,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "trading_hpc_market_forecasting": {
+      "variants_with_hits": 18,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Quantitative_Research_Trading_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "strategic_finance_saas_fp_a": {
+      "variants_with_hits": 9,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Field_CTO_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "partnerships_alliances_gtm": {
+      "variants_with_hits": 11,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    "commercialization_reusable_ip": {
+      "variants_with_hits": 0,
+      "variant_files": []
+    },
+    "org_leadership_operating_model": {
+      "variants_with_hits": 17,
+      "variant_files": [
+        "AI_and_Data_Governance_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_AI_Financial_Services.txt",
+        "Amit_Ayer_Resume_-_Chief_Data_Analytics_Officer_v1.txt",
+        "Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "CTO_Resume_-_Amit_Ayer.txt",
+        "Chief_AI_Officer_-_Amit_Ayer.txt",
+        "Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "Head_of_Customer_Success_-_Amit_Ayer.txt",
+        "Head_of_Data_Analytics_-_Amit_Ayer.txt",
+        "Industry_Solutions_-_Amit_Ayer.txt",
+        "Partnerships_Alliances_-_Amit_Ayer.txt",
+        "Quantitative_Research_Trading_-_Amit_Ayer.txt",
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Sales_-_Amit_Ayer.txt",
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    }
+  },
+  "ledger_coverage_summary": {
+    "pillars_with_high_confidence_ledger_rows": [
+      "agentic_ai_platform_engineering",
+      "risk_management_regulatory_governance",
+      "trading_hpc_market_forecasting",
+      "partnerships_alliances_gtm",
+      "commercialization_reusable_ip",
+      "org_leadership_operating_model"
+    ],
+    "pillars_underrepresented_in_exec_srfs": [
+      "actuarial_quantitative_foundation",
+      "derivatives_financial_engineering",
+      "capital_modeling_reserving_pricing",
+      "strategic_finance_saas_fp_a"
+    ],
+    "root_issue": "Ledger has 42 HIGH/MEDIUM facts across domains, but executive_summary SRFS selection and fact_certs_001 bundling underrepresent actuarial/quant/governance depth for synthesis."
+  },
+  "proposed_facts": [
+    {
+      "fact_id": "fact_actuarial_foundation_001",
+      "pillar": "actuarial_quantitative_foundation",
+      "claim_text": "Earned Fellow of the Society of Actuaries (FSA) in 2010 after eight years of quantitative rigor spanning advanced modeling, derivatives pricing, and risk analytics.",
+      "source_resume_files": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "AI and Data Governance - Amit Ayer.docx",
+        "Strategic Finance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "I spent my first eight years cultivating quant rigor\u2014earning my Fellow of the Society of Actuaries credential, building advanced models, and orchestrating multi-Greek hedges for exotic options.",
+        "Gained an FSA credential while focusing on advanced derivative pricing, multi-Greek hedging, and capital modeling at Towers Perrin, ING, and Aetna.",
+        "Fellow of the Society of Actuaries | Society of Actuaries | Earned 2010"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "FSA",
+        "Fellow of the Society of Actuaries",
+        "eight years of quantitative rigor",
+        "earned 2010"
+      ],
+      "forbidden_phrases_without_support": [
+        "chartered financial analyst",
+        "PhD in mathematics",
+        "credentialed foundation strength"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "headline",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "risk_notes": "Split from fact_certs_001 inventory row; cite this fact for FSA depth not cert list alone.",
+      "maps_existing_ledger_id": "fact_quant_hpc_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_derivatives_pricing_001",
+      "pillar": "derivatives_financial_engineering",
+      "claim_text": "Applied derivatives pricing and quantitative risk methods across early-career actuarial roles at Towers Perrin, ING, and Aetna.",
+      "source_resume_files": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Strategic Finance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Gained an FSA credential while focusing on advanced derivative pricing, multi-Greek hedging, and capital modeling at Towers Perrin, ING, and Aetna.",
+        "Developed deep expertise in derivatives pricing, multi-Greek hedging, and risk modeling, culminating in the Fellow of the Society of Actuaries (FSA)."
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "derivatives pricing",
+        "Towers Perrin",
+        "ING",
+        "Aetna"
+      ],
+      "forbidden_phrases_without_support": [
+        "structured products desk lead",
+        "OTC derivatives book owner"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_bullets",
+        "competencies"
+      ],
+      "risk_notes": "Employer names must stay tied to Early Career section only.",
+      "maps_existing_ledger_id": "fact_quant_hpc_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_multi_greek_hedging_001",
+      "pillar": "derivatives_financial_engineering",
+      "claim_text": "Orchestrated multi-Greek hedging strategies for complex derivatives exposures in early-career actuarial and quant roles.",
+      "source_resume_files": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "orchestrating multi-Greek hedges for exotic options",
+        "I spent my early career applying FSA-driven quantitative skills to complex derivatives pricing and multi-Greek hedging strategies.",
+        "Provides advanced quantitative foundation for derivatives pricing and multi-Greek hedging."
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "multi-Greek hedging",
+        "multi-Greek hedges",
+        "Greek parameter"
+      ],
+      "forbidden_phrases_without_support": [
+        "delta-one desk",
+        "vol surface arbitrage"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "Do not imply current trading desk role; early-career + foundation framing only.",
+      "maps_existing_ledger_id": "fact_quant_hpc_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_exotic_options_001",
+      "pillar": "derivatives_financial_engineering",
+      "claim_text": "Built early-career expertise in exotic options and multi-Greek hedging as part of FSA-level quantitative foundation work.",
+      "source_resume_files": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "AI and Data Governance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "orchestrating multi-Greek hedges for exotic options",
+        "focusing on advanced modeling, multi-Greek hedging, and exotic options"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "exotic options",
+        "multi-Greek hedging"
+      ],
+      "forbidden_phrases_without_support": [
+        "exotic derivatives book",
+        "barrier option market-making"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "Archive-specific term not atomic in current ledger rows.",
+      "maps_existing_ledger_id": null,
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_capital_modeling_001",
+      "pillar": "capital_modeling_reserving_pricing",
+      "claim_text": "Performed capital modeling and actuarial reserving/pricing work during FSA-track roles at Towers Perrin, ING, and Aetna.",
+      "source_resume_files": [
+        "AI and Data Governance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "focusing on advanced derivative pricing, multi-Greek hedging, and capital modeling at Towers Perrin, ING, and Aetna.",
+        "Deployed advanced Greek parameter stress-testing and scenario analyses, ensuring capital reserves aligned with market volatility."
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "capital modeling",
+        "capital reserves",
+        "capital adequacy"
+      ],
+      "forbidden_phrases_without_support": [
+        "appointed actuary",
+        "chief actuary"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_bullets"
+      ],
+      "risk_notes": "Pair with fact_governance_003 for CCAR/Basel runtime governance, not reserving sign-off.",
+      "maps_existing_ledger_id": "fact_quant_hpc_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_data_governance_security_001",
+      "pillar": "risk_management_regulatory_governance",
+      "claim_text": "Implemented enterprise data lineage, cataloging, encryption, access controls, and metadata management frameworks for regulated financial reporting and analytics.",
+      "source_resume_files": [
+        "Sales - Amit Ayer.docx",
+        "Revenue Operations - Amit Ayer.docx",
+        "Quantitative Research & Trading - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "integrated lineage tracking, encryption, and clear ownership across risk, compliance, and technology teams",
+        "Deployed comprehensive data governance solutions, integrating metadata management, advanced encryption, and compliance protocols",
+        "Implemented Enterprise Data Security: Overhauled encryption and access controls"
+      ],
+      "support_level": "BUNDLE_SUPPORTED",
+      "allowed_phrases": [
+        "data lineage",
+        "encryption",
+        "access controls",
+        "metadata management",
+        "role-based access"
+      ],
+      "forbidden_phrases_without_support": [
+        "SOC 2 Type II certified",
+        "ISO 27001 certified"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "risk_notes": "Bundle cites fact_governance_003 + new lineage row; supporting_fact_ids required at activation.",
+      "maps_existing_ledger_id": "fact_governance_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_model_explainability_001",
+      "pillar": "risk_management_regulatory_governance",
+      "claim_text": "Established executive AI governance councils and model explainability standards with data-security controls for automated financial decisions.",
+      "source_resume_files": [
+        "Strategic Finance - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx",
+        "Quantitative Research & Trading - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Established an Executive AI Council: Introduced model explainability and data security frameworks",
+        "Established an Executive AI Council to govern model explainability and data security standards"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "model explainability",
+        "Executive AI Council",
+        "data security standards"
+      ],
+      "forbidden_phrases_without_support": [
+        "EU AI Act certified",
+        "model risk SR 11-7 signatory"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "Overlaps fact_governance_005; prefer this row for exec S2 governance vocabulary.",
+      "maps_existing_ledger_id": "fact_governance_005",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_basel_ccar_001",
+      "pillar": "risk_management_regulatory_governance",
+      "claim_text": "Delivered Basel III and CCAR programs with data lineage, cataloging, and automated validation that cut regulatory reporting errors by 40%.",
+      "source_resume_files": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Strategic Finance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Implemented consistent Basel III reporting structures by establishing data lineage, cataloging, and automated validation, cutting reporting errors by 40%.",
+        "Reduced Regulatory Remediation by 30%: Executed Basel/CCAR compliance programs"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_phrases": [
+        "Basel III",
+        "CCAR",
+        "40% reporting errors"
+      ],
+      "forbidden_phrases_without_support": [
+        "Fed approved model",
+        "OCC examination clean sheet"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "risk_notes": "Canonical metric carrier aligns with fact_governance_003; do not double metrics without both IDs.",
+      "maps_existing_ledger_id": "fact_governance_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_algorithmic_trading_hpc_001",
+      "pillar": "trading_hpc_market_forecasting",
+      "claim_text": "Engineered AI-driven automated trading platforms on parallel HPC workflows, cutting end-to-end latency by 50% and enabling real-time ML insights and dynamic risk monitoring.",
+      "source_resume_files": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "Revenue Operations - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Engineered an AI-Driven Automated Trading Platform leveraging parallel HPC workflows, reducing end-to-end latency by 50%"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_phrases": [
+        "50% latency reduction",
+        "parallel HPC",
+        "automated trading platform"
+      ],
+      "forbidden_phrases_without_support": [
+        "profitable hedge fund",
+        "Sharpe ratio"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "Maps fact_quant_hpc_002; TraderSense framing required in risk_notes for external use.",
+      "maps_existing_ledger_id": "fact_quant_hpc_002",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_market_forecasting_hft_001",
+      "pillar": "trading_hpc_market_forecasting",
+      "claim_text": "Delivered high-frequency and algorithmic trading capabilities including sub-millisecond execution pipelines and GPU-accelerated market forecasting for trading desks.",
+      "source_resume_files": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Delivered high-frequency trading pipelines with sub-millisecond latency, enabling dynamic order execution.",
+        "Developed GPU Powered Market Forecasting Models: Utilized parallel training to analyze market signals in near real time, yielding a 15% improvement in trade execution accuracy",
+        "Increased Forecast Accuracy by 35%: Deployed custom LLM-based predictive engines in market risk scenarios"
+      ],
+      "support_level": "BUNDLE_SUPPORTED",
+      "allowed_phrases": [
+        "sub-millisecond",
+        "algorithmic trading",
+        "market forecasting",
+        "35% forecast accuracy",
+        "15% trade execution accuracy"
+      ],
+      "forbidden_phrases_without_support": [
+        "profitable HFT fund",
+        "market maker of record"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "Metrics must cite specific supporting facts when activated; 35% and 15% are distinct claims.",
+      "maps_existing_ledger_id": null,
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_saas_fpa_metrics_001",
+      "pillar": "strategic_finance_saas_fp_a",
+      "claim_text": "Led FP&A and SaaS metric programs spanning ARR, churn, LTV/CAC, usage-based forecasting, and executive reporting for subscription revenue models.",
+      "source_resume_files": [
+        "Strategic Finance - Amit Ayer.docx",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.docx"
+      ],
+      "exact_supporting_snippets": [
+        "My background spans FP&A, SaaS metric optimization (ARR, churn, LTV/CAC), and enterprise data governance",
+        "Unified finance, product, and sales stakeholders with consistent KPIs (ARR, churn, LTV/CAC)"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "FP&A",
+        "ARR",
+        "churn",
+        "LTV/CAC",
+        "usage-based forecasting"
+      ],
+      "forbidden_phrases_without_support": [
+        "Rule of 40 leader",
+        "negative churn guarantee"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "Do not cite JD SaaS targets; archive-only.",
+      "maps_existing_ledger_id": "fact_revenue_ops_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_ma_synergy_modeling_001",
+      "pillar": "strategic_finance_saas_fp_a",
+      "claim_text": "Conducted M&A readiness reviews, synergy modeling, and post-merger risk-model consolidation for executive stakeholders.",
+      "source_resume_files": [
+        "Strategic Finance - Amit Ayer.docx",
+        "AI and Data Governance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Supported M&A Synergy Forecasts: Conducted preliminary due diligence on multiple acquisitions, quantifying potential technology and operational synergies",
+        "Facilitated a post-M&A risk model consolidation for a $1B asset portfolio, ensuring cohesive compliance controls"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "M&A synergy",
+        "due diligence",
+        "$1B asset portfolio",
+        "post-M&A consolidation"
+      ],
+      "forbidden_phrases_without_support": [
+        "closed $1B acquisition",
+        "investment banker"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_narrative"
+      ],
+      "risk_notes": "$1B portfolio is EY engagement scale not personal AUM.",
+      "maps_existing_ledger_id": "fact_consulting_002",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_partnerships_cosell_001",
+      "pillar": "partnerships_alliances_gtm",
+      "claim_text": "Led co-selling motions, partner-ecosystem negotiations, and strategic alliances with cloud, data, and AI vendors for enterprise financial-services clients.",
+      "source_resume_files": [
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "AI and Data Governance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "led cross-functional partner initiatives, co-selling motions, and enterprise contract negotiations",
+        "Built a global AI channel program from inception, co-developing analytics frameworks with partners"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "co-selling",
+        "strategic alliances",
+        "partner ecosystems",
+        "enterprise negotiations"
+      ],
+      "forbidden_phrases_without_support": [
+        "exclusive AWS distribution agreement"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "Maps partnerships_gtm_001/003; use for exec synthesis not bullet dump.",
+      "maps_existing_ledger_id": "fact_partnerships_gtm_001",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_exec_quant_synthesis_001",
+      "pillar": "actuarial_quantitative_foundation",
+      "claim_text": "Brings FSA-backed quantitative depth to governed AI platform leadership, connecting derivatives, capital, and regulatory analytics to modern platform design.",
+      "source_resume_files": [
+        "Strategic Finance - Amit Ayer.docx",
+        "Quantitative Research & Trading - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Provides advanced quantitative foundation for derivatives pricing and multi-Greek hedging",
+        "This rigorous foundation informed my approach to SaaS forecasting, capital allocation, and data governance"
+      ],
+      "support_level": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "FSA-backed quantitative foundation",
+        "FSA depth informs governed AI platform design"
+      ],
+      "forbidden_phrases_without_support": [
+        "with the executive platform record above",
+        "applied depth",
+        "credentialed foundation strength"
+      ],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "risk_notes": "DERIVED for S5/S1 integration; requires fact_actuarial_foundation_001 + platform fact in slice.",
+      "maps_existing_ledger_id": null,
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_actuarial_software_001",
+      "pillar": "actuarial_quantitative_foundation",
+      "claim_text": "Contributed to sale and rollout of specialized actuarial software at Towers Perrin, expanding adoption of advanced risk solutions for insurers.",
+      "source_resume_files": [
+        "AI and Data Governance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "During my time at Towers Perrin, I also contributed to the sale and rollout of specialized actuarial software, expanding the adoption of advanced risk solutions for leading insurers."
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "actuarial software",
+        "Towers Perrin"
+      ],
+      "forbidden_phrases_without_support": [
+        "founded actuarial software company"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_narrative"
+      ],
+      "risk_notes": "Early-career only.",
+      "maps_existing_ledger_id": null,
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_regulatory_finra_sec_001",
+      "pillar": "risk_management_regulatory_governance",
+      "claim_text": "Strengthened regulatory alignment for trading and AI documentation workflows under FINRA and SEC mandates.",
+      "source_resume_files": [
+        "Quantitative Research & Trading - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "satisfying rigorous FINRA and SEC mandates"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "FINRA",
+        "SEC mandates"
+      ],
+      "forbidden_phrases_without_support": [
+        "SEC approved"
+      ],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "risk_notes": "No personal license claim.",
+      "maps_existing_ledger_id": null,
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_banking_regulatory_findings_001",
+      "pillar": "risk_management_regulatory_governance",
+      "claim_text": "Lowered regulatory findings by 35% in the first year of an enterprise AI rollout via data-usage controls and compliance checkpoints for a major banking client.",
+      "source_resume_files": [
+        "AI and Data Governance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "lowered regulatory findings by 35% in the first year"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_phrases": [
+        "35% regulatory findings reduction"
+      ],
+      "forbidden_phrases_without_support": [
+        "zero findings"
+      ],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "risk_notes": "Maps fact_governance_001.",
+      "maps_existing_ledger_id": "fact_governance_001",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_arr_growth_5m_001",
+      "pillar": "strategic_finance_saas_fp_a",
+      "claim_text": "Increased annual recurring revenue by  through AI-enhanced usage-based forecasting and subscription pricing optimization.",
+      "source_resume_files": [
+        "Strategic Finance - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "Increased Annual Recurring Revenue by "
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_phrases": [
+        " ARR"
+      ],
+      "forbidden_phrases_without_support": [
+        " ARR"
+      ],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "risk_notes": "Maps fact_revenue_ops_003.",
+      "maps_existing_ledger_id": "fact_revenue_ops_003",
+      "status": "DRAFT_INACTIVE"
+    },
+    {
+      "fact_id": "fact_agentic_platform_archive_001",
+      "pillar": "agentic_ai_platform_engineering",
+      "claim_text": "Designed governed agentic AI platform capabilities including deterministic routing, multi-agent orchestration, GraphRAG, sandboxed execution, policy gating, and replayable traces.",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "exact_supporting_snippets": [
+        "governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating"
+      ],
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "governed agentic AI platform",
+        "GraphRAG",
+        "deterministic routing"
+      ],
+      "forbidden_phrases_without_support": [
+        "autonomous AGI"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "Maps fact_engineering_platform_001; reserve for exec slice.",
+      "maps_existing_ledger_id": "fact_engineering_platform_001",
+      "status": "DRAFT_INACTIVE"
+    }
+  ],
+  "proposed_fact_count": 19,
+  "executive_summary_impact": {
+    "current_exec_srfs_fact_ids": [
+      "fact_engineering_platform_005",
+      "fact_engineering_platform_006",
+      "fact_exec_002",
+      "fact_certs_001",
+      "fact_governance_003",
+      "fact_quant_hpc_001",
+      "fact_quant_hpc_002"
+    ],
+    "recommended_exec_srfs_additions": [
+      "fact_actuarial_foundation_001",
+      "fact_engineering_platform_001",
+      "fact_ai_governance_runtime_001",
+      "fact_basel_ccar_001",
+      "fact_platform_commercialization_001",
+      "fact_exec_scale_001",
+      "fact_exec_quant_synthesis_001"
+    ],
+    "recommended_exec_srfs_removals_or_demote": [
+      "fact_quant_hpc_001",
+      "fact_quant_hpc_002"
+    ],
+    "expected_anthropic_remediation": [
+      "S1 agentic + FSA-backed differentiation via fact_actuarial_foundation_001 and platform 001",
+      "S2 governance metric specificity via fact_basel_ccar_001 (40%)",
+      "S5 integrated credibility via fact_exec_quant_synthesis_001 instead of cert inventory"
+    ],
+    "proof_run_reference": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_185251"
+  },
+  "constraint_changes_recommended": {
+    "support_level_taxonomy": [
+      "DIRECT_FROM_RESUME_ARCHIVE",
+      "BUNDLE_SUPPORTED",
+      "DERIVED_SUPPORTED",
+      "TARGETING_ONLY",
+      "BLOCKED"
+    ],
+    "srfs_selector": [
+      "Reserve fact_engineering_platform_001 and fact_actuarial_foundation_001 for executive_summary before headline consumes them",
+      "Promote fact_quant_hpc_003 and fact_basel_ccar_001 into exec slice (currently excluded)",
+      "Replace fact_certs_001-only S5 with DERIVED fact_exec_quant_synthesis_001 citing actuarial + platform facts"
+    ],
+    "ledger_schema": [
+      "Add exact_supporting_snippets[] and pillar fields to master ledger rows",
+      "Split fact_certs_001 FSA from quantitative foundation facts"
+    ],
+    "no_gate_weakening": true
+  },
+  "constraints_preserved": {
+    "no_agentic_core_changes": true,
+    "no_x2_x3_judge_threshold_weakening": true,
+    "no_jd_briefing_as_proof": true,
+    "no_runtime_generation_patch_in_this_audit": true,
+    "preserve_canonical_source_fact_ids": true,
+    "no_invented_facts": true
+  },
+  "honest_caveat": "Resume variants are role-tailored marketing documents; all proposed facts require human confirmation before ledger promotion. Some metrics appear in multiple variants with different employers\u2014cite the narrowest defensible claim_text. Extracted text from docx/pdf may omit formatting; verify against source files before activation."
+}

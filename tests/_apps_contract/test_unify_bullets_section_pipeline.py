@@ -472,3 +472,26 @@ def test_section_lane_main_calls_canonical_primitives(monkeypatch):
     )
     assert called == ["unify_bullets"]
 
+
+def test_canonicalize_bul_w7_unify_whitespace_source_fact_id():
+    from apps_rg.runtime.sections.unify_bullets_lane import (
+        _canonicalize_bul_w7_unify_source_fact_id,
+        normalize_unify_parsed_without_ledger_synthesis,
+    )
+
+    assert _canonicalize_bul_w7_unify_source_fact_id("bul_w7_unify_ 006") == "bul_w7_unify_006"
+    assert _canonicalize_bul_w7_unify_source_fact_id("bul_w7_unify_001") == "bul_w7_unify_001"
+
+    parsed = {
+        "bullets": [{"bullet_id": "bul_unify_006", "bullet_text": "x", "source_fact_ids": ["bul_w7_unify_ 006"]}],
+        "claim_ledger": [{"claim_text": "x", "source_fact_ids": ["bul_w7_unify_ 006"]}],
+    }
+    rp = {
+        "proof_pool_metadata": {"proof_pool_type": "selected_role_fact_set"},
+        "selected_fact_plan": {"facts": []},
+    }
+    out = normalize_unify_parsed_without_ledger_synthesis(parsed, rp)
+    assert out is not None
+    assert out["bullets"][0]["source_fact_ids"] == ["bul_w7_unify_006"]
+    assert out["claim_ledger"][0]["source_fact_ids"] == ["bul_w7_unify_006"]
+

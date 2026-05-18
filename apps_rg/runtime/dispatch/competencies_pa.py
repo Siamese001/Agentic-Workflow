@@ -19,7 +19,7 @@ import yaml
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
-from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
+from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 
 
 def _repo_root() -> Path:
@@ -247,8 +247,7 @@ def compile_competencies_prompt(
         section_id="competencies",
         companion_u_tier=tier,
     )
-    ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
-    return augment_section_compiled_with_input_authority(compiled, allowed_source_fact_ids=ids)
+    return finalize_section_compiled_with_proof_pool(compiled, runtime_payload=runtime_payload)
 
 
 __all__ = [

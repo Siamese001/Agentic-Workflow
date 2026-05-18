@@ -707,16 +707,56 @@ def select_candidate_facts_for_role(
     selected_by_section: dict[str, list[SelectedLedgerFactSlice]] = {k: [] for k in SECTION_KEYS}
     used_global: set[str] = set()
 
-    headline_vals, used_global = _take_unique(high_sorted_global, 5, used=used_global, taxonomy=taxonomy, hint="headline")
+    from apps_rg.fact_inventory import exec_summary_srfs_arsenal as exec_arsenal
 
-    exec_pool = [r for r in high_sorted_global if r["candidate_fact_id"] not in used_global]
-    exec_slices = _allocate_exec_summary_facts(
-        exec_pool,
-        used_global=used_global,
-        taxonomy=taxonomy,
-        max_total=10,
-        max_per_domain_family=2,
+    exec_reserved: tuple[str, ...] = ()
+    try:
+        role_key, projection, arsenal_ledger, _ext_ids = exec_arsenal.build_executive_summary_arsenal_context(
+            repo_root=root,
+            role_family_priorities=role_family_priorities,
+            target_role=target_role,
+            jd_text=jd_norm,
+            briefing_text=br_norm,
+        )
+        exec_reserved = exec_arsenal.compute_executive_summary_reserved_fact_ids(
+            high_sorted_global,
+            projection=projection,
+            role_family_key=role_key,
+            arsenal_ledger=arsenal_ledger,
+            role_family_priorities=role_family_priorities,
+        )
+    except FileNotFoundError:
+        role_key = exec_arsenal.DEFAULT_ARSENAL_ROLE_FAMILY_KEY
+        projection = None
+        arsenal_ledger = None
+
+    headline_pool = _exclude_ids(high_sorted_global, set(exec_reserved))
+    headline_vals, used_global = _take_unique(
+        headline_pool, 5, used=used_global, taxonomy=taxonomy, hint="headline"
     )
+
+    if projection is not None and arsenal_ledger is not None:
+        exec_slices = exec_arsenal.allocate_executive_summary_with_arsenal(
+            high_sorted_global,
+            reserved_ids=exec_reserved,
+            used_global=used_global,
+            taxonomy=taxonomy,
+            projection=projection,
+            role_family_key=role_key,
+            arsenal_ledger=arsenal_ledger,
+            role_family_priorities=role_family_priorities,
+            max_total=10,
+            max_per_domain_family=2,
+        )
+    else:
+        exec_pool = [r for r in high_sorted_global if r["candidate_fact_id"] not in used_global]
+        exec_slices = _allocate_exec_summary_facts(
+            exec_pool,
+            used_global=used_global,
+            taxonomy=taxonomy,
+            max_total=10,
+            max_per_domain_family=2,
+        )
 
     ub_pool = _exclude_ids(high_unify_sorted, used_global)
     ub_slices, used_global = _take_unique(

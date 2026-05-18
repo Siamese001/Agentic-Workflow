@@ -1,0 +1,195 @@
+{
+  "status": "PARTIAL",
+  "product_claim": false,
+  "audit_date": "2026-05-18",
+  "sections": {
+    "headline": {
+      "canonical_path": "python -m apps_rg --section headline → apps_rg.runtime.orchestration.canonical_dispatch._run_headline_lane_from_cli → apps_rg.runtime.sections.headline_lane.run_headline_lane_execution",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/headline/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/headline/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/headline/<provider>/<run_id>/canonical_claim_ledger_v2.json",
+        "artifacts/apps_rg/runtime_proofs/headline/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[headline]"
+      ],
+      "gaps": [
+        "MAJOR: default proof pool is base resume employment bullets, not master_candidate_skills_fact_ledger",
+        "MAJOR: section lane bypasses U0; CLI --resume not forwarded to lane"
+      ]
+    },
+    "executive_summary": {
+      "canonical_path": "python -m apps_rg --section executive_summary → canonical_dispatch._run_executive_summary_lane_from_cli → executive_summary_lane.run_executive_summary_execution",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/executive_summary/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/executive_summary/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/executive_summary/<provider>/<run_id>/selected_role_fact_set_ref.json",
+        "artifacts/apps_rg/runtime_proofs/executive_summary/<provider>/<run_id>/executive_summary_judge_packet.json",
+        "artifacts/apps_rg/runtime_proofs/executive_summary/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[executive_summary]"
+      ],
+      "gaps": [
+        "MAJOR: default extract_allowed_facts from base resume JSON only",
+        "BLOCKER-class for product if broad skills ledger required on every section without --selected-role-fact-set"
+      ]
+    },
+    "unify_bullets": {
+      "canonical_path": "python -m apps_rg --section unify_bullets → canonical_dispatch._run_unify_bullets_lane_from_cli → unify_bullets_lane",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/unify_bullets/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/unify_bullets/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/unify_bullets/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[unify_bullets]",
+        "tests/_apps_contract/test_unify_bullets_section_pipeline.py"
+      ],
+      "gaps": [
+        "MAJOR: load_lane_base_resume_json at lane; no broad skills ledger"
+      ]
+    },
+    "unify_narrative": {
+      "canonical_path": "python -m apps_rg --section unify_narrative → canonical_dispatch._run_unify_narrative_lane_from_cli → unify_narrative_lane",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/unify_narrative/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/unify_narrative/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/unify_narrative/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[unify_narrative]",
+        "tests/_apps_contract/test_unify_narrative_section_pipeline.py"
+      ],
+      "gaps": [
+        "MAJOR: companion unify_bullets dependency; broad skills ledger not in default C0"
+      ]
+    },
+    "ibm_bullets": {
+      "canonical_path": "python -m apps_rg --section ibm_bullets → canonical_dispatch._run_ibm_bullets_lane_from_cli → ibm_bullets_lane",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/ibm_bullets/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/ibm_bullets/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/ibm_bullets/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[ibm_bullets]"
+      ],
+      "gaps": [
+        "MAJOR: same base resume bullet pool pattern as unify"
+      ]
+    },
+    "ibm_narrative": {
+      "canonical_path": "python -m apps_rg --section ibm_narrative → canonical_dispatch._run_ibm_narrative_lane_from_cli → ibm_narrative_lane",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/ibm_narrative/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/ibm_narrative/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/ibm_narrative/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[ibm_narrative]"
+      ],
+      "gaps": [
+        "MAJOR: same pattern as unify_narrative for IBM scope"
+      ]
+    },
+    "competencies": {
+      "canonical_path": "python -m apps_rg --section competencies → canonical_dispatch._run_competencies_lane_from_cli → competencies_lane → competencies_dispatch.run_competencies_execution",
+      "inputs": {
+        "jd_title_company": "PRESENT",
+        "briefing": "PRESENT",
+        "broad_skills_ledger": "MISSING",
+        "srfs": "PARTIAL",
+        "base_resume_raw_u0": "ABSENT"
+      },
+      "proof_artifacts": [
+        "artifacts/apps_rg/runtime_proofs/competencies/<provider>/<run_id>/section_input_usage_ledger.json",
+        "artifacts/apps_rg/runtime_proofs/competencies/<provider>/<run_id>/compiled_prompt.txt",
+        "artifacts/apps_rg/runtime_proofs/competencies/<provider>/<run_id>/section_metric_receipt.json"
+      ],
+      "tests": [
+        "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py::test_section_cli_emits_input_usage_ledger_and_prompt_authority[competencies]"
+      ],
+      "gaps": [
+        "MAJOR: collect_employment_bullets only — base resume facts.skills[] not used",
+        "BLOCKER if competencies must be ledger-bound from broad skills ledger by default"
+      ]
+    }
+  },
+  "u0_base_resume_finding": {
+    "raw_base_resume_used_as_u0_input": true,
+    "section_only_lane_bypasses_u0": true,
+    "finding": "Full R4 ingress accepts source_resume_ref/source_resume_text on AppsRgIngressPayload; u0_validate_apps_rg hashes source_resume_text and enrich_ingress_resume_inline_text may load canonical JSON from ref. Section-only CLI lanes do not call U0—they load base resume JSON via load_lane_base_resume_json/SSOT pointer and ignore CLI --resume in lane args.",
+    "paths": [
+      "agentic_core/runtime/contracts/apps_rg_ingress_payload.py",
+      "apps_rg/runtime/bindings/u0_binding.py",
+      "apps_rg/runtime/dispatch/apps_rg_dispatch.py",
+      "apps_rg/runtime/resume_resolution.py",
+      "apps_rg/runtime/orchestration/canonical_dispatch.py",
+      "apps_rg/runtime/sections/*_lane.py"
+    ],
+    "broad_skills_ledger_ssot": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "broad_skills_ledger_loader": "apps_rg/fact_inventory/candidate_fact_ledger.py::load_master_candidate_fact_ledger",
+    "broad_skills_ledger_consumer_offline": "apps_rg/fact_inventory/select_role_facts.py"
+  },
+  "blockers": [
+    "Broad skills ledger (master_candidate_skills_fact_ledger) is not wired into default section lane proof pools; only base resume employment bullets (and optional SRFS artifact) supply C0 proof."
+  ],
+  "major_gaps": [
+    "Section-only canonical path bypasses U0 ValidatedRequest entirely.",
+    "CLI --resume is not forwarded from canonical_dispatch into lane execution (SSOT pointer always used).",
+    "Competencies lane does not ingest base resume facts.skills[] or master candidate fact ledger on default path.",
+    "SRFS is optional (--selected-role-fact-set); no test requires SRFS for all sections by default."
+  ],
+  "minor_gaps": [
+    "Code symbol 'broad skills ledger' does not exist; artifact name is master_candidate_skills_fact_ledger_*.",
+    "Duplicate load_base_resume helpers in executive_summary_lane vs resume_resolution.",
+    "Legacy *._dispatch modules remain with deprecation notices."
+  ],
+  "recommended_next_steps": [
+    "Single-wave: add apps_rg proof-pool resolver (base bullets | SRFS | ledger slice) shared by all seven lanes; extend section_input_usage_ledger + contract tests for ledger hash and --resume override."
+  ]
+}

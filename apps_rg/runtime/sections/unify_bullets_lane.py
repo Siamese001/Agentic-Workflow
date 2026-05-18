@@ -234,6 +234,31 @@ def _canonicalize_unify_gate_metric_text(text: str) -> str:
     return s
 
 
+def _canonicalize_bul_w7_unify_source_fact_id(fid: str) -> str:
+    """Normalize model typos such as ``bul_w7_unify_ 006`` → ``bul_w7_unify_006`` (stray whitespace)."""
+    s = str(fid).strip()
+    if s.startswith("bul_w7_unify"):
+        s = re.sub(r"\s+", "", s)
+    return s
+
+
+def _normalize_unify_source_fact_id_list(ids: Any) -> list[str]:
+    if ids is None:
+        return []
+    if not isinstance(ids, list):
+        return []
+    return [_canonicalize_bul_w7_unify_source_fact_id(str(x)) for x in ids]
+
+
+def _normalize_unify_claim_ledger(parsed: dict[str, Any]) -> None:
+    led = parsed.get("claim_ledger")
+    if not isinstance(led, list):
+        return
+    for entry in led:
+        if isinstance(entry, dict):
+            entry["source_fact_ids"] = _normalize_unify_source_fact_id_list(entry.get("source_fact_ids"))
+
+
 def normalize_unify_parsed_without_ledger_synthesis(
     parsed: dict[str, Any] | None,
     runtime_payload: dict[str, Any],
@@ -261,6 +286,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
         ).upper()
         if not row.get("source_fact_ids"):
             row["source_fact_ids"] = [row["bullet_id"]]
+        row["source_fact_ids"] = _normalize_unify_source_fact_id_list(row.get("source_fact_ids"))
         bt = row.get("bullet_text")
         if isinstance(bt, str):
             row["bullet_text"] = _canonicalize_unify_gate_metric_text(bt)
@@ -275,6 +301,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
             ct = cl.get("claim_text")
             if isinstance(ct, str):
                 cl["claim_text"] = _canonicalize_unify_gate_metric_text(ct)
+    _normalize_unify_claim_ledger(out)
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
     dist = out.get("rewrite_distribution") or {}
@@ -332,15 +359,19 @@ def retry_qwen_for_parse(
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    is_srfs = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
-    if is_srfs:
+    pool_type = str(pp.get("proof_pool_type") or "")
+    is_srfs = pool_type == "selected_role_fact_set"
+    is_ledger = pool_type == "broad_skills_ledger"
+    if is_srfs or is_ledger:
         facts = list(runtime_payload["selected_fact_plan"].get("facts") or [])
         bullets: list[dict[str, Any]] = []
         claim_ledger: list[dict[str, Any]] = []
-        for fact in facts[:6]:
+        for idx, fact in enumerate(facts[:6]):
             bid = str(fact.get("fact_id") or "").strip()
             if not bid:
                 continue
+            if is_ledger and bid not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
+                bid = UNIFY_BULLET_IDS[idx]
             intensity = DEFAULT_INTENSITY_BY_BULLET.get(bid, "MODERATE")
             text = str(fact.get("claim_text") or "")
             metric_ids = [bid]
@@ -473,31 +504,28 @@ def run_unify_bullets_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end unify_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
-    base, base_path, base_hash = load_base_resume()
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
 
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    if srfs_path:
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="unify_bullets",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
+    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
+        unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
+        selected_fact_plan = build_selected_fact_plan(unify_facts)
+    else:
         unify_header, _, _ = extract_unify_employment(base)
-        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "unify_bullets")
-        unify_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
+        unify_facts = list(pool.selected_fact_plan.get("facts") or [])
         unify_facts.sort(
             key=lambda r: UNIFY_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in UNIFY_BULLET_IDS else 99,
         )
-        selected_fact_plan = {
-            "section_id": "unify_bullets",
-            "selection_method": _srfs.selection_method_for_section("unify_bullets"),
-            "facts": unify_facts,
-            "required_fact_ids": [str(f["fact_id"]) for f in unify_facts],
-        }
-    else:
-        unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
-        selected_fact_plan = build_selected_fact_plan(unify_facts)
-        pp_meta = _srfs.base_proof_pool_metadata(
-            section_id="unify_bullets",
-            candidate_fact_pool_count=len(unify_facts),
-            allowed_fact_ids_count=len(allowed_fact_ids),
-        )
+        selected_fact_plan = {**pool.selected_fact_plan, "facts": unify_facts}
+        allowed_fact_ids = pool.allowed_fact_ids
+    proof_pool_metadata = pool.proof_pool_metadata
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
         base_hash=base_hash,
@@ -509,7 +537,7 @@ def run_unify_bullets_execution(
         jd_text=str(getattr(args, "jd_text", "") or "").strip() or JD_TEXT_DEFAULT,
         briefing=str(getattr(args, "briefing", "") or "").strip() or BRIEFING_DEFAULT,
     )
-    runtime_payload["proof_pool_metadata"] = pp_meta
+    runtime_payload["proof_pool_metadata"] = proof_pool_metadata
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
         artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -683,7 +711,12 @@ def run_unify_bullets_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=l2_output.get("jd_alignment"),
     )
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+
+    write_json(
+        artifact_dir / "section_input_usage_ledger.json",
+        apply_proof_pool_to_usage_ledger(usage_doc, pool),
+    )
     write_json(artifact_dir / "rewrite_distribution.json", rewrite_distribution)
 
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
@@ -733,7 +766,7 @@ def run_unify_bullets_execution(
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
 
     x2 = [
         g.to_dict()
@@ -751,9 +784,21 @@ def run_unify_bullets_execution(
             raw_output=raw_output,
             x1d_judges=x1d,
             rewrite_distribution=rewrite_distribution,
-            srfs_source_fact_slice_gate_active=srfs_x2_active,
+            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            proof_pool_metadata=pp_x2,
+            proof_pool_ref=str(pool.proof_pool_ref or ""),
+            proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
     write_json(
         artifact_dir / "fact_check_result.json",
@@ -782,6 +827,7 @@ def run_unify_bullets_execution(
     )
     proof_bundle = compute_lane_proof_bundle(
         args,
+        section_id="unify_bullets",
         runtime_generation_status=runtime_generation_status,
         x1d_judges=x1d,
         x2_gates=x2,

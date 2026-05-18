@@ -539,12 +539,23 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
     )
     compiled = compile_section_prompt(assembly, section_id="executive_summary")
     ids = list(runtime_payload.get("allowed_fact_ids") or [])
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    pool_type = str(pp.get("proof_pool_type") or "")
     srfs = runtime_payload.get("srfs_integration")
-    srfs_mode = isinstance(srfs, dict) and bool(srfs.get("artifact_path_resolved"))
+    if pool_type == "selected_role_fact_set":
+        proof_pool_mode = "srfs"
+        srfs_mode = True
+    elif pool_type == "broad_skills_ledger":
+        proof_pool_mode = "broad_skills_ledger"
+        srfs_mode = False
+    else:
+        proof_pool_mode = "base_resume_fallback"
+        srfs_mode = isinstance(srfs, dict) and bool(srfs.get("artifact_path_resolved"))
     compiled = augment_section_compiled_with_input_authority(
         compiled,
         allowed_source_fact_ids=ids,
         selected_role_fact_set_mode=srfs_mode,
+        proof_pool_mode=proof_pool_mode,
     )
     if srfs_mode:
         appendix = format_srfs_role_adaptive_appendix(srfs)

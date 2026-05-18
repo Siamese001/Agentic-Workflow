@@ -1,0 +1,2094 @@
+{
+  "design_version": "master_skills_arsenal_ledger_design_v1",
+  "generated_at_utc": "2026-05-18T19:28:28Z",
+  "upstream_audits": [
+    "docs/reports/apps_rg/master_experience_ledger_archive_audit.json",
+    "docs/reports/apps_rg/exec_summary_fact_ledger_expansion_audit.json"
+  ],
+  "canonical_sources": {
+    "base_resume": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+    "candidate_fact_ledger": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "archive_extracts": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted",
+    "role_family_taxonomy": "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml"
+  },
+  "design_principles": [
+    "Arsenal != two-page resume: skills inventory is superset; section generation projects subsets.",
+    "Phase I variants are evidence artifacts, not SSOT\u2014base resume + confirmed facts are SSOT.",
+    "USER_CONFIRMED_PENDING_SOURCE blocks external activation until snippet attached.",
+    "No JD/briefing as proof; TARGETING_ONLY for emphasis."
+  ],
+  "capability_taxonomy": [
+    {
+      "pillar_id": "pillar_agentic_ai_platforms",
+      "name": "Agentic AI Platforms",
+      "description": "Governed agentic runtime, routing, orchestration, GraphRAG, policy gates, validation, replayable traces.",
+      "subskills": [
+        "deterministic_routing",
+        "multi_agent_orchestration",
+        "graphrag_retrieval",
+        "sandboxed_execution",
+        "policy_gating",
+        "evaluation_gates",
+        "replayable_traces",
+        "llm_governance"
+      ],
+      "evidence_sources": [
+        "Chief AI Officer - Amit Ayer.docx",
+        "CTO Resume - Amit Ayer.docx",
+        "Field CTO - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004"
+      ],
+      "allowed_phrases": [
+        "governed agentic AI platform",
+        "deterministic routing",
+        "GraphRAG",
+        "policy gating",
+        "replayable execution traces"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "autonomous AGI",
+        "unsupervised production agents without oversight"
+      ],
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.9,
+        "EXECUTIVE_LEADERSHIP": 0.85,
+        "AI_GOVERNANCE_RISK": 0.8
+      },
+      "section_fit": {
+        "headline": true,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_cloud_data_aws",
+      "name": "Cloud / Data / AWS",
+      "description": "AWS/Databricks lakehouse, microservices, vector services, API gateways, identity, HPC on cloud.",
+      "subskills": [
+        "aws_microservices",
+        "databricks_lakehouse",
+        "vector_services",
+        "api_gateways",
+        "identity_controls",
+        "hybrid_cloud",
+        "finops"
+      ],
+      "evidence_sources": [
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Chief Technology Officer - Amit Ayer.docx",
+        "CTO Resume - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "AWS Partner: Advanced Migration and Modernization Sales Training",
+        "Scaled cloud adoption with AWS/Azure alliances; delivered 40+ client go-lives",
+        "Architected cloud-native microservices across AWS and Databricks Lakehouse"
+      ],
+      "user_confirmed_pending_source": [
+        "azure_depth_beyond_archive_snippets"
+      ],
+      "linked_fact_ids": [
+        "fact_engineering_platform_005",
+        "fact_certs_001"
+      ],
+      "allowed_phrases": [
+        "AWS",
+        "Databricks Lakehouse",
+        "cloud-native microservices",
+        "vector services",
+        "API gateways"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "AWS Premier Partner of the Year",
+        "sole cloud provider for Fortune 50"
+      ],
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 0.95,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85,
+        "PARTNERSHIPS_GTM": 0.75
+      },
+      "section_fit": {
+        "headline": true,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_partner_gtm_alliances",
+      "name": "Partner GTM / Alliances",
+      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM\u2013AWS alliance motions.",
+      "subskills": [
+        "channel_program_build",
+        "strategic_alliances",
+        "ecosystem_gtm",
+        "ibm_aws_alliance",
+        "partner_derived_revenue"
+      ],
+      "evidence_sources": [
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Amit Ayer Resume - Partner Development Manager.docx"
+      ],
+      "archive_snippets": [
+        "Built a global AI channel program from inception",
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance",
+        "generate 3 million dollars in partner-derived revenue"
+      ],
+      "user_confirmed_pending_source": [
+        "anthropic_style_applied_ai_partnership_motion"
+      ],
+      "linked_fact_ids": [
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_002",
+        "fact_partnerships_gtm_003"
+      ],
+      "allowed_phrases": [
+        "global AI channel program",
+        "IBM\u2013AWS alliance",
+        "strategic alliances",
+        "partner-derived revenue"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "exclusive hyperscaler mandate"
+      ],
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.7,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.65
+      },
+      "section_fit": {
+        "headline": true,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": false,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_cosell_partner_engineering",
+      "name": "Co-selling / Partner Engineering",
+      "description": "Co-sell frameworks, partner engineering delivery, bundled partner offers, technical enablement for partners.",
+      "subskills": [
+        "co_sell_frameworks",
+        "partner_engineering",
+        "partner_bundles",
+        "partner_data_integration",
+        "partner_security_alignment"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Amit Ayer Resume - AI Financial Services.docx"
+      ],
+      "archive_snippets": [
+        "Forged co-selling frameworks with SIs and ISVs",
+        "co-selling motions, and enterprise contract negotiations",
+        "co-developing advanced analytics frameworks with strategic partners"
+      ],
+      "user_confirmed_pending_source": [
+        "partner_engineering_depth_beyond_co_sell_wording"
+      ],
+      "linked_fact_ids": [
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_003"
+      ],
+      "allowed_phrases": [
+        "co-selling",
+        "co-sell",
+        "partner engineering",
+        "SI and ISV"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "built partner engineering org of 50+"
+      ],
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 0.95,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85,
+        "SALES_STRATEGIC_ACCOUNTS": 0.75
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_presales_solutioning",
+      "name": "Pre-sales / Solutioning",
+      "description": "Executive workshops, pilots, ROI validation, solution architecture in pursuit cycles.",
+      "subskills": [
+        "executive_workshops",
+        "pilot_engagements",
+        "roi_validation",
+        "solution_architecture_pursuits",
+        "technical_win_strategy"
+      ],
+      "evidence_sources": [
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Field CTO - Amit Ayer.docx",
+        "Industry Solutions - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "executive workshops, leading to faster adoption across major financial accounts",
+        "validating measurable ROI for clients through pilot engagements"
+      ],
+      "user_confirmed_pending_source": [
+        "pre_sales_quota_carrying"
+      ],
+      "linked_fact_ids": [
+        "fact_solutions_001",
+        "fact_solutions_002"
+      ],
+      "allowed_phrases": [
+        "executive workshops",
+        "pilot engagements",
+        "measurable ROI",
+        "solution architecture"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "carried $100M presales quota"
+      ],
+      "role_family_weights": {
+        "AI_SOLUTIONS_ARCHITECTURE": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.8,
+        "PARTNERSHIPS_GTM": 0.7
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_revenue_commercialization",
+      "name": "Revenue Ownership / Commercialization",
+      "description": "IP-led revenue, margins, ARR growth, sales targets, P&L/partner revenue accountability.",
+      "subskills": [
+        "ip_led_revenue",
+        "gross_margin_expansion",
+        "arr_growth",
+        "sales_targets",
+        "pnl_oversight",
+        "consumption_licensing"
+      ],
+      "evidence_sources": [
+        "Strategic Finance - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx",
+        "Partnerships & Alliances - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "generating $22M in IP-led revenue, expanding gross margins by 20%",
+        "Achieved 110% of annual revenue targets",
+        "P&L oversight in my prior roles",
+        "Drove $5 Million in Annual Contract Value"
+      ],
+      "user_confirmed_pending_source": [
+        "owning_sales_and_revenue_targets_as_primary_role"
+      ],
+      "linked_fact_ids": [
+        "fact_engineering_platform_006",
+        "fact_sales_accounts_001",
+        "fact_revenue_ops_003"
+      ],
+      "allowed_phrases": [
+        "$22M IP-led revenue",
+        "20% gross margin",
+        "$5M ARR",
+        "110% of annual revenue targets",
+        "P&L oversight"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "booked $500M personal quota"
+      ],
+      "role_family_weights": {
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "SALES_STRATEGIC_ACCOUNTS": 0.95,
+        "STRATEGIC_FINANCE": 0.85,
+        "PARTNERSHIPS_GTM": 0.8
+      },
+      "section_fit": {
+        "headline": true,
+        "executive_summary": true,
+        "competencies": false,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_executive_leadership",
+      "name": "Executive Leadership / Operating Model",
+      "description": "C-suite alignment, cross-functional scale-out, operating model, org design.",
+      "subskills": [
+        "c_suite_alignment",
+        "cross_functional_leadership",
+        "operating_model",
+        "ml_org_scale",
+        "distributed_teams"
+      ],
+      "evidence_sources": [
+        "Chief AI Officer - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "Scaled ML engineering organization from 8 to 28 specialists",
+        "guiding a 20-member distributed sales team",
+        "Collaborated with C-level stakeholders"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_exec_002",
+        "fact_exec_001"
+      ],
+      "allowed_phrases": [
+        "8 to 28 specialists",
+        "cross-functional",
+        "C-level stakeholders",
+        "operating model"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "CEO of",
+        "board member"
+      ],
+      "role_family_weights": {
+        "EXECUTIVE_LEADERSHIP": 1.0,
+        "ENGINEERING_PLATFORM": 0.85
+      },
+      "section_fit": {
+        "headline": true,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_actuarial_foundation",
+      "name": "Actuarial Foundation",
+      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software\u2014not credential label only.",
+      "subskills": [
+        "fsa_credential",
+        "stochastic_modeling",
+        "actuarial_software",
+        "towers_perrin_ing_aetna",
+        "quant_rigor_eight_years"
+      ],
+      "evidence_sources": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "AI and Data Governance - Amit Ayer.docx",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "eight years cultivating quant rigor\u2014earning my Fellow of the Society of Actuaries credential",
+        "sale and rollout of specialized actuarial software",
+        "stochastic modeling, multi-Greek hedging, and pricing of complex derivatives while completing Fellowship requirements"
+      ],
+      "user_confirmed_pending_source": [
+        "actuarial_depth_beyond_archive_employer_detail"
+      ],
+      "linked_fact_ids": [
+        "fact_quant_hpc_003",
+        "fact_certs_001"
+      ],
+      "allowed_phrases": [
+        "FSA",
+        "Fellow of the Society of Actuaries",
+        "eight years of quantitative rigor",
+        "actuarial software",
+        "stochastic modeling"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "appointed actuary",
+        "chief actuary"
+      ],
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 0.9,
+        "STRATEGIC_FINANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.8,
+        "EXECUTIVE_LEADERSHIP": 0.75
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": true
+      }
+    },
+    {
+      "pillar_id": "pillar_embedded_options_insurance",
+      "name": "Embedded Options / Insurance Liabilities",
+      "description": "Insurance liability and embedded-options valuation context from actuarial career.",
+      "subskills": [
+        "embedded_options",
+        "insurance_liabilities",
+        "liability_driven_exposures"
+      ],
+      "evidence_sources": [],
+      "archive_snippets": [],
+      "user_confirmed_pending_source": [
+        "embedded_options",
+        "insurance_liabilities",
+        "embedded_options_in_insurance_products"
+      ],
+      "linked_fact_ids": [],
+      "allowed_phrases": [],
+      "forbidden_phrases_without_stronger_support": [
+        "led embedded options trading desk"
+      ],
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 0.7,
+        "STRATEGIC_FINANCE": 0.6,
+        "AI_GOVERNANCE_RISK": 0.55
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": false,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": true
+      }
+    },
+    {
+      "pillar_id": "pillar_derivatives_structured",
+      "name": "Derivatives / Structured Derivatives",
+      "description": "Derivatives pricing, complex/structured derivatives, exotic options.",
+      "subskills": [
+        "derivatives_pricing",
+        "structured_derivatives",
+        "exotic_options",
+        "complex_derivatives"
+      ],
+      "evidence_sources": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "Amit Ayer Resume - AI Financial Services.docx",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "complex derivatives pricing and multi-Greek hedging strategies",
+        "orchestrating multi-Greek hedges for exotic options",
+        "pricing of complex derivatives while completing Fellowship requirements"
+      ],
+      "user_confirmed_pending_source": [
+        "structured_derivatives_explicit"
+      ],
+      "linked_fact_ids": [
+        "fact_quant_hpc_003"
+      ],
+      "allowed_phrases": [
+        "derivatives pricing",
+        "exotic options",
+        "complex derivatives"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "structured derivatives desk head"
+      ],
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0,
+        "STRATEGIC_FINANCE": 0.75
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": true
+      }
+    },
+    {
+      "pillar_id": "pillar_greeks_hedging",
+      "name": "Greeks / Hedging",
+      "description": "Multi-Greek hedging, Greek stress tests, hedging frameworks.",
+      "subskills": [
+        "multi_greek_hedging",
+        "greek_stress_testing",
+        "delta",
+        "gamma",
+        "vega",
+        "theta",
+        "rho",
+        "convexity"
+      ],
+      "evidence_sources": [
+        "Amit Ayer Resume - AI Financial Services.docx",
+        "Amit Ayer Resume - Partner Development Manager.docx"
+      ],
+      "archive_snippets": [
+        "Developed multi-Greek hedging frameworks (gamma, Vega, Theta) for exotic option pricing",
+        "Deployed advanced Greek parameter stress-testing and scenario analyses",
+        "multi-Greek hedges for exotic options"
+      ],
+      "user_confirmed_pending_source": [
+        "delta",
+        "rho",
+        "convexity_as_individual_claims"
+      ],
+      "linked_fact_ids": [
+        "fact_quant_hpc_003"
+      ],
+      "allowed_phrases": [
+        "multi-Greek hedging",
+        "Greek parameter stress-testing",
+        "gamma",
+        "Vega",
+        "Theta"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "rho trading desk",
+        "convexity arbitrage fund"
+      ],
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0,
+        "AI_GOVERNANCE_RISK": 0.7
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": true
+      }
+    },
+    {
+      "pillar_id": "pillar_risk_management",
+      "name": "Risk Management",
+      "description": "Enterprise risk analytics, portfolio risk, market risk, model risk themes.",
+      "subskills": [
+        "enterprise_risk",
+        "market_risk",
+        "model_risk",
+        "portfolio_risk",
+        "stress_testing"
+      ],
+      "evidence_sources": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "Strategic Finance - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "real-time risk scoring and portfolio optimization",
+        "risk-focused innovation, deploying early machine learning approaches for fraud detection"
+      ],
+      "user_confirmed_pending_source": [
+        "enterprise_risk_management_officer_title"
+      ],
+      "linked_fact_ids": [
+        "fact_quant_hpc_001",
+        "fact_governance_001"
+      ],
+      "allowed_phrases": [
+        "risk management",
+        "portfolio risk",
+        "stress testing",
+        "market risk"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "chief risk officer"
+      ],
+      "role_family_weights": {
+        "AI_GOVERNANCE_RISK": 0.95,
+        "QUANT_TRADING_HPC": 0.85,
+        "STRATEGIC_FINANCE": 0.75
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": true
+      }
+    },
+    {
+      "pillar_id": "pillar_enterprise_risk_controls",
+      "name": "Enterprise Risk / Controls",
+      "description": "Usage controls, compliance checkpoints, encryption, access controls, audit readiness.",
+      "subskills": [
+        "usage_controls",
+        "compliance_checkpoints",
+        "encryption",
+        "rbac",
+        "audit_trails",
+        "model_risk_controls"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "data usage controls and compliance checkpoints that lowered regulatory findings by 35%",
+        "encryption and role-based access controls",
+        "standardized audit trails, metadata tagging, and secure data sharing protocols"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_governance_001",
+        "fact_governance_003"
+      ],
+      "allowed_phrases": [
+        "usage controls",
+        "compliance checkpoints",
+        "encryption",
+        "role-based access",
+        "audit trails"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "SOX certified internal controls owner"
+      ],
+      "role_family_weights": {
+        "AI_GOVERNANCE_RISK": 1.0,
+        "DATA_ANALYTICS_LEADERSHIP": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_regulatory_governance",
+      "name": "Regulatory Governance",
+      "description": "Basel, CCAR, FINRA/SEC alignment, regulatory reporting, lineage/cataloging.",
+      "subskills": [
+        "basel_iii",
+        "ccar",
+        "finra_sec",
+        "regulatory_reporting",
+        "data_lineage",
+        "automated_validation"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Strategic Finance - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "Basel III reporting structures by establishing data lineage, cataloging, and automated validation, cutting reporting errors by 40%",
+        "satisfying rigorous FINRA and SEC mandates"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_governance_003",
+        "fact_governance_002"
+      ],
+      "allowed_phrases": [
+        "Basel III",
+        "CCAR",
+        "40% reporting errors",
+        "FINRA",
+        "SEC mandates",
+        "data lineage"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "regulator-approved model"
+      ],
+      "role_family_weights": {
+        "AI_GOVERNANCE_RISK": 1.0,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.85,
+        "DATA_ANALYTICS_LEADERSHIP": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_capital_modeling",
+      "name": "Capital Modeling / Reserving / Pricing",
+      "description": "Capital models, reserving, pricing, capital adequacy, regulatory capital.",
+      "subskills": [
+        "capital_modeling",
+        "reserving",
+        "pricing",
+        "capital_adequacy",
+        "regulatory_capital",
+        "scenario_testing"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Chief AI Officer - Amit Ayer.docx",
+        "Partnerships & Alliances - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "capital modeling at Towers Perrin, ING, and Aetna",
+        "refine capital models and drive more precise risk assessments",
+        "capital reserves aligned with market volatility"
+      ],
+      "user_confirmed_pending_source": [
+        "reserving_signoff_authority"
+      ],
+      "linked_fact_ids": [
+        "fact_quant_hpc_003",
+        "fact_governance_003"
+      ],
+      "allowed_phrases": [
+        "capital modeling",
+        "capital reserves",
+        "capital adequacy",
+        "regulatory capital"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "appointed reserving actuary"
+      ],
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 0.9,
+        "STRATEGIC_FINANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": true
+      }
+    },
+    {
+      "pillar_id": "pillar_trading_hpc",
+      "name": "Trading / HPC / Market Forecasting",
+      "description": "Algorithmic trading, HPC, sub-ms latency, GPU forecasting, market-making.",
+      "subskills": [
+        "algorithmic_trading",
+        "hpc_clusters",
+        "gpu_forecasting",
+        "market_making",
+        "latency_reduction"
+      ],
+      "evidence_sources": [
+        "Quantitative Research & Trading - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx"
+      ],
+      "archive_snippets": [
+        "high-frequency trading pipelines with sub-millisecond latency",
+        "reducing end-to-end latency by 50%",
+        "Increased Forecast Accuracy by 35%"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_quant_hpc_002",
+        "fact_quant_hpc_001"
+      ],
+      "allowed_phrases": [
+        "algorithmic trading",
+        "50% latency reduction",
+        "sub-millisecond",
+        "HPC",
+        "35% forecast accuracy"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "profitable hedge fund manager"
+      ],
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0,
+        "ENGINEERING_PLATFORM": 0.7
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_strategic_finance_saas",
+      "name": "Strategic Finance / SaaS Metrics",
+      "description": "FP&A, ARR, churn, LTV/CAC, M&A synergy, investor relations.",
+      "subskills": [
+        "fp_a",
+        "arr",
+        "churn",
+        "ltv_cac",
+        "usage_based_forecasting",
+        "ma_synergy",
+        "investor_relations"
+      ],
+      "evidence_sources": [
+        "Strategic Finance - Amit Ayer.docx",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.docx"
+      ],
+      "archive_snippets": [
+        "FP&A, SaaS metric optimization (ARR, churn, LTV/CAC)",
+        "Supported M&A Synergy Forecasts",
+        "Increased Annual Recurring Revenue by $5M"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_revenue_ops_003",
+        "fact_revenue_ops_005",
+        "fact_consulting_002"
+      ],
+      "allowed_phrases": [
+        "ARR",
+        "churn",
+        "LTV/CAC",
+        "FP&A",
+        "M&A synergy",
+        "$5M ARR"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "CFO with signing authority"
+      ],
+      "role_family_weights": {
+        "STRATEGIC_FINANCE": 1.0,
+        "REVENUE_OPERATIONS": 0.85,
+        "EXECUTIVE_LEADERSHIP": 0.7
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_customer_stakeholder",
+      "name": "Customer / Enterprise Stakeholder Leadership",
+      "description": "CFO/CRO alignment, enterprise negotiations, customer success motions, renewal/expansion.",
+      "subskills": [
+        "cfo_alignment",
+        "enterprise_negotiations",
+        "renewal_expansion",
+        "stakeholder_alignment",
+        "customer_success"
+      ],
+      "evidence_sources": [
+        "Head of Customer Success - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx",
+        "Amit Ayer Resume - Strategic Account Executive.docx"
+      ],
+      "archive_snippets": [
+        "enterprise contract negotiations",
+        "93% annual renewal rate",
+        "CFOs and audit leaders"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_customer_success_001",
+        "fact_sales_accounts_003",
+        "fact_exec_001"
+      ],
+      "allowed_phrases": [
+        "enterprise negotiations",
+        "CFO",
+        "renewal",
+        "stakeholder alignment"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "managed $1B client portfolio personally"
+      ],
+      "role_family_weights": {
+        "CUSTOMER_SUCCESS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.9,
+        "EXECUTIVE_LEADERSHIP": 0.85
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    }
+  ],
+  "actuarial_career_matrix": [
+    {
+      "skill": "derivatives_pricing",
+      "domain": "derivatives",
+      "career_stage": "early_career",
+      "employer_source": "Towers Perrin / ING / Aetna",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.docx",
+      "source_evidence": "advanced derivative pricing, multi-Greek hedging, and capital modeling at Towers Perrin, ING, and Aetna",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "derivatives pricing"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": "fact_quant_hpc_003",
+      "skill_id": "skill_derivatives_derivatives_pricing"
+    },
+    {
+      "skill": "multi_greek_hedging",
+      "domain": "greeks_hedging",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "Quantitative Research & Trading - Amit Ayer.docx",
+      "source_evidence": "orchestrating multi-Greek hedges for exotic options",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "multi-Greek hedging",
+        "multi-Greek hedges"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": "fact_quant_hpc_003",
+      "skill_id": "skill_greeks_hedging_multi_greek_hedging"
+    },
+    {
+      "skill": "exotic_options",
+      "domain": "derivatives",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "Quantitative Research & Trading - Amit Ayer.docx",
+      "source_evidence": "multi-Greek hedges for exotic options",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "exotic options"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "competencies"
+      ],
+      "risk_of_overclaim": "medium",
+      "linked_fact_id": null,
+      "skill_id": "skill_derivatives_exotic_options"
+    },
+    {
+      "skill": "structured_derivatives",
+      "domain": "derivatives",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career"
+      ],
+      "risk_of_overclaim": "high",
+      "linked_fact_id": null,
+      "skill_id": "skill_derivatives_structured_derivatives"
+    },
+    {
+      "skill": "embedded_options",
+      "domain": "insurance_liabilities",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [],
+      "role_relevance": [
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use_in_resume": [
+        "early_career"
+      ],
+      "risk_of_overclaim": "high",
+      "linked_fact_id": null,
+      "skill_id": "skill_insurance_liabilities_embedded_options"
+    },
+    {
+      "skill": "insurance_liabilities",
+      "domain": "insurance_liabilities",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career"
+      ],
+      "risk_of_overclaim": "high",
+      "linked_fact_id": null,
+      "skill_id": "skill_insurance_liabilities_insurance_liabilities"
+    },
+    {
+      "skill": "gamma",
+      "domain": "greeks",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "Amit Ayer Resume - AI Financial Services.docx",
+      "source_evidence": "multi-Greek hedging frameworks (gamma, Vega, Theta)",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "gamma"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "competencies"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_greeks_gamma"
+    },
+    {
+      "skill": "vega",
+      "domain": "greeks",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "Amit Ayer Resume - AI Financial Services.docx",
+      "source_evidence": "gamma, Vega, Theta",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "Vega",
+        "vega"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "competencies"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_greeks_vega"
+    },
+    {
+      "skill": "theta",
+      "domain": "greeks",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "Amit Ayer Resume - AI Financial Services.docx",
+      "source_evidence": "gamma, Vega, Theta",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "Theta"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "competencies"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_greeks_theta"
+    },
+    {
+      "skill": "delta",
+      "domain": "greeks",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [
+        "delta"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "competencies"
+      ],
+      "risk_of_overclaim": "medium",
+      "linked_fact_id": null,
+      "skill_id": "skill_greeks_delta"
+    },
+    {
+      "skill": "rho",
+      "domain": "greeks",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [
+        "rho"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "competencies"
+      ],
+      "risk_of_overclaim": "medium",
+      "linked_fact_id": null,
+      "skill_id": "skill_greeks_rho"
+    },
+    {
+      "skill": "convexity",
+      "domain": "greeks",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [
+        "convexity"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "competencies"
+      ],
+      "risk_of_overclaim": "medium",
+      "linked_fact_id": null,
+      "skill_id": "skill_greeks_convexity"
+    },
+    {
+      "skill": "greek_stress_testing",
+      "domain": "risk",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.docx",
+      "source_evidence": "Deployed advanced Greek parameter stress-testing and scenario analyses",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "Greek parameter stress-testing"
+      ],
+      "role_relevance": [
+        "AI_GOVERNANCE_RISK",
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "ibm_bullets"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_risk_greek_stress_testing"
+    },
+    {
+      "skill": "capital_modeling",
+      "domain": "capital",
+      "career_stage": "early_career",
+      "employer_source": "Towers Perrin / ING / Aetna",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.docx",
+      "source_evidence": "capital modeling at Towers Perrin, ING, and Aetna",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "capital modeling"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "executive_summary"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": "fact_quant_hpc_003",
+      "skill_id": "skill_capital_capital_modeling"
+    },
+    {
+      "skill": "reserving",
+      "domain": "capital",
+      "career_stage": "early_career",
+      "employer_source": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_output_phrases": [
+        "reserving"
+      ],
+      "role_relevance": [
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use_in_resume": [
+        "early_career"
+      ],
+      "risk_of_overclaim": "high",
+      "linked_fact_id": null,
+      "skill_id": "skill_capital_reserving"
+    },
+    {
+      "skill": "pricing_actuarial",
+      "domain": "capital",
+      "career_stage": "early_career",
+      "employer_source": "Early Career",
+      "source_resume_file": "Chief AI Officer - Amit Ayer.docx",
+      "source_evidence": "pricing of complex derivatives while completing Fellowship requirements",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "pricing of complex derivatives"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_capital_pricing_actuarial"
+    },
+    {
+      "skill": "fsa_fellowship",
+      "domain": "actuarial",
+      "career_stage": "early_career",
+      "employer_source": "Society of Actuaries",
+      "source_resume_file": "Quantitative Research & Trading - Amit Ayer.docx",
+      "source_evidence": "Fellow of the Society of Actuaries | Earned 2010",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "FSA",
+        "Fellow of the Society of Actuaries",
+        "earned 2010"
+      ],
+      "role_relevance": [
+        "EXECUTIVE_LEADERSHIP",
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "executive_summary",
+        "early_career"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": "fact_certs_001",
+      "skill_id": "skill_actuarial_fsa_fellowship"
+    },
+    {
+      "skill": "actuarial_software",
+      "domain": "actuarial",
+      "career_stage": "early_career",
+      "employer_source": "Towers Perrin",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.docx",
+      "source_evidence": "sale and rollout of specialized actuarial software",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "actuarial software"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC"
+      ],
+      "where_to_use_in_resume": [
+        "early_career",
+        "ibm_narrative"
+      ],
+      "risk_of_overclaim": "medium",
+      "linked_fact_id": null,
+      "skill_id": "skill_actuarial_actuarial_software"
+    },
+    {
+      "skill": "enterprise_risk_controls",
+      "domain": "risk",
+      "career_stage": "cross_career",
+      "employer_source": "EY / IBM / Unify",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.docx",
+      "source_evidence": "data usage controls and compliance checkpoints",
+      "support_status": "BUNDLE_SUPPORTED",
+      "allowed_output_phrases": [
+        "enterprise risk",
+        "usage controls"
+      ],
+      "role_relevance": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "where_to_use_in_resume": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_of_overclaim": "medium",
+      "linked_fact_id": "fact_governance_001",
+      "skill_id": "skill_risk_enterprise_risk_controls"
+    },
+    {
+      "skill": "market_risk",
+      "domain": "risk",
+      "career_stage": "mid_career",
+      "employer_source": "IBM / Unify",
+      "source_resume_file": "Quantitative Research & Trading - Amit Ayer.docx",
+      "source_evidence": "market risk scenarios",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "market risk"
+      ],
+      "role_relevance": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "where_to_use_in_resume": [
+        "unify_bullets"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_risk_market_risk"
+    },
+    {
+      "skill": "model_risk",
+      "domain": "risk",
+      "career_stage": "mid_career",
+      "employer_source": "Unify / TraderSense",
+      "source_resume_file": "Strategic Finance - Amit Ayer.docx",
+      "source_evidence": "model explainability and data security frameworks",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "model explainability",
+        "model risk"
+      ],
+      "role_relevance": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "where_to_use_in_resume": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": "fact_governance_005",
+      "skill_id": "skill_risk_model_risk"
+    },
+    {
+      "skill": "regulatory_capital",
+      "domain": "capital",
+      "career_stage": "mid_career",
+      "employer_source": "EY / IBM",
+      "source_resume_file": "Strategic Finance - Amit Ayer.docx",
+      "source_evidence": "Basel/CCAR compliance programs, streamlining capital reporting",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_output_phrases": [
+        "regulatory capital",
+        "capital reporting",
+        "Basel",
+        "CCAR"
+      ],
+      "role_relevance": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "where_to_use_in_resume": [
+        "ibm_bullets",
+        "executive_summary"
+      ],
+      "risk_of_overclaim": "low",
+      "linked_fact_id": "fact_governance_003",
+      "skill_id": "skill_capital_regulatory_capital"
+    }
+  ],
+  "partner_gtm_matrix": [
+    {
+      "skill": "aws_ecosystem",
+      "description": "AWS partner accreditations and alliance delivery",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "AWS Partner: Advanced Migration and Modernization Sales Training",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "AWS Partner",
+        "Machine Learning on AWS",
+        "Financial Services Sales Accreditation"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "ENGINEERING_PLATFORM"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "Verify accreditation list against current AWS partner portal.",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_aws_ecosystem"
+    },
+    {
+      "skill": "cloud_partner_ecosystem",
+      "description": "IBM\u2013AWS and multi-vendor ecosystem",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "IBM\u2013AWS alliance for financial services",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "IBM\u2013AWS alliance",
+        "cloud transformations"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_cloud_partner_ecosystem"
+    },
+    {
+      "skill": "partner_motions",
+      "description": "Channel and alliance motions",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "Built a global AI channel program from inception",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "channel program",
+        "partner motions"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_partner_motions"
+    },
+    {
+      "skill": "co_selling",
+      "description": "Co-sell with SI/ISV",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "Forged co-selling frameworks with SIs and ISVs",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "co-selling",
+        "co-sell"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": "fact_partnerships_gtm_003",
+      "skill_id": "skill_partner_co_selling"
+    },
+    {
+      "skill": "partner_engineering",
+      "description": "Technical delivery with partners",
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_phrases": [
+        "partner engineering"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "unify_bullets"
+      ],
+      "risk_notes": "Do not claim without project receipts.",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_partner_engineering"
+    },
+    {
+      "skill": "pre_sales",
+      "description": "Presales workshops and pilots",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "executive workshops, leading to faster adoption",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "executive workshops",
+        "pilot engagements"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "ibm_bullets",
+        "unify_narrative"
+      ],
+      "risk_notes": "medium",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_pre_sales"
+    },
+    {
+      "skill": "solution_architecture",
+      "description": "Field/solution architecture",
+      "source_resume_file": "Field CTO - Amit Ayer.docx",
+      "source_evidence": "technical strategy and architecture",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "solution architecture",
+        "field CTO"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "competencies",
+        "headline"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": "fact_solutions_001",
+      "skill_id": "skill_partner_solution_architecture"
+    },
+    {
+      "skill": "workshops",
+      "description": "Executive workshops",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "executive workshops",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "executive workshops"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "ibm_narrative"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_workshops"
+    },
+    {
+      "skill": "customer_deal_support",
+      "description": "Enterprise deal support",
+      "source_resume_file": "Sales - Amit Ayer.docx",
+      "source_evidence": "Drove $5 Million in Annual Contract Value",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Annual Contract Value",
+        "enterprise-wide adoption"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "unify_narrative"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "skill_id": "skill_partner_customer_deal_support"
+    },
+    {
+      "skill": "enterprise_negotiations",
+      "description": "Contract negotiations",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.docx",
+      "source_evidence": "enterprise contract negotiations",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "enterprise contract negotiations"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_enterprise_negotiations"
+    },
+    {
+      "skill": "sales_revenue_targets",
+      "description": "Quota / revenue targets",
+      "source_resume_file": "Sales - Amit Ayer.docx",
+      "source_evidence": "Achieved 110% of annual revenue targets",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "110% of annual revenue targets"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "unify_bullets"
+      ],
+      "risk_notes": "TraderSense context; not current employer.",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "skill_id": "skill_partner_sales_revenue_targets"
+    },
+    {
+      "skill": "gtm_enablement",
+      "description": "GTM packaging and enablement",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "co-marketing campaigns",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "go-to-market",
+        "GTM",
+        "co-marketing"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "REVENUE_OPERATIONS"
+      ],
+      "where_to_use": [
+        "competencies"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_gtm_enablement"
+    },
+    {
+      "skill": "partner_led_ai_solutions",
+      "description": "Partner-led AI solution development",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "co-developing advanced analytics frameworks with strategic partners",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "partner-led",
+        "co-developing"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "ENGINEERING_PLATFORM"
+      ],
+      "where_to_use": [
+        "unify_bullets"
+      ],
+      "risk_notes": "low",
+      "linked_fact_id": "fact_partnerships_gtm_001",
+      "skill_id": "skill_partner_partner_led_ai_solutions"
+    },
+    {
+      "skill": "product_feedback_loops",
+      "description": "Partner/product feedback",
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "USER_CONFIRMED_PENDING_SOURCE",
+      "allowed_phrases": [
+        "product feedback loops"
+      ],
+      "role_relevance": [
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "competencies"
+      ],
+      "risk_notes": "Needs source snippet before activation.",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_product_feedback_loops"
+    },
+    {
+      "skill": "pnl_oversight",
+      "description": "P&L on alliance revenue",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "P&L oversight",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "P&L oversight",
+        "partial P&L accountability"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "Partial P&L wording in archive\u2014do not upgrade to full P&L owner.",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_pnl_oversight"
+    },
+    {
+      "skill": "partner_revenue_3m",
+      "description": "Partner-derived revenue metric",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "3 million dollars in partner-derived revenue",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "partner-derived revenue"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "unify_bullets"
+      ],
+      "risk_notes": "Confirm Unify engagement scope.",
+      "linked_fact_id": null,
+      "skill_id": "skill_partner_partner_revenue_3m"
+    }
+  ],
+  "schema_extension": {
+    "schema_version": "master_skills_arsenal_v1",
+    "extends": "master_candidate_skills_fact_ledger",
+    "design_principle": "Arsenal ledger holds skills/capabilities beyond two-page resume projection; facts remain atomic proof rows.",
+    "new_entity_types": [
+      "skill_row",
+      "capability_pillar",
+      "career_matrix_row"
+    ],
+    "skill_row_fields": {
+      "skill_id": "Stable skill identifier (skill_<domain>_<name>)",
+      "fact_id_links": "Array of candidate_fact_id proof anchors",
+      "pillar": "pillar_id reference",
+      "subpillar": "Optional finer grouping",
+      "career_stage": "early_career | mid_career | current | cross_career",
+      "source_resume_files": "Phase I archive filenames (evidence artifacts)",
+      "source_snippets": "Verbatim or near-verbatim archive lines",
+      "user_confirmed": "Boolean \u2014 true if operator affirmed without archive line",
+      "support_level": [
+        "DIRECT_FROM_RESUME_ARCHIVE",
+        "BUNDLE_SUPPORTED",
+        "DERIVED_SUPPORTED",
+        "TARGETING_ONLY",
+        "USER_CONFIRMED_PENDING_SOURCE",
+        "BLOCKED"
+      ],
+      "role_family_weights": "Map ENGINEERING_PLATFORM \u2192 0.0-1.0",
+      "allowed_phrases": "Emit whitelist",
+      "forbidden_phrases": "BLOCK if emitted without support",
+      "allowed_sections": "Resume section targets",
+      "visibility_rule": "always | role_family_match | human_confirm | never_external",
+      "evidence_risk": "low | medium | high",
+      "activation_status": "DRAFT | ACTIVE | RETIRED",
+      "human_confirmation_required": "Boolean"
+    },
+    "visibility_rules_catalog": {
+      "always": "Eligible when support_level is DIRECT and fact linked",
+      "role_family_match": "Surface only when targeting role family weight >= 0.7",
+      "human_confirm": "Blocked from external until confirmation receipt",
+      "never_external": "Internal arsenal only (projection planning)"
+    },
+    "support_level_definitions": {
+      "DIRECT_FROM_RESUME_ARCHIVE": "Verbatim-supported by Phase I extract or base resume bullet",
+      "BUNDLE_SUPPORTED": "Synthesis requires all linked fact_ids in section slice",
+      "DERIVED_SUPPORTED": "Approved compression with derivation registry",
+      "TARGETING_ONLY": "JD/briefing emphasis only \u2014 never proof",
+      "USER_CONFIRMED_PENDING_SOURCE": "Operator confirmed; archive line pending",
+      "BLOCKED": "Must not appear in external output"
+    }
+  },
+  "role_family_projection_map": {
+    "SVP_ENGINEERING_AI_PLATFORM": {
+      "label": "SVP Engineering / AI Platform",
+      "taxonomy_ids": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 0.75
+        },
+        {
+          "pillar_id": "pillar_actuarial_foundation",
+          "weight": 0.7
+        }
+      ],
+      "deprioritize_pillars": [
+        "pillar_sales_revenue_only"
+      ],
+      "executive_summary_skill_budget": {
+        "architecture": 3,
+        "governance": 2,
+        "commercialization": 1,
+        "actuarial_credibility": 1
+      }
+    },
+    "AI_FINANCIAL_SERVICES": {
+      "label": "AI Financial Services",
+      "taxonomy_ids": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_enterprise_risk_controls",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_actuarial_foundation",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_cosell_partner_engineering",
+          "weight": 0.8
+        }
+      ]
+    },
+    "ANTHROPIC_PARTNERSHIPS_APPLIED_AI": {
+      "label": "Anthropic-style Partnerships / Applied AI",
+      "taxonomy_ids": [
+        "PARTNERSHIPS_GTM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_cosell_partner_engineering",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_customer_stakeholder",
+          "weight": 0.8
+        }
+      ],
+      "user_confirmed_pending_source": [
+        "anthropic_style_applied_ai_partnership_motion"
+      ]
+    },
+    "FIELD_CTO": {
+      "label": "Field CTO",
+      "taxonomy_ids": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "PARTNERSHIPS_GTM"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_cosell_partner_engineering",
+          "weight": 0.85
+        }
+      ]
+    },
+    "CHIEF_AI_OFFICER": {
+      "label": "Chief AI Officer",
+      "taxonomy_ids": [
+        "EXECUTIVE_LEADERSHIP",
+        "AI_GOVERNANCE_RISK",
+        "ENGINEERING_PLATFORM"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_revenue_commercialization",
+          "weight": 0.85
+        }
+      ]
+    },
+    "STRATEGIC_FINANCE": {
+      "label": "Strategic Finance",
+      "taxonomy_ids": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_strategic_finance_saas",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_capital_modeling",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_actuarial_foundation",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 0.8
+        }
+      ]
+    },
+    "QUANT_TRADING": {
+      "label": "Quant / Trading",
+      "taxonomy_ids": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_trading_hpc",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_greeks_hedging",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_derivatives_structured",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_actuarial_foundation",
+          "weight": 0.9
+        }
+      ]
+    },
+    "GOVERNANCE_RISK": {
+      "label": "Governance / Risk",
+      "taxonomy_ids": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_enterprise_risk_controls",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_risk_management",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_capital_modeling",
+          "weight": 0.85
+        }
+      ]
+    }
+  },
+  "executive_summary_impact": {
+    "current_gap": "Exec SRFS treats FSA as cert label; omits quant_hpc_003 and partner/co-sell depth.",
+    "arsenal_to_exec_projection": [
+      "Pull pillar_actuarial_foundation + pillar_greeks_hedging into exec slice via skill_id rows",
+      "Use DERIVED row for FSA-backed platform credibility (not fact_certs_001 list)",
+      "Reserve pillar_agentic_ai_platforms facts for exec before headline consumption",
+      "Allow one partner/GTM phrase only when PARTNERSHIPS_GTM weight >= 0.7 in targeting"
+    ],
+    "competencies_projection": "Load top 12-18 skill_ids by role_family_weights across pillars (not capped at resume page limit)."
+  },
+  "constraints_preserved": {
+    "no_agentic_core_changes": true,
+    "no_x2_x3_judge_threshold_weakening": true,
+    "no_jd_briefing_as_proof": true,
+    "no_runtime_generation_changes": true,
+    "no_invented_facts": true
+  },
+  "honest_caveat": "Embedded options, structured derivatives, insurance liabilities, delta/rho/convexity, and partner engineering are USER_CONFIRMED_PENDING_SOURCE\u2014no dedicated archive lines found. Archive 'embedded' elsewhere means DevSecOps/embedded analytics, not insurance embedded options. Revenue-target claims are context-specific (e.g., TraderSense 110%); verify employer scope before activation.",
+  "stats": {
+    "pillar_count": 18,
+    "actuarial_matrix_rows": 22,
+    "partner_gtm_matrix_rows": 16,
+    "pending_source_rows": 9,
+    "linked_existing_facts": 42
+  }
+}

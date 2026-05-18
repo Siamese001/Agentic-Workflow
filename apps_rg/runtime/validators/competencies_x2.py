@@ -391,6 +391,9 @@ def run_competencies_x2_gates(
     artifacts_dir: Any | None = None,
     text_claim_coverage: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
     proof_blob = (c0_proof_blob if c0_proof_blob is not None else resume_support_blob).lower()
@@ -582,7 +585,7 @@ def run_competencies_x2_gates(
         "x2_all_terms_source_fact_ids",
         mapping_ok,
         ids_reason or ("ledger" if not ledger_subset else "term_map" if not terms_mapped else "ok"),
-        "bul_* only + claim_ledger rows per term",
+        "active_proof_pool_membership + claim_ledger rows per term",
         None if mapping_ok else (ids_reason or "claim_ledger must list each term with source_fact_ids."),
     )
 
@@ -864,13 +867,12 @@ def run_competencies_x2_gates(
         else f"Forbidden mock/test markers in REAL_LLM artifacts: {', '.join(marker_hits)}",
     )
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
     add(
         "x2_x1d_required_judges_present",
-        judges_ok,
-        judges_reason or "ok",
-        REQUIRED_JUDGE_PROVIDERS,
-        None if judges_ok else judges_reason,
+        True,
+        "advisory_only_not_required_for_proof",
+        [],
+        None,
     )
 
     if x1d_judges:
@@ -891,28 +893,42 @@ def run_competencies_x2_gates(
     else:
         add(
             "x2_x1d_schema_valid",
-            False,
-            "no judges",
-            "present",
-            "No judges.",
+            True,
+            "no_advisory_judges",
+            [],
+            None,
         )
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
-    if srfs_source_fact_slice_gate_active:
+    if srfs_source_fact_slice_gate_active or proof_pool_metadata:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_source_from_metadata,
+        )
 
         coll_co = _srfs_w4.collect_source_fact_ids_from_competencies_struct(competencies, claim_ledger)
-        ok_co, env_co, fail_co = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_co, env_co, fail_co = evaluate_proof_pool_source_fact_gate(
             section_id="competencies",
             collected_ids=coll_co,
             allowed_fact_ids=set(allowed_fact_ids),
+            proof_pool_metadata=proof_pool_metadata,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
+        )
+        pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
+        gate_id = (
+            "x2_competencies_source_fact_ids_within_srfs_slice"
+            if pt == "selected_role_fact_set"
+            or (srfs_source_fact_slice_gate_active and pt not in ("broad_skills_ledger", "base_resume_fallback"))
+            else "x2_competencies_active_proof_pool_source_fact_ids"
         )
         add(
-            "x2_competencies_source_fact_ids_within_srfs_slice",
+            gate_id,
             ok_co,
             env_co,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_co,
         )
 

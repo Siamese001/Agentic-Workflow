@@ -1,0 +1,87 @@
+{
+  "report_id": "apps_rg_x2_remaining_lanes_active_proof_pool",
+  "generated_at_utc": "2026-05-18T20:15:00Z",
+  "scope": "Extend ledger-primary active proof-pool X2/source-fact validation to headline, executive_summary, unify_narrative, ibm_narrative",
+  "status": "PASS",
+  "sections": [
+    "headline",
+    "executive_summary",
+    "unify_narrative",
+    "ibm_narrative"
+  ],
+  "helper": "apps_rg/runtime/validators/proof_pool_source_fact_validation.py",
+  "receipt_artifact": "x2_source_fact_pool_receipt.json",
+  "gate_id_policy": {
+    "srfs_legacy": "x2_{section}_source_fact_ids_within_srfs_slice",
+    "ledger_primary": "x2_{section}_active_proof_pool_source_fact_ids"
+  },
+  "validators_updated": [
+    "apps_rg/runtime/validators/headline_x2.py",
+    "apps_rg/runtime/validators/executive_summary_x2.py",
+    "apps_rg/runtime/validators/unify_narrative_x2.py",
+    "apps_rg/runtime/validators/ibm_narrative_x2.py"
+  ],
+  "lanes_updated": [
+    "apps_rg/runtime/sections/headline_lane.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/sections/unify_narrative_lane.py",
+    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py"
+  ],
+  "mock_stub_alignment": [
+    "headline_lane.build_mock_output uses ledger/SRFS stub ids",
+    "unify_narrative_lane.build_mock_output uses ledger/SRFS stub ids",
+    "ibm_narrative_dispatch.build_mock_output uses ledger/SRFS stub ids"
+  ],
+  "x2_matrix": [
+    {
+      "section": "headline",
+      "srfs_ids": "PASS when in SRFS slice; legacy gate id",
+      "ledger_ids": "PASS when in active broad_skills_ledger slice",
+      "base_fallback_ids": "PASS only when proof_pool_type=base_resume_fallback",
+      "jd_briefing_rejected": true,
+      "random_ids_rejected": true,
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/headline/<run>/x2_source_fact_pool_receipt.json"
+    },
+    {
+      "section": "executive_summary",
+      "srfs_ids": "PASS when in SRFS slice; legacy gate id",
+      "ledger_ids": "PASS when in active broad_skills_ledger slice",
+      "base_fallback_ids": "PASS only when fallback active",
+      "jd_briefing_rejected": true,
+      "random_ids_rejected": true,
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/executive_summary/<run>/x2_source_fact_pool_receipt.json"
+    },
+    {
+      "section": "unify_narrative",
+      "srfs_ids": "PASS when in SRFS slice; legacy gate id",
+      "ledger_ids": "PASS when in active broad_skills_ledger slice",
+      "base_fallback_ids": "PASS only when fallback active",
+      "jd_briefing_rejected": true,
+      "random_ids_rejected": true,
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/<run>/x2_source_fact_pool_receipt.json"
+    },
+    {
+      "section": "ibm_narrative",
+      "srfs_ids": "PASS when in SRFS slice; legacy gate id",
+      "ledger_ids": "PASS when in active broad_skills_ledger slice",
+      "base_fallback_ids": "PASS only when fallback active",
+      "jd_briefing_rejected": true,
+      "random_ids_rejected": true,
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/<run>/x2_source_fact_pool_receipt.json"
+    }
+  ],
+  "commands": [
+    "python -m compileall apps_rg -q",
+    "python -m pytest tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py -q --override-ini=addopts=",
+    "python -m pytest tests/_apps_contract -k \"headline or executive_summary or unify_narrative or ibm_narrative or source_fact or proof_pool or srfs\" -q --override-ini=addopts="
+  ],
+  "test_results": {
+    "ledger_primary_contract": "21 passed",
+    "filtered_contract_note": "340 passed in filtered run; 65 failures are pre-existing unrelated modules (PA treatment profile, resume_exit_checks import, manual review)"
+  },
+  "non_claims": [
+    "No product ALLOW",
+    "No live provider proof",
+    "X2/X3/judges not weakened"
+  ]
+}

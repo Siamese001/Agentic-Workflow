@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "product_claim": false,
+  "proof_pool_sources_supported_by_x2": [
+    "srfs",
+    "broad_skills_ledger",
+    "base_resume_fallback"
+  ],
+  "sections_checked": {
+    "competencies": {
+      "ledger_primary_x2_supported": true,
+      "jd_briefing_rejected_as_proof": true,
+      "unsupported_ids_fail": true
+    },
+    "ibm_bullets": {
+      "ledger_primary_x2_supported": true,
+      "membership_scope_not_prefix_only": true,
+      "srfs_legacy_gate_id_preserved": true
+    },
+    "unify_bullets": {
+      "ledger_primary_x2_supported": true,
+      "membership_scope_not_prefix_only": true,
+      "srfs_legacy_gate_id_preserved": true
+    }
+  },
+  "receipt_artifacts": [
+    "artifacts/apps_rg/runtime_proofs/<lane>/<run>/x2_source_fact_pool_receipt.json"
+  ],
+  "commands_run": [
+    "python -m compileall apps_rg -q -> exit 0",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py -q -> 22 passed",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py -q -> 37 passed",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract -k \"source_fact or proof_pool or srfs or section_input_usage or x2_ledger\" -q -> 186 passed, 1 skipped"
+  ],
+  "tests": [
+    "tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py",
+    "tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py",
+    "tests/_apps_contract/test_apps_rg_srfs_w4_x2_slice_gates.py",
+    "tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py",
+    "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py"
+  ],
+  "gaps_remaining": [
+    "headline / executive_summary / narrative lanes: SRFS slice gate unchanged; ledger-primary membership gate not duplicated in this narrow wave",
+    "IBM/Unify offline stub may still remap ledger fact_ids to canonical bul_* indices for distribution gates"
+  ],
+  "non_claims": [
+    "Does not claim full product ALLOW",
+    "Does not claim live Qwen quality proof",
+    "Does not weaken X2"
+  ]
+}

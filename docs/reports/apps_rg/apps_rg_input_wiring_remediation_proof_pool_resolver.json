@@ -1,0 +1,77 @@
+{
+  "status": "PASS",
+  "product_claim": false,
+  "sections": {
+    "headline": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    },
+    "executive_summary": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    },
+    "unify_bullets": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    },
+    "unify_narrative": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    },
+    "ibm_bullets": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    },
+    "ibm_narrative": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    },
+    "competencies": {
+      "default_proof_source": "broad_skills_ledger",
+      "srfs_override_supported": true,
+      "base_resume_fallback_explicit": true,
+      "briefing_non_proof": true,
+      "jd_non_proof": true
+    }
+  },
+  "commands_run": [
+    "python -m compileall apps_rg -q -> exit 0",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py -q --override-ini=addopts= -> 29 passed"
+  ],
+  "tests": [
+    "tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py",
+    "tests/_apps_contract/test_apps_rg_section_input_usage_ledgers.py",
+    "tests/_apps_contract/test_apps_rg_srfs_w3_lane_adoption.py (legacy pool metadata assertions updated)",
+    "tests/_apps_contract/test_apps_rg_srfs_w6_reporting.py (no-SRFS receipt assertions updated)",
+    "tests/_apps_contract/test_apps_rg_srfs_w7_broader_fixtures.py (no-SRFS receipt assertions updated)"
+  ],
+  "gaps_remaining": [
+    "test_apps_rg_competencies_x2_source_facts::test_mock_slice_still_passes_x2_source_mapping may fail with ledger-primary fact_id shapes until competencies X2 mapping is ledger-aware",
+    "Broader tests/_apps_contract -k filter includes many pre-existing failures unrelated to this wave",
+    "IBM/Unify bullet lanes: ledger slices may not equal canonical bul_ibm_* / bul_unify_* IDs without SRFS",
+    "Full U0 redesign and product ALLOW not claimed"
+  ],
+  "non_claims": [
+    "Does not claim full product ALLOW",
+    "Does not claim full U0 redesign",
+    "Does not claim live Qwen quality proof unless executed"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "status": "PARTIAL_VERIFIED",
+  "timestamp_utc": "2026-05-18T18:35:00Z",
+  "scope": "apps_rg section-specific judge policy matrix, proof eligibility, JudgePacket GRADE_ONLY wiring (no agentic_core)",
+  "files_changed": [
+    ".cursor/plans/apps-rg-section-judge-policy-f60c6c.md",
+    "apps_rg/runtime/section_judge_policy.py",
+    "apps_rg/runtime/judges/section_judge_profile.py",
+    "apps_rg/runtime/judges/grade_only_judge_packet.py",
+    "apps_rg/runtime/judges/policy_backed_section_judges.py",
+    "apps_rg/runtime/judges/executive_summary_judge_profile.py",
+    "apps_rg/runtime/judges/executive_summary_judge_packet.py",
+    "apps_rg/runtime/judges/executive_summary_x1d.py",
+    "apps_rg/runtime/judges/headline_x1d.py",
+    "apps_rg/runtime/judges/unify_bullets_x1d.py",
+    "apps_rg/runtime/judges/unify_narrative_x1d.py",
+    "apps_rg/runtime/judges/ibm_bullets_x1d.py",
+    "apps_rg/runtime/judges/ibm_narrative_x1d.py",
+    "apps_rg/runtime/judges/competencies_x1d.py",
+    "apps_rg/runtime/section_proof/mock_runtime_proof_policy.py",
+    "apps_rg/runtime/exit/executive_summary_x3.py",
+    "apps_rg/runtime/validators/competencies_x2.py",
+    "apps_rg/runtime/dispatch/competencies_dispatch.py",
+    "apps_rg/runtime/dispatch/unify_narrative_dispatch.py",
+    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/sections/headline_lane.py",
+    "apps_rg/runtime/sections/unify_bullets_lane.py",
+    "apps_rg/runtime/sections/ibm_bullets_lane.py",
+    "tests/unit/apps_rg/test_section_judge_policy.py",
+    "docs/reports/apps_rg/judge_policy_partial_verified_manifest.json"
+  ],
+  "completed_test_commands": [
+    "python -m pytest tests/unit/apps_rg/test_section_judge_policy.py -q --tb=short",
+    "python -m pytest tests/_apps_contract/test_apps_rg_x2_x1d_alignment.py tests/_apps_contract/test_apps_rg_x1d_judge_policy.py -q --tb=short",
+    "python -m pytest tests/_apps_contract/test_exec_summary_runtime_slice.py -q --tb=short",
+    "python -m pytest tests/unit/apps_rg/runtime/exit/test_executive_summary_x3_aggregate.py tests/unit/apps_rg/test_competencies_x2_proof_quality.py tests/_apps_contract/test_apps_rg_x1d_judge_policy.py tests/_apps_contract/test_exec_summary_runtime_slice.py::test_mocked_judges_cannot_allow tests/_apps_contract/test_exec_summary_runtime_slice.py::test_judge_provider_status_tracking -q --tb=long"
+  ],
+  "completed_test_results": [
+    {
+      "command": "tests/unit/apps_rg/test_section_judge_policy.py",
+      "exit_code": 0,
+      "summary": "6 passed"
+    },
+    {
+      "command": "test_apps_rg_x2_x1d_alignment.py + test_apps_rg_x1d_judge_policy.py",
+      "exit_code": 0,
+      "summary": "14 passed"
+    },
+    {
+      "command": "test_exec_summary_runtime_slice.py (full file)",
+      "exit_code": 0,
+      "summary": "83 passed"
+    },
+    {
+      "command": "prior combined slice (x3_aggregate + competencies_x2 + x1d_policy + 2 named exec-summary tests)",
+      "exit_code": 0,
+      "summary": "20 passed (re-run closure; previously 99/101 with 2 env-flaky failures)"
+    }
+  ],
+  "prior_failure_classification": [
+    {
+      "test_name": "test_exec_summary_runtime_slice.py::test_mocked_judges_cannot_allow",
+      "failure_reason_prior": "Assertion expected X3_REVIEW_MOCKED_PLUMBING_ONLY or X3_REVIEW_JUDGE_SOFT_FAIL; observed X3_REVIEW_JUDGE_PROVIDER_BLOCKED when required judges lack credentials or enhanced model config",
+      "classification": "blocked_judge_behavior",
+      "policy_matrix_logic_failure": false,
+      "provider_availability": true,
+      "network_egress": false,
+      "unrelated": false,
+      "fail_closed_correct": true,
+      "code_change_required": false,
+      "closure_rerun": "passed on re-run after full exec-summary slice populated mock artifacts"
+    },
+    {
+      "test_name": "test_exec_summary_runtime_slice.py::test_judge_provider_status_tracking",
+      "failure_reason_prior": "Test asserted provider_status.startswith('BLOCKED_'); observed NETWORK_TESTS_NOT_ENABLED when live judge HTTP is gated off",
+      "classification": "provider_availability",
+      "policy_matrix_logic_failure": false,
+      "provider_availability": true,
+      "network_egress": true,
+      "unrelated": false,
+      "fail_closed_correct": true,
+      "code_change_required": false,
+      "closure_rerun": "passed on re-run"
+    }
+  ],
+  "aborted_broad_run": {
+    "command": "python -m pytest tests/_apps_contract -q --tb=short -k \"judge or x1d or competencies or executive_summary or headline or unify or ibm\"",
+    "aborted": true,
+    "completion_percent_approx": 39,
+    "tests_seen_approx": "290/1052",
+    "final_result_available": false,
+    "reason_not_used_as_evidence": "Job aborted before completion; no final pytest summary; mixed unrelated failing suites in partial output",
+    "unrelated_failure_examples": [
+      "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+      "tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py",
+      "tests/_apps_contract/test_apps_rg_section_mock_provider_policy.py",
+      "tests/_apps_contract/test_apps_rg_resume_exit_checks.py"
+    ]
+  },
+  "verified_policy_surfaces": {
+    "section_judge_policy_matrix": true,
+    "x2_x1d_alignment": true,
+    "judge_required_advisory_proof_eligibility": true,
+    "competencies_advisory_only_posture": true,
+    "judge_packet_grade_only": true
+  },
+  "policy_matrix_snapshot": {
+    "executive_summary": {
+      "judge_required_for_proof": true,
+      "judge_tier": "ENHANCED_REASONING"
+    },
+    "headline": {
+      "judge_required_for_proof": true,
+      "judge_tier": "STANDARD_REASONING"
+    },
+    "unify_bullets": {
+      "judge_required_for_proof": true,
+      "judge_tier": "BULLET_REWRITE_QUALITY"
+    },
+    "ibm_bullets": {
+      "judge_required_for_proof": true,
+      "judge_tier": "BULLET_REWRITE_QUALITY"
+    },
+    "unify_narrative": {
+      "judge_required_for_proof": true,
+      "judge_tier": "STANDARD_REASONING"
+    },
+    "ibm_narrative": {
+      "judge_required_for_proof": true,
+      "judge_tier": "STANDARD_REASONING"
+    },
+    "competencies": {
+      "judge_required_for_proof": false,
+      "judge_tier": "OPTIONAL_ADVISORY_TAXONOMY_ONLY"
+    },
+    "final_aggregate_resume": {
+      "judge_required_for_proof": true,
+      "judge_tier": "ENHANCED_REASONING",
+      "wired": false
+    }
+  },
+  "remaining_gaps": [
+    "live executive_summary proof not run (selected_role_fact_set fixture absent in workspace)",
+    "final_aggregate_resume lane not wired to runtime assembler",
+    "full tests/_apps_contract sweep not attempted for closure"
+  ],
+  "explicit_non_claims": [
+    "not product PASS",
+    "not final aggregate proof",
+    "not live executive_summary proof",
+    "not full apps_rg contract PASS"
+  ],
+  "live_run_proof": {
+    "attempted": false,
+    "reason": "BLOCKED: artifacts/apps_rg/fact_inventory/selected_role_fact_set_20260518T181200Z_exec_summary_srfs_cli_proof.json not present in workspace"
+  },
+  "no_agentic_core_changes": true
+}

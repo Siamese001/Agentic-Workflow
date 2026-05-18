@@ -265,6 +265,9 @@ def run_unify_bullets_x2_gates(
     x1d_judges: list[dict[str, Any]] | None = None,
     rewrite_distribution: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -395,21 +398,36 @@ def run_unify_bullets_x2_gates(
         "Core metrics ($22M, 20%, 8 to 28, six months to three weeks) must appear in bullets.",
     )
 
-    source_ids = _all_source_fact_ids(parsed_output, claim_ledger)
-    illegal_prefix_ids = sorted({str(s) for s in source_ids if not str(s).startswith("bul_unify_")})
-    forbidden_hits = sorted(
-        {str(s) for s in source_ids if any(str(s).startswith(prefix) for prefix in FORBIDDEN_FACT_PREFIXES)}
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        proof_source_from_metadata,
+        scope_ids_membership_only,
     )
-    not_in_allowlist = sorted(
-        {
-            str(s)
-            for s in source_ids
-            if str(s).startswith("bul_unify_")
-            and str(s) not in allowed_fact_ids
-            and str(s).split("_metric_")[0] not in allowed_fact_ids
-        }
-    )
-    scope_ok = bool(source_ids) and not illegal_prefix_ids and not forbidden_hits and not not_in_allowlist
+
+    source_ids = set(_all_source_fact_ids(parsed_output, claim_ledger))
+    proof_source = proof_source_from_metadata(proof_pool_metadata)
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        scope_ok, illegal_prefix_ids, forbidden_hits, not_in_allowlist = scope_ids_membership_only(
+            source_ids,
+            allowed_fact_ids=set(allowed_fact_ids),
+            forbidden_prefixes=FORBIDDEN_FACT_PREFIXES,
+        )
+        scope_threshold = "active_proof_pool_membership"
+    else:
+        illegal_prefix_ids = sorted({str(s) for s in source_ids if not str(s).startswith("bul_unify_")})
+        forbidden_hits = sorted(
+            {str(s) for s in source_ids if any(str(s).startswith(prefix) for prefix in FORBIDDEN_FACT_PREFIXES)}
+        )
+        not_in_allowlist = sorted(
+            {
+                str(s)
+                for s in source_ids
+                if str(s).startswith("bul_unify_")
+                and str(s) not in allowed_fact_ids
+                and str(s).split("_metric_")[0] not in allowed_fact_ids
+            }
+        )
+        scope_ok = bool(source_ids) and not illegal_prefix_ids and not forbidden_hits and not not_in_allowlist
+        scope_threshold = "bul_unify_*"
     scope_parts: list[str] = []
     if illegal_prefix_ids:
         scope_parts.append(f"tokens_not_bul_unify_prefix={illegal_prefix_ids}")
@@ -418,14 +436,14 @@ def run_unify_bullets_x2_gates(
     if not_in_allowlist:
         scope_parts.append(f"tokens_not_in_allowed_fact_pool={not_in_allowlist}")
     scope_failure = (
-        "Fact scope must be Unify bullets only."
+        "Fact scope must match active proof pool."
         + (f" ({'; '.join(scope_parts)})" if scope_parts else "")
     )
     add(
         "x2_unify_only_fact_scope",
         scope_ok,
         sorted(source_ids),
-        "bul_unify_*",
+        scope_threshold,
         None if scope_ok else scope_failure,
     )
 
@@ -449,19 +467,32 @@ def run_unify_bullets_x2_gates(
         "JD phrase copied into bullet proof.",
     )
 
-    required_bullet_ids = set(UNIFY_BULLET_IDS)
-    output_ids = {b.get("bullet_id") for b in bullets}
+    output_ids = {str(b.get("bullet_id")) for b in bullets if b.get("bullet_id")}
     ledger_ids = set()
     for claim in claim_ledger:
         for fid in claim.get("source_fact_ids") or []:
             ledger_ids.add(str(fid).split("_metric_")[0])
-    coverage_ok = required_bullet_ids <= output_ids and required_bullet_ids <= ledger_ids
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        pool_bullet_ids = {str(x) for x in allowed_fact_ids if str(x).startswith("bul_unify_")}
+        required_bullet_ids = pool_bullet_ids or output_ids
+        coverage_ok = output_ids <= set(allowed_fact_ids) | pool_bullet_ids and bool(output_ids)
+        coverage_ok = coverage_ok and all(
+            any(rid in allowed_fact_ids or rid.split("_metric_")[0] in allowed_fact_ids for rid in ledger_ids)
+            for rid in ledger_ids
+        ) if ledger_ids else coverage_ok
+        coverage_threshold = "active_pool_bullet_ids"
+        coverage_msg = "Every output bullet_id and ledger root must be in active proof pool."
+    else:
+        required_bullet_ids = set(UNIFY_BULLET_IDS)
+        coverage_ok = required_bullet_ids <= output_ids and required_bullet_ids <= ledger_ids
+        coverage_threshold = sorted(required_bullet_ids)
+        coverage_msg = "Every bul_unify_* bullet must appear in output and claim_ledger."
     add(
         "x2_claim_ledger_coverage_100",
-        coverage_ok and len(claim_ledger) >= 6,
+        coverage_ok and len(claim_ledger) >= len(output_ids) and len(output_ids) >= 1,
         {"output_ids": sorted(output_ids), "ledger_roots": sorted(ledger_ids)},
-        sorted(required_bullet_ids),
-        "Every bul_unify_* bullet must appear in output and claim_ledger.",
+        coverage_threshold,
+        coverage_msg,
     )
 
     metric_granular_ok = True
@@ -540,20 +571,34 @@ def run_unify_bullets_x2_gates(
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
-    if srfs_source_fact_slice_gate_active:
+    if srfs_source_fact_slice_gate_active or proof_pool_metadata:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_source_from_metadata,
+        )
 
         coll = _srfs_w4.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
-        ok_sl, env_sl, fail_sl = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_sl, env_sl, fail_sl = evaluate_proof_pool_source_fact_gate(
             section_id="unify_bullets",
             collected_ids=coll,
             allowed_fact_ids=set(allowed_fact_ids),
+            proof_pool_metadata=proof_pool_metadata,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
+        )
+        pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
+        gate_id = (
+            "x2_unify_bullets_source_fact_ids_within_srfs_slice"
+            if pt == "selected_role_fact_set"
+            or (srfs_source_fact_slice_gate_active and pt not in ("broad_skills_ledger", "base_resume_fallback"))
+            else "x2_unify_bullets_active_proof_pool_source_fact_ids"
         )
         add(
-            "x2_unify_bullets_source_fact_ids_within_srfs_slice",
+            gate_id,
             ok_sl,
             env_sl,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_sl,
         )
 

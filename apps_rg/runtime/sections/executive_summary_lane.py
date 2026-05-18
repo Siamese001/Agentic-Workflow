@@ -382,8 +382,21 @@ def _fact_body_for_mock_synthesis(claim_text: str) -> str:
 
 
 def _srfs_active_payload(runtime_payload: dict[str, Any]) -> bool:
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    if str(pp.get("proof_pool_type") or "") == "selected_role_fact_set":
+        return True
     s = runtime_payload.get("srfs_integration")
     return isinstance(s, dict) and bool(str(s.get("artifact_path_resolved") or "").strip())
+
+
+def _proof_pool_mode_from_payload(runtime_payload: dict[str, Any]) -> str:
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    pool_type = str(pp.get("proof_pool_type") or "")
+    if pool_type == "selected_role_fact_set":
+        return "srfs"
+    if pool_type == "broad_skills_ledger":
+        return "broad_skills_ledger"
+    return "base_resume_fallback"
 
 
 def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
@@ -887,41 +900,36 @@ def run_executive_summary_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end executive_summary run (qwen_vllm): artifacts + X2/X1D/X3."""
-    base, base_path, base_hash = load_base_resume()
-    srfs_arg = getattr(args, "selected_role_fact_set", None)
-    srfs_path_str = str(srfs_arg).strip() if srfs_arg else ""
+    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.proof_pool_lane_integration import (
+        apply_proof_pool_to_usage_ledger,
+        load_section_proof_for_lane,
+    )
+
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="executive_summary",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
+    selected_fact_plan = pool.selected_fact_plan
+    allowed_fact_ids = pool.allowed_fact_ids
+    allowed_fact_ids_ordered = list(pool.allowed_fact_ids_ordered)
+    proof_pool_metadata = pool.proof_pool_metadata
+
     srfs_integration: dict[str, Any] | None = None
-    allowed_fact_ids_ordered: list[str] | None = None
-    if srfs_path_str:
-        from apps_rg.runtime.sections.exec_summary_srfs_integration import build_exec_summary_srfs_bundle
+    if pool.srfs_present and pool.srfs_ref:
         from apps_rg.runtime.sections.selected_role_fact_set import (
-            build_allowed_fact_ids_for_plan_facts,
-            srfs_proof_pool_metadata,
+            build_srfs_integration_envelope,
+            load_selected_role_fact_set,
         )
 
-        plan_bundle, envelope, ordered_ids, allowed_fact_ids_set = build_exec_summary_srfs_bundle(
-            srfs_json_path=Path(srfs_path_str)
-        )
-        selected_fact_plan = plan_bundle
-        allowed_fact_ids = allowed_fact_ids_set
-        srfs_integration = envelope
-        allowed_fact_ids_ordered = ordered_ids
-        plan_facts = list(plan_bundle.get("facts") or [])
-        _, allowed_for_count = build_allowed_fact_ids_for_plan_facts(plan_facts)
-        proof_pool_metadata = srfs_proof_pool_metadata(
-            section_id="executive_summary",
-            candidate_fact_pool_count=len(plan_facts),
-            allowed_fact_ids_count=len(allowed_for_count),
-        )
-    else:
-        from apps_rg.runtime.sections.selected_role_fact_set import base_proof_pool_metadata
-
-        selected, allowed_fact_ids = extract_allowed_facts(base)
-        selected_fact_plan = build_selected_fact_plan(selected)
-        proof_pool_metadata = base_proof_pool_metadata(
-            section_id="executive_summary",
-            candidate_fact_pool_count=len(selected),
-            allowed_fact_ids_count=len(allowed_fact_ids),
+        doc = load_selected_role_fact_set(Path(pool.srfs_ref))
+        plan_facts = list(selected_fact_plan.get("facts") or [])
+        srfs_integration = build_srfs_integration_envelope(
+            doc,
+            executive_summary_plan_facts=plan_facts,
+            artifact_path_resolved=pool.srfs_ref,
         )
     provider_resolution_source = coalesce_lane_provider_resolution_source(
         explicit=getattr(args, "provider_resolution_source", None),
@@ -975,6 +983,11 @@ def run_executive_summary_execution(
             "pa_prompt_hash": section_compiled.artifact.prompt_hash,
             "provider_prompt_hash": prompt_hash,
             "slot_count": section_compiled.artifact.slot_count,
+            "proof_source": pool.proof_source,
+            "proof_pool_ref": pool.proof_pool_ref,
+            "proof_pool_digest": pool.proof_pool_digest,
+            "base_resume_fallback_used": pool.base_resume_fallback_used,
+            "allowed_source_fact_ids_count": len(allowed_fact_ids),
         },
     )
 
@@ -1157,6 +1170,8 @@ def run_executive_summary_execution(
         briefing_text=str(args.briefing),
         jd_alignment=l2_output.get("jd_alignment"),
     )
+    usage_doc = apply_proof_pool_to_usage_ledger(usage_doc, pool)
+    runtime_payload["proof_pool_metadata"] = pool.proof_pool_metadata
     write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
@@ -1231,7 +1246,9 @@ def run_executive_summary_execution(
     pp_x2 = runtime_payload.get("proof_pool_metadata") or proof_pool_metadata or {}
     proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
 
-    x2 = [g.to_dict() for g in run_x2_gates(
+    x2 = [
+        g.to_dict()
+        for g in run_x2_gates(
         resume_display_text=resume_display_text,
         parsed_output=parsed_for_x2,
         claim_ledger=claim_ledger,
@@ -1257,7 +1274,8 @@ def run_executive_summary_execution(
         proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
-    )]
+        )
+    ]
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
         write_x2_source_fact_pool_receipt,
     )

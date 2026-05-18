@@ -423,7 +423,7 @@ def test_w7_no_srfs_fallback_receipt_headline(monkeypatch: pytest.MonkeyPatch, t
     )
     run_headline_execution(args, artifact_dir_override=run_dir, print_output=False)
     rec = json.loads((run_dir / "section_metric_receipt.json").read_text(encoding="utf-8"))
-    assert rec["proof_pool_type"] == "base_resume_fallback"
+    assert rec["proof_pool_type"] in ("broad_skills_ledger", "base_resume_fallback")
     assert rec["x2_srfs_gate_status"] == "NOT_APPLICABLE"
 
 

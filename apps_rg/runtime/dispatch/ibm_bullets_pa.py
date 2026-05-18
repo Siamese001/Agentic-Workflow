@@ -6,7 +6,7 @@ from typing import Any
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
-from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
+from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     BULLETS_R0,
     jd_non_proof_block,
@@ -114,8 +114,7 @@ def compile_ibm_bullets_prompt(
         render_context={"section_id": "ibm_bullets"},
     )
     compiled = compile_section_prompt(assembly, section_id="ibm_bullets")
-    ids = list(runtime_payload.get("allowed_fact_ids") or [])
-    return augment_section_compiled_with_input_authority(compiled, allowed_source_fact_ids=ids)
+    return finalize_section_compiled_with_proof_pool(compiled, runtime_payload=runtime_payload)
 
 
 __all__ = ["compile_ibm_bullets_prompt"]

@@ -1,0 +1,87 @@
+{
+  "schema_version": "srfs_full_track_closeout_v1",
+  "status": "PASS",
+  "closure_status": "CLOSED / STRUCTURAL PASS",
+  "plan_disk_status": "COMPLETED",
+  "notion_plan_status": "Completed",
+  "proof_level": "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY",
+  "timestamp_utc": "2026-05-18T20:15:00Z",
+  "closure_synced_utc": "2026-05-18T22:00:00Z",
+  "plan_slug": "apps-rg-srfs-aggregator-e7b2a1",
+  "proven": [
+    "Seven generated sections can consume pinned SRFS",
+    "Seven section receipts are SRFS-active",
+    "All seven x2_srfs_gate_status values are PASS",
+    "Aggregator v3 deterministic_status is PASS",
+    "No agentic_core change",
+    "No X2 or aggregator guard weakening"
+  ],
+  "not_proven": [
+    "Full résumé R4 SRFS path",
+    "modular_resume_generation.py path",
+    "Product X3 ALLOW",
+    "Runtime certification",
+    "Live judge quality"
+  ],
+  "tracks": {
+    "aggregator_w1_w8": {
+      "status": "PASS",
+      "waves": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+      "closeout": "docs/reports/apps_rg/srfs_aggregator_w1_w8_closeout_manifest.json",
+      "plan": ".cursor/plans/apps-rg-srfs-aggregator-e7b2a1.md"
+    },
+    "fallback_diagnosis": {
+      "status": "PASS",
+      "waves": ["W1", "W2"],
+      "receipt": "docs/reports/apps_rg/srfs_real_receipt_fallback_diagnosis_w1_w2_receipt.json",
+      "report": "docs/reports/apps_rg/srfs_real_receipt_fallback_diagnosis_w1_w2.md"
+    },
+    "srfs_active_rerun": {
+      "status": "PASS",
+      "waves": ["R1", "R2", "R3", "R4"],
+      "ssot": "docs/reports/apps_rg/srfs_active_rerun_ssot_r1.json",
+      "receipts": [
+        "docs/reports/apps_rg/srfs_active_unify_bullets_r1_r2_receipt.json",
+        "docs/reports/apps_rg/srfs_active_five_lane_batch_r3_receipt.json",
+        "docs/reports/apps_rg/srfs_aggregator_real_receipt_trial_v2_r4_receipt.json"
+      ],
+      "aggregator_trials": {
+        "v1_fail_expected": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial/apps_rg_srfs_audit_report.json",
+        "v2_pass": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/apps_rg_srfs_audit_report.json",
+        "v3_pass": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v3/apps_rg_srfs_audit_report.json"
+      }
+    },
+    "unify_bullets_srfs_x2": {
+      "status": "PASS",
+      "waves": ["Q1", "Q2", "Q3"],
+      "receipt": "docs/reports/apps_rg/unify_bullets_srfs_x2_q1_q3_receipt.json",
+      "report": "docs/reports/apps_rg/unify_bullets_srfs_x2_q1_q3.md",
+      "fix": "apps_rg/runtime/sections/unify_bullets_lane.py (bul_w7_unify* whitespace canonicalization)"
+    }
+  },
+  "wave_matrix": [
+    {"wave": "W1", "focus": "Receipt inventory", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_aggregator_w1_receipt_inventory.md"},
+    {"wave": "W2", "focus": "Schema and PASS rules", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_aggregator_w2_schema_and_rules.md"},
+    {"wave": "W3", "focus": "Aggregator implementation", "status": "DONE", "artifact": "apps_rg/audit/srfs_receipt_aggregator.py"},
+    {"wave": "W4", "focus": "CLI", "status": "DONE", "artifact": "apps_rg/audit/srfs_receipt_aggregator.py"},
+    {"wave": "W5", "focus": "Contract tests (20)", "status": "DONE", "artifact": "tests/_apps_contract/test_apps_rg_srfs_aggregator.py"},
+    {"wave": "W6", "focus": "Advisory judge (optional)", "status": "DONE", "artifact": "apps_rg/audit/srfs_audit_advisory_judge.py"},
+    {"wave": "W7", "focus": "Fixture aggregator PASS", "status": "DONE", "artifact": "artifacts/apps_rg/audit/srfs_section_aggregation/fixture_run/"},
+    {"wave": "W8", "focus": "Aggregator closeout", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_aggregator_w1_w8_closeout_manifest.json"},
+    {"wave": "D-W1/W2", "focus": "Fallback diagnosis", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_real_receipt_fallback_diagnosis_w1_w2.md"},
+    {"wave": "R1", "focus": "Seven-section SRFS SSOT", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_active_rerun_ssot_r1.json"},
+    {"wave": "R2", "focus": "Representative unify_bullets SRFS-active", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_active_unify_bullets_r1_r2.md"},
+    {"wave": "R3", "focus": "Five-lane SRFS-active batch", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_active_five_lane_batch_r3.md"},
+    {"wave": "R4", "focus": "Aggregator trial v2 (7 SRFS-active)", "status": "DONE", "artifact": "docs/reports/apps_rg/srfs_aggregator_real_receipt_trial_v2_r4.md"},
+    {"wave": "Q1", "focus": "unify_bullets X2 SRFS root cause", "status": "DONE", "artifact": "docs/reports/apps_rg/unify_bullets_srfs_x2_q1_q3.md"},
+    {"wave": "Q2", "focus": "Source fact-id normalization fix", "status": "DONE", "artifact": "apps_rg/runtime/sections/unify_bullets_lane.py"},
+    {"wave": "Q3", "focus": "Aggregator trial v3 all x2_srfs PASS", "status": "DONE", "artifact": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v3/apps_rg_srfs_audit_report.json"}
+  ],
+  "canonical_aggregator_manifest_v3": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v3/real_section_receipt_manifest_v3.json",
+  "deterministic_verdict_v3": "PASS",
+  "explicit_non_claims": [
+    "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY; not runtime certification or product ALLOW.",
+    "W7 fixture + real-receipt trials use W7 test SRFS and mock judges.",
+    "No full résumé R4 proof."
+  ]
+}

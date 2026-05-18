@@ -522,6 +522,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
 
     bundle = compute_lane_proof_bundle(
         args,
+        section_id="unify_narrative",
         runtime_generation_status=runtime_generation_status,
         x1d_judges=x1d,
         x2_gates=x2,

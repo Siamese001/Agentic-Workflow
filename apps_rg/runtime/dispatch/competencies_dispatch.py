@@ -1125,13 +1125,14 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         return {"text": phrase, "source_fact_id": fid, "source_fact_ids": [fid]}
 
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    if str(pp.get("proof_pool_type") or "") == "selected_role_fact_set":
+    pool_type = str(pp.get("proof_pool_type") or "")
+    if pool_type in ("selected_role_fact_set", "broad_skills_ledger"):
         raw_allowed = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])]
         allowed = [x for x in raw_allowed if "_metric_" not in x]
         if not allowed and raw_allowed:
             allowed = sorted({x.split("_metric_", 1)[0] for x in raw_allowed})
         if not allowed:
-            allowed = ["srfs_placeholder"]
+            allowed = ["proof_pool_placeholder"]
         competencies_srfs: list[dict[str, Any]] = []
         for i in range(8):
             fid = allowed[i % len(allowed)]
@@ -1395,26 +1396,19 @@ def run_competencies_execution(
     trace_runtime_path: str = "apps_rg.runtime.dispatch.competencies_dispatch",
     print_output: bool = True,
 ) -> dict[str, Any]:
-    base, base_path, base_hash = load_base_resume()
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
 
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    if srfs_path:
-        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "competencies")
-        bullet_rows = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
-        required_ids = sorted(allowed_fact_ids)
-        selected_fact_plan = build_selected_fact_plan(bullet_rows, required_ids)
-        selected_fact_plan["selection_method"] = _srfs.selection_method_for_section("competencies")
-        bullet_lowers = [str(r.get("claim_text") or "").lower() for r in bullet_rows]
-    else:
-        bullet_rows, allowed_fact_ids, bullet_lowers = collect_employment_bullets(base)
-        required_ids = sorted(allowed_fact_ids)
-        selected_fact_plan = build_selected_fact_plan(bullet_rows, required_ids)
-        pp_meta = _srfs.base_proof_pool_metadata(
-            section_id="competencies",
-            candidate_fact_pool_count=len(bullet_rows),
-            allowed_fact_ids_count=len(allowed_fact_ids),
-        )
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="competencies",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
+    bullet_rows = pool.bullet_rows
+    allowed_fact_ids = pool.allowed_fact_ids
+    selected_fact_plan = pool.selected_fact_plan
+    pp_meta = pool.proof_pool_metadata
+    bullet_lowers = [str(r.get("claim_text") or "").lower() for r in bullet_rows]
     companion_context = load_companion_context()
     resume_blob = build_resume_support_blob(bullet_rows, companion_context)
     c0_proof_blob = build_c0_proof_support_blob(bullet_rows)
@@ -1685,7 +1679,12 @@ def run_competencies_execution(
         jd_alignment=jd_alignment_final,
         extra_section_fields={"competency_group_fact_support": competency_group_fact_support},
     )
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+
+    write_json(
+        artifact_dir / "section_input_usage_ledger.json",
+        apply_proof_pool_to_usage_ledger(usage_doc, pool),
+    )
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
@@ -1704,7 +1703,7 @@ def run_competencies_execution(
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
 
     x2 = [
         g.to_dict()
@@ -1728,9 +1727,21 @@ def run_competencies_execution(
             x1d_judges=x1d,
             artifacts_dir=artifact_dir,
             text_claim_coverage=coverage,
-            srfs_source_fact_slice_gate_active=srfs_x2_active,
+            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            proof_pool_metadata=pp_x2,
+            proof_pool_ref=str(pool.proof_pool_ref or ""),
+            proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
 
     l2_output = {
         "run_id": runtime_payload["run_id"],
@@ -1792,6 +1803,7 @@ def run_competencies_execution(
         product_quality_status=product_quality_status,
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
+        judge_required_for_allow=False,
     )
     x3 = clarify_x3_for_competencies_live_provider_preflight(
         x3,
@@ -1801,6 +1813,7 @@ def run_competencies_execution(
 
     bundle = compute_lane_proof_bundle(
         args,
+        section_id="competencies",
         runtime_generation_status=runtime_generation_status,
         x1d_judges=x1d,
         x2_gates=x2,

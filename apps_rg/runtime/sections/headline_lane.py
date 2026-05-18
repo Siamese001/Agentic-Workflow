@@ -709,7 +709,8 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     wc = headline_word_count(hl)
     allowed_sorted = list(runtime_payload.get("allowed_fact_ids") or [])
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    if str(pp.get("proof_pool_type") or "") == "selected_role_fact_set" and allowed_sorted:
+    pool_type = str(pp.get("proof_pool_type") or "")
+    if pool_type in ("selected_role_fact_set", "broad_skills_ledger") and allowed_sorted:
         from apps_rg.runtime.sections.selected_role_fact_set import stub_source_fact_ids_for_allowed
 
         stub_ids = stub_source_fact_ids_for_allowed(allowed_sorted, max_ids=6)
@@ -780,26 +781,22 @@ def run_headline_execution(
     trace_runtime_path: str = TRACE_RUNTIME_PATH_DEFAULT,
     print_output: bool = True,
 ) -> dict[str, Any]:
-    base, base_path, base_hash = load_base_resume()
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+    from apps_rg.runtime.proof_pool_lane_integration import (
+        apply_proof_pool_to_usage_ledger,
+        load_section_proof_for_lane,
+    )
 
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    if srfs_path:
-        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "headline")
-        bullet_rows = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
-        candidate_pool_ids = [r["fact_id"] for r in bullet_rows]
-        selected_fact_plan = build_selected_fact_plan(bullet_rows, candidate_pool_ids)
-        selected_fact_plan["selection_method"] = _srfs.selection_method_for_section("headline")
-        proof_pool_metadata = pp_meta
-    else:
-        bullet_rows, allowed_fact_ids, _bullet_lowers = collect_employment_bullets(base)
-        candidate_pool_ids = sorted(allowed_fact_ids)
-        selected_fact_plan = build_selected_fact_plan(bullet_rows, candidate_pool_ids)
-        proof_pool_metadata = _srfs.base_proof_pool_metadata(
-            section_id="headline",
-            candidate_fact_pool_count=len(bullet_rows),
-            allowed_fact_ids_count=len(allowed_fact_ids),
-        )
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="headline",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
+    selected_fact_plan = pool.selected_fact_plan
+    allowed_fact_ids = pool.allowed_fact_ids
+    bullet_rows = pool.bullet_rows
+    proof_pool_metadata = pool.proof_pool_metadata
+    candidate_pool_ids = sorted(allowed_fact_ids)
     employer_names = collect_employer_names_lower(base)
     candidate_name_tokens = extract_candidate_name_tokens(base)
     candidate_pool_ids = sorted(allowed_fact_ids)
@@ -1121,7 +1118,10 @@ def run_headline_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=(parsed or {}).get("jd_alignment") if isinstance(parsed, dict) else None,
     )
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+    write_json(
+        artifact_dir / "section_input_usage_ledger.json",
+        apply_proof_pool_to_usage_ledger(usage_doc, pool),
+    )
     parsed_for_x2: dict[str, Any] = {**(parsed or {}), "text_claim_coverage": coverage}
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
@@ -1141,7 +1141,7 @@ def run_headline_execution(
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
 
     x2 = [
         g.to_dict()
@@ -1167,9 +1167,21 @@ def run_headline_execution(
             reasoning_execution_receipt=reasoning_receipt,
             artifacts_dir=artifact_dir,
             text_claim_coverage=coverage,
-            srfs_source_fact_slice_gate_active=srfs_x2_active,
+            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            proof_pool_metadata=pp_x2,
+            proof_pool_ref=str(pool.proof_pool_ref or ""),
+            proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
 
     reasoning_summary = summarize_reasoning_receipt_for_bundle(reasoning_receipt)
 
@@ -1255,7 +1267,8 @@ def run_headline_execution(
 
     bundle = headline_proof_bundle_labels(
         compute_lane_proof_bundle(
-            args,
+        args,
+        section_id="headline",
             runtime_generation_status=runtime_generation_status,
             x1d_judges=x1d,
             x2_gates=x2,
@@ -1487,6 +1500,7 @@ def build_headline_lane_args(
     jd_text: str,
     briefing: str,
     selected_role_fact_set: str = "",
+    base_resume_ref: str = "",
 ) -> SimpleNamespace:
     return SimpleNamespace(
         provider=str(provider).strip() or "qwen_vllm",
@@ -1500,6 +1514,7 @@ def build_headline_lane_args(
         jd_text=str(jd_text).strip() or JD_TEXT_DEFAULT,
         briefing=str(briefing).strip() or BRIEFING_DEFAULT,
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(base_resume_ref or ""),
     )
 
 

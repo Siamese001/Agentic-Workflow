@@ -111,7 +111,7 @@ def test_x2_gate_count():
     assert result.returncode == 0, (result.stderr, result.stdout)
     rd = proof_run_dir_from_result(result)
     x2 = load_json_from(rd, "x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 42
+    assert x2["total_x2_gates"] == 43
     assert x2["x2_failed"] == 0
 
 

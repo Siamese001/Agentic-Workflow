@@ -122,6 +122,7 @@ def aggregate_x3(
     product_quality_status: str,
     canonical_claims_for_hash: list[dict[str, Any]] | None = None,
     section_input_usage_ledger: dict[str, Any] | None = None,
+    judge_required_for_allow: bool = True,
 ) -> X3Disposition:
     failed_gates = [g["gate_id"] for g in x2_gates if not g.get("pass")]
 
@@ -221,13 +222,13 @@ def aggregate_x3(
         reason = "Product quality is FAIL."
         scope = "PLUMBING_ONLY"
         allowed = False
-    elif blocked:
+    elif judge_required_for_allow and blocked:
         code = "X3_REVIEW_JUDGE_PROVIDER_BLOCKED"
         reason = "One or more required X1D judge providers are blocked."
         review_reason = reason
         scope = "PLUMBING_ONLY"
         allowed = False
-    elif mocked:
+    elif judge_required_for_allow and mocked:
         code = "X3_REVIEW_MOCKED_PLUMBING_ONLY"
         reason = "One or more X1D judges are mocked."
         review_reason = reason
@@ -254,47 +255,69 @@ def aggregate_x3(
         review_reason = reason
         scope = "PLUMBING_ONLY"
         allowed = False
-    elif decisive:
+    elif judge_required_for_allow and decisive:
         code = "X3_BLOCK"
         reason = "X1D decisive judge failure"
         scope = "PLUMBING_ONLY"
         allowed = False
-    elif soft_failed:
+    elif judge_required_for_allow and soft_failed:
         code = "X3_REVIEW_JUDGE_SOFT_FAIL"
         reason = "One or more required X1D judges scored below threshold without decisive failure."
         review_reason = reason
         scope = "REVIEW_ONLY"
         allowed = False
     else:
-        all_model_backed_pass = all(
-            j.get("evaluator_mode") == "MODEL_BACKED"
-            and j.get("provider_status") == "MODEL_BACKED_PASS"
-            and j.get("pass") is not False
-            and not j.get("decisive_failure")
-            and (
-                j.get("normalized_score") is None
-                or j.get("normalized_threshold") is None
-                or float(j["normalized_score"]) >= float(j["normalized_threshold"])
-            )
-            for j in x1d_judges
-        )
-        if all_model_backed_pass and x1d_judges:
+        if not judge_required_for_allow:
             code = "X3_ALLOW"
-            reason = "REAL_LLM output, X2 pass, all X1D judges model-backed pass, product quality PASS."
+            reason = (
+                "REAL_LLM output, X2 pass, product quality PASS; "
+                "X1D judges advisory-only for this section (not required for allow)."
+            )
             review_reason = ""
             scope = "PRODUCT_QUALITY"
             allowed = True
-        else:
+        elif not x1d_judges:
             code = "X3_REVIEW_JUDGE_SOFT_FAIL"
-            reason = "One or more required X1D judges scored below threshold without decisive failure."
+            reason = "No X1D judge rows present for a section that requires judges."
             review_reason = reason
             scope = "REVIEW_ONLY"
             allowed = False
-            soft_failed = [
-                j["provider_key"]
+        else:
+            all_model_backed_pass = all(
+                j.get("evaluator_mode") == "MODEL_BACKED"
+                and j.get("provider_status") == "MODEL_BACKED_PASS"
+                and j.get("pass") is not False
+                and not j.get("decisive_failure")
+                and (
+                    j.get("normalized_score") is None
+                    or j.get("normalized_threshold") is None
+                    or float(j["normalized_score"]) >= float(j["normalized_threshold"])
+                )
                 for j in x1d_judges
-                if j.get("provider_key") not in soft_failed and _is_model_backed_soft_fail(j)
-            ] or soft_failed
+            )
+            if all_model_backed_pass:
+                code = "X3_ALLOW"
+                reason = "REAL_LLM output, X2 pass, all X1D judges model-backed pass, product quality PASS."
+                review_reason = ""
+                scope = "PRODUCT_QUALITY"
+                allowed = True
+            else:
+                code = "X3_REVIEW_JUDGE_SOFT_FAIL"
+                reason = "One or more required X1D judges scored below threshold without decisive failure."
+                review_reason = reason
+                scope = "REVIEW_ONLY"
+                allowed = False
+                soft_failed = [
+                    j["provider_key"]
+                    for j in x1d_judges
+                    if j.get("provider_key") not in soft_failed and _is_model_backed_soft_fail(j)
+                ] or soft_failed
+
+    proof_requires = (
+        "every_configured_x1d_judge_model_backed_pass"
+        if judge_required_for_allow
+        else "x2_pass_only_x1d_advisory_optional"
+    )
 
     return X3Disposition(
         x3_code=code,
@@ -316,5 +339,5 @@ def aggregate_x3(
         required_remediation=remediation,
         blocked_judge_detail_rows=blocked_detail_rows,
         model_backed_pass_provider_keys=mb_pass_keys,
-        proof_eligible_allow_requires="every_configured_x1d_judge_model_backed_pass",
+        proof_eligible_allow_requires=proof_requires,
     )

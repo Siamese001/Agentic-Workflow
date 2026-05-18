@@ -68,15 +68,51 @@ def _any_judge_blocked(x1d_judges: list[dict[str, Any]] | None) -> bool:
     return False
 
 
+def _judge_counts_for_proof(
+    x1d_judges: list[dict[str, Any]] | None,
+    *,
+    judge_required_for_proof: bool,
+) -> tuple[bool, bool, bool]:
+    """Return (has_mock, has_blocked, has_non_proof_eligible_required)."""
+    rows = x1d_judges or []
+    has_mock = any(str(j.get("evaluator_mode")) == "MOCKED" for j in rows)
+    has_blocked = any(str(j.get("evaluator_mode", "")).startswith("BLOCKED_") for j in rows)
+    if not judge_required_for_proof:
+        return has_mock, has_blocked, False
+    non_proof = False
+    for j in rows:
+        if j.get("mocked") is True:
+            non_proof = True
+            continue
+        if j.get("advisory_only") is True and j.get("proof_eligible_judge") is False:
+            non_proof = True
+            continue
+        if j.get("proof_eligible_judge") is False and str(j.get("evaluator_mode")) == "MODEL_BACKED":
+            non_proof = True
+    return has_mock, has_blocked, non_proof
+
+
 def compute_lane_proof_bundle(
     args: Any,
     *,
+    section_id: str = "",
     runtime_generation_status: str,
     x1d_judges: list[dict[str, Any]],
     x2_gates: list[dict[str, Any]],
     x3: _X3DispositionLike | Any,
     offline_contract_stub_used: bool = False,
 ) -> dict[str, Any]:
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy, normalize_section_id
+
+    sid = normalize_section_id(
+        section_id or str(getattr(args, "section", "") or getattr(args, "section_id", "") or "")
+    )
+    try:
+        policy = get_section_judge_policy(sid)
+    except KeyError:
+        policy = None
+    judge_required_for_proof = True if policy is None else policy.judge_required_for_proof
+
     cli_mock_judge = bool(getattr(args, "mock_judges", False))
     inspection_hatch = bool(getattr(args, "allow_non_allow_exit_zero", False))
     mock_judge_hatch = bool(getattr(args, "allow_test_mock_judges", False))
@@ -87,9 +123,11 @@ def compute_lane_proof_bundle(
         plumbing_waiver and mock_provider
     )
 
-    judge_rows_mock = cli_mock_judge or any(
-        str(j.get("evaluator_mode")) == "MOCKED" for j in (x1d_judges or [])
+    judge_rows_mock, judge_blocked, judge_non_proof = _judge_counts_for_proof(
+        x1d_judges,
+        judge_required_for_proof=judge_required_for_proof,
     )
+    judge_rows_mock = judge_rows_mock or cli_mock_judge
 
     failed_x2 = [g["gate_id"] for g in (x2_gates or []) if not g.get("pass")]
     x3_allow = getattr(x3, "x3_code", "") == "X3_ALLOW"
@@ -98,8 +136,9 @@ def compute_lane_proof_bundle(
 
     plumbing = (
         runtime_generation_status != "REAL_LLM"
-        or judge_rows_mock
-        or _any_judge_blocked(x1d_judges)
+        or (judge_required_for_proof and judge_rows_mock)
+        or (judge_required_for_proof and judge_blocked)
+        or (judge_required_for_proof and judge_non_proof)
         or mock_provider
         or inspection_hatch
         or mock_judge_hatch
@@ -108,12 +147,16 @@ def compute_lane_proof_bundle(
 
     proof_eligible = bool(not plumbing and proofs_ok)
 
-    judge_pe = bool(
-        proof_eligible
-        and not judge_rows_mock
-        and not cli_mock_judge
-        and not _any_judge_blocked(x1d_judges)
-    )
+    if judge_required_for_proof:
+        judge_pe = bool(
+            proof_eligible
+            and not judge_rows_mock
+            and not cli_mock_judge
+            and not judge_blocked
+            and not judge_non_proof
+        )
+    else:
+        judge_pe = False
     provider_pe = bool(
         proof_eligible
         and runtime_generation_status == "REAL_LLM"
@@ -142,6 +185,9 @@ def compute_lane_proof_bundle(
     auth_scope = str(getattr(x3, "authorization_scope", "") or "")
 
     return {
+        "section_id": sid or None,
+        "judge_required_for_proof": judge_required_for_proof,
+        "judge_tier": policy.judge_tier.value if policy else None,
         "proof_eligible": proof_eligible,
         "generation_runtime_status": runtime_generation_status,
         "mocked_provider_selected": mock_provider,

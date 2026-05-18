@@ -334,15 +334,20 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    is_srfs = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
-    if is_srfs:
+    pool_type = str(pp.get("proof_pool_type") or "")
+    is_srfs = pool_type == "selected_role_fact_set"
+    is_ledger = pool_type == "broad_skills_ledger"
+    if is_srfs or is_ledger:
         facts = list(runtime_payload["selected_fact_plan"].get("facts") or [])
         bullets: list[dict[str, Any]] = []
         claim_ledger: list[dict[str, Any]] = []
-        for fact in facts[:5]:
+        limit = 5 if is_srfs else min(5, len(facts))
+        for idx, fact in enumerate(facts[:limit]):
             bid = str(fact.get("fact_id") or "").strip()
             if not bid:
                 continue
+            if is_ledger and bid not in IBM_BULLET_IDS and idx < len(IBM_BULLET_IDS):
+                bid = IBM_BULLET_IDS[idx]
             intensity = DEFAULT_INTENSITY_BY_BULLET.get(bid, "MODERATE")
             text = str(fact.get("claim_text") or "")
             metric_ids = [bid]
@@ -435,31 +440,28 @@ def run_ibm_bullets_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end ibm_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
-    base, base_path, base_hash = load_base_resume()
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
 
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    if srfs_path:
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="ibm_bullets",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
+    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
+        ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
+        selected_fact_plan = build_selected_fact_plan(ibm_facts)
+    else:
         ibm_header, _, _ = extract_ibm_employment(base)
-        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "ibm_bullets")
-        ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
+        ibm_facts = list(pool.selected_fact_plan.get("facts") or [])
         ibm_facts.sort(
             key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
         )
-        selected_fact_plan = {
-            "section_id": "ibm_bullets",
-            "selection_method": _srfs.selection_method_for_section("ibm_bullets"),
-            "facts": ibm_facts,
-            "required_fact_ids": [str(f["fact_id"]) for f in ibm_facts],
-        }
-    else:
-        ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
-        selected_fact_plan = build_selected_fact_plan(ibm_facts)
-        pp_meta = _srfs.base_proof_pool_metadata(
-            section_id="ibm_bullets",
-            candidate_fact_pool_count=len(ibm_facts),
-            allowed_fact_ids_count=len(allowed_fact_ids),
-        )
+        selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
+        allowed_fact_ids = pool.allowed_fact_ids
+    proof_pool_metadata = pool.proof_pool_metadata
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
         base_hash=base_hash,
@@ -471,7 +473,7 @@ def run_ibm_bullets_execution(
         jd_text=args.jd_text,
         briefing=args.briefing,
     )
-    runtime_payload["proof_pool_metadata"] = pp_meta
+    runtime_payload["proof_pool_metadata"] = proof_pool_metadata
     offline_stub_used = effective_offline_contract_stub_enabled()
     placement_bucket = resolve_lane_placement_bucket(
         args.provider,
@@ -638,7 +640,12 @@ def run_ibm_bullets_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=l2_output.get("jd_alignment"),
     )
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+
+    write_json(
+        artifact_dir / "section_input_usage_ledger.json",
+        apply_proof_pool_to_usage_ledger(usage_doc, pool),
+    )
 
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
@@ -670,7 +677,7 @@ def run_ibm_bullets_execution(
     )
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
 
     x2 = [
         g.to_dict()
@@ -688,9 +695,21 @@ def run_ibm_bullets_execution(
             raw_output=raw_output,
             x1d_judges=x1d,
             rewrite_distribution=rewrite_distribution,
-            srfs_source_fact_slice_gate_active=srfs_x2_active,
+            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            proof_pool_metadata=pp_x2,
+            proof_pool_ref=str(pool.proof_pool_ref or ""),
+            proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
     write_json(
         artifact_dir / "fact_check_result.json",
@@ -714,6 +733,7 @@ def run_ibm_bullets_execution(
 
     bundle = compute_lane_proof_bundle(
         args,
+        section_id="ibm_bullets",
         runtime_generation_status=runtime_generation_status,
         x1d_judges=x1d,
         x2_gates=x2,

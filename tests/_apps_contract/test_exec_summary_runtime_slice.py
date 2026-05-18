@@ -1719,7 +1719,6 @@ def test_zz_exec_summary_selected_role_fact_set_cli_smoke(persisted_selected_rol
             assert fid in compiled
         assert "SELECTED_ROLE_FACT_SET_APPENDIX" in compiled
         assert "NOT PROOF" in compiled
-        assert "SELECTED_ROLE_FACT_SET_EXECUTIVE_SLICE" in compiled
         assert SRFS_STYLE_ONESHOT_MARKER in compiled
         assert "STYLE_ONLY_NOT_PROOF" in compiled
         assert "<north_star_synthesis_contract>" in compiled

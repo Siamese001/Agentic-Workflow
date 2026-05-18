@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "waves_completed": ["W1", "W2"],
+  "proof_level": "DIAGNOSIS_ONLY",
+  "timestamp_utc": "2026-05-18T19:00:00Z",
+  "files_changed": [
+    "docs/reports/apps_rg/srfs_real_receipt_fallback_diagnosis_w1_w2.md",
+    "docs/reports/apps_rg/srfs_real_receipt_fallback_diagnosis_w1_w2_receipt.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "result": "empty diff (0 lines)"
+    },
+    {
+      "command": "python -m compileall apps_rg/audit apps_rg/runtime/sections apps_rg/runtime/dispatch -q",
+      "exit_code": 0,
+      "result": "compile succeeded"
+    },
+    {
+      "command": "python inspection of run_manifest.json commands vs section_metric_receipt.json fallback_reason",
+      "exit_code": 0,
+      "result": "six lanes lack --selected-role-fact-set; executive_summary includes it"
+    }
+  ],
+  "inspected_receipts": [
+    "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_182333/section_metric_receipt.json",
+    "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_173654/section_metric_receipt.json",
+    "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_182346/section_metric_receipt.json",
+    "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_182352/section_metric_receipt.json",
+    "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_182358/section_metric_receipt.json",
+    "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_182405/section_metric_receipt.json",
+    "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_182432/section_metric_receipt.json"
+  ],
+  "inspected_runtime_paths": [
+    "apps_rg/__main__.py",
+    "apps_rg/runtime/orchestration/canonical_dispatch.py",
+    "apps_rg/runtime/sections/headline_lane.py",
+    "apps_rg/runtime/sections/unify_bullets_lane.py",
+    "apps_rg/runtime/sections/unify_narrative_lane.py",
+    "apps_rg/runtime/sections/ibm_bullets_lane.py",
+    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+    "apps_rg/runtime/dispatch/competencies_dispatch.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/sections/selected_role_fact_set.py"
+  ],
+  "lane_diagnosis_matrix": {
+    "headline": {
+      "repair_classification": "expected_fallback_due_to_missing_SRFS_fixture_input",
+      "cli_had_selected_role_fact_set": false,
+      "fallback_reason_on_receipt": "no_selected_role_fact_set_supplied",
+      "lane_srfs_code_present": true,
+      "dispatcher_threads_srfs": true
+    },
+    "unify_bullets": {
+      "repair_classification": "expected_fallback_due_to_missing_SRFS_fixture_input",
+      "cli_had_selected_role_fact_set": false,
+      "fallback_reason_on_receipt": "no_selected_role_fact_set_supplied",
+      "lane_srfs_code_present": true,
+      "dispatcher_threads_srfs": true
+    },
+    "unify_narrative": {
+      "repair_classification": "expected_fallback_due_to_missing_SRFS_fixture_input",
+      "cli_had_selected_role_fact_set": false,
+      "fallback_reason_on_receipt": "no_selected_role_fact_set_supplied",
+      "lane_srfs_code_present": true,
+      "dispatcher_threads_srfs": true
+    },
+    "ibm_bullets": {
+      "repair_classification": "expected_fallback_due_to_missing_SRFS_fixture_input",
+      "cli_had_selected_role_fact_set": false,
+      "fallback_reason_on_receipt": "no_selected_role_fact_set_supplied",
+      "lane_srfs_code_present": true,
+      "dispatcher_threads_srfs": true
+    },
+    "ibm_narrative": {
+      "repair_classification": "expected_fallback_due_to_missing_SRFS_fixture_input",
+      "cli_had_selected_role_fact_set": false,
+      "fallback_reason_on_receipt": "no_selected_role_fact_set_supplied",
+      "lane_srfs_code_present": true,
+      "dispatcher_threads_srfs": true
+    },
+    "competencies": {
+      "repair_classification": "expected_fallback_due_to_missing_SRFS_fixture_input",
+      "cli_had_selected_role_fact_set": false,
+      "fallback_reason_on_receipt": "no_selected_role_fact_set_supplied",
+      "lane_srfs_code_present": true,
+      "dispatcher_threads_srfs": true,
+      "run_manifest_note": "trial run_manifest references pytest; rerun with governed apps_rg CLI"
+    },
+    "executive_summary": {
+      "repair_classification": "control_srfs_active",
+      "cli_had_selected_role_fact_set": true,
+      "srfs_input_path": "artifacts/apps_rg/fact_inventory/selected_role_fact_set_20260518T181200Z_exec_summary_srfs_cli_proof.json"
+    }
+  },
+  "recommended_next_waves": [
+    "R1: Pin seven-section non-empty SRFS JSON SSOT for reruns (e.g. artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json)",
+    "R2: Representative proof rerun — unify_bullets with --selected-role-fact-set (offline/stub only)",
+    "R3: Batch rerun six lanes with same SRFS path on governed CLI",
+    "R4: Real-receipt aggregator trial v2 with new explicit manifest paths"
+  ],
+  "guardrail_violations": [],
+  "decisive_reason": "W1-W2 static diagnosis: six trial receipts show fallback_reason=no_selected_role_fact_set_supplied because run_manifest commands omitted --selected-role-fact-set; executive_summary control run included it and produced SRFS-active receipt. Lane and dispatch SRFS wiring present; smallest repair is governed CLI reruns with shared seven-section SRFS input, not aggregator or lane code changes."
+}

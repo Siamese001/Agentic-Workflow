@@ -1,7 +1,7 @@
 """INPUT_AUTHORITY block appended to compiled section prompts (apps_rg-only)."""
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Any, Sequence
 
 import json
 from dataclasses import replace
@@ -13,14 +13,21 @@ def format_input_authority_block(
     *,
     allowed_source_fact_ids: Sequence[str],
     selected_role_fact_set_mode: bool = False,
+    proof_pool_mode: str = "base_resume_fallback",
 ) -> str:
-    substrate = (
-        "- SELECTED_ROLE_FACT_SET_EXECUTIVE_SLICE (from artifact): CLAIM_EVIDENCE - sole proof substrate for SelectedRoleFactSet mode executive_summary adaptive claims."
-        if selected_role_fact_set_mode
-        else (
-            "- BASE_RESUME_SELECTED_FACTS: CLAIM_EVIDENCE after selection (only substrate for factual resume claims)"
+    if selected_role_fact_set_mode or proof_pool_mode == "srfs":
+        substrate = (
+            "- CLAIM SUPPORT POOL (SRFS): SelectedRoleFactSet section slice — sole substrate for factual claims"
         )
-    )
+    elif proof_pool_mode == "broad_skills_ledger":
+        substrate = (
+            "- CLAIM SUPPORT POOL (BROAD SKILLS LEDGER): governed candidate_fact_id rows — sole substrate for factual claims"
+        )
+    else:
+        substrate = (
+            "- CLAIM SUPPORT POOL (BASE RESUME FALLBACK): canonical employment bullets — explicit fallback; "
+            "not ledger/SRFS primary"
+        )
     lines = [
         "INPUT_AUTHORITY:",
         substrate,
@@ -30,9 +37,10 @@ def format_input_authority_block(
         "- BRIEFING_RESEARCH: CONTEXT_INPUT (mandatory; positioning and themes; not claim evidence)",
         "",
         "Rules:",
-        "- source_fact_ids must come only from ALLOWED_SOURCE_FACT_IDS",
+        "- TARGETING INPUTS (NON-PROOF): JD/title/company and briefing — prioritize relevance only",
+        "- source_fact_ids must come only from ALLOWED_SOURCE_FACT_IDS in the CLAIM SUPPORT POOL",
         "- JD, target title, target company, and briefing/research must never appear in source_fact_ids",
-        "- If a claim cannot be supported by selected base-resume facts, omit it",
+        "- If a claim cannot be supported by the CLAIM SUPPORT POOL, omit it or write conservatively",
         "- Do not invent facts to satisfy the JD",
         "- Do not turn briefing/research into resume experience",
         "",
@@ -47,11 +55,13 @@ def augment_section_compiled_with_input_authority(
     *,
     allowed_source_fact_ids: Sequence[str],
     selected_role_fact_set_mode: bool = False,
+    proof_pool_mode: str = "base_resume_fallback",
 ) -> SectionCompiledPrompt:
     """Return a copy of ``compiled`` with INPUT_AUTHORITY appended to the last message."""
     block = format_input_authority_block(
         allowed_source_fact_ids=allowed_source_fact_ids,
         selected_role_fact_set_mode=selected_role_fact_set_mode,
+        proof_pool_mode=proof_pool_mode,
     )
     art = compiled.artifact
     msgs = [dict(m) for m in art.messages]
@@ -68,4 +78,34 @@ def augment_section_compiled_with_input_authority(
     )
 
 
-__all__ = ["augment_section_compiled_with_input_authority", "format_input_authority_block"]
+def finalize_section_compiled_with_proof_pool(
+    compiled: SectionCompiledPrompt,
+    *,
+    runtime_payload: dict[str, Any],
+) -> SectionCompiledPrompt:
+    """Append INPUT_AUTHORITY using runtime proof_pool_metadata when present."""
+    ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
+    mode = proof_pool_mode_from_metadata(runtime_payload.get("proof_pool_metadata"))
+    return augment_section_compiled_with_input_authority(
+        compiled,
+        allowed_source_fact_ids=ids,
+        selected_role_fact_set_mode=(mode == "srfs"),
+        proof_pool_mode=mode,
+    )
+
+
+def proof_pool_mode_from_metadata(metadata: dict[str, Any] | None) -> str:
+    pt = str((metadata or {}).get("proof_pool_type") or "")
+    if pt == "selected_role_fact_set":
+        return "srfs"
+    if pt == "broad_skills_ledger":
+        return "broad_skills_ledger"
+    return "base_resume_fallback"
+
+
+__all__ = [
+    "augment_section_compiled_with_input_authority",
+    "finalize_section_compiled_with_proof_pool",
+    "format_input_authority_block",
+    "proof_pool_mode_from_metadata",
+]

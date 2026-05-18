@@ -63,7 +63,7 @@ def test_mock_one_sentence():
 def test_x2_gate_count():
     run_cmd()
     x2 = load_json("x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 35
+    assert x2["total_x2_gates"] == 36
     assert x2["x2_failed"] == 0
 
 

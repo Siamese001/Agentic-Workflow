@@ -44,6 +44,7 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
+from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
 from apps_rg.runtime.dispatch.ibm_narrative_pa import compile_ibm_narrative_prompt
 from apps_rg.runtime.exit.ibm_narrative_x3 import aggregate_x3
 from apps_rg.runtime.ibm_narrative_judge_preflight import run_ibm_narrative_judge_credentials_preflight
@@ -508,9 +509,11 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         "production AI platform leadership."
     )
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    is_srfs = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
+    pool_type = str(pp.get("proof_pool_type") or "")
+    is_srfs = pool_type == "selected_role_fact_set"
+    is_ledger = pool_type == "broad_skills_ledger"
     allowed_sorted = list(runtime_payload.get("allowed_fact_ids") or [])
-    if is_srfs and allowed_sorted:
+    if (is_srfs or is_ledger) and allowed_sorted:
         from apps_rg.runtime.sections.selected_role_fact_set import stub_source_fact_ids_for_allowed
 
         bases = stub_source_fact_ids_for_allowed(allowed_sorted, max_ids=6)
@@ -591,29 +594,34 @@ def run_ibm_narrative_execution(
     print_output: bool = False,
 ) -> dict[str, Any]:
     """Single end-to-end ibm_narrative run: artifacts + X1D/X2/X3/L6."""
-    base, base_path, base_hash = load_base_resume()
+    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
+    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="ibm_narrative",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
     candidate_name = str(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
-
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    if srfs_path:
+    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
+        ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
+        selected_fact_plan = build_selected_fact_plan(ibm_facts)
+    else:
         ibm_header, _, _ = extract_ibm_employment(base)
-        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "ibm_narrative")
-        ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
+        ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
         ibm_facts.sort(
             key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
         )
-        selected_fact_plan = build_selected_fact_plan_ibm_narrative_srfs(ibm_facts)
-    else:
-        ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
-        selected_fact_plan = build_selected_fact_plan(ibm_facts)
-        pp_meta = _srfs.base_proof_pool_metadata(
-            section_id="ibm_narrative",
-            candidate_fact_pool_count=len(ibm_facts),
-            allowed_fact_ids_count=len(allowed_fact_ids),
-        )
+        if pool.srfs_present:
+            selected_fact_plan = build_selected_fact_plan_ibm_narrative_srfs(ibm_facts)
+        else:
+            selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
+        allowed_fact_ids = pool.allowed_fact_ids
+    proof_pool_metadata = pool.proof_pool_metadata
     companion_text = load_companion_ibm_bullets_text()
     ibm_bullets_l2 = resolve_effective_lane_l2_path(REPO_ROOT, "ibm_bullets")
     companion_ref = (
@@ -634,7 +642,7 @@ def run_ibm_narrative_execution(
         briefing=args.briefing,
         candidate_name=candidate_name,
     )
-    runtime_payload["proof_pool_metadata"] = pp_meta
+    runtime_payload["proof_pool_metadata"] = proof_pool_metadata
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
         artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -856,7 +864,12 @@ def run_ibm_narrative_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=(parsed or {}).get("jd_alignment") if isinstance(parsed, dict) else None,
     )
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+
+    write_json(
+        artifact_dir / "section_input_usage_ledger.json",
+        apply_proof_pool_to_usage_ledger(usage_doc, pool),
+    )
     parsed_for_x2: dict[str, Any] = {**(parsed or {}), "text_claim_coverage": coverage}
 
     mock_provider_cli = str(getattr(args, "provider", "") or "").strip().lower() == "mock"
@@ -868,7 +881,7 @@ def run_ibm_narrative_execution(
 
     allowed_ids_list = list(runtime_payload.get("allowed_fact_ids") or [])
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
     x2 = [
         g.to_dict()
         for g in run_ibm_narrative_x2_gates(
@@ -888,9 +901,21 @@ def run_ibm_narrative_execution(
             test_only_mock_provider=test_only_mock_provider_eff,
             artifacts_dir=artifact_dir,
             text_claim_coverage=coverage,
-            srfs_source_fact_slice_gate_active=srfs_x2_active,
+            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            proof_pool_metadata=pp_x2,
+            proof_pool_ref=str(pool.proof_pool_ref or ""),
+            proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
 
     l2_output = {
         "run_id": runtime_payload["run_id"],
@@ -952,6 +977,7 @@ def run_ibm_narrative_execution(
 
     bundle = compute_lane_proof_bundle(
         args,
+        section_id="ibm_narrative",
         runtime_generation_status=runtime_generation_status,
         x1d_judges=x1d,
         x2_gates=x2,

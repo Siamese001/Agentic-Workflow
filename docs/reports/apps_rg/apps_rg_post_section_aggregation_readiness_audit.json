@@ -1,0 +1,517 @@
+{
+  "status": "FAIL",
+  "product_claim": false,
+  "audit_evidence": "latest_mock_run or latest_real_run per section (artifacts/apps_rg/runtime_proofs)",
+  "aggregation_code": {
+    "final_resume_assembler": "apps_rg/runtime/assembly/final_resume_assembler.py",
+    "final_resume_x2": "apps_rg/runtime/assembly/final_resume_x2.py",
+    "final_resume_manifest": "apps_rg/runtime/assembly/final_resume_manifest.py",
+    "generated_lane_rollup": "apps_rg/runtime/reports/generated_lane_rollup.py",
+    "orchestrate_full_resume": "apps_rg/runtime/orchestrate_full_resume.py",
+    "resume_package_x3": "apps_rg/runtime/package/resume_package_x3.py",
+    "modular_rg_output_builder": "apps_rg/l2_recipe/modular_rg_output_builder.py",
+    "srfs_receipt_aggregator": "apps_rg/audit/srfs_receipt_aggregator.py"
+  },
+  "sections_checked": {
+    "headline": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\headline\\mock\\headline_20260518_203549",
+      "bucket": "mock",
+      "run_id": "headline_20260518_203549",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "4fc0a92ced018a87e5524d445c4ffe71680871352080c9578e1575f03940d219",
+      "digest_match": true,
+      "x2_gate_status": "PASS",
+      "x2_receipt_status": "PASS",
+      "source_fact_id_count": 5,
+      "runtime_generation_status": "OFFLINE_CONTRACT_STUB"
+    },
+    "executive_summary": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\executive_summary\\real\\exec_summary_20260518_203431",
+      "bucket": "real",
+      "run_id": "exec_summary_20260518_203431",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "6a8ef62221108f83f42b07619830984c2f299d4ae1d1c3530337fbc2e6ad630a",
+      "digest_match": true,
+      "x2_gate_status": "PASS",
+      "x2_receipt_status": "PASS",
+      "source_fact_id_count": 7,
+      "runtime_generation_status": "REAL_LLM"
+    },
+    "unify_bullets": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\unify_bullets\\mock\\unify_bullets_20260518_203630",
+      "bucket": "mock",
+      "run_id": "unify_bullets_20260518_203630",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "c7e7efeff1c42ce294c7240ab59904e3414612f442943921be689423bf5f635d",
+      "digest_match": true,
+      "x2_gate_status": "FAIL",
+      "x2_receipt_status": "FAIL",
+      "source_fact_id_count": 2,
+      "runtime_generation_status": "OFFLINE_CONTRACT_STUB"
+    },
+    "unify_narrative": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\unify_narrative\\mock\\unify_narrative_20260518_203636",
+      "bucket": "mock",
+      "run_id": "unify_narrative_20260518_203636",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "9b5a253443e73aec1b7078d43ce1d574f1c4a23e766e798416bca58f05be4d6d",
+      "digest_match": true,
+      "x2_gate_status": "PASS",
+      "x2_receipt_status": "PASS",
+      "source_fact_id_count": 4,
+      "runtime_generation_status": "MOCKED"
+    },
+    "ibm_bullets": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\ibm_bullets\\mock\\ibm_bullets_20260518_203612",
+      "bucket": "mock",
+      "run_id": "ibm_bullets_20260518_203612",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "2f359ca889bdcef67364f085cc4e60fef3161e61ed76b9a5fa04369b668b6697",
+      "digest_match": true,
+      "x2_gate_status": "FAIL",
+      "x2_receipt_status": "FAIL",
+      "source_fact_id_count": 5,
+      "runtime_generation_status": "OFFLINE_CONTRACT_STUB"
+    },
+    "ibm_narrative": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\ibm_narrative\\real\\ibm_narrative_20260518_200524",
+      "bucket": "real",
+      "run_id": "ibm_narrative_20260518_200524",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "0f21685843ff29e784b76696b68bb5c3f83c0ffd3db124fb51b533df7af7aff4",
+      "digest_match": true,
+      "x2_gate_status": "PASS",
+      "x2_receipt_status": "PASS",
+      "source_fact_id_count": 3,
+      "runtime_generation_status": "OFFLINE_CONTRACT_STUB"
+    },
+    "competencies": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\competencies\\mock\\competencies_20260518_203623",
+      "bucket": "mock",
+      "run_id": "competencies_20260518_203623",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "960bc26eb9ed38d0290d7b33874a33bbe8ab1f3ba55081f771c175ab499f5c1f",
+      "digest_match": true,
+      "x2_gate_status": "FAIL",
+      "x2_receipt_status": "PASS",
+      "source_fact_id_count": 8,
+      "runtime_generation_status": "OFFLINE_CONTRACT_STUB"
+    }
+  },
+  "section_artifacts": {
+    "headline": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\headline\\mock\\headline_20260518_203549",
+      "bucket": "mock",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/headline/mock/headline_20260518_203549/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/headline/mock/headline_20260518_203549/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/headline/mock/headline_20260518_203549/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/headline/mock/headline_20260518_203549/x2_gate_outputs.json",
+      "output_artifact": "headline_output.txt",
+      "output_files_present": [
+        "headline_output.txt"
+      ]
+    },
+    "executive_summary": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\executive_summary\\real\\exec_summary_20260518_203431",
+      "bucket": "real",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_203431/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_203431/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_203431/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_203431/x2_gate_outputs.json",
+      "output_artifact": "l2_output.resume_display_text",
+      "output_files_present": []
+    },
+    "unify_bullets": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\unify_bullets\\mock\\unify_bullets_20260518_203630",
+      "bucket": "mock",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/unify_bullets/mock/unify_bullets_20260518_203630/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/unify_bullets/mock/unify_bullets_20260518_203630/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/unify_bullets/mock/unify_bullets_20260518_203630/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/unify_bullets/mock/unify_bullets_20260518_203630/x2_gate_outputs.json",
+      "output_artifact": "l2_output.bullets",
+      "output_files_present": []
+    },
+    "unify_narrative": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\unify_narrative\\mock\\unify_narrative_20260518_203636",
+      "bucket": "mock",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/unify_narrative/mock/unify_narrative_20260518_203636/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/unify_narrative/mock/unify_narrative_20260518_203636/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/unify_narrative/mock/unify_narrative_20260518_203636/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/unify_narrative/mock/unify_narrative_20260518_203636/x2_gate_outputs.json",
+      "output_artifact": "l2_output.narrative_sentence",
+      "output_files_present": []
+    },
+    "ibm_bullets": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\ibm_bullets\\mock\\ibm_bullets_20260518_203612",
+      "bucket": "mock",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/ibm_bullets/mock/ibm_bullets_20260518_203612/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/ibm_bullets/mock/ibm_bullets_20260518_203612/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/ibm_bullets/mock/ibm_bullets_20260518_203612/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/ibm_bullets/mock/ibm_bullets_20260518_203612/x2_gate_outputs.json",
+      "output_artifact": "l2_output.bullets",
+      "output_files_present": []
+    },
+    "ibm_narrative": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\ibm_narrative\\real\\ibm_narrative_20260518_200524",
+      "bucket": "real",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_200524/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_200524/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_200524/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_200524/x2_gate_outputs.json",
+      "output_artifact": "l2_output.narrative_sentence",
+      "output_files_present": []
+    },
+    "competencies": {
+      "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\competencies\\mock\\competencies_20260518_203623",
+      "bucket": "mock",
+      "l2_output": "artifacts/apps_rg/runtime_proofs/competencies/mock/competencies_20260518_203623/l2_output.json",
+      "section_input_usage_ledger": "artifacts/apps_rg/runtime_proofs/competencies/mock/competencies_20260518_203623/section_input_usage_ledger.json",
+      "x2_source_fact_pool_receipt": "artifacts/apps_rg/runtime_proofs/competencies/mock/competencies_20260518_203623/x2_source_fact_pool_receipt.json",
+      "x2_gate_outputs": "artifacts/apps_rg/runtime_proofs/competencies/mock/competencies_20260518_203623/x2_gate_outputs.json",
+      "output_artifact": "l2_output.competencies + competencies_section_output.json",
+      "output_files_present": [
+        "competencies_section_output.json"
+      ]
+    }
+  },
+  "x2_receipts": {
+    "headline": {
+      "path": "artifacts/apps_rg/runtime_proofs/headline/mock/headline_20260518_203549/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "4fc0a92ced018a87e5524d445c4ffe71680871352080c9578e1575f03940d219",
+      "allowed_source_fact_ids_count": 9
+    },
+    "executive_summary": {
+      "path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_203431/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "6a8ef62221108f83f42b07619830984c2f299d4ae1d1c3530337fbc2e6ad630a",
+      "allowed_source_fact_ids_count": 8
+    },
+    "unify_bullets": {
+      "path": "artifacts/apps_rg/runtime_proofs/unify_bullets/mock/unify_bullets_20260518_203630/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "FAIL",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "c7e7efeff1c42ce294c7240ab59904e3414612f442943921be689423bf5f635d",
+      "allowed_source_fact_ids_count": 2
+    },
+    "unify_narrative": {
+      "path": "artifacts/apps_rg/runtime_proofs/unify_narrative/mock/unify_narrative_20260518_203636/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "9b5a253443e73aec1b7078d43ce1d574f1c4a23e766e798416bca58f05be4d6d",
+      "allowed_source_fact_ids_count": 8
+    },
+    "ibm_bullets": {
+      "path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/mock/ibm_bullets_20260518_203612/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "FAIL",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "2f359ca889bdcef67364f085cc4e60fef3161e61ed76b9a5fa04369b668b6697",
+      "allowed_source_fact_ids_count": 5
+    },
+    "ibm_narrative": {
+      "path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_200524/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "0f21685843ff29e784b76696b68bb5c3f83c0ffd3db124fb51b533df7af7aff4",
+      "allowed_source_fact_ids_count": 5
+    },
+    "competencies": {
+      "path": "artifacts/apps_rg/runtime_proofs/competencies/mock/competencies_20260518_203623/x2_source_fact_pool_receipt.json",
+      "x2_source_fact_pool_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "proof_pool_digest": "960bc26eb9ed38d0290d7b33874a33bbe8ab1f3ba55081f771c175ab499f5c1f",
+      "allowed_source_fact_ids_count": 19
+    }
+  },
+  "proof_pool_digest_matrix": {
+    "headline": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "4fc0a92ced018a87e5524d445c4ffe71680871352080c9578e1575f03940d219",
+      "proof_pool_digest_receipt": "4fc0a92ced018a87e5524d445c4ffe71680871352080c9578e1575f03940d219",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    },
+    "executive_summary": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "6a8ef62221108f83f42b07619830984c2f299d4ae1d1c3530337fbc2e6ad630a",
+      "proof_pool_digest_receipt": "6a8ef62221108f83f42b07619830984c2f299d4ae1d1c3530337fbc2e6ad630a",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    },
+    "unify_bullets": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "c7e7efeff1c42ce294c7240ab59904e3414612f442943921be689423bf5f635d",
+      "proof_pool_digest_receipt": "c7e7efeff1c42ce294c7240ab59904e3414612f442943921be689423bf5f635d",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    },
+    "unify_narrative": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "9b5a253443e73aec1b7078d43ce1d574f1c4a23e766e798416bca58f05be4d6d",
+      "proof_pool_digest_receipt": "9b5a253443e73aec1b7078d43ce1d574f1c4a23e766e798416bca58f05be4d6d",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    },
+    "ibm_bullets": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "2f359ca889bdcef67364f085cc4e60fef3161e61ed76b9a5fa04369b668b6697",
+      "proof_pool_digest_receipt": "2f359ca889bdcef67364f085cc4e60fef3161e61ed76b9a5fa04369b668b6697",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    },
+    "ibm_narrative": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "0f21685843ff29e784b76696b68bb5c3f83c0ffd3db124fb51b533df7af7aff4",
+      "proof_pool_digest_receipt": "0f21685843ff29e784b76696b68bb5c3f83c0ffd3db124fb51b533df7af7aff4",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    },
+    "competencies": {
+      "proof_source_usage": "broad_skills_ledger",
+      "proof_source_receipt": "broad_skills_ledger",
+      "proof_pool_digest_usage": "960bc26eb9ed38d0290d7b33874a33bbe8ab1f3ba55081f771c175ab499f5c1f",
+      "proof_pool_digest_receipt": "960bc26eb9ed38d0290d7b33874a33bbe8ab1f3ba55081f771c175ab499f5c1f",
+      "digest_match": true,
+      "base_resume_fallback_used": false
+    }
+  },
+  "source_fact_reuse_matrix": {
+    "fact_consulting_001": {
+      "sections": [
+        "competencies",
+        "headline",
+        "ibm_narrative"
+      ],
+      "section_count": 3
+    },
+    "fact_engineering_platform_001": {
+      "sections": [
+        "competencies",
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "section_count": 3
+    },
+    "fact_engineering_platform_002": {
+      "sections": [
+        "competencies",
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "section_count": 3
+    },
+    "fact_engineering_platform_004": {
+      "sections": [
+        "competencies",
+        "headline",
+        "unify_narrative"
+      ],
+      "section_count": 3
+    },
+    "fact_engineering_platform_003": {
+      "sections": [
+        "competencies",
+        "unify_narrative"
+      ],
+      "section_count": 2
+    },
+    "fact_engineering_platform_006": {
+      "sections": [
+        "competencies",
+        "headline"
+      ],
+      "section_count": 2
+    },
+    "fact_governance_003": {
+      "sections": [
+        "executive_summary",
+        "ibm_narrative"
+      ],
+      "section_count": 2
+    },
+    "fact_quant_hpc_001": {
+      "sections": [
+        "headline",
+        "ibm_narrative"
+      ],
+      "section_count": 2
+    },
+    "bul_ibm_001": {
+      "sections": [
+        "ibm_bullets"
+      ],
+      "section_count": 1
+    },
+    "bul_ibm_002": {
+      "sections": [
+        "ibm_bullets"
+      ],
+      "section_count": 1
+    },
+    "bul_ibm_002_metric_e5abeb74": {
+      "sections": [
+        "ibm_bullets"
+      ],
+      "section_count": 1
+    },
+    "bul_ibm_003": {
+      "sections": [
+        "ibm_bullets"
+      ],
+      "section_count": 1
+    },
+    "bul_ibm_003_metric_219867bb": {
+      "sections": [
+        "ibm_bullets"
+      ],
+      "section_count": 1
+    },
+    "bul_unify_001": {
+      "sections": [
+        "unify_bullets"
+      ],
+      "section_count": 1
+    },
+    "bul_unify_002": {
+      "sections": [
+        "unify_bullets"
+      ],
+      "section_count": 1
+    },
+    "fact_certs_001": {
+      "sections": [
+        "competencies"
+      ],
+      "section_count": 1
+    },
+    "fact_engineering_platform_005": {
+      "sections": [
+        "competencies"
+      ],
+      "section_count": 1
+    },
+    "fact_exec_002": {
+      "sections": [
+        "executive_summary"
+      ],
+      "section_count": 1
+    },
+    "fact_exec_002_metric_c880fce9": {
+      "sections": [
+        "executive_summary"
+      ],
+      "section_count": 1
+    },
+    "fact_governance_003_metric_e5abeb74": {
+      "sections": [
+        "executive_summary"
+      ],
+      "section_count": 1
+    },
+    "fact_quant_hpc_002": {
+      "sections": [
+        "headline"
+      ],
+      "section_count": 1
+    },
+    "fact_quant_hpc_003": {
+      "sections": [
+        "executive_summary"
+      ],
+      "section_count": 1
+    }
+  },
+  "duplicate_claims": [],
+  "duplicate_metrics": [],
+  "phrase_overlap": [],
+  "blockers": [
+    {
+      "code": "X2_RECEIPT_FAIL",
+      "section": "unify_bullets",
+      "status": "FAIL",
+      "decisive_reason": "unsupported_source_fact_ids:bul_unify_001,bul_unify_002"
+    },
+    {
+      "code": "X2_GATES_FAIL",
+      "section": "unify_bullets",
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\unify_bullets\\mock\\unify_bullets_20260518_203630\\x2_gate_outputs.json"
+    },
+    {
+      "code": "X2_RECEIPT_FAIL",
+      "section": "ibm_bullets",
+      "status": "FAIL",
+      "decisive_reason": "unsupported_source_fact_ids:bul_ibm_001,bul_ibm_002,bul_ibm_002_metric_e5abeb74,bul_ibm_003,bul_ibm_003_metric_219867bb"
+    },
+    {
+      "code": "X2_GATES_FAIL",
+      "section": "ibm_bullets",
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\ibm_bullets\\mock\\ibm_bullets_20260518_203612\\x2_gate_outputs.json"
+    },
+    {
+      "code": "X2_GATES_FAIL",
+      "section": "competencies",
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\competencies\\mock\\competencies_20260518_203623\\x2_gate_outputs.json"
+    }
+  ],
+  "major_gaps": [
+    {
+      "code": "MISSING_GENERATED_LANE_ROLLUP",
+      "path": "artifacts\\apps_rg\\reports\\generated_lane_rollup.json",
+      "note": "final_resume_assembler requires rollup pointers"
+    },
+    {
+      "code": "CROSS_SECTION_PROOF_POOL_DIGEST_HETEROGENEITY",
+      "unique_digest_count": 7,
+      "per_section_digests": {
+        "headline": "4fc0a92ced018a87e5524d445c4ffe71680871352080c9578e1575f03940d219",
+        "executive_summary": "6a8ef62221108f83f42b07619830984c2f299d4ae1d1c3530337fbc2e6ad630a",
+        "unify_bullets": "c7e7efeff1c42ce294c7240ab59904e3414612f442943921be689423bf5f635d",
+        "unify_narrative": "9b5a253443e73aec1b7078d43ce1d574f1c4a23e766e798416bca58f05be4d6d",
+        "ibm_bullets": "2f359ca889bdcef67364f085cc4e60fef3161e61ed76b9a5fa04369b668b6697",
+        "ibm_narrative": "0f21685843ff29e784b76696b68bb5c3f83c0ffd3db124fb51b533df7af7aff4",
+        "competencies": "960bc26eb9ed38d0290d7b33874a33bbe8ab1f3ba55081f771c175ab499f5c1f"
+      },
+      "note": "Each section resolves its own ledger slice; assembler embeds l2 snapshots without verifying a single orchestration-scoped proof pool."
+    },
+    {
+      "code": "L2_OUTPUT_IDS_OUTSIDE_ACTIVE_LEDGER_POOL",
+      "sections": [
+        {
+          "section": "unify_bullets",
+          "decisive_reason": "unsupported_source_fact_ids:bul_unify_001,bul_unify_002",
+          "unsupported_source_fact_ids": [
+            "bul_unify_001",
+            "bul_unify_002"
+          ]
+        },
+        {
+          "section": "ibm_bullets",
+          "decisive_reason": "unsupported_source_fact_ids:bul_ibm_001,bul_ibm_002,bul_ibm_002_metric_e5abeb74,bul_ibm_003,bul_ibm_003_metric_219867bb",
+          "unsupported_source_fact_ids": [
+            "bul_ibm_001",
+            "bul_ibm_002",
+            "bul_ibm_002_metric_e5abeb74",
+            "bul_ibm_003",
+            "bul_ibm_003_metric_219867bb"
+          ]
+        }
+      ],
+      "note": "Mock/stub L2 still cites legacy bul_* ids not in broad_skills_ledger allowlist"
+    }
+  ],
+  "minor_gaps": [],
+  "recommended_next_wave": "Wire final_resume_assembler preflight: require x2_source_fact_pool_receipt PASS + usage/receipt digest match per lane; add aggregate X2 gates for cross-section source_fact_id budget, narrative-vs-bullet substring anti-repeat, and metric dedup.",
+  "non_claims": [
+    "Does not claim product ALLOW",
+    "Does not rewrite outputs",
+    "Does not weaken X2"
+  ]
+}

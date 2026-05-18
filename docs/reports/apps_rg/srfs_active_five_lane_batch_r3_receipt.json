@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "waves_completed": ["R3"],
+  "proof_level": "FIVE_LANE_SRFS_ACTIVE_RECEIPT_BATCH_ONLY",
+  "timestamp_utc": "2026-05-18T19:30:00Z",
+  "files_changed": [
+    "docs/reports/apps_rg/srfs_active_five_lane_batch_r3.md",
+    "docs/reports/apps_rg/srfs_active_five_lane_batch_r3_receipt.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "result": "empty diff"
+    },
+    {
+      "command": "python -m compileall apps_rg/runtime/sections apps_rg/runtime/dispatch apps_rg/audit -q",
+      "exit_code": 0,
+      "result": "compile succeeded"
+    },
+    {
+      "command": "python SRFS SSOT sha256 and section counts",
+      "exit_code": 0,
+      "result": "sha256 30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f; all seven non-empty"
+    },
+    {
+      "command": "python -m apps_rg --section headline --selected-role-fact-set artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json --provider qwen_vllm --mock-judges --allow-test-mock-judges --allow-non-allow-exit-zero",
+      "exit_code": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606"
+    },
+    {
+      "command": "python -m apps_rg --section unify_narrative ... (same SRFS flags)",
+      "exit_code": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624"
+    },
+    {
+      "command": "python -m apps_rg --section ibm_bullets ... (same SRFS flags)",
+      "exit_code": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636"
+    },
+    {
+      "command": "python -m apps_rg --section ibm_narrative ... (same SRFS flags)",
+      "exit_code": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700"
+    },
+    {
+      "command": "python -m apps_rg --section competencies ... (same SRFS flags)",
+      "exit_code": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715"
+    },
+    {
+      "command": "python inspection of run_manifest.json and section_metric_receipt.json (all five lanes)",
+      "exit_code": 0,
+      "result": "ALL_FIVE_SRFS_ACTIVE: true"
+    }
+  ],
+  "selected_srfs_path": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json",
+  "selected_srfs_sha256": "30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f",
+  "lanes_attempted": [
+    "headline",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "lane_result_matrix": {
+    "headline": {
+      "srfs_active_receipt": true,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606",
+      "placement_bucket": "real"
+    },
+    "unify_narrative": {
+      "srfs_active_receipt": true,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624",
+      "placement_bucket": "real"
+    },
+    "ibm_bullets": {
+      "srfs_active_receipt": true,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636",
+      "placement_bucket": "plumbing"
+    },
+    "ibm_narrative": {
+      "srfs_active_receipt": true,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700",
+      "placement_bucket": "real"
+    },
+    "competencies": {
+      "srfs_active_receipt": true,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715",
+      "placement_bucket": "real"
+    }
+  },
+  "run_dirs": {
+    "headline": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606",
+    "unify_narrative": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624",
+    "ibm_bullets": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636",
+    "ibm_narrative": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700",
+    "competencies": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715"
+  },
+  "receipt_paths": {
+    "headline": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606/section_metric_receipt.json",
+    "unify_narrative": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624/section_metric_receipt.json",
+    "ibm_bullets": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636/section_metric_receipt.json",
+    "ibm_narrative": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700/section_metric_receipt.json",
+    "competencies": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715/section_metric_receipt.json"
+  },
+  "proof_checks_by_lane": {
+    "headline": {
+      "run_manifest_has_srfs": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_active_receipt": true
+    },
+    "unify_narrative": {
+      "run_manifest_has_srfs": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_active_receipt": true
+    },
+    "ibm_bullets": {
+      "run_manifest_has_srfs": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_active_receipt": true
+    },
+    "ibm_narrative": {
+      "run_manifest_has_srfs": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_active_receipt": true
+    },
+    "competencies": {
+      "run_manifest_has_srfs": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_active_receipt": true
+    }
+  },
+  "x2_srfs_gate_status_by_lane": {
+    "headline": "PASS",
+    "unify_narrative": "PASS",
+    "ibm_bullets": "PASS",
+    "ibm_narrative": "PASS",
+    "competencies": "PASS"
+  },
+  "guardrail_violations": [],
+  "can_start_r4_aggregator_trial_v2": true,
+  "r4_notes": [
+    "Build explicit seven-receipt manifest; six lanes use W7 nested SSOT (R2+R3).",
+    "executive_summary trial receipt still uses exec-only SRFS file; optional exec rerun with W7 SSOT for homogeneous manifest.",
+    "ibm_bullets receipt under plumbing/ is valid for manifest path listing."
+  ],
+  "explicit_non_claims": [
+    "Structural SRFS-active receipt batch only.",
+    "Mock judges; REAL_LLM generation; no certification or product ALLOW.",
+    "Aggregator trial v2 not executed in R3."
+  ],
+  "decisive_reason": "All five R3 lanes run with --selected-role-fact-set and W7 nested SSOT produced SRFS-active section_metric_receipt.json files (no base_resume_fallback). Confirms batch repair path without lane code changes."
+}

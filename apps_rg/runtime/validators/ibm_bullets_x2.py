@@ -308,6 +308,9 @@ def run_ibm_bullets_x2_gates(
     x1d_judges: list[dict[str, Any]] | None = None,
     rewrite_distribution: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -402,12 +405,31 @@ def run_ibm_bullets_x2_gates(
         "Core IBM metrics ($15M, 99.9%, 30%, 25%, 50%) must appear in bullet text.",
     )
 
-    source_ids = _all_source_fact_ids(parsed_output, claim_ledger)
-    scope_ok = bool(source_ids) and all(str(sid).startswith("bul_ibm_") for sid in source_ids)
-    scope_ok = scope_ok and all(
-        sid.split("_metric_")[0] in allowed_fact_ids or sid in allowed_fact_ids for sid in source_ids
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        proof_source_from_metadata,
+        scope_ids_membership_only,
     )
-    add("x2_ibm_only_fact_scope", scope_ok, sorted(source_ids), "bul_ibm_*", "Fact scope must be IBM bullets only.")
+
+    source_ids = set(_all_source_fact_ids(parsed_output, claim_ledger))
+    proof_source = proof_source_from_metadata(proof_pool_metadata)
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        scope_ok, _, forbidden_hits, not_in_pool = scope_ids_membership_only(
+            source_ids,
+            allowed_fact_ids=set(allowed_fact_ids),
+            forbidden_prefixes=("bul_unify_", "bul_insurtech_", "bul_ey_"),
+        )
+        scope_threshold = "active_proof_pool_membership"
+        scope_fail = "Fact scope must match active IBM proof pool."
+        if forbidden_hits or not_in_pool:
+            scope_fail += f" forbidden={forbidden_hits} out_of_pool={not_in_pool}"
+    else:
+        scope_ok = bool(source_ids) and all(str(sid).startswith("bul_ibm_") for sid in source_ids)
+        scope_ok = scope_ok and all(
+            sid.split("_metric_")[0] in allowed_fact_ids or sid in allowed_fact_ids for sid in source_ids
+        )
+        scope_threshold = "bul_ibm_*"
+        scope_fail = "Fact scope must be IBM bullets only."
+    add("x2_ibm_only_fact_scope", scope_ok, sorted(source_ids), scope_threshold, None if scope_ok else scope_fail)
 
     serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
     add(
@@ -453,19 +475,32 @@ def run_ibm_bullets_x2_gates(
         "JD phrase copied into bullet proof.",
     )
 
-    required_bullet_ids = set(IBM_BULLET_IDS)
-    output_ids = {b.get("bullet_id") for b in bullets}
+    output_ids = {str(b.get("bullet_id")) for b in bullets if b.get("bullet_id")}
     ledger_roots: set[str] = set()
     for claim in claim_ledger:
         for fid in claim.get("source_fact_ids") or []:
             ledger_roots.add(str(fid).split("_metric_")[0])
-    coverage_ok = required_bullet_ids <= output_ids and required_bullet_ids <= ledger_roots
+    if proof_source in ("srfs", "broad_skills_ledger"):
+        allowed_bases = {str(x).split("_metric_")[0] for x in allowed_fact_ids} | set(allowed_fact_ids)
+        coverage_ok = (
+            bool(output_ids)
+            and all(bid in allowed_bases for bid in output_ids)
+            and all(rid in allowed_bases for rid in ledger_roots)
+            and len(claim_ledger) >= len(output_ids)
+        )
+        coverage_threshold = "active_pool_bullet_ids"
+        coverage_msg = "Every output bullet_id and ledger root must be in active proof pool."
+    else:
+        required_bullet_ids = set(IBM_BULLET_IDS)
+        coverage_ok = required_bullet_ids <= output_ids and required_bullet_ids <= ledger_roots
+        coverage_threshold = sorted(required_bullet_ids)
+        coverage_msg = "Every bul_ibm_* bullet must appear in output and claim_ledger."
     add(
         "x2_claim_ledger_coverage_100",
-        coverage_ok and len(claim_ledger) >= 5,
+        coverage_ok and len(claim_ledger) >= len(output_ids) and len(output_ids) >= 1,
         {"output_ids": sorted(output_ids), "ledger_roots": sorted(ledger_roots)},
-        sorted(required_bullet_ids),
-        "Every bul_ibm_* bullet must appear in output and claim_ledger.",
+        coverage_threshold,
+        coverage_msg,
     )
 
     add(
@@ -536,20 +571,34 @@ def run_ibm_bullets_x2_gates(
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
-    if srfs_source_fact_slice_gate_active:
+    if srfs_source_fact_slice_gate_active or proof_pool_metadata:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_source_from_metadata,
+        )
 
         coll_ib = _srfs_w4.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
-        ok_ib, env_ib, fail_ib = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_ib, env_ib, fail_ib = evaluate_proof_pool_source_fact_gate(
             section_id="ibm_bullets",
             collected_ids=coll_ib,
             allowed_fact_ids=set(allowed_fact_ids),
+            proof_pool_metadata=proof_pool_metadata,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
+        )
+        pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
+        gate_id = (
+            "x2_ibm_bullets_source_fact_ids_within_srfs_slice"
+            if pt == "selected_role_fact_set"
+            or (srfs_source_fact_slice_gate_active and pt not in ("broad_skills_ledger", "base_resume_fallback"))
+            else "x2_ibm_bullets_active_proof_pool_source_fact_ids"
         )
         add(
-            "x2_ibm_bullets_source_fact_ids_within_srfs_slice",
+            gate_id,
             ok_ib,
             env_ib,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_ib,
         )
 

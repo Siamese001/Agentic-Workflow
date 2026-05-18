@@ -278,6 +278,10 @@ def test_legacy_base_pool_metadata_when_no_srfs_headline(monkeypatch: pytest.Mon
     run_headline_execution(args, artifact_dir_override=run_dir, print_output=False)
     payload = json.loads((run_dir / "runtime_payload.json").read_text(encoding="utf-8"))
     meta = payload.get("proof_pool_metadata") or {}
-    assert meta.get("proof_pool_type") == "base_resume_fallback"
     assert meta.get("selected_role_fact_set_used") is False
-    assert meta.get("fallback_used") is True
+    assert meta.get("proof_pool_type") in ("broad_skills_ledger", "base_resume_fallback")
+    if meta.get("proof_pool_type") == "broad_skills_ledger":
+        assert meta.get("broad_skills_ledger_used") is True
+        assert meta.get("fallback_used") is False
+    else:
+        assert meta.get("fallback_used") is True

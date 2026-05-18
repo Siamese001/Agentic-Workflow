@@ -1,0 +1,226 @@
+{
+  "status": "PASS",
+  "waves_completed": ["R4"],
+  "proof_level": "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY",
+  "timestamp_utc": "2026-05-18T19:55:00Z",
+  "files_changed": [
+    "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/real_section_receipt_manifest_v2.json",
+    "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/apps_rg_srfs_audit_report.json",
+    "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/apps_rg_srfs_audit_report.md",
+    "docs/reports/apps_rg/srfs_aggregator_real_receipt_trial_v2_r4.md",
+    "docs/reports/apps_rg/srfs_aggregator_real_receipt_trial_v2_r4_receipt.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "stdout_summary": "empty diff"
+    },
+    {
+      "command": "python -m compileall apps_rg/runtime/sections apps_rg/runtime/dispatch apps_rg/audit -q",
+      "exit_code": 0,
+      "stdout_summary": "compile succeeded"
+    },
+    {
+      "command": "python SRFS SSOT sha256 and section counts",
+      "exit_code": 0,
+      "stdout_summary": "sha256 30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f; all seven non-empty"
+    },
+    {
+      "command": "python -m apps_rg --section executive_summary --selected-role-fact-set artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json --provider qwen_vllm --mock-judges --allow-test-mock-judges --allow-non-allow-exit-zero",
+      "exit_code": 0,
+      "stdout_summary": "artifact_dir=.../exec_summary_20260518_195206; X3_BLOCK; SRFS-active receipt",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206/section_metric_receipt.json"
+    },
+    {
+      "command": "python inspection seven receipt paths pre-aggregator",
+      "exit_code": 0,
+      "stdout_summary": "ALL_SRFS_ACTIVE True"
+    },
+    {
+      "command": "python -m apps_rg.audit.srfs_receipt_aggregator --receipt-manifest artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/real_section_receipt_manifest_v2.json --manifest docs/reports/apps_rg/srfs_per_section_w1_w7_closeout_manifest.json --out artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2",
+      "exit_code": 0,
+      "stdout_summary": "deterministic_status=PASS; proof_level=SECTION_SRFS_STRUCTURAL_AUDIT_ONLY; advisory_judge_status=NOT_RUN"
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_srfs_aggregator.py -q --tb=short --override-ini=addopts=",
+      "exit_code": 0,
+      "stdout_summary": "20 passed in 0.26s"
+    }
+  ],
+  "selected_srfs_path": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json",
+  "selected_srfs_sha256": "30ac00cbcbe55f761afaba28685015081d83228efc2b8c6759c302f22b99b50f",
+  "executive_summary_r4_run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206",
+  "executive_summary_r4_receipt_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206/section_metric_receipt.json",
+  "manifest_path": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/real_section_receipt_manifest_v2.json",
+  "section_matrix": {
+    "headline": {
+      "source_wave": "R3",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "PASS",
+      "aggregator_pass_guard_violations": []
+    },
+    "executive_summary": {
+      "source_wave": "R4",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "PASS",
+      "aggregator_pass_guard_violations": []
+    },
+    "unify_bullets": {
+      "source_wave": "R2",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_191249",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_191249/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "FAIL",
+      "aggregator_pass_guard_violations": []
+    },
+    "unify_narrative": {
+      "source_wave": "R3",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "PASS",
+      "aggregator_pass_guard_violations": []
+    },
+    "ibm_bullets": {
+      "source_wave": "R3",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "PASS",
+      "aggregator_pass_guard_violations": []
+    },
+    "ibm_narrative": {
+      "source_wave": "R3",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "PASS",
+      "aggregator_pass_guard_violations": []
+    },
+    "competencies": {
+      "source_wave": "R3",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715",
+      "receipt_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715/section_metric_receipt.json",
+      "srfs_active": true,
+      "x2_srfs_gate_status": "PASS",
+      "aggregator_pass_guard_violations": []
+    }
+  },
+  "receipt_paths": {
+    "headline": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_192606/section_metric_receipt.json",
+    "executive_summary": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_195206/section_metric_receipt.json",
+    "unify_bullets": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260518_191249/section_metric_receipt.json",
+    "unify_narrative": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_192624/section_metric_receipt.json",
+    "ibm_bullets": "artifacts/apps_rg/runtime_proofs/ibm_bullets/plumbing/ibm_bullets_20260518_192636/section_metric_receipt.json",
+    "ibm_narrative": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_192700/section_metric_receipt.json",
+    "competencies": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_192715/section_metric_receipt.json"
+  },
+  "proof_checks_by_lane": {
+    "headline": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    },
+    "executive_summary": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    },
+    "unify_bullets": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    },
+    "unify_narrative": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    },
+    "ibm_bullets": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    },
+    "ibm_narrative": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    },
+    "competencies": {
+      "manifest_exact_path": true,
+      "proof_pool_type": "selected_role_fact_set",
+      "selected_role_fact_set_used": true,
+      "fallback_used": false,
+      "srfs_section_id_match": true,
+      "x2_srfs_gate_status_pass_or_fail": true,
+      "prompt_hash_nonempty": true,
+      "full_resume_srfs_supported_false": true
+    }
+  },
+  "x2_srfs_gate_status_by_lane": {
+    "headline": "PASS",
+    "executive_summary": "PASS",
+    "unify_bullets": "FAIL",
+    "unify_narrative": "PASS",
+    "ibm_bullets": "PASS",
+    "ibm_narrative": "PASS",
+    "competencies": "PASS"
+  },
+  "aggregator_reports": {
+    "json": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/apps_rg_srfs_audit_report.json",
+    "md": "artifacts/apps_rg/audit/srfs_section_aggregation/real_receipt_trial_v2/apps_rg_srfs_audit_report.md"
+  },
+  "deterministic_verdict": "PASS",
+  "advisory_verdict": "NOT_RUN",
+  "test_results": {
+    "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_srfs_aggregator.py -q --tb=short --override-ini=addopts=",
+    "exit_code": 0,
+    "passed": 20,
+    "failed": 0
+  },
+  "guardrail_violations": [],
+  "explicit_non_claims": [
+    "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY; not runtime certification or product ALLOW.",
+    "Mock judges only on section runs; advisory aggregator judge not enabled.",
+    "W7 test fixture SRFS; not production fact_inventory certification.",
+    "unify_bullets x2_srfs_gate_status FAIL is cross-section informational only.",
+    "No full résumé R4 or modular_resume_generation proof."
+  ],
+  "decisive_reason": "R4 executive_summary rerun with W7 nested SSOT produced SRFS-active receipt. Explicit v2 manifest combined R2+R3+R4 paths; all seven receipts SRFS-active with zero pass_guard_violations. Aggregator deterministic_status=PASS; 20/20 contract tests passed."
+}

@@ -348,6 +348,29 @@ def srfs_proof_pool_metadata(
     }
 
 
+def broad_skills_ledger_proof_pool_metadata(
+    *,
+    section_id: str,
+    candidate_fact_pool_count: int,
+    allowed_fact_ids_count: int,
+    ledger_ref: str,
+) -> dict[str, Any]:
+    n = int(allowed_fact_ids_count)
+    return {
+        "proof_pool_type": "broad_skills_ledger",
+        "selected_role_fact_set_used": False,
+        "broad_skills_ledger_used": True,
+        "broad_skills_ledger_ref": str(ledger_ref),
+        "srfs_section_id": section_id,
+        "candidate_fact_pool_count": int(candidate_fact_pool_count),
+        "allowed_fact_ids_count": n,
+        "srfs_allowed_fact_ids_count": 0,
+        "fallback_used": False,
+        "fallback_reason": "",
+        "full_resume_srfs_supported": False,
+    }
+
+
 def _ledger_root_fact_ids_union(claim_ledger: list[Any] | None) -> set[str]:
     ids: set[str] = set()
     for row in claim_ledger or []:
@@ -640,6 +663,7 @@ __all__ = [
     "selection_method_for_section",
     "plan_fact_to_employment_bullet_row",
     "base_proof_pool_metadata",
+    "broad_skills_ledger_proof_pool_metadata",
     "compute_claim_ledger_union_matches_required_fact_ids",
     "merge_normalized_srfs_reporting_into_dict",
     "normalized_srfs_section_reporting_fields",

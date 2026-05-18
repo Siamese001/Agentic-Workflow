@@ -439,9 +439,9 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         "institutions and converting bespoke programs into reusable intellectual property deployed across enterprise lines of business."
     )
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    is_srfs = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
+    pool_type = str(pp.get("proof_pool_type") or "")
     allowed_sorted = list(runtime_payload.get("allowed_fact_ids") or [])
-    if is_srfs and allowed_sorted:
+    if pool_type in ("selected_role_fact_set", "broad_skills_ledger") and allowed_sorted:
         from apps_rg.runtime.sections.selected_role_fact_set import stub_source_fact_ids_for_allowed
 
         cite_ids = stub_source_fact_ids_for_allowed(allowed_sorted, max_ids=4)
@@ -532,32 +532,40 @@ def run_unify_narrative_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end unify_narrative run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
-    base, base_path, base_hash = load_base_resume()
+    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
+    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+
+    pool, base, base_path, base_hash = load_section_proof_for_lane(
+        section_id="unify_narrative",
+        args=args,
+        repo_root=REPO_ROOT,
+        collect_employment_bullets_fn=collect_employment_bullets,
+    )
     candidate_name = str(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
-
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    if srfs_path:
-        unify_header, _, _ = extract_unify_employment(base)
-        _plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(
-            srfs_path, "unify_narrative"
-        )
-        unify_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in _plan.get("facts", [])]
-        selected_fact_plan = build_selected_fact_plan_srfs(unify_facts)
-    else:
+    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
         unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
         selected_fact_plan = build_selected_fact_plan(
             unify_facts,
             role_narrative=str(unify_header.get("role_narrative") or ""),
             employment_fact_id=str(unify_header.get("fact_id") or "exp_unify_001"),
         )
-        pp_meta = _srfs.base_proof_pool_metadata(
-            section_id="unify_narrative",
-            candidate_fact_pool_count=len(selected_fact_plan.get("facts") or []),
-            allowed_fact_ids_count=len(allowed_fact_ids),
-        )
+    else:
+        unify_header, _, _ = extract_unify_employment(base)
+        unify_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
+        if pool.srfs_present:
+            selected_fact_plan = build_selected_fact_plan_srfs(unify_facts)
+        else:
+            selected_fact_plan = build_selected_fact_plan(
+                unify_facts,
+                role_narrative=str(unify_header.get("role_narrative") or ""),
+                employment_fact_id=str(unify_header.get("fact_id") or "exp_unify_001"),
+            )
+        allowed_fact_ids = pool.allowed_fact_ids
+    proof_pool_metadata = pool.proof_pool_metadata
     companion_context = load_companion_unify_bullets_context()
     companion_text = str(companion_context.get("text") or "")
     companion_ref = companion_context.get("l2_ref") if companion_text else None
@@ -580,7 +588,7 @@ def run_unify_narrative_execution(
         briefing=str(getattr(args, "briefing", "") or "").strip() or BRIEFING_DEFAULT,
         candidate_name=candidate_name,
     )
-    runtime_payload["proof_pool_metadata"] = pp_meta
+    runtime_payload["proof_pool_metadata"] = proof_pool_metadata
 
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
@@ -767,7 +775,12 @@ def run_unify_narrative_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=l2_output.get("jd_alignment"),
     )
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+
+    write_json(
+        artifact_dir / "section_input_usage_ledger.json",
+        apply_proof_pool_to_usage_ledger(usage_doc, pool),
+    )
 
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
@@ -817,7 +830,7 @@ def run_unify_narrative_execution(
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
 
     x2 = [
         g.to_dict()
@@ -839,9 +852,21 @@ def run_unify_narrative_execution(
             x1d_judges=x1d,
             allowed_fact_ids=allowed_fact_ids,
             artifacts_dir=artifact_dir,
-            srfs_source_fact_slice_gate_active=srfs_x2_active,
+            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            proof_pool_metadata=pp_x2,
+            proof_pool_ref=str(pool.proof_pool_ref or ""),
+            proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
     write_json(
         artifact_dir / "fact_check_result.json",

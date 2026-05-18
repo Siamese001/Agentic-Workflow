@@ -1,0 +1,1312 @@
+{
+  "schema_version": "exec_summary_graph_projection_w4b_v1",
+  "role_families_inspected": [
+    "SVP_ENGINEERING_AI_PLATFORM",
+    "AI_FINANCIAL_SERVICES",
+    "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+    "FIELD_CTO",
+    "CHIEF_AI_OFFICER"
+  ],
+  "inspections": {
+    "SVP_ENGINEERING_AI_PLATFORM": {
+      "role_family_key": "SVP_ENGINEERING_AI_PLATFORM",
+      "resolved_arsenal_role_family_key": "SVP_ENGINEERING_AI_PLATFORM",
+      "auto_resolved_from_targeting": "SVP_ENGINEERING_AI_PLATFORM",
+      "identity_node": "identity_amit_ayer_governed_ai_platform_leader",
+      "selected_epoch_nodes": [
+        "epoch_agentic_ai_runtime_architecture"
+      ],
+      "selected_pillar_nodes": [
+        "pillar_regulatory_governance",
+        "pillar_agentic_ai_platforms",
+        "pillar_revenue_commercialization"
+      ],
+      "selected_domain_nodes": [
+        "domain_hitl_escalation",
+        "domain_agentic_systems_architecture",
+        "domain_productization_enterprise_adoption",
+        "domain_security_governance_compliance",
+        "domain_replay_observability_audit",
+        "domain_execution_tool_sandbox",
+        "domain_orchestration_managed_workflows",
+        "domain_routing_triage_workflow",
+        "domain_context_engineering_grounding",
+        "domain_runtime_gates_exit",
+        "domain_learning_calibration"
+      ],
+      "selected_domain_labels": [
+        "Human-in-the-Loop and Escalation Design",
+        "Agentic Systems Architecture",
+        "Productization, Reuse, and Enterprise Adoption",
+        "Security, Governance, Authority, and Compliance",
+        "Replay, Observability, Audit, and Proof",
+        "Execution, Tool Use, and Sandboxed Autonomy",
+        "Orchestration and Managed Workflows",
+        "Routing, Triage, and Workflow Selection",
+        "Context Engineering and Evidence Grounding",
+        "Runtime Gates, Evaluation, and Exit Control",
+        "Learning, Calibration, and Future-Run Improvement"
+      ],
+      "top_internal_skill_ids": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_audit_grade_observability",
+        "skill_authority_and_registry_binding",
+        "skill_bounded_agent_execution",
+        "skill_bounded_fanout_and_retry_design",
+        "skill_cache_fallback_grounded_action_routing",
+        "skill_confidence_based_escalation",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_dependency_and_join_control",
+        "skill_deterministic_route_selection",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_exit_disposition_governance",
+        "skill_external_egress_control",
+        "skill_fail_closed_gate_semantics",
+        "skill_governed_agentic_systems_architecture"
+      ],
+      "external_eligible_skill_ids": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_audit_grade_observability",
+        "skill_authority_and_registry_binding",
+        "skill_bounded_agent_execution",
+        "skill_bounded_fanout_and_retry_design",
+        "skill_cache_fallback_grounded_action_routing",
+        "skill_confidence_based_escalation",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_dependency_and_join_control",
+        "skill_deterministic_route_selection",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_exit_disposition_governance",
+        "skill_external_egress_control",
+        "skill_fail_closed_gate_semantics",
+        "skill_governed_agentic_systems_architecture"
+      ],
+      "linked_fact_ids_from_projection": [
+        "fact_governance_003",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_004",
+        "fact_governance_001",
+        "fact_exec_002",
+        "fact_engineering_platform_003",
+        "fact_governance_002",
+        "fact_engineering_platform_002",
+        "fact_governance_004",
+        "fact_exec_001",
+        "fact_certs_001",
+        "fact_partnerships_gtm_001",
+        "fact_solutions_001",
+        "fact_sales_accounts_001"
+      ],
+      "blocked_or_pending_skill_ids": [
+        "skill_derivatives_structured_derivatives",
+        "skill_insurance_liabilities_embedded_options",
+        "skill_insurance_liabilities_insurance_liabilities",
+        "skill_greeks_vega",
+        "skill_greeks_theta",
+        "skill_greeks_delta",
+        "skill_greeks_rho",
+        "skill_greeks_convexity",
+        "skill_capital_reserving",
+        "skill_risk_market_risk",
+        "skill_partner_partner_engineering",
+        "skill_partner_workshops",
+        "skill_partner_gtm_enablement",
+        "skill_partner_product_feedback_loops",
+        "skill_partner_pnl_oversight",
+        "skill_intent_interpretation_and_ambiguity_framing",
+        "skill_bounded_planning_contracts",
+        "skill_lowest_viable_agency_design",
+        "skill_task_decomposition_for_agentic_workflows",
+        "skill_planning_prior_and_policy_context_use",
+        "skill_workflow_checkpointing_and_resumability",
+        "skill_tool_and_model_registry_control",
+        "skill_same_authority_runtime_repair",
+        "skill_schema_and_output_repair",
+        "skill_deterministic_trim_and_reformat",
+        "skill_multi_judge_calibration",
+        "skill_trace_and_reconstruction_design",
+        "skill_shadow_learning_design",
+        "skill_completed_run_evaluation",
+        "skill_future_run_calibration"
+      ],
+      "executive_summary_srfs_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_consulting_001"
+      ],
+      "allowed_fact_packet_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_consulting_001"
+      ],
+      "allowed_fact_packet": [
+        {
+          "fact_id": "fact_engineering_platform_001",
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces."
+        },
+        {
+          "fact_id": "fact_engineering_platform_002",
+          "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk."
+        },
+        {
+          "fact_id": "fact_governance_003",
+          "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%."
+        },
+        {
+          "fact_id": "fact_exec_002",
+          "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads."
+        },
+        {
+          "fact_id": "fact_certs_001",
+          "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials."
+        },
+        {
+          "fact_id": "fact_quant_hpc_003",
+          "claim_text": "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna."
+        },
+        {
+          "fact_id": "fact_consulting_001",
+          "claim_text": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains."
+        }
+      ],
+      "prompt_facing_allowed_phrases": [
+        "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+        "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+        "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+        "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+        "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+        "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna.",
+        "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains."
+      ],
+      "skill_forbidden_phrases_blocked_from_external": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "jd_briefing_proof_exclusion": {
+        "jd_targeting_only_in_prompt": true,
+        "briefing_targeting_only_in_prompt": true,
+        "jd_used_as_proof_false_required": true
+      },
+      "skill_id_source_fact_id_exclusion": {
+        "allowed_ids_all_fact_prefixed": true,
+        "skill_id_in_allowed_list": [],
+        "skill_id_mentions_in_prompt": [],
+        "excluded_ok": true
+      },
+      "banned_phrases_enforced_in_prompt": {
+        "applied depth": true,
+        "documented credential training": true,
+        "quantitative methods training": true,
+        "distributed systems training": true,
+        "fully autonomous production agents": false,
+        "self-learning runtime": false,
+        "unsupported GraphRAG claims": true,
+        "unsupported partner engineering claims": false
+      },
+      "graph_metadata_present": true,
+      "actuarial_differentiator_in_projection": true,
+      "governance_risk_in_projection": true,
+      "partner_gtm_in_projection": true,
+      "medium_partner_gtm_facts_in_exec_srfs": [],
+      "claim_verification_summary_excerpt": [
+        "skill_actuarial_fsa_fellowship: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_actuarial_actuarial_software: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_aws_ecosystem: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_cloud_partner_ecosystem: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_partner_engineering: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics."
+      ],
+      "external_claim_policy_summary_excerpt": [
+        "atomic_fact_default_external_proof: claim_ledger_fact_id_only",
+        "skill_projection_not_proof: reject_skill_id_in_claim_ledger",
+        "repo_evidence_portfolio_not_resume_default: block_external_unless_active_confirmed_fact",
+        "pending_source_internal_only: block_external_pending_source",
+        "jd_briefing_targeting_only: reject_jd_briefing_fact_ids"
+      ],
+      "exec_allocation_hints": [
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:governance",
+        "executive_summary|arsenal_reserved:commercialization",
+        "executive_summary|arsenal_reserved:actuarial_quant",
+        "executive_summary|arsenal:actuarial_quant",
+        "executive_summary|arsenal:other"
+      ],
+      "arsenal_influenced_reservation": true,
+      "srfs_auto_exec_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_consulting_001"
+      ],
+      "prompt_forbidden_phrases_section_present": true
+    },
+    "AI_FINANCIAL_SERVICES": {
+      "role_family_key": "AI_FINANCIAL_SERVICES",
+      "resolved_arsenal_role_family_key": "AI_FINANCIAL_SERVICES",
+      "auto_resolved_from_targeting": "AI_FINANCIAL_SERVICES",
+      "identity_node": "identity_amit_ayer_governed_ai_platform_leader",
+      "selected_epoch_nodes": [
+        "epoch_agentic_ai_runtime_architecture"
+      ],
+      "selected_pillar_nodes": [
+        "pillar_regulatory_governance",
+        "pillar_agentic_ai_platforms",
+        "pillar_revenue_commercialization"
+      ],
+      "selected_domain_nodes": [
+        "domain_hitl_escalation",
+        "domain_agentic_systems_architecture",
+        "domain_productization_enterprise_adoption",
+        "domain_security_governance_compliance",
+        "domain_replay_observability_audit",
+        "domain_execution_tool_sandbox",
+        "domain_context_engineering_grounding",
+        "domain_runtime_gates_exit"
+      ],
+      "selected_domain_labels": [
+        "Human-in-the-Loop and Escalation Design",
+        "Agentic Systems Architecture",
+        "Productization, Reuse, and Enterprise Adoption",
+        "Security, Governance, Authority, and Compliance",
+        "Replay, Observability, Audit, and Proof",
+        "Execution, Tool Use, and Sandboxed Autonomy",
+        "Context Engineering and Evidence Grounding",
+        "Runtime Gates, Evaluation, and Exit Control"
+      ],
+      "top_internal_skill_ids": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_audit_grade_observability",
+        "skill_authority_and_registry_binding",
+        "skill_bounded_agent_execution",
+        "skill_confidence_based_escalation",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_exit_disposition_governance",
+        "skill_external_egress_control",
+        "skill_fail_closed_gate_semantics",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_hitl_escalation_architecture",
+        "skill_human_review_freeze_and_resume",
+        "skill_human_review_reclearance_controls"
+      ],
+      "external_eligible_skill_ids": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_audit_grade_observability",
+        "skill_authority_and_registry_binding",
+        "skill_bounded_agent_execution",
+        "skill_confidence_based_escalation",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_exit_disposition_governance",
+        "skill_external_egress_control",
+        "skill_fail_closed_gate_semantics",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_hitl_escalation_architecture",
+        "skill_human_review_freeze_and_resume",
+        "skill_human_review_reclearance_controls"
+      ],
+      "linked_fact_ids_from_projection": [
+        "fact_governance_003",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_004",
+        "fact_governance_001",
+        "fact_exec_002",
+        "fact_engineering_platform_003",
+        "fact_governance_002",
+        "fact_governance_004",
+        "fact_engineering_platform_002",
+        "fact_exec_001",
+        "fact_governance_005",
+        "fact_solutions_001",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_partnerships_gtm_003",
+        "fact_sales_accounts_001"
+      ],
+      "blocked_or_pending_skill_ids": [
+        "skill_derivatives_structured_derivatives",
+        "skill_insurance_liabilities_embedded_options",
+        "skill_insurance_liabilities_insurance_liabilities",
+        "skill_greeks_vega",
+        "skill_greeks_theta",
+        "skill_greeks_delta",
+        "skill_greeks_rho",
+        "skill_greeks_convexity",
+        "skill_capital_reserving",
+        "skill_risk_market_risk",
+        "skill_partner_partner_engineering",
+        "skill_partner_workshops",
+        "skill_partner_gtm_enablement",
+        "skill_partner_product_feedback_loops",
+        "skill_partner_pnl_oversight",
+        "skill_intent_interpretation_and_ambiguity_framing",
+        "skill_bounded_planning_contracts",
+        "skill_lowest_viable_agency_design",
+        "skill_task_decomposition_for_agentic_workflows",
+        "skill_planning_prior_and_policy_context_use",
+        "skill_workflow_checkpointing_and_resumability",
+        "skill_tool_and_model_registry_control",
+        "skill_same_authority_runtime_repair",
+        "skill_schema_and_output_repair",
+        "skill_deterministic_trim_and_reformat",
+        "skill_multi_judge_calibration",
+        "skill_trace_and_reconstruction_design",
+        "skill_shadow_learning_design",
+        "skill_completed_run_evaluation",
+        "skill_future_run_calibration"
+      ],
+      "executive_summary_srfs_fact_ids": [
+        "fact_governance_003",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_engineering_platform_001",
+        "fact_exec_002",
+        "fact_engineering_platform_004"
+      ],
+      "allowed_fact_packet_fact_ids": [
+        "fact_governance_003",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_engineering_platform_001",
+        "fact_exec_002",
+        "fact_engineering_platform_004"
+      ],
+      "allowed_fact_packet": [
+        {
+          "fact_id": "fact_governance_003",
+          "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%."
+        },
+        {
+          "fact_id": "fact_certs_001",
+          "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials."
+        },
+        {
+          "fact_id": "fact_quant_hpc_003",
+          "claim_text": "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna."
+        },
+        {
+          "fact_id": "fact_engineering_platform_001",
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces."
+        },
+        {
+          "fact_id": "fact_exec_002",
+          "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads."
+        },
+        {
+          "fact_id": "fact_engineering_platform_004",
+          "claim_text": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability."
+        }
+      ],
+      "prompt_facing_allowed_phrases": [
+        "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+        "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+        "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna.",
+        "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+        "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+        "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability."
+      ],
+      "skill_forbidden_phrases_blocked_from_external": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "jd_briefing_proof_exclusion": {
+        "jd_targeting_only_in_prompt": true,
+        "briefing_targeting_only_in_prompt": true,
+        "jd_used_as_proof_false_required": true
+      },
+      "skill_id_source_fact_id_exclusion": {
+        "allowed_ids_all_fact_prefixed": true,
+        "skill_id_in_allowed_list": [],
+        "skill_id_mentions_in_prompt": [],
+        "excluded_ok": true
+      },
+      "banned_phrases_enforced_in_prompt": {
+        "applied depth": true,
+        "documented credential training": true,
+        "quantitative methods training": true,
+        "distributed systems training": true,
+        "fully autonomous production agents": false,
+        "self-learning runtime": false,
+        "unsupported GraphRAG claims": true,
+        "unsupported partner engineering claims": false
+      },
+      "graph_metadata_present": true,
+      "actuarial_differentiator_in_projection": true,
+      "governance_risk_in_projection": true,
+      "partner_gtm_in_projection": true,
+      "medium_partner_gtm_facts_in_exec_srfs": [],
+      "claim_verification_summary_excerpt": [
+        "skill_derivatives_derivatives_pricing: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_greeks_hedging_multi_greek_hedging: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_derivatives_exotic_options: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_derivatives_structured_derivatives: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_greeks_gamma: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics."
+      ],
+      "external_claim_policy_summary_excerpt": [
+        "atomic_fact_default_external_proof: claim_ledger_fact_id_only",
+        "skill_projection_not_proof: reject_skill_id_in_claim_ledger",
+        "repo_evidence_portfolio_not_resume_default: block_external_unless_active_confirmed_fact",
+        "pending_source_internal_only: block_external_pending_source",
+        "jd_briefing_targeting_only: reject_jd_briefing_fact_ids"
+      ],
+      "exec_allocation_hints": [
+        "executive_summary|arsenal_reserved:governance",
+        "executive_summary|arsenal_reserved:actuarial_quant",
+        "executive_summary|arsenal_reserved:actuarial_quant",
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:commercialization",
+        "executive_summary|arsenal_reserved:architecture"
+      ],
+      "arsenal_influenced_reservation": true,
+      "srfs_auto_exec_fact_ids": [
+        "fact_governance_003",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_engineering_platform_001",
+        "fact_exec_002",
+        "fact_engineering_platform_004"
+      ],
+      "prompt_forbidden_phrases_section_present": true
+    },
+    "ANTHROPIC_PARTNERSHIPS_APPLIED_AI": {
+      "role_family_key": "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+      "resolved_arsenal_role_family_key": "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+      "auto_resolved_from_targeting": "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+      "identity_node": "identity_amit_ayer_governed_ai_platform_leader",
+      "selected_epoch_nodes": [
+        "epoch_agentic_ai_runtime_architecture",
+        "epoch_partner_gtm_revenue_leadership"
+      ],
+      "selected_pillar_nodes": [
+        "pillar_agentic_ai_platforms",
+        "pillar_revenue_commercialization",
+        "pillar_regulatory_governance",
+        "pillar_cosell_partner_engineering"
+      ],
+      "selected_domain_nodes": [
+        "domain_agentic_systems_architecture",
+        "domain_productization_enterprise_adoption",
+        "domain_prompt_assembly_boundaries",
+        "domain_context_engineering_grounding",
+        "domain_hitl_escalation",
+        "domain_security_governance_compliance",
+        "domain_partner_gtm",
+        "domain_execution_tool_sandbox",
+        "domain_orchestration_managed_workflows",
+        "domain_routing_triage_workflow"
+      ],
+      "selected_domain_labels": [
+        "Agentic Systems Architecture",
+        "Productization, Reuse, and Enterprise Adoption",
+        "Prompt Assembly and Instruction/Data Boundaries",
+        "Context Engineering and Evidence Grounding",
+        "Human-in-the-Loop and Escalation Design",
+        "Security, Governance, Authority, and Compliance",
+        "domain_partner_gtm",
+        "Execution, Tool Use, and Sandboxed Autonomy",
+        "Orchestration and Managed Workflows",
+        "Routing, Triage, and Workflow Selection"
+      ],
+      "top_internal_skill_ids": [
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_authority_ordered_prompt_packaging",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_instruction_data_boundary_design",
+        "skill_layered_runtime_spine_design",
+        "skill_metadata_acl_freshness_filtering",
+        "skill_operating_model_for_agentic_ai",
+        "skill_prompt_assembly_architecture",
+        "skill_prompt_injection_airlock_design",
+        "skill_reusable_agentic_platform_architecture",
+        "skill_reusable_ai_ip_design",
+        "skill_schema_bound_generation",
+        "skill_agent_to_human_handoff_design",
+        "skill_ai_governance_certification",
+        "skill_approval_gated_workflow_design"
+      ],
+      "external_eligible_skill_ids": [
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_authority_ordered_prompt_packaging",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_instruction_data_boundary_design",
+        "skill_layered_runtime_spine_design",
+        "skill_metadata_acl_freshness_filtering",
+        "skill_operating_model_for_agentic_ai",
+        "skill_prompt_assembly_architecture",
+        "skill_prompt_injection_airlock_design",
+        "skill_reusable_agentic_platform_architecture",
+        "skill_reusable_ai_ip_design",
+        "skill_schema_bound_generation",
+        "skill_agent_to_human_handoff_design",
+        "skill_ai_governance_certification",
+        "skill_approval_gated_workflow_design"
+      ],
+      "linked_fact_ids_from_projection": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_engineering_platform_003",
+        "fact_governance_002",
+        "fact_governance_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_001",
+        "fact_governance_004",
+        "fact_partnerships_gtm_003",
+        "fact_partnerships_gtm_001",
+        "fact_solutions_001",
+        "fact_sales_accounts_001"
+      ],
+      "blocked_or_pending_skill_ids": [
+        "skill_derivatives_structured_derivatives",
+        "skill_insurance_liabilities_embedded_options",
+        "skill_insurance_liabilities_insurance_liabilities",
+        "skill_greeks_vega",
+        "skill_greeks_theta",
+        "skill_greeks_delta",
+        "skill_greeks_rho",
+        "skill_greeks_convexity",
+        "skill_capital_reserving",
+        "skill_risk_market_risk",
+        "skill_partner_partner_engineering",
+        "skill_partner_workshops",
+        "skill_partner_gtm_enablement",
+        "skill_partner_product_feedback_loops",
+        "skill_partner_pnl_oversight",
+        "skill_intent_interpretation_and_ambiguity_framing",
+        "skill_bounded_planning_contracts",
+        "skill_lowest_viable_agency_design",
+        "skill_task_decomposition_for_agentic_workflows",
+        "skill_planning_prior_and_policy_context_use",
+        "skill_workflow_checkpointing_and_resumability",
+        "skill_tool_and_model_registry_control",
+        "skill_same_authority_runtime_repair",
+        "skill_schema_and_output_repair",
+        "skill_deterministic_trim_and_reformat",
+        "skill_multi_judge_calibration",
+        "skill_trace_and_reconstruction_design",
+        "skill_shadow_learning_design",
+        "skill_completed_run_evaluation",
+        "skill_future_run_calibration"
+      ],
+      "executive_summary_srfs_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "allowed_fact_packet_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "allowed_fact_packet": [
+        {
+          "fact_id": "fact_certs_001",
+          "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials."
+        },
+        {
+          "fact_id": "fact_engineering_platform_001",
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces."
+        },
+        {
+          "fact_id": "fact_engineering_platform_002",
+          "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk."
+        },
+        {
+          "fact_id": "fact_exec_002",
+          "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads."
+        },
+        {
+          "fact_id": "fact_governance_003",
+          "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%."
+        },
+        {
+          "fact_id": "fact_quant_hpc_001",
+          "claim_text": "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing."
+        },
+        {
+          "fact_id": "fact_quant_hpc_002",
+          "claim_text": "Engineered an AI-driven automated trading platform using parallel HPC workflows, reducing end-to-end latency by 50% while enabling real-time ML insights and dynamic risk monitoring."
+        }
+      ],
+      "prompt_facing_allowed_phrases": [
+        "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+        "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+        "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+        "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+        "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+        "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing.",
+        "Engineered an AI-driven automated trading platform using parallel HPC workflows, reducing end-to-end latency by 50% while enabling real-time ML insights and dynamic risk monitoring."
+      ],
+      "skill_forbidden_phrases_blocked_from_external": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "jd_briefing_proof_exclusion": {
+        "jd_targeting_only_in_prompt": true,
+        "briefing_targeting_only_in_prompt": true,
+        "jd_used_as_proof_false_required": true
+      },
+      "skill_id_source_fact_id_exclusion": {
+        "allowed_ids_all_fact_prefixed": true,
+        "skill_id_in_allowed_list": [],
+        "skill_id_mentions_in_prompt": [],
+        "excluded_ok": true
+      },
+      "banned_phrases_enforced_in_prompt": {
+        "applied depth": true,
+        "documented credential training": true,
+        "quantitative methods training": true,
+        "distributed systems training": true,
+        "fully autonomous production agents": false,
+        "self-learning runtime": false,
+        "unsupported GraphRAG claims": true,
+        "unsupported partner engineering claims": true
+      },
+      "graph_metadata_present": true,
+      "actuarial_differentiator_in_projection": false,
+      "governance_risk_in_projection": true,
+      "partner_gtm_in_projection": true,
+      "medium_partner_gtm_facts_in_exec_srfs": [],
+      "claim_verification_summary_excerpt": [
+        "skill_partner_aws_ecosystem: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_cloud_partner_ecosystem: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_partner_motions: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_co_selling: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_partner_engineering: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics."
+      ],
+      "external_claim_policy_summary_excerpt": [
+        "atomic_fact_default_external_proof: claim_ledger_fact_id_only",
+        "skill_projection_not_proof: reject_skill_id_in_claim_ledger",
+        "repo_evidence_portfolio_not_resume_default: block_external_unless_active_confirmed_fact",
+        "pending_source_internal_only: block_external_pending_source",
+        "jd_briefing_targeting_only: reject_jd_briefing_fact_ids"
+      ],
+      "exec_allocation_hints": [
+        "executive_summary|arsenal_reserved:actuarial_quant",
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:commercialization",
+        "executive_summary|arsenal_reserved:governance",
+        "executive_summary|arsenal:actuarial_quant",
+        "executive_summary|arsenal:actuarial_quant"
+      ],
+      "arsenal_influenced_reservation": true,
+      "srfs_auto_exec_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "prompt_forbidden_phrases_section_present": true
+    },
+    "FIELD_CTO": {
+      "role_family_key": "FIELD_CTO",
+      "resolved_arsenal_role_family_key": "FIELD_CTO",
+      "auto_resolved_from_targeting": "SVP_ENGINEERING_AI_PLATFORM",
+      "identity_node": "identity_amit_ayer_governed_ai_platform_leader",
+      "selected_epoch_nodes": [
+        "epoch_agentic_ai_runtime_architecture"
+      ],
+      "selected_pillar_nodes": [
+        "pillar_agentic_ai_platforms",
+        "pillar_revenue_commercialization",
+        "pillar_regulatory_governance"
+      ],
+      "selected_domain_nodes": [
+        "domain_agentic_systems_architecture",
+        "domain_prompt_assembly_boundaries",
+        "domain_execution_tool_sandbox",
+        "domain_context_engineering_grounding",
+        "domain_productization_enterprise_adoption",
+        "domain_security_governance_compliance",
+        "domain_replay_observability_audit",
+        "domain_runtime_gates_exit"
+      ],
+      "selected_domain_labels": [
+        "Agentic Systems Architecture",
+        "Prompt Assembly and Instruction/Data Boundaries",
+        "Execution, Tool Use, and Sandboxed Autonomy",
+        "Context Engineering and Evidence Grounding",
+        "Productization, Reuse, and Enterprise Adoption",
+        "Security, Governance, Authority, and Compliance",
+        "Replay, Observability, Audit, and Proof",
+        "Runtime Gates, Evaluation, and Exit Control"
+      ],
+      "top_internal_skill_ids": [
+        "skill_agentic_control_plane_design",
+        "skill_app_overlay_runtime_binding",
+        "skill_authority_ordered_prompt_packaging",
+        "skill_bounded_agent_execution",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_evidence_contract_design",
+        "skill_external_egress_control",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_instruction_data_boundary_design",
+        "skill_layered_runtime_spine_design",
+        "skill_metadata_acl_freshness_filtering",
+        "skill_no_direct_write_runtime_design",
+        "skill_prompt_assembly_architecture",
+        "skill_prompt_injection_airlock_design",
+        "skill_reusable_agentic_platform_architecture",
+        "skill_sandboxed_execution_design",
+        "skill_schema_bound_generation",
+        "skill_side_effect_bounded_action_design",
+        "skill_tool_and_model_registry_control",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization"
+      ],
+      "external_eligible_skill_ids": [
+        "skill_agentic_control_plane_design",
+        "skill_app_overlay_runtime_binding",
+        "skill_authority_ordered_prompt_packaging",
+        "skill_bounded_agent_execution",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_evidence_contract_design",
+        "skill_external_egress_control",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_instruction_data_boundary_design",
+        "skill_layered_runtime_spine_design",
+        "skill_metadata_acl_freshness_filtering",
+        "skill_no_direct_write_runtime_design",
+        "skill_prompt_assembly_architecture",
+        "skill_prompt_injection_airlock_design",
+        "skill_reusable_agentic_platform_architecture",
+        "skill_sandboxed_execution_design",
+        "skill_schema_bound_generation",
+        "skill_side_effect_bounded_action_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_specific_runtime_overlay_design"
+      ],
+      "linked_fact_ids_from_projection": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003",
+        "fact_governance_002",
+        "fact_governance_001",
+        "fact_governance_004",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_exec_001",
+        "fact_partnerships_gtm_003",
+        "fact_solutions_001",
+        "fact_partnerships_gtm_001"
+      ],
+      "blocked_or_pending_skill_ids": [
+        "skill_derivatives_structured_derivatives",
+        "skill_insurance_liabilities_embedded_options",
+        "skill_insurance_liabilities_insurance_liabilities",
+        "skill_greeks_vega",
+        "skill_greeks_theta",
+        "skill_greeks_delta",
+        "skill_greeks_rho",
+        "skill_greeks_convexity",
+        "skill_capital_reserving",
+        "skill_risk_market_risk",
+        "skill_partner_partner_engineering",
+        "skill_partner_workshops",
+        "skill_partner_gtm_enablement",
+        "skill_partner_product_feedback_loops",
+        "skill_partner_pnl_oversight",
+        "skill_intent_interpretation_and_ambiguity_framing",
+        "skill_bounded_planning_contracts",
+        "skill_lowest_viable_agency_design",
+        "skill_task_decomposition_for_agentic_workflows",
+        "skill_planning_prior_and_policy_context_use",
+        "skill_workflow_checkpointing_and_resumability",
+        "skill_tool_and_model_registry_control",
+        "skill_same_authority_runtime_repair",
+        "skill_schema_and_output_repair",
+        "skill_deterministic_trim_and_reformat",
+        "skill_multi_judge_calibration",
+        "skill_trace_and_reconstruction_design",
+        "skill_shadow_learning_design",
+        "skill_completed_run_evaluation",
+        "skill_future_run_calibration"
+      ],
+      "executive_summary_srfs_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_003"
+      ],
+      "allowed_fact_packet_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_003"
+      ],
+      "allowed_fact_packet": [
+        {
+          "fact_id": "fact_engineering_platform_001",
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces."
+        },
+        {
+          "fact_id": "fact_engineering_platform_002",
+          "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk."
+        },
+        {
+          "fact_id": "fact_governance_003",
+          "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%."
+        },
+        {
+          "fact_id": "fact_exec_002",
+          "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads."
+        },
+        {
+          "fact_id": "fact_certs_001",
+          "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials."
+        },
+        {
+          "fact_id": "fact_quant_hpc_001",
+          "claim_text": "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing."
+        },
+        {
+          "fact_id": "fact_quant_hpc_003",
+          "claim_text": "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna."
+        }
+      ],
+      "prompt_facing_allowed_phrases": [
+        "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+        "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+        "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+        "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+        "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+        "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing.",
+        "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna."
+      ],
+      "skill_forbidden_phrases_blocked_from_external": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "jd_briefing_proof_exclusion": {
+        "jd_targeting_only_in_prompt": true,
+        "briefing_targeting_only_in_prompt": true,
+        "jd_used_as_proof_false_required": true
+      },
+      "skill_id_source_fact_id_exclusion": {
+        "allowed_ids_all_fact_prefixed": true,
+        "skill_id_in_allowed_list": [],
+        "skill_id_mentions_in_prompt": [],
+        "excluded_ok": true
+      },
+      "banned_phrases_enforced_in_prompt": {
+        "applied depth": true,
+        "documented credential training": true,
+        "quantitative methods training": true,
+        "distributed systems training": true,
+        "fully autonomous production agents": false,
+        "self-learning runtime": false,
+        "unsupported GraphRAG claims": true,
+        "unsupported partner engineering claims": false
+      },
+      "graph_metadata_present": true,
+      "actuarial_differentiator_in_projection": false,
+      "governance_risk_in_projection": true,
+      "partner_gtm_in_projection": true,
+      "medium_partner_gtm_facts_in_exec_srfs": [],
+      "claim_verification_summary_excerpt": [
+        "skill_partner_aws_ecosystem: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_cloud_partner_ecosystem: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_partner_motions: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_co_selling: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_partner_partner_engineering: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics."
+      ],
+      "external_claim_policy_summary_excerpt": [
+        "atomic_fact_default_external_proof: claim_ledger_fact_id_only",
+        "skill_projection_not_proof: reject_skill_id_in_claim_ledger",
+        "repo_evidence_portfolio_not_resume_default: block_external_unless_active_confirmed_fact",
+        "pending_source_internal_only: block_external_pending_source",
+        "jd_briefing_targeting_only: reject_jd_briefing_fact_ids"
+      ],
+      "exec_allocation_hints": [
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:governance",
+        "executive_summary|arsenal_reserved:commercialization",
+        "executive_summary|arsenal_reserved:actuarial_quant",
+        "executive_summary|arsenal:actuarial_quant",
+        "executive_summary|arsenal:actuarial_quant"
+      ],
+      "arsenal_influenced_reservation": true,
+      "srfs_auto_exec_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_003"
+      ],
+      "prompt_forbidden_phrases_section_present": true
+    },
+    "CHIEF_AI_OFFICER": {
+      "role_family_key": "CHIEF_AI_OFFICER",
+      "resolved_arsenal_role_family_key": "CHIEF_AI_OFFICER",
+      "auto_resolved_from_targeting": "AI_FINANCIAL_SERVICES",
+      "identity_node": "identity_amit_ayer_governed_ai_platform_leader",
+      "selected_epoch_nodes": [
+        "epoch_agentic_ai_runtime_architecture"
+      ],
+      "selected_pillar_nodes": [
+        "pillar_regulatory_governance",
+        "pillar_agentic_ai_platforms",
+        "pillar_revenue_commercialization"
+      ],
+      "selected_domain_nodes": [
+        "domain_hitl_escalation",
+        "domain_agentic_systems_architecture",
+        "domain_productization_enterprise_adoption",
+        "domain_security_governance_compliance",
+        "domain_replay_observability_audit",
+        "domain_routing_triage_workflow",
+        "domain_context_engineering_grounding",
+        "domain_runtime_gates_exit",
+        "domain_learning_calibration"
+      ],
+      "selected_domain_labels": [
+        "Human-in-the-Loop and Escalation Design",
+        "Agentic Systems Architecture",
+        "Productization, Reuse, and Enterprise Adoption",
+        "Security, Governance, Authority, and Compliance",
+        "Replay, Observability, Audit, and Proof",
+        "Routing, Triage, and Workflow Selection",
+        "Context Engineering and Evidence Grounding",
+        "Runtime Gates, Evaluation, and Exit Control",
+        "Learning, Calibration, and Future-Run Improvement"
+      ],
+      "top_internal_skill_ids": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_audit_grade_observability",
+        "skill_authority_and_registry_binding",
+        "skill_cache_fallback_grounded_action_routing",
+        "skill_confidence_based_escalation",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_deterministic_route_selection",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_exit_disposition_governance",
+        "skill_fail_closed_gate_semantics",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_hitl_escalation_architecture",
+        "skill_human_review_freeze_and_resume",
+        "skill_human_review_reclearance_controls"
+      ],
+      "external_eligible_skill_ids": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_audit_grade_observability",
+        "skill_authority_and_registry_binding",
+        "skill_cache_fallback_grounded_action_routing",
+        "skill_confidence_based_escalation",
+        "skill_context_engineering",
+        "skill_contradiction_and_lineage_handling",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_deterministic_route_selection",
+        "skill_enterprise_workflow_adoption",
+        "skill_evidence_contract_design",
+        "skill_exit_disposition_governance",
+        "skill_fail_closed_gate_semantics",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_hitl_escalation_architecture",
+        "skill_human_review_freeze_and_resume",
+        "skill_human_review_reclearance_controls"
+      ],
+      "linked_fact_ids_from_projection": [
+        "fact_governance_003",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_004",
+        "fact_governance_001",
+        "fact_exec_002",
+        "fact_engineering_platform_003",
+        "fact_governance_002",
+        "fact_engineering_platform_002",
+        "fact_exec_001",
+        "fact_governance_004",
+        "fact_certs_001",
+        "fact_governance_005",
+        "fact_partnerships_gtm_001",
+        "fact_sales_accounts_001"
+      ],
+      "blocked_or_pending_skill_ids": [
+        "skill_derivatives_structured_derivatives",
+        "skill_insurance_liabilities_embedded_options",
+        "skill_insurance_liabilities_insurance_liabilities",
+        "skill_greeks_vega",
+        "skill_greeks_theta",
+        "skill_greeks_delta",
+        "skill_greeks_rho",
+        "skill_greeks_convexity",
+        "skill_capital_reserving",
+        "skill_risk_market_risk",
+        "skill_partner_partner_engineering",
+        "skill_partner_workshops",
+        "skill_partner_gtm_enablement",
+        "skill_partner_product_feedback_loops",
+        "skill_partner_pnl_oversight",
+        "skill_intent_interpretation_and_ambiguity_framing",
+        "skill_bounded_planning_contracts",
+        "skill_lowest_viable_agency_design",
+        "skill_task_decomposition_for_agentic_workflows",
+        "skill_planning_prior_and_policy_context_use",
+        "skill_workflow_checkpointing_and_resumability",
+        "skill_tool_and_model_registry_control",
+        "skill_same_authority_runtime_repair",
+        "skill_schema_and_output_repair",
+        "skill_deterministic_trim_and_reformat",
+        "skill_multi_judge_calibration",
+        "skill_trace_and_reconstruction_design",
+        "skill_shadow_learning_design",
+        "skill_completed_run_evaluation",
+        "skill_future_run_calibration"
+      ],
+      "executive_summary_srfs_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_engineering_platform_004",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "allowed_fact_packet_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_engineering_platform_004",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "allowed_fact_packet": [
+        {
+          "fact_id": "fact_engineering_platform_001",
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces."
+        },
+        {
+          "fact_id": "fact_governance_003",
+          "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%."
+        },
+        {
+          "fact_id": "fact_exec_002",
+          "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads."
+        },
+        {
+          "fact_id": "fact_certs_001",
+          "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials."
+        },
+        {
+          "fact_id": "fact_engineering_platform_004",
+          "claim_text": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability."
+        },
+        {
+          "fact_id": "fact_quant_hpc_001",
+          "claim_text": "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing."
+        },
+        {
+          "fact_id": "fact_quant_hpc_002",
+          "claim_text": "Engineered an AI-driven automated trading platform using parallel HPC workflows, reducing end-to-end latency by 50% while enabling real-time ML insights and dynamic risk monitoring."
+        }
+      ],
+      "prompt_facing_allowed_phrases": [
+        "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+        "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+        "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+        "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+        "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability.",
+        "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing.",
+        "Engineered an AI-driven automated trading platform using parallel HPC workflows, reducing end-to-end latency by 50% while enabling real-time ML insights and dynamic risk monitoring."
+      ],
+      "skill_forbidden_phrases_blocked_from_external": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "jd_briefing_proof_exclusion": {
+        "jd_targeting_only_in_prompt": true,
+        "briefing_targeting_only_in_prompt": true,
+        "jd_used_as_proof_false_required": true
+      },
+      "skill_id_source_fact_id_exclusion": {
+        "allowed_ids_all_fact_prefixed": true,
+        "skill_id_in_allowed_list": [],
+        "skill_id_mentions_in_prompt": [],
+        "excluded_ok": true
+      },
+      "banned_phrases_enforced_in_prompt": {
+        "applied depth": true,
+        "documented credential training": true,
+        "quantitative methods training": true,
+        "distributed systems training": true,
+        "fully autonomous production agents": false,
+        "self-learning runtime": false,
+        "unsupported GraphRAG claims": true,
+        "unsupported partner engineering claims": false
+      },
+      "graph_metadata_present": true,
+      "actuarial_differentiator_in_projection": true,
+      "governance_risk_in_projection": true,
+      "partner_gtm_in_projection": true,
+      "medium_partner_gtm_facts_in_exec_srfs": [],
+      "claim_verification_summary_excerpt": [
+        "skill_risk_greek_stress_testing: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_actuarial_fsa_fellowship: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_risk_enterprise_risk_controls: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_risk_market_risk: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+        "skill_risk_model_risk: External resume claims allowed only when external_claim_policy permits and fact_id backs metrics."
+      ],
+      "external_claim_policy_summary_excerpt": [
+        "atomic_fact_default_external_proof: claim_ledger_fact_id_only",
+        "skill_projection_not_proof: reject_skill_id_in_claim_ledger",
+        "repo_evidence_portfolio_not_resume_default: block_external_unless_active_confirmed_fact",
+        "pending_source_internal_only: block_external_pending_source",
+        "jd_briefing_targeting_only: reject_jd_briefing_fact_ids"
+      ],
+      "exec_allocation_hints": [
+        "executive_summary|arsenal_reserved:architecture",
+        "executive_summary|arsenal_reserved:governance",
+        "executive_summary|arsenal_reserved:commercialization",
+        "executive_summary|arsenal_reserved:actuarial_quant",
+        "executive_summary|arsenal:architecture",
+        "executive_summary|arsenal:actuarial_quant",
+        "executive_summary|arsenal:actuarial_quant"
+      ],
+      "arsenal_influenced_reservation": true,
+      "srfs_auto_exec_fact_ids": [
+        "fact_governance_003",
+        "fact_certs_001",
+        "fact_quant_hpc_003",
+        "fact_engineering_platform_001",
+        "fact_exec_002",
+        "fact_engineering_platform_004",
+        "fact_quant_hpc_001"
+      ],
+      "prompt_forbidden_phrases_section_present": true
+    }
+  },
+  "partner_gtm_medium_caveat": "fact_partnerships_gtm_* rows remain MEDIUM in candidate ledger; they do not enter HIGH SRFS executive_summary proof.",
+  "readiness_for_live_run": {
+    "ready_for_live_executive_summary_rerun": false,
+    "blockers": [
+      "Executive_summary runtime proof not complete without live apps_rg generation run."
+    ],
+    "expected_anthropic_judge_risk": "Semantic density and mechanism vocabulary may still soft-fail Anthropic judge until live run validates S2/S5 repair; graph ranking does not replace fact-backed prose.",
+    "honest_caveat": "Graph domains rank internal capabilities; external proof remains fact_id-only from HIGH candidate ledger. Deep agentic rows are mostly REPO_EVIDENCE_PORTFOLIO / internal. Executive_summary runtime proof is not complete without a live generation run."
+  }
+}

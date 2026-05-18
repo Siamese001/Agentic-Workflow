@@ -299,10 +299,13 @@ def test_section_metric_receipt_w6_no_srfs_base_pool(
 
     rec = json.loads((run_dir / "section_metric_receipt.json").read_text(encoding="utf-8"))
     assert rec["selected_role_fact_set_used"] is False
-    assert rec["proof_pool_type"] == "base_resume_fallback"
-    assert rec["fallback_used"] is True
-    assert rec["fallback_reason"]
-    assert "no" in rec["fallback_reason"].lower() or "selected" in rec["fallback_reason"].lower()
+    assert rec["proof_pool_type"] in ("broad_skills_ledger", "base_resume_fallback")
+    if rec["proof_pool_type"] == "broad_skills_ledger":
+        assert rec.get("fallback_used") is False
+    else:
+        assert rec["fallback_used"] is True
+        assert rec["fallback_reason"]
+        assert "no" in rec["fallback_reason"].lower() or "selected" in rec["fallback_reason"].lower()
     assert rec["x2_srfs_gate_status"] == "NOT_APPLICABLE"
     assert rec["out_of_slice_fact_ids"] == []
     assert rec["full_resume_srfs_supported"] is False

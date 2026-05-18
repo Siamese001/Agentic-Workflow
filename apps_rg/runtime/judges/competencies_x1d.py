@@ -24,7 +24,8 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
 JUDGE_RUBRIC_VERSION = "competencies_x1d_v1"
 
 COMPETENCIES_RUBRIC = """
-You are evaluating exactly eight resume competency categories (short labels plus noun-phrase terms).
+You are evaluating exactly eight resume competency categories (short labels plus compact keyword-phrase terms).
+This is OPTIONAL ADVISORY taxonomy grading — deterministic X2 gates are authoritative for proof eligibility.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
 Score contract:
@@ -37,12 +38,16 @@ Rubric dimensions:
 4. complementarity: augments executive summary, Unify, and IBM generated sections; not a mechanical restatement of bullets.
 5. no_bullet_restatement: avoids copying long bullet fragments or outcome laundry lists.
 6. anti_overfit: no JD-only or briefing-only skills framed as proof.
-7. category_clarity: labels are crisp; terms are short phrases, not sentences.
+7. category_clarity: labels are crisp; terms are compact keyword phrases (not sentence-style competency claims).
 
-Decisive failure triggers:
+Advisory notes:
+- Sentence-style competency claims are out of scope for this section format; flag them as quality_flags only.
+- Judge pass/fail does not gate product proof eligibility for competencies.
+
+Decisive failure triggers (advisory only):
 - JD or briefing used as primary evidence for unsupported clusters
 - obvious bullet paste or first-person resume voice leakage
-- format breaks (sentences inside terms, bullet markers)
+- format breaks (full sentences inside terms, bullet markers)
 """.strip()
 
 
@@ -185,6 +190,8 @@ def run_competencies_judges(
                 )
             output.judge_id = f"x1d_{key}_competencies"
             output.rubric_version = JUDGE_RUBRIC_VERSION
+            output.advisory_only = True
+            output.proof_eligible_judge = False
             outputs.append(output)
         except Exception as exc:  # noqa: BLE001
             blocked = _make_blocked_output(

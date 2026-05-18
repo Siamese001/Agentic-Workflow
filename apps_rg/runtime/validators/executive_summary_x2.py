@@ -1208,6 +1208,9 @@ def run_x2_gates(
     target_role: str | None = None,
     selected_facts: list[dict[str, Any]] | None = None,
     srfs_integration: dict[str, Any] | None = None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    proof_pool_ref: str = "",
+    proof_pool_digest: str = "",
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
     artifacts_dir = artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/executive_summary")
@@ -1446,20 +1449,37 @@ def run_x2_gates(
         srfs_jd_reason,
     )
 
-    if _srfs_mode_active(srfs_integration):
+    pp_meta = proof_pool_metadata
+    if pp_meta is None and isinstance(srfs_integration, dict):
+        pp_meta = srfs_integration.get("proof_pool_metadata")
+    pp_x2_active = bool(pp_meta and str(pp_meta.get("proof_pool_type") or "").strip()) or _srfs_mode_active(
+        srfs_integration
+    )
+    if pp_x2_active:
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+            evaluate_proof_pool_source_fact_gate,
+            proof_pool_x2_gate_id,
+        )
 
         coll_ex = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
-        ok_ex, env_ex, fail_ex = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+        ok_ex, env_ex, fail_ex = evaluate_proof_pool_source_fact_gate(
             section_id="executive_summary",
             collected_ids=coll_ex,
             allowed_fact_ids=set(allowed_fact_ids),
+            proof_pool_metadata=pp_meta,
+            proof_pool_ref=proof_pool_ref,
+            proof_pool_digest=proof_pool_digest,
         )
         add(
-            "x2_executive_summary_source_fact_ids_within_srfs_slice",
+            proof_pool_x2_gate_id(
+                "executive_summary",
+                proof_pool_metadata=pp_meta,
+                srfs_slice_gate_active=_srfs_mode_active(srfs_integration),
+            ),
             ok_ex,
             env_ex,
-            "srfs_slice_allowlist_exact",
+            "active_proof_pool_allowlist_exact",
             fail_ex,
         )
 

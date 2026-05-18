@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "waves_completed": ["W3", "W4", "W5"],
+  "proof_level": "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY",
+  "plan_slug": "apps-rg-srfs-aggregator-e7b2a1",
+  "timestamp_utc": "2026-05-18T21:30:00Z",
+  "files_changed": [
+    "apps_rg/audit/__init__.py",
+    "apps_rg/audit/srfs_receipt_aggregator.py",
+    "tests/_apps_contract/test_apps_rg_srfs_aggregator.py",
+    "docs/reports/apps_rg/srfs_aggregator_w3_w5_receipt.json"
+  ],
+  "commands_run": [
+    {
+      "command": "python -m compileall apps_rg/audit -q",
+      "exit_code": 0,
+      "result": "compile succeeded"
+    },
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_srfs_aggregator.py -q --tb=short --override-ini=addopts=",
+      "exit_code": 0,
+      "result": "18 passed in 0.24s"
+    },
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "result": "empty diff (0 lines)"
+    }
+  ],
+  "tests_run": [
+    "tests/_apps_contract/test_apps_rg_srfs_aggregator.py::18 passed"
+  ],
+  "artifacts_created": [],
+  "guardrail_violations": [],
+  "can_start_w6": true,
+  "deferred_items": [
+    "W6 advisory LLM-as-judge (optional, apps_rg-local)",
+    "W7 fixture-based committed aggregator artifacts under artifacts/apps_rg/audit/srfs_section_aggregation/",
+    "W8 closeout manifest"
+  ],
+  "decisive_reason": "apps_rg/audit/srfs_receipt_aggregator.py implements manifest-first load, root discovery, PASS guard, and structural audit report emission with advisory_judge_review NOT_RUN only; CLI exits 0 on written report; 18 contract tests pass; no agentic_core or lane writer changes."
+}

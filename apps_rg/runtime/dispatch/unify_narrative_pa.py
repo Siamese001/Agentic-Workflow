@@ -11,7 +11,7 @@ from typing import Any
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
-from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
+from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 from apps_rg.runtime.dispatch.executive_summary_pa import format_selected_facts_for_c0
 from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     NARRATIVE_R0,
@@ -172,8 +172,7 @@ def compile_unify_narrative_prompt(
         },
     )
     compiled = compile_section_prompt(assembly, section_id="unify_narrative", companion_u_tier=tier)
-    ids = list(runtime_payload.get("allowed_fact_ids") or [])
-    return augment_section_compiled_with_input_authority(compiled, allowed_source_fact_ids=ids)
+    return finalize_section_compiled_with_proof_pool(compiled, runtime_payload=runtime_payload)
 
 
 __all__ = ["compile_unify_narrative_prompt"]

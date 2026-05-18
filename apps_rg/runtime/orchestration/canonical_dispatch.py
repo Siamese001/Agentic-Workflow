@@ -102,6 +102,7 @@ def _run_competencies_lane_from_cli(
         briefing=briefing,
         target_role=str(target_role).strip() or None,
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
 
     override = Path(artifact_dir) if str(artifact_dir).strip() else None
@@ -189,6 +190,7 @@ def _run_headline_lane_from_cli(
         jd_text=jd_text,
         briefing=briefing,
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
 
     override = Path(artifact_dir) if str(artifact_dir).strip() else None
@@ -287,6 +289,7 @@ def _run_executive_summary_lane_from_cli(
         briefing=briefing,
         target_role=str(target_role).strip() or None,
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
     if eff_prov == "qwen_vllm":
         lo, hi = lane.EXEC_SUMMARY_TEMP_RANGE
@@ -393,6 +396,7 @@ def _run_unify_bullets_lane_from_cli(
         allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
         allow_test_mock_judges=bool(lane_allow_test_mock_judges),
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
         lo, hi = lane.UNIFY_TEMP_RANGE
@@ -497,6 +501,7 @@ def _run_unify_narrative_lane_from_cli(
         jd_text=jd_text,
         briefing=briefing,
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
         lo, hi = lane.NARRATIVE_TEMP_RANGE
@@ -603,6 +608,7 @@ def _run_ibm_bullets_lane_from_cli(
         jd_text=jd_text,
         briefing=briefing,
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
         lo, hi = lane.IBM_TEMP_RANGE
@@ -709,6 +715,7 @@ def _run_ibm_narrative_lane_from_cli(
         briefing=briefing,
         allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
         selected_role_fact_set=str(selected_role_fact_set or ""),
+        base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
         lo, hi = lane.IBM_NARRATIVE_TEMP_RANGE

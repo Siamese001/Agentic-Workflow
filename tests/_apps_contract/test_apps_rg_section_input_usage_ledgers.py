@@ -77,9 +77,28 @@ def test_section_cli_emits_input_usage_ledger_and_prompt_authority(section_id: s
     assert "jd as proof" not in led_blob
     assert "briefing as proof" not in led_blob
 
+    assert doc.get("proof_source") in ("broad_skills_ledger", "srfs", "base_resume_fallback")
+    assert doc.get("proof_pool_digest")
+    assert doc.get("non_proof_inputs") == ["jd_title_company", "briefing"]
+    claim_support = doc.get("claim_support_inputs") or []
+    assert claim_support
+    assert "jd_title_company" not in claim_support
+    assert "briefing" not in claim_support
+
     ia = doc.get("input_authority")
     assert isinstance(ia, dict)
-    assert ia.get("base_resume") == "CLAIM_EVIDENCE"
+    if doc.get("proof_source") == "broad_skills_ledger":
+        assert doc.get("broad_skills_ledger_present") is True
+        assert doc.get("base_resume_fallback_used") is False
+        assert ia.get("broad_skills_ledger") == "CLAIM_EVIDENCE"
+        assert ia.get("base_resume") == "BASE_RESUME_SOURCE"
+    elif doc.get("proof_source") == "srfs":
+        assert doc.get("srfs_present") is True
+        assert ia.get("selected_role_fact_set") == "CLAIM_EVIDENCE"
+        assert ia.get("base_resume") == "BASE_RESUME_SOURCE"
+    else:
+        assert doc.get("base_resume_fallback_used") is True
+        assert ia.get("base_resume") == "CLAIM_EVIDENCE_FALLBACK"
     assert ia.get("selected_fact_plan") == "CLAIM_EVIDENCE_AFTER_SELECTION"
     assert ia.get("jd_text") == "TARGETING_INPUT"
     assert ia.get("briefing_research") == "CONTEXT_INPUT"
@@ -93,7 +112,12 @@ def test_section_cli_emits_input_usage_ledger_and_prompt_authority(section_id: s
     assert riu.get("briefing_research", {}).get("authority") == "CONTEXT_INPUT"
     assert riu.get("target_title", {}).get("authority") == "POSITIONING_INPUT"
     assert riu.get("target_company", {}).get("authority") == "POSITIONING_INPUT"
-    assert riu.get("base_resume", {}).get("authority") == "CLAIM_EVIDENCE"
+    if doc.get("proof_source") == "broad_skills_ledger":
+        assert riu.get("base_resume", {}).get("authority") == "BASE_RESUME_SOURCE"
+    elif doc.get("proof_source") == "base_resume_fallback":
+        assert riu.get("base_resume", {}).get("authority") == "CLAIM_EVIDENCE"
+    else:
+        assert riu.get("base_resume", {}).get("authority") in ("BASE_RESUME_SOURCE", "CLAIM_EVIDENCE")
 
     eb = doc.get("evidence_boundary")
     assert isinstance(eb, dict)
@@ -112,7 +136,7 @@ def test_section_cli_emits_input_usage_ledger_and_prompt_authority(section_id: s
     cl = compiled.lower()
     assert "INPUT_AUTHORITY" in compiled
     assert "BASE_RESUME_SELECTED_FACTS" in compiled or "ALLOWED_SOURCE_FACT_IDS" in compiled
-    assert "TARGETING_INPUT" in compiled or "CLAIM_EVIDENCE" in compiled
+    assert "TARGETING_INPUT" in compiled or "CLAIM_EVIDENCE" in compiled or "CLAIM SUPPORT POOL" in compiled
     assert "jd as proof" not in cl
     assert "briefing as proof" not in cl
 

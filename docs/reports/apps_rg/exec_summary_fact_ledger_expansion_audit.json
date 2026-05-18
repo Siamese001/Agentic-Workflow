@@ -1,0 +1,2139 @@
+{
+  "audit_version": "exec_summary_fact_ledger_expansion_audit_v1",
+  "generated_at_utc": "2026-05-18T19:17:30Z",
+  "proof_run_reference": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_185251",
+  "x3_disposition": "X3_REVIEW_JUDGE_SOFT_FAIL",
+  "judge_scores": {
+    "gemini_pro": 5.0,
+    "openai_chatgpt": 4.8,
+    "anthropic_claude": 3.6
+  },
+  "source_locations": {
+    "master_candidate_skills_fact_ledger": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "master_role_family_taxonomy": "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml",
+    "base_resume_json": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+    "candidate_fact_ledger_module": "apps_rg/fact_inventory/candidate_fact_ledger.py",
+    "selected_role_fact_set_module": "apps_rg/fact_inventory/selected_role_fact_set.py",
+    "runtime_srfs_helpers": "apps_rg/runtime/sections/selected_role_fact_set.py",
+    "exec_summary_srfs_judge_safe": "apps_rg/runtime/sections/exec_summary_srfs_judge_safe.py",
+    "executive_summary_lane": "apps_rg/runtime/sections/executive_summary_lane.py",
+    "executive_summary_judge_packet": "apps_rg/runtime/judges/executive_summary_judge_packet.py",
+    "executive_summary_x2_validators": "apps_rg/runtime/validators/executive_summary_x2.py",
+    "fact_vectors_schema": "apps_rg/config/domain_contract/fact_vectors_schema.yaml",
+    "active_srfs_artifact": "artifacts/apps_rg/fact_inventory/selected_role_fact_set_20260518T181200Z_exec_summary_srfs_cli_proof.json"
+  },
+  "ledger_stats": {
+    "total_candidate_facts": 42,
+    "high_confidence_facts": 13,
+    "executive_summary_slice_count": 7,
+    "headline_slice_count": 5
+  },
+  "structural_diagnosis": {
+    "headline_consumes_agentic_core_facts": [
+      "fact_engineering_platform_001",
+      "fact_engineering_platform_002",
+      "fact_engineering_platform_003",
+      "fact_engineering_platform_004"
+    ],
+    "executive_summary_leftover_pool": [
+      "fact_certs_001",
+      "fact_engineering_platform_005",
+      "fact_engineering_platform_006",
+      "fact_exec_002",
+      "fact_governance_003",
+      "fact_quant_hpc_001",
+      "fact_quant_hpc_002"
+    ],
+    "root_cause": "Global used_global set: headline _take_unique(5) runs before _allocate_exec_summary_facts; richest agentic/runtime vocabulary facts are headline-only, not in executive_summary allowed_fact_packet."
+  },
+  "gap_analysis": {
+    "governed_agentic_ai_runtime": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_006"
+      ],
+      "executive_summary_selected": [
+        "fact_engineering_platform_006"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "deterministic_routing": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "managed_multi_step_orchestration": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "graph_aware_retrieval_graphrag": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "vector_retrieval": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_005"
+      ],
+      "executive_summary_selected": [
+        "fact_engineering_platform_005"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "prompt_assembly": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "bounded_sandboxed_execution": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "policy_enforcement": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "replayable_traces": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003"
+      ],
+      "executive_summary_selected": [],
+      "gap_status": "covered_in_ledger_only"
+    },
+    "evaluation_gates": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_003",
+        "fact_governance_003"
+      ],
+      "executive_summary_selected": [
+        "fact_governance_003"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "human_escalation_hitl": {
+      "ledger_fact_ids": [],
+      "executive_summary_selected": [],
+      "gap_status": "missing_from_ledger"
+    },
+    "reusable_platform_ip": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "executive_summary_selected": [
+        "fact_engineering_platform_006"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "commercialization": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_006",
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_002",
+        "fact_partnerships_gtm_003",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_003",
+        "fact_revenue_ops_005",
+        "fact_data_analytics_004"
+      ],
+      "executive_summary_selected": [
+        "fact_engineering_platform_006"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "ai_revenue_margin_metrics": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "executive_summary_selected": [
+        "fact_engineering_platform_006"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "ml_org_scale": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_006",
+        "fact_exec_002"
+      ],
+      "executive_summary_selected": [
+        "fact_engineering_platform_006",
+        "fact_exec_002"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "aws_databricks_credentials": {
+      "ledger_fact_ids": [
+        "fact_certs_001"
+      ],
+      "executive_summary_selected": [
+        "fact_certs_001"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "fsa_actuarial_statistical_foundation": {
+      "ledger_fact_ids": [
+        "fact_governance_003",
+        "fact_data_analytics_001",
+        "fact_quant_hpc_003",
+        "fact_certs_001"
+      ],
+      "executive_summary_selected": [
+        "fact_governance_003",
+        "fact_certs_001"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    },
+    "regulated_enterprise_governance": {
+      "ledger_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_partnerships_gtm_005",
+        "fact_governance_003",
+        "fact_governance_005",
+        "fact_data_analytics_001",
+        "fact_data_analytics_004",
+        "fact_consulting_002"
+      ],
+      "executive_summary_selected": [
+        "fact_governance_003"
+      ],
+      "gap_status": "covered_in_exec_slice"
+    }
+  },
+  "proposed_support_levels": {
+    "DIRECT": "Atomic claim_text may appear when fact_id is in section SRFS slice and cited.",
+    "METRIC_DIRECT": "Metrics in claim_text proof-eligible only with this fact_id cited.",
+    "BUNDLE_SUPPORTED": "Synthesis allowed when ALL supporting_fact_ids in slice + bundle rule registered.",
+    "DERIVED_SUPPORTED": "Approved semantic compression with explicit derivation registry.",
+    "TARGETING_ONLY": "JD/briefing may reorder emphasis; never in source_fact_ids.",
+    "STYLE_ONLY": "Base r\u00e9sum\u00e9 voice hints; never proof.",
+    "BLOCKED": "Must not appear in external output; X2/judge fail if emitted."
+  },
+  "fact_inventory": [
+    {
+      "fact_id": "fact_engineering_platform_001",
+      "category": "ENGINEERING_PLATFORM",
+      "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt",
+        "CTO Resume - Amit Ayer.txt"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": true,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "agentic_ai_platform",
+        "deterministic_routing",
+        "multi_agent_orchestration",
+        "graphrag",
+        "policy_gating"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Grounded in current base bullets plus AI/CTO variants; confirm exact wording before canonical ledger promotion.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "gap_concepts_covered": [
+        "governed_agentic_ai_runtime",
+        "deterministic_routing",
+        "managed_multi_step_orchestration",
+        "graph_aware_retrieval_graphrag",
+        "bounded_sandboxed_execution",
+        "policy_enforcement",
+        "replayable_traces",
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [
+        "headline_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_engineering_platform_002",
+      "category": "ENGINEERING_PLATFORM",
+      "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "Chief Technology Officer - Amit Ayer.txt",
+        "CTO Resume - Amit Ayer.txt"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": true,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "dependency_graph",
+        "legacy_modernization",
+        "refactor_risk"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [
+        "graph_aware_retrieval_graphrag"
+      ],
+      "current_executive_summary_usage": [
+        "headline_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_engineering_platform_003",
+      "category": "ENGINEERING_PLATFORM",
+      "claim_text": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": true,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "retrieval_quality",
+        "context_assembly",
+        "eval_gates",
+        "telemetry",
+        "rollback",
+        "ai_cicd"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [
+        "vector_retrieval",
+        "prompt_assembly",
+        "policy_enforcement",
+        "replayable_traces",
+        "evaluation_gates"
+      ],
+      "current_executive_summary_usage": [
+        "headline_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_engineering_platform_004",
+      "category": "ENGINEERING_PLATFORM",
+      "claim_text": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_sections": {
+        "headline_srfs": true,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "ai_lifecycle",
+        "production_adoption",
+        "auditability"
+      ],
+      "metric_values": [
+        "6 months to 3 weeks"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Strong base claim; verify exact source before canonical ledger promotion.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [
+        "headline_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_engineering_platform_005",
+      "category": "ENGINEERING_PLATFORM",
+      "claim_text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "Head of Data & Analytics - Amit Ayer.txt",
+        "Chief Technology Officer - Amit Ayer.txt"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "cloud_native",
+        "aws",
+        "databricks",
+        "microservices",
+        "vector_services",
+        "api_gateway",
+        "identity"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [
+        "vector_retrieval"
+      ],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice",
+        "executive_summary_claim_ledger_output"
+      ],
+      "current_judge_issue": "S1 generic thesis \u2014 agentic vocabulary absent (Anthropic)"
+    },
+    {
+      "fact_id": "fact_engineering_platform_006",
+      "category": "ENGINEERING_PLATFORM",
+      "claim_text": "Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue, expanding gross margins by 20%, and scaling the ML engineering organization from 8 to 28 specialists.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "commercialization",
+        "platform_services",
+        "reusable_primitives",
+        "engineering_leadership"
+      ],
+      "metric_values": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "team 8 to 28"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "High-value claim; preserve exact metric relationships.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "PARTNERSHIPS_GTM"
+      ],
+      "gap_concepts_covered": [
+        "governed_agentic_ai_runtime",
+        "reusable_platform_ip",
+        "commercialization",
+        "ai_revenue_margin_metrics",
+        "ml_org_scale"
+      ],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice",
+        "executive_summary_claim_ledger_output"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_partnerships_gtm_001",
+      "category": "PARTNERSHIPS_GTM",
+      "claim_text": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+      "evidence_source": [
+        "Amit Ayer Resume - Partner Development Manager.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "partner_strategy",
+        "channel_program",
+        "ai_channel",
+        "co_marketing"
+      ],
+      "metric_values": [
+        "$3M partner-derived revenue"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_partnerships_gtm_002",
+      "category": "PARTNERSHIPS_GTM",
+      "claim_text": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%.",
+      "evidence_source": [
+        "Amit Ayer Resume - Partner Development Manager.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "aws_alliance",
+        "joint_revenue",
+        "ai_sales_motion",
+        "financial_services"
+      ],
+      "metric_values": [
+        "20% joint revenue boost"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_partnerships_gtm_003",
+      "category": "PARTNERSHIPS_GTM",
+      "claim_text": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
+      "evidence_source": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "strategic_alliances",
+        "data_providers",
+        "co_sell",
+        "subscription_offerings"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM / Unify Consulting",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_partnerships_gtm_004",
+      "category": "PARTNERSHIPS_GTM",
+      "claim_text": "Forged relationships with cloud and AI vendors, combining market influence with solution roadmaps and joint go-to-market strategies to accelerate enterprise adoption of advanced analytics and platform services.",
+      "evidence_source": [
+        "Sales - Amit Ayer.txt",
+        "Chief Technology Officer - Amit Ayer.txt",
+        "Field CTO - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "cloud_vendor_partnerships",
+        "ai_vendor_partnerships",
+        "joint_roadmaps"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Multiple",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_partnerships_gtm_005",
+      "category": "PARTNERSHIPS_GTM",
+      "claim_text": "Facilitated an executive governance council with partner stakeholders to align solution architecture, data security protocols, and regulatory mandates.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "partner_stakeholders",
+        "governance_council",
+        "solution_architecture"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "TraderSense",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_sales_accounts_001",
+      "category": "SALES_STRATEGIC_ACCOUNTS",
+      "claim_text": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
+      "evidence_source": [
+        "Amit Ayer Resume - Strategic Account Executive.txt",
+        "Sales - Amit Ayer.txt",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "enterprise_sales",
+        "acv",
+        "generative_ai",
+        "cfo_alignment"
+      ],
+      "metric_values": [
+        "$5M ACV / new revenue"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_sales_accounts_002",
+      "category": "SALES_STRATEGIC_ACCOUNTS",
+      "claim_text": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+      "evidence_source": [
+        "Amit Ayer Resume - Strategic Account Executive.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "modernization_deals",
+        "hpc_roi",
+        "financial_services"
+      ],
+      "metric_values": [
+        ">$15M deals",
+        "40% scenario runtime reduction"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "QUANT_TRADING_HPC",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_sales_accounts_003",
+      "category": "SALES_STRATEGIC_ACCOUNTS",
+      "claim_text": "Oversaw strategic sales engagements for top-tier financial institutions across EMEA, APAC, and North America, guiding a 20-member distributed sales team and securing multimillion-dollar transactions.",
+      "evidence_source": [
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "distributed_sales_team",
+        "global_accounts",
+        "financial_institutions"
+      ],
+      "metric_values": [
+        "20-member distributed sales team"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_sales_accounts_004",
+      "category": "SALES_STRATEGIC_ACCOUNTS",
+      "claim_text": "Used consumption-based SaaS licensing models to support generative-AI adoption, shorten sales cycles, and achieve a 93% annual renewal rate.",
+      "evidence_source": [
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "renewals",
+        "saas_licensing",
+        "sales_cycles"
+      ],
+      "metric_values": [
+        "93% annual renewal rate"
+      ],
+      "confidence": "NEEDS_VERIFICATION",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "CUSTOMER_SUCCESS",
+        "REVENUE_OPERATIONS"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_sales_accounts_005",
+      "category": "SALES_STRATEGIC_ACCOUNTS",
+      "claim_text": "Partnered with cloud and streaming vendors to bundle AI and data-ingestion services, increasing upsell opportunities by 30% and improving CRM-based forecasting accuracy by 15%.",
+      "evidence_source": [
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "cloud_vendor_bundle",
+        "upsell",
+        "forecasting"
+      ],
+      "metric_values": [
+        "30% upsell opportunities",
+        "15% forecasting accuracy"
+      ],
+      "confidence": "NEEDS_VERIFICATION",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "PARTNERSHIPS_GTM",
+        "REVENUE_OPERATIONS"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_revenue_ops_001",
+      "category": "REVENUE_OPERATIONS",
+      "claim_text": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+      "evidence_source": [
+        "Strategic Finance - Amit Ayer.txt",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "salesforce_analytics",
+        "pipeline_prioritization",
+        "arr"
+      ],
+      "metric_values": [
+        "$10M new ARR"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_revenue_ops_002",
+      "category": "REVENUE_OPERATIONS",
+      "claim_text": "Expanded client portfolios by 50% through targeted relationship-building and maintained a Salesforce forecast pipeline that drove $10M in net-new revenue.",
+      "evidence_source": [
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "client_portfolio_growth",
+        "salesforce_pipeline",
+        "forecasting"
+      ],
+      "metric_values": [
+        "50% portfolio expansion",
+        "$10M net-new revenue"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_revenue_ops_003",
+      "category": "STRATEGIC_FINANCE",
+      "claim_text": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.",
+      "evidence_source": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "usage_based_forecasting",
+        "subscription_pricing",
+        "renewals"
+      ],
+      "metric_values": [
+        "$5M recurring revenue"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_revenue_ops_004",
+      "category": "STRATEGIC_FINANCE",
+      "claim_text": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.",
+      "evidence_source": [
+        "Strategic Finance - Amit Ayer.txt",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "cost_optimization",
+        "budget_dashboards",
+        "forecasting"
+      ],
+      "metric_values": [
+        "30% cost optimization"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_revenue_ops_005",
+      "category": "STRATEGIC_FINANCE",
+      "claim_text": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities.",
+      "evidence_source": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "ma_synergy",
+        "due_diligence",
+        "integration_costs"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [
+        "commercialization"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_solutions_001",
+      "category": "AI_SOLUTIONS_ARCHITECTURE",
+      "claim_text": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+      "evidence_source": [
+        "Field CTO - Amit Ayer.txt",
+        "Industry Solutions - Amit Ayer.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "field_cto",
+        "executive_value",
+        "roi_translation"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Multiple",
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_solutions_002",
+      "category": "AI_SOLUTIONS_ARCHITECTURE",
+      "claim_text": "Developed industry-specific AI, analytics, and cloud modernization solutions across financial-services risk, compliance, fraud, and regulatory use cases.",
+      "evidence_source": [
+        "Industry Solutions - Amit Ayer.txt",
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "joint_solution_development",
+        "reference_architecture",
+        "industry_solutions"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM / EY / Unify Consulting",
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_customer_success_001",
+      "category": "CUSTOMER_SUCCESS",
+      "claim_text": "Positioned technical delivery and stakeholder alignment as adoption levers for AI/cloud programs, with resume variants emphasizing customer success, renewal, and measurable business outcomes.",
+      "evidence_source": [
+        "Head of Customer Success - Amit Ayer.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "customer_success",
+        "adoption",
+        "renewal",
+        "stakeholder_alignment"
+      ],
+      "metric_values": [],
+      "confidence": "LOW",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "The archive has a Customer Success variant, but claims need finer extraction and verification before strong use.",
+      "company": null,
+      "role_families_supported": [
+        "CUSTOMER_SUCCESS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_governance_001",
+      "category": "AI_GOVERNANCE_RISK",
+      "claim_text": "Steered enterprise AI rollout for a major banking client, establishing data usage controls and compliance checkpoints that lowered regulatory findings by 35% in the first year.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "data_governance",
+        "usage_controls",
+        "compliance_checkpoints"
+      ],
+      "metric_values": [
+        "35% reduction in regulatory findings"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_governance_002",
+      "category": "AI_GOVERNANCE_RISK",
+      "claim_text": "Deployed LLM-based document intelligence to automate compliance reviews and accelerate regulatory submissions by 40%.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "llm_document_intelligence",
+        "compliance_reviews",
+        "regulatory_submission"
+      ],
+      "metric_values": [
+        "40% faster regulatory submissions"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_governance_003",
+      "category": "AI_GOVERNANCE_RISK",
+      "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "basel",
+        "ccar",
+        "data_lineage",
+        "reporting_errors"
+      ],
+      "metric_values": [
+        "40% reporting error reduction"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "EY / IBM",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [
+        "evaluation_gates",
+        "fsa_actuarial_statistical_foundation",
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice",
+        "executive_summary_claim_ledger_output"
+      ],
+      "current_judge_issue": "S2 softened 40% metric vs available fact (Anthropic remediation)"
+    },
+    {
+      "fact_id": "fact_governance_004",
+      "category": "AI_GOVERNANCE_RISK",
+      "claim_text": "Defined documentation standards and centralized data catalogs that expedited audits by 20%.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "audit_readiness",
+        "documentation",
+        "data_catalogs"
+      ],
+      "metric_values": [
+        "20% faster audits / filing"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "EY",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_governance_005",
+      "category": "AI_GOVERNANCE_RISK",
+      "claim_text": "Established executive AI governance councils and model-explainability/data-security standards to reinforce stakeholder trust and compliance in automated financial decisions.",
+      "evidence_source": [
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "model_explainability",
+        "data_security",
+        "executive_ai_council"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "TraderSense / Unify Consulting",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "gap_concepts_covered": [
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_data_analytics_001",
+      "category": "DATA_ANALYTICS_LEADERSHIP",
+      "claim_text": "Unified data latency governance processes across three business units, enabling standardized risk metrics and more consistent CCAR compliance.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "data_governance",
+        "latency_governance",
+        "risk_metrics"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "gap_concepts_covered": [
+        "fsa_actuarial_statistical_foundation",
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_data_analytics_002",
+      "category": "DATA_ANALYTICS_LEADERSHIP",
+      "claim_text": "Launched AWS streaming microservices / streaming analytics ecosystems to validate market data in near real time and increase decision capacity by about 25%.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "streaming_analytics",
+        "aws",
+        "market_data",
+        "real_time_validation"
+      ],
+      "metric_values": [
+        "~25% increased capacity"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_data_analytics_003",
+      "category": "DATA_ANALYTICS_LEADERSHIP",
+      "claim_text": "Unified disparate infrastructures under Confluent-based pipelines, enabling real-time risk scoring and reducing downtime by 25%.",
+      "evidence_source": [
+        "Amit Ayer Resume - Strategic Account Executive.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "confluent",
+        "real_time_risk",
+        "streaming_pipelines"
+      ],
+      "metric_values": [
+        "25% downtime reduction"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_data_analytics_004",
+      "category": "DATA_ANALYTICS_LEADERSHIP",
+      "claim_text": "Instituted governance frameworks linking financial and operational datasets, giving leadership near-real-time insights into revenue trends, churn risk, and capital allocation.",
+      "evidence_source": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "executive_reporting",
+        "financial_operational_data",
+        "capital_allocation"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS"
+      ],
+      "gap_concepts_covered": [
+        "commercialization",
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_quant_hpc_001",
+      "category": "QUANT_TRADING_HPC",
+      "claim_text": "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Amit Ayer Resume - Strategic Account Executive.txt"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "hpc",
+        "risk_calculation",
+        "stress_testing"
+      ],
+      "metric_values": [
+        "40% faster calculations / stress testing"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "IBM",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "ENGINEERING_PLATFORM",
+        "STRATEGIC_FINANCE"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_quant_hpc_002",
+      "category": "QUANT_TRADING_HPC",
+      "claim_text": "Engineered an AI-driven automated trading platform using parallel HPC workflows, reducing end-to-end latency by 50% while enabling real-time ML insights and dynamic risk monitoring.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Sales - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "automated_trading",
+        "hpc",
+        "latency",
+        "ml_insights"
+      ],
+      "metric_values": [
+        "50% latency reduction"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "TraderSense",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_quant_hpc_003",
+      "category": "QUANT_TRADING_HPC",
+      "claim_text": "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "derivatives_pricing",
+        "multi_greek_hedging",
+        "capital_modeling",
+        "fsa"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Early Career",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "gap_concepts_covered": [
+        "fsa_actuarial_statistical_foundation"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_quant_hpc_004",
+      "category": "QUANT_TRADING_HPC",
+      "claim_text": "Developed or deployed AI/ML anomaly and fraud-detection models that reduced false positives by 20% and surfaced market or derivative irregularities earlier.",
+      "evidence_source": [
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Sales - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "fraud_detection",
+        "anomaly_detection",
+        "false_positives"
+      ],
+      "metric_values": [
+        "20% false-positive reduction"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "EY / Unify Consulting",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_exec_001",
+      "category": "EXECUTIVE_LEADERSHIP",
+      "claim_text": "Partnered with C-suite executives and cross-functional leaders to align AI, analytics, cloud, risk, and financial strategies with measurable business outcomes.",
+      "evidence_source": [
+        "Strategic Finance - Amit Ayer.txt",
+        "Sales - Amit Ayer.txt",
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "c_suite_alignment",
+        "cross_functional",
+        "ai_strategy"
+      ],
+      "metric_values": [],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Multiple",
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_exec_002",
+      "category": "EXECUTIVE_LEADERSHIP",
+      "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+      "evidence_source": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "team_leadership",
+        "ml_engineering",
+        "platform_leads"
+      ],
+      "metric_values": [
+        "team 8 to 28"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Unify Consulting",
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "gap_concepts_covered": [
+        "ml_org_scale"
+      ],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice",
+        "executive_summary_claim_ledger_output"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_consulting_001",
+      "category": "CONSULTING_DELIVERY_LEADERSHIP",
+      "claim_text": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": true,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "regulatory_transformation",
+        "legacy_modernization",
+        "financial_services"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "EY / IBM",
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "AI_GOVERNANCE_RISK",
+        "ENGINEERING_PLATFORM"
+      ],
+      "gap_concepts_covered": [],
+      "current_executive_summary_usage": [
+        "headline_srfs_slice"
+      ],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_consulting_002",
+      "category": "CONSULTING_DELIVERY_LEADERSHIP",
+      "claim_text": "Facilitated post-M&A risk-model consolidation for a $1B asset portfolio, ensuring cohesive compliance controls and unified governance.",
+      "evidence_source": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "support_level": "BLOCKED",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": false
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "post_ma",
+        "risk_model_consolidation",
+        "governance"
+      ],
+      "metric_values": [
+        "$1B asset portfolio"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "EY",
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "AI_GOVERNANCE_RISK",
+        "STRATEGIC_FINANCE"
+      ],
+      "gap_concepts_covered": [
+        "regulated_enterprise_governance"
+      ],
+      "current_executive_summary_usage": [],
+      "current_judge_issue": null
+    },
+    {
+      "fact_id": "fact_certs_001",
+      "category": "EXECUTIVE_LEADERSHIP",
+      "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+      "evidence_source": [
+        "All Phase I resume variants"
+      ],
+      "support_level": "DIRECT",
+      "allowed_sections": {
+        "headline_srfs": false,
+        "executive_summary_srfs": true
+      },
+      "allowed_phrases": [],
+      "blocked_phrases": [],
+      "capability_tags": [
+        "aws_ml",
+        "aws_solutions_architect",
+        "databricks",
+        "fsa"
+      ],
+      "metric_values": [],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "company": "Credentials",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "REVENUE_OPERATIONS",
+        "CUSTOMER_SUCCESS",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "STRATEGIC_FINANCE",
+        "QUANT_TRADING_HPC",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "gap_concepts_covered": [
+        "aws_databricks_credentials",
+        "fsa_actuarial_statistical_foundation"
+      ],
+      "current_executive_summary_usage": [
+        "executive_summary_srfs_slice",
+        "executive_summary_claim_ledger_output"
+      ],
+      "current_judge_issue": "S5 meta-narration / credential inventory (Anthropic 3.6)"
+    }
+  ],
+  "proposed_new_facts": [
+    {
+      "fact_id": "fact_agentic_runtime_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Designed and operationalized a governed agentic AI runtime for regulated enterprise workflows, combining deterministic routing, policy-gated execution, validation controls, and replayable execution traces.",
+      "supporting_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_001",
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_003"
+      ],
+      "support_level": "BUNDLE_SUPPORTED",
+      "allowed_phrases": [
+        "governed agentic AI runtime",
+        "deterministic routing",
+        "replayable execution traces",
+        "policy-gated execution"
+      ],
+      "forbidden_phrases_without_support": [
+        "autonomous agents without oversight",
+        "fully autonomous production deployment"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "risk_notes": "Bundle compresses 001+003; activate after human confirmation."
+    },
+    {
+      "fact_id": "fact_agentic_orchestration_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Delivered multi-step agent orchestration with sandboxed execution boundaries and human escalation controls for high-risk workflow steps.",
+      "supporting_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_001"
+      ],
+      "support_level": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "multi-step orchestration",
+        "sandboxed execution",
+        "human escalation controls"
+      ],
+      "forbidden_phrases_without_support": [
+        "unsupervised agent swarms",
+        "zero human review"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "HITL phrase must map to governed base bullet framing."
+    },
+    {
+      "fact_id": "fact_graph_rag_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Applied graph-aware retrieval (GraphRAG) and dependency-graph intelligence to improve architecture visibility and reduce refactor risk in legacy modernization.",
+      "supporting_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_001",
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_002"
+      ],
+      "support_level": "BUNDLE_SUPPORTED",
+      "allowed_phrases": [
+        "GraphRAG",
+        "graph-aware retrieval",
+        "dependency-graph intelligence"
+      ],
+      "forbidden_phrases_without_support": [
+        "proprietary GraphRAG product",
+        "industry-standard GraphRAG certification"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "risk_notes": "Technique label tied to base bullets only."
+    },
+    {
+      "fact_id": "fact_ai_governance_runtime_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Institutionalized evaluation gates, telemetry, rollback controls, and automated validation frameworks that strengthen auditability in regulated analytics environments.",
+      "supporting_fact_ids": [
+        "fact_engineering_platform_003",
+        "fact_governance_003"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_003",
+        "master ledger fact_governance_003"
+      ],
+      "support_level": "BUNDLE_SUPPORTED",
+      "allowed_phrases": [
+        "evaluation gates",
+        "automated validation frameworks",
+        "auditability",
+        "40% reporting error reduction"
+      ],
+      "forbidden_phrases_without_support": [
+        "certified compliant",
+        "regulator-approved platform"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "risk_notes": "40% metric requires fact_governance_003 in source_fact_ids."
+    },
+    {
+      "fact_id": "fact_platform_commercialization_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Converted bespoke AI delivery into reusable platform IP with $22M IP-led revenue, 20% gross margin expansion, and repeatable enterprise adoption.",
+      "supporting_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_006"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_phrases": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "reusable platform IP",
+        "commercialization"
+      ],
+      "forbidden_phrases_without_support": [
+        "$30M portfolio",
+        "ARR",
+        "bookings"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets",
+        "unify_narrative",
+        "headline"
+      ],
+      "risk_notes": "Subset of 006 for exec S4; avoid double team-scale without fact_exec_002."
+    },
+    {
+      "fact_id": "fact_exec_scale_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Scaled ML engineering organization from 8 to 28 specialists including senior engineers and platform leads.",
+      "supporting_fact_ids": [
+        "fact_exec_002",
+        "fact_engineering_platform_006"
+      ],
+      "evidence_source": [
+        "master ledger fact_exec_002"
+      ],
+      "support_level": "METRIC_DIRECT",
+      "allowed_phrases": [
+        "8 to 28 specialists",
+        "ML engineering organization",
+        "platform leads"
+      ],
+      "forbidden_phrases_without_support": [
+        "100+ engineers",
+        "global engineering org of"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "Prefer fact_exec_002 as canonical metric carrier."
+    },
+    {
+      "fact_id": "fact_quant_credential_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Brings Fellow of the Society of Actuaries (FSA) depth together with AWS and Databricks credentials to inform governed AI platform design in regulated financial services.",
+      "supporting_fact_ids": [
+        "fact_certs_001"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json certifications",
+        "master ledger fact_certs_001"
+      ],
+      "support_level": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "FSA",
+        "Fellow of the Society of Actuaries",
+        "AWS Certified",
+        "Databricks Lakehouse Fundamentals"
+      ],
+      "forbidden_phrases_without_support": [
+        "credentialed foundation strength",
+        "with the executive platform record above",
+        "applied depth"
+      ],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "risk_notes": "Aligns with exec_summary_srfs_judge_safe banned phrases."
+    },
+    {
+      "fact_id": "fact_cloud_data_platform_001",
+      "status": "DRAFT_INACTIVE",
+      "claim_text": "Architected cloud-native microservices on AWS and Databricks Lakehouse with enterprise data pipelines, vector services, API gateways, and identity controls.",
+      "supporting_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
+      "evidence_source": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json#bul_unify_005"
+      ],
+      "support_level": "DIRECT",
+      "allowed_phrases": [
+        "AWS",
+        "Databricks Lakehouse",
+        "vector services",
+        "API gateways",
+        "identity controls",
+        "data pipelines"
+      ],
+      "forbidden_phrases_without_support": [
+        "multi-cloud GA",
+        "sole cloud provider"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets",
+        "headline"
+      ],
+      "risk_notes": "Narrower alias of fact_engineering_platform_005."
+    }
+  ],
+  "executive_summary_selection_recommendation": {
+    "principle": "Reserve agentic/runtime vocabulary for executive_summary slice; prevent headline from consuming facts 001-004 before exec allocation OR add exec_summary_reserved_fact_ids.",
+    "target_composition": {
+      "architecture_runtime_facts_2_3": [
+        "fact_agentic_runtime_001 (draft)",
+        "fact_cloud_data_platform_001 or fact_engineering_platform_005",
+        "fact_graph_rag_001 (draft)"
+      ],
+      "governance_evidence_facts_1_2": [
+        "fact_ai_governance_runtime_001 (draft) or fact_governance_003"
+      ],
+      "commercialization_fact_1": [
+        "fact_platform_commercialization_001 (draft) or fact_engineering_platform_006"
+      ],
+      "org_scale_fact_1": [
+        "fact_exec_scale_001 (draft) or fact_exec_002"
+      ],
+      "credential_quant_fact_1": [
+        "fact_quant_credential_001 (draft) or fact_certs_001"
+      ]
+    },
+    "targeting_context_non_proof": {
+      "sources": [
+        "JD_TEXT",
+        "BRIEFING",
+        "target_role",
+        "target_company"
+      ],
+      "support_level": "TARGETING_ONLY",
+      "rules": [
+        "May bias role-family sort and fact ordering within HIGH pool",
+        "Must never appear in claim_ledger.source_fact_ids",
+        "Must not mint new facts"
+      ]
+    },
+    "selector_changes_proposed": [
+      "_allocate_exec_summary_facts: reserved_ids for fact_engineering_platform_001..004 when ENGINEERING_PLATFORM is top priority",
+      "max_per_domain_family exception for executive_summary when agentic bundle row present",
+      "Promote fact_engineering_platform_001 into exec slice before quant_hpc when JD signals agentic/platform",
+      "Cross-section dedup: headline may echo tags but not exclusive claim_text lockout of exec facts"
+    ],
+    "judge_safe_s5_template": "FSA and cloud certifications inform governed agentic platform design in regulated financial services \u2014 cite fact_certs_001; forbid meta anchors per exec_summary_srfs_judge_safe.py"
+  },
+  "implementation_plan_waves": [
+    {
+      "wave": "W1",
+      "scope": "Schema: support_level, allowed_phrases, blocked_phrases, bundle_rules + contract tests",
+      "runtime_change": false
+    },
+    {
+      "wave": "W2",
+      "scope": "SRFS selector: exec_reserved_fact_ids + cross-section headline/exec dedup",
+      "runtime_change": true
+    },
+    {
+      "wave": "W3",
+      "scope": "Activate DRAFT facts after human confirmation on base resume bullets",
+      "runtime_change": true
+    },
+    {
+      "wave": "W4",
+      "scope": "DERIVED_SUPPORTED registry + X2 bundle gate",
+      "runtime_change": true
+    },
+    {
+      "wave": "W5",
+      "scope": "Re-run exec_summary real proof; target Anthropic >= 4.0 without threshold changes",
+      "runtime_change": false
+    }
+  ],
+  "constraints_preserved": {
+    "no_agentic_core_changes": true,
+    "no_x2_weakening": true,
+    "no_x3_weakening": true,
+    "no_judge_threshold_changes": true,
+    "no_jd_briefing_as_proof": true,
+    "no_runtime_generation_patch_in_this_audit": true,
+    "preserve_canonical_source_fact_ids": true
+  },
+  "honest_caveat": "Master ledger status is candidate_ledger_requires_human_confirmation. Proposed facts are DRAFT_INACTIVE. This audit did not re-run generation or modify runtime."
+}
