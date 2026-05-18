@@ -1,0 +1,88 @@
+{
+  "wave": "W11-W12",
+  "title": "apps_rg R1B derived index projection and write-to-read lifecycle",
+  "status": "PASS",
+  "status_note": "UWG-admitted durable bundles project into derived_index/; whole-run preflight prefers derived index; lifecycle hit/miss/reject proven via fixtures and tests",
+  "fixtures": {
+    "root": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures",
+    "durable_to_index_projection": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/durable_to_index_projection.json",
+    "index_refresh_receipt": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/index_refresh_receipt.json",
+    "lifecycle_accepted_hit": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/lifecycle_accepted_hit.json",
+    "lifecycle_miss_fallthrough": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/lifecycle_miss_fallthrough.json",
+    "lifecycle_rejected_candidate": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/lifecycle_rejected_candidate.json",
+    "child_chunk_not_independent": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/child_chunk_not_independent.json",
+    "r1b_vs_c0_separation": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/r1b_vs_c0_separation.json",
+    "w10b_sidecar_gap_carry_forward": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/w10b_sidecar_gap_carry_forward.json"
+  },
+  "index": {
+    "collection_path": "derived_index/intent_vectors/",
+    "digest_index_path": "derived_index/by_digest/",
+    "manifest_path": "derived_index/manifest.json",
+    "durable_truth_path": "durable/uwg_admitted/intents/",
+    "lookup_anchor": "HistoricalIntentRecord.request_intent_vector",
+    "refresh_after_uwg_admission": true
+  },
+  "proof_claims": {
+    "durable_truth_authoritative": true,
+    "derived_index_read_only": true,
+    "intent_vectors_only_indexed": true,
+    "child_chunks_not_independent_identities": true,
+    "c0_fact_vectors_excluded": true,
+    "accepted_hit_exit_review_required": true,
+    "miss_fallthrough": true,
+    "rejected_candidate_no_hit": true,
+    "w7_w10b_regression_pass": true,
+    "agentic_core_diff_empty": true,
+    "core_uwg_commit_receipt_parity_solved": false
+  },
+  "files_changed": [
+    "apps_rg/cache/r1b_derived_index.py",
+    "apps_rg/cache/r1b_index_lifecycle.py",
+    "apps_rg/cache/r1b_uwg_promotion.py",
+    "apps_rg/cache/r1b_whole_run_preflight.py",
+    "apps_rg/config/domain_contract/cache_profiles.yaml",
+    "tools/apps_rg/emit_r1b_w11_w12_fixtures.py",
+    "tests/unit/apps_rg/test_r1b_derived_index_projection_w11.py",
+    "tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py",
+    "tests/_apps_contract/test_apps_rg_r1b_index_lifecycle_w11_w12.py",
+    "docs/reports/apps_rg/r1b_index_lifecycle_w11_w12.md",
+    "docs/reports/apps_rg/r1b_index_lifecycle_w11_w12_manifest.json"
+  ],
+  "commands": [
+    {"cmd": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w7_fixtures.py", "exit_code": 1, "note": "pre-existing w7 fixtures on disk; offline_stub intent path missing under _store/intents"},
+    {"cmd": "python tools/apps_rg/emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9b_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w10_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w10b_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w11_w12_fixtures.py", "exit_code": 0},
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"r1b and (projection or index or lifecycle or durable or lookup)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 27
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and r1b and (projection or index or lifecycle or durable or lookup)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 18
+    },
+    {
+      "cmd": "pytest tests/_apps_contract/test_apps_rg_r1b_semantic_cache_w7.py ... w10b.py -q --tb=short",
+      "exit_code": 0,
+      "passed": 32
+    },
+    {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
+  ],
+  "w10b_gap_carry_forward": {
+    "core_uwg_commit_receipt_missing_fields": [
+      "gate_verdict_refs",
+      "replay_key",
+      "policy_hash",
+      "blueprint_hash",
+      "source_surface"
+    ],
+    "apps_rg_governance_sidecar_preserves_refs": true,
+    "shim_patches_l5_on_receipt": true
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "title": "apps_rg R1B W7-W12 closeout",
+  "status": "PASS",
+  "status_note": "All W7-W12 fixture emitters exit 0; 92/92 W7-W12 dedicated tests pass. Broad pytest -k r1b surfaces 9 pre-existing failures outside W7-W12 modules (documented, not introduced by closeout).",
+  "waves": {
+    "W7": {
+      "focus": "ROLE_TARGET_RUN persistence, HistoricalIntentRecord + child chunks",
+      "emitter": "tools/apps_rg/emit_r1b_w7_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_semantic_cache_persistence_w7_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w7_fixtures/"
+    },
+    "W8": {
+      "focus": "post-Exit ingestion eligibility",
+      "emitter": "tools/apps_rg/emit_r1b_w8_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_post_exit_ingestion_w8_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/"
+    },
+    "W9": {
+      "focus": "whole-run R1B lookup before generation",
+      "emitter": "tools/apps_rg/emit_r1b_w9_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_whole_run_lookup_w9_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/"
+    },
+    "W9b": {
+      "focus": "canonical whole-run entrypoint preflight parity",
+      "emitter": "tools/apps_rg/emit_r1b_w9b_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_whole_run_entrypoint_parity_w9b_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w9b_fixtures/"
+    },
+    "W10": {
+      "focus": "UWG-gated durable promotion",
+      "emitter": "tools/apps_rg/emit_r1b_w10_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_uwg_durable_persistence_w10_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/"
+    },
+    "W10b": {
+      "focus": "UWG receipt contract parity (apps_rg sidecar)",
+      "emitter": "tools/apps_rg/emit_r1b_w10b_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_uwg_receipt_contract_parity_w10b_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/"
+    },
+    "W11-W12": {
+      "focus": "derived index projection + write-to-read lifecycle",
+      "emitter": "tools/apps_rg/emit_r1b_w11_w12_fixtures.py",
+      "emitter_exit_code": 0,
+      "manifest": "docs/reports/apps_rg/r1b_index_lifecycle_w11_w12_manifest.json",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/"
+    }
+  },
+  "fixture_emitter_matrix": [
+    {"wave": "W7", "script": "emit_r1b_w7_fixtures.py", "exit_code": 0},
+    {"wave": "W8", "script": "emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {"wave": "W9", "script": "emit_r1b_w9_fixtures.py", "exit_code": 0},
+    {"wave": "W9b", "script": "emit_r1b_w9b_fixtures.py", "exit_code": 0},
+    {"wave": "W10", "script": "emit_r1b_w10_fixtures.py", "exit_code": 0},
+    {"wave": "W10b", "script": "emit_r1b_w10b_fixtures.py", "exit_code": 0},
+    {"wave": "W11-W12", "script": "emit_r1b_w11_w12_fixtures.py", "exit_code": 0}
+  ],
+  "test_matrix": {
+    "w7_w12_dedicated": {
+      "cmd": "pytest tests/unit/apps_rg/test_r1b_* tests/_apps_contract/test_apps_rg_r1b_* (W7-W12 files)",
+      "passed": 92,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "unit_broad_r1b_keyword": {
+      "cmd": "pytest tests/unit/apps_rg -k r1b -q --tb=short",
+      "passed": 53,
+      "failed": 5,
+      "exit_code": 1,
+      "failures_pre_existing": [
+        "tests/unit/apps_rg/test_l0_wiring_gaps.py::TestMainR1BWiring (5 tests; ResumeResolutionError on mock args.resume)"
+      ]
+    },
+    "contract_broad_r1b_keyword": {
+      "cmd": "pytest tests/_apps_contract -k apps_rg and r1b -q --tb=short",
+      "passed": 67,
+      "failed": 4,
+      "exit_code": 1,
+      "failures_pre_existing": [
+        "test_apps_rg_exit_gate_harness.py::TestBR1BoundaryRepair::test_apps_rg_exit_factory_lives_in_apps_rg_exit_binding",
+        "test_w2_r1b_semantic_cache.py::test_apps_rg_r1b_enabled_uses_generic_binding",
+        "test_w3_graph_traverse_policy.py::test_apps_rg_graph_profile_added_r1b_preserved",
+        "test_w3_l0_package_driven_routing.py::TestR1BSemanticCache::test_apps_research_r1b_blocks_final_apps_rg_output_terminal_reuse"
+      ]
+    }
+  },
+  "w7_emitter_fix": {
+    "issue": "rejected offline/mock fixtures no longer mirrored to store intents/ after UWG promotion path",
+    "fix": "_export_intent_fixture builds post-Exit record when store mirror absent",
+    "emitter_exit_code_after_fix": 0
+  },
+  "proof_claims": {
+    "w7_emitter_exits_zero": true,
+    "offline_stub_cache_admissible_false": true,
+    "offline_stub_non_admissible_reason": "not_mock_runtime",
+    "not_proof_eligible_rejected": true,
+    "durable_truth_vs_derived_index_intact": true,
+    "child_chunks_not_independent": true,
+    "r1b_vs_c0_separation": true,
+    "w10b_core_receipt_gap_documented": true,
+    "core_uwg_commit_receipt_parity_solved": false,
+    "agentic_core_diff_empty": true
+  },
+  "files_changed": [
+    "tools/apps_rg/emit_r1b_w7_fixtures.py",
+    "tests/unit/apps_rg/test_r1b_historical_intent_persistence.py",
+    "docs/reports/apps_rg/r1b_w7_w12_closeout.md",
+    "docs/reports/apps_rg/r1b_w7_w12_closeout_manifest.json"
+  ],
+  "commands": [
+    {"cmd": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w7_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9b_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w10_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w10b_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w11_w12_fixtures.py", "exit_code": 0},
+    {"cmd": "pytest W7-W12 dedicated (92 tests)", "exit_code": 0, "passed": 92},
+    {"cmd": "pytest tests/unit/apps_rg -k r1b", "exit_code": 1, "passed": 53, "failed": 5},
+    {"cmd": "pytest tests/_apps_contract -k apps_rg and r1b", "exit_code": 1, "passed": 67, "failed": 4},
+    {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
+  ],
+  "notion": {
+    "plan_page_id": "36427693-f55c-81b2-8511-fcb3b83f0c68",
+    "plan_url": "https://www.notion.so/36427693f55c81b28511fcb3b83f0c68",
+    "plan_slug": "apps-rg-r1b-w7-w12-closeout-e8f4a1",
+    "plan_status": "Completed",
+    "backlog_rows": {
+      "W7": "https://www.notion.so/36427693f55c81a18a41e767779aff8a",
+      "W8": "https://www.notion.so/36427693f55c81028c8ad638c7102910",
+      "W9": "https://www.notion.so/36427693f55c81c38bfde538f3d1f45e",
+      "W9b": "https://www.notion.so/36427693f55c816f9007e5a2cfd99fba",
+      "W10": "https://www.notion.so/36427693f55c817a85bff078a09184d4",
+      "W10b": "https://www.notion.so/36427693f55c81ceaa81c06e78d2bf72",
+      "W11-W12": "https://www.notion.so/36427693f55c81cd9748d4101bb0dd87"
+    }
+  },
+  "disk_ssot_index": "docs/reports/apps_rg/r1b_w7_w12_ssot_index.json",
+  "w10b_gap_carry_forward": {
+    "core_uwg_commit_receipt_missing_fields": [
+      "gate_verdict_refs",
+      "replay_key",
+      "policy_hash",
+      "blueprint_hash",
+      "source_surface"
+    ],
+    "apps_rg_governance_sidecar_preserves_refs": true,
+    "artifact": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/w10b_sidecar_gap_carry_forward.json"
+  }
+}

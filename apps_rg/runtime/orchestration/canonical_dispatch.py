@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import uuid
 from pathlib import Path
 from types import SimpleNamespace
@@ -1160,6 +1161,30 @@ def run_canonical_apps_rg_from_cli_primitives(
     )
     art = _default_artifact_dir(artifact_dir)
 
+    from apps_rg.cache.whole_run_entrypoint_preflight import (
+        ENTRYPOINT_CANONICAL_DISPATCH,
+        build_cache_hit_dispatch_result,
+        maybe_ingest_r1b_post_exit,
+        run_whole_run_cache_preflight,
+    )
+
+    preflight = run_whole_run_cache_preflight(
+        entrypoint=ENTRYPOINT_CANONICAL_DISPATCH,
+        raw_request=raw_request,
+        target_company=target_company,
+        target_role=target_role,
+        artifact_dir=art,
+        runs_dir=art.parent,
+        policy_hash=os.environ.get("APPS_RG_POLICY_HASH"),
+        blueprint_hash=os.environ.get("APPS_RG_BLUEPRINT_HASH"),
+        section=section,
+    )
+    if not preflight.generation_required:
+        hit_result = build_cache_hit_dispatch_result(preflight)
+        if preflight.r1a_hit:
+            hit_result["artifact_dir"] = preflight.r1a_artifact_dir
+        return hit_result
+
     result = run_integrated_r4_deterministic_pipeline(
         raw_request=raw_request,
         app_name="apps_rg",
@@ -1178,6 +1203,12 @@ def run_canonical_apps_rg_from_cli_primitives(
         art,
         run_id=rid or None,
         correlation_id=rid or None,
+    )
+
+    maybe_ingest_r1b_post_exit(
+        raw_request=raw_request,
+        artifact_dir=art,
+        runs_dir=art.parent,
     )
 
     l7_path = art / "agentic_core_how_trace.json"

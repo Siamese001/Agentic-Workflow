@@ -344,15 +344,11 @@ def test_apps_lic_r1b_absent_from_route_order() -> None:
 # ---------------------------------------------------------------------------
 
 def test_apps_rg_quarantined_r1b_adapter_untouched() -> None:
-    """AC-14: apps_rg/cache/r1b_adapter.py must contain RuntimeError quarantine sentinel."""
+    """W7: apps_rg/cache/r1b_adapter.py is the active ROLE_TARGET_RUN implementation."""
     assert RG_R1B_ADAPTER.exists(), f"r1b_adapter.py missing: {RG_R1B_ADAPTER}"
     source = RG_R1B_ADAPTER.read_text(encoding="utf-8")
-    assert "RuntimeError" in source, (
-        "r1b_adapter.py quarantine RuntimeError removed — quarantine violated"
-    )
-    assert "W4N" not in source, (
-        "r1b_adapter.py contains W4N marker — W4N must not touch quarantined adapter"
-    )
+    assert "check_r1b_for_apps_rg" in source
+    assert "ROLE_TARGET_RUN" in source or "CACHE_GRAIN_ROLE_TARGET_RUN" in source
 
 
 # ---------------------------------------------------------------------------

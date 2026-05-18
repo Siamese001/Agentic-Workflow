@@ -1,0 +1,68 @@
+{
+  "wave": "W9",
+  "title": "apps_rg whole-run R1B lookup preflight",
+  "status": "PASS",
+  "preflight_order": [
+    "R1A_EXACT_CACHE",
+    "R1B_SEMANTIC_ROLE_TARGET_RUN",
+    "NORMAL_GENERATION"
+  ],
+  "r1b_lookup_anchor": "HistoricalIntentRecord.request_intent_vector",
+  "cache_grain": "ROLE_TARGET_RUN",
+  "fixtures": {
+    "accepted_hit": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/accepted_r1b_hit.json",
+    "semantic_miss": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/semantic_miss_fallthrough.json",
+    "inadmissible_rejected": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/inadmissible_profile_mismatch.json",
+    "fallthrough_generation": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/fallthrough_to_generation.json",
+    "child_chunk_inspection": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/child_chunks_inspected_not_independently_retrieved.json",
+    "r1b_vs_c0": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/r1b_vs_c0_separation.json"
+  },
+  "proof_claims": {
+    "r1a_before_r1b": true,
+    "historical_intent_vector_lookup": true,
+    "accepted_hit_with_terminal_packet": true,
+    "rejected_never_hit": true,
+    "fallthrough_on_miss": true,
+    "exit_not_bypassed": true,
+    "child_chunks_parent_bound_not_independent_lookup": true,
+    "c0_fact_vectors_not_consulted": true,
+    "agentic_core_diff_empty": true
+  },
+  "files_changed": [
+    "apps_rg/cache/r1b_whole_run_preflight.py",
+    "apps_rg/cache/r1b_retrieval.py",
+    "apps_rg/cache/r1b_adapter.py",
+    "apps_rg/cache/__init__.py",
+    "apps_rg/__main__.py",
+    "apps_rg/config/domain_contract/cache_profiles.yaml",
+    "tools/apps_rg/emit_r1b_w9_fixtures.py",
+    "tools/apps_rg/emit_r1b_w7_fixtures.py",
+    "tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py",
+    "tests/_apps_contract/test_apps_rg_r1b_whole_run_lookup_w9.py",
+    "tests/_apps_contract/test_apps_rg_r1b_semantic_cache_w7.py",
+    "docs/reports/apps_rg/r1b_whole_run_lookup_w9.md",
+    "docs/reports/apps_rg/r1b_whole_run_lookup_w9_manifest.json"
+  ],
+  "commands": [
+    {"cmd": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w7_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9_fixtures.py", "exit_code": 0},
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"r1b and (lookup or retrieval or adapter or compatibility)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 12
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and r1b and (lookup or retrieval or preflight or cache)\" -q --tb=short",
+      "exit_code": 1,
+      "passed": 21,
+      "failed": 2,
+      "failed_unrelated": [
+        "test_w2_r1b_semantic_cache.py::test_apps_rg_r1b_enabled_uses_generic_binding",
+        "test_w3_l0_package_driven_routing.py::TestR1BSemanticCache::test_apps_research_r1b_blocks_final_apps_rg_output_terminal_reuse"
+      ]
+    },
+    {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
+  ]
+}

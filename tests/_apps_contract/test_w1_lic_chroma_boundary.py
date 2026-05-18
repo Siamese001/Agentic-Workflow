@@ -261,13 +261,12 @@ def test_ac7_route_contract_unchanged() -> None:
 # ---------------------------------------------------------------------------
 
 def test_ac8_apps_rg_r1b_adapter_unchanged() -> None:
-    """AC-8: apps_rg/cache/r1b_adapter.py not touched in W1."""
+    """W7: apps_rg/cache/r1b_adapter.py is the active ROLE_TARGET_RUN implementation."""
     path = REPO_ROOT / "apps_rg" / "cache" / "r1b_adapter.py"
     assert path.exists()
     source = path.read_text(encoding="utf-8")
-    assert "RuntimeError" in source, (
-        "apps_rg/cache/r1b_adapter.py appears to have been modified (quarantine guard removed)"
-    )
+    assert "check_r1b_for_apps_rg" in source
+    assert "ROLE_TARGET_RUN" in source or "CACHE_GRAIN_ROLE_TARGET_RUN" in source
 
 
 def test_ac8_apps_research_cache_profile_unchanged() -> None:

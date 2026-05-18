@@ -532,25 +532,23 @@ def test_apps_rg_r1b_eligible_via_generic_check() -> None:
 # ---------------------------------------------------------------------------
 
 def test_apps_rg_quarantined_adapter_untouched() -> None:
-    """apps_rg/cache/r1b_adapter.py must still raise RuntimeError on import (quarantine intact)."""
+    """W7: apps_rg/cache/r1b_adapter.py implements ROLE_TARGET_RUN persistence (quarantine cleared)."""
     adapter_path = REPO_ROOT / "apps_rg" / "cache" / "r1b_adapter.py"
-    assert adapter_path.exists(), "r1b_adapter.py must still exist (quarantined)"
+    assert adapter_path.exists(), "r1b_adapter.py must exist"
 
     source = adapter_path.read_text(encoding="utf-8")
-    assert "QUARANTINE" in source, "Quarantine notice must still be present"
-    assert "RuntimeError" in source, "Quarantine must raise RuntimeError"
-    assert "raise RuntimeError" in source
+    assert "check_r1b_for_apps_rg" in source
+    assert "HistoricalIntentRecord" in source or "r1b_retrieval" in source
+    assert "ROLE_TARGET_RUN" in source or "CACHE_GRAIN_ROLE_TARGET_RUN" in source
 
 
 def test_apps_rg_quarantined_adapter_raises_on_import() -> None:
-    """Importing apps_rg.cache.r1b_adapter must raise RuntimeError."""
+    """W7: importing apps_rg.cache.r1b_adapter succeeds (active implementation)."""
     import importlib
 
-    # Remove cached module if present
     sys.modules.pop("apps_rg.cache.r1b_adapter", None)
-
-    with pytest.raises(RuntimeError, match="QUARANTINE"):
-        importlib.import_module("apps_rg.cache.r1b_adapter")
+    mod = importlib.import_module("apps_rg.cache.r1b_adapter")
+    assert hasattr(mod, "check_r1b_for_apps_rg")
 
 
 # ---------------------------------------------------------------------------

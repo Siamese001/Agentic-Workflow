@@ -537,16 +537,12 @@ def test_no_app_id_branch_in_package_driven_l0_binding():
 # 12. test_apps_rg_quarantined_adapter_untouched
 # ---------------------------------------------------------------------------
 
-def test_apps_rg_quarantined_adapter_untouched():
-    """apps_rg/cache/r1b_adapter.py must still raise RuntimeError on import.
-    W1 must not have removed or modified the quarantine guard."""
+def test_apps_rg_r1b_adapter_w7_role_target_run_implementation():
+    """W7: apps_rg/cache/r1b_adapter.py implements ROLE_TARGET_RUN persistence (quarantine cleared)."""
     adapter_source = APPS_RG_QUARANTINED_ADAPTER.read_text(encoding="utf-8")
-    assert "RuntimeError" in adapter_source, (
-        "apps_rg/cache/r1b_adapter.py quarantine guard must remain intact"
-    )
-    assert "QUARANTINE" in adapter_source.upper(), (
-        "apps_rg/cache/r1b_adapter.py must still carry the QUARANTINE marker"
-    )
+    assert "HistoricalIntentRecord" in adapter_source or "r1b_retrieval" in adapter_source
+    assert "ROLE_TARGET_RUN" in adapter_source or "check_r1b_for_apps_rg" in adapter_source
+    assert "not_c0_fact_vectors" in adapter_source or "R1B_NOT_C0_FACT_VECTORS" in adapter_source
 
 
 # ---------------------------------------------------------------------------
@@ -702,7 +698,7 @@ def test_apps_rg_actual_profile_deferred():
     )
     assert result.get("enabled") is True
     assert result.get("live_wiring_deferred") is False
-    assert result.get("namespace") == "apps_rg.resume_gen.v1"
+    assert result.get("namespace") == "apps_rg.resume_gen.section.v1"
 
 
 # Regression: check_d2_semantic_cache is called with exact expected arguments

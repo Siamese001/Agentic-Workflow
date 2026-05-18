@@ -345,13 +345,12 @@ def test_apps_rg_untouched_by_w6():
 
 
 def test_apps_rg_r1b_adapter_quarantine_untouched():
-    """apps_rg/cache/r1b_adapter.py must still be quarantined (raises RuntimeError on import)."""
+    """W7: apps_rg/cache/r1b_adapter.py is the active ROLE_TARGET_RUN implementation."""
     r1b_path = REPO_ROOT / "apps_rg" / "cache" / "r1b_adapter.py"
-    assert r1b_path.exists(), "apps_rg/cache/r1b_adapter.py must still exist"
+    assert r1b_path.exists(), "apps_rg/cache/r1b_adapter.py must exist"
     source = r1b_path.read_text(encoding="utf-8")
-    assert "RuntimeError" in source, (
-        "apps_rg/cache/r1b_adapter.py quarantine guard (RuntimeError) must be intact"
-    )
+    assert "check_r1b_for_apps_rg" in source
+    assert "ROLE_TARGET_RUN" in source or "CACHE_GRAIN_ROLE_TARGET_RUN" in source
 
 
 # ---------------------------------------------------------------------------

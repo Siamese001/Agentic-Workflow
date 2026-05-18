@@ -338,7 +338,7 @@ def test_apps_rg_semantic_cache_config_still_prepared() -> None:
     assert sc.get("enabled") is True, (
         f"apps_rg semantic_cache.enabled changed: {sc.get('enabled')!r}"
     )
-    assert sc.get("namespace") == "apps_rg.resume_gen.v1", (
+    assert sc.get("namespace") == "apps_rg.resume_gen.section.v1", (
         f"apps_rg semantic_cache.namespace changed: {sc.get('namespace')!r}"
     )
     assert sc.get("live_wiring_deferred") is True, (

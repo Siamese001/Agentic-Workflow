@@ -1,0 +1,72 @@
+{
+  "wave": "W8",
+  "title": "apps_rg R1B post-Exit ingestion eligibility hardening",
+  "status": "PASS",
+  "parent_wave": "W7",
+  "ingestion_phase": "post_exit_only",
+  "required_exit_artifact": "x3_disposition.json",
+  "durable_write_via_uwg": "BLOCKED",
+  "ingestion_rules": [
+    "exit_metadata_present (x3_disposition.json + x3_code)",
+    "x3_allows_finish",
+    "proof_eligible explicit and true",
+    "runtime_generation_status present and not mock/offline/stub",
+    "exit_proceed_to_runtime not false",
+    "jd_digest, base_resume_digest, prompt_profile_hash, gate_profile_hash present",
+    "final_resume, section_proof_summary, at_least_one_section_output chunks",
+    "chunks parent-linked; independent_cache_identity false",
+    "no C0 fact_vectors chunk types"
+  ],
+  "fixtures": {
+    "accepted": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/accepted_post_exit_ingestion.json",
+    "rejected_mock_runtime": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/rejected_mock_runtime_ingestion.json",
+    "rejected_missing_x3": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/rejected_missing_x3_ingestion.json",
+    "rejected_missing_proof_chunks": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/rejected_missing_proof_chunks_ingestion.json",
+    "rejected_missing_digest": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/rejected_missing_required_digest_ingestion.json"
+  },
+  "rejected_reasons": {
+    "rejected_mock_runtime_ingestion": "not_mock_runtime",
+    "rejected_missing_x3_ingestion": "missing_exit_x3_disposition",
+    "rejected_missing_proof_chunks_ingestion": "final_resume_chunk_present; at_least_one_section_output",
+    "rejected_missing_required_digest_ingestion": "jd_digest_present; base_resume_digest_present"
+  },
+  "proof_claims": {
+    "ingestion_after_exit_metadata": true,
+    "mock_stub_never_cache_admissible": true,
+    "child_chunks_parent_bound": true,
+    "r1b_separate_from_c0_fact_vectors": true,
+    "pre_exit_store_blocked": true,
+    "agentic_core_diff_empty": true
+  },
+  "files_changed": [
+    "apps_rg/cache/r1b_post_exit_eligibility.py",
+    "apps_rg/cache/r1b_post_exit_ingest.py",
+    "apps_rg/cache/r1b_adapter.py",
+    "apps_rg/cache/r1b_ingest.py",
+    "apps_rg/cache/__init__.py",
+    "apps_rg/cache/r1b_constants.py",
+    "apps_rg/__main__.py",
+    "tools/apps_rg/emit_r1b_w8_fixtures.py",
+    "tests/unit/apps_rg/test_r1b_post_exit_ingestion_eligibility.py",
+    "tests/unit/apps_rg/test_r1b_historical_intent_persistence.py",
+    "tests/_apps_contract/test_apps_rg_r1b_post_exit_ingest_w8.py",
+    "tests/_apps_contract/test_apps_rg_r1b_semantic_cache_w7.py",
+    "docs/reports/apps_rg/r1b_post_exit_ingestion_w8.md",
+    "docs/reports/apps_rg/r1b_post_exit_ingestion_w8_manifest.json"
+  ],
+  "commands": [
+    {"cmd": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"r1b and (ingest or eligibility or admissible or post_exit)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 9
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and r1b and (ingest or eligibility or admissible or post_exit)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 10
+    },
+    {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "wave": "W10",
+  "title": "apps_rg R1B UWG durable persistence",
+  "status": "PASS",
+  "durable_write_path": "Exit → CommitRequest → DurableWriteGateway.commit → l4.apps_rg.r1b_semantic_cache",
+  "target_surface": "l4.apps_rg.r1b_semantic_cache",
+  "operation_type": "memory_promotion",
+  "fixture_storage_tier": "fixture_proof_mirror",
+  "durable_storage_tier": "uwg_admitted_durable_projection",
+  "fixtures": {
+    "uwg_admitted": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/uwg_admitted_promotion.json",
+    "blocked_promotion": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/blocked_promotion.json",
+    "l2_direct_write_blocked": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/l2_direct_write_blocked.json",
+    "l6_direct_write_blocked": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/l6_direct_write_blocked.json",
+    "file_backed_non_durable": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/file_backed_non_durable_manifest.json"
+  },
+  "proof_claims": {
+    "uwg_admission_wired": true,
+    "blocked_write_receipt": true,
+    "l2_direct_write_blocked": true,
+    "l6_direct_write_blocked": true,
+    "file_backed_not_durable_truth": true,
+    "w7_w9b_regression": true,
+    "c0_separation": true,
+    "agentic_core_diff_empty": true
+  },
+  "files_changed": [
+    "apps_rg/cache/r1b_constants.py",
+    "apps_rg/cache/r1b_store.py",
+    "apps_rg/cache/r1b_post_exit_ingest.py",
+    "apps_rg/cache/r1b_adapter.py",
+    "apps_rg/cache/r1b_durable_write_guard.py",
+    "apps_rg/cache/r1b_uwg_promotion.py",
+    "apps_rg/cache/r1b_uwg_gateway_shim.py",
+    "apps_rg/cache/__init__.py",
+    "apps_rg/config/domain_contract/cache_profiles.yaml",
+    "tools/apps_rg/emit_r1b_w7_fixtures.py",
+    "tools/apps_rg/emit_r1b_w8_fixtures.py",
+    "tools/apps_rg/emit_r1b_w9_fixtures.py",
+    "tools/apps_rg/emit_r1b_w9b_fixtures.py",
+    "tools/apps_rg/emit_r1b_w10_fixtures.py",
+    "tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py",
+    "tests/_apps_contract/test_apps_rg_r1b_uwg_durable_persistence_w10.py",
+    "docs/reports/apps_rg/r1b_uwg_durable_persistence_w10.md",
+    "docs/reports/apps_rg/r1b_uwg_durable_persistence_w10_manifest.json"
+  ],
+  "commands": [
+    {"cmd": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w7_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9b_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w10_fixtures.py", "exit_code": 0},
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"r1b and (uwg or durable or commit or write_gate or promotion)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 9
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and r1b and (uwg or durable or commit or write_gate or promotion)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 5
+    },
+    {
+      "cmd": "pytest tests/_apps_contract/test_apps_rg_r1b_semantic_cache_w7.py tests/_apps_contract/test_apps_rg_r1b_post_exit_ingest_w8.py tests/_apps_contract/test_apps_rg_r1b_whole_run_lookup_w9.py tests/_apps_contract/test_apps_rg_r1b_whole_run_entrypoint_parity_w9b.py -q --tb=short",
+      "exit_code": 0,
+      "passed": 22
+    },
+    {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
+  ],
+  "uwg_gateway_shim_note": "AppsRgR1BUwgGateway patches UWGCommitReceipt l5_certification_ref until core propagates field"
+}

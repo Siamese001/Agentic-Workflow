@@ -1,0 +1,60 @@
+# apps_rg cache profile — section + whole-run R1A/R1B (W6 section_cache_preflight).
+cache_profile_id: cp::apps_rg::resume_generation::v1
+app_id: apps_rg
+version: "1.0.0"
+status: active
+source_app_config_ref: apps_rg/config/domain_contract/cache_profiles.yaml
+
+semantic_cache:
+  enabled: true
+  namespace: apps_rg.resume_gen.section.v1
+  similarity_threshold: 0.88
+  live_wiring_deferred: false
+  wiring_gate: CLEARED_BY_W1_GENERIC_R1B_CACHE_WIRING
+  compatibility_check_fields:
+    - role_compatible
+    - freshness_within_ttl
+    - provenance_known
+
+r1b_uwg_durable_promotion:
+  enabled: true
+  target_surface: l4.apps_rg.r1b_semantic_cache
+  operation_type: memory_promotion
+  source_surface_required: Exit
+  fixture_storage_tier: fixture_proof_mirror
+  durable_storage_tier: uwg_admitted_durable_projection
+  l2_direct_write: forbidden
+  l6_direct_write: forbidden
+  c0_fact_vectors_excluded: fact_vectors
+
+r1b_derived_index:
+  enabled: true
+  durable_truth_path: durable/uwg_admitted/
+  derived_index_path: derived_index/
+  lookup_anchor: HistoricalIntentRecord.request_intent_vector
+  child_chunks_parent_bound_only: true
+  child_chunks_independent_index_identities: false
+  c0_fact_vectors_excluded: fact_vectors
+  refresh_after_uwg_admission: true
+
+whole_run_cache_preflight:
+  enabled: true
+  route_order:
+    - R1A_EXACT_CACHE
+    - R1B_SEMANTIC_ROLE_TARGET_RUN
+    - NORMAL_GENERATION
+  r1b_lookup_grain: ROLE_TARGET_RUN
+  r1b_lookup_anchor: HistoricalIntentRecord.request_intent_vector
+  r1b_derived_index_preferred: true
+  c0_collection_excluded: fact_vectors
+  section_level_loose_reuse: false
+
+section_cache_preflight:
+  enabled: true
+  # R1B uses historical intent vectors (D2 semantic cache). NOT Chroma fact_vectors (C0 dense lane).
+  c0_collection_excluded: fact_vectors
+  distinguish_semantic_cache_from_c0_fact_vectors: true
+
+notes: >
+  Section lanes evaluate R1A exact hash then R1B semantic cache before proof-pool, C0, PA, or L2.
+  C0 fact_vectors retrieval remains a separate grounding substrate on cache miss only.

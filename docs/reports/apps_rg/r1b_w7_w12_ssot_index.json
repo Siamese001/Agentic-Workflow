@@ -1,0 +1,95 @@
+{
+  "schema_version": "2026-05-18-r1b-w7-w12-ssot-v1",
+  "track": "apps_rg R1B semantic cache W7-W12",
+  "status": "COMPLETED",
+  "closeout": {
+    "md": "docs/reports/apps_rg/r1b_w7_w12_closeout.md",
+    "manifest": "docs/reports/apps_rg/r1b_w7_w12_closeout_manifest.json",
+    "plan_file": ".cursor/plans/apps-rg-r1b-w7-w12-closeout-e8f4a1.md",
+    "plan_slug": "apps-rg-r1b-w7-w12-closeout-e8f4a1",
+    "notion_plan_url": "https://www.notion.so/36427693f55c81b28511fcb3b83f0c68",
+    "notion_plan_page_id": "36427693-f55c-81b2-8511-fcb3b83f0c68"
+  },
+  "waves": [
+    {
+      "wave": "W7",
+      "title": "ROLE_TARGET_RUN persistence",
+      "report_md": "docs/reports/apps_rg/r1b_semantic_cache_persistence_w7.md",
+      "manifest": "docs/reports/apps_rg/r1b_semantic_cache_persistence_w7_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w7_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w7_fixtures/"
+    },
+    {
+      "wave": "W8",
+      "title": "post-Exit ingestion eligibility",
+      "report_md": "docs/reports/apps_rg/r1b_post_exit_ingestion_w8.md",
+      "manifest": "docs/reports/apps_rg/r1b_post_exit_ingestion_w8_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w8_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w8_fixtures/"
+    },
+    {
+      "wave": "W9",
+      "title": "whole-run R1B lookup",
+      "report_md": "docs/reports/apps_rg/r1b_whole_run_lookup_w9.md",
+      "manifest": "docs/reports/apps_rg/r1b_whole_run_lookup_w9_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w9_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w9_fixtures/"
+    },
+    {
+      "wave": "W9b",
+      "title": "canonical entrypoint preflight parity",
+      "report_md": "docs/reports/apps_rg/r1b_whole_run_entrypoint_parity_w9b.md",
+      "manifest": "docs/reports/apps_rg/r1b_whole_run_entrypoint_parity_w9b_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w9b_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w9b_fixtures/"
+    },
+    {
+      "wave": "W10",
+      "title": "UWG durable promotion",
+      "report_md": "docs/reports/apps_rg/r1b_uwg_durable_persistence_w10.md",
+      "manifest": "docs/reports/apps_rg/r1b_uwg_durable_persistence_w10_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w10_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w10_fixtures/"
+    },
+    {
+      "wave": "W10b",
+      "title": "UWG receipt contract parity",
+      "report_md": "docs/reports/apps_rg/r1b_uwg_receipt_contract_parity_w10b.md",
+      "manifest": "docs/reports/apps_rg/r1b_uwg_receipt_contract_parity_w10b_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w10b_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/"
+    },
+    {
+      "wave": "W11-W12",
+      "title": "derived index + lifecycle",
+      "report_md": "docs/reports/apps_rg/r1b_index_lifecycle_w11_w12.md",
+      "manifest": "docs/reports/apps_rg/r1b_index_lifecycle_w11_w12_manifest.json",
+      "emitter": "tools/apps_rg/emit_r1b_w11_w12_fixtures.py",
+      "fixtures": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/"
+    }
+  ],
+  "cache_modules": [
+    "apps_rg/cache/r1b_constants.py",
+    "apps_rg/cache/r1b_models.py",
+    "apps_rg/cache/r1b_intent_vector.py",
+    "apps_rg/cache/r1b_store.py",
+    "apps_rg/cache/r1b_compatibility.py",
+    "apps_rg/cache/r1b_retrieval.py",
+    "apps_rg/cache/r1b_ingest.py",
+    "apps_rg/cache/r1b_adapter.py",
+    "apps_rg/cache/r1b_post_exit_eligibility.py",
+    "apps_rg/cache/r1b_post_exit_ingest.py",
+    "apps_rg/cache/r1b_whole_run_preflight.py",
+    "apps_rg/cache/whole_run_entrypoint_preflight.py",
+    "apps_rg/cache/r1b_uwg_promotion.py",
+    "apps_rg/cache/r1b_uwg_receipt_contract.py",
+    "apps_rg/cache/r1b_uwg_gateway_shim.py",
+    "apps_rg/cache/r1b_durable_write_guard.py",
+    "apps_rg/cache/r1b_derived_index.py",
+    "apps_rg/cache/r1b_index_lifecycle.py"
+  ],
+  "w10b_gap_carry_forward": {
+    "core_uwg_commit_receipt_parity_solved": false,
+    "artifact": "artifacts/apps_rg/r1b_semantic_cache/w11_w12_fixtures/w10b_sidecar_gap_carry_forward.json"
+  }
+}

@@ -92,11 +92,13 @@ def test_apps_rg_cache_profile_live_wiring_decision_correct() -> None:
 # W5-5: Quarantine guard still active
 # ---------------------------------------------------------------------------
 
-def test_apps_rg_r1b_adapter_kept_quarantined_if_obsolete() -> None:
-    """W5-5: apps_rg/cache/r1b_adapter.py must still raise RuntimeError on import."""
-    assert QUARANTINED_ADAPTER.exists(), "Quarantined adapter file must still exist"
-    with pytest.raises(RuntimeError, match="QUARANTINE VIOLATION"):
-        import apps_rg.cache.r1b_adapter  # noqa: F401
+def test_apps_rg_r1b_adapter_w7_active_not_quarantined() -> None:
+    """W7: apps_rg/cache/r1b_adapter.py is the active ROLE_TARGET_RUN implementation (quarantine cleared)."""
+    assert QUARANTINED_ADAPTER.exists(), "R1B adapter file must exist"
+    import apps_rg.cache.r1b_adapter as mod  # noqa: F401
+
+    assert hasattr(mod, "check_r1b_for_apps_rg")
+    assert hasattr(mod, "AppsRgR1BCacheAdapter")
 
 
 def test_apps_rg_r1b_adapter_no_direct_l4_import() -> None:

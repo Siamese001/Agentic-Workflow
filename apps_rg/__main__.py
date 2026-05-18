@@ -475,32 +475,34 @@ def _run_with_args(
         ),
     )
 
-    resume_snapshot = str(raw_request.get("resume_hash") or "")
-    r1a_key = compute_r1a_key(
-        source_resume_hash=resume_snapshot,
-        target_company=str(getattr(args, "target_company", "") or ""),
-        target_role=str(getattr(args, "target_role", "") or ""),
-    )
-
     env_policy = os.environ.get("APPS_RG_POLICY_HASH")
     env_bp = os.environ.get("APPS_RG_BLUEPRINT_HASH")
 
-    r1a_hit = check_r1a_cache(
-        r1a_key,
+    from apps_rg.cache.whole_run_entrypoint_preflight import (
+        ENTRYPOINT_CLI_SHIM,
+        maybe_ingest_r1b_post_exit,
+        run_whole_run_cache_preflight,
+    )
+
+    preflight = run_whole_run_cache_preflight(
+        entrypoint=ENTRYPOINT_CLI_SHIM,
+        raw_request=raw_request,
+        target_company=str(getattr(args, "target_company", "") or ""),
+        target_role=str(getattr(args, "target_role", "") or ""),
+        artifact_dir=artifact_dir_override,
         runs_dir=runs_dir,
         policy_hash=env_policy,
         blueprint_hash=env_bp,
     )
-    if r1a_hit:
+    if not preflight.generation_required:
         raise SystemExit(0)
 
-    if _semantic_cache_r1b_enabled():
-        r1b_probe = _r1b_mod.check_r1b_for_apps_rg(
-            raw_request=raw_request,
-            runs_dir=str(runs_dir),
-        )
-        if isinstance(r1b_probe, dict) and bool(r1b_probe.get("cached")):
-            raise SystemExit(0)
+    resume_hash = str(raw_request.get("resume_hash") or "")
+    r1a_key = compute_r1a_key(
+        source_resume_hash=resume_hash,
+        target_company=str(getattr(args, "target_company", "") or ""),
+        target_role=str(getattr(args, "target_role", "") or ""),
+    )
 
     artifact_root = (
         artifact_dir_override
@@ -537,21 +539,14 @@ def _run_with_args(
         blueprint_hash=env_bp,
     )
 
-    if _semantic_cache_r1b_enabled():
-        generated = Path(outcome.artifact_dir) / "generated_resume.json"
-        if generated.is_file():
-            try:
-                payload = json.loads(generated.read_text(encoding="utf-8"))
-                if isinstance(payload, list):
-                    semantic_writer = _r1b_mod.AppsRgR1BCacheAdapter(
-                        runs_dir=str(runs_dir),
-                    )
-                    semantic_writer.store_intent_and_output(
-                        intent=dict(raw_request),
-                        chunks=payload,
-                    )
-            except (OSError, json.JSONDecodeError, TypeError):
-                pass
+    try:
+        maybe_ingest_r1b_post_exit(
+            raw_request=dict(raw_request),
+            artifact_dir=Path(outcome.artifact_dir),
+            runs_dir=runs_dir,
+        )
+    except (OSError, TypeError, ValueError):
+        pass
 
     raise SystemExit(0)
 

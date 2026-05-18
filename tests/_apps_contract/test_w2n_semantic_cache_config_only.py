@@ -123,7 +123,7 @@ def test_apps_rg_semantic_cache_config_prepared() -> None:
     assert sc.get("enabled") is True, (
         f"apps_rg semantic_cache.enabled should be true: {sc.get('enabled')!r}"
     )
-    assert sc.get("namespace") == "apps_rg.resume_gen.v1", (
+    assert sc.get("namespace") == "apps_rg.resume_gen.section.v1", (
         f"apps_rg semantic_cache.namespace wrong: {sc.get('namespace')!r}"
     )
     assert sc.get("similarity_threshold") == 0.88, (
@@ -135,13 +135,9 @@ def test_apps_rg_semantic_cache_config_prepared() -> None:
             f"apps_rg compatibility_check_fields missing '{required}': {fields}"
         )
 
-    # CONFIG_PREPARED_ONLY — live wiring must be deferred
-    assert sc.get("live_wiring_deferred") is True, (
-        "apps_rg cache profile missing live_wiring_deferred=true — "
-        "W2N must not claim live R1B wiring"
-    )
-    assert sc.get("wiring_gate") == "W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED", (
-        f"apps_rg wiring_gate marker absent or wrong: {sc.get('wiring_gate')!r}"
+    # W7: file-backed R1B adapter wired; durable UWG persistence remains BLOCKED in code constants.
+    assert sc.get("live_wiring_deferred") is False, (
+        f"apps_rg semantic_cache.live_wiring_deferred should be false after W7: {sc.get('live_wiring_deferred')!r}"
     )
 
 
@@ -150,12 +146,11 @@ def test_apps_rg_semantic_cache_config_prepared() -> None:
 # ---------------------------------------------------------------------------
 
 def test_apps_rg_quarantined_adapter_untouched() -> None:
-    """AC-5: r1b_adapter.py must exist and still raise RuntimeError (quarantine intact)."""
+    """W7: r1b_adapter.py implements ROLE_TARGET_RUN persistence (quarantine cleared)."""
     assert RG_R1B_ADAPTER.exists(), "apps_rg/cache/r1b_adapter.py does not exist"
     source = RG_R1B_ADAPTER.read_text(encoding="utf-8")
-    assert "RuntimeError" in source, (
-        "apps_rg/cache/r1b_adapter.py quarantine guard (RuntimeError) has been removed"
-    )
+    assert "check_r1b_for_apps_rg" in source
+    assert "HistoricalIntentRecord" in source or "r1b_retrieval" in source
 
 
 # ---------------------------------------------------------------------------
@@ -224,18 +219,10 @@ def test_no_agentic_core_check_d2_wired_by_w2n() -> None:
 # ---------------------------------------------------------------------------
 
 def test_w2n_does_not_claim_live_r1b_wiring() -> None:
-    """AC-8: Both apps_lic and apps_rg cache profiles must carry live_wiring_deferred=true,
-    proving W2N explicitly does not claim live R1B runtime wiring."""
-    for path, label in (
-        (LIC_CACHE_PROFILE, "apps_lic"),
-        (RG_CACHE_PROFILE, "apps_rg"),
-    ):
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-        sc = data.get("semantic_cache", {})
-        assert sc.get("live_wiring_deferred") is True, (
-            f"{label} cache profile missing live_wiring_deferred=true — "
-            "W2N must explicitly defer live wiring"
-        )
-        assert sc.get("wiring_gate") == "W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED", (
-            f"{label} cache profile missing wiring_gate marker"
-        )
+    """AC-8 / W7: apps_lic still defers live wiring; apps_rg file-backed R1B adapter is live."""
+    lic = yaml.safe_load(LIC_CACHE_PROFILE.read_text(encoding="utf-8")).get("semantic_cache", {})
+    assert lic.get("live_wiring_deferred") is True, "apps_lic must defer live R1B wiring"
+    assert lic.get("wiring_gate") == "W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED"
+
+    rg = yaml.safe_load(RG_CACHE_PROFILE.read_text(encoding="utf-8")).get("semantic_cache", {})
+    assert rg.get("live_wiring_deferred") is False, "apps_rg W7 enables file-backed R1B adapter"

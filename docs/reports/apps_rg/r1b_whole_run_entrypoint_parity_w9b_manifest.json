@@ -1,0 +1,59 @@
+{
+  "wave": "W9b",
+  "title": "apps_rg whole-run entrypoint R1A/R1B preflight parity",
+  "status": "PASS",
+  "preflight_order": [
+    "R1A_EXACT_CACHE",
+    "R1B_SEMANTIC_ROLE_TARGET_RUN",
+    "NORMAL_GENERATION"
+  ],
+  "ssot_module": "apps_rg/cache/whole_run_entrypoint_preflight.py",
+  "entrypoint_audit_matrix": "artifacts/apps_rg/r1b_semantic_cache/w9b_fixtures/entrypoint_audit_matrix.json",
+  "fixtures": {
+    "production_accepted_hit": "artifacts/apps_rg/r1b_semantic_cache/w9b_fixtures/production_entrypoint_accepted_hit.json",
+    "production_miss_fallthrough": "artifacts/apps_rg/r1b_semantic_cache/w9b_fixtures/production_entrypoint_miss_fallthrough.json",
+    "production_rejected_candidate": "artifacts/apps_rg/r1b_semantic_cache/w9b_fixtures/production_entrypoint_rejected_candidate.json"
+  },
+  "proof_claims": {
+    "cli_path_wired": true,
+    "production_path_wired": true,
+    "r1a_before_r1b_cli": true,
+    "r1a_before_r1b_production": true,
+    "accepted_hit_production": true,
+    "rejected_never_hit": true,
+    "fallthrough_on_miss": true,
+    "exit_not_bypassed": true,
+    "c0_fact_vectors_not_consulted": true,
+    "agentic_core_diff_empty": true
+  },
+  "files_changed": [
+    "apps_rg/cache/whole_run_entrypoint_preflight.py",
+    "apps_rg/runtime/orchestration/canonical_dispatch.py",
+    "apps_rg/__main__.py",
+    "apps_rg/cache/__init__.py",
+    "tools/apps_rg/emit_r1b_w9b_fixtures.py",
+    "tests/unit/apps_rg/test_r1b_whole_run_entrypoint_parity_w9b.py",
+    "tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py",
+    "tests/_apps_contract/test_apps_rg_r1b_whole_run_entrypoint_parity_w9b.py",
+    "docs/reports/apps_rg/r1b_whole_run_entrypoint_parity_w9b.md",
+    "docs/reports/apps_rg/r1b_whole_run_entrypoint_parity_w9b_manifest.json"
+  ],
+  "commands": [
+    {"cmd": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w7_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w8_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9_fixtures.py", "exit_code": 0},
+    {"cmd": "python tools/apps_rg/emit_r1b_w9b_fixtures.py", "exit_code": 0},
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"r1b and (whole_run or preflight or dispatch or entrypoint)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 15
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and r1b and (whole_run or preflight or dispatch or entrypoint)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 12
+    },
+    {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
+  ]
+}
