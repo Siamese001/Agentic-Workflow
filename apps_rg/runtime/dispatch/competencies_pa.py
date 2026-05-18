@@ -19,6 +19,7 @@ import yaml
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
+from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
 
 
 def _repo_root() -> Path:
@@ -46,8 +47,7 @@ _TEMPLATE_PATH = (
     / "competency_selector_v2.pa_slots.yaml"
 )
 
-_COMPETENCIES_OUTPUT_SCHEMA_JSON = json.dumps(
-    {
+COMPETENCIES_OUTPUT_SCHEMA: dict[str, Any] = {
         "type": "object",
         "required": [
             "competencies",
@@ -65,7 +65,7 @@ _COMPETENCIES_OUTPUT_SCHEMA_JSON = json.dumps(
                 "type": "array",
                 "minItems": 8,
                 "maxItems": 8,
-                "description": "Each category: category_label, terms (string or object), source_fact_ids",
+                "description": "Each category: category_label, terms (structured objects only), source_fact_ids",
             },
             "selected_fact_plan": {"type": "object"},
             "claim_ledger": {"type": "array"},
@@ -78,27 +78,28 @@ _COMPETENCIES_OUTPUT_SCHEMA_JSON = json.dumps(
         },
         "definitions": {
             "competency_term": {
-                "oneOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "required": ["text", "source_fact_id"],
-                        "properties": {
-                            "text": {"type": "string"},
-                            "source_fact_id": {"type": "string"},
-                            "jd_signal_ids": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "Optional JD phrases used only for ranking; not proof",
-                            },
-                        },
+                "type": "object",
+                "required": ["text", "source_fact_id", "source_fact_ids"],
+                "properties": {
+                    "text": {"type": "string"},
+                    "source_fact_id": {"type": "string"},
+                    "source_fact_ids": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {"type": "string"},
+                        "description": "Non-empty bul_* ids backing the term (primary must be listed)",
                     },
-                ]
+                    "jd_signal_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional JD phrases used only for ranking; not proof",
+                    },
+                },
             }
         },
-    },
-    sort_keys=True,
-)
+}
+
+_COMPETENCIES_OUTPUT_SCHEMA_JSON = json.dumps(COMPETENCIES_OUTPUT_SCHEMA, sort_keys=True)
 
 
 def load_competencies_template_slots() -> dict[str, str]:
@@ -132,9 +133,19 @@ def build_competencies_assembly_input(
     jd = str(runtime_payload.get("jd_text") or "")
     briefing = str(runtime_payload.get("briefing") or "")
 
+    allowed_raw = runtime_payload.get("allowed_fact_ids") or []
+    allowed_list = [str(x) for x in allowed_raw] if isinstance(allowed_raw, (list, tuple)) else []
+    allowed_block = ""
+    if allowed_list:
+        allowed_block = (
+            "\nALLOWED_SOURCE_FACT_IDS (bul_* only — every emitted competency term MUST map here):\n"
+            + ", ".join(sorted(allowed_list))
+        )
+
     c0_facts = (
         "CANONICAL_EMPLOYMENT_BULLETS (proof source only — use ONLY fact ids from this list):\n"
         + fact_lines.strip()
+        + allowed_block
         + "\n\nSELECTED_FACT_PLAN_STUB (echo this shape in output only; do not paste facts[] array):\n"
         + stub
     )
@@ -144,32 +155,48 @@ def build_competencies_assembly_input(
         f"TARGET_COMPANY (NOT PROOF): {t_company}\n"
         f"JD_TEXT (ranking/targeting only — NOT PROOF): {jd}\n"
         f"BRIEFING (NOT PROOF): {briefing}\n"
-        "JD may rank or select terms but must NOT be treated as candidate experience."
+        "Use the JD and briefing only to prioritize, label, order, and tune emphasis. "
+        "Do not use the JD, briefing, title, company, or companion generated sections as proof "
+        "for any emitted competency term."
     )
 
     u0 = (
-        "Generate exactly EIGHT resume competency categories for ATS alignment.\n"
+        "MODE: Competencies is a target-aware, fact-constrained SELECTION and GROUPING lane — "
+        "not free-form rewriting of the base résumé competencies and not JD/briefing-driven generation.\n"
+        "Build a professional Competencies section by selecting, grouping, and normalizing ONLY supported terms "
+        "from the allowed base-resume fact pool.\n"
+        "The professional Competencies section must be a scannable executive capability index, "
+        "not a narrative impact section.\n"
+        "Every emitted competency term must trace to allowed source_fact_ids from the canonical base resume "
+        "or C0 candidate facts.\n\n"
+        "DISPLAY PATTERN (resume-facing intent): Category Label: compact phrase, compact phrase, compact phrase\n"
+        "Do NOT use full sentences, impact narratives, metrics, or accomplishment prose inside terms.\n\n"
         "Return RAW JSON only: first character {, last character }. No ``` fences.\n\n"
         "OUTPUT CONTRACT (top-level object):\n"
         "- competencies: array of exactly 8 objects, each with:\n"
-        "  - category_label: short title (no colon, no newlines, not a sentence)\n"
-        "  - terms: array of 2 to 6 entries; each entry is EITHER a short noun phrase string OR an object "
-        'with keys "text", "source_fact_id" (single bul_*), and optional "jd_signal_ids": [strings]; '
-        "if any term in a category uses the object form, every term in that category MUST use it.\n"
+        "  - category_label: crisp professional label (no colon, no newlines, not a sentence; not generic "
+        '"Skills" / "Competency 1")\n'
+        "  - terms: array of 2 to 6 entries; EACH entry MUST be an object with keys "
+        "\"text\" (compact phrase), \"source_fact_id\" (single bul_* primary), "
+        "\"source_fact_ids\" (non-empty bul_* array including the primary), "
+        "optional \"jd_signal_ids\" (ranking only).\n"
+        "    Phrasing: prefer 2–5 words; single-token terms ONLY for resume-grounded technical names, "
+        "acronyms, platforms, products, or credentials (for example GraphRAG, AWS, vLLM); "
+        "never emit bare generic one-word skills without proof overlap.\n"
         "  - source_fact_ids: non-empty array of bul_* ids backing the category\n"
         "- selected_fact_plan: stub only {section_id, selection_method, required_fact_ids}\n"
-        "- claim_ledger: one row per term with claim_text and source_fact_ids ([single bul_*] for structured terms)\n"
-        '- jd_alignment: {targeting_only: true, jd_used_as_proof: false}\n'
+        "- claim_ledger: one row per emitted term; claim_text non-empty; source_fact_ids [single bul_*]\n"
+        "- jd_alignment must include: targeting_only: true, jd_used_as_proof: false, "
+        "briefing_used_as_proof: false, companion_context_used_as_proof: false\n"
         "- excluded_jd_skills, removed_or_rewritten_terms, gap_notes, change_log, self_check\n\n"
-        "RULES:\n"
-        "- Terms augment resume evidence; do not paste long bullet fragments.\n"
-        "- C0 candidate_facts are the only proof block; U-tier companion is context only.\n"
-        "- No inline [source:] tags in display strings.\n"
-        "- Third person / capability voice only.\n"
+        "CORE RULES:\n"
+        "- Do not invent tools, platforms, certifications, industries, metrics, or employers.\n"
+        "- Do not treat U-tier companion context as proof — tone/positioning only.\n"
+        "- No em dash (U+2014). No bullet markers in terms. No inline [source:] tags.\n"
     )
 
     return PromptAssemblyInput(
-        template_id="strategic_tailor_v1",
+        template_id="competency_selector_v2",
         request_id=request_id,
         run_id=run_id,
         trace_root=trace_root,
@@ -215,14 +242,17 @@ def compile_competencies_prompt(
         trace_root=f"competencies:{run_id}",
     )
     tier = companion_context.strip() or None
-    return compile_section_prompt(
+    compiled = compile_section_prompt(
         assembly,
         section_id="competencies",
         companion_u_tier=tier,
     )
+    ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
+    return augment_section_compiled_with_input_authority(compiled, allowed_source_fact_ids=ids)
 
 
 __all__ = [
+    "COMPETENCIES_OUTPUT_SCHEMA",
     "build_competencies_assembly_input",
     "compile_competencies_prompt",
     "load_competencies_template_slots",

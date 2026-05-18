@@ -10,11 +10,11 @@ l2_artifact_layout:
   primary_filename: l2_output.json
 lanes:
   - lane_key: headline
-    dispatch_module: apps_rg.runtime.dispatch.headline_dispatch
-    prompt_id: headline_dispatch_v1
+    dispatch_module: apps_rg.runtime.sections.headline_lane
+    prompt_id: headline_section_v1
     section_contract: apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml
   - lane_key: executive_summary
-    dispatch_module: apps_rg.runtime.dispatch.executive_summary_dispatch
+    dispatch_module: apps_rg.runtime.sections.executive_summary_lane
     prompt_id: executive_summary.generate_scratch_v1
     section_contract: apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml
   - lane_key: unify_bullets
@@ -26,22 +26,23 @@ lanes:
     prompt_id: unify_position_narrative_v1
     section_contract: apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml
   - lane_key: ibm_bullets
-    dispatch_module: apps_rg.runtime.dispatch.ibm_bullets_dispatch
+    dispatch_module: apps_rg.runtime.sections.ibm_bullets_lane
     prompt_id: ibm_bullet_tailor_dispatch_v1
     section_contract: apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml
   - lane_key: ibm_narrative
-    dispatch_module: apps_rg.runtime.dispatch.ibm_narrative_dispatch
+    dispatch_module: apps_rg.runtime.sections.ibm_narrative_lane
     prompt_id: ibm_position_narrative_dispatch_v1
     section_contract: apps_rg/prompt_assembly/section_prompt_contracts/ibm_narrative.contract.yaml
   - lane_key: competencies
-    dispatch_module: apps_rg.runtime.dispatch.competencies_dispatch
+    dispatch_module: apps_rg.runtime.sections.competencies_lane
     prompt_id: competencies_dispatch_v1
     section_contract: apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml
 file_hashes:
-  apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml: f59c29d99dc718dd6d85647d55c6f9cf1c5476252aa346e5e535af0a3a86099b
-  apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml: 39c05144c4283892968ab73a80a465f0c0e43adff18fc2533fce27cfb1498f96
+  # pinned sha256(bytes on disk); refresh when referenced section_contract files change under apps_rg/prompt_assembly/
+  apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml: eeb91857ae0ccc861c6493f2b166e4d0226319c646190b3f6887cc6c9be2f746
+  apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml: b4a7bc110005800b984f11c555af3b45cfac457f424e6ecd9aaa7bb4adf84a1d
   apps_rg/prompt_assembly/section_prompt_contracts/unify_bullets.contract.yaml: 036db415bf8aa46f5af18b5f2015af999e0291f217ae011ac3e956d5353addf6
-  apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml: 69749b8eeb6b8ab5eb7a8eb2ca9de6cee7599b66a5521596aab49680f7513401
-  apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml: 6c9f9b7b1d2173ff9ea00269376e731ed9364f45e2011b78dd336d7f2b95a701
+  apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml: cd5c2446ef6616570b62c8722202759f7cdc3fb9a32d86793202f559d2755ddc
+  apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml: d167feedccb016e0ca0b20a6689b53e5cbe3f6bd96fa877e0c8bc83ea1f388f8
   apps_rg/prompt_assembly/section_prompt_contracts/ibm_narrative.contract.yaml: e2a67cc75e311cc466da96520568fca871f808f9a12562f6f6f5f2b222154575
-  apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml: 087e0ff897479f1da093d37f65f52bfd681e758838c810ef0260f57bacb246c0
+  apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml: cace118d5232b80d67db2cfe3daed8f8a2da25d3cadda3493260f9582f4b84df

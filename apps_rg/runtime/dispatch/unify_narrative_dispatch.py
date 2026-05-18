@@ -1,9 +1,14 @@
-"""App-local unify_narrative runtime seam.
+"""[LEGACY] unify_narrative ``python -m`` seam — **retired from canonical CLI**.
 
-Canonical JSON + accepted finalized unify_bullets artifact -> one role sentence -> X2 -> X1D -> X3 -> L6.
-Does not activate registry or touch agentic_core.
+Canonical path: ``python -m apps_rg --section unify_narrative`` via
+``apps_rg.runtime.sections.unify_narrative_lane`` and
+``apps_rg.runtime.orchestration.canonical_dispatch``.
 
-**W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
+This module remains for diagnostics and backward-compatible ``python -m`` only.
+Do not extend with new runtime logic. Retirement note directory:
+``artifacts/apps_rg/unify_narrative_dispatch_retirement/``.
+
+**W3:** ``declared_temporary_slice``.
 """
 from __future__ import annotations
 
@@ -39,19 +44,20 @@ from apps_rg.runtime.exit.unify_narrative_x3 import aggregate_x3
 from apps_rg.runtime.judges.unify_narrative_x1d import run_unify_narrative_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.qwen_offline_contract_stub import (
+    effective_offline_contract_stub_enabled,
+    synthetic_qwen_provider_result,
+)
 from apps_rg.runtime.shadow.unify_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
-from apps_rg.runtime.dispatch.mock_runtime_proof_policy import (
+from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     MOCK_JUDGES_REJECT_EXIT_CODE,
-    MOCK_PROVIDER_REJECT_EXIT_CODE,
     allow_non_allow_exit_zero_ok,
     attach_lane_proof_bundle_fields,
     compute_lane_proof_bundle,
-    emit_mock_blocked_stderr,
     emit_mock_judges_blocked_stderr,
     infer_product_quality_blocked_or_mock,
-    mock_blocked_before_run,
     mock_judges_blocked_before_run,
 )
 from apps_rg.runtime.runtime_proof_layout import (
@@ -62,6 +68,14 @@ from apps_rg.runtime.runtime_proof_layout import (
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.sections.unify_narrative_lane import (
+    build_mock_output,
+    build_selected_fact_plan,
+    extract_unify_employment,
+    normalize_unify_narrative_parsed,
+)
+
+normalize_parsed_output = normalize_unify_narrative_parsed
 
 PROMPT_ID = "unify_position_narrative_v1"
 NARRATIVE_TEMP_DEFAULT = 0.45
@@ -97,56 +111,6 @@ def write_json(path: Path, data: Any) -> None:
 
 def load_base_resume() -> tuple[dict[str, Any], Path, str]:
     return load_lane_base_resume_json(repo_root=REPO_ROOT)
-
-
-def extract_unify_employment(base_resume: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], set[str]]:
-    facts_obj = base_resume.get("facts", base_resume)
-    for emp in facts_obj.get("employment", []):
-        if "unify" not in str(emp.get("employer", "")).lower():
-            continue
-        bullets: list[dict[str, Any]] = []
-        allowed: set[str] = set()
-        for bullet in emp.get("bullets", []):
-            bid = bullet.get("bullet_id")
-            if not bid:
-                continue
-            allowed.add(bid)
-            row = {
-                "fact_id": bid,
-                "claim_text": bullet.get("text", ""),
-                "source_employment": emp.get("employer"),
-                "has_metric": bool(bullet.get("has_metric")),
-                "metric_raw": bullet.get("metric_raw", "") if bullet.get("has_metric") else "",
-                "domain": bullet.get("domain", ""),
-                "technologies": bullet.get("technologies", []),
-            }
-            bullets.append(row)
-            if row.get("metric_raw"):
-                allowed.add(f"{bid}_metric_{sha16(row['metric_raw'])[:8]}")
-        header = {
-            "employer": emp.get("employer"),
-            "title": emp.get("title"),
-            "location": emp.get("location"),
-            "start_date": emp.get("start_date"),
-            "end_date": emp.get("end_date"),
-            "is_current": emp.get("is_current"),
-            "fact_id": emp.get("fact_id", "exp_unify_001"),
-        }
-        return header, bullets, allowed
-    raise ValueError("Unify employment entry not found in base resume.")
-
-
-def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
-    ordered = sorted(
-        facts,
-        key=lambda r: UNIFY_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in UNIFY_BULLET_IDS else 99,
-    )
-    return {
-        "section_id": "unify_narrative",
-        "selection_method": "canonical_json_unify_facts",
-        "facts": ordered,
-        "required_fact_ids": list(UNIFY_BULLET_IDS),
-    }
 
 
 def load_companion_bullets_context() -> dict[str, Any]:
@@ -281,47 +245,6 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
     return None, "Model output was not a JSON object."
 
 
-def normalize_parsed_output(
-    parsed: dict[str, Any] | None,
-    runtime_payload: dict[str, Any],
-) -> dict[str, Any] | None:
-    if not parsed:
-        return parsed
-    out = dict(parsed)
-    narrative = str(out.get("narrative_sentence", "")).strip()
-    if narrative and not narrative.endswith((".", "!", "?")):
-        narrative += "."
-    out["narrative_sentence"] = narrative
-    if not isinstance(out.get("selected_fact_plan"), dict):
-        out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
-    ledger = out.get("claim_ledger")
-    if isinstance(ledger, list):
-        for entry in ledger:
-            raw_ids = entry.get("source_fact_ids")
-            if not isinstance(raw_ids, list):
-                continue
-            fixed: list[str] = []
-            for fid in raw_ids:
-                s = str(fid)
-                while "bul_unify__" in s:
-                    s = s.replace("bul_unify__", "bul_unify_", 1)
-                fixed.append(s)
-            entry["source_fact_ids"] = fixed
-    if not out.get("claim_ledger"):
-        out["claim_ledger"] = [
-            {
-                "claim_text": narrative,
-                "source_fact_ids": list(UNIFY_BULLET_IDS),
-            }
-        ]
-    if not isinstance(out.get("jd_alignment"), dict):
-        out["jd_alignment"] = {"targeting_only": True, "jd_used_as_proof": False}
-    out.setdefault("gap_notes", [])
-    out.setdefault("change_log", [])
-    out.setdefault("self_check", {"normalized_by_dispatch": True})
-    return out
-
-
 def retry_qwen_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
@@ -333,13 +256,16 @@ def retry_qwen_for_parse(
         {"role": "assistant", "content": raw_output},
         {
             "role": "user",
-                "content": (
+            "content": (
                 f"JSON INVALID: {parse_error}. Return one NEW compact JSON object only. "
                 "Keys: narrative_sentence (one sentence), selected_fact_plan, claim_ledger, jd_alignment, "
                 "gap_notes, change_log, self_check. "
-                "narrative_sentence: third person, no \"At Unify Consulting, the\", no \"the SVP Engineering\", "
-                "use literal cycle phrase \"reducing lab-to-production cycle time from six months to three weeks\" "
-                "when citing that win, no em dash, no inline source tags."
+                "jd_alignment MUST include selected_jd_themes (non-empty), selected_briefing_themes (array; "
+                "non-empty when briefing exists in payload), targeting_rationale (non-empty), "
+                "jd_used_as_proof:false, briefing_used_as_proof:false. "
+                "Every claim_ledger row MUST have non-empty claim_text and non-empty source_fact_ids from "
+                "ALLOWED_SOURCE_FACT_IDS in C0. "
+                "narrative_sentence: third person, <=58 words, <=360 characters, no em dash, no inline source tags."
             ),
         },
     ]
@@ -350,28 +276,6 @@ def retry_qwen_for_parse(
     new_raw = result.raw_model_output
     new_parsed, new_err = parse_model_json(new_raw)
     return new_raw, new_parsed, new_err
-
-
-def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    narrative = (
-        "Shaped governed agentic AI platform delivery at Unify Consulting by weaving reusable primitives, "
-        "retrieval rigor, and disciplined lifecycle governance into one enterprise operating lane, "
-        "reducing lab-to-production cycle time from six months to three weeks."
-    )
-    return {
-        "narrative_sentence": narrative,
-        "selected_fact_plan": runtime_payload["selected_fact_plan"],
-        "claim_ledger": [
-            {
-                "claim_text": narrative,
-                "source_fact_ids": ["bul_unify_001", "bul_unify_003", "bul_unify_004"],
-            }
-        ],
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
-        "gap_notes": [],
-        "change_log": [{"operation": "mocked_runtime_slice", "reason": "provider not requested"}],
-        "self_check": {"one_sentence": True, "third_person": True},
-    }
 
 
 def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[str, Any]]) -> tuple[str, str]:
@@ -398,9 +302,6 @@ def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
 
 
 def run_dispatch(args: argparse.Namespace) -> int:
-    if mock_blocked_before_run(args):
-        emit_mock_blocked_stderr(dispatcher_label="unify_narrative_dispatch")
-        return MOCK_PROVIDER_REJECT_EXIT_CODE
     if mock_judges_blocked_before_run(args):
         emit_mock_judges_blocked_stderr(dispatcher_label="unify_narrative_dispatch")
         return MOCK_JUDGES_REJECT_EXIT_CODE
@@ -410,7 +311,11 @@ def run_dispatch(args: argparse.Namespace) -> int:
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
     unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
-    selected_fact_plan = build_selected_fact_plan(unify_facts)
+    selected_fact_plan = build_selected_fact_plan(
+        unify_facts,
+        role_narrative=str(unify_header.get("role_narrative") or ""),
+        employment_fact_id=str(unify_header.get("fact_id") or "exp_unify_001"),
+    )
     companion_context = load_companion_bullets_context()
     companion_text = str(companion_context.get("text") or "")
     companion_ref = companion_context.get("l2_ref") if companion_text else None
@@ -435,6 +340,13 @@ def run_dispatch(args: argparse.Namespace) -> int:
     artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     write_json(artifact_dir / "companion_unify_bullets_context.json", companion_context)
     (artifact_dir / "companion_unify_bullets_context.txt").write_text((companion_text or "(none)") + "\n", encoding="utf-8")
+
+    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+
+    merge_transport_context(
+        artifact_dir=str(artifact_dir.resolve()),
+        run_id=str(runtime_payload.get("run_id") or ""),
+    )
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_unify_narrative_prompt(
@@ -467,47 +379,39 @@ def run_dispatch(args: argparse.Namespace) -> int:
     raw_output = ""
     parsed: dict[str, Any] | None = None
     parse_error = ""
-    runtime_generation_status = "MOCKED"
+    runtime_generation_status = "BLOCKED"
 
-    if args.provider == "qwen_vllm":
-        provider_req, provider_payload = build_qwen_request(
-            messages=messages,
-            prompt_hash=prompt_hash,
-            input_payload_hash=input_payload_hash,
-            temperature=args.temperature,
-            max_tokens=NARRATIVE_QWEN_MAX_TOKENS,
-        )
-        provider_request_data = provider_req.to_dict()
-        write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
-        provider_result_data = result.to_dict()
-        raw_output = result.raw_model_output
-        runtime_generation_status = result.runtime_generation_status
-        write_json(artifact_dir / "provider_response.json", provider_result_data)
-        if result.runtime_generation_status == "REAL_LLM":
-            parsed, parse_error = parse_model_json(raw_output)
-            if parsed is None:
-                raw_output, parsed, parse_error = retry_qwen_for_parse(
-                    messages, provider_payload, raw_output, parse_error
-                )
-            if parsed is not None:
-                parsed = normalize_parsed_output(parsed, runtime_payload)
-        else:
-            parsed = None
-            parse_error = result.exact_provider_error or "provider blocked"
+    provider_req, provider_payload = build_qwen_request(
+        messages=messages,
+        prompt_hash=prompt_hash,
+        input_payload_hash=input_payload_hash,
+        temperature=args.temperature,
+        max_tokens=NARRATIVE_QWEN_MAX_TOKENS,
+    )
+    provider_request_data = provider_req.to_dict()
+    write_json(artifact_dir / "provider_request.json", provider_request_data)
+    req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    if effective_offline_contract_stub_enabled():
+        stub_doc = normalize_unify_narrative_parsed(build_mock_output(runtime_payload), runtime_payload)
+        stub_raw = json.dumps(stub_doc or {}, sort_keys=True, separators=(",", ":"))
+        result = synthetic_qwen_provider_result(raw_model_output=stub_raw, requested_model=req_model)
     else:
-        parsed = normalize_parsed_output(build_mock_output(runtime_payload), runtime_payload)
-        raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
-        runtime_generation_status = "MOCKED"
-        provider_request_data = {
-            "provider_requested": "mock",
-            "provider_attempted": False,
-            "mock_fallback_allowed": True,
-            "model": DEFAULT_QWEN_MODEL,
-            "prompt_hash": prompt_hash,
-            "input_payload_hash": input_payload_hash,
-        }
-        write_json(artifact_dir / "provider_request.json", provider_request_data)
+        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
+    provider_result_data = result.to_dict()
+    raw_output = result.raw_model_output
+    runtime_generation_status = result.runtime_generation_status
+    write_json(artifact_dir / "provider_response.json", provider_result_data)
+    if result.runtime_generation_status == "REAL_LLM":
+        parsed, parse_error = parse_model_json(raw_output)
+        if parsed is None:
+            raw_output, parsed, parse_error = retry_qwen_for_parse(
+                messages, provider_payload, raw_output, parse_error
+            )
+        if parsed is not None:
+            parsed = normalize_parsed_output(parsed, runtime_payload)
+    else:
+        parsed = None
+        parse_error = result.exact_provider_error or "provider blocked"
 
     narrative = str((parsed or {}).get("narrative_sentence") or "").strip()
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
@@ -528,6 +432,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             judge_keys=judge_keys,
             companion_bullets_context=companion_text,
             mode=judge_mode,
+            artifact_base=artifact_dir,
         )
     ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
@@ -539,6 +444,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             parsed_output=parsed,
             claim_ledger=claim_ledger,
             jd_text=args.jd_text,
+            briefing_text=str(args.briefing or ""),
             runtime_generation_status=runtime_generation_status,
             companion_bullet_texts=companion_text or None,
             companion_bullets_status=str(companion_context.get("status") or "UNKNOWN"),
@@ -549,6 +455,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
             model_name=model_name,
             raw_output=raw_output,
             x1d_judges=x1d,
+            allowed_fact_ids=allowed_fact_ids,
+            artifacts_dir=artifact_dir,
         )
     ]
 
@@ -583,7 +491,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
                 "runtime_path": "apps_rg.runtime.dispatch.unify_narrative_dispatch",
                 "prompt_id": PROMPT_ID,
                 "provider": args.provider,
-                "temperature": args.temperature if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT,
+                "temperature": args.temperature,
                 "section_prompt_adapter": True,
                 "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
                 "compiler_template_id": section_compiled.artifact.template_id,
@@ -628,8 +536,8 @@ def run_dispatch(args: argparse.Namespace) -> int:
     )
     write_json(artifact_dir / "l2_output.json", l2_output)
 
-    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT
-    l6_max = NARRATIVE_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    l6_temp = float(args.temperature)
+    l6_max = NARRATIVE_QWEN_MAX_TOKENS
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,
@@ -681,7 +589,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
     (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
     print(output_text)
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
-    pratt = (provider_request_data or {}).get("provider_attempted", False)
+    pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,
@@ -693,15 +601,6 @@ def run_dispatch(args: argparse.Namespace) -> int:
         provider_requested=prq,
         provider_attempted=pratt,
         command=" ".join(sys.argv),
-        proof_eligible=bundle["proof_eligible"],
-        proof_scope=bundle["proof_scope"],
-        test_only_mock_provider=bundle["test_only_mock_provider"],
-        runtime_certification=bundle["runtime_certification"],
-        x1d_runtime_status=bundle["x1d_runtime_status"],
-        judge_proof_eligible=bundle["judge_proof_eligible"],
-        provider_proof_eligible=bundle["provider_proof_eligible"],
-        test_only_mock_judges=bundle["test_only_mock_judges"],
-        proof_closeout_note=bundle["proof_closeout_note"] if bundle.get("proof_closeout_note") else None,
     )
     if allow_non_allow_exit_zero_ok(args):
         return 0
@@ -712,9 +611,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg unify_narrative runtime seam.")
     parser.add_argument(
         "--provider",
-        choices=["mock", "qwen_vllm"],
+        choices=["qwen_vllm"],
         default="qwen_vllm",
-        help="Generation provider. mock requires `--allow-test-mock-provider` (plumbing-only).",
+        help="Generation provider (qwen_vllm only). Offline tests: set APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1.",
     )
     parser.add_argument("--temperature", type=float, default=NARRATIVE_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
@@ -734,11 +633,6 @@ def build_parser() -> argparse.ArgumentParser:
             "(never runtime certification)."
         ),
     )
-    parser.add_argument(
-        "--allow-test-mock-provider",
-        action="store_true",
-        help="Test-only: allow mock provider for plumbing artifacts (proof_eligible=false).",
-    )
     parser.add_argument("--target-title", default=TARGET_TITLE_DEFAULT)
     parser.add_argument("--target-company", default=TARGET_COMPANY_DEFAULT)
     parser.add_argument("--jd-text", default=JD_TEXT_DEFAULT)
@@ -746,7 +640,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--allow-non-allow-exit-zero",
         action="store_true",
-        help="Exit 0 for inspection despite X3≠ALLOW — qwen_vllm or mock+hatch only.",
+        help="Exit 0 for inspection despite X3≠ALLOW — does not bypass mock-judge blocks.",
     )
     return parser
 
@@ -756,4 +650,6 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    from apps_rg.runtime.deprecated_runtime_cli import exit_deprecated_dispatch_cli
+
+    raise SystemExit(exit_deprecated_dispatch_cli(section="unify_narrative"))

@@ -10,7 +10,7 @@ Implementations live in `apps_rg/runtime/judges/executive_summary_x1d.py` and ar
 | OpenAI | `OPENAI_API_KEY` | `OPENAI_MODEL` | — | `gpt-4o` |
 | Anthropic | `ANTHROPIC_API_KEY` | `APPS_RG_ANTHROPIC_JUDGE_MODEL` | `ANTHROPIC_MODEL` | `claude-3-5-sonnet-20241022` |
 
-Artifacts record `resolved_model` and `resolved_model_source` on each judge `provider_request` JSON under `artifacts/apps_rg/runtime_proofs/executive_summary/`.
+Provider request/response/raw-parse artifacts are written next to the **current run folder** (for example `.../executive_summary/mock/exec_summary_<ts>/` or the equivalent for other RG lanes). Each `provider_request` JSON records `resolved_model` and `resolved_model_source`. If no run directory is passed, dumps fall back under `artifacts/apps_rg/runtime_proofs/executive_summary/`.
 
 ## Anthropic fallback (opt-in)
 

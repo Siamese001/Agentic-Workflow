@@ -1,0 +1,905 @@
+"""IBM bullets section lane — canonical implementation for ``python -m apps_rg --section ibm_bullets``.
+
+Wires PA → provider → X1D → X2 → X3 → L6 shadow handoff under ``artifacts/apps_rg/runtime_proofs/ibm_bullets``.
+
+``apps_rg.runtime.dispatch.ibm_bullets_dispatch`` is **import-only** (legacy module path for helpers).
+Running ``python -m apps_rg.runtime.dispatch.ibm_bullets_dispatch`` is deprecated and exits 2.
+
+**W3:** ``declared_temporary_slice`` — section runtime proof seam.
+"""
+from __future__ import annotations
+
+from apps_rg.runtime.w3_execution_path_labels import (
+    BUCKET_DECLARED_TEMPORARY_SLICE,
+    PLAN_SLUG,
+    validate_bucket,
+)
+
+W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
+W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
+validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
+
+import argparse
+import hashlib
+import json
+import re
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
+from apps_rg.runtime.dispatch.ibm_bullets_pa import compile_ibm_bullets_prompt
+from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
+    build_canonical_claim_ledger_v2_payload,
+    classify_ledger_parse_state,
+    normalize_exec_summary_claim_ledger,
+)
+from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3
+from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
+from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
+from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.section_proof.lane_proof_accounting import (
+    generation_status_allows_qwen_json_parse,
+    resolve_lane_placement_bucket,
+)
+from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
+    attach_lane_proof_bundle_fields,
+    compute_lane_proof_bundle,
+    infer_product_quality_blocked_or_mock,
+)
+from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
+from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
+from apps_rg.runtime.shadow.ibm_bullets_l6 import (
+    build_l6_shadow_package,
+    extend_ibm_bullets_l6_learning_fields,
+)
+from apps_rg.runtime.validators.ibm_bullets_x2 import (
+    IBM_BULLET_IDS,
+    IBM_DEFAULT_DISTRIBUTION,
+    build_ibm_bullets_text_claim_coverage,
+    run_ibm_bullets_x2_gates,
+)
+from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
+from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
+from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
+from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+
+PROMPT_ID = "ibm_bullet_tailor_dispatch_v1"
+IBM_TEMP_DEFAULT = 0.45
+IBM_TEMP_RANGE = (0.35, 0.55)
+TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
+TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
+JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
+BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
+
+DEFAULT_INTENSITY_BY_BULLET = {
+    "bul_ibm_001": "MODERATE",
+    "bul_ibm_002": "MODERATE",
+    "bul_ibm_003": "LIGHT_PROTECTED",
+    "bul_ibm_004": "MODERATE",
+    "bul_ibm_005": "LIGHT_PROTECTED",
+}
+BULLET_ID_ALIASES = {
+    **{f"I{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
+    **{f"i{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
+    **{f"B{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
+    **{f"b{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
+}
+IBM_QWEN_MAX_TOKENS = 2200
+
+
+def _find_repo_root() -> Path:
+    here = Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        if (parent / "apps_rg" / "resume" / "base").exists():
+            return parent
+    return Path.cwd()
+
+
+REPO_ROOT = _find_repo_root()
+LANE_KEY = "ibm_bullets"
+
+
+def sha16(value: str | bytes) -> str:
+    data = value.encode("utf-8") if isinstance(value, str) else value
+    return hashlib.sha256(data).hexdigest()[:16]
+
+
+def write_json(path: Path, data: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def load_base_resume() -> tuple[dict[str, Any], Path, str]:
+    return load_lane_base_resume_json(repo_root=REPO_ROOT)
+
+
+def extract_ibm_employment(base_resume: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], set[str]]:
+    facts_obj = base_resume.get("facts", base_resume)
+    for emp in facts_obj.get("employment", []):
+        if "ibm" not in str(emp.get("employer", "")).lower():
+            continue
+        bullets: list[dict[str, Any]] = []
+        allowed: set[str] = set()
+        for bullet in emp.get("bullets", []):
+            bid = bullet.get("bullet_id")
+            if not bid:
+                continue
+            allowed.add(bid)
+            row = {
+                "fact_id": bid,
+                "claim_text": bullet.get("text", ""),
+                "source_employment": emp.get("employer"),
+                "has_metric": bool(bullet.get("has_metric")),
+                "metric_raw": bullet.get("metric_raw", "") if bullet.get("has_metric") else "",
+                "domain": bullet.get("domain", ""),
+                "technologies": bullet.get("technologies", []),
+            }
+            bullets.append(row)
+            if row.get("metric_raw"):
+                allowed.add(f"{bid}_metric_{sha16(row['metric_raw'])[:8]}")
+        header = {
+            "employer": emp.get("employer"),
+            "title": emp.get("title"),
+            "location": emp.get("location"),
+            "start_date": emp.get("start_date"),
+            "end_date": emp.get("end_date"),
+            "is_current": emp.get("is_current"),
+            "fact_id": emp.get("fact_id", "exp_ibm_001"),
+        }
+        return header, bullets, allowed
+    raise ValueError("IBM employment entry not found in base resume.")
+
+
+def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
+    ordered = sorted(facts, key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99)
+    return {
+        "section_id": "ibm_bullets",
+        "selection_method": "canonical_json_all_ibm_bullets",
+        "facts": ordered,
+        "required_fact_ids": list(IBM_BULLET_IDS),
+    }
+
+
+def build_runtime_payload(
+    *,
+    base_json_path: Path,
+    base_hash: str,
+    ibm_header: dict[str, Any],
+    selected_fact_plan: dict[str, Any],
+    allowed_fact_ids: set[str],
+    target_title: str,
+    target_company: str,
+    jd_text: str,
+    briefing: str,
+) -> dict[str, Any]:
+    return {
+        "run_id": datetime.now(timezone.utc).strftime("ibm_bullets_%Y%m%d_%H%M%S"),
+        "section_id": "ibm_bullets",
+        "prompt_id": PROMPT_ID,
+        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT)) if base_json_path.is_relative_to(REPO_ROOT) else str(base_json_path),
+        "base_resume_json_hash": base_hash,
+        "ibm_header": ibm_header,
+        "target_title": target_title,
+        "target_company": target_company,
+        "jd_text": jd_text,
+        "briefing": briefing,
+        "selected_fact_plan": selected_fact_plan,
+        "allowed_fact_ids": sorted(allowed_fact_ids),
+        "writable_context_scope": "ibm_bullets_only",
+        "full_resume_writable": False,
+        "rewrite_distribution_default": IBM_DEFAULT_DISTRIBUTION,
+    }
+
+
+def build_prompt_messages(runtime_payload: dict[str, Any]) -> list[dict[str, str]]:
+    """W7: PA-compiled system prompt via ``section_prompt_adapter`` (no inline fallback)."""
+    rid = str(runtime_payload.get("run_id") or "ibm_bullets_prompt_build")
+    return compile_ibm_bullets_prompt(runtime_payload, run_id=rid).artifact.messages
+
+
+def _canonicalize_bul_ibm_source_fact_id(fid: str) -> str:
+    """Normalize model typos such as ``bul_ibm__002`` → ``bul_ibm_002`` (single underscores)."""
+    s = str(fid).strip()
+    while "bul_ibm__" in s:
+        s = s.replace("bul_ibm__", "bul_ibm_", 1)
+    return s
+
+
+def _normalize_fact_id_list(ids: Any) -> list[str]:
+    if ids is None:
+        return []
+    if not isinstance(ids, list):
+        return []
+    return [_canonicalize_bul_ibm_source_fact_id(str(x)) for x in ids]
+
+
+def _normalize_ibm_claim_ledger(parsed: dict[str, Any]) -> None:
+    led = parsed.get("claim_ledger")
+    if not isinstance(led, list):
+        return
+    for entry in led:
+        if isinstance(entry, dict):
+            entry["source_fact_ids"] = _normalize_fact_id_list(entry.get("source_fact_ids"))
+
+
+def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
+    for bullet in bullets:
+        key = str(bullet.get("rewrite_intensity", "")).upper()
+        if key in counts:
+            counts[key] += 1
+    return counts
+
+
+def normalize_parsed_output(
+    parsed: dict[str, Any] | None,
+    runtime_payload: dict[str, Any],
+) -> dict[str, Any] | None:
+    if not parsed:
+        return parsed
+    normalized_bullets: list[dict[str, Any]] = []
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    srfs_mode = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
+    for idx, bullet in enumerate((parsed.get("bullets") or [])[:5]):
+        row = dict(bullet)
+        bid = str(row.get("bullet_id", "")).strip()
+        row["bullet_id"] = BULLET_ID_ALIASES.get(bid, bid)
+        if (not srfs_mode) and row["bullet_id"] not in IBM_BULLET_IDS and idx < len(IBM_BULLET_IDS):
+            row["bullet_id"] = IBM_BULLET_IDS[idx]
+        row["rewrite_intensity"] = str(
+            row.get(
+                "rewrite_intensity",
+                DEFAULT_INTENSITY_BY_BULLET.get(row["bullet_id"], "MODERATE"),
+            )
+        ).upper()
+        if not row.get("source_fact_ids"):
+            row["source_fact_ids"] = [row["bullet_id"]]
+        row["source_fact_ids"] = _normalize_fact_id_list(row.get("source_fact_ids"))
+        normalized_bullets.append(row)
+
+    parsed = dict(parsed)
+    parsed["bullets"] = normalized_bullets
+    if not isinstance(parsed.get("selected_fact_plan"), dict):
+        parsed["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
+    if not parsed.get("claim_ledger"):
+        parsed["claim_ledger"] = [
+            {
+                "claim_text": bullet.get("bullet_text", ""),
+                "source_fact_ids": list(bullet.get("source_fact_ids") or [bullet["bullet_id"]]),
+            }
+            for bullet in normalized_bullets
+        ]
+    _normalize_ibm_claim_ledger(parsed)
+    dist = parsed.get("rewrite_distribution") or {}
+    if not dist.get("total"):
+        counts = _count_intensities(normalized_bullets)
+        parsed["rewrite_distribution"] = {**counts, "total": sum(counts.values())}
+    if not isinstance(parsed.get("jd_alignment"), dict):
+        parsed["jd_alignment"] = {"targeting_only": True, "jd_used_as_proof": False}
+    parsed.setdefault("gap_notes", [])
+    parsed.setdefault("change_log", [])
+    parsed.setdefault("self_check", {"normalized_by_dispatch": True})
+    return parsed
+
+
+def retry_qwen_for_parse(
+    messages: list[dict[str, str]],
+    provider_payload: dict[str, Any],
+    raw_output: str,
+    parse_error: str,
+) -> tuple[str, dict[str, Any] | None, str]:
+    repair_messages = [
+        *messages,
+        {"role": "assistant", "content": raw_output},
+        {
+            "role": "user",
+            "content": (
+                f"JSON INVALID: {parse_error}. Return a NEW complete compact JSON object only. "
+                "Use bullet_id values bul_ibm_001..bul_ibm_005 exactly. "
+                "Include non-empty claim_ledger and rewrite_distribution with total=5, HEAVY=0."
+            ),
+        },
+    ]
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": IBM_QWEN_MAX_TOKENS}
+    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    if not generation_status_allows_qwen_json_parse(result.runtime_generation_status):
+        return raw_output, None, parse_error
+    new_raw = result.raw_model_output
+    new_parsed, new_err = parse_model_json(new_raw)
+    return new_raw, new_parsed, new_err
+
+
+def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
+    text = raw.strip()
+    text = re.sub(r"^```(?:json)?", "", text).strip()
+    text = re.sub(r"```$", "", text).strip()
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed, ""
+    except json.JSONDecodeError as exc:
+        return None, f"JSON parse failed: {exc}"
+    return None, "Model output was not a JSON object."
+
+
+def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    is_srfs = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
+    if is_srfs:
+        facts = list(runtime_payload["selected_fact_plan"].get("facts") or [])
+        bullets: list[dict[str, Any]] = []
+        claim_ledger: list[dict[str, Any]] = []
+        for fact in facts[:5]:
+            bid = str(fact.get("fact_id") or "").strip()
+            if not bid:
+                continue
+            intensity = DEFAULT_INTENSITY_BY_BULLET.get(bid, "MODERATE")
+            text = str(fact.get("claim_text") or "")
+            metric_ids = [bid]
+            if fact.get("metric_raw"):
+                metric_ids.append(f"{bid}_metric_{sha16(str(fact['metric_raw']))[:8]}")
+            bullets.append(
+                {
+                    "bullet_id": bid,
+                    "bullet_text": text,
+                    "rewrite_intensity": intensity,
+                    "has_metric": bool(fact.get("has_metric")),
+                    "metric_raw": fact.get("metric_raw") or None,
+                    "source_fact_ids": metric_ids,
+                }
+            )
+            claim_ledger.append({"claim_text": text, "source_fact_ids": metric_ids})
+        return {
+            "bullets": bullets,
+            "selected_fact_plan": runtime_payload["selected_fact_plan"],
+            "claim_ledger": claim_ledger,
+            "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+            "gap_notes": [],
+            "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
+            "rewrite_distribution": dict(IBM_DEFAULT_DISTRIBUTION),
+            "self_check": {
+                "bullet_count_valid": True,
+                "distribution_valid": True,
+                "no_cross_contamination": True,
+                "metrics_preserved": True,
+            },
+        }
+    by_id = {f["fact_id"]: f for f in runtime_payload["selected_fact_plan"]["facts"]}
+    bullets = []
+    claim_ledger = []
+    for bid in IBM_BULLET_IDS:
+        fact = by_id[bid]
+        intensity = DEFAULT_INTENSITY_BY_BULLET[bid]
+        text = fact["claim_text"]
+        metric_ids = [bid]
+        if fact.get("metric_raw"):
+            metric_ids.append(f"{bid}_metric_{sha16(fact['metric_raw'])[:8]}")
+        bullets.append(
+            {
+                "bullet_id": bid,
+                "bullet_text": text,
+                "rewrite_intensity": intensity,
+                "has_metric": fact.get("has_metric", False),
+                "metric_raw": fact.get("metric_raw") or None,
+                "source_fact_ids": metric_ids,
+            }
+        )
+        claim_ledger.append({"claim_text": text, "source_fact_ids": metric_ids})
+
+    return {
+        "bullets": bullets,
+        "selected_fact_plan": runtime_payload["selected_fact_plan"],
+        "claim_ledger": claim_ledger,
+        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "gap_notes": [],
+        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
+        "rewrite_distribution": dict(IBM_DEFAULT_DISTRIBUTION),
+        "self_check": {
+            "bullet_count_valid": True,
+            "distribution_valid": True,
+            "no_cross_contamination": True,
+            "metrics_preserved": True,
+        },
+    }
+
+
+def infer_product_quality(
+    runtime_generation_status: str,
+    x2_gates: list[dict[str, Any]],
+) -> tuple[str, str]:
+    failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
+    return infer_product_quality_blocked_or_mock(
+        runtime_generation_status=runtime_generation_status,
+        x2_failed_gate_ids=failed,
+        pass_reason="REAL_LLM output passed all deterministic IBM bullet gates.",
+    )
+
+
+def bullets_display_text(bullets: list[dict[str, Any]]) -> str:
+    return "\n".join(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}" for b in bullets)
+
+
+def run_ibm_bullets_execution(
+    args: argparse.Namespace,
+    *,
+    artifact_dir_override: Path | None = None,
+) -> dict[str, Any]:
+    """Single end-to-end ibm_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
+    base, base_path, base_hash = load_base_resume()
+    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+
+    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
+    if srfs_path:
+        ibm_header, _, _ = extract_ibm_employment(base)
+        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "ibm_bullets")
+        ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
+        ibm_facts.sort(
+            key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
+        )
+        selected_fact_plan = {
+            "section_id": "ibm_bullets",
+            "selection_method": _srfs.selection_method_for_section("ibm_bullets"),
+            "facts": ibm_facts,
+            "required_fact_ids": [str(f["fact_id"]) for f in ibm_facts],
+        }
+    else:
+        ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
+        selected_fact_plan = build_selected_fact_plan(ibm_facts)
+        pp_meta = _srfs.base_proof_pool_metadata(
+            section_id="ibm_bullets",
+            candidate_fact_pool_count=len(ibm_facts),
+            allowed_fact_ids_count=len(allowed_fact_ids),
+        )
+    runtime_payload = build_runtime_payload(
+        base_json_path=base_path,
+        base_hash=base_hash,
+        ibm_header=ibm_header,
+        selected_fact_plan=selected_fact_plan,
+        allowed_fact_ids=allowed_fact_ids,
+        target_title=args.target_title,
+        target_company=args.target_company,
+        jd_text=args.jd_text,
+        briefing=args.briefing,
+    )
+    runtime_payload["proof_pool_metadata"] = pp_meta
+    offline_stub_used = effective_offline_contract_stub_enabled()
+    placement_bucket = resolve_lane_placement_bucket(
+        args.provider,
+        mock_judges=bool(getattr(args, "mock_judges", False)),
+        offline_stub_env=offline_stub_used,
+    )
+    if artifact_dir_override is not None:
+        artifact_dir = Path(artifact_dir_override)
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        artifact_dir = prepare_runtime_proof_run_dir(
+            REPO_ROOT,
+            LANE_KEY,
+            args.provider,
+            runtime_payload["run_id"],
+            placement_bucket=placement_bucket,
+        )
+    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+
+    merge_transport_context(
+        artifact_dir=str(artifact_dir.resolve()),
+        run_id=str(runtime_payload.get("run_id") or ""),
+    )
+    input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
+    section_compiled = compile_ibm_bullets_prompt(runtime_payload, run_id=runtime_payload["run_id"])
+    messages = section_compiled.artifact.messages
+    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
+    prompt_hash = sha16(compiled_prompt)
+    write_json(artifact_dir / "runtime_payload.json", runtime_payload)
+    (artifact_dir / "compiled_prompt.txt").write_text(
+        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    write_json(
+        artifact_dir / "compiled_prompt_artifact.json",
+        {
+            "section_id": section_compiled.section_id,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "dispatch_sha256_prompt16": prompt_hash,
+            "slot_count": section_compiled.artifact.slot_count,
+            "allowed_fact_ids": list(runtime_payload.get("allowed_fact_ids") or []),
+        },
+    )
+
+    provider_request_data = None
+    provider_result_data = None
+    raw_output = ""
+    parsed: dict[str, Any] | None = None
+    parse_error = ""
+    runtime_generation_status = "BLOCKED"
+
+    provider_req, provider_payload = build_qwen_request(
+        messages=messages,
+        prompt_hash=prompt_hash,
+        input_payload_hash=input_payload_hash,
+        temperature=args.temperature,
+        max_tokens=IBM_QWEN_MAX_TOKENS,
+        temperature_bounds=IBM_TEMP_RANGE,
+    )
+    provider_request_data = provider_req.to_dict()
+    write_json(artifact_dir / "provider_request.json", provider_request_data)
+    tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
+    req_model = str(tagged.get("model", DEFAULT_QWEN_MODEL))
+    if effective_offline_contract_stub_enabled():
+        from apps_rg.runtime.qwen_offline_contract_stub import synthetic_qwen_provider_result
+
+        parsed_stub = normalize_parsed_output(build_mock_output(runtime_payload), runtime_payload)
+        raw_body = json.dumps(parsed_stub or {}, sort_keys=True, separators=(",", ":"))
+        result = synthetic_qwen_provider_result(raw_model_output=raw_body, requested_model=req_model)
+    else:
+        result = call_qwen_vllm(tagged)
+    provider_result_data = result.to_dict()
+    raw_output = result.raw_model_output
+    runtime_generation_status = result.runtime_generation_status
+    write_json(artifact_dir / "provider_response.json", provider_result_data)
+    if generation_status_allows_qwen_json_parse(result.runtime_generation_status):
+        parsed, parse_error = parse_model_json(raw_output)
+        if parsed is None:
+            raw_output, parsed, parse_error = retry_qwen_for_parse(
+                messages, tagged, raw_output, parse_error
+            )
+        if parsed is not None:
+            parsed = normalize_parsed_output(parsed, runtime_payload)
+    else:
+        parsed = None
+        parse_error = result.exact_provider_error or "provider blocked"
+
+    bullets = list((parsed or {}).get("bullets") or [])
+    claim_ledger_raw = list((parsed or {}).get("claim_ledger") or [])
+    parse_status, invalid_reason = classify_ledger_parse_state(
+        parsed,
+        parse_error=parse_error,
+        raw_output=raw_output,
+        lane_profile="ibm_bullets",
+    )
+    norm_rows = normalize_exec_summary_claim_ledger(claim_ledger_raw) if parse_status == "OK" else []
+    canon_doc = build_canonical_claim_ledger_v2_payload(
+        norm_rows,
+        parse_status=parse_status,
+        invalid_reason=invalid_reason if parse_status != "OK" else None,
+        claim_id_prefix="ibm_bullets_claim",
+    )
+    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+    write_json(
+        artifact_dir / "parsed_output.json",
+        {"parsed": parsed, "parse_error": parse_error, "parse_status": parse_status},
+    )
+    write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
+    claim_ledger = claim_ledger_raw
+    coverage = build_ibm_bullets_text_claim_coverage(bullets, claim_ledger, allowed_fact_ids)
+    parsed_for_x2: dict[str, Any] = {**(parsed or {}), "text_claim_coverage": coverage}
+    rewrite_distribution = (parsed or {}).get("rewrite_distribution") or dict(IBM_DEFAULT_DISTRIBUTION)
+    model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
+
+    l2_output = {
+        "run_id": runtime_payload["run_id"],
+        "section_id": "ibm_bullets",
+        "runtime_generation_status": runtime_generation_status,
+        "product_quality_status": "PENDING",
+        "ibm_header": ibm_header,
+        "bullets": bullets,
+        "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
+        "claim_ledger": claim_ledger,
+        "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True},
+        "gap_notes": (parsed or {}).get("gap_notes") or [],
+        "change_log": (parsed or {}).get("change_log") or [],
+        "rewrite_distribution": rewrite_distribution,
+        "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
+        "text_claim_coverage": coverage,
+        "prompt_id": PROMPT_ID,
+        "prompt_hash": prompt_hash,
+        "section_prompt_adapter": True,
+        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "compiler_template_id": section_compiled.artifact.template_id,
+        "input_payload_hash": input_payload_hash,
+    }
+    (artifact_dir / "ibm_bullets_output.txt").write_text(bullets_display_text(bullets) + "\n", encoding="utf-8")
+    write_json(artifact_dir / "claim_ledger.json", claim_ledger)
+    write_json(artifact_dir / "selected_fact_plan.json", l2_output["selected_fact_plan"])
+    write_json(artifact_dir / "rewrite_distribution.json", rewrite_distribution)
+    write_json(artifact_dir / "text_claim_coverage.json", coverage)
+    req_id = str(
+        (provider_request_data or {}).get("request_id")
+        or (provider_request_data or {}).get("id")
+        or runtime_payload["run_id"]
+    )
+    trace_rr = artifact_dir.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    usage_doc = build_section_input_usage_ledger_v1(
+        section_id="ibm_bullets",
+        run_id=str(runtime_payload["run_id"]),
+        request_id=req_id,
+        trace_root=trace_rr,
+        repo_root=REPO_ROOT,
+        artifact_dir=artifact_dir,
+        runtime_payload=runtime_payload,
+        selected_fact_plan=l2_output["selected_fact_plan"],
+        claim_ledger=claim_ledger,
+        allowed_fact_ids=allowed_fact_ids,
+        jd_text=str(runtime_payload.get("jd_text") or ""),
+        target_title=str(runtime_payload.get("target_title") or ""),
+        target_company=str(runtime_payload.get("target_company") or ""),
+        briefing_text=str(runtime_payload.get("briefing") or ""),
+        jd_alignment=l2_output.get("jd_alignment"),
+    )
+    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+
+    judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
+    judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    x1d = [
+        j.to_dict()
+        for j in run_ibm_bullets_judges(
+            bullets=bullets,
+            claim_ledger=claim_ledger,
+            judge_keys=judge_keys,
+            mode=judge_mode,
+            artifact_base=artifact_dir,
+        )
+    ]
+    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+
+    temperature = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
+
+    write_json(
+        artifact_dir / "prompt_selection_trace.json",
+        {
+            "runtime_path": "apps_rg.runtime.sections.ibm_bullets_lane",
+            "prompt_id": PROMPT_ID,
+            "provider": args.provider,
+            "temperature": temperature,
+            "section_prompt_adapter": True,
+            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+            "compiler_template_id": section_compiled.artifact.template_id,
+        },
+    )
+
+    pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
+    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
+
+    x2 = [
+        g.to_dict()
+        for g in run_ibm_bullets_x2_gates(
+            bullets=bullets,
+            parsed_output=parsed_for_x2,
+            claim_ledger=claim_ledger,
+            allowed_fact_ids=allowed_fact_ids,
+            jd_text=args.jd_text,
+            runtime_generation_status=runtime_generation_status,
+            artifacts_dir=artifact_dir,
+            provider_requested=args.provider,
+            provider_attempted=args.provider,
+            model_name=model_name,
+            raw_output=raw_output,
+            x1d_judges=x1d,
+            rewrite_distribution=rewrite_distribution,
+            srfs_source_fact_slice_gate_active=srfs_x2_active,
+        )
+    ]
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_json(
+        artifact_dir / "fact_check_result.json",
+        {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
+    )
+
+    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
+
+    display_for_x3 = bullets_display_text(bullets)
+    x3 = aggregate_x3(
+        resume_display_text=display_for_x3,
+        claim_ledger=claim_ledger,
+        x2_gates=x2,
+        x1d_judges=x1d,
+        runtime_generation_status=runtime_generation_status,
+        product_quality_status=product_quality_status,
+        canonical_claims_for_hash=canon_doc.get("claims"),
+        section_input_usage_ledger=usage_doc,
+    )
+    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+
+    bundle = compute_lane_proof_bundle(
+        args,
+        runtime_generation_status=runtime_generation_status,
+        x1d_judges=x1d,
+        x2_gates=x2,
+        x3=x3,
+        offline_contract_stub_used=offline_stub_used,
+    )
+    l2_output["product_quality_status"] = product_quality_status
+    l2_output["product_quality_reason"] = product_quality_reason
+    attach_lane_proof_bundle_fields(
+        l2_output,
+        runtime_generation_status=runtime_generation_status,
+        bundle=bundle,
+    )
+    write_json(artifact_dir / "l2_output.json", l2_output)
+
+    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
+    l6_max = IBM_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    l6_base = build_l6_shadow_package(
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        prompt_id=PROMPT_ID,
+        temperature=l6_temp,
+        max_tokens=l6_max,
+    )
+    l6 = extend_ibm_bullets_l6_learning_fields(
+        l6_base,
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        provider=str(args.provider),
+        x2_gates=x2,
+        x3_code=str(x3.x3_code),
+        authorization_scope=str(x3.authorization_scope),
+        mocked_judges=list(x3.mocked_judges),
+        proof_bundle=bundle,
+        claim_ledger=claim_ledger,
+        allowed_fact_ids=allowed_fact_ids,
+        bullets=bullets,
+        rewrite_distribution=rewrite_distribution,
+    )
+    write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
+
+    rl2 = {
+        "provider_attempted": args.provider,
+        "runtime_generation_status": runtime_generation_status,
+        "prompt_hash": prompt_hash,
+        "model": model_name,
+        "raw_model_output": raw_output,
+        "bullets": bullets,
+        "rewrite_distribution": rewrite_distribution,
+        "product_quality_status": product_quality_status,
+        "x3_code": x3.x3_code,
+    }
+    attach_lane_proof_bundle_fields(
+        rl2,
+        runtime_generation_status=runtime_generation_status,
+        bundle=bundle,
+    )
+
+    _smr_ibm_b = {
+        "run_id": runtime_payload["run_id"],
+        "lane_id": "ibm_bullets",
+        "prompt_id": PROMPT_ID,
+        "prompt_hash": prompt_hash,
+        "input_payload_hash": input_payload_hash,
+        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
+        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
+        "runtime_generation_status": runtime_generation_status,
+        "product_quality_status": product_quality_status,
+        "x2_failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
+        "x3_code": x3.x3_code,
+        "proof_eligible": bundle["proof_eligible"],
+        "judge_proof_eligible": bundle["judge_proof_eligible"],
+    }
+    merge_normalized_srfs_reporting_into_dict(
+        _smr_ibm_b,
+        section_id="ibm_bullets",
+        runtime_payload=runtime_payload,
+        x2_gates=x2,
+        selected_fact_plan=l2_output.get("selected_fact_plan") if isinstance(l2_output, dict) else None,
+        claim_ledger=claim_ledger,
+    )
+    write_json(artifact_dir / "section_metric_receipt.json", _smr_ibm_b)
+
+    write_json(
+        artifact_dir / "real_l2_generation_result.json",
+        rl2,
+    )
+
+    lines = [
+        "IBM_BULLETS_OUTPUT:",
+        bullets_display_text(bullets) if bullets else f"BLOCKED: {parse_error}",
+        "",
+        "REWRITE_DISTRIBUTION:",
+        json.dumps(rewrite_distribution, indent=2),
+        "",
+        "X1D_LLM_JUDGE_OUTPUTS:",
+        "| Provider | Mode | Status | Score | Pass | Decisive Failure |",
+        "|---|---|---|---:|---|---|",
+    ]
+    for judge in x1d:
+        lines.append(
+            f"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('provider_status')} | "
+            f"{judge.get('score')} | {judge.get('pass')} | {judge.get('decisive_failure')} |"
+        )
+    lines.extend(["", "X2_DETERMINISTIC_GATE_OUTPUTS:"])
+    for gate in x2:
+        lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
+    lines.extend(["", "X3_DISPOSITION:", json.dumps(x3.to_dict(), indent=2), "", "L6_SHADOW_EVAL_PACKAGE:", str(artifact_dir / "l6_shadow_eval_package.json"), "offline_only=true"])
+    output_text = "\n".join(lines)
+    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+    prq = str((provider_request_data or {}).get("provider_requested", args.provider))
+    pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
+    finalize_runtime_proof_run(
+        REPO_ROOT,
+        LANE_KEY,
+        args.provider,
+        artifact_dir,
+        run_id=runtime_payload["run_id"],
+        section_id="ibm_bullets",
+        runtime_generation_status=runtime_generation_status,
+        provider_requested=prq,
+        provider_attempted=pratt,
+        command=" ".join(sys.argv),
+        placement_bucket=placement_bucket,
+        proof_eligible=bundle["proof_eligible"],
+        proof_scope=bundle["proof_scope"],
+        proof_status=bundle["proof_status"],
+        artifact_namespace_class=bundle["artifact_namespace_class"],
+        runtime_generation_status_class=bundle["runtime_generation_status_class"],
+        offline_contract_stub_used=bundle["offline_contract_stub_used"],
+        offline_contract_stub_reason="APPS_RG_QWEN_OFFLINE_CONTRACT_STUB" if offline_stub_used else None,
+        authorization_scope=bundle["authorization_scope"],
+        mocked_judges=list(x3.mocked_judges),
+        test_only_mock_provider=bundle["test_only_mock_provider"],
+        runtime_certification=bundle["runtime_certification"],
+        x1d_runtime_status=bundle["x1d_runtime_status"],
+        judge_proof_eligible=bundle["judge_proof_eligible"],
+        provider_proof_eligible=bundle["provider_proof_eligible"],
+        test_only_mock_judges=bundle["test_only_mock_judges"],
+        proof_closeout_note=bundle["proof_closeout_note"] if bundle.get("proof_closeout_note") else None,
+    )
+    return {
+        "artifact_dir": artifact_dir,
+        "repo_root": REPO_ROOT,
+        "lane_key": LANE_KEY,
+        "args": args,
+        "runtime_payload": runtime_payload,
+        "section_compiled": section_compiled,
+        "messages": messages,
+        "prompt_hash": prompt_hash,
+        "input_payload_hash": input_payload_hash,
+        "x3": x3,
+        "output_text": output_text,
+        "runtime_generation_status": runtime_generation_status,
+        "allowed_fact_ids": allowed_fact_ids,
+    }
+
+
+__all__ = [
+    "BRIEFING_DEFAULT",
+    "BULLET_ID_ALIASES",
+    "DEFAULT_INTENSITY_BY_BULLET",
+    "IBM_BULLET_IDS",
+    "IBM_DEFAULT_DISTRIBUTION",
+    "IBM_QWEN_MAX_TOKENS",
+    "IBM_TEMP_DEFAULT",
+    "IBM_TEMP_RANGE",
+    "JD_TEXT_DEFAULT",
+    "LANE_KEY",
+    "PROMPT_ID",
+    "REPO_ROOT",
+    "TARGET_COMPANY_DEFAULT",
+    "TARGET_TITLE_DEFAULT",
+    "_canonicalize_bul_ibm_source_fact_id",
+    "build_mock_output",
+    "build_prompt_messages",
+    "build_runtime_payload",
+    "build_selected_fact_plan",
+    "bullets_display_text",
+    "extract_ibm_employment",
+    "infer_product_quality",
+    "load_base_resume",
+    "normalize_parsed_output",
+    "parse_model_json",
+    "retry_qwen_for_parse",
+    "run_ibm_bullets_execution",
+    "sha16",
+    "write_json",
+]

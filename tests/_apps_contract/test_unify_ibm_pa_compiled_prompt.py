@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
+import uuid
 from pathlib import Path
 
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt
@@ -64,6 +66,27 @@ def test_unify_narrative_compiled_shape():
     }
     out = compile_unify_narrative_prompt(payload, "", run_id="pa_un_narr")
     _assert_compiled(out, "unify_narrative", "unify_position_narrative_v1.yaml")
+    body = out.artifact.messages[0]["content"]
+    assert "ALLOWED_SOURCE_FACT_IDS" in body
+    assert "non-empty" in body.lower() and "claim_text" in body.lower()
+
+
+def test_narrative_r0_claim_ledger_item_requires_claim_text_and_source_fact_ids():
+    from apps_rg.runtime.dispatch.unify_ibm_pa_common import NARRATIVE_JD_ALIGNMENT_SCHEMA, NARRATIVE_R0
+
+    schema = json.loads(NARRATIVE_R0)
+    items = schema["properties"]["claim_ledger"]["items"]
+    assert "claim_text" in items["required"]
+    assert "source_fact_ids" in items["required"]
+    assert items["properties"]["claim_text"]["minLength"] == 1
+    assert items["properties"]["source_fact_ids"]["minItems"] == 1
+    ja = schema["properties"]["jd_alignment"]
+    assert ja == NARRATIVE_JD_ALIGNMENT_SCHEMA
+
+
+def test_strategic_tailor_v1_yaml_resolvable():
+    p = REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "strategic_tailor_v1.yaml"
+    assert p.is_file()
 
 
 def test_unify_narrative_companion_fence_when_present():
@@ -95,9 +118,61 @@ def test_ibm_narrative_compiled_shape():
         "candidate_name": "",
         "ibm_header": _ibm_header(),
         "selected_fact_plan": {"facts": _ibm_facts()},
+        "allowed_fact_ids": ["bul_ibm_001"],
     }
     out = compile_ibm_narrative_prompt(payload, "", run_id="pa_ibm_narr")
     _assert_compiled(out, "ibm_narrative", "ibm_position_narrative_v1.yaml")
+    body = out.artifact.messages[0]["content"]
+    assert "ALLOWED_SOURCE_FACT_IDS" in body
+    assert "bul_ibm_001" in body
+    assert "IBM NARRATIVE NORTH STAR" in body
+    assert "JD and briefing are targeting context only" in body.lower() or "targeting context only" in body.lower()
+
+    out_fence = compile_ibm_narrative_prompt(
+        payload,
+        "- bul_ibm_001: mock companion bullet KPIs live on bullet lines.",
+        run_id="pa_ibm_fence",
+    )
+    body_f = out_fence.artifact.messages[0]["content"]
+    assert "U_TIER_COMPANION_CONTEXT" in body_f
+    assert "ACCEPTED_IBM_BULLETS" in body_f
+
+
+def test_canonical_dispatch_routes_ibm_narrative_lane():
+    from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
+
+    art = REPO_ROOT / "artifacts" / "apps_rg" / "_pytest_ibm_narr_lane" / uuid.uuid4().hex[:12]
+    art.mkdir(parents=True, exist_ok=True)
+    try:
+        result = run_canonical_apps_rg_from_cli_primitives(
+            target_company="Synthetic Enterprise Corp.",
+            target_role="SVP Engineering, Agentic AI Platforms",
+            target_level="",
+            jd="",
+            job_description_ref="",
+            job_description_text="",
+            manual_brief="",
+            resume_path="",
+            source_resume_text="",
+            generation_mode="strategic_tailor",
+            artifact_dir=str(art),
+            section="ibm_narrative",
+            lane_provider="mock",
+            lane_temperature=0.45,
+            lane_x1d_judges="gemini_pro,openai_chatgpt,anthropic_claude",
+            lane_mock_judges=False,
+        )
+        assert result.get("artifact_dir")
+        ps = Path(str(result["artifact_dir"])) / "prompt_selection_trace.json"
+        assert ps.is_file()
+        trace = json.loads(ps.read_text(encoding="utf-8"))
+        assert trace.get("runtime_path") == "apps_rg.runtime.sections.ibm_narrative_lane"
+        cap = Path(str(result["artifact_dir"])) / "compiled_prompt_artifact.json"
+        cap_doc = json.loads(cap.read_text(encoding="utf-8"))
+        assert cap_doc.get("allowed_fact_ids")
+        assert "ibm_position_narrative_v1.yaml" in cap_doc.get("apps_rg_prompt_template_ref", "")
+    finally:
+        shutil.rmtree(art, ignore_errors=True)
 
 
 def test_unify_bullets_compiled_shape():
@@ -123,9 +198,15 @@ def test_ibm_bullets_compiled_shape():
         "briefing": "regulated",
         "ibm_header": _ibm_header(),
         "selected_fact_plan": {"facts": _ibm_facts()},
+        "allowed_fact_ids": ["bul_ibm_001"],
     }
     out = compile_ibm_bullets_prompt(payload, run_id="pa_ibm_bul")
     _assert_compiled(out, "ibm_bullets", "ibm_bullet_tailor_v1.yaml")
+    body = out.artifact.messages[0]["content"]
+    assert "ALLOWED_SOURCE_FACT_IDS" in body
+    assert "bul_ibm_001" in body
+    assert "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1" in body
+    assert "REWRITE_FROM_FACT_POOL_CONSTRAINED" in body
 
 
 def test_w7_shell_slots_file_exists():

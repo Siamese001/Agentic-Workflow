@@ -20,26 +20,15 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RUNTIME_PROOFS = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs"
 ROLLUP_DIR = RUNTIME_PROOFS / "generated_lane_rollup"
 
-# Canonical real-LLM invocation (documented evidence pack); does not execute.
-CANONICAL_QWEN_JUDGES_CMD: str = (
+# Canonical user-facing invocation (documentation only — does not execute).
+CANONICAL_QWEN_JUDGES_FLAGS: str = (
     "--provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude "
     "--allow-non-allow-exit-zero"
 )
 
-LANE_DISPATCH_MODULE: dict[str, str] = {
-    "headline": "apps_rg.runtime.dispatch.headline_dispatch",
-    "executive_summary": "apps_rg.runtime.dispatch.executive_summary_dispatch",
-    "unify_bullets": "apps_rg.runtime.dispatch.unify_bullets_dispatch",
-    "unify_narrative": "apps_rg.runtime.dispatch.unify_narrative_dispatch",
-    "ibm_bullets": "apps_rg.runtime.dispatch.ibm_bullets_dispatch",
-    "ibm_narrative": "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
-    "competencies": "apps_rg.runtime.dispatch.competencies_dispatch",
-}
-
 
 def canonical_lane_command(lane: str) -> str:
-    mod = LANE_DISPATCH_MODULE[lane]
-    return f"python -m {mod} {CANONICAL_QWEN_JUDGES_CMD}"
+    return f"python -m apps_rg --section {lane} {CANONICAL_QWEN_JUDGES_FLAGS}"
 
 
 def _mtime_iso_utc(path: Path) -> str | None:

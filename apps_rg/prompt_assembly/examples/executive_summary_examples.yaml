@@ -2,54 +2,72 @@ version: "1.0"
 section: executive_summary
 description: >
   Multishot examples for the executive_summary section.
-  All examples are wrapped in XML tags per XML-structured prompt best practice.
-  Positive examples demonstrate recruiter-trust naturalness signals.
-  Negative examples show AI-giveaway markers for contrast.
-  Repair examples show before/after corrections.
+  Proof substrate is always selected base-résumé facts + claim_ledger in runtime artifacts;
+  examples teach voice and structure only unless marked as STYLE_EXAMPLE_NOT_PROOF.
 
 examples:
-  - id: exec_summary_pos_001
-    category: positive
+  - id: exec_summary_gold_base_resume_001
+    category: positive_gold
+    authority: E0_STYLE_EXAMPLE_NOT_PROOF
     section: executive_summary
     seniority_band: EXECUTIVE
     xml_wrapped: true
     before: null
     after: |
-      Technology executive with 18 years leading enterprise AI programs across
-      financial services and insurance verticals. Cut cloud spend by $2.1M in
-      FY2023. Delivered 40% ops-efficiency gain via ML pipeline modernization
-      serving 12 business units.
-    claim_ledger_grounded: true
+      Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure. Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and distributed systems engineering.
+    claim_ledger_grounded: false
     annotation: >
-      Leads with role identity + years, no generic opener, two concrete proof
-      points (fact binding lives in claim_ledger — display prose has no inline
-      source tags), no em dash, varied sentence structure.
-    anti_ai_compliance:
-      no_em_dash: true
-      no_pioneered_orchestrated: true
-      no_corporate_buzzwords: true
-      voice_variation_score: high
+      STYLE AND QUALITY TARGET ONLY — not proof for arbitrary runs.
+      This is the voice, density, synthesis, and executive register to emulate.
+      Do not copy example facts, metrics, or credentials unless current selected facts
+      contain the same substance. The example demonstrates executive-level synthesis,
+      not claim-label stitching. Metrics and credentials appear here because this
+      paragraph assumes those facts are already in the proof substrate.
+      Runtime proof remains claim_ledger + source_fact_ids only; resume_display_text
+      stays clean prose.
 
-  - id: exec_summary_pos_002
-    category: positive
+  - id: exec_summary_neg_label_stitch_001
+    category: negative
     section: executive_summary
-    seniority_band: SENIOR
+    seniority_band: EXECUTIVE
     xml_wrapped: true
     before: null
     after: |
-      Engineering leader with 12 years building distributed systems at scale.
-      Grew platform from 500K to 8M daily active users while maintaining
-      99.97% uptime. Built and retained a 45-person engineering org through
-      two acquisitions.
-    claim_ledger_grounded: true
+      Enterprise Agentic AI Platform Architecture: designed and operationalized a governed agentic AI platform. Dependency Graph Accelerator: built software dependency graph intelligence.
     annotation: >
-      Concrete scale metrics, org-leadership evidence, natural prose, no
-      discouraged openers, no buzzwords; proof IDs belong in claim_ledger only.
-    anti_ai_compliance:
-      no_em_dash: true
-      no_pioneered_orchestrated: true
-      no_corporate_buzzwords: true
-      voice_variation_score: high
+      VIOLATION: selected-fact label / title colon stitching; reads like artifact
+      labels pasted into prose instead of one executive paragraph.
+    ai_giveaway_markers:
+      - label_colon_stitching
+      - non_executive_register
+
+  - id: exec_summary_neg_meta_filler_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering executive across the scope described in selected facts with active-voice delivery and governance discipline.
+    annotation: >
+      VIOLATION: meta-scaffolding; prompt-compliance narration; not credible résumé prose.
+    ai_giveaway_markers:
+      - meta_filler
+      - selected_facts_phrase_leak
+
+  - id: exec_summary_neg_sentence_stack_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering executive specializing in governed agentic AI platforms. Built deterministic routing. Built GraphRAG retrieval. Built telemetry instrumentation. Reduced deployment cycles.
+    annotation: >
+      VIOLATION: one short sentence per fact; proof stacking; lacks narrative synthesis.
+    ai_giveaway_markers:
+      - sentence_stacked_proof
+      - bullet_voice
 
   - id: exec_summary_neg_001
     category: negative
@@ -130,3 +148,7 @@ examples:
       no_pioneered_orchestrated: true
       no_corporate_buzzwords: true
       voice_variation_score: high
+
+# Legacy weak positives (exec_summary_pos_001 / _002) removed — they pulled toward
+# shallow “years of experience” résumé filler. SSOT positive_gold is
+# exec_summary_gold_base_resume_001 above.

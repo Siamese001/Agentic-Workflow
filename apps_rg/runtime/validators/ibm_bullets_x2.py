@@ -13,6 +13,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     GENERIC_FILLER,
     INLINE_SOURCE_PATTERN,
     REQUIRED_JUDGE_PROVIDERS,
+    check_claim_ledger_claim_text_non_empty,
     check_json_parse_valid,
     check_judge_rows_present,
     check_judge_schema_valid,
@@ -29,8 +30,12 @@ IBM_BULLET_IDS = (
 IBM_DEFAULT_DISTRIBUTION = {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}
 VALID_INTENSITIES = frozenset({"HEAVY", "MODERATE", "LIGHT_PROTECTED"})
 
+# Category-style prefix at start of resume bullet (themes belong in bullet_theme / metadata only).
+TAXONOMY_LABEL_PREFIX_PATTERN = re.compile(r"^[A-Z][A-Za-z /,&-]{3,60}:\s+")
+
 UNIFY_RUNTIME_TERM_PATTERNS = (
     r"\bagentic\s+ai\b",
+    r"\bagentic\s+runtime\b",
     r"\bgraphrag\b",
     r"\bmulti[- ]?agent\s+orchestration\b",
     r"\bdeterministic\s+routing\b",
@@ -38,6 +43,8 @@ UNIFY_RUNTIME_TERM_PATTERNS = (
     r"\breplayable\s+traces\b",
     r"\bgoverned\s+ai\s+runtime\b",
     r"\bprompt\s+assembly\b",
+    r"\bjudge\s+mesh\b",
+    r"\bgoverned\s+spine\b",
     r"\bc0\b",
     r"\bl2\b",
     r"\bexit\b",
@@ -56,6 +63,144 @@ REQUIRED_TOP_LEVEL = {
 }
 
 CORE_METRIC_TOKENS = ("$15M", "99.9%", "30%", "25%", "50%")
+
+_COVERAGE_WS_RE = re.compile(r"\s+")
+
+
+def _norm_claim_ws(text: str) -> str:
+    return _COVERAGE_WS_RE.sub(" ", str(text or "").strip())
+
+
+def _ibm_root_from_source_fact_ids(source_fact_ids: list[Any]) -> str | None:
+    for raw in source_fact_ids or []:
+        s = str(raw)
+        if s.startswith("bul_ibm_"):
+            return s.split("_metric_")[0]
+    return None
+
+
+def build_ibm_bullets_text_claim_coverage(
+    bullets: list[dict[str, Any]],
+    claim_ledger: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+) -> dict[str, Any]:
+    """Structural bullet↔ledger coverage for IBM bullets (``bul_ibm_001``..``005`` only).
+
+    Mirrors unify_bullets structural coverage shape without embedding ``bul_unify_*`` placeholders
+    that would false-trigger ``x2_no_unify_fact_leakage`` on serialized ``parsed_output``.
+    """
+    ledger_by_root: dict[str, dict[str, Any]] = {}
+    duplicate_roots: list[str] = []
+    unresolved_roots = 0
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        ids = list(row.get("source_fact_ids") or [])
+        root = _ibm_root_from_source_fact_ids(ids)
+        if root is None:
+            if str(row.get("claim_text") or "").strip():
+                unresolved_roots += 1
+            continue
+        if root in ledger_by_root:
+            duplicate_roots.append(root)
+        ledger_by_root[root] = row
+
+    by_bullet_id = {str(b.get("bullet_id")): b for b in bullets if b.get("bullet_id")}
+    coverage_rows: list[dict[str, Any]] = []
+    overall_pass = True
+    integrity_notes: list[str] = []
+
+    if duplicate_roots:
+        overall_pass = False
+        integrity_notes.append(f"duplicate_ledger_roots:{sorted(set(duplicate_roots))}")
+    if unresolved_roots:
+        overall_pass = False
+        integrity_notes.append(f"ledger_rows_missing_ibm_root:{unresolved_roots}")
+
+    for ordinal, bid in enumerate(IBM_BULLET_IDS, start=1):
+        bullet = by_bullet_id.get(bid)
+        ledger_row = ledger_by_root.get(bid)
+        btxt = str((bullet or {}).get("bullet_text") or "").strip()
+        sentence_text = f"- {bid}: {btxt}"
+
+        if bullet is None or ledger_row is None:
+            overall_pass = False
+            coverage_rows.append(
+                {
+                    "sentence_index": ordinal,
+                    "bullet_id": bid,
+                    "sentence_text": sentence_text,
+                    "material_claims": [
+                        {
+                            "claim_text": "",
+                            "source_fact_ids": [],
+                            "support_status": "UNSUPPORTED",
+                            "reason": "missing bullet or claim_ledger row for bullet_id",
+                        }
+                    ],
+                    "sentence_pass": False,
+                }
+            )
+            continue
+
+        ct = str(ledger_row.get("claim_text") or "").strip()
+        source_ids = list(ledger_row.get("source_fact_ids") or [])
+        valid_source_ids = [
+            sid for sid in source_ids if sid in allowed_fact_ids or "_metric_" in str(sid)
+        ]
+        ids_ok = bool(valid_source_ids)
+        text_align = _norm_claim_ws(ct) == _norm_claim_ws(btxt)
+
+        sentence_pass = True
+        material_claims: list[dict[str, Any]] = []
+        if not text_align:
+            overall_pass = False
+            sentence_pass = False
+            material_claims.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": source_ids,
+                    "support_status": "MISALIGNED_TEXT",
+                    "reason": "claim_ledger claim_text must align with bullet_text (normalized whitespace).",
+                }
+            )
+        elif not ids_ok:
+            overall_pass = False
+            sentence_pass = False
+            material_claims.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": source_ids,
+                    "support_status": "UNSUPPORTED",
+                    "reason": "source_fact_ids not in allowed_fact_ids.",
+                }
+            )
+        else:
+            material_claims.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": source_ids,
+                    "support_status": "SUPPORTED",
+                    "reason": "Structural row aligned to bullet_id and claim_ledger.",
+                }
+            )
+
+        coverage_rows.append(
+            {
+                "sentence_index": ordinal,
+                "bullet_id": bid,
+                "sentence_text": sentence_text,
+                "material_claims": material_claims,
+                "sentence_pass": sentence_pass,
+            }
+        )
+
+    return {
+        "coverage_schema": "ibm_bullets_structural_v1",
+        "sentences": coverage_rows,
+        "overall_pass": overall_pass,
+        "integrity_notes": integrity_notes,
+    }
 
 
 @dataclass
@@ -76,6 +221,24 @@ class X2GateResult:
 
 def _combined_bullet_text(bullets: list[dict[str, Any]]) -> str:
     return "\n".join(str(b.get("bullet_text", "")) for b in bullets)
+
+
+def ibm_bullet_text_has_taxonomy_label_prefix(text: str) -> bool:
+    """True when ``bullet_text`` starts with a category-style ``Title: `` prefix (deterministic gate helper)."""
+
+    return bool(TAXONOMY_LABEL_PREFIX_PATTERN.match((text or "").strip()))
+
+
+def _taxonomy_prefix_violations(bullets: list[dict[str, Any]]) -> list[str]:
+    bad: list[str] = []
+    for b in bullets:
+        if not isinstance(b, dict):
+            continue
+        bt = str(b.get("bullet_text") or "").strip()
+        bid = str(b.get("bullet_id") or "").strip()
+        if ibm_bullet_text_has_taxonomy_label_prefix(bt):
+            bad.append(bid or bt[:72])
+    return bad
 
 
 def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
@@ -144,8 +307,8 @@ def run_ibm_bullets_x2_gates(
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
     rewrite_distribution: dict[str, Any] | None = None,
+    srfs_source_fact_slice_gate_active: bool = False,
 ) -> list[X2GateResult]:
-    del artifacts_dir  # API parity with unify_bullets_x2; unused here.
     gates: list[X2GateResult] = []
 
     def add(
@@ -173,6 +336,31 @@ def run_ibm_bullets_x2_gates(
     intensity_counts = _count_intensities(bullets)
 
     add("x2_ibm_bullet_count_5", len(bullets) == 5, len(bullets), 5, "Must output exactly 5 IBM bullets.")
+
+    ledger_text_ok, ledger_text_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
+    if not ledger_text_ok and ledger_text_reason:
+        hint_parts = []
+        for i, row in enumerate(claim_ledger):
+            if not isinstance(row, dict):
+                continue
+            ct = row.get("claim_text")
+            if ct is None or (isinstance(ct, str) and not str(ct).strip()):
+                b_hint = row.get("bullet_id")
+                sfx = ""
+                if b_hint is None and row.get("source_fact_ids"):
+                    sfx = f"ledger_idx={i} source_fact_ids={row.get('source_fact_ids')!r}"
+                else:
+                    sfx = f"ledger_idx={i} bullet_id_hint={b_hint!r} source_fact_ids={row.get('source_fact_ids')!r}"
+                hint_parts.append(sfx)
+        if hint_parts:
+            ledger_text_reason = f"{ledger_text_reason}; " + "; ".join(hint_parts)
+    add(
+        "x2_claim_ledger_claim_text_non_empty",
+        ledger_text_ok,
+        ledger_text_reason or ("ok" if ledger_text_ok else "failed"),
+        "non-empty trimmed claim_text for every ledger row",
+        ledger_text_reason,
+    )
 
     dist_valid = (
         dist.get("HEAVY") == IBM_DEFAULT_DISTRIBUTION["HEAVY"]
@@ -245,6 +433,15 @@ def run_ibm_bullets_x2_gates(
         "agentic token",
         "absent",
         "Agentic inflation language in IBM bullets.",
+    )
+
+    prefix_hits = _taxonomy_prefix_violations(bullets)
+    add(
+        "x2_no_taxonomy_label_prefix_in_display_text",
+        not prefix_hits,
+        prefix_hits,
+        [],
+        "bullet_text must not start with a category-style Title: prefix.",
     )
 
     jd_copy, jd_phrase = has_jd_phrase_copy(combined, jd_text)
@@ -337,6 +534,35 @@ def run_ibm_bullets_x2_gates(
     else:
         add("x2_x1d_schema_valid", False, "no judges", "present", "No X1D judges.")
 
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    if srfs_source_fact_slice_gate_active:
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        coll_ib = _srfs_w4.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
+        ok_ib, env_ib, fail_ib = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="ibm_bullets",
+            collected_ids=coll_ib,
+            allowed_fact_ids=set(allowed_fact_ids),
+        )
+        add(
+            "x2_ibm_bullets_source_fact_ids_within_srfs_slice",
+            ok_ib,
+            env_ib,
+            "srfs_slice_allowlist_exact",
+            fail_ib,
+        )
+
+    append_section_input_usage_x2_gates(
+        gates,
+        artifacts_dir=artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/ibm_bullets"),
+        allowed_fact_ids=allowed_fact_ids,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=(parsed_output or {}).get("text_claim_coverage")
+        if isinstance(parsed_output, dict)
+        else None,
+    )
+
     return gates
 
 
@@ -344,5 +570,8 @@ __all__ = [
     "IBM_BULLET_IDS",
     "IBM_DEFAULT_DISTRIBUTION",
     "REQUIRED_TOP_LEVEL",
+    "TAXONOMY_LABEL_PREFIX_PATTERN",
+    "build_ibm_bullets_text_claim_coverage",
+    "ibm_bullet_text_has_taxonomy_label_prefix",
     "run_ibm_bullets_x2_gates",
 ]

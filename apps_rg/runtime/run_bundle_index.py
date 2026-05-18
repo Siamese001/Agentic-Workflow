@@ -307,26 +307,49 @@ _INTEGRATED_OPTIONAL_OUTPUTS: tuple[tuple[str, str, str, bool, str], ...] = (
     ("spine_runtime_exhaust", "runtime_exhaust_bundle.json", "application/json", False, "integrated_r4_deterministic_pipeline"),
 )
 
-# Lane seam — filenames commonly emitted by section dispatches.
+# Lane seam — filenames commonly emitted by section lanes (canonical ``python -m apps_rg --section`` runtime proofs).
 _LANE_CORE: tuple[tuple[str, str, str, bool, str], ...] = (
     ("lane_run_manifest", "run_manifest.json", "application/json", True, "runtime_proof_layout.finalize_runtime_proof_run"),
-    ("lane_l2_output", "l2_output.json", "application/json", True, "apps_rg_section_dispatch"),
-    ("lane_runtime_payload", "runtime_payload.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("prompt_compiled_text", "compiled_prompt.txt", "text/plain", False, "apps_rg_section_dispatch"),
-    ("prompt_compiled_artifact", "compiled_prompt_artifact.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("provider_request", "provider_request.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("provider_response", "provider_response.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("judge_x1d_outputs", "x1d_llm_judge_outputs.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("gate_x2_outputs", "x2_gate_outputs.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("disposition_x3", "x3_disposition.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("l6_shadow_eval_package", "l6_shadow_eval_package.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("fact_check_result", "fact_check_result.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("repair_receipt", "repair_receipt.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("section_metric_receipt", "section_metric_receipt.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("claim_ledger", "claim_ledger.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("text_claim_coverage", "text_claim_coverage.json", "application/json", False, "apps_rg_section_dispatch"),
-    ("selected_fact_plan", "selected_fact_plan.json", "application/json", False, "apps_rg_section_dispatch"),
+    ("lane_l2_output", "l2_output.json", "application/json", True, "apps_rg_canonical_section_runtime"),
+    ("lane_runtime_payload", "runtime_payload.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("prompt_compiled_text", "compiled_prompt.txt", "text/plain", False, "apps_rg_canonical_section_runtime"),
+    ("prompt_compiled_artifact", "compiled_prompt_artifact.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("prompt_selection_trace", "prompt_selection_trace.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("provider_request", "provider_request.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("provider_response", "provider_response.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("judge_x1d_outputs", "x1d_llm_judge_outputs.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("gate_x2_outputs", "x2_gate_outputs.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("disposition_x3", "x3_disposition.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("l6_shadow_eval_package", "l6_shadow_eval_package.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("fact_check_result", "fact_check_result.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("repair_receipt", "repair_receipt.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("section_metric_receipt", "section_metric_receipt.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("claim_ledger", "claim_ledger.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("text_claim_coverage", "text_claim_coverage.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("selected_fact_plan", "selected_fact_plan.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("stage_sequence", "stage_sequence.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("artifact_inventory", "artifact_inventory.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("runtime_exhaust_bundle", "runtime_exhaust_bundle.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("section_runtime_proof_bundle", "section_runtime_proof_bundle.json", "application/json", False, "apps_rg_canonical_section_runtime"),
 )
+
+_HEADLINE_PROOF_STRICT_SUFFIXES: frozenset[str] = frozenset(
+    {
+        "run_manifest.json",
+        "l2_output.json",
+        "provider_request.json",
+        "provider_response.json",
+        "prompt_selection_trace.json",
+        "compiled_prompt_artifact.json",
+        "x1d_llm_judge_outputs.json",
+        "x2_gate_outputs.json",
+        "x3_disposition.json",
+        "claim_ledger.json",
+        "selected_fact_plan.json",
+        "l6_shadow_eval_package.json",
+    }
+)
+_CANONICAL_HEADLINE_PRODUCER = "apps_rg_canonical_section_headline"
 
 
 def build_integrated_run_bundle_document(
@@ -377,6 +400,7 @@ def build_lane_runtime_proof_bundle_document(
     *,
     lane: str,
     run_id: str,
+    proof_contract_strict: bool = False,
 ) -> dict[str, Any]:
     art_ns, log_ns = load_apps_rg_pipeline_namespaces(repo_root)
     rid = str(run_id or "").strip() or artifact_dir.name
@@ -384,6 +408,10 @@ def build_lane_runtime_proof_bundle_document(
     indexed_relpaths: set[str] = set()
     for role, suffix, ct, req, prod in _LANE_CORE:
         indexed_relpaths.add(suffix.replace("\\", "/"))
+        norm_suf = suffix.replace("\\", "/")
+        if proof_contract_strict and lane == "headline" and norm_suf in _HEADLINE_PROOF_STRICT_SUFFIXES:
+            req = True
+            prod = _CANONICAL_HEADLINE_PRODUCER
         entries.append(
             _file_entry(
                 repo_root,
@@ -396,12 +424,17 @@ def build_lane_runtime_proof_bundle_document(
                 notes=f"lane={lane}" if role in ("lane_run_manifest", "lane_l2_output") else None,
             )
         )
+    extra_prod = (
+        _CANONICAL_HEADLINE_PRODUCER
+        if proof_contract_strict and lane == "headline"
+        else "apps_rg_canonical_section_runtime"
+    )
     entries.extend(
         _extra_file_entries(
             repo_root,
             artifact_dir,
             indexed_relpaths,
-            producer="apps_rg_section_dispatch_or_tests",
+            producer=extra_prod,
             role_prefix=f"lane_{lane}_emitted",
         )
     )
@@ -418,6 +451,31 @@ def build_lane_runtime_proof_bundle_document(
         "log_namespace": log_ns,
         "entries": entries,
     }
+    mf_path = artifact_dir / "run_manifest.json"
+    if mf_path.is_file():
+        try:
+            mfd = json.loads(mf_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, TypeError):
+            mfd = {}
+        if isinstance(mfd, dict):
+            for key in (
+                "proof_eligible",
+                "proof_scope",
+                "proof_status",
+                "artifact_namespace_class",
+                "offline_contract_stub_used",
+                "offline_contract_stub_reason",
+                "authorization_scope",
+                "mocked_judges",
+                "runtime_proof_placement_bucket",
+                "judge_proof_eligible",
+                "provider_proof_eligible",
+                "test_only_mock_judges",
+                "runtime_generation_status",
+                "runtime_generation_status_class",
+            ):
+                if key in mfd:
+                    doc[key] = mfd[key]
     return doc
 
 
@@ -466,9 +524,25 @@ def emit_lane_runtime_proof_bundle_index(
     artifact_dir: Path,
     *,
     run_id: str,
+    proof_contract_strict: bool = False,
+    document_metadata: Mapping[str, Any] | None = None,
 ) -> Path:
     """Write RUN_BUNDLE_INDEX.json for a lane runtime proof directory."""
-    doc = build_lane_runtime_proof_bundle_document(repo_root, artifact_dir, lane=lane, run_id=run_id)
+    doc = build_lane_runtime_proof_bundle_document(
+        repo_root,
+        artifact_dir,
+        lane=lane,
+        run_id=run_id,
+        proof_contract_strict=proof_contract_strict,
+    )
+    if document_metadata:
+        overlap = frozenset(document_metadata.keys()) & frozenset(doc.keys())
+        if overlap - frozenset({"entries"}):
+            raise ValueError(
+                "document_metadata must not collide with canonical RUN_BUNDLE_INDEX keys "
+                f"(overlap={sorted(overlap)})"
+            )
+        doc.update(dict(document_metadata))
     target = artifact_dir / RUN_BUNDLE_INDEX_FILENAME
     try:
         write_run_bundle_index(artifact_dir, doc)

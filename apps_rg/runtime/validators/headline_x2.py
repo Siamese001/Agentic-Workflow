@@ -6,6 +6,7 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
+from apps_rg.runtime.reasoning.prompt_control_proof import reasoning_receipt_denies_quality_certification
 from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,
     FIRST_PERSON_PATTERN,
@@ -28,7 +29,19 @@ _METRIC_RE = re.compile(
 _KEYWORD_STUFF_RE = re.compile(
     r"(?:\bai\s+ml\s+cloud\s+data\b|\bai\s+ml\s+cloud\b|\bdigital\s+transformation\b|"
     r"\binnovation\s+leadership\b|\btechnology\s+evangelist\b|\bthought\s+leader\b|\bai\s+evangelist\b|"
-    r"\bstrategic\s+leader\b)",
+    r"\bstrategic\s+leader\b|\bvisionary\b|\bthought\s+leaders?\b|\bdigital\s+transformations?\b|"
+    r"\binnovation\s+leaderships?\b|\btechnology\s+evangelists?\b|\bai\s+evangelists?\b)",
+    re.IGNORECASE,
+)
+
+_SEGMENT_BANNED_FILLERS_RE = re.compile(
+    r"(?:\bvisionary\b|\bthought\s+leader\b|\binnovation\s+leadership\b|\bdigital\s+transformation\b|"
+    r"\bstrategic\s+leader\b|\bai\s+evangelist\b|\btechnology\s+evangelist\b)",
+    re.IGNORECASE,
+)
+
+_EXTRA_HYPE_MARKERS_RE = re.compile(
+    r"(?:\bFortune\s+500\b|\b10x\b|\b24x7\b|\b24/7\b)",
     re.IGNORECASE,
 )
 
@@ -43,6 +56,17 @@ _HEADLINE_SCHEMA_KEYS = frozenset(
         "self_check",
     }
 )
+
+
+def _model_jd_alignment_for_proof(parsed_output: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Prefer frozen ``raw_jd_alignment`` (pre-normalize model emission) for proof-boolean gates."""
+    if not isinstance(parsed_output, dict):
+        return None
+    raw = parsed_output.get("raw_jd_alignment")
+    if isinstance(raw, dict):
+        return raw
+    jd = parsed_output.get("jd_alignment")
+    return jd if isinstance(jd, dict) else None
 
 
 @dataclass
@@ -76,6 +100,92 @@ def headline_word_count(headline: str) -> int:
     return len([w for w in flat.split() if w.strip()])
 
 
+def validate_raw_headline_claim_ledger(parsed: dict[str, Any] | None) -> tuple[bool, str, Any]:
+    """Schema for model-emitted JSON **before** lane normalization.
+
+    ``claim_ledger`` must be a non-empty list of objects with non-empty ``claim_text`` and non-empty
+    ``source_fact_ids`` lists. A flat list of ``bul_*`` strings is invalid for proof-eligible runs.
+    """
+    if not isinstance(parsed, dict):
+        return False, "parsed_not_dict", None
+    cl = parsed.get("claim_ledger", None)
+    if cl is None:
+        return False, "claim_ledger_key_missing", None
+    if not isinstance(cl, list):
+        return False, "claim_ledger_not_array", type(cl).__name__
+    if len(cl) == 0:
+        return False, "claim_ledger_empty_array", []
+    if all(isinstance(x, str) for x in cl):
+        return False, "claim_ledger_flat_string_fact_ids_invalid", cl
+    if not all(isinstance(x, dict) for x in cl):
+        return False, "claim_ledger_rows_must_be_objects", cl
+    for i, row in enumerate(cl):
+        ct = str(row.get("claim_text") or "").strip()
+        if not ct:
+            return False, f"row_{i}_missing_claim_text", row
+        ids = row.get("source_fact_ids")
+        if not isinstance(ids, list) or not bool(ids):
+            return False, f"row_{i}_invalid_source_fact_ids", row
+    return True, "ok", None
+
+
+def headline_runtime_self_check_truth(
+    headline_line: str,
+    *,
+    target_company: str,
+    employer_names_lower: list[str],
+) -> dict[str, Any]:
+    """Deterministic self-check slice comparable to model ``self_check`` JSON."""
+    h = (headline_line or "").strip()
+    wc = headline_word_count(h)
+    sep = " | "
+    sep_count = h.count(sep)
+    parts = [p.strip() for p in h.split(sep)] if sep_count >= 3 else []
+    segment_count = len(parts) if sep_count == 3 else 0
+    fixed_prefix = h.startswith("SVP Engineering | ")
+    hl_lower = h.lower()
+    tc = (target_company or "").strip().lower()
+    tc_bad = bool(tc) and len(tc) >= 6 and tc in hl_lower
+    emp_hit = False
+    for name in employer_names_lower:
+        if len(name) >= 4 and name in hl_lower:
+            emp_hit = True
+            break
+    return {
+        "word_count": wc,
+        "segment_count": segment_count,
+        "separator_count": sep_count,
+        "word_count_in_range": 10 <= wc <= 13,
+        "fixed_prefix": fixed_prefix,
+        "no_metrics": _METRIC_RE.search(h) is None,
+        "no_employer_names": not emp_hit,
+        "no_company_names": not tc_bad,
+    }
+
+
+def polish_claim_text_when_headline_has_no_metrics(headline_line: str, claim_text: str) -> str:
+    """Strip %-literal uptime phrasing from ledger rows when headline_line has no metric tokens.
+
+    Keeps ``source_fact_ids`` unchanged (caller owns IDs). Headline remains metric-free while claims stay sourced.
+    """
+    h = (headline_line or "").strip()
+    t = str(claim_text or "").strip()
+    if not t or _METRIC_RE.search(h) or "%" not in t:
+        return t
+    out = re.sub(
+        r"\s+operating\s+at\s+\d+(?:\.\d+)?%\s+uptime\b(?:\s+[^\.]*)?",
+        "",
+        t,
+        flags=re.IGNORECASE,
+    )
+    out = re.sub(r"\bat\s+\d+(?:\.\d+)?%\s+uptime\b", "", out, flags=re.IGNORECASE)
+    out = re.sub(r"\d+(?:\.\d+)?\s*%", "", out)
+    out = re.sub(r"\s+,", ",", out)
+    out = re.sub(r"\s+\.", ".", out)
+    out = re.sub(r"\s{2,}", " ", out).strip()
+    return out
+
+
 def run_headline_x2_gates(
     *,
     headline_line: str,
@@ -94,6 +204,12 @@ def run_headline_x2_gates(
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
     companion_context: str = "",
+    candidate_name_tokens: list[str] | None = None,
+    raw_model_parsed_before_normalize: dict[str, Any] | None = None,
+    reasoning_execution_receipt: dict[str, Any] | None = None,
+    artifacts_dir: Any | None = None,
+    text_claim_coverage: dict[str, Any] | None = None,
+    srfs_source_fact_slice_gate_active: bool = False,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -149,6 +265,56 @@ def run_headline_x2_gates(
         None if pipe_ok else pipe_reason,
     )
 
+    seg_issues: list[str] = []
+    if pipe_ok:
+        parts = [p.strip() for p in h.split(_sep)]
+        for si in (1, 2, 3):
+            seg = parts[si]
+            wc_seg = len(seg.split())
+            if wc_seg < 2 or wc_seg > 5:
+                seg_issues.append(f"seg{si + 1}_words:{wc_seg}")
+            if seg.count(",") >= 2:
+                seg_issues.append(f"seg{si + 1}_comma_heavy")
+            if _SEGMENT_BANNED_FILLERS_RE.search(seg):
+                seg_issues.append(f"seg{si + 1}_banned_filler")
+        uniq_low = [parts[i].lower() for i in (1, 2, 3)]
+        if len(set(uniq_low)) < 3:
+            seg_issues.append("duplicate_segment_theme")
+    add(
+        "x2_headline_segments_quality",
+        not seg_issues,
+        seg_issues or "ok",
+        "segments 2–4: 2–5 words, low comma load, no duplicate themes, no banned fillers",
+        None if not seg_issues else "Segment quality gate failed.",
+    )
+
+    digit_hit = re.search(r"\d", h)
+    add(
+        "x2_headline_no_digit_tokens",
+        digit_hit is None,
+        digit_hit.group(0) if digit_hit else "ok",
+        "no ASCII digits",
+        None if digit_hit is None else "Digit-bearing token in headline.",
+    )
+
+    curr_pct_hit = bool(re.search(r"[\$%]", h))
+    add(
+        "x2_headline_no_currency_percent_literals",
+        not curr_pct_hit,
+        "$ or %" if curr_pct_hit else "ok",
+        "none",
+        None if not curr_pct_hit else "$ or % literal in headline.",
+    )
+
+    hype_hit = _EXTRA_HYPE_MARKERS_RE.search(h)
+    add(
+        "x2_headline_no_hype_markers",
+        hype_hit is None,
+        hype_hit.group(0) if hype_hit else "ok",
+        "no Fortune 500 / 10x / 24x7 patterns",
+        None if hype_hit is None else "Banned hype/numeric-adjacent marker in headline.",
+    )
+
     stuff_hit = _KEYWORD_STUFF_RE.search(h)
     add(
         "x2_headline_no_keyword_stuffing_heuristic",
@@ -193,8 +359,12 @@ def run_headline_x2_gates(
     )
 
     name_tokens: set[str] = set()
+    for raw_tok in candidate_name_tokens or []:
+        t = str(raw_tok).strip()
+        if len(t) >= 3:
+            name_tokens.add(t.lower())
     rs = (resume_support_blob or "").strip()
-    if rs.startswith("{"):
+    if not name_tokens and rs.startswith("{"):
         try:
             cand = json.loads(rs)
         except json.JSONDecodeError:
@@ -221,20 +391,31 @@ def run_headline_x2_gates(
         None if not leaked else f"Personal name token(s) in headline: {leaked}",
     )
 
+    fp_hit = FIRST_PERSON_PATTERN.search(h)
+    fp_ok = fp_hit is None
     add(
         "x2_no_first_person",
-        not FIRST_PERSON_PATTERN.search(h),
-        "first person",
+        fp_ok,
+        "absent" if fp_ok else "first_person_detected",
         "absent",
-        "First person in headline.",
+        None if fp_ok else "First person in headline.",
     )
-    add("x2_no_em_dash", EM_DASH not in h, "em dash", "absent", "Em dash in headline.")
+    em_bad = EM_DASH in h
+    add(
+        "x2_no_em_dash",
+        not em_bad,
+        "absent" if not em_bad else "em_dash_present",
+        "absent",
+        None if not em_bad else "Em dash in headline.",
+    )
+    tag_hit = INLINE_SOURCE_PATTERN.search(h)
+    tags_ok = tag_hit is None
     add(
         "x2_headline_no_inline_source_tags",
-        not INLINE_SOURCE_PATTERN.search(h),
-        "tags",
+        tags_ok,
+        "absent" if tags_ok else "inline_source_tag_detected",
         "absent",
-        "Inline source tags in headline.",
+        None if tags_ok else "Inline source tags in headline.",
     )
 
     tc = (target_company or "").strip().lower()
@@ -257,6 +438,19 @@ def run_headline_x2_gates(
         None if not jd_only else "JD phrase copied without resume support.",
     )
 
+    ledger_rows = [cl for cl in (claim_ledger or []) if isinstance(cl, dict)]
+    ledger_has_rows = bool(ledger_rows) and all(isinstance(cl.get("source_fact_ids"), list) for cl in ledger_rows)
+    rows_have_ids = bool(ledger_rows) and all(bool(cl.get("source_fact_ids")) for cl in ledger_rows)
+    add(
+        "x2_headline_claim_ledger_rows_present",
+        ledger_has_rows and rows_have_ids,
+        len(ledger_rows),
+        ">=1 dict rows with non-empty source_fact_ids",
+        None
+        if ledger_has_rows and rows_have_ids
+        else "claim_ledger must contain dict rows with non-empty source_fact_ids (no fabrication).",
+    )
+
     ledger_ids = _ledger_fact_ids(claim_ledger)
     supported = bool(claim_ledger) and bool(ledger_ids) and ledger_ids <= allowed_fact_ids
     add(
@@ -267,8 +461,105 @@ def run_headline_x2_gates(
         None if supported else "claim_ledger must cite allowed bul_* facts only.",
     )
 
+    sfp = parsed_output.get("selected_fact_plan") if isinstance(parsed_output, dict) else None
+    req_ids = set(sfp.get("required_fact_ids") or []) if isinstance(sfp, dict) else set()
+    plan_matches = req_ids == ledger_ids and bool(req_ids)
+    add(
+        "x2_headline_selected_fact_plan_matches_ledger",
+        plan_matches,
+        {"required_fact_ids": sorted(req_ids), "ledger_union": sorted(ledger_ids)},
+        "exact set equality",
+        None if plan_matches else "selected_fact_plan.required_fact_ids must equal claim_ledger union.",
+    )
+
     json_ok, json_reason = check_json_parse_valid(parsed_output, raw_output)
     add("x2_json_parse_valid", json_ok, json_reason, None, json_reason)
+
+    if runtime_generation_status != "REAL_LLM":
+        add(
+            "x2_headline_prompt_reasoning_receipt_clean",
+            True,
+            "n/a_not_real_llm",
+            None,
+            None,
+        )
+        add(
+            "x2_headline_raw_model_schema_valid",
+            True,
+            "n/a_not_real_llm",
+            None,
+            None,
+        )
+        add(
+            "x2_headline_self_check_consistent",
+            True,
+            "n/a_not_real_llm",
+            None,
+            None,
+        )
+    else:
+        denied, deny_reasons = reasoning_receipt_denies_quality_certification(reasoning_execution_receipt)
+        add(
+            "x2_headline_prompt_reasoning_receipt_clean",
+            not denied,
+            deny_reasons or "ok",
+            "no_aggregate_blocked_no_quality_denial",
+            None if not denied else "reasoning_execution_receipt blocked certification for required controls",
+        )
+        raw_ok, raw_detail, raw_obs = validate_raw_headline_claim_ledger(raw_model_parsed_before_normalize)
+        add(
+            "x2_headline_raw_model_schema_valid",
+            raw_ok,
+            raw_detail if raw_ok else raw_obs,
+            "dict_rows_with_claim_text_and_source_fact_ids",
+            None if raw_ok else f"Raw model claim_ledger invalid: {raw_detail}",
+        )
+        sc_model = parsed_output.get("self_check") if isinstance(parsed_output, dict) else None
+        rt_sc = headline_runtime_self_check_truth(
+            h, target_company=target_company, employer_names_lower=employer_names_lower
+        )
+        sc_failures: list[str] = []
+        if not isinstance(sc_model, dict):
+            sc_failures.append("self_check_missing_or_not_object")
+        else:
+            comparable_keys = (
+                "word_count",
+                "segment_count",
+                "separator_count",
+                "word_count_in_range",
+                "fixed_prefix",
+                "no_metrics",
+                "no_employer_names",
+                "no_company_names",
+            )
+            for key in comparable_keys:
+                if key not in sc_model:
+                    sc_failures.append(f"model_missing:{key}")
+                    continue
+                mv = sc_model[key]
+                rv = rt_sc[key]
+                if key == "word_count":
+                    try:
+                        mv_int = int(float(mv))
+                    except (TypeError, ValueError):
+                        sc_failures.append(f"{key}:non_numeric_model_value")
+                        continue
+                    if mv_int != int(rv):
+                        sc_failures.append(f"{key}:model={mv_int}_runtime={int(rv)}")
+                    continue
+                if isinstance(mv, bool) and isinstance(rv, bool):
+                    if mv != rv:
+                        sc_failures.append(f"{key}:model={mv}_runtime={rv}")
+                    continue
+                if mv != rv:
+                    sc_failures.append(f"{key}:model={mv!r}_runtime={rv!r}")
+        add(
+            "x2_headline_self_check_consistent",
+            not sc_failures,
+            {"runtime": rt_sc, "model": sc_model if isinstance(sc_model, dict) else None},
+            rt_sc,
+            None if not sc_failures else "; ".join(sc_failures),
+        )
 
     schema_ok = isinstance(parsed_output, dict) and _HEADLINE_SCHEMA_KEYS <= set(parsed_output.keys())
     missing = sorted(_HEADLINE_SCHEMA_KEYS - set(parsed_output.keys())) if isinstance(parsed_output, dict) else sorted(_HEADLINE_SCHEMA_KEYS)
@@ -335,45 +626,90 @@ def run_headline_x2_gates(
         infl_reason,
     )
 
-    jd_al = parsed_output.get("jd_alignment") if isinstance(parsed_output, dict) else None
-    jd_pf = isinstance(jd_al, dict) and jd_al.get("jd_used_as_proof") is False
+    proof_jd = _model_jd_alignment_for_proof(parsed_output if isinstance(parsed_output, dict) else None)
+    jd_pf = isinstance(proof_jd, dict) and "jd_used_as_proof" in proof_jd and proof_jd.get("jd_used_as_proof") is False
     add(
         "x2_headline_jd_context_not_proof",
         jd_pf,
-        jd_al if isinstance(jd_al, dict) else "missing",
-        "jd_used_as_proof=false",
-        None if jd_pf else "jd_used_as_proof must be exactly false",
+        proof_jd if isinstance(proof_jd, dict) else "missing",
+        "jd_used_as_proof key present and false",
+        None if jd_pf else "jd_used_as_proof must be present and exactly false",
     )
 
-    br_pf = isinstance(jd_al, dict) and jd_al.get("briefing_used_as_proof") is False
+    br_pf = (
+        isinstance(proof_jd, dict)
+        and "briefing_used_as_proof" in proof_jd
+        and proof_jd.get("briefing_used_as_proof") is False
+    )
     add(
         "x2_headline_briefing_context_not_proof",
         br_pf,
-        jd_al if isinstance(jd_al, dict) else "missing",
-        "briefing_used_as_proof=false",
-        None if br_pf else "briefing_used_as_proof must be exactly false",
+        proof_jd if isinstance(proof_jd, dict) else "missing",
+        "briefing_used_as_proof key present and false",
+        None if br_pf else "briefing_used_as_proof must be present and exactly false",
     )
 
     cc = (companion_context or "").strip()
+    cmp_raw = proof_jd.get("companion_used_as_proof") if isinstance(proof_jd, dict) else None
     if not cc:
-        add(
-            "x2_headline_companion_context_not_proof",
-            True,
-            "no companion lanes",
-            "n/a",
-            None,
-        )
-    else:
-        cmp_pf = isinstance(jd_al, dict) and jd_al.get("companion_used_as_proof") is not True
+        cmp_pf = cmp_raw is not True
         add(
             "x2_headline_companion_context_not_proof",
             cmp_pf,
-            jd_al if isinstance(jd_al, dict) else "missing",
-            "companion_used_as_proof not true",
-            None if cmp_pf else "companion_used_as_proof must not be true",
+            "no companion lanes",
+            "companion_used_as_proof must not be true",
+            None if cmp_pf else "companion_used_as_proof must not be true when no companion context exists",
+        )
+    else:
+        cmp_pf = (
+            isinstance(proof_jd, dict)
+            and "companion_used_as_proof" in proof_jd
+            and proof_jd.get("companion_used_as_proof") is False
+        )
+        add(
+            "x2_headline_companion_context_not_proof",
+            cmp_pf,
+            proof_jd if isinstance(proof_jd, dict) else "missing",
+            "companion_used_as_proof key present and false",
+            None if cmp_pf else "companion_used_as_proof must be present and exactly false when companion exists",
+        )
+
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    if srfs_source_fact_slice_gate_active:
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        collected_srfs = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
+        ok_srfs, env_srfs, fail_srfs = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="headline",
+            collected_ids=collected_srfs,
+            allowed_fact_ids=set(allowed_fact_ids),
+        )
+        add(
+            "x2_headline_source_fact_ids_within_srfs_slice",
+            ok_srfs,
+            env_srfs,
+            "srfs_slice_allowlist_exact",
+            fail_srfs,
+        )
+
+    if artifacts_dir is not None:
+        append_section_input_usage_x2_gates(
+            gates,
+            artifacts_dir=artifacts_dir,
+            allowed_fact_ids=allowed_fact_ids,
+            claim_ledger=claim_ledger,
+            text_claim_coverage=text_claim_coverage,
         )
 
     return gates
 
 
-__all__ = ["run_headline_x2_gates", "X2GateResult", "headline_word_count"]
+__all__ = [
+    "headline_runtime_self_check_truth",
+    "headline_word_count",
+    "polish_claim_text_when_headline_has_no_metrics",
+    "run_headline_x2_gates",
+    "validate_raw_headline_claim_ledger",
+    "X2GateResult",
+]

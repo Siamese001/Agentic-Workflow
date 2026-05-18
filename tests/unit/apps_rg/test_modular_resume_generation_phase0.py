@@ -22,7 +22,7 @@ from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
 
 def test_lane_modules_match_seven_dispatch_modules() -> None:
     assert len(LANE_DISPATCH_MODULES) == 7
-    assert LANE_DISPATCH_MODULES[0].endswith("headline_dispatch")
+    assert LANE_DISPATCH_MODULES[0].endswith("headline_lane")
 
 
 def test_ok_for_recipe_context_contract() -> None:
@@ -107,5 +107,11 @@ def test_section_provider_calls_has_seven_lanes() -> None:
 
 
 def test_lane_names_align_with_generated_lanes_order() -> None:
-    tails = tuple(m.rsplit(".", 1)[-1].replace("_dispatch", "") for m in LANE_DISPATCH_MODULES)
+    def _lane_tail(mod: str) -> str:
+        tail = mod.rsplit(".", 1)[-1]
+        if tail.endswith("_lane"):
+            return tail[: -len("_lane")]
+        return tail.replace("_dispatch", "")
+
+    tails = tuple(_lane_tail(m) for m in LANE_DISPATCH_MODULES)
     assert tails == GENERATED_LANES

@@ -2,32 +2,42 @@ version: "1.0"
 section: executive_summary
 description: >
   Declarative contract for the executive_summary section.
-  All fields encode prompt-level guidance for the model.
-  No compile-time semantic enforcement — runtime enforcement deferred to W11/Exit.
+  Canonical runtime: ``python -m apps_rg --section executive_summary`` via
+  apps_rg_canonical_section_runtime (section PA + ledger + X2/X1D/X3).
+  All fields encode prompt-level guidance for the model; hard gates live in X2/X3.
 
 structure:
   lead_with_seniority: required
   lead_clause_note: >
-    Open with seniority/operating identity as first clause.
+    Open with seniority/operating identity as first clause (engineering executive register).
     Do NOT open with: Seasoned, Dynamic, Proven, Passionate, Dedicated, Results-driven,
     Innovative, Accomplished, Visionary, Detail-oriented, Strategic, Forward-thinking.
 
 proof_points:
   min: 1
-  max: 2
-  source: candidate_facts_only
+  max: 5
+  source: selected_base_resume_facts_only
   note: >
-    Every proof point must map to a candidate_facts entry.
-    Do NOT draw proof from jd_requirements or company_brief.
+    Every material claim in resume_display_text must be backed by claim_ledger rows
+    whose source_fact_ids are drawn only from allowed selected facts (proof substrate).
+    JD_TEXT, company_brief, target title, and briefing are targeting context only —
+    never proof.
 
 length:
-  max_lines: 4
-  max_words: 60
+  display_text_sentence_band:
+    default_min: 2
+    default_max: 3
+    extended_max: 5
+  note: >
+    Default generated resume_display_text: **2–3 dense sentences** (period-delimited
+    executive paragraph). Use up to **4–5 sentences** only when the active section
+    budget or base résumé target explicitly allows a longer executive summary; never
+    use arbitrary word or line caps (legacy max_words/max_lines retired).
 
 naturalness_guidance_ref: "forbidden_ai_phrases.yaml#generic_openers"
 naturalness_note: >
-  These phrases are declared as discouraged in the prompt — prompt-level guidance,
-  not compile-time blocks.
+  Phrases declared discouraged in the prompt are guidance for the model;
+  deterministic blocking is via X2 where applicable.
 
 discouraged_adjectives:
   - proven
@@ -41,23 +51,27 @@ discouraged_adjectives:
 pre_output_checklist_required: true
 
 # Runtime resume display: recruiter-facing prose only. Proof and fact IDs live in
-# claim_ledger + selected_fact_plan payloads — not as inline [source: …] tags in
+# claim_ledger + runtime selected_fact_plan artifact — not as inline tags in
 # resume_display_text.
 proof_authority:
   canonical_binding: claim_ledger
   display_text: clean_prose_only_no_inline_source_tags
+  selected_fact_plan_artifact: runtime_owned_json
   note: >
-    Material claims must be reifiable via claim_ledger rows (source_fact_ids).
-    gap_notes is the documented escape when a ledger row is not fully
-    materialized in display text (executive_summary X2 gate).
+    Material claims must be reifiable via claim_ledger rows (source_fact_ids from
+    selected facts only). gap_notes documents unsupported JD asks. The model must
+    not echo selected_fact_plan in JSON output; runtime materializes that artifact.
 
 jd_mirror_guidance_fraction: 0.20
 jd_mirror_note: >
-  Prompt instructs model to keep verbatim JD phrasing low; JD_TEXT + BRIEFING are for
-  prioritizing and framing among **selected** candidate facts only (not proof). Executive
-  summary voice should match the canonical base résumé register—dense, concrete stack/governance
-  nouns from facts—without JD keyword stuffing. Not a compile-time gate.
+  Verbatim JD phrasing stays low; JD_TEXT and BRIEFING prioritize among **selected**
+  base-résumé facts (targeting only, not proof). Voice matches canonical base résumé:
+  dense platform/runtime/governance/commercial nouns from facts — no keyword stuffing.
 
 briefing_targeting_note: >
-  Operator briefing steers emphasis (regulated context, modernization, governance, etc.) the same
-  way as JD_TEXT: targeting only; all substantive claims remain candidate_facts-backed.
+  Operator briefing steers emphasis (regulated context, modernization, governance)
+  like JD_TEXT: **targeting context only**; substantive claims remain selected-fact-backed.
+
+north_star_note: >
+  Executive summary is a polished SVP / agentic-AI-platform paragraph: synthesized
+  narrative, not bullet stacks, not label/colon stitching, not one-sentence-per-fact proof.

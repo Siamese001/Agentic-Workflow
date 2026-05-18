@@ -83,7 +83,7 @@ def test_modular_orchestrator_is_not_core_r4_dispatch() -> None:
 
 def test_modular_orchestrator_exports_seven_lane_modules() -> None:
     assert len(ofr.LANE_MODULES) == 7
-    assert "headline_dispatch" in ofr.LANE_MODULES[0]
+    assert "headline_lane" in ofr.LANE_MODULES[0]
 
 
 def test_golden_r4_ssot_declares_modular_canonical() -> None:

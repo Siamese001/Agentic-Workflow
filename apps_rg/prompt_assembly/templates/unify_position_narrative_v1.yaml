@@ -6,22 +6,39 @@ rewrite_intent: "UNIFY_NARRATIVE"
 execution_order: "AFTER_UNIFY_BULLET_FACT_CHECK"
 
 purpose: |
-  Write exactly one sentence position narrative for Unify Consulting after the Unify bullets are finalized.
-  Uses accepted Unify bullets as read-only sequencing context and canonical Unify facts as proof.
-  Balances target JD, title, company, and briefing as positioning context only.
-  Complements bullets without summarizing or repeating them.
-  No new claims beyond Unify facts or finalized bullets.
+  Write exactly one role-level CAPSTONE sentence for Unify Consulting after the Unify bullets are finalized.
+  The sentence must align with the north-star arc: platform roadmap, core systems architecture, commercialization,
+  reusable IP or platform services, consulting-firm delivery, and enterprise deployment — grounded strictly in C0 facts
+  (unify_narrative_base_* anchor when present, plus bul_unify_*). It must NOT summarize or recap the six bullets.
+  Uses accepted Unify bullets only as read-only anti-repetition context (U-tier).
+  JD, target title/company, and briefing are targeting inputs only; they never appear in source_fact_ids.
+  Complements bullets by concept overlap, never by copying labels, metrics, machinery stacks, or sentence structure.
 
 sovereign_oath: |
-  UNIFY NARRATIVE ONLY - BULLETS ARE READ-ONLY CONTEXT
-  
-  I may ONLY reference finalized Unify bullets as anti-repetition context.
+  UNIFY NARRATIVE ONLY — ROLE CAPSTONE, NOT BULLET RECAP
+
+  The narrative is a role-level capstone, not a bullet summary.
+  I may ONLY cite C0 canonical facts: unify_narrative_base_* (when present) and bul_unify_* in claim_ledger source_fact_ids.
+  I may reference finalized Unify bullets ONLY to avoid repetition; companion lines are not proof.
   I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
-  I may NOT introduce claims beyond supported Unify facts or fact-checked bullets.
-  I may NOT repeat bullet metrics or labels unless explicitly justified.
-  I may NOT copy bullet sentence structure.
-  I may NOT output bullet-list format - exactly one sentence only.
-  I may NOT use numbers unless present in base narrative or explicitly supported.
+  I may NOT put JD, briefing, target title, or target company into source_fact_ids.
+  I may NOT paste bullet display labels (e.g., Enterprise Agentic AI Platform Architecture).
+  I may NOT default to six-months-to-three-weeks or other bullet metric clusters unless strictly necessary and supported.
+  I may NOT output bullet-list format — exactly one sentence only.
+
+  SelectedRoleFactSet (SRFS): claim_ledger source_fact_ids must be ONLY tokens from the unify_narrative slice
+  allowlist (ALLOWED_SOURCE_FACT_IDS), including unify_narrative_base_* only if explicitly listed there. Finalized
+  Unify bullets are companion context for anti-repetition — do not treat companion bullet IDs as proof unless the same
+  fact id appears in the unify_narrative allowlist. JD, briefing, title, and company steer emphasis only. Out-of-slice
+  IDs fail deterministic X2 SRFS gates.
+
+north_star_semantic_contract: |
+  Preferred semantic shape (paraphrase allowed; must remain fact-grounded):
+  Led the platform roadmap, core systems architecture, and commercialization of [supported AI platform / Solution Accelerator]
+  within [supported consulting firm / enterprise delivery context], converting bespoke delivery into reusable IP or scalable
+  platform services deployed across supported enterprise contexts.
+  Use Fortune 500 financial institutions, Solution Accelerator, or enterprise lines of business only when that substance
+  exists in the base anchor or bullet facts in C0.
 
 role_header_fields:
   company:
@@ -85,6 +102,7 @@ source_authority_hierarchy:
     - "Candidate facts and finalized bullets decide what can be claimed."
     - "JD, title, company, and briefing decide the narrative angle, vocabulary, and priority, not proof."
     - "Do not introduce target-company facts as candidate experience."
+    - "Finalized Unify bullets are companion context only; synthesize principles and operating-model themes without mechanically repeating bullets; companion bullet source_fact_ids are not proof unless duplicated in unify_narrative SRFS allowlist."
 
 prompt_engineering_hardening:
   role_and_objective: |
@@ -104,11 +122,25 @@ prompt_engineering_hardening:
 
 few_shot_patterns:
   positive:
-    - id: unify_narrative_positive_capstone
-      context: "Bullets already carry detailed platform mechanisms and commercial metrics."
-      output_pattern: "At Unify Consulting, shaped the operating model for governed agentic AI platforms, turning reusable engineering primitives and disciplined delivery controls into a production path for enterprise AI adoption."
-      why_it_works: "Provides executive positioning without repeating bullet metrics or copying bullet structure."
+    - id: unify_narrative_positive_north_star
+      context: "C0 includes base role anchor and commercialization bullets; bullets carry metrics elsewhere."
+      output_pattern: >
+        Led the platform roadmap, core systems architecture, and commercialization of a production-grade agentic AI platform
+        at Unify Consulting, converting bespoke enterprise delivery into reusable platform services for regulated financial-services adoption.
+      why_it_works: "North-star capstone without copying bullet labels, mechanism stacks, or default metrics."
   negative:
+    - id: unify_narrative_negative_mechanism_recap
+      bad_output: >
+        Shaped governed agentic AI platform delivery by weaving retrieval rigor, lifecycle governance, deterministic routing, GraphRAG, and policy gates.
+      violation: "Mechanism recap from bullets instead of role-level capstone."
+    - id: unify_narrative_negative_metric_recap
+      bad_output: >
+        Reduced lab-to-production from six months to three weeks while generating $22M and expanding margins by 20%.
+      violation: "Repeats bullet metrics as the main point."
+    - id: unify_narrative_negative_jd_as_proof
+      bad_output: >
+        Led the agentic AI systems and LLMOps strategy required by the target company.
+      violation: "JD/target framing presented as candidate proof."
     - id: unify_narrative_negative_bullet_summary
       bad_output: "Built GraphRAG, deterministic routing, policy gates, Databricks integrations, API gateways, and $22M revenue while scaling from 8 to 28 specialists."
       violation: "Lists bullet topics and repeats protected metrics."
@@ -119,14 +151,16 @@ few_shot_patterns:
 output_contract:
   format: "JSON"
   required_fields:
-    - name: position_narrative
+    - name: narrative_sentence
       type: "string"
       constraints:
         - "Exactly one sentence"
+        - "Preferred 34–48 words; hard maximum 58 words"
+        - "Hard maximum ~360 characters (no legacy 250-character cap)"
         - "No bullet characters (•, -, *)"
         - "No line breaks"
         - "No numbering"
-      max_length: "250 characters"
+      max_length: "~360 characters (word budget enforced downstream: <=58 words)"
       style: "Complementary to bullets without summarizing"
       anti_patterns:
         - "Summarizing bullet achievements"
@@ -137,8 +171,9 @@ output_contract:
     - name: claim_ledger
       type: "array"
       item_schema:
-        claim_text: "string"
-        source_fact_id: "string (must be bul_unify_*)"
+        claim_text: "string (non-empty material prose; minLength 1)"
+        source_fact_ids: "array[string] (minItems 1; bul_unify_* and unify_narrative_base_* when in ALLOWED_SOURCE_FACT_IDS; exp_unify_* if allow-listed)"
+        source_fact_id: "legacy singular alias only — normalize to source_fact_ids upstream"
         supported: "boolean"
         narrative_usage: "enum[direct, inferred, avoided]"
         repetition_risk: "enum[none, low, medium, high]"
@@ -235,15 +270,21 @@ metric_handling_rules:
 
 validation_rules:
   pre_output:
-    - assert: "output.position_narrative.count('.') == 1"
+    - assert: "output.narrative_sentence.count('.') == 1"
       error: "NOT_EXACTLY_ONE_SENTENCE"
       message: "Must be exactly one sentence"
-    - assert: "not any([c in output.position_narrative for c in ['•', '- ', '*', '1.', '2.', '3.']])"
+    - assert: "len([w for w in output.narrative_sentence.split() if w]) <= 58"
+      error: "WORD_BUDGET_EXCEEDED"
+      message: "Must stay within 58 words (preferred 34-48)"
+    - assert: "len(output.narrative_sentence) <= 360"
+      error: "CHAR_BUDGET_EXCEEDED"
+      message: "Must stay within 360 characters"
+    - assert: "not any([c in output.narrative_sentence for c in ['•', '- ', '*', '1.', '2.', '3.']])"
       error: "BULLET_LIST_FORMAT"
       message: "Bullet list format forbidden"
-    - assert: "all([b.source_fact_id.startswith('bul_unify_') for b in output.claim_ledger])"
+    - assert: "all([all(str(s).startswith(('bul_unify_', 'unify_narrative_base_', 'exp_unify_')) for s in (b.get('source_fact_ids') or [])) for b in output.claim_ledger])"
       error: "CROSS_CONTAMINATION"
-      message: "All claims must source from Unify facts only"
+      message: "All claims must source from allow-listed Unify narrative resume facts only"
   post_output:
     - check: "anti_repetition_check.complement_score > 0.7"
     - check: "anti_repetition_check.sentence_structure_similarity < 0.3"
@@ -265,6 +306,13 @@ execution_context:
   runs_after: "unify_bullet_tailor_v1 fact check completion"
   input_dependency: "Finalized bullets from bullet pass (read-only)"
   anti_repetition_source: "Finalized bullets used solely to avoid repetition, not to copy"
+
+# W5 — SSOT excerpt for contract tests (companion bullets context-only; SRFS slice is proof).
+w5_proof_targeting_harmonization: |
+  Proof: SelectedRoleFactSet facts for unify_narrative only; claim_ledger source_fact_ids must match this section's
+  allowlist. Finalized Unify bullets: companion context only, not proof unless the same fact id is in the narrative slice.
+  Targeting only: JD, briefing, target title, target company. Out-of-slice source_fact_ids fail X2. Omit unsupported claims;
+  no invention of employers, metrics, partners, domains, or regulated claims beyond selected narrative facts.
 
 metadata:
   produced_at: "2026-05-14"

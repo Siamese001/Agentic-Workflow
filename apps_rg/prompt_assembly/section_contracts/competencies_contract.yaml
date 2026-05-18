@@ -1,35 +1,36 @@
 version: "1.0"
 section: competencies
 description: >
-  Declarative contract for the competencies/skills section.
-  All fields encode prompt-level guidance — not compile-time enforcement.
+  Professional Competencies is a target-aware, fact-constrained selection and grouping lane.
+  It selects, groups, normalizes, and prioritizes supported competency terms from the allowed
+  base-resume fact pool. JD, briefing, title, company, and companion generated sections may
+  influence emphasis, labels, ordering, and relevance — never proof.
 
 evidence:
   evidence_required: candidate_facts_only
   note: >
-    Every listed competency must be supported by at least one candidate_facts entry.
-    No JD-only terms without a gap marker.
+    Every emitted competency term must trace to allowed source_fact_ids from the canonical
+    base resume / C0 candidate facts. No JD-only, briefing-only, or companion-only proof.
 
 gap_marking:
-  jd_gap_marking: required
-  gap_marker_format: "[Gap: {jd_skill} -- no supporting evidence]"
+  jd_gap_marking: optional_notes_only
   note: >
-    Any JD skill absent from candidate_facts must use the gap marker format above.
-    Never list silently.
+    Unsupported JD or briefing phrases belong in excluded_jd_skills / gap_notes — do not
+    emit them as competency terms.
 
 display_and_proof:
   resume_display_text: clean_no_inline_source_tags
   proof_surfaces: claim_ledger_and_source_fact_ids
+  display_pattern: "Category Label: compact phrase, compact phrase, ..."
   note: >
-    Recruiter-facing competency lines must not include bracket source tags or footnotes.
-    Bind each cluster to candidate_facts via claim_ledger / source_fact_ids; JD text is
-    targeting only and is never proof of capability.
+    Scannable executive capability index — not a narrative impact section.
+    Terms are compact noun phrases (no full sentences, metrics, or accomplishment prose).
+    JD/briefing/title/company/companion are targeting context only.
 
 ordering:
-  cluster_ordering: jd_priority
+  cluster_ordering: target_influenced_within_fact_constraints
   note: >
-    Reorder skill categories so highest-JD-weight categories appear first.
-    Advisory ordering — not a compile-time reorder gate.
+    JD/briefing may influence category ordering and labels only within allowed facts.
 
 forbidden:
   - jd_only_skills_unlabeled

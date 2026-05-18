@@ -43,6 +43,29 @@ def jd_non_proof_block(payload: dict[str, Any]) -> str:
     )
 
 
+NARRATIVE_JD_ALIGNMENT_SCHEMA = {
+    "type": "object",
+    "required": [
+        "selected_jd_themes",
+        "selected_briefing_themes",
+        "targeting_rationale",
+        "jd_used_as_proof",
+        "briefing_used_as_proof",
+    ],
+    "properties": {
+        "selected_jd_themes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"},
+        },
+        "selected_briefing_themes": {"type": "array", "items": {"type": "string"}},
+        "targeting_rationale": {"type": "string", "minLength": 1},
+        "jd_used_as_proof": {"type": "boolean"},
+        "briefing_used_as_proof": {"type": "boolean"},
+        "targeting_only": {"type": "boolean"},
+    },
+}
+
 NARRATIVE_R0 = json.dumps(
     {
         "type": "object",
@@ -58,8 +81,30 @@ NARRATIVE_R0 = json.dumps(
         "properties": {
             "narrative_sentence": {"type": "string"},
             "selected_fact_plan": {"type": "object"},
-            "claim_ledger": {"type": "array"},
-            "jd_alignment": {"type": "object"},
+            "claim_ledger": {
+                "type": "array",
+                "description": (
+                    "Each row: non-empty claim_text and source_fact_ids from ALLOWED_SOURCE_FACT_IDS. "
+                    "Gate x2_claim_ledger_claim_text_non_empty."
+                ),
+                "items": {
+                    "type": "object",
+                    "required": ["claim_text", "source_fact_ids"],
+                    "properties": {
+                        "claim_text": {"type": "string", "minLength": 1},
+                        "claim": {
+                            "type": "string",
+                            "description": "Legacy alias normalized to claim_text upstream.",
+                        },
+                        "source_fact_ids": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {"type": "string"},
+                        },
+                    },
+                },
+            },
+            "jd_alignment": NARRATIVE_JD_ALIGNMENT_SCHEMA,
             "gap_notes": {"type": "array"},
             "change_log": {"type": "array"},
             "self_check": {"type": "object"},
@@ -82,9 +127,48 @@ BULLETS_R0 = json.dumps(
             "self_check",
         ],
         "properties": {
-            "bullets": {"type": "array"},
+            "bullets": {
+                "type": "array",
+                "description": "Optional bullet_theme per item carries taxonomy; never prefix bullet_text.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "bullet_theme": {
+                            "type": "string",
+                            "description": "Optional taxonomy/theme label — not copied into bullet_text prefix.",
+                        },
+                    },
+                },
+            },
             "selected_fact_plan": {"type": "object"},
-            "claim_ledger": {"type": "array"},
+            "claim_ledger": {
+                "type": "array",
+                "description": (
+                    "Each row must include non-empty claim_text and source_fact_ids copied exactly "
+                    "from ALLOWED_SOURCE_FACT_IDS. Missing/empty/null/whitespace-only claim_text fails "
+                    "deterministic gate x2_claim_ledger_claim_text_non_empty."
+                ),
+                "items": {
+                    "type": "object",
+                    "required": ["claim_text", "source_fact_ids"],
+                    "properties": {
+                        "claim_text": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Non-empty material claim prose; whitespace-only invalid.",
+                        },
+                        "claim": {
+                            "type": "string",
+                            "description": "Legacy alias normalized to claim_text upstream when present.",
+                        },
+                        "source_fact_ids": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "minItems": 1,
+                        },
+                    },
+                },
+            },
             "jd_alignment": {"type": "object"},
             "gap_notes": {"type": "array"},
             "change_log": {"type": "array"},
@@ -97,6 +181,7 @@ BULLETS_R0 = json.dumps(
 
 __all__ = [
     "BULLETS_R0",
+    "NARRATIVE_JD_ALIGNMENT_SCHEMA",
     "NARRATIVE_R0",
     "SHELL_PATH",
     "jd_non_proof_block",

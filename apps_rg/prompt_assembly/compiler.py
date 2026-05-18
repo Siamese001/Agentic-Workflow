@@ -536,7 +536,10 @@ class PromptCompiler:
             slot_count=len(slot_payloads),
             token_estimate=len(system_prompt) // 4,  # Rough estimate
             has_no_fabrication_oath="NO FABRICATION" in (slot_contents.get("S0", "")),
-            has_source_separation="candidate_facts" in (slot_contents.get("C0", "")),
+            has_source_separation=any(
+                tag in (slot_contents.get("C0", ""))
+                for tag in ("candidate_facts", "selected_facts")
+            ),
             has_schema_reference=bool(response_schema_ref),
         )
         

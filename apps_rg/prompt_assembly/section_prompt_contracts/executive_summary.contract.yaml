@@ -1,6 +1,8 @@
 section_id: executive_summary
 mode: REWRITE_FROM_FACT_POOL
 apps_rg_prompt_template_ref: apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml
+# Compiler shell id (strategic_tailor_v1) is the shared PA slot-order wrapper; section
+# content and narrative SSOT are executive_summary.generate_scratch_v1.yaml.
 pa_template_ref: strategic_tailor_v1
 output_schema_ref: apps_rg/rg_output_schema.json
 claim_ledger_required: true
@@ -13,8 +15,9 @@ x1d_judge_profile_ref: apps_rg/runtime/judges/executive_summary_x1d.py
 locked_fields: []
 llm_generation_allowed: true
 notes: >
-  W8 ledger-only citations: resume display text must not contain inline source/citation tags.
-  Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
-  jd_requirements / company_brief are targeting only, not proof.
+  Canonical entry: python -m apps_rg --section executive_summary.
+  Ledger-only display text: no inline source/citation tags.
+  Proof binds via claim_ledger / source_fact_ids; runtime writes selected_fact_plan.json.
+  jd_requirements / company_brief are targeting context only, not proof.
   Companion context is U-tier only, not proof.
-  Template path is representative; W4 migrates dispatch to adapter + registered PA template.
+  Model JSON MUST NOT echo selected_fact_plan; runtime injects it before X2.

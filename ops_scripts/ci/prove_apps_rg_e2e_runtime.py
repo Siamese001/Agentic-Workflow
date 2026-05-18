@@ -24,15 +24,6 @@ _AGENTIC_CORE_UNTRACKED_ONLY = "PRE_EXISTING_UNTRACKED_AGENTIC_CORE_PATH"
 _AGENTIC_CORE_TRACKED_ONLY = "TRACKED_AGENTIC_CORE_WORKING_TREE_CHANGES"
 _AGENTIC_CORE_MIXED = "TRACKED_AND_UNTRACKED_AGENTIC_CORE_CHANGES"
 
-LANE_MODULES: tuple[str, ...] = (
-    "apps_rg.runtime.dispatch.headline_dispatch",
-    "apps_rg.runtime.dispatch.executive_summary_dispatch",
-    "apps_rg.runtime.dispatch.unify_bullets_dispatch",
-    "apps_rg.runtime.dispatch.unify_narrative_dispatch",
-    "apps_rg.runtime.dispatch.ibm_bullets_dispatch",
-    "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
-    "apps_rg.runtime.dispatch.competencies_dispatch",
-)
 LANE_KEYS: tuple[str, ...] = (
     "headline",
     "executive_summary",
@@ -371,7 +362,7 @@ def main() -> int:
             "target_role": target_role,
             "jd_payload_ref": "inline_ci_fixture",
             "base_resume_ref": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
-            "selected_section_lanes": list(LANE_MODULES),
+            "selected_section_lanes": list(LANE_KEYS),
         }
     )
 
@@ -441,37 +432,57 @@ def main() -> int:
         _persist_e2e_proof_artifact(art, cwd)
         return 1
 
-    for mod in LANE_MODULES:
-        lane_argv = [
-            sys.executable,
-            "-m",
-            mod,
-            "--provider",
-            provider,
-            "--x1d-judges",
-            judge_policy.get("default_if_unset_csv", "gemini_pro,openai_chatgpt,anthropic_claude"),
-            "--target-company",
-            target_company,
-            "--jd-text",
-            JD_INLINE,
-            "--briefing",
-            full_briefing,
-        ]
-        if mod.endswith("headline_dispatch"):
-            lane_argv.extend(["--target-title", target_role])
-        if allow_non_allow:
-            lane_argv.append("--allow-non-allow-exit-zero")
-        r_lane = _run_cmd(lane_argv, cwd=cwd, env=_penv)
+    from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
+    from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
+    from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
+
+    section_allow_exit = bool(allow_non_allow)
+    judge_csv = judge_policy.get("default_if_unset_csv", "gemini_pro,openai_chatgpt,anthropic_claude")
+
+    def _lane_rc(res: dict[str, Any]) -> int:
+        if res.get("fault") == "temperature_range":
+            return 2
+        if section_allow_exit:
+            return 0
+        authorized = bool(res.get("outcome_authorized"))
+        if str(res.get("exit_status") or "") == "success" and authorized:
+            return 0
+        return 2
+
+    for lk in LANE_KEYS:
+        res = run_canonical_apps_rg_from_cli_primitives(
+            target_company=target_company,
+            target_role=target_role,
+            jd="",
+            job_description_ref="",
+            job_description_text=JD_INLINE,
+            manual_brief=full_briefing,
+            resume_path="",
+            source_resume_text="",
+            generation_mode="strategic_tailor",
+            artifact_dir="",
+            section=lk,
+            lane_provider=provider,
+            lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+            lane_temperature=default_temperature_for_section(lk),
+            lane_x1d_judges=str(judge_csv),
+            lane_mock_judges=False,
+        )
+        rc = _lane_rc(res if isinstance(res, dict) else {})
+        lane_cmd = (
+            f"{sys.executable} -m apps_rg --section {lk} --provider {provider} "
+            f"--x1d-judges {judge_csv} (canonical in-process)"
+        )
         art["commands_run"].append(
             {
-                "cmd": " ".join(lane_argv),
-                "exit_code": r_lane.returncode,
-                "stdout_tail": (r_lane.stdout or "")[-2000:],
-                "stderr_tail": (r_lane.stderr or "")[-1200:],
+                "cmd": lane_cmd,
+                "exit_code": rc,
+                "stdout_tail": "",
+                "stderr_tail": str((res or {}).get("error") or "")[-1200:] if isinstance(res, dict) else "",
             }
         )
-        if r_lane.returncode != 0:
-            art["decisive_reason"] = f"LANE_DISPATCH_NONZERO:{mod}"
+        if rc != 0:
+            art["decisive_reason"] = f"LANE_CANONICAL_NONZERO:{lk}"
             _persist_e2e_proof_artifact(art, cwd)
             return 1
 
@@ -510,7 +521,8 @@ def main() -> int:
     pa_data_only_any = False
     pa_schema_slots: list[bool] = []
 
-    for lk, mod_path in zip(LANE_KEYS, LANE_MODULES):
+    for lk in LANE_KEYS:
+        mod_path = f"python -m apps_rg --section {lk}"
         row = lanes_blob.get(lk) if isinstance(lanes_blob, dict) else None
         if not isinstance(row, dict):
             continue

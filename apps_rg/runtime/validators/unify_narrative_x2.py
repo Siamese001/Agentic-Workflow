@@ -4,14 +4,20 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, asdict
+from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.section_proof.section_input_usage_ledger import (
+    _is_forbidden_proof_source_fact_id,
+    source_fact_base_id,
+)
 from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,
     FIRST_PERSON_PATTERN,
     GENERIC_FILLER,
     INLINE_SOURCE_PATTERN,
     REQUIRED_JUDGE_PROVIDERS,
+    check_claim_ledger_claim_text_non_empty,
     check_json_parse_valid,
     check_judge_rows_present,
     check_judge_schema_valid,
@@ -20,6 +26,114 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
+
+
+# Exact display labels from finalized Unify bullets — never paste into narrative_sentence.
+FORBIDDEN_UNIFY_BULLET_DISPLAY_LABELS: tuple[str, ...] = (
+    "Enterprise Agentic AI Platform Architecture",
+    "Dependency Graph Accelerator",
+    "Governed Runtime Reliability",
+    "Production Adoption",
+    "Distributed Ecosystem Engineering",
+    "Platform Commercialization and Engineering Leadership",
+)
+
+
+def _narrative_word_count(text: str) -> int:
+    return len(text.split())
+
+
+def _forbidden_bullet_label_hit(narrative: str) -> str | None:
+    nl = narrative.lower()
+    for label in FORBIDDEN_UNIFY_BULLET_DISPLAY_LABELS:
+        if label.lower() in nl:
+            return label
+    return None
+
+
+def _content_words(text: str) -> list[str]:
+    return [w for w in re.findall(r"[a-z0-9%$]+", text.lower()) if w]
+
+
+def _fourgrams(words: list[str]) -> set[tuple[str, ...]]:
+    if len(words) < 4:
+        return set()
+    return {tuple(words[i : i + 4]) for i in range(len(words) - 3)}
+
+
+def _fourgram_exempt(gram: tuple[str, ...]) -> bool:
+    s = " ".join(gram)
+    for anchor in ("unify consulting", "agentic ai platform", "agentic ai platforms"):
+        if anchor in s:
+            return True
+    return False
+
+
+def _companion_bullet_bodies(companion: str) -> list[str]:
+    bodies: list[str] = []
+    for line in companion.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        bodies.append(line.split(":", 1)[-1].strip() if ":" in line else line)
+    return bodies
+
+
+def _companion_fourgram_hits(narrative: str, companion: str) -> list[str]:
+    nar_g = _fourgrams(_content_words(narrative))
+    hits: list[str] = []
+    for body in _companion_bullet_bodies(companion):
+        shared = nar_g & _fourgrams(_content_words(body))
+        for gram in shared:
+            if _fourgram_exempt(gram):
+                continue
+            hits.append(" ".join(gram))
+    return hits
+
+
+def _jd_alignment_targeting_ok(
+    jd_alignment: Any,
+    *,
+    claim_ledger: list[dict[str, Any]],
+    briefing_text: str,
+) -> tuple[bool, dict[str, Any]]:
+    detail: dict[str, Any] = {}
+    if not isinstance(jd_alignment, dict):
+        detail["reason"] = "jd_alignment_not_object"
+        return False, detail
+    themes = jd_alignment.get("selected_jd_themes")
+    if not isinstance(themes, list) or len(themes) < 1:
+        detail["reason"] = "selected_jd_themes_empty"
+        return False, detail
+    rationale = str(jd_alignment.get("targeting_rationale") or "").strip()
+    if not rationale:
+        detail["reason"] = "targeting_rationale_empty"
+        return False, detail
+    if jd_alignment.get("jd_used_as_proof") is not False:
+        detail["reason"] = "jd_used_as_proof_not_false"
+        return False, detail
+    if jd_alignment.get("briefing_used_as_proof") is not False:
+        detail["reason"] = "briefing_used_as_proof_not_false"
+        return False, detail
+    br = jd_alignment.get("selected_briefing_themes")
+    if not isinstance(br, list):
+        detail["reason"] = "selected_briefing_themes_not_array"
+        return False, detail
+    if str(briefing_text or "").strip() and len(br) < 1:
+        detail["reason"] = "selected_briefing_themes_empty_when_briefing_present"
+        return False, detail
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        for fid in row.get("source_fact_ids") or []:
+            bad, reason = _is_forbidden_proof_source_fact_id(str(fid))
+            if bad:
+                detail["reason"] = "targeting_shaped_source_fact_id"
+                detail["hit"] = str(fid)
+                detail["subtype"] = reason
+                return False, detail
+    detail["reason"] = "ok"
+    return True, detail
 
 
 @dataclass
@@ -73,6 +187,7 @@ def run_unify_narrative_x2_gates(
     parsed_output: dict[str, Any] | None,
     claim_ledger: list[dict[str, Any]],
     jd_text: str,
+    briefing_text: str = "",
     runtime_generation_status: str,
     companion_bullet_texts: str | None,
     companion_bullets_status: str | None = None,
@@ -83,6 +198,9 @@ def run_unify_narrative_x2_gates(
     model_name: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
+    allowed_fact_ids: set[str] | None = None,
+    artifacts_dir: Any | None = None,
+    srfs_source_fact_slice_gate_active: bool = False,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -125,26 +243,50 @@ def run_unify_narrative_x2_gates(
     )
 
     ledger_ids = _ledger_fact_ids(claim_ledger)
-    unify_roots = set(UNIFY_BULLET_IDS)
-    supported = bool(claim_ledger) and bool(ledger_ids)
-    supported = supported and ledger_ids <= unify_roots
-    supported = supported and all(str(fid).startswith("bul_unify_") for fid in ledger_ids)
+    allow_bases = (
+        {source_fact_base_id(str(x)) for x in allowed_fact_ids}
+        if allowed_fact_ids is not None
+        else set(UNIFY_BULLET_IDS) | {"unify_narrative_base_001", "exp_unify_001"}
+    )
+    bases = {source_fact_base_id(str(x)) for x in ledger_ids}
+    supported = bool(claim_ledger) and bool(ledger_ids) and bases <= allow_bases
     add(
         "x2_unify_narrative_source_supported",
         supported,
         sorted(ledger_ids),
-        "bul_unify_*",
-        "claim_ledger must map to Unify bullet facts only.",
+        "subset_of_runtime_allowed_fact_ids",
+        "claim_ledger must map to allowed Unify narrative proof facts only.",
+    )
+
+    ledger_ct_ok, ledger_ct_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
+    add(
+        "x2_claim_ledger_claim_text_non_empty",
+        ledger_ct_ok,
+        ledger_ct_reason or "ok",
+        "non_empty_claim_text_per_row",
+        ledger_ct_reason,
     )
 
     serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
     scope_ids = _ledger_fact_ids(claim_ledger) | set(
-        re.findall(r"bul_unify_\d{3}", serialized)
+        re.findall(
+            r"\b(?:bul_unify_\d{3}|unify_narrative_base_\d{3}|exp_unify_\d{3})\b",
+            serialized,
+        )
     )
-    scope_ok = all(s.startswith("bul_unify_") for s in scope_ids) and not any(
-        p in serialized for p in ("bul_ibm_", "bul_insurtech_", "bul_ey_")
+    scope_ok = (
+        all(
+            str(s).startswith(("bul_unify_", "unify_narrative_base_", "exp_unify_"))
+            for s in scope_ids
+        )
+    ) and not any(p in serialized for p in ("bul_ibm_", "bul_insurtech_", "bul_ey_"))
+    add(
+        "x2_unify_narrative_unify_only_fact_scope",
+        scope_ok,
+        sorted(scope_ids),
+        "bul_unify_*|unify_narrative_base_*|exp_unify_*",
+        "Non-Unify fact scope.",
     )
-    add("x2_unify_narrative_unify_only_fact_scope", scope_ok, sorted(scope_ids), "bul_unify_*", "Non-Unify fact scope.")
 
     add("x2_no_ibm_fact_leakage", "bul_ibm_" not in serialized, "bul_ibm_", "absent", "IBM leakage.")
     add("x2_no_insurtech_fact_leakage", "bul_insurtech_" not in serialized, "bul_insurtech_", "absent", "InsurTech leakage.")
@@ -152,6 +294,20 @@ def run_unify_narrative_x2_gates(
 
     jd_copy, jd_phrase = has_jd_phrase_copy(narrative_sentence, jd_text)
     add("x2_no_jd_only_claims", not jd_copy, jd_phrase or "none", "no long JD copy", "JD phrase copied as proof.")
+
+    ja = (parsed_output or {}).get("jd_alignment")
+    targ_ok, targ_detail = _jd_alignment_targeting_ok(
+        ja,
+        claim_ledger=claim_ledger,
+        briefing_text=briefing_text,
+    )
+    add(
+        "x2_unify_narrative_targeting_inputs_used_but_not_proof",
+        targ_ok,
+        targ_detail,
+        "jd_alignment_contract",
+        None if targ_ok else str(targ_detail.get("reason")),
+    )
 
     companion = companion_bullet_texts or ""
     if runtime_generation_status == "MOCKED":
@@ -224,6 +380,44 @@ def run_unify_narrative_x2_gates(
     six_summary = comma_count >= 5 or narrative_sentence.count(";") >= 2
     add("x2_no_six_bullet_summary", not six_summary, comma_count, "<5 commas", "Reads like stacked bullet summary.")
 
+    lbl_hit = _forbidden_bullet_label_hit(narrative_sentence)
+    add(
+        "x2_no_bullet_label_repetition",
+        lbl_hit is None,
+        lbl_hit or "none",
+        "no companion bullet display label substring",
+        "Narrative repeats a finalized bullet label.",
+    )
+
+    if companion.strip():
+        fg_hits = _companion_fourgram_hits(narrative_sentence, companion)
+        add(
+            "x2_no_companion_ngram_copy",
+            len(fg_hits) == 0,
+            fg_hits[:12],
+            "no shared 4-grams with companion bullet bodies",
+            "High n-gram overlap with companion bullet text.",
+        )
+    else:
+        add(
+            "x2_no_companion_ngram_copy",
+            True,
+            "no companion text",
+            "skipped",
+            None,
+        )
+
+    stripped_narrative = narrative_sentence.strip()
+    wc = _narrative_word_count(stripped_narrative)
+    budget_ok = wc <= 58 and len(stripped_narrative) <= 360
+    add(
+        "x2_unify_narrative_word_budget",
+        budget_ok,
+        {"word_count": wc, "char_len": len(stripped_narrative)},
+        "<=58 words and <=360 chars",
+        None if budget_ok else "Narrative exceeds word or character budget.",
+    )
+
     add(
         "x2_no_inline_source_tags",
         not INLINE_SOURCE_PATTERN.search(narrative_sentence),
@@ -275,5 +469,34 @@ def run_unify_narrative_x2_gates(
         )
     else:
         add("x2_x1d_schema_valid", False, "no judges", "present", "No judges.")
+
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    if srfs_source_fact_slice_gate_active and allowed_fact_ids is not None:
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        coll_un = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
+        ok_un, env_un, fail_un = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="unify_narrative",
+            collected_ids=coll_un,
+            allowed_fact_ids=set(allowed_fact_ids),
+        )
+        add(
+            "x2_unify_narrative_source_fact_ids_within_srfs_slice",
+            ok_un,
+            env_un,
+            "srfs_slice_allowlist_exact",
+            fail_un,
+        )
+
+    append_section_input_usage_x2_gates(
+        gates,
+        artifacts_dir=artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/unify_narrative"),
+        allowed_fact_ids=set(allowed_fact_ids) if allowed_fact_ids is not None else set(UNIFY_BULLET_IDS),
+        claim_ledger=claim_ledger,
+        text_claim_coverage=(parsed_output or {}).get("text_claim_coverage")
+        if isinstance(parsed_output, dict)
+        else None,
+    )
 
     return gates

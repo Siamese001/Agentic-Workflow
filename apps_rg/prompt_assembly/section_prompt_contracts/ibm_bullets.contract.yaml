@@ -1,5 +1,6 @@
 section_id: ibm_bullets
-mode: REWRITE_FROM_FACT_POOL
+mode: REWRITE_FROM_FACT_POOL_CONSTRAINED
+foundation_proof_model_id: IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1
 apps_rg_prompt_template_ref: apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml
 pa_template_ref: strategic_tailor_v1
 output_schema_ref: apps_rg/rg_output_schema.json
@@ -16,4 +17,7 @@ notes: >
   W8 ledger-only citations: resume display text must not contain inline source/citation tags.
   Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
   jd_requirements / company_brief are targeting only, not proof.
+  IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1: enterprise AI/data platform architecture, cloud/data modernization,
+  reusable platform patterns, lineage/observability/regulatory response, hyperscaler leverage —
+  not Unify agentic-platform vocabulary and not taxonomy-prefixed bullet_text.
   W7 mechanical migration.

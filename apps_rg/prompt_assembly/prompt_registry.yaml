@@ -269,7 +269,9 @@ templates:
   # ---------------------------------------------------------------------------
   executive_summary.generate_scratch_v1:
     template_id: executive_summary.generate_scratch_v1
-    description: Executive summary section PA narrative SSOT (W4/W8 ledger-only)
+    description: >
+      Executive summary section PA SSOT — canonical ``python -m apps_rg --section executive_summary``.
+      North-star synthesis (2–3 dense sentences default); claim_ledger proof; no selected_fact_plan model echo.
     path: templates/executive_summary.generate_scratch_v1.yaml
     version: "1.0"
     allowed_stage: L2_EXEC
@@ -286,7 +288,7 @@ templates:
     template_id: headline_tailor_v1
     description: Headline section PA (W6)
     path: templates/headline_tailor_v1.yaml
-    version: "1.0"
+    version: "1.5"
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
@@ -381,7 +383,9 @@ templates:
 
   ibm_bullet_tailor_v1:
     template_id: ibm_bullet_tailor_v1
-    description: IBM bullets section PA (W7)
+    description: >
+      IBM bullets foundation-proof PA (IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1;
+      REWRITE_FROM_FACT_POOL_CONSTRAINED; W7)
     path: templates/ibm_bullet_tailor_v1.yaml
     version: "1.0"
     allowed_stage: L2_EXEC

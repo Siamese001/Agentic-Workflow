@@ -1,12 +1,11 @@
 """Phase 1 — in-process modular lane helpers (apps_rg only; no l2 envelope).
 
-Invokes existing ``*_dispatch.main()`` entrypoints with scoped proof layout via
-``APPS_RG_MODULAR_R4_SECTIONS_ROOT``.
+Real lane execution uses ``run_canonical_apps_rg_from_cli_primitives`` (same as ``python -m apps_rg``);
+``run_dispatch_main`` is a fail-closed legacy stub.
 """
 
 from __future__ import annotations
 
-import importlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -87,18 +86,11 @@ def modular_lane_targeting_from_recipe_context(context: dict[str, Any]) -> Modul
 
 
 def build_modular_lane_argv(*, provider: str, targeting: ModularLaneTargeting | None = None) -> list[str]:
-    """Argv for ``python -m apps_rg.runtime.dispatch.<lane>_dispatch`` (in-process ``main``)."""
-    if provider == "mock":
-        argv: list[str] = [
-            "--provider",
-            "mock",
-            "--allow-test-mock-provider",
-            "--mock-judges",
-            "--allow-test-mock-judges",
-            "--allow-non-allow-exit-zero",
-        ]
-    else:
-        argv = ["--provider", provider, "--allow-non-allow-exit-zero"]
+    """Argv tokens historically passed to legacy dispatch CLIs (metadata / inventories only)."""
+    pv = str(provider or "").strip().lower()
+    if pv and pv != "qwen_vllm":
+        raise ValueError(f"Unsupported modular lane provider {provider!r} (expected qwen_vllm).")
+    argv: list[str] = ["--provider", "qwen_vllm", "--allow-non-allow-exit-zero"]
     if targeting is None:
         return argv
     if targeting.target_company:
@@ -117,9 +109,13 @@ def lane_argv_for_provider(*, provider: str) -> list[str]:
     return build_modular_lane_argv(provider=provider, targeting=None)
 
 
-def run_dispatch_main(module_qualname: str, argv: list[str]) -> int:
-    mod = importlib.import_module(module_qualname)
-    return int(mod.main(argv))
+def run_dispatch_main(module_qualname: str, argv: list[str]) -> int:  # noqa: ARG001
+    """Deprecated — legacy ``*-dispatch.main`` helper; fail-closed (do not execute lane)."""
+    from apps_rg.runtime.deprecated_runtime_cli import exit_deprecated_dispatch_cli
+
+    tail = str(module_qualname).rsplit(".", 1)[-1]
+    section = tail[: -len("_dispatch")] if tail.endswith("_dispatch") else None
+    return exit_deprecated_dispatch_cli(section=section)
 
 
 def resolve_latest_lane_run_dir(
@@ -127,22 +123,19 @@ def resolve_latest_lane_run_dir(
     sections_root: Path,
     lane: str,
     *,
-    lane_provider: str = "mock",
+    lane_provider: str = "qwen_vllm",
 ) -> Path:
     """Pick newest run dir from per-lane pointer files under ``sections_root/<lane>/``.
 
-    ``mock`` provider prefers ``latest_mock_run.json`` first so plumbing runs are stable.
     ``qwen_vllm`` prefers ``latest_successful_real_run.json`` so rollup matches assembly gates.
+    ``latest_mock_run.json`` is only a last-resort fallback for legacy pointer files.
     """
-    lp = str(lane_provider or "mock").strip().lower()
-    if lp == "mock":
-        ptr_order = ("latest_mock_run.json", "latest_real_run.json")
-    else:
-        ptr_order = (
-            "latest_successful_real_run.json",
-            "latest_real_run.json",
-            "latest_mock_run.json",
-        )
+    _ = str(lane_provider or "qwen_vllm").strip().lower()  # reserved for future provider-specific ordering
+    ptr_order = (
+        "latest_successful_real_run.json",
+        "latest_real_run.json",
+        "latest_mock_run.json",
+    )
     for ptr in ptr_order:
         p = sections_root / lane / ptr
         if not p.is_file():
@@ -218,7 +211,7 @@ def build_section_provider_call_record(
     else:
         provider_call_attempted = provider_req == "qwen_vllm"
 
-    model_id = str(prv_resp.get("model") or prov.get("model") or ("mock_deterministic" if provider_req == "mock" else ""))
+    model_id = str(prv_resp.get("model") or prov.get("model") or "")
     max_t = prv_resp.get("max_tokens", prov.get("max_tokens", 0))
     max_tokens = int(max_t) if max_t is not None else 0
     temp_raw = prv_resp.get("temperature", prov.get("temperature", 0.0))

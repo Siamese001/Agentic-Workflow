@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -361,34 +362,23 @@ def test_near_duplicate_structured_terms_then_expand_minimum_two_terms() -> None
     ) >= 2
 
 
-def test_mock_slice_still_passes_x2_source_mapping() -> None:
-    import subprocess
-    import sys
-    from pathlib import Path
+def test_mock_slice_still_passes_x2_source_mapping(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
+    from apps_rg.runtime.sections import competencies_lane as lane
 
-    repo = Path(__file__).resolve().parents[2]
-    r = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "apps_rg.runtime.dispatch.competencies_dispatch",
-            "--provider",
-            "mock",
-            "--allow-test-mock-provider",
-            "--mock-judges",
-            "--allow-non-allow-exit-zero",
-        ],
-        cwd=repo,
-        capture_output=True,
-        text=True,
-        timeout=120,
+    args = lane.build_competencies_lane_args(
+        provider="qwen_vllm",
+        temperature=lane.COMPETENCIES_TEMP_DEFAULT,
+        x1d_judges="gemini_pro,openai_chatgpt,anthropic_claude",
+        mock_judges=True,
+        allow_test_mock_judges=True,
+        target_title="SVP Engineering",
+        target_company="Synthetic Enterprise Corp.",
+        jd_text="",
+        briefing="",
     )
-    assert r.returncode == 0, r.stderr
-    from apps_rg.runtime.runtime_proof_layout import resolve_latest_mock_run_dir
-
-    rd = resolve_latest_mock_run_dir(repo, "competencies")
-    if rd is None:
-        pytest.skip("mock competencies run dir missing")
+    ctx = lane.run_competencies_lane_execution(args)
+    rd = Path(ctx["artifact_dir"])
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     ids = {g["gate_id"]: g["pass"] for g in x2.get("gates", [])}
     assert ids.get("x2_all_terms_source_fact_ids") is True

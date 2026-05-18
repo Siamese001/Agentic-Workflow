@@ -1,9 +1,13 @@
-"""App-local competencies runtime seam.
+"""App-local competencies execution seam (compile → provider → X2 → X1D → X3 → L6).
 
-Canonical base resume plus read-only accepted section artifacts -> eight competency categories -> X1D -> X2 -> X3 -> L6.
-Does not activate registry or modify the shared governed-runtime spine package under sibling app paths.
+**Primary runtime entry:** ``python -m apps_rg --section competencies`` via
+``apps_rg.runtime.sections.competencies_lane`` (canonical selected-section path).
 
-**W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
+**Deprecated:** ``python -m apps_rg.runtime.dispatch.competencies_dispatch`` — exits with guidance;
+do not use for runtime proof.
+
+Shared helpers (``compile_competencies_prompt``, ``run_competencies_execution``) remain here for PA and
+orchestration; they are not a standalone product entrypoint.
 """
 from __future__ import annotations
 
@@ -22,6 +26,7 @@ import hashlib
 import json
 import re
 import sys
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -33,28 +38,45 @@ try:
 except ImportError:
     pass
 
+from apps_rg.runtime.competencies_proof_boundary import merge_jd_alignment
 from apps_rg.runtime.dispatch.competencies_pa import compile_competencies_prompt
+from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
+    build_canonical_claim_ledger_v2_payload,
+    classify_ledger_parse_state,
+    normalize_exec_summary_claim_ledger,
+)
 from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
-from apps_rg.runtime.exit.competencies_x3 import aggregate_x3
+from apps_rg.runtime.exit.competencies_x3 import X3Disposition, aggregate_x3
 from apps_rg.runtime.judges.competencies_x1d import run_competencies_judges
+from apps_rg.runtime.providers.competencies_live_provider_gate import (
+    REASON_PROVIDER_UNAVAILABLE,
+    STATUS_BLOCKED_LIVE_PROVIDER,
+    competencies_vllm_preflight_disabled,
+    competencies_vllm_preflight_timeout_s,
+    live_provider_gate_audit_payload_failure,
+)
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.qwen_offline_contract_stub import (
+    OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,
+    effective_offline_contract_stub_enabled,
+    synthetic_qwen_provider_result,
+)
 from apps_rg.runtime.shadow.competencies_l6 import build_l6_shadow_package
+from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage
 from apps_rg.runtime.validators.competencies_x2 import (
     find_bullet_restatement_term,
     run_competencies_x2_gates,
     term_primary_support_overlap,
 )
-from apps_rg.runtime.dispatch.mock_runtime_proof_policy import (
+from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
+from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     MOCK_JUDGES_REJECT_EXIT_CODE,
-    MOCK_PROVIDER_REJECT_EXIT_CODE,
     allow_non_allow_exit_zero_ok,
     attach_lane_proof_bundle_fields,
     compute_lane_proof_bundle,
-    emit_mock_blocked_stderr,
     emit_mock_judges_blocked_stderr,
     infer_product_quality_blocked_or_mock,
-    mock_blocked_before_run,
     mock_judges_blocked_before_run,
 )
 from apps_rg.runtime.runtime_proof_layout import (
@@ -65,6 +87,7 @@ from apps_rg.runtime.runtime_proof_layout import (
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
 
 PROMPT_ID = "competencies_dispatch_v1"
 COMPETENCIES_TEMP_DEFAULT = 0.38
@@ -95,11 +118,61 @@ REPO_ROOT = _find_repo_root()
 LANE_KEY = "competencies"
 
 
+def _artifact_repo_rel(path: Path, repo_root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(repo_root.resolve())).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def term_phrase(raw: Any) -> str:
     """Normalize a competency term to display text (string or structured object)."""
     if isinstance(raw, dict):
         return str(raw.get("text") or raw.get("phrase") or raw.get("term") or "").strip()
     return str(raw).strip()
+
+
+def canonicalize_competency_terms_for_proof(parsed: dict[str, Any]) -> None:
+    """Persist canonical structured term rows: ``text``, ``source_fact_id``, ``source_fact_ids``."""
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        ids_norm = [
+            _fix_fact_id_typos(str(x)).split("_metric_")[0] for x in (cat.get("source_fact_ids") or []) if x
+        ]
+        terms_raw = cat.get("terms") if isinstance(cat.get("terms"), list) else []
+        new_terms: list[dict[str, Any]] = []
+        for t in terms_raw:
+            if isinstance(t, dict):
+                txt = term_phrase(t)
+                sid_raw = t.get("source_fact_id")
+                sid = (
+                    _fix_fact_id_typos(str(sid_raw)).split("_metric_")[0]
+                    if sid_raw is not None and str(sid_raw).strip()
+                    else ""
+                )
+                if not sid and ids_norm:
+                    sid = ids_norm[0]
+                sup = t.get("source_fact_ids")
+                if isinstance(sup, list) and sup:
+                    sf_ids = sorted({_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in sup})
+                else:
+                    sf_ids = list(ids_norm)
+                if sid and sid not in sf_ids:
+                    sf_ids = [sid] + [x for x in sf_ids if x != sid]
+                jd_sig = t.get("jd_signal_ids")
+                row: dict[str, Any] = {"text": txt, "source_fact_id": sid, "source_fact_ids": sf_ids}
+                if isinstance(jd_sig, list):
+                    row["jd_signal_ids"] = jd_sig
+                new_terms.append(row)
+            elif isinstance(t, str) and t.strip():
+                sid0 = ids_norm[0] if ids_norm else ""
+                sf_ids = list(ids_norm)
+                new_terms.append({"text": t.strip(), "source_fact_id": sid0, "source_fact_ids": sf_ids})
+        cat["terms"] = new_terms
 
 
 def _terms_list_has_dict(terms_raw: Any) -> bool:
@@ -197,6 +270,16 @@ def build_resume_support_blob(bullet_rows: list[dict[str, Any]], companion_blob:
         for tech in row.get("technologies") or []:
             chunks.append(str(tech))
     chunks.append(companion_blob)
+    return " ".join(chunks).lower()
+
+
+def build_c0_proof_support_blob(bullet_rows: list[dict[str, Any]]) -> str:
+    """C0 employment bullets + technologies only — excludes companion/U-tier for proof overlap."""
+    chunks: list[str] = []
+    for row in bullet_rows:
+        chunks.append(str(row.get("claim_text", "")))
+        for tech in row.get("technologies") or []:
+            chunks.append(str(tech))
     return " ".join(chunks).lower()
 
 
@@ -610,7 +693,7 @@ def expand_structured_competencies_min_two_terms(
     """When a structured (dict-backed) competency category emits only one nonempty term after repair/dedupe,
     deterministically append a second short grounded phrase sourced from the same validated ``bul_*`` rows.
 
-    Addresses ``x2_competency_format_category_colon_terms`` (2≤terms≤7) without inventing canonical fact ids —
+    Addresses ``x2_competency_format_category_colon_terms`` (2≤terms≤6) without inventing canonical fact ids —
     fragments are restricted to bullet ``technologies`` and short claim splits (see
     :func:`_candidate_phrases_for_category`).
     """
@@ -991,7 +1074,8 @@ def normalize_parsed_output(parsed: dict[str, Any] | None, runtime_payload: dict
             "required_fact_ids": out["selected_fact_plan"].get("required_fact_ids")
             or runtime_payload["selected_fact_plan"]["required_fact_ids"],
         }
-    out.setdefault("jd_alignment", {"targeting_only": True, "jd_used_as_proof": False})
+    out.setdefault("jd_alignment", {})
+    out["jd_alignment"] = merge_jd_alignment(out.get("jd_alignment"))
     out.setdefault("excluded_jd_skills", [])
     out.setdefault("removed_or_rewritten_terms", [])
     out.setdefault("gap_notes", [])
@@ -1007,6 +1091,9 @@ def retry_qwen_for_parse(
     provider_payload: dict[str, Any],
     raw_output: str,
     parse_error: str,
+    *,
+    artifact_dir: Path | None = None,
+    run_id: str | None = None,
 ) -> tuple[str, dict[str, Any] | None, str]:
     repair_messages = [
         *messages,
@@ -1021,7 +1108,11 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = call_qwen_vllm(
+        tag_reasoning_lane(repair_payload, LANE_KEY),
+        artifact_dir=artifact_dir,
+        run_id=run_id,
+    )
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -1030,49 +1121,131 @@ def retry_qwen_for_parse(
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
+    def _term_obj(phrase: str, fid: str) -> dict[str, Any]:
+        return {"text": phrase, "source_fact_id": fid, "source_fact_ids": [fid]}
+
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    if str(pp.get("proof_pool_type") or "") == "selected_role_fact_set":
+        raw_allowed = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])]
+        allowed = [x for x in raw_allowed if "_metric_" not in x]
+        if not allowed and raw_allowed:
+            allowed = sorted({x.split("_metric_", 1)[0] for x in raw_allowed})
+        if not allowed:
+            allowed = ["srfs_placeholder"]
+        competencies_srfs: list[dict[str, Any]] = []
+        for i in range(8):
+            fid = allowed[i % len(allowed)]
+            competencies_srfs.append(
+                {
+                    "category_label": f"SRFS Competency Area {i + 1}",
+                    "terms": [
+                        _term_obj(f"governed capability cluster {i}a", fid),
+                        _term_obj(f"governed capability cluster {i}b", fid),
+                        _term_obj(f"governed capability cluster {i}c", fid),
+                    ],
+                    "source_fact_ids": [fid],
+                }
+            )
+        ledger_srfs: list[dict[str, Any]] = []
+        for cat in competencies_srfs:
+            ids = list(cat["source_fact_ids"])
+            for t in cat["terms"]:
+                ts = term_phrase(t)
+                if not ts:
+                    continue
+                if isinstance(t, dict) and t.get("source_fact_id") is not None:
+                    sid = _fix_fact_id_typos(str(t["source_fact_id"])).split("_metric_")[0]
+                    ledger_srfs.append({"claim_text": ts, "source_fact_ids": [sid]})
+                else:
+                    ledger_srfs.append({"claim_text": ts, "source_fact_ids": list(ids)})
+        return {
+            "competencies": competencies_srfs,
+            "selected_fact_plan": runtime_payload["selected_fact_plan"],
+            "claim_ledger": ledger_srfs,
+            "jd_alignment": {
+                "targeting_only": True,
+                "jd_used_as_proof": False,
+                "briefing_used_as_proof": False,
+                "companion_context_used_as_proof": False,
+            },
+            "excluded_jd_skills": ["raw LLMOps toolchain dump"],
+            "removed_or_rewritten_terms": [],
+            "gap_notes": [],
+            "change_log": [],
+            "self_check": {"eight_categories": True, "terms_are_phrases": True},
+        }
+
     competencies: list[dict[str, Any]] = [
         {
             "category_label": "Agentic AI Platforms",
             "terms": [
-                {"text": "governed agentic systems", "source_fact_id": "bul_unify_001"},
-                {"text": "multi-agent coordination", "source_fact_id": "bul_unify_001"},
-                {"text": "policy-aware routing", "source_fact_id": "bul_unify_001"},
+                _term_obj("governed agentic systems", "bul_unify_001"),
+                _term_obj("multi-agent coordination", "bul_unify_001"),
+                _term_obj("policy-aware routing", "bul_unify_001"),
             ],
             "source_fact_ids": ["bul_unify_001"],
         },
         {
             "category_label": "Dependency Intelligence",
-            "terms": ["graph signal extraction", "modernization acceleration cues", "dependency intelligence"],
+            "terms": [
+                _term_obj("graph signal extraction", "bul_unify_002"),
+                _term_obj("modernization acceleration cues", "bul_unify_002"),
+                _term_obj("dependency intelligence", "bul_unify_002"),
+            ],
             "source_fact_ids": ["bul_unify_002"],
         },
         {
             "category_label": "Retrieval and Quality Gates",
-            "terms": ["retrieval instrumentation posture", "quality gate patterns", "observability rollouts"],
+            "terms": [
+                _term_obj("retrieval instrumentation posture", "bul_unify_003"),
+                _term_obj("quality gate patterns", "bul_unify_003"),
+                _term_obj("observability rollouts", "bul_unify_003"),
+            ],
             "source_fact_ids": ["bul_unify_003"],
         },
         {
             "category_label": "AI Lifecycle Operations",
-            "terms": ["lifecycle standardization", "delivery acceleration", "monitoring discipline"],
+            "terms": [
+                _term_obj("lifecycle standardization", "bul_unify_004"),
+                _term_obj("delivery acceleration", "bul_unify_004"),
+                _term_obj("monitoring discipline", "bul_unify_004"),
+            ],
             "source_fact_ids": ["bul_unify_004"],
         },
         {
             "category_label": "Cloud Platforms and Data Planes",
-            "terms": ["distributed service tiers", "lakehouse-adjacent pipelines", "identity-aware gateways"],
+            "terms": [
+                _term_obj("distributed service tiers", "bul_unify_005"),
+                _term_obj("lakehouse-adjacent pipelines", "bul_unify_005"),
+                _term_obj("identity-aware gateways", "bul_unify_005"),
+            ],
             "source_fact_ids": ["bul_unify_005"],
         },
         {
             "category_label": "Platform Productization",
-            "terms": ["platform economics lift", "specialist scaling curve", "IP-forward packaging"],
+            "terms": [
+                _term_obj("platform economics lift", "bul_unify_006"),
+                _term_obj("specialist scaling curve", "bul_unify_006"),
+                _term_obj("IP-forward packaging", "bul_unify_006"),
+            ],
             "source_fact_ids": ["bul_unify_006"],
         },
         {
             "category_label": "Enterprise AI and Analytics",
-            "terms": ["cloud posture modernization", "uptime discipline", "regulated delivery contexts"],
+            "terms": [
+                _term_obj("cloud posture modernization", "bul_ibm_001"),
+                _term_obj("uptime discipline", "bul_ibm_001"),
+                _term_obj("regulated delivery contexts", "bul_ibm_001"),
+            ],
             "source_fact_ids": ["bul_ibm_001"],
         },
         {
             "category_label": "Partnership and Revenue Engineering",
-            "terms": ["multi-year alliance rhythm", "joint sell patterns", "incremental revenue streams"],
+            "terms": [
+                _term_obj("multi-year alliance rhythm", "bul_ibm_005"),
+                _term_obj("joint sell patterns", "bul_ibm_005"),
+                _term_obj("incremental revenue streams", "bul_ibm_005"),
+            ],
             "source_fact_ids": ["bul_ibm_005"],
         },
     ]
@@ -1092,11 +1265,16 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         "competencies": competencies,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
         "claim_ledger": ledger,
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "companion_context_used_as_proof": False,
+        },
         "excluded_jd_skills": ["raw LLMOps toolchain dump"],
         "removed_or_rewritten_terms": [],
-        "gap_notes": ["Mock slice uses canonical bul_* mapping only."],
-        "change_log": [{"operation": "mocked_runtime_slice", "reason": "provider not requested"}],
+        "gap_notes": [],
+        "change_log": [],
         "self_check": {"eight_categories": True, "terms_are_phrases": True},
     }
 
@@ -1118,6 +1296,32 @@ def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[st
         runtime_generation_status=runtime_generation_status,
         x2_failed_gate_ids=failed,
         pass_reason="REAL_LLM output passed all deterministic competencies gates.",
+    )
+
+
+def clarify_x3_for_competencies_live_provider_preflight(
+    x3: X3Disposition,
+    *,
+    live_preflight_blocked: bool,
+) -> X3Disposition:
+    """Rewrite disposition copy when TCP preflight aborted generation.
+
+    Raw ``aggregate_x3`` may classify empty-parse X2 failures ahead of the BLOCKED narrative; for
+    unreachable vLLM the authoritative blocker is the live provider gate (see
+    ``competencies_live_provider_gate.json``). X2 sidecars remain on disk for forensics.
+    """
+    if not live_preflight_blocked:
+        return x3
+    remediation = [r for r in x3.required_remediation if not r.startswith("Fix failed X2 gates")]
+    probe = "Restore reachable Qwen/vLLM endpoint (see competencies_live_provider_gate.json and stderr)."
+    if probe not in remediation:
+        remediation.insert(0, probe)
+    return replace(
+        x3,
+        decisive_reason="Runtime generation is BLOCKED (BLOCKED_LIVE_PROVIDER / PROVIDER_UNAVAILABLE).",
+        review_reason="",
+        x2_failed_gates=[],
+        required_remediation=remediation,
     )
 
 
@@ -1143,6 +1347,9 @@ def retry_qwen_competency_restatement(
     bad_term: str,
     runtime_payload: dict[str, Any],
     allowed_fact_ids: set[str],
+    *,
+    artifact_dir: Path | None = None,
+    run_id: str | None = None,
 ) -> tuple[str, dict[str, Any]]:
     """One repair turn when a competency term copies a long bullet substring."""
     repair_messages = [
@@ -1160,7 +1367,11 @@ def retry_qwen_competency_restatement(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_QWEN_MAX_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = call_qwen_vllm(
+        tag_reasoning_lane(repair_payload, LANE_KEY),
+        artifact_dir=artifact_dir,
+        run_id=run_id,
+    )
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed
     new_raw = result.raw_model_output
@@ -1177,20 +1388,36 @@ def retry_qwen_competency_restatement(
     return json.dumps(new_parsed, sort_keys=True, separators=(",", ":")), new_parsed
 
 
-def run_dispatch(args: argparse.Namespace) -> int:
-    if mock_blocked_before_run(args):
-        emit_mock_blocked_stderr(dispatcher_label="competencies_dispatch")
-        return MOCK_PROVIDER_REJECT_EXIT_CODE
-    if mock_judges_blocked_before_run(args):
-        emit_mock_judges_blocked_stderr(dispatcher_label="competencies_dispatch")
-        return MOCK_JUDGES_REJECT_EXIT_CODE
-
+def run_competencies_execution(
+    args: argparse.Namespace,
+    *,
+    artifact_dir_override: Path | None = None,
+    trace_runtime_path: str = "apps_rg.runtime.dispatch.competencies_dispatch",
+    print_output: bool = True,
+) -> dict[str, Any]:
     base, base_path, base_hash = load_base_resume()
-    bullet_rows, allowed_fact_ids, bullet_lowers = collect_employment_bullets(base)
-    required_ids = sorted(allowed_fact_ids)
-    selected_fact_plan = build_selected_fact_plan(bullet_rows, required_ids)
+    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+
+    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
+    if srfs_path:
+        plan, _ordered, allowed_fact_ids, pp_meta = _srfs.resolve_srfs_section_proof_bundle(srfs_path, "competencies")
+        bullet_rows = [_srfs.plan_fact_to_employment_bullet_row(f) for f in plan.get("facts", [])]
+        required_ids = sorted(allowed_fact_ids)
+        selected_fact_plan = build_selected_fact_plan(bullet_rows, required_ids)
+        selected_fact_plan["selection_method"] = _srfs.selection_method_for_section("competencies")
+        bullet_lowers = [str(r.get("claim_text") or "").lower() for r in bullet_rows]
+    else:
+        bullet_rows, allowed_fact_ids, bullet_lowers = collect_employment_bullets(base)
+        required_ids = sorted(allowed_fact_ids)
+        selected_fact_plan = build_selected_fact_plan(bullet_rows, required_ids)
+        pp_meta = _srfs.base_proof_pool_metadata(
+            section_id="competencies",
+            candidate_fact_pool_count=len(bullet_rows),
+            allowed_fact_ids_count=len(allowed_fact_ids),
+        )
     companion_context = load_companion_context()
     resume_blob = build_resume_support_blob(bullet_rows, companion_context)
+    c0_proof_blob = build_c0_proof_support_blob(bullet_rows)
 
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
@@ -1202,8 +1429,20 @@ def run_dispatch(args: argparse.Namespace) -> int:
         jd_text=args.jd_text,
         briefing=args.briefing,
     )
-    artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    runtime_payload["proof_pool_metadata"] = pp_meta
+    if artifact_dir_override is not None:
+        artifact_dir = Path(artifact_dir_override)
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     (artifact_dir / "companion_generated_sections.txt").write_text(companion_context or "(none)\n", encoding="utf-8")
+
+    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+
+    merge_transport_context(
+        artifact_dir=str(artifact_dir.resolve()),
+        run_id=str(runtime_payload.get("run_id") or ""),
+    )
 
     fact_lines = "\n".join(
         f"- {row['fact_id']}: {row['claim_text']}"
@@ -1234,6 +1473,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             "pa_prompt_hash": section_compiled.artifact.prompt_hash,
             "dispatch_sha256_prompt16": prompt_hash,
             "slot_count": section_compiled.artifact.slot_count,
+            "allowed_fact_ids": sorted(str(x) for x in allowed_fact_ids),
         },
     )
 
@@ -1243,65 +1483,115 @@ def run_dispatch(args: argparse.Namespace) -> int:
     raw_output = ""
     parsed: dict[str, Any] | None = None
     parse_error = ""
-    runtime_generation_status = "MOCKED"
+    runtime_generation_status = "BLOCKED"
+    live_preflight_blocked = False
 
-    if args.provider == "qwen_vllm":
-        provider_req, provider_payload = build_qwen_request(
-            messages=messages,
-            prompt_hash=prompt_hash,
-            input_payload_hash=input_payload_hash,
-            temperature=args.temperature,
-            max_tokens=COMPETENCIES_QWEN_MAX_TOKENS,
+    provider_req, provider_payload = build_qwen_request(
+        messages=messages,
+        prompt_hash=prompt_hash,
+        input_payload_hash=input_payload_hash,
+        temperature=args.temperature,
+        max_tokens=COMPETENCIES_QWEN_MAX_TOKENS,
+    )
+    provider_request_data = provider_req.to_dict()
+    write_json(artifact_dir / "provider_request.json", provider_request_data)
+    req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    _run_id = str(runtime_payload.get("run_id") or "")
+    if effective_offline_contract_stub_enabled():
+        stub_raw = json.dumps(build_mock_output(runtime_payload), sort_keys=True, separators=(",", ":"))
+        result = synthetic_qwen_provider_result(raw_model_output=stub_raw, requested_model=req_model)
+    elif str(args.provider).strip().lower() == "qwen_vllm":
+        base_url = str(provider_request_data.get("provider_url") or "")
+        pre_timeout = competencies_vllm_preflight_timeout_s()
+        print(
+            f"[competencies] live qwen_vllm: shared HTTP /v1/models preflight base_url={base_url!r} "
+            f"model={req_model!r} timeout_s={pre_timeout}",
+            file=sys.stderr,
+            flush=True,
         )
-        provider_request_data = provider_req.to_dict()
-        write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
-        provider_result_data = result.to_dict()
-        raw_output = result.raw_model_output
-        provider_raw_output = raw_output
-        raw_model_output_original = raw_output
-        write_json(artifact_dir / "provider_response.json", provider_result_data)
-        runtime_generation_status = result.runtime_generation_status
-        if result.runtime_generation_status == "REAL_LLM":
-            parsed, parse_error = parse_model_json(raw_model_output_original)
-            if parsed is None:
-                raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
-                    messages, provider_payload, raw_model_output_original, parse_error
-                )
-            if parsed is not None:
-                parsed = normalize_parsed_output(parsed, runtime_payload, allowed_fact_ids)
-                raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
-                bad_term = find_bullet_restatement_term(parsed.get("competencies") or [], bullet_lowers)
-                if bad_term:
-                    raw_output, parsed = retry_qwen_competency_restatement(
-                        messages,
-                        provider_payload,
-                        raw_output,
-                        parsed,
-                        bad_term,
-                        runtime_payload,
-                        allowed_fact_ids,
-                    )
-                    if parsed is not None:
-                        raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
-            else:
-                raw_output = raw_model_output_original
-        else:
-            parsed = None
-            parse_error = result.exact_provider_error or "provider blocked"
+        if competencies_vllm_preflight_disabled():
+            print(
+                "[competencies] WARNING: APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE is set — "
+                "skipping HTTP models preflight in slice (not recommended for unattended runs).",
+                file=sys.stderr,
+                flush=True,
+            )
+        result = call_qwen_vllm(
+            tag_reasoning_lane(provider_payload, LANE_KEY),
+            artifact_dir=artifact_dir,
+            run_id=_run_id or None,
+        )
+        if getattr(result, "apps_rg_qwen_preflight_blocked", False):
+            live_preflight_blocked = True
+            snap = getattr(result, "apps_rg_last_probe_snapshot", None)
+            write_json(
+                artifact_dir / "competencies_live_provider_gate.json",
+                live_provider_gate_audit_payload_failure(
+                    provider_base_url=base_url,
+                    preflight_detail=str(result.exact_provider_error or "http_models_preflight_failed"),
+                    timeout_s=pre_timeout,
+                    probe_snapshot=dict(snap) if isinstance(snap, dict) else None,
+                ),
+            )
+            print(
+                f"{STATUS_BLOCKED_LIVE_PROVIDER}: {REASON_PROVIDER_UNAVAILABLE} — "
+                f"HTTP /v1/models preflight blocked for {base_url!r}",
+                file=sys.stderr,
+                flush=True,
+            )
     else:
-        parsed = normalize_parsed_output(build_mock_output(runtime_payload), runtime_payload, allowed_fact_ids)
-        raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
-        runtime_generation_status = "MOCKED"
-        provider_request_data = {
-            "provider_requested": "mock",
-            "provider_attempted": False,
-            "mock_fallback_allowed": True,
-            "model": DEFAULT_QWEN_MODEL,
-            "prompt_hash": prompt_hash,
-            "input_payload_hash": input_payload_hash,
+        result = call_qwen_vllm(
+            tag_reasoning_lane(provider_payload, LANE_KEY),
+            artifact_dir=artifact_dir,
+            run_id=_run_id or None,
+        )
+    provider_result_data = result.to_dict()
+    if live_preflight_blocked:
+        provider_result_data = {
+            **provider_result_data,
+            "live_provider_gate_status": STATUS_BLOCKED_LIVE_PROVIDER,
+            "provider_unreachable_reason": REASON_PROVIDER_UNAVAILABLE,
+            "live_provider_gate_artifact": "competencies_live_provider_gate.json",
         }
-        write_json(artifact_dir / "provider_request.json", provider_request_data)
+    raw_output = result.raw_model_output
+    provider_raw_output = raw_output
+    raw_model_output_original = raw_output
+    write_json(artifact_dir / "provider_response.json", provider_result_data)
+    runtime_generation_status = result.runtime_generation_status
+    if result.runtime_generation_status in ("REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS):
+        parsed, parse_error = parse_model_json(raw_model_output_original)
+        if parsed is None:
+            raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
+                messages,
+                provider_payload,
+                raw_model_output_original,
+                parse_error,
+                artifact_dir=artifact_dir,
+                run_id=_run_id or None,
+            )
+        if parsed is not None:
+            parsed = normalize_parsed_output(parsed, runtime_payload, allowed_fact_ids)
+            raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+            bad_term = find_bullet_restatement_term(parsed.get("competencies") or [], bullet_lowers)
+            if bad_term:
+                raw_output, parsed = retry_qwen_competency_restatement(
+                    messages,
+                    provider_payload,
+                    raw_output,
+                    parsed,
+                    bad_term,
+                    runtime_payload,
+                    allowed_fact_ids,
+                    artifact_dir=artifact_dir,
+                    run_id=_run_id or None,
+                )
+                if parsed is not None:
+                    raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+        else:
+            raw_output = raw_model_output_original
+    else:
+        parsed = None
+        parse_error = result.exact_provider_error or "provider blocked"
 
     if parsed is not None:
         collapse_duplicate_competency_terms(parsed, bullet_rows, resume_blob)
@@ -1322,6 +1612,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
             bullet_texts_lower=bullet_lowers,
         )
         dedupe_structured_competency_terms(parsed)
+        canonicalize_competency_terms_for_proof(parsed)
         rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         prune_claim_ledger_bullet_paste(parsed)
         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
@@ -1335,6 +1626,67 @@ def run_dispatch(args: argparse.Namespace) -> int:
     elif provider_request_data:
         model_name = provider_request_data.get("model")
 
+    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+    parse_status, invalid_reason = classify_ledger_parse_state(
+        parsed,
+        parse_error=parse_error,
+        raw_output=raw_output or "",
+        lane_profile="competencies",
+    )
+    norm_rows = normalize_exec_summary_claim_ledger(claim_ledger) if parse_status == "OK" else []
+    canon_doc = build_canonical_claim_ledger_v2_payload(
+        norm_rows,
+        parse_status=parse_status,
+        invalid_reason=invalid_reason if parse_status != "OK" else None,
+        claim_id_prefix="competencies_claim",
+    )
+    write_json(
+        artifact_dir / "parsed_output.json",
+        {"parsed": parsed, "parse_error": parse_error, "parse_status": parse_status},
+    )
+    write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
+    coverage = build_sentence_claim_coverage(display_text, claim_ledger, allowed_fact_ids)
+    write_json(artifact_dir / "text_claim_coverage.json", coverage)
+    effective_sfp_c = (parsed or {}).get("selected_fact_plan") if isinstance(parsed, dict) else None
+    if not isinstance(effective_sfp_c, dict):
+        effective_sfp_c = selected_fact_plan
+    write_json(artifact_dir / "selected_fact_plan.json", effective_sfp_c)
+    competency_group_fact_support: list[dict[str, Any]] = []
+    for cat in competencies:
+        if isinstance(cat, dict):
+            competency_group_fact_support.append(
+                {
+                    "category_label": cat.get("category_label"),
+                    "source_fact_ids": list(cat.get("source_fact_ids") or []),
+                }
+            )
+    req_id_c = str(
+        (provider_request_data or {}).get("request_id")
+        or (provider_request_data or {}).get("id")
+        or runtime_payload["run_id"]
+    )
+    jd_alignment_final = merge_jd_alignment((parsed or {}).get("jd_alignment") if isinstance(parsed, dict) else None)
+    trace_rr_c = artifact_dir.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    usage_doc = build_section_input_usage_ledger_v1(
+        section_id="competencies",
+        run_id=str(runtime_payload["run_id"]),
+        request_id=req_id_c,
+        trace_root=trace_rr_c,
+        repo_root=REPO_ROOT,
+        artifact_dir=artifact_dir,
+        runtime_payload=runtime_payload,
+        selected_fact_plan=effective_sfp_c,
+        claim_ledger=claim_ledger,
+        allowed_fact_ids=allowed_fact_ids,
+        jd_text=str(runtime_payload.get("jd_text") or ""),
+        target_title=str(runtime_payload.get("target_title") or ""),
+        target_company=str(runtime_payload.get("target_company") or ""),
+        briefing_text=str(runtime_payload.get("briefing") or ""),
+        jd_alignment=jd_alignment_final,
+        extra_section_fields={"competency_group_fact_support": competency_group_fact_support},
+    )
+    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
+
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
     judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
@@ -1346,9 +1698,13 @@ def run_dispatch(args: argparse.Namespace) -> int:
             judge_keys=judge_keys,
             companion_context=companion_context,
             mode=judge_mode,
+            artifact_base=artifact_dir,
         )
     ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+
+    pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
+    srfs_x2_active = bool(pp_x2.get("selected_role_fact_set_used"))
 
     x2 = [
         g.to_dict()
@@ -1357,15 +1713,22 @@ def run_dispatch(args: argparse.Namespace) -> int:
             parsed_output=parsed,
             claim_ledger=claim_ledger,
             jd_text=args.jd_text,
+            briefing_text=getattr(args, "briefing", "") or "",
             bullet_texts_lower=bullet_lowers,
             resume_support_blob=resume_blob,
+            c0_proof_blob=c0_proof_blob,
             allowed_fact_ids=allowed_fact_ids,
             runtime_generation_status=runtime_generation_status,
+            cli_provider=args.provider,
+            live_preflight_blocked=live_preflight_blocked,
             provider_requested=args.provider,
             provider_attempted=args.provider,
             model_name=model_name,
             raw_output=raw_output,
             x1d_judges=x1d,
+            artifacts_dir=artifact_dir,
+            text_claim_coverage=coverage,
+            srfs_source_fact_slice_gate_active=srfs_x2_active,
         )
     ]
 
@@ -1377,8 +1740,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "competencies": competencies,
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
-        "jd_alignment": (parsed or {}).get("jd_alignment")
-        or {"targeting_only": True, "jd_used_as_proof": False},
+        "jd_alignment": jd_alignment_final,
         "excluded_jd_skills": (parsed or {}).get("excluded_jd_skills") or [],
         "removed_or_rewritten_terms": (parsed or {}).get("removed_or_rewritten_terms") or [],
         "gap_notes": (parsed or {}).get("gap_notes") or [],
@@ -1390,6 +1752,7 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
         "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
+        "text_claim_coverage": coverage,
     }
     write_json(artifact_dir / "competencies_output.json", competencies)
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
@@ -1398,10 +1761,10 @@ def run_dispatch(args: argparse.Namespace) -> int:
         artifact_dir / "prompt_selection_trace.json",
         attach_reasoning_to_prompt_trace(
             {
-                "runtime_path": "apps_rg.runtime.dispatch.competencies_dispatch",
+                "runtime_path": trace_runtime_path,
                 "prompt_id": PROMPT_ID,
                 "provider": args.provider,
-                "temperature": args.temperature if args.provider == "qwen_vllm" else COMPETENCIES_TEMP_DEFAULT,
+                "temperature": args.temperature,
                 "section_prompt_adapter": True,
                 "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
                 "compiler_template_id": section_compiled.artifact.template_id,
@@ -1427,6 +1790,12 @@ def run_dispatch(args: argparse.Namespace) -> int:
         x1d_judges=x1d,
         runtime_generation_status=runtime_generation_status,
         product_quality_status=product_quality_status,
+        canonical_claims_for_hash=canon_doc.get("claims"),
+        section_input_usage_ledger=usage_doc,
+    )
+    x3 = clarify_x3_for_competencies_live_provider_preflight(
+        x3,
+        live_preflight_blocked=live_preflight_blocked,
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
 
@@ -1444,10 +1813,50 @@ def run_dispatch(args: argparse.Namespace) -> int:
         runtime_generation_status=runtime_generation_status,
         bundle=bundle,
     )
+    jd_al_out = jd_alignment_final
+    section_agg: dict[str, Any] = {
+        "schema_version": "1",
+        "section_id": "competencies",
+        "canonical_aggregation_note": (
+            "CANONICAL_DOWNSTREAM_AGGREGATION_INPUT — use this file as the sole bundle-shaped join surface "
+            "for competencies (display_lines, competencies[], claim_ledger, proof-boundary flags, X2/X3 refs). "
+            "competencies_output.json is legacy competencies[] only; provider_response.json is transport-only diagnostic."
+        ),
+        "artifact_role_bundle": {
+            "competencies_section_output.json": "canonical_downstream_aggregation_input",
+            "competencies_output.json": "legacy_competencies_array_only",
+            "provider_response.json": "diagnostic_transport_metadata_only",
+            "l2_output.json": "rich_runtime_section_object_with_refs",
+        },
+        "display_lines": [ln for ln in (display_text or "").split("\n") if str(ln).strip()],
+        "competencies": competencies,
+        "claim_ledger": claim_ledger,
+        "selected_fact_ids": sorted(str(x) for x in allowed_fact_ids),
+        "targeting_only": bool(jd_al_out.get("targeting_only")),
+        "jd_used_as_proof": bool(jd_al_out.get("jd_used_as_proof")),
+        "briefing_used_as_proof": bool(jd_al_out.get("briefing_used_as_proof")),
+        "companion_context_used_as_proof": bool(jd_al_out.get("companion_context_used_as_proof")),
+        "runtime_generation_status": runtime_generation_status,
+        "x2_gate_outputs_ref": _artifact_repo_rel(artifact_dir / "x2_gate_outputs.json", REPO_ROOT),
+        "x3_disposition_ref": _artifact_repo_rel(artifact_dir / "x3_disposition.json", REPO_ROOT),
+        "section_input_usage_ledger_ref": _artifact_repo_rel(
+            artifact_dir / "section_input_usage_ledger.json",
+            REPO_ROOT,
+        ),
+        "proof_eligible": bool(bundle.get("proof_eligible")),
+        "proof_scope": bundle.get("proof_scope"),
+        "product_quality_status": product_quality_status,
+        "x3_code": x3.x3_code,
+    }
+    write_json(artifact_dir / "competencies_section_output.json", section_agg)
+    l2_output["competencies_section_output_ref"] = _artifact_repo_rel(
+        artifact_dir / "competencies_section_output.json",
+        REPO_ROOT,
+    )
     write_json(artifact_dir / "l2_output.json", l2_output)
 
-    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else COMPETENCIES_TEMP_DEFAULT
-    l6_max = COMPETENCIES_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    l6_temp = float(args.temperature)
+    l6_max = COMPETENCIES_QWEN_MAX_TOKENS
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,
@@ -1456,6 +1865,30 @@ def run_dispatch(args: argparse.Namespace) -> int:
         max_tokens=l6_max,
     )
     write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
+
+    section_agg["l6_shadow_eval_package_ref"] = _artifact_repo_rel(
+        artifact_dir / "l6_shadow_eval_package.json",
+        REPO_ROOT,
+    )
+    section_agg["l6_shadow_learning_ref"] = _artifact_repo_rel(
+        artifact_dir / "l6_shadow_learning.json",
+        REPO_ROOT,
+    )
+    _prop_path = artifact_dir / "l6_future_run_proposals.json"
+    if _prop_path.is_file():
+        section_agg["l6_future_run_proposals_ref"] = _artifact_repo_rel(_prop_path, REPO_ROOT)
+    _rca_path = artifact_dir / "l6_shadow_rca_sketch.json"
+    if _rca_path.is_file():
+        section_agg["l6_shadow_rca_sketch_ref"] = _artifact_repo_rel(_rca_path, REPO_ROOT)
+    write_json(artifact_dir / "competencies_section_output.json", section_agg)
+
+    l2_output["l6_shadow_eval_package_ref"] = section_agg["l6_shadow_eval_package_ref"]
+    l2_output["l6_shadow_learning_ref"] = section_agg["l6_shadow_learning_ref"]
+    if section_agg.get("l6_future_run_proposals_ref"):
+        l2_output["l6_future_run_proposals_ref"] = section_agg["l6_future_run_proposals_ref"]
+    if section_agg.get("l6_shadow_rca_sketch_ref"):
+        l2_output["l6_shadow_rca_sketch_ref"] = section_agg["l6_shadow_rca_sketch_ref"]
+    write_json(artifact_dir / "l2_output.json", l2_output)
 
     rl2 = {
         "provider_attempted": args.provider,
@@ -1472,6 +1905,31 @@ def run_dispatch(args: argparse.Namespace) -> int:
         runtime_generation_status=runtime_generation_status,
         bundle=bundle,
     )
+
+    _smr_co = {
+        "run_id": runtime_payload["run_id"],
+        "lane_id": "competencies",
+        "prompt_id": PROMPT_ID,
+        "prompt_hash": prompt_hash,
+        "input_payload_hash": input_payload_hash,
+        "output_payload_hash": None,
+        "claim_ledger_hash": None,
+        "runtime_generation_status": runtime_generation_status,
+        "product_quality_status": product_quality_status,
+        "x2_failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
+        "x3_code": x3.x3_code,
+        "proof_eligible": bundle["proof_eligible"],
+        "judge_proof_eligible": bundle["judge_proof_eligible"],
+    }
+    merge_normalized_srfs_reporting_into_dict(
+        _smr_co,
+        section_id="competencies",
+        runtime_payload=runtime_payload,
+        x2_gates=x2,
+        selected_fact_plan=l2_output.get("selected_fact_plan") if isinstance(l2_output, dict) else None,
+        claim_ledger=claim_ledger,
+    )
+    write_json(artifact_dir / "section_metric_receipt.json", _smr_co)
 
     write_json(
         artifact_dir / "real_l2_generation_result.json",
@@ -1495,12 +1953,32 @@ def run_dispatch(args: argparse.Namespace) -> int:
     lines.extend(["", "X2_DETERMINISTIC_GATE_OUTPUTS:"])
     for gate in x2:
         lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
-    lines.extend(["", "X3_DISPOSITION:", json.dumps(x3.to_dict(), indent=2), "", "L6_SHADOW_EVAL_PACKAGE:", str(artifact_dir / "l6_shadow_eval_package.json"), "offline_only=true"])
+    status_hint = (
+        "PASS_RUNTIME_PROOF_ELIGIBLE" if bundle["proof_eligible"] else "PASS_NONCERTIFYING_RUNTIME_PROOF"
+    )
+    lines.extend(
+        [
+            "",
+            "RUNTIME_PROOF_SUMMARY:",
+            f"RUNTIME_GENERATION_STATUS: {runtime_generation_status}",
+            f"STATUS: {status_hint}",
+            f"PRODUCT_STATUS: {x3.x3_code}",
+            f"PROOF_ELIGIBLE: {str(bundle['proof_eligible']).lower()}",
+            "NOTE: STATUS PASS alone never implies X3 ALLOW or certification — check PRODUCT_STATUS and PROOF_ELIGIBLE.",
+            f"CANONICAL_AGGREGATION_INPUT: competencies_section_output.json ({_artifact_repo_rel(artifact_dir / 'competencies_section_output.json', REPO_ROOT)})",
+            "",
+            "L6_SHADOW_EVAL_PACKAGE:",
+            str(artifact_dir / "l6_shadow_eval_package.json"),
+            "offline_only=true",
+            "l6_shadow_learning=" + str(artifact_dir / "l6_shadow_learning.json"),
+        ]
+    )
     output_text = "\n".join(lines)
     (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
-    print(output_text)
+    if print_output:
+        print(output_text)
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
-    pratt = (provider_request_data or {}).get("provider_attempted", False)
+    pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,
@@ -1523,17 +2001,43 @@ def run_dispatch(args: argparse.Namespace) -> int:
         proof_closeout_note=bundle["proof_closeout_note"] if bundle.get("proof_closeout_note") else None,
     )
     if allow_non_allow_exit_zero_ok(args):
-        return 0
-    return 0 if x3.x3_code == "X3_ALLOW" else 2
+        exit_code = 0
+    else:
+        exit_code = 0 if x3.x3_code == "X3_ALLOW" else 2
+    return {
+        "artifact_dir": artifact_dir,
+        "repo_root": REPO_ROOT,
+        "lane_key": LANE_KEY,
+        "runtime_payload": runtime_payload,
+        "x3": x3,
+        "output_text": output_text,
+        "exit_code": exit_code,
+        "runtime_generation_status": runtime_generation_status,
+        "competencies": competencies,
+    }
+
+
+def run_dispatch(args: argparse.Namespace) -> int:
+    """Argparse helper kept for import parity; ``__main__`` exits deprecated — use ``apps_rg`` CLI."""
+    if mock_judges_blocked_before_run(args):
+        emit_mock_judges_blocked_stderr(dispatcher_label="competencies_dispatch")
+        return MOCK_JUDGES_REJECT_EXIT_CODE
+    ctx = run_competencies_execution(
+        args,
+        artifact_dir_override=None,
+        trace_runtime_path="apps_rg.runtime.dispatch.competencies_dispatch",
+        print_output=True,
+    )
+    return int(ctx["exit_code"])
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg competencies runtime seam.")
     parser.add_argument(
         "--provider",
-        choices=["mock", "qwen_vllm"],
+        choices=["qwen_vllm"],
         default="qwen_vllm",
-        help="Generation provider. mock requires `--allow-test-mock-provider` (plumbing-only).",
+        help="Generation provider (qwen_vllm only). Offline tests: set APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1.",
     )
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
@@ -1553,11 +2057,6 @@ def build_parser() -> argparse.ArgumentParser:
             "(never runtime certification)."
         ),
     )
-    parser.add_argument(
-        "--allow-test-mock-provider",
-        action="store_true",
-        help="Test-only: allow mock provider for plumbing artifacts (proof_eligible=false).",
-    )
     parser.add_argument("--target-title", default=TARGET_TITLE_DEFAULT)
     parser.add_argument("--target-company", default=TARGET_COMPANY_DEFAULT)
     parser.add_argument("--jd-text", default=JD_TEXT_DEFAULT)
@@ -1565,7 +2064,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--allow-non-allow-exit-zero",
         action="store_true",
-        help="Exit 0 for inspection despite X3≠ALLOW — qwen_vllm or mock+hatch only.",
+        help="Exit 0 for inspection despite X3≠ALLOW — does not bypass mock-judge blocks.",
     )
     return parser
 
@@ -1575,4 +2074,6 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    from apps_rg.runtime.deprecated_runtime_cli import exit_deprecated_dispatch_cli
+
+    raise SystemExit(exit_deprecated_dispatch_cli(section="competencies"))

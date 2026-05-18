@@ -1,4 +1,4 @@
-"""Contract tests: mock provider is plumbing-only across all section dispatch CLIs."""
+"""Contract tests: mock judges policy and offline Qwen stub on ``python -m apps_rg``."""
 
 from __future__ import annotations
 
@@ -9,62 +9,57 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.l2_recipe.modular_resume_generation import LANE_DISPATCH_MODULES
-from apps_rg.runtime.dispatch.mock_runtime_proof_policy import (
-    MOCK_JUDGES_REJECT_EXIT_CODE,
-    MOCK_PROVIDER_REJECT_EXIT_CODE,
-)
+from apps_rg.runtime.section_proof.mock_runtime_proof_policy import MOCK_JUDGES_REJECT_EXIT_CODE
+from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-
-def _lane_key_from_dispatch_module(mod: str) -> str:
-    tail = mod.rsplit(".", 1)[-1]
-    assert tail.endswith("_dispatch")
-    return tail[: -len("_dispatch")]
+_BASE_ENV = {"APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1"}
 
 
-@pytest.mark.parametrize("mod", LANE_DISPATCH_MODULES)
-def test_mock_rejected_without_test_hatch_before_run(mod: str) -> None:
-    r = subprocess.run(
-        [sys.executable, "-m", mod, "--provider", "mock", "--allow-non-allow-exit-zero"],
-        cwd=REPO_ROOT,
-        text=True,
-        capture_output=True,
-        timeout=90,
-    )
-    assert r.returncode == MOCK_PROVIDER_REJECT_EXIT_CODE
-    err = (r.stderr or "").lower()
-    assert "cannot produce runtime proof" in err
+def _env(extra: dict[str, str] | None = None) -> dict[str, str]:
+    import os
+
+    out = {**os.environ, **_BASE_ENV}
+    if extra:
+        out.update(extra)
+    return out
 
 
-@pytest.mark.parametrize("mod", LANE_DISPATCH_MODULES)
-def test_allow_non_allow_exit_zero_does_not_bypass_mock_provider_block(mod: str) -> None:
+@pytest.mark.parametrize("lane", GENERATED_LANES)
+def test_invalid_provider_rejected(lane: str) -> None:
     r = subprocess.run(
         [
             sys.executable,
             "-m",
-            mod,
+            "apps_rg",
+            "--section",
+            lane,
             "--provider",
             "mock",
-            "--mock-judges",
             "--allow-non-allow-exit-zero",
         ],
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
-        timeout=90,
+        timeout=120,
+        env=_env(),
     )
-    assert r.returncode == MOCK_PROVIDER_REJECT_EXIT_CODE
+    assert r.returncode == 2
+    err = (r.stderr or "").lower()
+    assert "invalid" in err and "provider" in err
 
 
-@pytest.mark.parametrize("mod", LANE_DISPATCH_MODULES)
-def test_mock_judges_rejected_without_test_hatch_before_run(mod: str) -> None:
+@pytest.mark.parametrize("lane", GENERATED_LANES)
+def test_mock_judges_rejected_without_test_hatch_before_run(lane: str) -> None:
     r = subprocess.run(
         [
             sys.executable,
             "-m",
-            mod,
+            "apps_rg",
+            "--section",
+            lane,
             "--provider",
             "qwen_vllm",
             "--mock-judges",
@@ -72,21 +67,24 @@ def test_mock_judges_rejected_without_test_hatch_before_run(mod: str) -> None:
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
-        timeout=90,
+        timeout=120,
+        env=_env(),
     )
     assert r.returncode == MOCK_JUDGES_REJECT_EXIT_CODE
     err = (r.stderr or "").lower()
-    assert "cannot produce runtime proof" in err
+    assert "cannot produce runtime certification evidence" in err or "mock judges cannot certify" in err
     assert "mock judges" in err
 
 
-@pytest.mark.parametrize("mod", LANE_DISPATCH_MODULES)
-def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_block(mod: str) -> None:
+@pytest.mark.parametrize("lane", GENERATED_LANES)
+def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_block(lane: str) -> None:
     r = subprocess.run(
         [
             sys.executable,
             "-m",
-            mod,
+            "apps_rg",
+            "--section",
+            lane,
             "--provider",
             "qwen_vllm",
             "--mock-judges",
@@ -95,21 +93,22 @@ def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_block(mod: str) ->
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
-        timeout=90,
+        timeout=120,
+        env=_env(),
     )
     assert r.returncode == MOCK_JUDGES_REJECT_EXIT_CODE
 
 
-@pytest.mark.parametrize("mod", LANE_DISPATCH_MODULES)
-def test_mock_hatch_writes_proof_eligible_false_manifest(mod: str) -> None:
-    lane = _lane_key_from_dispatch_module(mod)
+@pytest.mark.parametrize("lane", GENERATED_LANES)
+def test_offline_qwen_stub_with_mock_judges_hatch_writes_real_bucket_manifest(lane: str) -> None:
     cmd = [
         sys.executable,
         "-m",
-        mod,
+        "apps_rg",
+        "--section",
+        lane,
         "--provider",
-        "mock",
-        "--allow-test-mock-provider",
+        "qwen_vllm",
         "--mock-judges",
         "--allow-test-mock-judges",
         "--allow-non-allow-exit-zero",
@@ -120,35 +119,34 @@ def test_mock_hatch_writes_proof_eligible_false_manifest(mod: str) -> None:
         text=True,
         capture_output=True,
         timeout=300,
+        env=_env({"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"}),
     )
     assert r.returncode == 0, r.stderr
-    from apps_rg.runtime.runtime_proof_layout import resolve_latest_mock_run_dir
-
-    rd = resolve_latest_mock_run_dir(REPO_ROOT, lane)
-    assert rd is not None, f"expected mock run dir for {lane}"
+    rd = resolve_run_dir_from_pointer(REPO_ROOT, lane, "real")
+    assert rd is not None, f"expected real-bucket run dir for {lane}"
     manifest = rd / "run_manifest.json"
     assert manifest.is_file()
     mf = json.loads(manifest.read_text(encoding="utf-8"))
-    assert mf.get("runtime_generation_status") == "MOCKED"
-    assert mf.get("proof_eligible") is False
-    assert mf.get("proof_scope") == "plumbing_only"
-    assert mf.get("test_only_mock_provider") is True
-    assert mf.get("runtime_certification") is False
-    assert mf.get("judge_proof_eligible") is False
-    assert mf.get("x1d_runtime_status") == "MOCKED"
-    assert mf.get("test_only_mock_judges") is True
+    assert mf.get("runtime_generation_status") == "REAL_LLM"
+    assert mf.get("proof_eligible") is not True
     l2_path = rd / "l2_output.json"
     assert l2_path.is_file()
     l2 = json.loads(l2_path.read_text(encoding="utf-8"))
-    assert l2.get("proof_eligible") is False
-    assert l2.get("judge_proof_eligible") is False
-    assert l2.get("x1d_runtime_status") == "MOCKED"
+    assert l2.get("runtime_generation_status") == "REAL_LLM"
+    assert l2.get("proof_eligible") is not True
 
 
-def test_lane_cli_default_provider_is_qwen_vllm() -> None:
+def test_lane_dispatch_build_parser_default_provider_is_qwen_vllm() -> None:
+    """Legacy dispatch argparse defaults use qwen_vllm (mock provider removed)."""
     import importlib
 
+    from apps_rg.l2_recipe.modular_resume_generation import LANE_DISPATCH_MODULES
+
     for mod in LANE_DISPATCH_MODULES:
-        bp = importlib.import_module(mod).build_parser()
+        m = importlib.import_module(mod)
+        bp_factory = m.__dict__.get("build_parser")
+        if bp_factory is None:
+            continue
+        bp = bp_factory()
         ns = bp.parse_args([])
         assert ns.provider == "qwen_vllm", mod

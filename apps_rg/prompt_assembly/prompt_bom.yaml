@@ -157,6 +157,17 @@ template_registry_refs:
   - final_unify_v2
 
 # =============================================================================
+# Executive summary — example authority (voice SSOT; not runtime proof)
+# =============================================================================
+executive_summary_example_authority:
+  gold_example_id: exec_summary_gold_base_resume_001
+  gold_authority_label: E0_STYLE_EXAMPLE_NOT_PROOF
+  gold_examples_path: apps_rg/prompt_assembly/examples/executive_summary_examples.yaml
+  note: >
+    Gold paragraph teaches density/register/synthesis only. Proof substrate remains
+    selected facts + claim_ledger + source_fact_ids at runtime.
+
+# =============================================================================
 # Hash Fields for Determinism
 # =============================================================================
 hash_fields:

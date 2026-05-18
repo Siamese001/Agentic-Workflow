@@ -1,11 +1,14 @@
-"""Deterministic X2 gates for competencies runtime slice (8 ATS-oriented categories)."""
+"""Deterministic X2 gates for the competencies section lane (8 ATS-oriented categories)."""
 from __future__ import annotations
 
 import json
 import re
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.validators.competencies_proof_markers import scan_mock_fixture_markers
 from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,
     FIRST_PERSON_PATTERN,
@@ -107,36 +110,138 @@ class X2GateResult:
         return data
 
 
+_STYLE_HYGIENE_GATE_IDS = frozenset(
+    {
+        "x2_no_inline_source_tags",
+        "x2_no_first_person",
+        "x2_no_em_dash",
+        "x2_no_bullet_format",
+        "x2_no_full_sentences",
+        "x2_no_mock_fixture_markers_in_real_llm_output",
+    }
+)
+
+_ALLOWED_STYLE_PASS_STRINGS = frozenset({"ok", "absent", "skipped_not_real_llm", "no_mock_fixture_language"})
+
+
+def resolve_competencies_provider_transport_x2(
+    *,
+    cli_provider: str,
+    runtime_generation_status: str,
+    live_preflight_blocked: bool,
+) -> tuple[bool, str, str]:
+    """Return (transport_ok, cli_label, attempted_transport_label)."""
+    cli = str(cli_provider).strip().lower()
+    rgs = str(runtime_generation_status).strip()
+    if live_preflight_blocked:
+        return False, cli, "blocked_http_models_preflight"
+    if cli == "qwen_vllm":
+        if rgs == "REAL_LLM":
+            return True, cli, "qwen_vllm_http"
+        if rgs == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
+            return True, cli, "offline_contract_stub"
+        if rgs == "BLOCKED":
+            return False, cli, "qwen_vllm_transport_blocked"
+        if rgs == "MOCKED":
+            return False, cli, "mocked_generation"
+        return False, cli, rgs.lower()
+    if cli == "mock":
+        return True, cli, rgs.lower()
+    return True, cli, rgs.lower()
+
+
+def _style_hygiene_pass_observed_ok(gate_id: str, passed: bool, observed: Any) -> bool:
+    if not passed or gate_id not in _STYLE_HYGIENE_GATE_IDS:
+        return True
+    if observed is True or observed is False or observed == 0:
+        return True
+    if isinstance(observed, list) and len(observed) == 0:
+        return True
+    if isinstance(observed, str):
+        olow = observed.strip().lower()
+        if olow in _ALLOWED_STYLE_PASS_STRINGS:
+            return True
+        forbidden = (
+            "em dash",
+            "first person",
+            "bullet",
+            "sentence",
+            "mock",
+            "fixture",
+            "inline",
+            "present",
+            "leading bullet",
+        )
+        if any(x in olow for x in forbidden):
+            return False
+        return True
+    return True
+
+
+def competencies_x2_gate_rows_internally_consistent(gates: list[X2GateResult]) -> tuple[bool, list[str]]:
+    consistency_bad: list[str] = []
+    for row in gates:
+        rd = row.to_dict()
+        gid = str(rd.get("gate_id") or "")
+        passed = bool(rd.get("pass"))
+        fr = rd.get("failure_reason")
+        obs = rd.get("observed_value")
+        if passed and fr is not None and str(fr).strip() != "":
+            consistency_bad.append(gid)
+        if not passed and (fr is None or str(fr).strip() == ""):
+            consistency_bad.append(gid)
+        if not _style_hygiene_pass_observed_ok(gid, passed, obs):
+            consistency_bad.append(gid)
+    return len(consistency_bad) == 0, consistency_bad
+
+
 def _term_phrase(raw: Any) -> str:
     if isinstance(raw, dict):
         return str(raw.get("text") or raw.get("phrase") or raw.get("term") or "").strip()
     return str(raw).strip()
 
 
-def check_structured_term_primary_facts(
+def check_canonical_competency_terms(
     competencies: list[dict[str, Any]],
     allowed_fact_ids: set[str],
 ) -> tuple[bool, str | None]:
-    """When any term is structured (dict), require all terms in that category to declare one source_fact_id."""
+    """Persisted proof shape: every term is ``{text, source_fact_id, source_fact_ids[]}``.
+
+    ``source_fact_id`` must appear in ``source_fact_ids``. All ids must be allowed bul_* rows.
+    Optional ``jd_signal_ids`` must be a list when present.
+    """
     for i, cat in enumerate(competencies):
         if not isinstance(cat, dict):
             continue
         terms_raw = cat.get("terms") or []
-        if not any(isinstance(t, dict) for t in terms_raw):
-            continue
         for j, t in enumerate(terms_raw):
             if not isinstance(t, dict):
-                return False, f"category {i} term {j} must be object when structured terms are present"
-            if t.get("source_fact_ids"):
-                return False, f"category {i} term {j} must not use term-level source_fact_ids; use source_fact_id only"
+                return False, f"category {i} term {j} must be canonical structured object (got non-object)"
             phrase = _term_phrase(t)
             sid = t.get("source_fact_id")
-            if not phrase or not sid:
+            sids_raw = t.get("source_fact_ids")
+            if t.get("jd_signal_ids") is not None and not isinstance(t.get("jd_signal_ids"), list):
+                return False, f"category {i} term {j}: jd_signal_ids must be an array when present"
+            if not phrase or sid is None or str(sid).strip() == "":
                 return False, f"category {i} term {j} missing text or source_fact_id"
-            fs = str(sid).split("_metric_")[0]
-            if fs not in allowed_fact_ids:
-                return False, f"{fs} not allowed at category {i} term {j}"
+            if not isinstance(sids_raw, list) or not sids_raw:
+                return False, f"category {i} term {j} missing non-empty source_fact_ids array"
+            pid = str(sid).split("_metric_")[0]
+            norm_ids = [str(x).split("_metric_")[0] for x in sids_raw]
+            if pid not in norm_ids:
+                return False, f"category {i} term {j}: source_fact_id not listed in source_fact_ids"
+            for fid in norm_ids:
+                if fid not in allowed_fact_ids:
+                    return False, f"{fid} not allowed at category {i} term {j}"
     return True, None
+
+
+def check_structured_term_primary_facts(
+    competencies: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+) -> tuple[bool, str | None]:
+    """Backward-compatible alias — canonical structured term enforcement."""
+    return check_canonical_competency_terms(competencies, allowed_fact_ids)
 
 
 def term_primary_support_overlap(term_text: str, primary_fid: str, resume_blob_lower: str) -> bool:
@@ -156,6 +261,43 @@ def _term_primary_support_ok(term_text: str, primary_fid: str, resume_blob_lower
     return False
 
 
+def _one_token_technical_cap_ok(term: str) -> bool:
+    """Heuristic: acronym / product token shapes (GraphRAG, AWS, vLLM, ChromaDB)."""
+    p = term.strip()
+    if len(p) < 2:
+        return False
+    if re.match(r"^[A-Z0-9]{2,}$", p):
+        return True
+    if re.match(r"^[A-Za-z][A-Za-z0-9./+\-]*(?:[A-Z][a-z0-9]*)+$", p):
+        return True
+    if re.search(r"\d", p) and re.match(r"^[A-Za-z0-9./+\-]+$", p):
+        return True
+    return False
+
+
+def _term_compact_phrase_ok(
+    phrase: str,
+    *,
+    primary_fact_id: str,
+    proof_blob_lower: str,
+) -> tuple[bool, str | None]:
+    """Compact phrase policy: typ. 2–5 words; single-token only when grounded or technical token; hard max 6 words."""
+    p = phrase.strip()
+    if not p:
+        return False, "empty"
+    wc = len(p.split())
+    if wc > 6:
+        return False, "over_max_words"
+    if wc >= 2:
+        return True, None
+    pid = str(primary_fact_id).split("_metric_")[0]
+    if pid and _term_primary_support_ok(p, pid, proof_blob_lower):
+        return True, None
+    if _one_token_technical_cap_ok(p):
+        return True, None
+    return False, "unsupported_one_token_generic"
+
+
 def check_competency_schema_top_level(parsed_output: dict[str, Any] | None) -> tuple[bool, str | None]:
     if not parsed_output or not isinstance(parsed_output, dict):
         return False, "missing parsed output"
@@ -164,8 +306,17 @@ def check_competency_schema_top_level(parsed_output: dict[str, Any] | None) -> t
         if k not in parsed_output:
             return False, f"missing {k}"
     jd = parsed_output.get("jd_alignment")
-    if isinstance(jd, dict) and jd.get("jd_used_as_proof") is True:
-        return False, "jd_used_as_proof must not be true"
+    if isinstance(jd, dict):
+        if jd.get("targeting_only") is not True:
+            return False, "jd_alignment.targeting_only must be true"
+        if jd.get("jd_used_as_proof") is True:
+            return False, "jd_used_as_proof must not be true"
+        if jd.get("briefing_used_as_proof") is True:
+            return False, "briefing_used_as_proof must not be true"
+        if jd.get("companion_context_used_as_proof") is True:
+            return False, "companion_context_used_as_proof must not be true"
+    else:
+        return False, "jd_alignment must be object"
     return True, None
 
 
@@ -224,17 +375,25 @@ def run_competencies_x2_gates(
     parsed_output: dict[str, Any] | None,
     claim_ledger: list[dict[str, Any]],
     jd_text: str,
+    briefing_text: str = "",
     bullet_texts_lower: list[str],
     resume_support_blob: str,
+    c0_proof_blob: str | None = None,
     allowed_fact_ids: set[str],
     runtime_generation_status: str,
+    cli_provider: str | None = None,
+    live_preflight_blocked: bool = False,
     provider_requested: str | None = None,
     provider_attempted: str | None = None,
     model_name: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
+    artifacts_dir: Any | None = None,
+    text_claim_coverage: dict[str, Any] | None = None,
+    srfs_source_fact_slice_gate_active: bool = False,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
+    proof_blob = (c0_proof_blob if c0_proof_blob is not None else resume_support_blob).lower()
 
     def add(
         gate_id: str,
@@ -261,7 +420,7 @@ def run_competencies_x2_gates(
         n_cats == 8,
         n_cats,
         8,
-        "Must have exactly 8 competency categories.",
+        None if n_cats == 8 else "Must have exactly 8 competency categories.",
     )
 
     format_ok = True
@@ -282,7 +441,7 @@ def run_competencies_x2_gates(
                 format_ok = False
                 fmt_reason = f"bad category_label idx {i}"
                 break
-            if not isinstance(terms, list) or len(terms) < 2 or len(terms) > 7:
+            if not isinstance(terms, list) or len(terms) < 2 or len(terms) > 6:
                 format_ok = False
                 fmt_reason = f"terms count idx {i}"
                 break
@@ -291,14 +450,9 @@ def run_competencies_x2_gates(
                 fmt_reason = f"source_fact_ids idx {i}"
                 break
             for t in terms:
-                if isinstance(t, dict):
-                    if not _term_phrase(t):
-                        format_ok = False
-                        fmt_reason = f"empty structured term idx {i}"
-                        break
-                elif not (isinstance(t, str) and t.strip()):
+                if not isinstance(t, dict) or not _term_phrase(t):
                     format_ok = False
-                    fmt_reason = f"non-string term idx {i}"
+                    fmt_reason = f"terms must be structured objects idx {i}"
                     break
             if not format_ok:
                 break
@@ -308,6 +462,55 @@ def run_competencies_x2_gates(
         fmt_reason or "ok",
         "label+terms[]+source_fact_ids[]",
         None if format_ok else fmt_reason,
+    )
+
+    claim_nonempty_ok = True
+    claim_nonempty_reason: str | None = None
+    for i, row in enumerate(claim_ledger):
+        if not isinstance(row, dict):
+            claim_nonempty_ok = False
+            claim_nonempty_reason = f"claim_ledger row {i} not object"
+            break
+        ct = str(row.get("claim_text", "") or "").strip()
+        if not ct:
+            claim_nonempty_ok = False
+            claim_nonempty_reason = f"claim_ledger row {i} empty claim_text"
+            break
+    add(
+        "x2_claim_ledger_claim_text_non_empty",
+        claim_nonempty_ok,
+        claim_nonempty_reason or "ok",
+        "non_empty_claim_text",
+        None if claim_nonempty_ok else claim_nonempty_reason,
+    )
+
+    word_ok = True
+    word_bad = None
+    for cat in competencies if isinstance(competencies, list) else []:
+        if not isinstance(cat, dict):
+            continue
+        for raw_t in cat.get("terms") or []:
+            phrase = _term_phrase(raw_t)
+            pid = ""
+            if isinstance(raw_t, dict):
+                pid = str(raw_t.get("source_fact_id") or "").split("_metric_")[0]
+            ok_w, _why = _term_compact_phrase_ok(
+                phrase,
+                primary_fact_id=pid,
+                proof_blob_lower=proof_blob,
+            )
+            if not ok_w:
+                word_ok = False
+                word_bad = phrase
+                break
+        if not word_ok:
+            break
+    add(
+        "x2_competency_term_compact_word_count",
+        word_ok,
+        word_bad or "ok",
+        "2–5 words typical; 1-token only when resume-grounded or technical/acronym token; hard max 6 words",
+        None if word_ok else "Term violates compact phrase policy (too long or unsupported one-token).",
     )
 
     all_text = " ".join(
@@ -383,16 +586,37 @@ def run_competencies_x2_gates(
         None if mapping_ok else (ids_reason or "claim_ledger must list each term with source_fact_ids."),
     )
 
-    structured_ok, structured_reason = check_structured_term_primary_facts(
+    canonical_terms_ok, canonical_terms_reason = check_canonical_competency_terms(
         competencies if isinstance(competencies, list) else [],
         allowed_fact_ids,
     )
     add(
         "x2_structured_term_primary_facts",
-        structured_ok,
-        structured_reason or "skipped_or_ok",
-        "structured_terms_have_source_fact_id",
-        None if structured_ok else structured_reason,
+        canonical_terms_ok,
+        canonical_terms_reason or "ok",
+        "canonical_term_objects",
+        None if canonical_terms_ok else canonical_terms_reason,
+    )
+    add(
+        "x2_competency_terms_canonical_structured",
+        canonical_terms_ok,
+        canonical_terms_reason or "ok",
+        "text+source_fact_id+source_fact_ids",
+        None if canonical_terms_ok else canonical_terms_reason,
+    )
+    add(
+        "x2_competency_term_primary_fact_present",
+        canonical_terms_ok,
+        canonical_terms_reason or "ok",
+        "primary_declared",
+        None if canonical_terms_ok else canonical_terms_reason,
+    )
+    add(
+        "x2_competency_term_primary_fact_unique",
+        canonical_terms_ok,
+        canonical_terms_reason or "ok",
+        "primary_in_source_fact_ids_list",
+        None if canonical_terms_ok else canonical_terms_reason,
     )
 
     schema_ok, schema_reason = check_competency_schema_top_level(
@@ -406,53 +630,7 @@ def run_competencies_x2_gates(
         None if schema_ok else schema_reason,
     )
 
-    primary_present_ok = True
-    primary_present_reason: str | None = None
-    for i, cat in enumerate(competencies):
-        if not isinstance(cat, dict):
-            continue
-        for j, raw_t in enumerate(cat.get("terms") or []):
-            if isinstance(raw_t, dict):
-                if not raw_t.get("source_fact_id"):
-                    primary_present_ok = False
-                    primary_present_reason = f"category {i} term {j} missing source_fact_id"
-                    break
-            else:
-                if not (cat.get("source_fact_ids") or []):
-                    primary_present_ok = False
-                    primary_present_reason = f"category {i} needs source_fact_ids for string terms"
-                    break
-        if not primary_present_ok:
-            break
-    add(
-        "x2_competency_term_primary_fact_present",
-        primary_present_ok,
-        primary_present_reason or "ok",
-        "one_primary_per_term",
-        primary_present_reason,
-    )
-
-    unique_primary_ok = True
-    unique_primary_reason: str | None = None
-    for i, cat in enumerate(competencies):
-        if not isinstance(cat, dict):
-            continue
-        for j, raw_t in enumerate(cat.get("terms") or []):
-            if isinstance(raw_t, dict) and raw_t.get("source_fact_ids"):
-                unique_primary_ok = False
-                unique_primary_reason = f"category {i} term {j}: use source_fact_id only"
-                break
-        if not unique_primary_ok:
-            break
-    add(
-        "x2_competency_term_primary_fact_unique",
-        unique_primary_ok,
-        unique_primary_reason or "ok",
-        "no_term_level_source_fact_ids_array",
-        unique_primary_reason,
-    )
-
-    blob_lower = resume_support_blob.lower()
+    blob_lower = proof_blob
     support_ok = True
     support_reason: str | None = None
     for cat in competencies:
@@ -473,15 +651,14 @@ def run_competencies_x2_gates(
         support_ok,
         support_reason or "ok",
         "resume_blob_overlap",
-        support_reason,
+        None if support_ok else support_reason,
     )
 
     jd_only = False
     jd_hit = None
-    blob_l = resume_support_blob.lower()
     for t in _flatten_terms(competencies):
         copied, phrase = has_jd_phrase_copy(t, jd_text, max_words=4)
-        if copied and phrase and phrase not in blob_l:
+        if copied and phrase and phrase not in proof_blob:
             jd_only = True
             jd_hit = phrase
             break
@@ -500,16 +677,37 @@ def run_competencies_x2_gates(
         None if not jd_only else "JD mirroring exceeds allowed grounding.",
     )
 
+    briefing_only = False
+    br_hit = None
+    br = str(briefing_text or "").strip()
+    if br:
+        for t in _flatten_terms(competencies):
+            copied, phrase = has_jd_phrase_copy(t, br, max_words=4)
+            if copied and phrase and phrase not in proof_blob:
+                briefing_only = True
+                br_hit = phrase
+                break
+    add(
+        "x2_no_briefing_only_skills",
+        not briefing_only,
+        br_hit or "ok",
+        "no briefing-only lift",
+        None if not briefing_only else "Briefing phrase in term without C0 resume support.",
+    )
+
     jd_al = (parsed_output or {}).get("jd_alignment") if isinstance(parsed_output, dict) else {}
     companion_pf_ok = (
-        isinstance(jd_al, dict) and jd_al.get("jd_used_as_proof") is not True
+        isinstance(jd_al, dict)
+        and jd_al.get("jd_used_as_proof") is not True
+        and jd_al.get("briefing_used_as_proof") is not True
+        and jd_al.get("companion_context_used_as_proof") is not True
     )
     add(
         "x2_competency_companion_context_not_proof",
         companion_pf_ok,
         jd_al if isinstance(jd_al, dict) else "missing",
-        "jd_used_as_proof_false_or_absent",
-        None if companion_pf_ok else "jd_used_as_proof must be false",
+        "proof_flags_false",
+        None if companion_pf_ok else "jd_used_as_proof, briefing_used_as_proof, and companion_context_used_as_proof must be false.",
     )
 
     lowered = [t.lower().strip() for t in _flatten_terms(competencies)]
@@ -555,7 +753,7 @@ def run_competencies_x2_gates(
 
     tool_bad = None
     for t in _flatten_terms(competencies):
-        hit = _tool_unsupported(t, resume_support_blob)
+        hit = _tool_unsupported(t, proof_blob)
         if hit:
             tool_bad = f"{t}:{hit}"
             break
@@ -586,67 +784,166 @@ def run_competencies_x2_gates(
     )
 
     serialized = json.dumps(parsed_output or {}, sort_keys=True)
+    inl = INLINE_SOURCE_PATTERN.search(serialized)
     add(
         "x2_no_inline_source_tags",
-        not INLINE_SOURCE_PATTERN.search(serialized),
-        "tags",
+        inl is None,
+        (inl.group(0)[:120] if inl else "ok"),
         "absent",
-        "Inline source tags in payload.",
+        None if inl is None else "Inline source tags in payload.",
     )
+    fp_hit = FIRST_PERSON_PATTERN.search(all_text)
     add(
         "x2_no_first_person",
-        not FIRST_PERSON_PATTERN.search(all_text),
-        "first person",
+        fp_hit is None,
+        (fp_hit.group(0)[:120] if fp_hit else "ok"),
         "absent",
-        "First person in competencies.",
+        None if fp_hit is None else "First person in competencies.",
     )
-    add("x2_no_em_dash", EM_DASH not in all_text, "em dash", "absent", "Em dash in competencies.")
+    em_hit = EM_DASH in all_text
+    add(
+        "x2_no_em_dash",
+        not em_hit,
+        "present" if em_hit else "ok",
+        "absent",
+        None if not em_hit else "Em dash in competencies.",
+    )
 
     json_ok, json_reason = check_json_parse_valid(parsed_output, raw_output)
-    add("x2_json_parse_valid", json_ok, json_reason, None, json_reason)
+    add(
+        "x2_json_parse_valid",
+        json_ok,
+        json_reason if not json_ok else "ok",
+        None,
+        None if json_ok else json_reason,
+    )
 
-    provider_ok = provider_requested == provider_attempted if provider_requested else True
+    cli_effective = str(cli_provider or provider_requested or "qwen_vllm").strip().lower()
+    provider_ok, req_lbl, att_lbl = resolve_competencies_provider_transport_x2(
+        cli_provider=cli_effective,
+        runtime_generation_status=str(runtime_generation_status),
+        live_preflight_blocked=live_preflight_blocked,
+    )
     add(
         "x2_provider_requested_attempted",
         provider_ok,
-        f"{provider_requested}->{provider_attempted}",
-        "match",
-        "Provider mismatch.",
+        f"{req_lbl}->{att_lbl}",
+        "cli_intent_matches_transport_surface",
+        None
+        if provider_ok
+        else "Provider transport does not match CLI intent (substitution, blocked TCP preflight, or mock).",
     )
-    no_silent_mock = not (provider_requested == "qwen_vllm" and runtime_generation_status == "MOCKED")
+    no_silent_mock = not (cli_effective == "qwen_vllm" and runtime_generation_status == "MOCKED")
     add(
         "x2_no_silent_mock_fallback",
         no_silent_mock,
         runtime_generation_status,
         "REAL_LLM",
-        "Silent mock fallback detected.",
+        None if no_silent_mock else "Silent mock fallback detected.",
+    )
+
+    proof_blob_scan = "\n".join(
+        [
+            raw_output or "",
+            serialized,
+        ]
+    )
+    marker_hits = scan_mock_fixture_markers(proof_blob_scan) if runtime_generation_status == "REAL_LLM" else []
+    markers_clean = len(marker_hits) == 0
+    marker_gate_pass = (runtime_generation_status != "REAL_LLM") or markers_clean
+    marker_observed: Any = (
+        "skipped_not_real_llm" if runtime_generation_status != "REAL_LLM" else (marker_hits or "ok")
+    )
+    add(
+        "x2_no_mock_fixture_markers_in_real_llm_output",
+        marker_gate_pass,
+        marker_observed,
+        "no_mock_fixture_language",
+        None
+        if marker_gate_pass
+        else f"Forbidden mock/test markers in REAL_LLM artifacts: {', '.join(marker_hits)}",
     )
 
     judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    add(
+        "x2_x1d_required_judges_present",
+        judges_ok,
+        judges_reason or "ok",
+        REQUIRED_JUDGE_PROVIDERS,
+        None if judges_ok else judges_reason,
+    )
 
     if x1d_judges:
         blocked_invalid = []
         for judge in x1d_judges:
             if str(judge.get("evaluator_mode", "")).startswith("BLOCKED_"):
-                schema_ok, _ = check_judge_schema_valid(judge)
-                if not schema_ok:
+                schema_ok2, _ = check_judge_schema_valid(judge)
+                if not schema_ok2:
                     blocked_invalid.append(judge.get("provider_key"))
+        schema_blocked_ok = not blocked_invalid
         add(
             "x2_x1d_schema_valid",
-            not blocked_invalid,
-            blocked_invalid,
+            schema_blocked_ok,
+            blocked_invalid if not schema_blocked_ok else "ok",
             [],
-            f"Blocked judges invalid schema: {blocked_invalid}",
+            None if schema_blocked_ok else f"Blocked judges invalid schema: {blocked_invalid}",
         )
     else:
-        add("x2_x1d_schema_valid", False, "no judges", "present", "No judges.")
+        add(
+            "x2_x1d_schema_valid",
+            False,
+            "no judges",
+            "present",
+            "No judges.",
+        )
+
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    if srfs_source_fact_slice_gate_active:
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        coll_co = _srfs_w4.collect_source_fact_ids_from_competencies_struct(competencies, claim_ledger)
+        ok_co, env_co, fail_co = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="competencies",
+            collected_ids=coll_co,
+            allowed_fact_ids=set(allowed_fact_ids),
+        )
+        add(
+            "x2_competencies_source_fact_ids_within_srfs_slice",
+            ok_co,
+            env_co,
+            "srfs_slice_allowlist_exact",
+            fail_co,
+        )
+
+    append_section_input_usage_x2_gates(
+        gates,
+        artifacts_dir=artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/competencies"),
+        allowed_fact_ids=allowed_fact_ids,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=text_claim_coverage,
+    )
+
+    consistency_ok, consistency_bad = competencies_x2_gate_rows_internally_consistent(gates)
+    add(
+        "x2_gate_rows_are_internally_consistent",
+        consistency_ok,
+        consistency_bad or "ok",
+        "pass_rows_have_null_failure_and_fail_rows_have_reason_and_style_observed_values",
+        None
+        if consistency_ok
+        else f"Inconsistent gate rows: {', '.join(consistency_bad)}",
+    )
 
     return gates
 
 
 __all__ = [
+    "check_canonical_competency_terms",
+    "check_structured_term_primary_facts",
+    "competencies_x2_gate_rows_internally_consistent",
     "find_bullet_restatement_term",
+    "resolve_competencies_provider_transport_x2",
     "run_competencies_x2_gates",
     "term_primary_support_overlap",
     "X2GateResult",

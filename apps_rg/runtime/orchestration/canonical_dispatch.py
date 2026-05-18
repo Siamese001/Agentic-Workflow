@@ -12,6 +12,7 @@ import hashlib
 import json
 import uuid
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -23,10 +24,739 @@ from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run i
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import resolve_resume_for_lanes
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
-from apps_rg.runtime.runtime_proof_layout import find_repo_root
+from apps_rg.runtime.runtime_proof_layout import find_repo_root, load_latest_pointer, proof_bucket_for_provider
 
 # V6 terminal codes short values (integrated R4); legacy strings retained.
 _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
+_HEADLINE_SECTION_ID = "headline"
+_EXEC_SUMMARY_SECTION_ID = "executive_summary"
+_UNIFY_BULLETS_SECTION_ID = "unify_bullets"
+_UNIFY_NARRATIVE_SECTION_ID = "unify_narrative"
+_IBM_BULLETS_SECTION_ID = "ibm_bullets"
+_IBM_NARRATIVE_SECTION_ID = "ibm_narrative"
+_COMPETENCIES_SECTION_ID = "competencies"
+
+
+def _effective_lane_provider(raw: str | None) -> str:
+    """Non-empty CLI value wins; empty uses ``APPS_RG_MODULAR_LANE_PROVIDER`` / modular default."""
+    from apps_rg.l2_recipe.r4_generation_mode import resolve_apps_rg_modular_lane_provider
+
+    s = str(raw or "").strip()
+    return s if s else resolve_apps_rg_modular_lane_provider()
+
+
+def _run_competencies_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_test_mock_judges: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only competencies lane — mirrors executive_summary CLI wiring."""
+    from apps_rg.runtime.sections import competencies_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = (
+        str(jp.get("description") or jp.get("title") or "").strip()
+    )
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = lane.BRIEFING_DEFAULT
+
+    args = lane.build_competencies_lane_args(
+        provider=_effective_lane_provider(lane_provider),
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        target_role=str(target_role).strip() or None,
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_competencies_lane_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+        "competencies_cli_output_text": str(ctx.get("output_text") or ""),
+    }
+
+
+def _run_headline_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_test_mock_judges: bool = False,
+    lane_allow_non_allow_exit_zero: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only headline lane via ``apps_rg.runtime.sections.headline_lane``."""
+    from apps_rg.runtime.sections import headline_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = lane.BRIEFING_DEFAULT
+
+    eff_prov = _effective_lane_provider(lane_provider)
+    args = lane.build_headline_lane_args(
+        provider=eff_prov,
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_headline_lane_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": str(ctx.get("output_text") or ""),
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+        "competencies_cli_output_text": "",
+    }
+
+
+def _run_executive_summary_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_provider_resolution_source: str | None,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_test_mock_judges: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only run: same artifacts as legacy dispatch; does not invoke ``dispatch_apps_rg_run``."""
+    from apps_rg.runtime.sections import executive_summary_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = (
+        str(jp.get("description") or jp.get("title") or "").strip()
+    )
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        from apps_rg.runtime.section_cli_defaults import default_targeting_briefing_text
+
+        briefing = default_targeting_briefing_text()
+
+    eff_prov = _effective_lane_provider(lane_provider)
+    from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source
+
+    prov_src = coalesce_lane_provider_resolution_source(
+        explicit=lane_provider_resolution_source,
+        resolved_provider=eff_prov,
+    )
+    args = SimpleNamespace(
+        provider=eff_prov,
+        provider_resolution_source=prov_src,
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        target_role=str(target_role).strip() or None,
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+    if eff_prov == "qwen_vllm":
+        lo, hi = lane.EXEC_SUMMARY_TEMP_RANGE
+        if args.temperature < lo or args.temperature > hi:
+            return {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "error": (
+                    f"temperature {args.temperature} outside executive_summary profile ({lo}-{hi})"
+                ),
+                "x3_disposition": "",
+                "fault": "temperature_range",
+                "artifact_dir": "",
+                "run_id": "",
+                "request_id": "",
+                "l7_how_trace_emitted": False,
+                "terminal_r5": False,
+            }
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_executive_summary_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": ctx.get("output_text", ""),
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+    }
+
+
+def _run_unify_bullets_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_non_allow_exit_zero: bool = False,
+    lane_allow_test_mock_judges: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only unify_bullets lane; legacy ``python -m`` dispatch entry is never imported here."""
+    from apps_rg.runtime.sections import unify_bullets_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = lane.BRIEFING_DEFAULT
+
+    lane_provider_eff = _effective_lane_provider(lane_provider)
+
+    args = SimpleNamespace(
+        provider=lane_provider_eff,
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+    if lane_provider_eff == "qwen_vllm":
+        lo, hi = lane.UNIFY_TEMP_RANGE
+        if args.temperature < lo or args.temperature > hi:
+            return {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "error": (
+                    f"temperature {args.temperature} outside unify_bullets profile ({lo}-{hi})"
+                ),
+                "x3_disposition": "",
+                "fault": "temperature_range",
+                "artifact_dir": "",
+                "run_id": "",
+                "request_id": "",
+                "l7_how_trace_emitted": False,
+                "terminal_r5": False,
+            }
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_unify_bullets_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": ctx.get("output_text", ""),
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+    }
+
+
+def _run_unify_narrative_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_test_mock_judges: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only unify_narrative lane; legacy ``python -m`` dispatch entry is not used."""
+    from apps_rg.runtime.sections import unify_narrative_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = lane.BRIEFING_DEFAULT
+
+    lane_provider_eff = _effective_lane_provider(lane_provider)
+
+    args = SimpleNamespace(
+        provider=lane_provider_eff,
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+    if lane_provider_eff == "qwen_vllm":
+        lo, hi = lane.NARRATIVE_TEMP_RANGE
+        if args.temperature < lo or args.temperature > hi:
+            return {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "error": (
+                    f"temperature {args.temperature} outside unify_narrative profile ({lo}-{hi})"
+                ),
+                "x3_disposition": "",
+                "fault": "temperature_range",
+                "artifact_dir": "",
+                "run_id": "",
+                "request_id": "",
+                "l7_how_trace_emitted": False,
+                "terminal_r5": False,
+            }
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_unify_narrative_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": ctx.get("output_text", ""),
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+    }
+
+
+def _run_ibm_bullets_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_non_allow_exit_zero: bool = False,
+    lane_allow_test_mock_judges: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only ibm_bullets lane via ``ibm_bullets_lane`` (legacy CLI wrapper not invoked)."""
+    from apps_rg.runtime.sections import ibm_bullets_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = lane.BRIEFING_DEFAULT
+
+    lane_provider_eff = _effective_lane_provider(lane_provider)
+
+    args = SimpleNamespace(
+        provider=lane_provider_eff,
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+    if lane_provider_eff == "qwen_vllm":
+        lo, hi = lane.IBM_TEMP_RANGE
+        if args.temperature < lo or args.temperature > hi:
+            return {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "error": (
+                    f"temperature {args.temperature} outside ibm_bullets profile ({lo}-{hi})"
+                ),
+                "x3_disposition": "",
+                "fault": "temperature_range",
+                "artifact_dir": "",
+                "run_id": "",
+                "request_id": "",
+                "l7_how_trace_emitted": False,
+                "terminal_r5": False,
+            }
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_ibm_bullets_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": ctx.get("output_text", ""),
+        "ibm_narrative_cli_output_text": "",
+    }
+
+
+def _run_ibm_narrative_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_test_mock_judges: bool = False,
+    lane_allow_non_allow_exit_zero: bool = False,
+    selected_role_fact_set: str = "",
+) -> dict[str, Any]:
+    """Section-only ibm_narrative lane (``ibm_narrative_dispatch`` module is implementation-only; CLI retired)."""
+    from apps_rg.runtime.sections import ibm_narrative_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = lane.BRIEFING_DEFAULT
+
+    lane_provider_eff = _effective_lane_provider(lane_provider)
+
+    args = SimpleNamespace(
+        provider=lane_provider_eff,
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
+        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        jd_text=jd_text,
+        briefing=briefing,
+        allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
+        selected_role_fact_set=str(selected_role_fact_set or ""),
+    )
+    if lane_provider_eff == "qwen_vllm":
+        lo, hi = lane.IBM_NARRATIVE_TEMP_RANGE
+        if args.temperature < lo or args.temperature > hi:
+            return {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "error": (
+                    f"temperature {args.temperature} outside ibm_narrative profile ({lo}-{hi})"
+                ),
+                "x3_disposition": "",
+                "fault": "temperature_range",
+                "artifact_dir": "",
+                "run_id": "",
+                "request_id": "",
+                "l7_how_trace_emitted": False,
+                "terminal_r5": False,
+            }
+
+    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    ctx = lane.run_ibm_narrative_lane_execution(args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+
+    x3 = ctx["x3"]
+    outcome_authorized = bool(getattr(x3, "pass_", False))
+    exit_status = "success" if outcome_authorized else "error"
+
+    return {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": getattr(x3, "x3_code", ""),
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": ctx.get("output_text", ""),
+    }
+
+
 _BRIEF_FETCH_MAX_BYTES = 2_000_000
 
 
@@ -252,8 +982,163 @@ def run_canonical_apps_rg_from_cli_primitives(
     source_resume_text: str = "",
     generation_mode: str = "strategic_tailor",
     artifact_dir: str = "",
+    section: str = "",
+    lane_provider: str = "",
+    lane_provider_resolution_source: str | None = None,
+    lane_temperature: float = 0.45,
+    lane_x1d_judges: str = "gemini_pro,openai_chatgpt,anthropic_claude",
+    lane_mock_judges: bool = False,
+    lane_allow_non_allow_exit_zero: bool = False,
+    lane_allow_test_mock_judges: bool = False,
+    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Run governed R4 spine for apps_rg; return CLI-shaped result dict."""
+    if str(section).strip().lower() == _HEADLINE_SECTION_ID:
+        return _run_headline_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+    if str(section).strip().lower() == _EXEC_SUMMARY_SECTION_ID:
+        return _run_executive_summary_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_provider_resolution_source=lane_provider_resolution_source,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+    if str(section).strip().lower() == _UNIFY_BULLETS_SECTION_ID:
+        return _run_unify_bullets_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+    if str(section).strip().lower() == _UNIFY_NARRATIVE_SECTION_ID:
+        return _run_unify_narrative_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+    if str(section).strip().lower() == _IBM_BULLETS_SECTION_ID:
+        return _run_ibm_bullets_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+    if str(section).strip().lower() == _IBM_NARRATIVE_SECTION_ID:
+        return _run_ibm_narrative_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+    if str(section).strip().lower() == _COMPETENCIES_SECTION_ID:
+        return _run_competencies_lane_from_cli(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+            lane_provider=lane_provider,
+            lane_temperature=float(lane_temperature),
+            lane_x1d_judges=lane_x1d_judges,
+            lane_mock_judges=lane_mock_judges,
+            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+            selected_role_fact_set=str(selected_role_fact_set or ""),
+        )
+
     raw_request = build_raw_request_for_r4(
         target_company=target_company,
         target_role=target_role,

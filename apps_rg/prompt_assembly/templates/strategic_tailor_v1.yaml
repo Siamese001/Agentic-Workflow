@@ -107,10 +107,13 @@ slot_bodies:
         </executive_summary>
 
         <competencies>
-          GAP_MARKING_REQUIRED: For any JD skill with no candidate_facts match output "[Gap: {skill} -- no supporting evidence]"
-          CLUSTER_ORDER: jd_priority — reorder skill categories so highest-JD-weight categories appear first
-          EVIDENCE_REQUIRED: Every listed competency must be supported by at least 1 candidate_facts entry
-          FORBIDDEN: jd_only_skills_unlabeled, keyword_stuffing, unsupported_trendy_terms
+          MODE: Fact-constrained selection and grouping — not JD/briefing-generated skills.
+          JD/BRIEFING/TITLE/COMPANY/COMPANION: targeting and emphasis only — never proof for emitted terms.
+          GAP_MARKING_OPTIONAL: Unsupported JD/briefing phrases → excluded_jd_skills / gap_notes — do not emit as terms.
+          CLUSTER_ORDER: JD/briefing may influence ordering and labels only within candidate_facts-supported clusters.
+          EVIDENCE_REQUIRED: Every listed competency term must be supported by candidate_facts / allowed bul_* ids only.
+          DISPLAY: Scannable executive capability index — compact noun phrases; no sentence-long impact narratives.
+          FORBIDDEN: jd_only_skills_unlabeled, briefing_only_terms, companion-as-proof, keyword_stuffing, unsupported_trendy_terms
         </competencies>
 
         <experience>

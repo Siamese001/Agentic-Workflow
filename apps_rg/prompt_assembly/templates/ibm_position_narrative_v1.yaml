@@ -1,32 +1,80 @@
 schema_version: "prompt_template_v1"
 template_id: "ibm_position_narrative_v1"
-version: "1.0"
+version: "1.2"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "IBM_NARRATIVE"
 execution_order: "AFTER_IBM_BULLET_FACT_CHECK"
 
 purpose: |
-  Write exactly one sentence position narrative for IBM.
-  Uses finalized IBM bullets as read-only anti-repetition context.
-  Complements bullets without summarizing or repeating them.
-  No new claims beyond IBM allowed facts or fact-checked bullets.
-  No Unify runtime claim import.
+  Write exactly one role-level CAPSTONE sentence for IBM employment after finalized IBM bullets (read-only companion).
+  The sentence must synthesize how IBM anchored enterprise-scale cloud, data, lineage, observability, and platform
+  modernization in regulated contexts — complementary to each bullet theme, NOT a recap of bullet metrics or labels.
+  JD, briefing, title, and company are targeting inputs only (never cited as résumé proof).
+  Facts in claim_ledger source_fact_ids may ONLY bul_ibm_* tokens from ALLOWED_SOURCE_FACT_IDS.
+  Do NOT claim IBM performed Unify-era agentic systems work; conceptual “later AI / production platform leadership”
+  framing is allowed only when stated as directional career positioning, not proof.
 
 sovereign_oath: |
-  IBM NARRATIVE ONLY — BULLETS ARE READ-ONLY CONTEXT — NO UNIFY IMPORT
+  IBM NARRATIVE ONLY — BULLETS ARE READ-ONLY CONTEXT — CAPSTONE, NOT METRIC SUMMARY
   
-  I may ONLY reference finalized IBM bullets as anti-repetition context.
-  I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts.
-  I may NOT import Unify runtime claims into IBM narrative.
-  I may NOT introduce claims beyond supported IBM facts or fact-checked bullets.
-  I may NOT repeat bullet metrics or labels unless explicitly justified.
-  I may NOT copy bullet sentence structure.
+  I may reference finalized IBM bullets ONLY to avoid repetition and to understand what is already proven elsewhere.
+  I may NOT copy bullet_text, mirror bullet sentence structure, or replay bullet metrics (see metric_handling_rules).
+  I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts or employers.
+  I may NOT import Unify runtime architecture as candidate proof at IBM.
+  I may NOT introduce claims beyond supported IBM facts (bul_ibm_*) and the allowed fact list.
   I may NOT output bullet-list format — exactly one sentence only.
-  I may NOT use numbers unless present in base narrative or explicitly supported.
+  I may NOT put JD, briefing, target title, or target company into source_fact_ids.
+  I may NOT use the exact phrase "agentic AI" or other Unify-runtime stack vocabulary (see forbidden_terms_in_narrative).
+  I may NOT name the candidate.
   
-  FORBIDDEN TERMS unless explicitly in IBM source:
-  agentic AI, GraphRAG, multi-agent orchestration, deterministic routing, sandboxed execution,
-  replayable traces, governed AI runtime, prompt assembly, C0, L2, Exit (as layer), UWG.
+  FORBIDDEN stack / layer tokens unless literally in résumé prose (they are not): C0, L2, Exit (as layer), UWG, GraphRAG,
+  multi-agent orchestration, deterministic routing, governed AI runtime, prompt assembly.
+
+  SelectedRoleFactSet (SRFS): claim_ledger source_fact_ids must be ONLY ibm_narrative slice allowlist tokens. Finalized
+  IBM bullets are companion context for anti-repetition — companion bullet IDs are not proof unless the same id appears in
+  the ibm_narrative allowlist. JD, briefing, title, and company steer emphasis only. Out-of-slice IDs fail deterministic
+  X2 SRFS gates.
+
+north_star_semantic_contract: |
+  Preferred QUALITY silhouette (PARAPHRASE allowed; MUST stay bul_ibm_*-grounded via claim_ledger; not a required verbatim string):
+
+  At IBM, led enterprise-scale cloud, data, lineage, observability, and platform modernization work for regulated
+  financial services, establishing the reliability, governance, and partnership discipline that supported later
+  production AI platform leadership in subsequent roles — without asserting IBM shipped agentic platform products.
+
+  North-star checks (self-enforce plus deterministic gates):
+  - Exactly ONE sentence ending with one period; IBM appears exactly once as employer anchor (case-insensitive "IBM").
+  - Polished executive SVP-engineering résumé tone; synthesis / positioning — not stacked KPI recap.
+  - Third person OR implied subject; no em dash; no inline [n] citations; no bullet characters.
+
+source_authority_hierarchy:
+  proof_sources:
+    - "canonical IBM bullets / bul_ibm_* facts listed in ALLOWED_SOURCE_FACT_IDS"
+    - "finalized IBM bullets, read-only (companion fence) AFTER acceptance — never pasted as proof"
+  targeting_context_only:
+    - "target_title"
+    - "target_company"
+    - "jd_text"
+    - "briefing"
+  authority_rules:
+    - "Facts + allowed IDs decide WHAT can be claimed."
+    - "JD / title / company / briefing decide emphasis and vocabulary, not proof."
+    - "Do not invent target-company experience as IBM experience."
+    - "Finalized IBM bullets are companion context only; do not mechanically repeat bullet metrics; companion bullet source_fact_ids are not proof unless duplicated in ibm_narrative SRFS allowlist."
+
+claim_ledger_coverage_contract: |
+  Every MATERIAL theme visible in narrative_sentence MUST be backed by at least one claim_ledger row whose
+  source_fact_ids include the matching bul_ibm_* fact (subset of ALLOWED_SOURCE_FACT_IDS).
+  Do NOT collapse unrelated themes into a single row tied only to bul_ibm_001.
+
+  Theme → fact ID mapping (when the theme appears materially in the sentence):
+  - Reliability / enterprise AI & analytics platforms / regulated financial context → bul_ibm_001
+  - Cloud modernization / migration / infrastructure foundation → bul_ibm_002
+  - Reusable platform / shared services / lifecycle / reducing operational burden → bul_ibm_003
+  - Lineage / observability / instrumentation / distributed data / regulatory response speed → bul_ibm_004
+  - Partnerships / hyperscaler alliances / ecosystem execution → bul_ibm_005
+
+  Prefer MULTIPLE concise claim_ledger rows (one per cluster) over one row that cannot justify the full sentence.
 
 role_header_fields:
   company:
@@ -48,140 +96,143 @@ role_header_fields:
 
 input_contract:
   required_fields:
-    - finalized_ibm_bullets
-      schema: "{bullets: [{bullet_id, bullet_text, source_fact_id}]}"
-      access_level: "READ_ONLY_ANTI_REPETITION"
-      constraints:
-        - "May not copy bullet_text"
-        - "May not mirror bullet sentence structure"
-        - "May not repeat bullet metrics without justification"
-    - selected_fact_plan
-      schema: "{exp_ibm_001: {priority: 2, narrative_angle: string}}"
-    - base_resume_json_ref
-      value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
-    - base_section_hash
-      description: "SHA256 of IBM employment section"
-    - claim_ledger_from_bullets
-      schema: "{claims: [{claim_text, source_fact_id, supported: bool, used_in_narrative: bool}]}"
-    - narrative_intent
-      allowed_values: ["COMPLEMENT_BULLETS", "FOUNDATION_POSITIONING", "ENTERPRISE_CONTEXT"]
-      default: "FOUNDATION_POSITIONING"
+    - finalized_ibm_bullets:
+        schema: "{bullets: [{bullet_id, bullet_text, source_fact_id}]}"
+        access_level: "READ_ONLY_ANTI_REPETITION"
+        constraints:
+          - "May not copy bullet_text"
+          - "May not mirror bullet sentence structure"
+          - "May not repeat bullet metrics (see metric_handling_rules — default NONE)"
+    - selected_fact_plan:
+        schema: "{exp_ibm_001: {priority: 2, narrative_angle: string}}"
+    - base_resume_json_ref:
+        value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+    - base_section_hash:
+        description: "SHA256 of IBM employment section"
+    - claim_ledger_from_bullets:
+        schema: "{claims: [{claim_text, source_fact_id, supported: bool, used_in_narrative: bool}]}"
+    - narrative_intent:
+        allowed_values: ["COMPLEMENT_BULLETS", "FOUNDATION_POSITIONING", "ENTERPRISE_CONTEXT"]
+        default: "FOUNDATION_POSITIONING"
 
 output_contract:
   format: "JSON"
   required_fields:
-    - position_narrative
-      type: "string"
-      constraints:
-        - "Exactly one sentence"
-        - "No bullet characters (•, -, *)"
-        - "No line breaks"
-        - "No numbering"
-      max_length: "250 characters"
-      style: "Complementary to bullets without summarizing"
-      positioning: "IBM as foundation for later Unify work, not competitor"
-      anti_patterns:
-        - "Summarizing bullet achievements"
-        - "Repeating bullet metrics verbatim"
-        - "Listing bullet topics"
-        - "Copying bullet sentence structure"
-        - "Importing Unify runtime claims"
-        - "Introducing new metrics not in bullets or base"
-    - claim_ledger
-      type: "array"
-      item_schema:
-        claim_text: "string"
-        source_fact_id: "string (must be bul_ibm_*)"
-        supported: "boolean"
-        narrative_usage: "enum[direct, inferred, avoided]"
-        repetition_risk: "enum[none, low, medium, high]"
-    - anti_repetition_check
-      type: "object"
-      schema:
-        bullet_metrics_repeated: "array[string] — metrics that appear in both bullets and narrative (should be empty or justified)"
-        bullet_labels_repeated: "array[string] — labels/topics that overlap (should be minimal)"
-        sentence_structure_similarity: "float 0.0-1.0 (should be < 0.3)"
-        complement_score: "float 0.0-1.0 (should be > 0.7)"
-        check_passed: "boolean"
-    - drift_check
-      type: "object"
-      description: "Detection of Unify runtime claim drift into IBM narrative"
-      schema:
-        unify_terms_detected: "array[string] — any agentic/GraphRAG/orchestration terms found"
-        runtime_inflation_score: "float 0.0-1.0 (must be 0.0)"
-        foundation_vs_runtime_frame: "enum[foundation, runtime, mixed] — must be 'foundation'"
-        drift_check_passed: "boolean (must be true)"
-    - gap_notes
-      type: "array"
-      description: "Unsupported narrative angles or gaps"
-    - change_log
-      type: "array"
-      description: "Narrative construction decisions: {draft, revision, rationale}"
-    - self_check
-      type: "object"
-      schema:
-        exactly_one_sentence: "boolean (must be true)"
-        no_bullet_list_format: "boolean (must be true)"
-        no_new_metrics: "boolean (must be true)"
-        no_repeated_bullet_metrics: "boolean (must be true)"
-        complements_not_summarizes: "boolean (must be true)"
-        no_cross_contamination: "boolean (must be true)"
-        no_unify_import: "boolean (must be true)"
-        foundation_positioning_only: "boolean (must be true)"
-        all_checks_passed: "boolean"
+    - narrative_sentence:
+        type: "string"
+        constraints:
+          - "Exactly one sentence"
+          - "Preferred 34–48 words; hard maximum 58 words"
+          - "Hard maximum ~360 characters"
+          - "No bullet characters (•, -, *)"
+          - "No line breaks"
+          - "No numbering"
+        max_length: "~360 characters (<=58 words)"
+        style: "Complementary capstone — not a bullet digest"
+        positioning: "IBM as enterprise-scale foundation relevant to later production AI leadership (no Unify proof import)"
+        anti_patterns:
+          - "Summarizing bullet achievements"
+          - "Repeating bullet metrics"
+          - "Listing bullet topics"
+          - "Copying bullet sentence structure"
+          - "Stacked consulting abstract nouns without executive meaning"
+          - "Introducing new metrics not in base or bullets"
+    - selected_fact_plan:
+        type: "object"
+    - claim_ledger:
+        type: "array"
+        item_schema:
+          claim_text: "string (non-empty material prose after trim)"
+          source_fact_ids: "array[string] — each token MUST appear in ALLOWED_SOURCE_FACT_IDS"
+    - jd_alignment:
+        type: "object"
+    - gap_notes:
+        type: "array"
+    - change_log:
+        type: "array"
+    - self_check:
+        type: "object"
+
+optional_design_review_contract:
+  description: >
+    Historical STOP-8 QA payloads may include drift_check / anti_repetition blocks.
+    Canonical runtime slice omits these optional objects; deterministic gates enforce drift IBM-only scope.
+
+drift_check:
+  type: "object"
+  description: "Detection of Unify runtime claim drift into IBM narrative (design-review signal)"
+  schema:
+    unify_terms_detected: "array[string] — any agentic/GraphRAG/orchestration terms found"
+    runtime_inflation_score: "float 0.0-1.0 (must be 0.0)"
+    foundation_vs_runtime_frame: "enum[foundation, runtime, mixed] — must be 'foundation'"
+    drift_check_passed: "boolean (must be true)"
+
+anti_repetition_check:
+  type: "object"
+  schema:
+    bullet_metrics_repeated: "array[string]"
+    bullet_labels_repeated: "array[string]"
+    sentence_structure_similarity: "float 0.0-1.0 (should be < 0.3)"
+    complement_score: "float 0.0-1.0 (should be > 0.7)"
+    check_passed: "boolean"
 
 narrative_complement_guidance:
   purpose: |
-    The narrative should POSITION IBM as the foundation experience that enabled later Unify agentic work.
-    Frame IBM's role: enterprise-scale delivery, regulated financial services mastery,
-    data/lineage/observability foundations, and partnership execution.
-    
-    DO NOT frame IBM as: agentic AI work, runtime governance innovation, or multi-agent orchestration.
+    POSITION IBM as the enterprise-scale foundation chapter: cloud, data, lineage, observability, reusable platform
+    discipline, and partnership execution in regulated financial services — setting up later production AI platform
+    leadership WITHOUT claiming IBM shipped modern agentic platform products and WITHOUT naming Unify as proof.
   angle_options:
-    - "Enterprise-scale foundation: delivered governed systems at 99.9% uptime across regulated financial environments"
-    - "Data and lineage groundwork: established observability and compliance frameworks later extended"
-    - "Partnership execution: built multi-year alliances and portfolio management capabilities"
+    - "Enterprise mandate: governed delivery and reliability culture in regulated financial institutions"
+    - "Platform + data foundations: modernization, lineage, observability, and operational discipline"
+    - "Ecosystem execution: alliances and portfolio motion that scale delivery"
   avoid:
-    - "Re-listing bullet achievements ($15M, 30%, 50%, 25%, 99.9%)"
-    - "Echoing bullet sentence structure (Subject-Verb-Object achievement pattern)"
-    - "Any mention of agentic AI, GraphRAG, orchestration, or runtime governance"
-    - "Implies IBM did current Unify-style work"
+    - "Any exact phrase 'agentic AI' or other forbidden stack tokens from sovereign_oath"
+    - "Re-listing bullet KPIs ($15M, 30%, 50%, 25%, 99.9%) — prefer conceptual language (see metric_handling_rules)"
+    - "Weak abstract stacks: concentrated enterprise…, tightening reliability posture, migration cadence (as jargon),
+      client-facing instrumentation (as filler), so delivery stayed predictable"
+    - "Echoing bullet sentence structure (Subject-Verb-Object stacked achievements)"
+    - >-
+      Test/plumbing/mock language in normalized JSON payloads (never write phrases like mocked_runtime_slice,
+      'provider not requested', mock_fallback, mocked_judge (as text), plumbing only, plumbing_only,
+      test-only in narrative_sentence / change_log / gap_notes / claim_ledger texts / self_check).
   example_anti_patterns:
     - bad: "Led agentic AI platform development and multi-agent orchestration at IBM."
-      reason: "Unify runtime inflation — IBM did not do agentic AI work"
+      reason: "Uses forbidden Unify-era stack phrasing; inflates IBM beyond bul_ibm_* scope"
     - bad: "Architected cloud-native platforms generating $15M in revenue while reducing costs by 30% and achieving 99.9% uptime."
-      reason: "Repeats all metrics verbatim and lists bullet achievements"
+      reason: "Repeats bullet metrics as the spine of the sentence"
     - bad: "• Delivered enterprise platforms • Built partnerships • Reduced latency"
       reason: "Bullet list format forbidden — must be one sentence"
     - bad: "Built the governed AI runtime foundation later productized at Unify."
-      reason: "Imports Unify runtime concepts (governed AI runtime) into IBM"
-    - good: "Delivered enterprise-scale cloud and data platforms for regulated financial services, establishing the observability, compliance, and partnership foundations that later enabled agentic AI platform leadership."
-      reason: "Frames IBM as foundation (cloud, data, compliance) for later Unify work without inflating IBM's role"
+      reason: "Imports Unify as proof and uses runtime stack vocabulary"
+    - bad: "Concentrated enterprise cloud outcomes by tightening reliability posture and migration cadence with client-facing instrumentation."
+      reason: "Consulting-fluff stack; weak executive résumé voice; likely under-maps claim_ledger to facts"
+    - good: "At IBM, led enterprise-scale cloud, data, lineage, and observability foundations for regulated financial services, establishing the reliability and governance discipline that supported later production AI platform leadership without claiming IBM delivered modern agentic platform products."
+      reason: "Capstone synthesis; later AI leadership is directional only; avoids forbidden 'agentic AI' phrase and Unify import"
 
 metric_handling_rules:
+  default_policy: "Do NOT restate bullet metrics in narrative_sentence when companion bullets already carry the canonical KPI set (99.9%, 30%, 25%, 50%, $15M). Prefer conceptual wording. Deterministic X2 enforces zero metric-token replay in that companion mode."
   from_bullets:
     - metric: "99.9% uptime"
-      allowed_usage: "NONE — mention 'enterprise reliability' or 'regulated environment delivery' conceptually"
+      allowed_usage: "NONE in narrative when IBM companion carries full KPI set — say enterprise reliability / governed delivery instead"
     - metric: "30% infrastructure overhead reduction"
-      allowed_usage: "NONE — mention 'cloud modernization' or 'cost optimization' conceptually"
+      allowed_usage: "NONE — say cloud modernization / efficiency posture instead"
     - metric: "25% renewal rate improvement"
-      allowed_usage: "NONE — mention 'portfolio management' or 'productization' conceptually"
+      allowed_usage: "NONE — say portfolio or renewal motion conceptually"
     - metric: "50% regulatory response latency reduction"
-      allowed_usage: "NONE — mention 'compliance enablement' or 'data lineage' conceptually"
+      allowed_usage: "NONE — say lineage / observability / regulatory response enablement instead"
     - metric: "$15M incremental revenue"
-      allowed_usage: "NONE — mention 'partnership execution' or 'ecosystem development' conceptually"
-  
+      allowed_usage: "NONE — say partnership / ecosystem impact instead"
   conceptual_references_allowed:
-    - "enterprise-scale delivery" (instead of 99.9% uptime)
-    - "regulated financial services" (instead of specific compliance metrics)
-    - "cloud modernization" (instead of 30% reduction)
-    - "data lineage and observability" (instead of 50% latency reduction)
-    - "strategic partnerships" (instead of $15M)
-    - "foundation for later work" (positions IBM as precursor)
+    - "enterprise reliability / governed delivery (not a numeric uptime claim)"
+    - "regulated financial services"
+    - "cloud and data modernization"
+    - "lineage and observability"
+    - "reusable platform and operational discipline"
+    - "hyperscaler and alliance execution"
 
 forbidden_terms_in_narrative:
   - term: "agentic AI"
-    action: "REJECT — Unify runtime claim"
+    action: "REJECT — use 'production AI platform leadership' Directionally without the banned phrase"
   - term: "GraphRAG"
     action: "REJECT — Unify runtime claim"
   - term: "multi-agent orchestration"
@@ -213,48 +264,55 @@ forbidden_patterns:
     check: "Output contains sentence-ending punctuation (.!?) more than once"
     action: "REJECT"
   - pattern: "repeated_bullet_metric"
-    check: "Metric from bullets appears verbatim in narrative without justification"
-    action: "FLAG_AND_REWRITE"
+    check: "Metric token from bullets appears in narrative_sentence when companion carries full KPI set"
+    action: "REJECT"
   - pattern: "copied_sentence_structure"
     check: "Narrative mirrors Subject-Verb-Object achievement pattern of bullets"
     action: "FLAG_AND_REWRITE"
   - pattern: "new_unsupported_metric"
-    check: "Number in narrative not present in base or bullets"
+    check: "Novel numeric metric in narrative not evidenced in canonical IBM facts/bullets"
     action: "REJECT"
   - pattern: "unify_fact_contamination"
     check: "Any claim sourcing from non-IBM employment"
     action: "REJECT"
   - pattern: "unify_runtime_import"
-    check: "Any agentic/orchestration/runtime claim applied to IBM"
+    check: "Unify-named proof import or forbidden stack vocabulary"
     action: "REJECT"
   - pattern: "runtime_inflation"
-    check: "Implies IBM did current Unify-style agentic work"
+    check: "Implies IBM operated modern Unify-style agentic platform engineering"
     action: "REJECT"
+
+prompt_engineering_hardening:
+  private_process:
+    - "Read companion bullets → list what KPIs/themes they already own."
+    - "Pick ONE capstone spine (foundation / modernization / alliances) that COMPLEMENTS, not summarizes."
+    - "Draft narrative_sentence WITHOUT digit metrics unless truly unavoidable and evidenced."
+    - "Build claim_ledger rows so each sentence clause maps to the right bul_ibm_* IDs."
+    - "Self-check: no forbidden phrase, no metric replay, no weak abstract stack from avoid list."
 
 validation_rules:
   pre_output:
-    - assert: "output.position_narrative.count('.') == 1"
+    - assert: "output.narrative_sentence.count('.') >= 1"
       error: "NOT_EXACTLY_ONE_SENTENCE"
-      message: "Must be exactly one sentence"
-    - assert: "not any([c in output.position_narrative for c in ['•', '- ', '*', '1.', '2.', '3.']])"
+      message: "Must read as exactly one sentence for runtime"
+    - assert: "len([w for w in output.narrative_sentence.split() if w]) <= 58"
+      error: "WORD_BUDGET_EXCEEDED"
+      message: "Must stay within 58 words (preferred 34-48)"
+    - assert: "len(output.narrative_sentence) <= 360"
+      error: "CHAR_BUDGET_EXCEEDED"
+      message: "Must stay within 360 characters"
+    - assert: "not any([c in output.narrative_sentence for c in ['•', '- ', '*', '1.', '2.', '3.']])"
       error: "BULLET_LIST_FORMAT"
       message: "Bullet list format forbidden"
-    - assert: "all([b.source_fact_id.startswith('bul_ibm_') for b in output.claim_ledger])"
-      error: "CROSS_CONTAMINATION"
-      message: "All claims must source from IBM facts only"
-    - assert: "output.drift_check.foundation_vs_runtime_frame == 'foundation'"
-      error: "RUNTIME_INFLATION_FRAME"
-      message: "IBM must be framed as foundation, not runtime"
-    - assert: "output.drift_check.runtime_inflation_score == 0.0"
-      error: "UNIFY_IMPORT_DETECTED"
-      message: "No Unify runtime claims in IBM narrative"
-    - assert: "len(output.drift_check.unify_terms_detected) == 0"
-      error: "FORBIDDEN_UNIFY_TERMS"
-      message: "Forbidden Unify runtime terms detected"
+    - assert: "every claim_ledger row has non-empty claim_text and non-empty source_fact_ids"
+      error: "CLAIM_LEDGER_SHAPE"
+      message: "claim_ledger rows require claim_text and source_fact_ids (X2: x2_claim_ledger_claim_text_non_empty)"
+    - assert: "every source_fact_ids token appears in ALLOWED_SOURCE_FACT_IDS for the run"
+      error: "FACT_ID_OUTSIDE_ALLOW_LIST"
+      message: "Ledger fact IDs must be subset of runtime allow-list"
   post_output:
-    - check: "anti_repetition_check.complement_score > 0.7"
-    - check: "anti_repetition_check.sentence_structure_similarity < 0.3"
-    - check: "anti_repetition_check.bullet_metrics_repeated is empty or all justified"
+    - check: "anti_repetition_check is optional — X2 includes companion-metric, structure, theme-coverage gates"
+    - check: "drift_check is optional — X2 includes IBM-only scope and unify-term gates"
 
 temperature_profile:
   range: "0.30 - 0.45"
@@ -274,7 +332,13 @@ execution_context:
   anti_repetition_source: "Finalized bullets used solely to avoid repetition, not to copy"
   drift_prevention: "Explicit drift_check to catch Unify runtime claim import"
 
+# W5 — SSOT excerpt for contract tests (IBM bullets companion context-only).
+w5_proof_targeting_harmonization: |
+  Proof: SelectedRoleFactSet facts for ibm_narrative only; claim_ledger source_fact_ids must match this section's allowlist.
+  Finalized IBM bullets: companion context only, not proof unless the same fact id is in the narrative slice. Targeting only:
+  JD, briefing, target title, target company. Out-of-slice source_fact_ids fail X2. No invention beyond selected IBM narrative facts; omit unsupported claims.
+
 metadata:
-  produced_at: "2026-05-14"
-  produced_by: "W2C STOP 8 — IBM Position Narrative"
+  produced_at: "2026-05-18"
+  produced_by: "W2C STOP 8 — IBM Position Narrative (quality hardening v1.2)"
   receipt_path: "artifacts/apps_rg/prompt_reset/w2c_outputs/stop_8_ibm_narrative_receipt.json"

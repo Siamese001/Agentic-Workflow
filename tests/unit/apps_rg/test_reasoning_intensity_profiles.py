@@ -32,8 +32,12 @@ def test_locked_sections_are_t0() -> None:
 
 
 def test_critical_sections_map_to_t3() -> None:
-    for lane in ("headline", "competencies", "unify_narrative", "unify_bullets"):
+    for lane in ("competencies", "unify_narrative", "unify_bullets"):
         assert section_reasoning_profile(lane).tier is ReasoningIntensityTier.T3_CRITICAL_SECTION
+
+
+def test_headline_singleton_lane_is_t0_locked_fact() -> None:
+    assert section_reasoning_profile("headline").tier is ReasoningIntensityTier.T0_LOCKED_FACT
 
 
 def test_ibm_sections_map_to_t2() -> None:
@@ -137,6 +141,18 @@ def test_orchestration_not_forwarded_snapshot_on_http_body() -> None:
     ref_loop = json.loads(loops["proved_reference"])
     assert ref_loop["loops_requested"] >= 1
     assert ref_loop["loops_completed"] == 0
+
+
+def test_softened_t0_headline_allows_quality_cert_path_like_http_singleton() -> None:
+    orch = dict(profile_to_requested_kw(section_reasoning_profile("headline")))
+    plan = build_apps_rg_http_reasoning_plan(merged_requested_kw=orch, profile=section_reasoning_profile("headline"))
+    rec = resolve_gateway_receipt(
+        plan,
+        TransportCapabilities(frozenset({"temperature", "max_tokens"})),
+        {"temperature": float(orch["temperature"]), "max_tokens": 900},
+    )
+    assert rec.aggregate_blocked is False
+    assert rec.quality_certification_denied is False
 
 
 def test_softened_t2_allows_positive_quality_cert_aggregate_path() -> None:

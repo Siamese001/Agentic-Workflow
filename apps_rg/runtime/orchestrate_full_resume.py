@@ -11,16 +11,24 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
+from apps_rg.l2_recipe.modular_resume_generation import LANE_DISPATCH_MODULES
 from apps_rg.runtime.locked_copy.locked_copy_manifest import sha256_hex
+from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
+from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.section_cli_defaults import (
+    CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+    resolve_allow_non_allow_exit_zero,
+)
+from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 
 RUNTIME_PROOFS = "artifacts/apps_rg/runtime_proofs"
 PLANNED_DOCX_REL = f"{RUNTIME_PROOFS}/docx/amit_ayer_resume_v1.docx"
 POINTER_PATH = Path("apps_rg/resume/base/active_base_resume_pointer.json")
 CANONICAL_BASE_RESUME_REPO_REL = Path("apps_rg/resume/base/amit_ayer_base_resume_v1.json")
 
-from apps_rg.l2_recipe.modular_resume_generation import LANE_DISPATCH_MODULES
-
+# Retained for logging / artifact metadata parity (historical module names).
 LANE_MODULES: tuple[str, ...] = LANE_DISPATCH_MODULES
+SECTION_ORDER: tuple[str, ...] = GENERATED_LANES
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -204,7 +212,6 @@ def run_orchestration(
     allow_non_allow_exit_zero: bool,
     mock_judges: bool,
     allow_test_mock_judges: bool,
-    allow_test_mock_provider: bool,
     jd_text: str | None,
     briefing: str | None,
     base_resume: Path | None,
@@ -212,11 +219,10 @@ def run_orchestration(
 ) -> dict[str, Any]:
     repo = repo.resolve()
     pv = str(provider or "").strip().lower()
-    if pv == "mock" and not allow_test_mock_provider:
+    if pv and pv != "qwen_vllm":
         raise ValueError(
-            "`--provider mock` requires `--allow-test-mock-provider` for orchestrated lane subprocesses. "
-            "Mock provider is test-only plumbing evidence and is not runtime proof. "
-            "Runtime proof requires REAL_LLM generation (`--provider qwen_vllm`)."
+            f"Unsupported orchestrator --provider {provider!r} (expected qwen_vllm). "
+            "Offline lane tests: set APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1 in the environment."
         )
     if mock_judges and not allow_test_mock_judges:
         raise ValueError(
@@ -226,28 +232,45 @@ def run_orchestration(
     eff_abs, default_used, base_resume_path_posix, base_resume_hash = validate_base_resume_for_orchestration(repo, base_resume)
     restore_pointer = _merge_active_resume_pointer(repo, eff_abs)
     try:
-        for mod in LANE_MODULES:
-            lane_argv = [
-                sys.executable,
-                "-m",
-                mod,
-                "--provider",
-                provider,
-                "--x1d-judges",
-                x1d_judges,
-            ]
-            if pv == "mock":
-                lane_argv.append("--allow-test-mock-provider")
-            if allow_non_allow_exit_zero:
-                lane_argv.append("--allow-non-allow-exit-zero")
-            if mock_judges:
-                lane_argv.append("--mock-judges")
-                lane_argv.append("--allow-test-mock-judges")
-            if jd_text is not None:
-                lane_argv.extend(["--jd-text", jd_text])
-            if briefing is not None:
-                lane_argv.extend(["--briefing", briefing])
-            _run_subprocess(lane_argv, cwd=repo, label=f"dispatch:{mod}")
+        section_allow_exit = resolve_allow_non_allow_exit_zero(allow_non_allow_exit_zero)
+        jd_pass = str(jd_text or "").strip()
+        br_pass = str(briefing or "").strip()
+
+        def _lane_exit_code(res: dict[str, Any]) -> int:
+            if res.get("fault") == "temperature_range":
+                return 2
+            if section_allow_exit:
+                return 0
+            authorized = bool(res.get("outcome_authorized"))
+            if str(res.get("exit_status") or "") == "success" and authorized:
+                return 0
+            return 2
+
+        for section in SECTION_ORDER:
+            res = run_canonical_apps_rg_from_cli_primitives(
+                target_company="",
+                target_role="",
+                jd="",
+                job_description_ref="",
+                job_description_text=jd_pass,
+                manual_brief=br_pass,
+                resume_path="",
+                source_resume_text="",
+                generation_mode="strategic_tailor",
+                artifact_dir="",
+                section=section,
+                lane_provider=provider,
+                lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+                lane_temperature=default_temperature_for_section(section),
+                lane_x1d_judges=x1d_judges,
+                lane_mock_judges=bool(mock_judges),
+                lane_allow_non_allow_exit_zero=allow_non_allow_exit_zero,
+                lane_allow_test_mock_judges=allow_test_mock_judges,
+            )
+            rc = _lane_exit_code(res if isinstance(res, dict) else {})
+            if rc != 0:
+                tail = str((res or {}).get("error") or "")[-4000:] if isinstance(res, dict) else ""
+                raise RuntimeError(f"canonical:{section} failed (exit {rc}): {tail}")
 
         _run_subprocess([sys.executable, "-m", "apps_rg.runtime.reports.generated_lane_rollup"], cwd=repo, label="rollup")
         _run_subprocess([sys.executable, "-m", "apps_rg.runtime.locked_copy.locked_copy_builder"], cwd=repo, label="locked_copy")
@@ -364,7 +387,7 @@ def run_orchestration(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="apps_rg end-to-end resume proof + DOCX refresh (seven lanes → package X3).")
-    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="qwen_vllm")
+    parser.add_argument("--provider", choices=["qwen_vllm"], default="qwen_vllm")
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
     parser.add_argument("--mock-judges", action="store_true", help="Forward to lanes (requires `--allow-test-mock-judges`).")
     parser.add_argument(
@@ -373,14 +396,6 @@ def main(argv: list[str] | None = None) -> int:
         help=(
             "Required when using `--mock-judges`: forwards test-only hatch to each lane subprocess. "
             "Mock judges cannot produce runtime proof."
-        ),
-    )
-    parser.add_argument(
-        "--allow-test-mock-provider",
-        action="store_true",
-        help=(
-            "Required when using `--provider mock`: forwards `--allow-test-mock-provider` to each lane subprocess. "
-            "Plumbing-only; not REAL_LLM runtime proof."
         ),
     )
     parser.add_argument("--allow-non-allow-exit-zero", action="store_true")
@@ -415,7 +430,6 @@ def main(argv: list[str] | None = None) -> int:
             allow_non_allow_exit_zero=args.allow_non_allow_exit_zero,
             mock_judges=args.mock_judges,
             allow_test_mock_judges=args.allow_test_mock_judges,
-            allow_test_mock_provider=args.allow_test_mock_provider,
             jd_text=jd_txt,
             briefing=br_txt,
             base_resume=args.base_resume,

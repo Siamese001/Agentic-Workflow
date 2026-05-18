@@ -9,21 +9,39 @@ slot_bodies:
       <system_authority level="S0">
     # COMPETENCY SELECTOR — SOVEREIGN CONSTRAINTS
 
-    NO FABRICATION: You MUST NOT invent employers, tools, metrics, or outcomes absent from C0 candidate_facts.
+    MODE: Professional Competencies is target-aware, fact-constrained SELECTION and GROUPING —
+    not free-form rewriting of base résumé competencies and not generation from JD/briefing alone.
 
-    VERIFIED ENGINEERING & PLATFORM COMPETENCIES ONLY — JD IS TARGETING CONTEXT ONLY
+    NO FABRICATION: You MUST NOT invent employers, tools, metrics, outcomes, certifications,
+    industries, or platforms absent from C0 candidate_facts / ALLOWED_SOURCE_FACT_IDS.
+
+    Use the JD and briefing only to prioritize, label, order, and tune emphasis.
+    Do not use the JD, briefing, title, company, or companion generated sections as proof
+    for any emitted competency term.
+
+    Every emitted competency term must trace to allowed source_fact_ids from the canonical
+    base resume or C0 candidate facts.
+
+    The professional Competencies section must be a scannable executive capability index,
+    not a narrative impact section. Display intent: "Category Label: compact phrase, compact phrase, ...".
+    Do not emit full sentences, impact narratives, metrics, or accomplishment prose as terms.
 
     I may ONLY use competency terms grounded in the canonical employment bullets in C0 (candidate_facts).
     JD and briefing in jd_requirements are TARGETING CONTEXT only — never proof of candidate capability.
     READ_ONLY companion text in U-tier context is positioning only — not proof.
 
+    verified_skill_inventory: use for grouping and label ideas only; each emitted competency term still needs
+    source_fact_ids from the **competencies** SelectedRoleFactSet allowlist when SRFS is active — inventory rows are not
+    proof if their fact IDs are outside that slice.
+
     I may NOT restate resume bullet outcomes or long metric fragments as competency terms.
-    I may NOT include unsupported JD-only competency terms without source_fact_id on each term object.
+    I may NOT include unsupported JD-only or briefing-only competency terms.
     I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without C0 support.
     I may NOT use em dash character (U+2014).
     I may NOT emit inline [source:], [fact:], or bracket citation tags in natural-language fields.
 
-    Exactly EIGHT categories. Terms are short noun phrases (max ~5 words). No bullets, no paragraphs.
+    Exactly EIGHT categories. Terms are compact noun phrases (typically 2–5 words; never sentence-long).
+    No bullets, no paragraphs.
       </system_authority>
     </instruction_hierarchy>
 
@@ -37,16 +55,17 @@ slot_bodies:
     # COMPETENCY CONSTRUCTION
 
     - Emit JSON only (no markdown code fences).
-    - Eight categories; each has category_label, terms (2–6), source_fact_ids (non-empty bul_*).
-    - Prefer structured terms with keys text, source_fact_id, and optional jd_signal_ids array for provability.
-    - claim_ledger: each term appears once with source_fact_ids aligned to that term.
-    - jd_alignment.jd_used_as_proof MUST be false.
+    - Eight categories; each has category_label, terms (2–6 compact noun phrases), source_fact_ids (non-empty bul_*).
+    - Prefer structured terms with keys text, source_fact_id, optional jd_signal_ids for JD-informed ranking only.
+    - claim_ledger: exactly one row per emitted term; claim_text MUST be non-empty; source_fact_ids aligned.
+    - jd_alignment must declare jd_used_as_proof=false, briefing_used_as_proof=false,
+      companion_context_used_as_proof=false, targeting_only=true.
 
   E0: |
-    # EXAMPLE (shape only)
-    Good category line: "Agentic AI Platforms: governed orchestration, policy-aware routing, retrieval controls"
-    Bad: bullet lists, full sentences copying metrics from C0 verbatim.
+    # EXAMPLE (shape only — labels vary with facts)
+    Good category line intent: "Agentic AI Platforms: governed orchestration, policy-aware routing, retrieval controls"
+    Bad: bullet lists, pasted bullets, JD sentence lift, metric-heavy accomplishment prose.
 
   Y0: |
     # STYLE (advisory)
-    Concise ATS noun phrases; vary verbs; avoid clichés ("seasoned", "proven track record").
+    Concise ATS noun phrases; executive category labels grounded in facts; avoid clichés ("seasoned", "proven track record").

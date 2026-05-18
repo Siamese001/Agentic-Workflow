@@ -6,6 +6,11 @@ from typing import Any
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
+from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
+from apps_rg.runtime.dispatch.executive_summary_pa import (
+    _ordered_allowed_source_fact_ids,
+    format_allowed_source_fact_ids_contract,
+)
 from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     BULLETS_R0,
     jd_non_proof_block,
@@ -14,12 +19,31 @@ from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
 from apps_rg.runtime.validators.unify_bullets_x2 import PROTECTED_BULLET_DEFAULT
 
 
-def _fact_lines(runtime_payload: dict[str, Any]) -> str:
-    facts = runtime_payload["selected_fact_plan"]["facts"]
-    return "\n".join(
+def _candidate_facts_block(runtime_payload: dict[str, Any]) -> str:
+    plan = runtime_payload.get("selected_fact_plan") or {}
+    facts = list(plan.get("facts") or [])
+    allowed_ids_list = _ordered_allowed_source_fact_ids(runtime_payload, facts)
+    allowed_block = format_allowed_source_fact_ids_contract(allowed_ids_list)
+    fact_lines = "\n".join(
         f"- {fact['fact_id']}: {fact['claim_text']}"
         + (f" | metric: {fact['metric_raw']}" if fact.get("metric_raw") else "")
         for fact in facts
+    )
+    unify_id_hygiene = (
+        "\nUNIFY FACT-ID HYGIENE (gate x2_unify_only_fact_scope checks every bullets[].source_fact_ids "
+        "and claim_ledger[].source_fact_ids token):\n"
+        '- Prefix must be exactly bul_unify_ with no extra underscores inside that prefix '
+        '(letters u-n-i-f-y must be contiguous).\n'
+        '- INVALID typo observed on real runs: bul_un_ify_NNN_metric_* '
+        "(underscore between 'un' and 'ify') — fails fact-scope gate.\n"
+        '- VALID metric satellites match allowed lines exactly, e.g. bul_unify_006_metric_<hash>.\n'
+        "- bullets[].source_fact_ids must mirror claim_ledger[].source_fact_ids for the same bullet "
+        "(same strings; no stray typo in bullets while ledger is correct).\n"
+    )
+    return (
+        f"{allowed_block}{unify_id_hygiene}\n"
+        "CANONICAL UNIFY FACTS (canonical starting bullets / fact pool — rewrite from these):\n"
+        f"{fact_lines}"
     )
 
 
@@ -53,7 +77,12 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "# Bullet Requirements\n"
         "OUTPUT: exactly 6 bullets. bullet_id MUST be bul_unify_001 through bul_unify_006, never B1/B2 aliases.\n"
         "Each bullet object: bullet_id, bullet_text, rewrite_intensity, has_metric, metric_raw, source_fact_ids.\n"
-        "claim_ledger MUST list every bullet with claim_text and source_fact_ids.\n"
+        "claim_ledger MUST list every bullet as its own ledger row.\n"
+        "Each claim_ledger row MUST include claim_text as a non-null, non-empty string after trim (material prose).\n"
+        "Whitespace-only claim_text is invalid.\n"
+        "Every row is checked by deterministic gate x2_claim_ledger_claim_text_non_empty before X3 aggregation.\n"
+        "Every source_fact_ids entry must match ALLOWED_SOURCE_FACT_IDS pinned in C0 candidate_facts exactly "
+        "(character-for-character; typos such as bul_un_ify_* instead of bul_unify_* fail X2).\n"
         "DISTRIBUTION: 2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED, max HEAVY=3, min LIGHT_PROTECTED=1.\n"
         f"Protected bullet {PROTECTED_BULLET_DEFAULT} must be LIGHT_PROTECTED and preserve $22M, 20%, 8 to 28 metrics.\n"
         "Preserve cycle-time metric in bul_unify_004: six months to three weeks.\n"
@@ -75,7 +104,7 @@ def compile_unify_bullets_prompt(
     run_id: str,
 ) -> SectionCompiledPrompt:
     slots = load_w7_shell_slot_bodies()
-    fact_lines = _fact_lines(runtime_payload)
+    candidate_body = _candidate_facts_block(runtime_payload)
     assembly = PromptAssemblyInput(
         template_id="strategic_tailor_v1",
         request_id=run_id,
@@ -88,7 +117,7 @@ def compile_unify_bullets_prompt(
         i0_instructions=_legacy_i0(runtime_payload),
         c0_candidate_facts=EvidenceSource(
             source_type="candidate_facts",
-            content="CANONICAL UNIFY FACTS:\n" + fact_lines,
+            content=candidate_body,
             confidence=1.0,
             source_tag="candidate_facts",
         ),
@@ -104,7 +133,9 @@ def compile_unify_bullets_prompt(
         r0_response_schema=BULLETS_R0,
         render_context={"section_id": "unify_bullets"},
     )
-    return compile_section_prompt(assembly, section_id="unify_bullets")
+    compiled = compile_section_prompt(assembly, section_id="unify_bullets")
+    ids = list(runtime_payload.get("allowed_fact_ids") or [])
+    return augment_section_compiled_with_input_authority(compiled, allowed_source_fact_ids=ids)
 
 
 __all__ = ["compile_unify_bullets_prompt"]

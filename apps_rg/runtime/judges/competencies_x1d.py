@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_x1d import (
@@ -98,6 +99,7 @@ def run_competencies_judges(
     judge_keys: list[str],
     companion_context: str = "",
     mode: str = "blocked_if_unavailable",
+    artifact_base: Path | None = None,
 ) -> list[JudgeOutput]:
     competencies_json = json.dumps(competencies, separators=(",", ":"), ensure_ascii=False)
     input_payload = {
@@ -158,11 +160,29 @@ def run_competencies_judges(
 
         try:
             if key == "openai_chatgpt":
-                output = _call_openai(api_key, prompt, model, input_hash, key)
+                output = _call_openai(
+                    api_key, prompt, model, input_hash, key, artifact_base=artifact_base
+                )
             elif key == "anthropic_claude":
-                output = _call_anthropic(api_key, prompt, model, input_hash, key, model_source=model_source)
+                output = _call_anthropic(
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
+                )
             else:
-                output = _call_gemini(api_key, prompt, model, input_hash, key, model_source=model_source)
+                output = _call_gemini(
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
+                )
             output.judge_id = f"x1d_{key}_competencies"
             output.rubric_version = JUDGE_RUBRIC_VERSION
             outputs.append(output)

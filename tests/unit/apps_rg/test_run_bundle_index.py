@@ -6,6 +6,7 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -191,6 +192,40 @@ def test_required_missing_shows_exists_false(tmp_path: Path) -> None:
     assert br["lane_l2_output"]["required"] is True and br["lane_l2_output"]["exists"] is False
 
 
+def test_headline_proof_strict_marks_core_bundle_paths_required(tmp_path: Path) -> None:
+    from apps_rg.runtime.run_bundle_index import (
+        _CANONICAL_HEADLINE_PRODUCER,
+        _HEADLINE_PROOF_STRICT_SUFFIXES,
+    )
+
+    repo = tmp_path
+    lane = tmp_path / "artifacts" / "apps_rg" / "runtime_proofs" / "headline" / "real" / "r_strict"
+    lane.mkdir(parents=True)
+    (lane / "run_manifest.json").write_text("{}", encoding="utf-8")
+    (lane / "l2_output.json").write_text("{}", encoding="utf-8")
+    doc_loose = build_lane_runtime_proof_bundle_document(repo, lane, lane="headline", run_id="r_strict")
+    doc_strict = build_lane_runtime_proof_bundle_document(
+        repo, lane, lane="headline", run_id="r_strict", proof_contract_strict=True
+    )
+
+    def _by_basename(entries: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+        out: dict[str, dict[str, Any]] = {}
+        for e in entries:
+            rp = str(e["relative_path"]).replace("\\", "/")
+            base = rp.rsplit("/", 1)[-1]
+            out[base] = e
+        return out
+
+    by_base_loose = _by_basename(doc_loose["entries"])
+    by_base_strict = _by_basename(doc_strict["entries"])
+    assert by_base_loose["claim_ledger.json"]["required"] is False
+    for suf in _HEADLINE_PROOF_STRICT_SUFFIXES:
+        assert suf in by_base_strict
+        row = by_base_strict[suf]
+        assert row["required"] is True
+        assert row["producer"] == _CANONICAL_HEADLINE_PRODUCER
+
+
 def test_emit_integrated_logs_on_write_oserror(caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     caplog.set_level(logging.WARNING, logger="apps_rg.runtime.run_bundle_index")
 
@@ -215,6 +250,7 @@ def test_finalize_runtime_proof_emits_index(tmp_path: Path) -> None:
     ad.mkdir(parents=True)
     (ad / "l2_output.json").write_text('{"runtime_generation_status":"MOCKED"}', encoding="utf-8")
 
+    (ad / "l6_shadow_eval_package.json").write_text("{}", encoding="utf-8")
     finalize_runtime_proof_run(
         repo,
         lane,
@@ -226,6 +262,16 @@ def test_finalize_runtime_proof_emits_index(tmp_path: Path) -> None:
         provider_requested="mock",
         provider_attempted="mock",
     )
+    mf = json.loads((ad / "run_manifest.json").read_text(encoding="utf-8"))
+    assert mf["run_dir_repo_relative"].endswith("/runtime_proofs/headline/mock/t_final")
+    assert "l2_output.json" in mf["artifact_links"]
+    assert "l6_shadow_eval_package.json" in mf["artifact_links"]
+    assert mf["l2_output_repo_relative"].endswith("/mock/t_final/l2_output.json")
+    assert mf["l6_shadow_eval_package_repo_relative"].endswith("/mock/t_final/l6_shadow_eval_package.json")
+    ptr_path = repo / "artifacts" / "apps_rg" / "runtime_proofs" / lane / "latest_mock_run.json"
+    ptr = json.loads(ptr_path.read_text(encoding="utf-8"))
+    assert ptr["l6_shadow_eval_package_repo_relative"] == mf["l6_shadow_eval_package_repo_relative"]
+
     idx = ad / RUN_BUNDLE_INDEX_FILENAME
     assert idx.is_file()
     data = json.loads(idx.read_text(encoding="utf-8"))

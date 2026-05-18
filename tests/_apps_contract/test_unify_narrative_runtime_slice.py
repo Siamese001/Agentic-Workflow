@@ -4,16 +4,30 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-
-import pytest
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LANE_KEY = "unify_narrative"
-CMD = [sys.executable, "-m", "apps_rg.runtime.dispatch.unify_narrative_dispatch", "--allow-non-allow-exit-zero"]
+CMD = [
+    sys.executable,
+    "-m",
+    "apps_rg",
+    "--section",
+    "unify_narrative",
+    "--target-company",
+    "Synthetic Enterprise Corp.",
+    "--target-role",
+    "SVP Engineering, Agentic AI Platforms",
+    "--provider",
+    "mock",
+    "--mock-judges",
+    "--allow-test-mock-judges",
+    "--allow-non-allow-exit-zero",
+]
 
 
 def run_cmd(*extra: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(CMD + list(extra), cwd=REPO_ROOT, text=True, capture_output=True, timeout=120)
+    return subprocess.run(CMD + list(extra), cwd=REPO_ROOT, text=True, capture_output=True, timeout=180)
 
 
 def mock_artifacts_dir() -> Path:
@@ -33,13 +47,13 @@ def load_json(name: str):
 
 
 def test_mock_dispatch_runs():
-    result = run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
+    result = run_cmd()
     assert result.returncode == 0, result.stderr
-    assert "UNIFY_NARRATIVE_OUTPUT:" in result.stdout
+    assert "L2_UNIFY_NARRATIVE_OUTPUT:" in result.stdout
 
 
 def test_mock_one_sentence():
-    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
+    run_cmd()
     l2 = load_json("l2_output.json")
     assert l2["narrative_sentence"].count(".") >= 1
     text = l2["narrative_sentence"].strip()
@@ -47,26 +61,40 @@ def test_mock_one_sentence():
 
 
 def test_x2_gate_count():
-    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
+    run_cmd()
     x2 = load_json("x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 21
+    assert x2["total_x2_gates"] == 35
     assert x2["x2_failed"] == 0
 
 
 def test_mock_x3_review_plumbing():
-    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
+    run_cmd()
     x3 = load_json("x3_disposition.json")
     assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
 
 
 def test_l6_flags():
-    run_cmd("--provider", "mock", "--allow-test-mock-provider", "--mock-judges")
+    run_cmd()
     l6 = load_json("l6_shadow_eval_package.json")
     assert l6["offline_only"] is True
     assert l6["human_label_required"] is True
     assert l6["promotion_allowed"] is False
     assert l6["learning_mutation_performed"] is False
     assert l6["runtime_approval_authority"] == "NONE"
+
+
+def _minimal_section_input_usage_ledger() -> dict[str, Any]:
+    return {
+        "schema": "section_input_usage_ledger_v1",
+        "evidence_boundary": {
+            "non_evidence_inputs_used_as_claim_evidence": False,
+            "non_evidence_inputs_in_source_fact_ids": False,
+        },
+        "claim_support_summary": {
+            "claims_with_targeting_input_in_source_fact_ids": 0,
+            "claims_with_context_input_in_source_fact_ids": 0,
+        },
+    }
 
 
 def test_x3_soft_fail_unit():
@@ -107,6 +135,7 @@ def test_x3_soft_fail_unit():
         ],
         runtime_generation_status="REAL_LLM",
         product_quality_status="PASS",
+        section_input_usage_ledger=_minimal_section_input_usage_ledger(),
     )
     assert x3.x3_code == "X3_REVIEW_JUDGE_SOFT_FAIL"
 

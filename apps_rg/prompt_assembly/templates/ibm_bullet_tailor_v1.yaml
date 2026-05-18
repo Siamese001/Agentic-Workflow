@@ -4,18 +4,26 @@ version: "1.0"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "IBM_BULLET"
 
+foundation_proof_model_id: "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
+treatment_profile: "REWRITE_FROM_FACT_POOL_CONSTRAINED"
+
 purpose: |
-  Rewrite IBM employment bullets only using IBM facts from canonical base resume.
-  Outputs exactly 5 bullets with zero HEAVY rewrites.
-  IBM is supporting proof for enterprise-scale cloud, data, AI platform, regulated financial services, lineage, observability, portfolio, and partnership execution.
-  No narrative text. No unsupported claims. No JD copying. No Unify runtime inflation.
+  FOUNDATION PROOF (not agentic-product narrative): rewrite IBM employment bullets using ONLY IBM facts
+  from the canonical base resume. Treatment profile REWRITE_FROM_FACT_POOL_CONSTRAINED.
+  Model IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1 must foreground enterprise AI/data platform architecture,
+  cloud and data modernization, reusable platform/productization patterns, lineage + observability +
+  regulatory response, and hyperscaler/commercial partnership leverage.
+  Outputs exactly 5 resume-native bullets with zero HEAVY rewrites (3 MODERATE + 2 LIGHT_PROTECTED).
+  No narrative paragraphs. No unsupported claims. No JD-as-proof copying.
+  No Unify facts, no Unify-era runtime vocabulary, no taxonomy/category label prefixes on bullet_text.
 
 sovereign_oath: |
-  IBM FACTS ONLY — NO CROSS-CONTAMINATION — NO UNIFY RUNTIME INFLATION
+  IBM FACTS ONLY — FOUNDATION PROOF — NO CROSS-CONTAMINATION — NO UNIFY / RUNTIME VOCABULARY
   
   I may ONLY use facts from the IBM employment entry (fact_id: exp_ibm_001).
   I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts.
-  I may NOT inflate IBM with Unify-style agentic runtime claims.
+  I may NOT describe IBM using current agentic runtime / repo vocabulary (agentic runtime, multi-agent
+  orchestration, GraphRAG, C0, L2, Exit, UWG, judge mesh, governed spine, prompt assembly, etc.).
   I may NOT introduce claims beyond supported IBM facts.
   I may NOT copy JD phrases beyond 4 consecutive words.
   I may NOT use em dash character anywhere.
@@ -26,10 +34,21 @@ sovereign_oath: |
   with generic "cloud AI" wording unless change_log documents the simplification with claim_ledger support.
 
   FORBIDDEN TERMS unless explicitly in IBM source facts:
-  - agentic AI, GraphRAG, multi-agent orchestration
+  - agentic AI, agentic runtime, multi-agent orchestration
+  - GraphRAG, judge mesh, governed spine
   - deterministic routing, sandboxed execution, replayable traces
   - governed AI runtime, prompt assembly
-  - C0, L2, Exit, UWG
+  - C0, L2, Exit, UWG (repo/runtime shorthand — never appear in resume bullets)
+
+  bullet_text MUST begin with resume-native prose (verb-led or neutral enterprise clause).
+  NEVER prefix bullet_text with taxonomy/category labels such as "AI and Data Platform Architecture: ..."
+  Optional bullet_theme (or other metadata fields) may carry themes; claim_ledger rows may reference themes —
+  but bullet_text itself must not start with "Category: " patterns.
+
+  SelectedRoleFactSet (SRFS): bullet and claim_ledger source_fact_ids must be ONLY ibm_bullets slice allowlist tokens
+  (ALLOWED_SOURCE_FACT_IDS), including allowed metric-suffix hashes. JD, briefing, IBM positioning context, target title,
+  and target company steer relevance and ordering — never proof; do not add IBM-specific outcomes, partnerships, or
+  regulated claims from JD alone. Out-of-slice IDs fail deterministic X2 SRFS gates.
 
 role_header_fields:
   company:
@@ -51,17 +70,17 @@ role_header_fields:
 
 input_contract:
   required_fields:
-    - selected_fact_plan
+    - name: selected_fact_plan
       schema: "{exp_ibm_001: {priority: 2, allowed_bullets: [bul_ibm_001..005], metrics: [...]}}"
-    - base_resume_json_ref
+    - name: base_resume_json_ref
       value: "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
-    - base_section_hash
+    - name: base_section_hash
       description: "SHA256 of IBM employment section for integrity"
-    - claim_ledger
+    - name: claim_ledger
       schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
-    - jd_alignment
+    - name: jd_alignment
       schema: "{alignment_score, matched_terms, gap_terms}"
-    - rewrite_intensity_request
+    - name: rewrite_intensity_request
       allowed_values: ["DEFAULT", "MODERATE", "LIGHT_PROTECTED"]
       default: "DEFAULT"
       forbidden: ["HEAVY"]
@@ -69,18 +88,19 @@ input_contract:
 output_contract:
   format: "JSON"
   required_fields:
-    - bullets
+    - name: bullets
       type: "array"
       min_items: 5
       max_items: 5
       item_schema:
         bullet_id: "string (must map to bul_ibm_001..005)"
-        bullet_text: "string"
+        bullet_text: "string — resume-native; MUST NOT start with 'Category: ' / taxonomy prefix"
+        bullet_theme: "optional string — taxonomy/theme belongs here or metadata, never as bullet_text prefix"
         rewrite_intensity: "enum[MODERATE, LIGHT_PROTECTED] — HEAVY forbidden"
         has_metric: "boolean"
         metric_raw: "string or null"
         source_fact_ids: "array[string]"
-    - rewrite_distribution
+    - name: rewrite_distribution
       type: "object"
       schema:
         MODERATE: "integer (2-3, default 3)"
@@ -96,19 +116,19 @@ output_contract:
         - "MODERATE >= 2, <= 3"
         - "LIGHT_PROTECTED >= 2"
         - "MODERATE + LIGHT_PROTECTED + HEAVY == 5"
-    - claim_ledger
+    - name: claim_ledger
       type: "array"
       item_schema:
         claim_text: "string"
         source_fact_id: "string (must be bul_ibm_*)"
         supported: "boolean"
-    - gap_notes
+    - name: gap_notes
       type: "array"
       description: "List of unsupported JD requirements or gaps"
-    - change_log
+    - name: change_log
       type: "array"
       description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale}"
-    - self_check
+    - name: self_check
       type: "object"
       schema:
         bullet_count_valid: "boolean (must be true)"
@@ -206,8 +226,12 @@ forbidden_terms_unless_ibm_source:
     action: "REJECT — not in IBM source facts (unless referring to job departure)"
   - term: "UWG"
     action: "REJECT — not in IBM source facts"
-  - term: "GraphRAG"
-    action: "REJECT — not in IBM source facts"
+  - term: "agentic runtime"
+    action: "REJECT — repo vocabulary"
+  - term: "judge mesh"
+    action: "REJECT — repo vocabulary"
+  - term: "governed spine"
+    action: "REJECT — repo vocabulary"
 
 forbidden_patterns:
   - pattern: "em dash"
@@ -232,7 +256,10 @@ forbidden_patterns:
     check: "source_fact_id must start with bul_ibm_*"
     action: "REJECT"
   - pattern: "unify_runtime_inflation"
-    check: "Any claim implying agentic runtime, multi-agent orchestration, or governed AI platform work at IBM"
+    check: "Any claim implying agentic runtime, orchestration mesh, GraphRAG, governed spine, or Unify-platform vocabulary at IBM"
+    action: "REJECT"
+  - pattern: "taxonomy_label_prefix_in_bullet_text"
+    check: "bullet_text must not match ^[A-Z][A-Za-z /,&-]{3,60}:\\s+"
     action: "REJECT"
 
 validation_rules:
@@ -279,13 +306,20 @@ payload_scope:
   json_schema_strict: true
 
 ibm_positioning_guidance: |
-  IBM represents the foundation that enabled later Unify agentic work.
-  Frame IBM bullets as: enterprise-scale delivery, regulated financial services experience,
-  data/observability/lineage foundations, partnership execution, and portfolio management.
-  
-  DO NOT frame IBM as: agentic AI leadership, runtime governance innovation, or multi-agent orchestration.
-  Those capabilities were developed at Unify. IBM provided the enterprise-scale, regulated-environment,
-  and partnership foundations that made Unify work credible.
+  IBM bullets are standalone FOUNDATION PROOF for regulated enterprise delivery — cloud-native AI/analytics
+  platforms, modernization, reusable platform patterns, lineage + observability + regulatory turnaround,
+  and hyperscaler alliances.
+  They must NOT read as the current Unify agentic-platform role, heavy wholesale rewrite, or Unify fact import.
+  Never prefix bullet_text with taxonomy labels (use bullet_theme / structured fields instead).
+  Forbidden in visible bullets: agentic runtime/repo vocabulary (GraphRAG, C0/L2/Exit/UWG, judge mesh,
+  governed spine, multi-agent orchestration, etc.) unless literally present in IBM source facts (normally absent).
+
+# W5 — SSOT excerpt for contract tests.
+w5_proof_targeting_harmonization: |
+  Proof: SelectedRoleFactSet facts for ibm_bullets only; bullet and claim_ledger source_fact_ids must match this section's
+  allowlist. Targeting only: JD, briefing, target title, target company, IBM positioning context — never proof; no
+  unsupported IBM-specific claims from JD alone. Out-of-slice source_fact_ids fail X2. No invented employers, metrics,
+  partners, alliances, domains, revenue, savings, percentages, or regulated claims beyond selected IBM facts.
 
 metadata:
   produced_at: "2026-05-14"

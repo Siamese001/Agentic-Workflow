@@ -266,6 +266,7 @@ def build_l6_shadow_handoff_dict(
     if max_tokens is not None:
         gen_meta["max_tokens"] = max_tokens
 
+    l6_pkg_path = ad / "l6_shadow_eval_package.json"
     pkt: dict[str, Any] = {
         "packet_type": L6_PACKET_TYPE,
         "packet_version": L6_PACKET_VERSION,
@@ -273,6 +274,9 @@ def build_l6_shadow_handoff_dict(
         "run_id": run_id,
         "runtime_generation_status": rgs,
         "generated_at_utc": _iso_mtime(l2_path),
+        # Bidirectional navigation vs lane runtime_proof run_manifest / latest_* pointers.
+        "runtime_proof_run_dir_repo_relative": repo_rel(rr, ad),
+        "l6_shadow_eval_package_repo_relative": repo_rel(rr, l6_pkg_path),
         "section_output_ref": repo_rel(rr, l2_path),
         "x1d_judge_outputs_ref": repo_rel(rr, x1_path),
         "x2_gate_outputs_ref": repo_rel(rr, x2_path),
@@ -328,6 +332,76 @@ def build_l6_shadow_handoff_dict(
             "total": int(rd_from_l2.get("total", 0)),
         }
         pkt["bullet_rewrite_map"] = bmap
+
+    elif section_id == "ibm_narrative":
+        cap_path = ad / "compiled_prompt_artifact.json"
+        comp_allowed: list[str] = []
+        if cap_path.is_file():
+            try:
+                cj = _load_json(cap_path)
+                if isinstance(cj, dict) and isinstance(cj.get("allowed_fact_ids"), list):
+                    comp_allowed = [str(x) for x in cj["allowed_fact_ids"]]
+            except (OSError, json.JSONDecodeError, TypeError, ValueError):
+                comp_allowed = []
+        l2d = l2 if isinstance(l2, dict) else {}
+        nar = str(l2d.get("narrative_sentence") or "")
+        nar_hash = hashlib.sha256(nar.encode("utf-8")).hexdigest()
+        gates_list = x2.get("gates") if isinstance(x2, dict) else []
+        focus_gate_ids = (
+            "x2_claim_ledger_claim_text_non_empty",
+            "x2_claim_ledger_source_fact_ids_allow_list",
+            "x2_ibm_narrative_source_supported",
+            "x2_ibm_narrative_ibm_only_fact_scope",
+        )
+        x2_claim_focus: list[dict[str, Any]] = []
+        if isinstance(gates_list, list):
+            for g in gates_list:
+                if not isinstance(g, dict):
+                    continue
+                gid = str(g.get("gate_id") or "")
+                if gid in focus_gate_ids or gid.startswith("x2_claim_ledger"):
+                    x2_claim_focus.append(
+                        {
+                            "gate_id": gid,
+                            "pass": g.get("pass"),
+                            "observed_value": g.get("observed_value"),
+                        }
+                    )
+        trace_ref: str | None = None
+        for cand in (ad / "runtime_payload.json", ad / "prompt_selection_trace.json"):
+            if cand.is_file():
+                trace_ref = repo_rel(rr, cand)
+                break
+        x3sum = summarize_x3(x3 if isinstance(x3, dict) else {})
+        pkt["ibm_narrative_shadow_learning"] = {
+            "section_id": "ibm_narrative",
+            "run_id": run_id,
+            "trace_runtime_artifact_ref": trace_ref,
+            "x3_disposition_ref": pkt.get("x3_disposition_ref"),
+            "prompt_hash_ref": gen_meta.get("prompt_hash"),
+            "compiled_prompt_artifact_ref": repo_rel(rr, cap_path) if cap_path.is_file() else None,
+            "output_hash_narrative_sentence_sha256": nar_hash,
+            "sealed_l2_output_ref": pkt.get("section_output_ref"),
+            "x1d_summary_ref": pkt.get("x1d_judge_outputs_ref"),
+            "x2_gate_summary": pkt.get("x2_summary"),
+            "x2_claim_and_allowed_fact_gates": x2_claim_focus,
+            "allowed_fact_ids_audit": comp_allowed,
+            "shadow_observations": [
+                "L6 shadow handoff is offline-only; no durable L4 write; no mutation of X2/X3 or runtime disposition.",
+                f"runtime_generation_status={rgs!r}",
+            ],
+            "drift_or_gap_signals": [
+                f"x3_code={x3sum.get('x3_code')}",
+                "Compare claim_text gate (x2_claim_ledger_claim_text_non_empty) and allow-list gate against compiled allowed_fact_ids.",
+            ],
+            "future_run_recommendations": [
+                "When infra allows, re-run without APPS_RG_QWEN_OFFLINE_CONTRACT_STUB for live Qwen calibration signal.",
+            ],
+            "promotion_request_candidate": False,
+            "current_run_effect": "none",
+        }
+        pkt["promotion_request_candidate"] = False
+        pkt["current_run_effect"] = "none"
 
     return pkt
 

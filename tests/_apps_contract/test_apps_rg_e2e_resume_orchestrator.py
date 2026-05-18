@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 from unittest import mock
 
 import pytest
@@ -28,7 +29,10 @@ class _FakeProc:
 
 
 def _lane_tail(mod: str) -> str:
-    return mod.split(".")[-1].removesuffix("_dispatch")
+    tail = mod.rsplit(".", 1)[-1]
+    if tail.endswith("_lane"):
+        return tail[: -len("_lane")]
+    return tail.replace("_dispatch", "")
 
 
 def _stub_canonical_base_resume(repo: Path, *, text: str) -> Path:
@@ -52,6 +56,29 @@ def test_lane_modules_canonical_sequence() -> None:
     ]
 
 
+def _canonical_success_stub() -> dict[str, Any]:
+    return {
+        "exit_status": "success",
+        "execution_status": "completed",
+        "outcome_authorized": True,
+        "x3_disposition": "X3_ALLOW",
+        "fault": "",
+        "error": "",
+        "artifact_dir": "",
+        "run_id": "",
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+        "competencies_cli_output_text": "",
+    }
+
+
 def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> None:
     repo = tmp_path.resolve()
     canon_text = '{"orchestrator_test_stub":true}\n'
@@ -73,6 +100,11 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     (fr_dir / "final_resume_x2_gate_outputs.json").write_text(json.dumps(fr_x2), encoding="utf-8")
 
     recorded: list[list[str]] = []
+    canonical_calls: list[dict[str, Any]] = []
+
+    def fake_canonical(**kwargs: Any) -> dict[str, Any]:
+        canonical_calls.append(kwargs)
+        return _canonical_success_stub()
 
     def fake_run(argv, cwd=None, **_kwargs):  # type: ignore[no-untyped-def]
         recorded.append(list(argv))
@@ -95,6 +127,10 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     with (
         mock.patch("subprocess.run", side_effect=fake_run),
         mock.patch(
+            "apps_rg.runtime.orchestrate_full_resume.run_canonical_apps_rg_from_cli_primitives",
+            side_effect=fake_canonical,
+        ),
+        mock.patch(
             "apps_rg.runtime.orchestrate_full_resume._run_docx_emit",
             return_value={
                 "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
@@ -112,45 +148,33 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     ):
         out = ofr.run_orchestration(
             repo=repo,
-            provider="mock",
+            provider="qwen_vllm",
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
             allow_test_mock_judges=True,
-            allow_test_mock_provider=True,
             jd_text=None,
             briefing=None,
             base_resume=None,
             output_docx=None,
         )
 
-    mods_run = []
+    assert [c.get("section") for c in canonical_calls] == list(ofr.SECTION_ORDER)
+    assert all(c.get("lane_mock_judges") for c in canonical_calls)
+    assert all(c.get("lane_allow_test_mock_judges") for c in canonical_calls)
+
     rollup_hit = locked_hit = assembler_hit = False
     for av in recorded:
         if "-m" in av:
             i = av.index("-m")
             mod = av[i + 1]
-            if mod.startswith("apps_rg.runtime.dispatch."):
-                mods_run.append(_lane_tail(mod))
-            elif mod == "apps_rg.runtime.reports.generated_lane_rollup":
+            if mod == "apps_rg.runtime.reports.generated_lane_rollup":
                 rollup_hit = True
             elif mod == "apps_rg.runtime.locked_copy.locked_copy_builder":
                 locked_hit = True
             elif mod == "apps_rg.runtime.assembly.final_resume_assembler":
                 assembler_hit = True
 
-    assert mods_run == [
-        "headline",
-        "executive_summary",
-        "unify_bullets",
-        "unify_narrative",
-        "ibm_bullets",
-        "ibm_narrative",
-        "competencies",
-    ]
-    headline_argv = next(av for av in recorded if any(x.endswith("headline_dispatch") for x in av))
-    hi = headline_argv.index("--mock-judges")
-    assert headline_argv[hi + 1] == "--allow-test-mock-judges"
     assert rollup_hit and locked_hit and assembler_hit
     assert out["orchestrator_status"] == "PASS"
     assert out["package_x3_code"] == "X3_ALLOW"
@@ -204,6 +228,10 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     with (
         mock.patch("subprocess.run", return_value=_FakeProc()),
         mock.patch(
+            "apps_rg.runtime.orchestrate_full_resume.run_canonical_apps_rg_from_cli_primitives",
+            return_value=_canonical_success_stub(),
+        ),
+        mock.patch(
             "apps_rg.runtime.orchestrate_full_resume._run_docx_emit",
             return_value={
                 "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
@@ -221,12 +249,11 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     ):
         out = ofr.run_orchestration(
             repo=repo,
-            provider="mock",
+            provider="qwen_vllm",
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
             allow_test_mock_judges=True,
-            allow_test_mock_provider=True,
             jd_text=None,
             briefing=None,
             base_resume=alt_rel,
@@ -238,11 +265,11 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     assert out["base_resume_hash"] == sha256_hex(alt_txt)
 
 
-def test_orchestrator_rejects_mock_without_allow_test_provider(tmp_path: Path) -> None:
+def test_orchestrator_rejects_unsupported_provider(tmp_path: Path) -> None:
     repo = tmp_path.resolve()
     canon_text = '{"stub":true}\n'
     _stub_canonical_base_resume(repo, text=canon_text)
-    with pytest.raises(ValueError, match="allow-test-mock-provider"):
+    with pytest.raises(ValueError, match="Unsupported orchestrator"):
         ofr.run_orchestration(
             repo=repo,
             provider="mock",
@@ -250,7 +277,6 @@ def test_orchestrator_rejects_mock_without_allow_test_provider(tmp_path: Path) -
             allow_non_allow_exit_zero=False,
             mock_judges=True,
             allow_test_mock_judges=False,
-            allow_test_mock_provider=False,
             jd_text=None,
             briefing=None,
             base_resume=None,
@@ -270,7 +296,6 @@ def test_orchestrator_rejects_mock_judges_without_allow_test_hatch(tmp_path: Pat
             allow_non_allow_exit_zero=False,
             mock_judges=True,
             allow_test_mock_judges=False,
-            allow_test_mock_provider=False,
             jd_text=None,
             briefing=None,
             base_resume=None,
@@ -286,12 +311,11 @@ def test_missing_default_base_resume_fails_before_subprocess(tmp_path: Path) -> 
         with pytest.raises(ValueError, match="canonical default base resume"):
             ofr.run_orchestration(
                 repo=repo,
-                provider="mock",
+                provider="qwen_vllm",
                 x1d_judges="gemini_pro",
                 allow_non_allow_exit_zero=False,
                 mock_judges=True,
                 allow_test_mock_judges=True,
-                allow_test_mock_provider=True,
                 jd_text=None,
                 briefing=None,
                 base_resume=None,
@@ -319,11 +343,11 @@ def test_main_allow_non_allow_exit_zero_returns_zero_on_partial(monkeypatch) -> 
     code = ofr.main(
         [
             "--provider",
-            "mock",
-            "--allow-test-mock-provider",
+            "qwen_vllm",
             "--x1d-judges",
             "gemini_pro",
             "--mock-judges",
+            "--allow-test-mock-judges",
             "--allow-non-allow-exit-zero",
         ],
     )
@@ -346,5 +370,7 @@ def test_main_fail_non_allow_partial_exit_code(monkeypatch) -> None:  # type: ig
     }
     monkeypatch.setattr(ofr, "run_orchestration", lambda **_: partial)
     monkeypatch.setattr(ofr, "find_repo_root", lambda: REPO_ROOT)
-    code = ofr.main(["--provider", "mock", "--x1d-judges", "gemini_pro", "--mock-judges"])
+    code = ofr.main(
+        ["--provider", "qwen_vllm", "--x1d-judges", "gemini_pro", "--mock-judges", "--allow-test-mock-judges"]
+    )
     assert code == 2

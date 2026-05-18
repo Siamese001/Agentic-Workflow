@@ -1,0 +1,147 @@
+# apps_rg — canonical role-family taxonomy for adaptive fact selection (design / retrieval).
+# SSOT count: thirteen role families listed below.
+# Ledger JSON may reference legacy alias ids; normalize via role_family_id_aliases.
+
+schema_version: "1"
+description: >-
+  Canonical role-family labels for JD → retrieval prioritization against the candidate
+  fact ledger. JD and briefing texts are targeting inputs only; they never constitute proof.
+
+notes:
+  - >-
+    Canonical employment facts remain in apps_rg/resume/base/amit_ayer_base_resume_v1.json.
+    This taxonomy does not replace or overwrite that artifact.
+  - >-
+    Candidate ledger lives under artifacts/apps_rg/fact_inventory/ — facts are provisional
+    until promoted through human confirmation and deterministic gates.
+
+role_families:
+  - id: ENGINEERING_PLATFORM
+    summary: >-
+      Agentic/platform engineering, microservices, cloud execution layers, deterministic
+      routing, and scalable ML engineering org dynamics.
+    jd_signal_keywords:
+      - platform
+      - engineering leadership
+      - microservices
+      - kubernetes
+      - agentic
+
+  - id: AI_SOLUTIONS_ARCHITECTURE
+    summary: >-
+      Architecture for AI/analytics/cloud solutions spanning design, rollout, stakeholder
+      translation, and field-facing technical strategy.
+    jd_signal_keywords:
+      - solutions architect
+      - field CTO
+      - AI architecture
+      - technical sales
+      - presales engineering
+
+  - id: PARTNERSHIPS_GTM
+    summary: >-
+      Alliances, co-sell, channel programs, ecosystem GTM, and partner-influenced revenue motion.
+    jd_signal_keywords:
+      - alliances
+      - partnerships
+      - channel
+      - co-sell
+      - ISV
+
+  - id: SALES_STRATEGIC_ACCOUNTS
+    summary: >-
+      Enterprise/strategic accounts, multimillion-dollar pursuits, geographic coverage leadership.
+    jd_signal_keywords:
+      - strategic accounts
+      - enterprise sales
+      - quota
+      - account executive
+
+  - id: REVENUE_OPERATIONS
+    summary: >-
+      Pipeline instrumentation, forecasting, Salesforce analytics, and revenue process design.
+    jd_signal_keywords:
+      - RevOps
+      - forecasting
+      - pipeline analytics
+      - Salesforce CPQ
+
+  - id: CUSTOMER_SUCCESS
+    summary: >-
+      Adoption, renewal, expansion, stakeholder alignment tied to measurable customer outcomes.
+    jd_signal_keywords:
+      - customer success
+      - adoption
+      - renewal rate
+      - expansion revenue
+
+  - id: PRODUCT_TECHNICAL_STRATEGY
+    summary: >-
+      Product strategy intersecting emerging tech, roadmaps, and commercialization primitives.
+    jd_signal_keywords:
+      - product strategy
+      - platform product
+      - roadmap
+      - commercialization
+
+  - id: AI_GOVERNANCE_RISK
+    summary: >-
+      Model governance, lineage, auditability, compliance checkpoints, regulatory reporting quality.
+    jd_signal_keywords:
+      - governance
+      - responsible AI
+      - model risk management
+      - compliance
+      - CCAR
+
+  - id: DATA_ANALYTICS_LEADERSHIP
+    summary: >-
+      Data platforms, streaming analytics, risk metrics consistency, latency governance across BUs.
+    jd_signal_keywords:
+      - lakehouse
+      - streaming analytics
+      - BI
+      - data latency
+      - risk metrics
+
+  - id: STRATEGIC_FINANCE
+    summary: >-
+      Finance-facing analytics, planning, M&A modeling, synergy analysis, CFO alignment.
+    jd_signal_keywords:
+      - CFO
+      - budgeting
+      - M&A
+      - synergy
+      - forecasting model
+
+  - id: QUANT_TRADING_HPC
+    summary: >-
+      Quantitative workflows, derivatives, HPC, automated trading infra, latency-sensitive risk.
+    jd_signal_keywords:
+      - quantitative
+      - HPC
+      - derivatives
+      - stress testing
+      - latency
+
+  - id: CONSULTING_DELIVERY_LEADERSHIP
+    summary: >-
+      Large-scale transformations, modernization programs, client delivery organization leadership.
+    jd_signal_keywords:
+      - consulting
+      - transformation
+      - delivery excellence
+      - client engagement director
+
+  - id: EXECUTIVE_LEADERSHIP
+    summary: >-
+      Cross-functional C-suite partnering, organizational scaling narratives, portfolio leadership.
+    jd_signal_keywords:
+      - executive steering
+      - board
+      - C-suite alignment
+      - organizational scaling
+
+# Ledger rows may cite FIELD_SOLUTIONS_ARCHITECTURE; fold into AI_SOLUTIONS_ARCHITECTURE for scoring.
+role_family_id_aliases:
+  FIELD_SOLUTIONS_ARCHITECTURE: AI_SOLUTIONS_ARCHITECTURE

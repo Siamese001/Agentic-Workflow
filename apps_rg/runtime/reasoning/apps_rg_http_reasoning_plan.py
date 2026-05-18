@@ -1,11 +1,12 @@
 """Build ReasoningExecutionPlan for apps_rg singleton HTTP lanes.
 
-IBM-style lanes (tier **T2**) soften orchestration **QUALITY_REQUIRED** and **reflexion POLICY_REQUIRED**
-to **OPTIONAL** so singleton HTTP receipts stay honest without spurious aggregate BLOCK from deferred loops.
+**T2** and **T0_LOCKED_FACT** lanes soften orchestration **QUALITY_REQUIRED** and (for T2) **reflexion POLICY_REQUIRED**
+to **OPTIONAL** so singleton HTTP Qwen receipts stay honest: transport cannot execute branch/reflexion loops,
+so those controls must not be certified as QUALITY_REQUIRED failures.
 
-Executive summary and other **T3** critical lanes preserve full Sovereign QUALITY semantics.
-**T1_SIMPLE_REWRITE** exists only as a reserved enum tier — **no `_reasoning_section_lane` bind yet**,
-so singleton softening applies only where `SectionReasoningProfile.tier == T2_QUALITY_SECTION`.
+Executive summary (**T3**, executive lane) preserves full Sovereign QUALITY semantics.
+
+**T1_SIMPLE_REWRITE** is reserved — **no `_reasoning_section_lane` bind yet**.
 """
 
 from __future__ import annotations
@@ -36,12 +37,12 @@ def build_apps_rg_http_reasoning_plan(
     kw = dict(merged_requested_kw)
     reqs = tuple(default_gateway_control_requirements(kw))
 
-    if profile.executive_lane or profile.tier in (
-        ReasoningIntensityTier.T0_LOCKED_FACT,
-        ReasoningIntensityTier.T3_CRITICAL_SECTION,
-    ):
+    if profile.executive_lane or profile.tier is ReasoningIntensityTier.T3_CRITICAL_SECTION:
         resolved = reqs
-    elif profile.tier is ReasoningIntensityTier.T2_QUALITY_SECTION:
+    elif profile.tier in (
+        ReasoningIntensityTier.T0_LOCKED_FACT,
+        ReasoningIntensityTier.T2_QUALITY_SECTION,
+    ):
         softened: list[Any] = []
         for req in reqs:
             if req.control_name == "reflexion_loops" and req.requirement_level == RequirementLevel.POLICY_REQUIRED:

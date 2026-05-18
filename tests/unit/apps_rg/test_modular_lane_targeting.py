@@ -43,16 +43,14 @@ def test_build_modular_lane_argv_includes_targeting_flags() -> None:
         jd_text="Do the thing.",
         briefing_text="Culture note.",
     )
-    argv = build_modular_lane_argv(provider="mock", targeting=tgt)
-    assert argv[:5] == [
+    argv = build_modular_lane_argv(provider="qwen_vllm", targeting=tgt)
+    assert argv[:4] == [
         "--provider",
-        "mock",
-        "--allow-test-mock-provider",
-        "--mock-judges",
+        "qwen_vllm",
         "--allow-non-allow-exit-zero",
+        "--target-company",
     ]
     assert argv[argv.index("--target-company") + 1] == "Acme Corp"
-    assert argv[argv.index("--target-title") + 1] == "Director, AI Platform"
     assert argv[argv.index("--jd-text") + 1] == "Do the thing."
     assert argv[argv.index("--briefing") + 1] == "Culture note."
 

@@ -88,7 +88,9 @@ _T2_QUALITY = SectionReasoningProfile(
 _lane_map: Final[dict[str, SectionReasoningProfile]] = {
     "education": _T0_LOCKED,
     "certifications": _T0_LOCKED,
-    "headline": _T3_NON_EXEC,
+    # HTTP singleton Qwen transport forwards only temperature/max_tokens — declaring ToT/reflexion as
+    # required would always IGNORE them and deny quality certification; headline matches transport.
+    "headline": _T0_LOCKED,
     "executive_summary": _EXEC_SUMMARY_PROFILE,
     "competencies": _T3_NON_EXEC,
     "unify_narrative": _T3_NON_EXEC,

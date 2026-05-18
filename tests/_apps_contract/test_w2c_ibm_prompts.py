@@ -4,11 +4,13 @@ Tests for ibm_bullet_tailor_v1.yaml and ibm_position_narrative_v1.yaml
 """
 
 import json
-import pytest
+import re
 from pathlib import Path
+
+import pytest
 import yaml
 
-REPO_ROOT = Path(__file__).parent.parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_RG_ROOT = REPO_ROOT / "apps_rg"
 
 
@@ -19,6 +21,20 @@ class TestStop7IBMBulletPrompt:
         """IBM bullet prompt exists at canonical path"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_bullet_tailor_v1.yaml"
         assert template_path.exists()
+
+    def test_foundation_proof_model_marker(self):
+        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_bullet_tailor_v1.yaml"
+        content = template_path.read_text(encoding="utf-8")
+        assert "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1" in content
+        assert "REWRITE_FROM_FACT_POOL_CONSTRAINED" in content
+
+    def test_ibm_bullets_contract_enforces_constrained_mode(self):
+        contract_path = (
+            APPS_RG_ROOT / "prompt_assembly" / "section_prompt_contracts" / "ibm_bullets.contract.yaml"
+        )
+        doc = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
+        assert doc.get("mode") == "REWRITE_FROM_FACT_POOL_CONSTRAINED"
+        assert doc.get("foundation_proof_model_id") == "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
     
     def test_ibm_bullet_emits_exactly_5_bullets(self):
         """Output contract requires exactly 5 bullets"""
@@ -195,6 +211,24 @@ class TestStop8IBMNarrativePrompt:
         assert "payload_scope:" in content
         assert "input_tokens_estimate" in content
         assert "output_tokens_estimate" in content
+
+    def test_ibm_narrative_yaml_has_north_star_and_claim_coverage_blocks(self):
+        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_position_narrative_v1.yaml"
+        txt = template_path.read_text(encoding="utf-8")
+        assert "north_star_semantic_contract:" in txt
+        assert "claim_ledger_coverage_contract:" in txt
+        assert "source_authority_hierarchy:" in txt
+
+    def test_ibm_narrative_good_examples_avoid_literal_agentic_ai_bigram(self):
+        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_position_narrative_v1.yaml"
+        doc = yaml.safe_load(template_path.read_text(encoding="utf-8"))
+        angles = doc.get("narrative_complement_guidance") or {}
+        for row in angles.get("example_anti_patterns") or []:
+            if not isinstance(row, dict) or "good" not in row:
+                continue
+            gtxt = row.get("good")
+            assert isinstance(gtxt, str)
+            assert re.search(r"\bagentic\s+ai\b", gtxt, flags=re.I) is None
 
 
 class TestW2CHardConstraints:

@@ -184,10 +184,10 @@ class TestStop3HeadlinePrompt:
         assert " | " in content  # space-pipe-space separator
     
     def test_headline_word_count_constraint(self):
-        """headline_tailor_v1.yaml enforces 8-11 words"""
+        """headline_tailor_v1.yaml enforces 10-13 words"""
         template_path = REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "headline_tailor_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "8" in content and "11" in content
+        assert "10" in content and "13" in content
         assert "word" in content.lower()
     
     def test_headline_three_segments(self):

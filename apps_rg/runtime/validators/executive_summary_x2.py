@@ -425,6 +425,19 @@ def check_claim_ledger_materialized_or_gap_excused(
     return True, None
 
 
+def _sensitive_phrase_present(text_lower: str, phrase: str) -> bool:
+    """Detect phrase in lowered text without substring false positives on stems.
+
+    Multi-word phrases use substring match. Single-token phrases use word boundaries
+    so ``audit`` does not fire on ``auditability`` unless the fact or output actually
+    contains the word ``audit``.
+    """
+    pl = phrase.lower()
+    if " " in pl:
+        return pl in text_lower
+    return re.search(rf"\b{re.escape(pl)}\b", text_lower) is not None
+
+
 def check_source_sensitive_phrases(
     text: str,
     selected_facts: list[dict[str, Any]],
@@ -444,13 +457,13 @@ def check_source_sensitive_phrases(
         
         # Check if any sensitive phrase appears in source facts
         for phrase in SOURCE_SENSITIVE_PHRASES:
-            if phrase in combined:
+            if _sensitive_phrase_present(combined, phrase):
                 supported_phrases.add(phrase)
     
     # Check if any sensitive phrase in output is NOT supported
     unsupported_in_output = []
     for phrase in SOURCE_SENSITIVE_PHRASES:
-        if phrase in text_lower and phrase not in supported_phrases:
+        if _sensitive_phrase_present(text_lower, phrase) and phrase not in supported_phrases:
             unsupported_in_output.append(phrase)
     
     if unsupported_in_output:
@@ -794,6 +807,7 @@ def build_sentence_claim_coverage(
         else:
             sentence_pass = True
             for claim in matching_claims:
+                claim_line = str(claim.get("claim_text") or "").strip()
                 source_ids = list(claim.get("source_fact_ids") or [])
                 valid_source_ids = [sid for sid in source_ids if sid in allowed_fact_ids or "_metric_" in sid]
                 status = "SUPPORTED" if valid_source_ids else "UNSUPPORTED"
@@ -801,7 +815,7 @@ def build_sentence_claim_coverage(
                     sentence_pass = False
                     overall_pass = False
                 material_claims.append({
-                    "claim_text": claim_text,
+                    "claim_text": claim_line,
                     "source_fact_ids": source_ids,
                     "support_status": status,
                     "reason": "Mapped from claim_ledger.",
@@ -814,6 +828,360 @@ def build_sentence_claim_coverage(
         })
 
     return {"sentences": coverage_rows, "overall_pass": overall_pass}
+
+
+NORTH_STAR_SIGNATURE_PHRASES = (
+    "fellow of the society of actuaries",
+    "$22m",
+    "$22 m",
+    "reclaimed $14m",
+    "reclaimed $14 m",
+    "reclaimed $14",
+    "productized ai revenue",
+)
+
+
+def _selected_facts_support_blob(selected_facts: list[dict[str, Any]] | None) -> str:
+    parts: list[str] = []
+    for fact in selected_facts or []:
+        if not isinstance(fact, dict):
+            continue
+        parts.append(str(fact.get("claim_text") or ""))
+        parts.append(str(fact.get("achievement_summary") or ""))
+        parts.append(str(fact.get("metric_raw") or ""))
+        parts.append(str(fact.get("text") or ""))
+    return " ".join(parts).lower()
+
+
+def check_north_star_style_example_echo_unsupported(
+    resume_display_text: str,
+    selected_facts: list[dict[str, Any]] | None,
+) -> tuple[bool, str | None]:
+    """Reject visible paste of gold-example metrics/credentials absent from selected facts."""
+    blob = _selected_facts_support_blob(selected_facts)
+    lower = resume_display_text.lower()
+    hits: list[str] = []
+    for phrase in NORTH_STAR_SIGNATURE_PHRASES:
+        p = phrase.lower()
+        if p in lower and p not in blob:
+            hits.append(phrase)
+    if hits:
+        return False, "Style-example echo without selected-fact support: " + ", ".join(hits)
+    return True, None
+
+
+def check_raw_json_no_selected_fact_plan_echo(raw_output: str | None) -> tuple[bool, str | None]:
+    """Model JSON must not echo selected_fact_plan; runtime injects it before X2."""
+    if raw_output is None or not str(raw_output).strip():
+        return True, None
+    stripped = str(raw_output).strip()
+    if not stripped.startswith("{"):
+        return True, None
+    try:
+        obj = json.loads(stripped)
+    except json.JSONDecodeError:
+        return True, None
+    if isinstance(obj, dict) and "selected_fact_plan" in obj:
+        return (
+            False,
+            "Model emitted selected_fact_plan in raw JSON; runtime owns selected_fact_plan.json",
+        )
+    return True, None
+
+
+def check_resume_display_sentence_count_2_3(resume_display_text: str) -> tuple[bool, str | None]:
+    sentences = [s for s in split_sentences(resume_display_text) if str(s).strip()]
+    n = len(sentences)
+    if n < 2 or n > 3:
+        return False, f"resume_display_text must have 2-3 sentences; found {n}"
+    return True, None
+
+
+def srfs_x2_mode_active(srfs_integration: dict[str, Any] | None) -> bool:
+    """True when SelectedRoleFactSet integration activates SRFS executive_summary structural gates."""
+    return _srfs_mode_active(srfs_integration)
+
+
+def _resume_word_count(resume_display_text: str) -> int:
+    return len(re.findall(r"\S+", str(resume_display_text or "").strip()))
+
+
+def check_srfs_sentence_count_4_5(
+    resume_display_text: str,
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    sentences = [s for s in split_sentences(resume_display_text) if str(s).strip()]
+    n = len(sentences)
+    if n in (4, 5):
+        return True, "ok"
+    return False, f"x2_exec_summary_srfs_sentence_count_4_5 requires 4 or 5 sentences in SRFS mode; found {n}"
+
+
+def check_srfs_density_word_count(
+    resume_display_text: str,
+    parsed_output: dict[str, Any] | None,
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    wc = _resume_word_count(resume_display_text)
+    if 95 <= wc <= 160:
+        return True, "ok"
+    if wc > 160:
+        return False, f"SRFS resume_display_text word count {wc} exceeds hard maximum 160"
+    sc = (parsed_output or {}).get("self_check") if isinstance(parsed_output, dict) else None
+    if isinstance(sc, dict) and sc.get("selected_fact_pool_too_small") is True:
+        reason = str(sc.get("selected_fact_pool_too_small_reason") or "").strip()
+        if reason:
+            return True, f"under_min_excused:selected_fact_pool_too_small:{wc}_words"
+        return (
+            False,
+            "SRFS word count under 95: self_check.selected_fact_pool_too_small=true requires non-empty "
+            "selected_fact_pool_too_small_reason",
+        )
+    return (
+        False,
+        f"SRFS resume_display_text word count {wc} below hard minimum 95 "
+        "(or set self_check.selected_fact_pool_too_small=true with reason if pool cannot support length)",
+    )
+
+
+def _srfs_lane_no_commercial_org_cred(s: str, label: str) -> str | None:
+    """Shared S2/S3 lane: no $, revenue, margin, org scale, credential language, credential-led openers."""
+    sl = s.lower()
+    if "$" in s:
+        return f"{label}: $ forbidden"
+    if re.search(r"\brevenue\b", sl):
+        return f"{label}: revenue forbidden"
+    if re.search(r"\b(margin|margins)\b", sl):
+        return f"{label}: margin language forbidden"
+    if re.search(r"\b8\s+to\s+28\b", sl):
+        return f"{label}: team span 8-to-28 forbidden"
+    if "specialist" in sl:
+        return f"{label}: specialist/team-scale language forbidden"
+    if re.search(r"\bfellow\b", sl):
+        return f"{label}: Fellow/credential language forbidden"
+    if "certification" in sl or re.search(r"\bcertified\b", sl):
+        return f"{label}: certification language forbidden"
+    st = s.strip()
+    if not st:
+        return f"{label}: empty"
+    for bad_start in ("fellow of", "holds", "certified", "credentials"):
+        if st.lower().startswith(bad_start):
+            return f"{label}: must not start with credential-led opener {bad_start!r}"
+    return None
+
+
+def _srfs_outcomes_sentence_opener_ok(s: str) -> str | None:
+    """Outcomes (or combined outcomes+cred) sentence must not lead with credential inventory."""
+    st = s.strip()
+    if not st:
+        return "outcomes sentence empty"
+    sl = st.lower()
+    for bad_start in ("fellow of", "holds", "certified", "credentials"):
+        if sl.startswith(bad_start):
+            return f"outcomes sentence must not lead with {bad_start!r}"
+    return None
+
+
+def _srfs_credibility_sentence_opener_ok(s: str) -> str | None:
+    st = s.strip()
+    if not st:
+        return "credibility sentence empty"
+    sl = st.lower()
+    if sl.startswith("holds certifications"):
+        return "S5 must not start with Holds certifications"
+    if sl.startswith("credentials"):
+        return "S5 must not start with Credentials"
+    return None
+
+
+# SRFS-only structural gate: five-part arc (thesis / mechanism / lifecycle / outcomes / credibility); no semantics.
+_SRFS_S1_CONNECTOR_PHRASES = (
+    "to improve",
+    "to reduce",
+    "to streamline",
+)
+_SRFS_S1_CONNECTOR_WORDS = (
+    "integrating",
+    "combining",
+    "through",
+    "while",
+)
+_SRFS_S1_MECHANISM_TERMS = (
+    "microservices",
+    "hpc",
+    "vector services",
+    "routing",
+    "orchestration",
+    "retrieval",
+    "pipelines",
+)
+
+
+def check_srfs_sentence_responsibility_shape(
+    resume_display_text: str,
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    """SRFS only: five-part structural roles (thesis / mechanism / lifecycle / outcomes / cred)."""
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    sentences = [s.strip() for s in split_sentences(resume_display_text) if str(s).strip()]
+    n = len(sentences)
+    if n not in (4, 5):
+        return (
+            False,
+            f"x2_exec_summary_srfs_sentence_responsibility_shape requires 4 or 5 sentences; found {n}",
+        )
+    s1 = sentences[0]
+    s1l = s1.lower()
+
+    # Sentence 1: thesis-only (no mechanism connectors, no listed stack nouns, no digits/$/%)
+    for phrase in _SRFS_S1_CONNECTOR_PHRASES:
+        if phrase in s1l:
+            return False, f"S1 thesis-only: forbidden connector phrase {phrase!r}"
+    for w in _SRFS_S1_CONNECTOR_WORDS:
+        if re.search(rf"\b{re.escape(w)}\b", s1l):
+            return False, f"S1 thesis-only: forbidden connector token {w!r}"
+    if re.search(r"\busing\b", s1l):
+        return False, "S1 thesis-only: forbidden connector token 'using'"
+    if re.search(r"\bby\b", s1l):
+        return False, "S1 thesis-only: forbidden token 'by' (mechanism/outcome bridge)"
+    for term in _SRFS_S1_MECHANISM_TERMS:
+        if term in s1l:
+            return False, f"S1 thesis-only: forbidden mechanism term {term!r}"
+    if re.search(r"[\d$%]", s1):
+        return False, "S1 thesis-only: numeric or $/% tokens forbidden"
+
+    bad2 = _srfs_lane_no_commercial_org_cred(sentences[1], "S2 mechanism-only")
+    if bad2:
+        return False, bad2
+
+    bad3 = _srfs_lane_no_commercial_org_cred(sentences[2], "S3 lifecycle bridge")
+    if bad3:
+        return False, bad3
+
+    if n == 5:
+        bad4 = _srfs_outcomes_sentence_opener_ok(sentences[3])
+        if bad4:
+            return False, bad4
+        bad5 = _srfs_credibility_sentence_opener_ok(sentences[4])
+        if bad5:
+            return False, bad5
+    else:
+        # Four sentences: outcomes + credibility merged in final sentence.
+        bad4 = _srfs_outcomes_sentence_opener_ok(sentences[3])
+        if bad4:
+            return False, bad4
+        tl = sentences[3].strip().lower()
+        if tl.startswith("holds certifications") or tl.startswith("credentials"):
+            return False, "S4 combined must not start with Holds certifications or Credentials"
+
+    return True, "ok"
+
+
+def _srfs_mode_active(srfs_integration: dict[str, Any] | None) -> bool:
+    if not isinstance(srfs_integration, dict):
+        return False
+    return bool(str(srfs_integration.get("artifact_path_resolved") or "").strip())
+
+
+def _claim_row_uses_resume_fact_id(fid: str) -> bool:
+    s = str(fid or "").strip()
+    if not s:
+        return False
+    if s.upper() == "JD_ONLY":
+        return False
+    base = s.split("_metric_", 1)[0] if "_metric_" in s else s
+    return base.startswith("fact_")
+
+
+def check_srfs_executive_selected_fact_scope(
+    claim_ledger: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    slice_ids = {
+        str(x).strip()
+        for x in (srfs_integration or {}).get("executive_summary_selected_fact_ids") or []
+        if str(x).strip()
+    }
+    if not slice_ids:
+        return True, "skipped_no_selected_role_fact_set"
+    bad: list[str] = []
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        for fid in row.get("source_fact_ids") or []:
+            s = str(fid).strip()
+            if not s or not _claim_row_uses_resume_fact_id(s):
+                continue
+            base = s.split("_metric_", 1)[0] if "_metric_" in s else s
+            if base not in slice_ids:
+                bad.append(s)
+    if bad:
+        return False, "claim_ledger cites facts outside executive_summary SRFS slice: " + ", ".join(
+            sorted(set(bad))[:24]
+        )
+    return True, "ok"
+
+
+def check_srfs_blocked_or_confirmation_citations(
+    claim_ledger: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None = None,
+    *,
+    blocked_ids: frozenset[str] | None = None,
+    confirmation_ids: frozenset[str] | None = None,
+) -> tuple[bool, str | None]:
+    if blocked_ids is not None or confirmation_ids is not None:
+        blocked = frozenset(blocked_ids or frozenset())
+        conf = frozenset(confirmation_ids or frozenset())
+    else:
+        if not _srfs_mode_active(srfs_integration):
+            return True, "skipped_no_selected_role_fact_set"
+        blocked = frozenset(
+            str(x).strip()
+            for x in (srfs_integration or {}).get("blocked_candidate_fact_ids") or []
+            if str(x).strip()
+        )
+        conf = frozenset(
+            str(x).strip()
+            for x in (srfs_integration or {}).get("confirmation_required_candidate_fact_ids") or []
+            if str(x).strip()
+        )
+    hits: list[str] = []
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        for fid in row.get("source_fact_ids") or []:
+            base = str(fid).strip().split("_metric_", 1)[0]
+            if base in blocked:
+                hits.append(f"{base}(blocked)")
+            if base in conf:
+                hits.append(f"{base}(confirmation)")
+    if hits:
+        return False, "SRFS blocked/confirmation facts cited as proof: " + ", ".join(sorted(set(hits))[:24])
+    return True, "ok"
+
+
+def check_srfs_jd_or_briefing_standalone_proof_id_zero(
+    claim_ledger: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        ids = [str(x).strip() for x in (row.get("source_fact_ids") or []) if str(x).strip()]
+        if not ids:
+            continue
+        if not any(_claim_row_uses_resume_fact_id(i) for i in ids):
+            return False, "Standalone JD/briefing surrogate proof ids in claim_ledger row: " + ", ".join(ids)
+    return True, "ok"
 
 
 def run_x2_gates(
@@ -839,6 +1207,7 @@ def run_x2_gates(
     x1d_judges: list[dict[str, Any]] | None = None,
     target_role: str | None = None,
     selected_facts: list[dict[str, Any]] | None = None,
+    srfs_integration: dict[str, Any] | None = None,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
     artifacts_dir = artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/executive_summary")
@@ -919,12 +1288,65 @@ def run_x2_gates(
         [],
         colon_stitch_reason,
     )
+    sent23_ok, sent23_reason = check_resume_display_sentence_count_2_3(resume_display_text)
+    if _srfs_mode_active(srfs_integration):
+        sent23_ok, sent23_reason = True, "skipped_srfs_uses_srfs_sentence_count_4_5"
+    add(
+        "x2_exec_summary_sentence_count_2_3",
+        sent23_ok,
+        sent23_reason or "ok",
+        "2-3",
+        sent23_reason,
+    )
+    srfs_n_ok, srfs_n_reason = check_srfs_sentence_count_4_5(resume_display_text, srfs_integration)
+    add(
+        "x2_exec_summary_srfs_sentence_count_4_5",
+        srfs_n_ok,
+        srfs_n_reason or "ok",
+        "4-5_srfs",
+        srfs_n_reason,
+    )
+    srfs_shape_ok, srfs_shape_reason = check_srfs_sentence_responsibility_shape(
+        resume_display_text, srfs_integration
+    )
+    add(
+        "x2_exec_summary_srfs_sentence_responsibility_shape",
+        srfs_shape_ok,
+        srfs_shape_reason or "ok",
+        (
+            "srfs_thesis_mechanism_lifecycle_outcomes_credibility"
+            if srfs_shape_ok
+            else "srfs_five_part_boundaries"
+        ),
+        srfs_shape_reason,
+    )
+    srfs_density_ok, srfs_density_reason = check_srfs_density_word_count(
+        resume_display_text, parsed_output, srfs_integration
+    )
+    add(
+        "x2_exec_summary_srfs_density_word_count",
+        srfs_density_ok,
+        srfs_density_reason or "ok",
+        "95-160_words_srfs",
+        srfs_density_reason,
+    )
     stacked, stack_reason, _ = detect_bullet_like_stacking(resume_display_text)
     add("x2_sentence_stacking_zero", not stacked, stack_reason, None, "Bullet-like sentence stacking detected.")
     
     # New synthesis quality gate
     synthesis_ok, synthesis_reason = check_synthesis_quality(resume_display_text)
     add("x2_executive_summary_synthesis_quality", synthesis_ok, synthesis_reason, None, synthesis_reason)
+
+    north_ok, north_reason = check_north_star_style_example_echo_unsupported(
+        resume_display_text, selected_facts
+    )
+    add(
+        "x2_north_star_style_echo_unsupported_zero",
+        north_ok,
+        north_reason or "ok",
+        "no_unsupported_style_echo",
+        north_reason,
+    )
     
     # New coverage accounting gate
     accounting_ok, accounting_reason = check_claim_coverage_accounting(
@@ -964,6 +1386,15 @@ def run_x2_gates(
     json_parse_ok, json_parse_reason = check_json_parse_valid(parsed_output, raw_output)
     add("x2_json_parse_valid", json_parse_ok, json_parse_reason, None, json_parse_reason)
 
+    no_plan_echo_ok, no_plan_echo_reason = check_raw_json_no_selected_fact_plan_echo(raw_output)
+    add(
+        "x2_no_selected_fact_plan_model_echo",
+        no_plan_echo_ok,
+        no_plan_echo_reason or "ok",
+        "no_model_plan_echo",
+        no_plan_echo_reason,
+    )
+
     # Gate 4: x2_no_extra_unrecognized_fields
     no_extra_ok, no_extra_reason = check_no_extra_fields(parsed_output)
     add("x2_no_extra_unrecognized_fields", no_extra_ok, no_extra_reason, None, no_extra_reason)
@@ -987,6 +1418,50 @@ def run_x2_gates(
     # Gate 9: x2_briefing_as_proof_zero
     briefing_proof_ok, briefing_proof_reason = check_briefing_as_proof_zero(claim_ledger)
     add("x2_briefing_as_proof_zero", briefing_proof_ok, briefing_proof_reason, None, briefing_proof_reason)
+
+    srfs_scope_ok, srfs_scope_reason = check_srfs_executive_selected_fact_scope(claim_ledger, srfs_integration)
+    add(
+        "x2_srfs_executive_selected_fact_scope",
+        srfs_scope_ok,
+        srfs_scope_reason or "ok",
+        "cite_only_executive_slice_base_ids_plus_metric_hashes",
+        srfs_scope_reason,
+    )
+    srfs_bc_ok, srfs_bc_reason = check_srfs_blocked_or_confirmation_citations(claim_ledger, srfs_integration)
+    add(
+        "x2_srfs_blocked_or_confirmation_fact_citation_zero",
+        srfs_bc_ok,
+        srfs_bc_reason or "ok",
+        "blocked_and_confirmation_queues_not_citable",
+        srfs_bc_reason,
+    )
+    srfs_jd_ok, srfs_jd_reason = check_srfs_jd_or_briefing_standalone_proof_id_zero(
+        claim_ledger, srfs_integration
+    )
+    add(
+        "x2_srfs_jd_or_briefing_standalone_proof_id_zero",
+        srfs_jd_ok,
+        srfs_jd_reason or "ok",
+        "no_jd_only_or_briefing_only_surrogate_ids",
+        srfs_jd_reason,
+    )
+
+    if _srfs_mode_active(srfs_integration):
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        coll_ex = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
+        ok_ex, env_ex, fail_ex = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="executive_summary",
+            collected_ids=coll_ex,
+            allowed_fact_ids=set(allowed_fact_ids),
+        )
+        add(
+            "x2_executive_summary_source_fact_ids_within_srfs_slice",
+            ok_ex,
+            env_ex,
+            "srfs_slice_allowlist_exact",
+            fail_ex,
+        )
 
     # Gate 10: x2_target_title_inflation_zero
     title_inflation_ok, title_inflation_reason = check_target_title_inflation(resume_display_text, target_company, target_role)
@@ -1059,21 +1534,35 @@ def run_x2_gates(
     raw_responses_ok, raw_responses_reason = check_judge_raw_responses_written(artifacts_dir, x1d_judges)
     add("x2_x1d_raw_responses_written", raw_responses_ok, raw_responses_reason, None, raw_responses_reason)
 
-    # Gate 19: x2_x1d_schema_valid (only for BLOCKED providers with valid schema - not a failure for blocked)
+    # Gate 19: x2_x1d_schema_valid — every judge row must satisfy required fields.
     if x1d_judges:
-        # Check if all blocked providers have valid schema
-        blocked_with_invalid_schema = []
+        invalid: list[str] = []
         for judge in x1d_judges:
-            evaluator_mode = judge.get("evaluator_mode", "")
-            if evaluator_mode.startswith("BLOCKED_"):
-                schema_ok, _ = check_judge_schema_valid(judge)
-                if not schema_ok:
-                    blocked_with_invalid_schema.append(judge.get("provider_key", "unknown"))
-        x1d_schema_ok = len(blocked_with_invalid_schema) == 0
-        add("x2_x1d_schema_valid", x1d_schema_ok, blocked_with_invalid_schema, [], f"Blocked providers with invalid schema: {blocked_with_invalid_schema}")
+            schema_ok, schema_reason = check_judge_schema_valid(judge)
+            if not schema_ok:
+                pk = judge.get("provider_key", "unknown")
+                invalid.append(f"{pk}: {schema_reason}")
+        x1d_schema_ok = len(invalid) == 0
+        add(
+            "x2_x1d_schema_valid",
+            x1d_schema_ok,
+            invalid,
+            [],
+            None if x1d_schema_ok else "; ".join(invalid),
+        )
     else:
         add("x2_x1d_schema_valid", False, "no judges", "judges present", "No X1D judges to validate.")
-    
+
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    append_section_input_usage_x2_gates(
+        gates,
+        artifacts_dir=artifacts_dir,
+        allowed_fact_ids=allowed_fact_ids,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=text_claim_coverage,
+    )
+
     return gates
 
 

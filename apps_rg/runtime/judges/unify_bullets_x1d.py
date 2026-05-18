@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_x1d import (
@@ -101,6 +102,7 @@ def run_unify_bullets_judges(
     claim_ledger: list[dict[str, Any]],
     judge_keys: list[str],
     mode: str = "blocked_if_unavailable",
+    artifact_base: Path | None = None,
 ) -> list[JudgeOutput]:
     input_payload = {"bullets": bullets, "claim_ledger": claim_ledger, "rubric": UNIFY_RUBRIC}
     input_hash = hashlib.sha256(json.dumps(input_payload, sort_keys=True).encode()).hexdigest()[:16]
@@ -155,14 +157,28 @@ def run_unify_bullets_judges(
 
         try:
             if key == "openai_chatgpt":
-                output = _call_openai(api_key, prompt, model, input_hash, key)
+                output = _call_openai(
+                    api_key, prompt, model, input_hash, key, artifact_base=artifact_base
+                )
             elif key == "anthropic_claude":
                 output = _call_anthropic(
-                    api_key, prompt, model, input_hash, key, model_source=model_source
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
                 )
             else:
                 output = _call_gemini(
-                    api_key, prompt, model, input_hash, key, model_source=model_source
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
                 )
             output.judge_id = f"x1d_{key}_unify_bullets"
             output.rubric_version = JUDGE_RUBRIC_VERSION

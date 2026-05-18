@@ -14,12 +14,15 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     GENERIC_FILLER,
     INLINE_SOURCE_PATTERN,
     REQUIRED_JUDGE_PROVIDERS,
+    check_claim_ledger_claim_text_non_empty,
     check_json_parse_valid,
     check_judge_raw_responses_written,
     check_judge_rows_present,
     check_judge_schema_valid,
     has_jd_phrase_copy,
 )
+
+TEXT_COVERAGE_INTEGRITY_GATE_ID = "x2_text_claim_coverage_integrity"
 
 UNIFY_BULLET_IDS = (
     "bul_unify_001",
@@ -33,6 +36,164 @@ DEFAULT_DISTRIBUTION = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total"
 PROTECTED_BULLET_DEFAULT = "bul_unify_006"
 VALID_INTENSITIES = frozenset({"HEAVY", "MODERATE", "LIGHT_PROTECTED"})
 FORBIDDEN_FACT_PREFIXES = ("bul_ibm_", "bul_insurtech_", "bul_ey_", "exp_ibm_", "exp_insurtech_", "exp_ey_")
+
+_COVERAGE_WS_RE = re.compile(r"\s+")
+
+
+def _norm_claim_ws(text: str) -> str:
+    return _COVERAGE_WS_RE.sub(" ", str(text or "").strip())
+
+
+def _unify_root_from_source_fact_ids(source_fact_ids: list[Any]) -> str | None:
+    for raw in source_fact_ids or []:
+        s = str(raw)
+        if s.startswith("bul_unify_"):
+            return s.split("_metric_")[0]
+    return None
+
+
+def build_unify_bullets_text_claim_coverage(
+    bullets: list[dict[str, Any]],
+    claim_ledger: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+) -> dict[str, Any]:
+    """Structural bullet→ledger coverage (one sentence row per canonical bullet_id).
+
+    Unlike resume prose coverage (token overlap), unify bullets map deterministically:
+    ``bul_unify_NNN`` ↔ exactly one ledger row sharing that root ``source_fact_ids`` prefix.
+    """
+    ledger_by_root: dict[str, dict[str, Any]] = {}
+    duplicate_roots: list[str] = []
+    unresolved_roots = 0
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        ids = list(row.get("source_fact_ids") or [])
+        root = _unify_root_from_source_fact_ids(ids)
+        if root is None:
+            if str(row.get("claim_text") or "").strip():
+                unresolved_roots += 1
+            continue
+        if root in ledger_by_root:
+            duplicate_roots.append(root)
+        ledger_by_root[root] = row
+
+    by_bullet_id = {str(b.get("bullet_id")): b for b in bullets if b.get("bullet_id")}
+    coverage_rows: list[dict[str, Any]] = []
+    overall_pass = True
+    integrity_notes: list[str] = []
+
+    if duplicate_roots:
+        overall_pass = False
+        integrity_notes.append(f"duplicate_ledger_roots:{sorted(set(duplicate_roots))}")
+    if unresolved_roots:
+        overall_pass = False
+        integrity_notes.append(f"ledger_rows_missing_unify_root:{unresolved_roots}")
+
+    for ordinal, bid in enumerate(UNIFY_BULLET_IDS, start=1):
+        bullet = by_bullet_id.get(bid)
+        ledger_row = ledger_by_root.get(bid)
+        btxt = str((bullet or {}).get("bullet_text") or "").strip()
+        sentence_text = f"- {bid}: {btxt}"
+
+        if bullet is None or ledger_row is None:
+            overall_pass = False
+            coverage_rows.append(
+                {
+                    "sentence_index": ordinal,
+                    "bullet_id": bid,
+                    "sentence_text": sentence_text,
+                    "material_claims": [
+                        {
+                            "claim_text": "",
+                            "source_fact_ids": [],
+                            "support_status": "UNSUPPORTED",
+                            "reason": "missing bullet or claim_ledger row for bullet_id",
+                        }
+                    ],
+                    "sentence_pass": False,
+                }
+            )
+            continue
+
+        ct = str(ledger_row.get("claim_text") or "").strip()
+        source_ids = list(ledger_row.get("source_fact_ids") or [])
+        valid_source_ids = [
+            sid for sid in source_ids if sid in allowed_fact_ids or "_metric_" in str(sid)
+        ]
+        ids_ok = bool(valid_source_ids)
+        text_align = _norm_claim_ws(ct) == _norm_claim_ws(btxt)
+
+        sentence_pass = True
+        material_claims: list[dict[str, Any]] = []
+        if not text_align:
+            overall_pass = False
+            sentence_pass = False
+            material_claims.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": source_ids,
+                    "support_status": "MISALIGNED_TEXT",
+                    "reason": "claim_ledger claim_text must align with bullet_text (normalized whitespace).",
+                }
+            )
+        elif not ids_ok:
+            overall_pass = False
+            sentence_pass = False
+            material_claims.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": source_ids,
+                    "support_status": "UNSUPPORTED",
+                    "reason": "source_fact_ids not in allowed_fact_ids.",
+                }
+            )
+        else:
+            material_claims.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": source_ids,
+                    "support_status": "SUPPORTED",
+                    "reason": "Structural row aligned to bullet_id and claim_ledger.",
+                }
+            )
+
+        coverage_rows.append(
+            {
+                "sentence_index": ordinal,
+                "bullet_id": bid,
+                "sentence_text": sentence_text,
+                "material_claims": material_claims,
+                "sentence_pass": sentence_pass,
+            }
+        )
+
+    return {
+        "coverage_schema": "unify_bullets_structural_v1",
+        "sentences": coverage_rows,
+        "overall_pass": overall_pass,
+        "integrity_notes": integrity_notes,
+    }
+
+
+def check_unify_bullets_text_claim_coverage_integrity(
+    bullets: list[dict[str, Any]],
+    claim_ledger: list[dict[str, Any]],
+    text_claim_coverage: dict[str, Any] | None,
+    allowed_fact_ids: set[str],
+) -> tuple[bool, str | None]:
+    """Deterministic gate: stored coverage must match a structural rebuild (no stale loops)."""
+    expected = build_unify_bullets_text_claim_coverage(bullets, claim_ledger, allowed_fact_ids)
+    actual = text_claim_coverage if isinstance(text_claim_coverage, dict) else {}
+    if actual.get("sentences") != expected.get("sentences"):
+        return False, "text_claim_coverage.sentences mismatch vs structural rebuild"
+    if actual.get("overall_pass") != expected.get("overall_pass"):
+        return (
+            False,
+            f"overall_pass mismatch observed={actual.get('overall_pass')} expected={expected.get('overall_pass')}",
+        )
+    return True, None
+
 
 REQUIRED_TOP_LEVEL = {
     "bullets",
@@ -103,6 +264,7 @@ def run_unify_bullets_x2_gates(
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
     rewrite_distribution: dict[str, Any] | None = None,
+    srfs_source_fact_slice_gate_active: bool = False,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -128,6 +290,56 @@ def run_unify_bullets_x2_gates(
     combined = _combined_bullet_text(bullets)
     dist = rewrite_distribution or (parsed_output or {}).get("rewrite_distribution") or {}
     intensity_counts = _count_intensities(bullets)
+
+    po_raw = parsed_output or {}
+    missing_top_level = sorted(k for k in REQUIRED_TOP_LEVEL if k not in po_raw)
+    add(
+        "x2_required_top_level_json_keys",
+        not missing_top_level,
+        missing_top_level,
+        sorted(REQUIRED_TOP_LEVEL),
+        f"Missing required top-level JSON keys: {', '.join(missing_top_level)}" if missing_top_level else None,
+    )
+
+    ledger_text_ok, ledger_text_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
+    if not ledger_text_ok and ledger_text_reason:
+        hint_parts = []
+        for i, row in enumerate(claim_ledger):
+            if not isinstance(row, dict):
+                continue
+            ct = row.get("claim_text")
+            if ct is None or (isinstance(ct, str) and not str(ct).strip()):
+                b_hint = row.get("bullet_id")
+                sfx = ""
+                if b_hint is None and row.get("source_fact_ids"):
+                    sfx = f"ledger_idx={i} source_fact_ids={row.get('source_fact_ids')!r}"
+                else:
+                    sfx = f"ledger_idx={i} bullet_id_hint={b_hint!r} source_fact_ids={row.get('source_fact_ids')!r}"
+                hint_parts.append(sfx)
+        if hint_parts:
+            ledger_text_reason = f"{ledger_text_reason}; " + "; ".join(hint_parts)
+    add(
+        "x2_claim_ledger_claim_text_non_empty",
+        ledger_text_ok,
+        ledger_text_reason or ("ok" if ledger_text_ok else "failed"),
+        "non-empty trimmed claim_text for every ledger row",
+        ledger_text_reason,
+    )
+
+    cov_gate_payload = po_raw.get("text_claim_coverage") if isinstance(po_raw.get("text_claim_coverage"), dict) else {}
+    cov_ok, cov_reason = check_unify_bullets_text_claim_coverage_integrity(
+        bullets=bullets,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=cov_gate_payload,
+        allowed_fact_ids=allowed_fact_ids,
+    )
+    add(
+        TEXT_COVERAGE_INTEGRITY_GATE_ID,
+        cov_ok,
+        cov_reason or "structural_alignment_ok",
+        "matches structural rebuild",
+        cov_reason,
+    )
 
     add("x2_unify_bullet_count_6", len(bullets) == 6, len(bullets), 6, "Must output exactly 6 bullets.")
 
@@ -184,14 +396,38 @@ def run_unify_bullets_x2_gates(
     )
 
     source_ids = _all_source_fact_ids(parsed_output, claim_ledger)
-    scope_ok = bool(source_ids) and all(sid.startswith("bul_unify_") for sid in source_ids)
-    scope_ok = scope_ok and not any(
-        any(fid.startswith(prefix) for fid in source_ids) for prefix in FORBIDDEN_FACT_PREFIXES
+    illegal_prefix_ids = sorted({str(s) for s in source_ids if not str(s).startswith("bul_unify_")})
+    forbidden_hits = sorted(
+        {str(s) for s in source_ids if any(str(s).startswith(prefix) for prefix in FORBIDDEN_FACT_PREFIXES)}
     )
-    scope_ok = scope_ok and all(
-        sid in allowed_fact_ids or sid.split("_metric_")[0] in allowed_fact_ids for sid in source_ids
+    not_in_allowlist = sorted(
+        {
+            str(s)
+            for s in source_ids
+            if str(s).startswith("bul_unify_")
+            and str(s) not in allowed_fact_ids
+            and str(s).split("_metric_")[0] not in allowed_fact_ids
+        }
     )
-    add("x2_unify_only_fact_scope", scope_ok, sorted(source_ids), "bul_unify_*", "Fact scope must be Unify bullets only.")
+    scope_ok = bool(source_ids) and not illegal_prefix_ids and not forbidden_hits and not not_in_allowlist
+    scope_parts: list[str] = []
+    if illegal_prefix_ids:
+        scope_parts.append(f"tokens_not_bul_unify_prefix={illegal_prefix_ids}")
+    if forbidden_hits:
+        scope_parts.append(f"forbidden_cross_lane_tokens={forbidden_hits}")
+    if not_in_allowlist:
+        scope_parts.append(f"tokens_not_in_allowed_fact_pool={not_in_allowlist}")
+    scope_failure = (
+        "Fact scope must be Unify bullets only."
+        + (f" ({'; '.join(scope_parts)})" if scope_parts else "")
+    )
+    add(
+        "x2_unify_only_fact_scope",
+        scope_ok,
+        sorted(source_ids),
+        "bul_unify_*",
+        None if scope_ok else scope_failure,
+    )
 
     serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
     add("x2_no_ibm_fact_leakage", "bul_ibm_" not in serialized, "bul_ibm_", "absent", "IBM fact leakage detected.")
@@ -301,5 +537,34 @@ def run_unify_bullets_x2_gates(
         )
     else:
         add("x2_x1d_schema_valid", False, "no judges", "present", "No X1D judges.")
+
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    if srfs_source_fact_slice_gate_active:
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        coll = _srfs_w4.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
+        ok_sl, env_sl, fail_sl = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="unify_bullets",
+            collected_ids=coll,
+            allowed_fact_ids=set(allowed_fact_ids),
+        )
+        add(
+            "x2_unify_bullets_source_fact_ids_within_srfs_slice",
+            ok_sl,
+            env_sl,
+            "srfs_slice_allowlist_exact",
+            fail_sl,
+        )
+
+    append_section_input_usage_x2_gates(
+        gates,
+        artifacts_dir=artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/unify_bullets"),
+        allowed_fact_ids=allowed_fact_ids,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=(parsed_output or {}).get("text_claim_coverage")
+        if isinstance(parsed_output, dict)
+        else None,
+    )
 
     return gates

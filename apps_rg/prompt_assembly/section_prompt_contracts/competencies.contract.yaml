@@ -1,7 +1,7 @@
 section_id: competencies
 mode: COMPOSE_NEW
 apps_rg_prompt_template_ref: apps_rg/prompt_assembly/templates/competency_selector_v2.yaml
-pa_template_ref: strategic_tailor_v1
+pa_template_ref: competency_selector_v2
 output_schema_ref: apps_rg/rg_output_schema.json
 claim_ledger_required: true
 display_text_source_tags_allowed: false
@@ -18,3 +18,5 @@ notes: >
   jd_requirements / company_brief are targeting only, not proof.
   Companion context is U-tier only, not proof.
   W5: apps_rg_prompt_template_ref is narrative SSOT; PA loads slot bodies from competency_selector_v2.pa_slots.yaml.
+  Structured competency terms in model JSON must be objects with text, source_fact_id, and non-empty source_fact_ids[]
+  (PA R0 schema); runtime persistence canonicalizes legacy string terms to objects before X2.

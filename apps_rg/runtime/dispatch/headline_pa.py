@@ -16,6 +16,7 @@ import yaml
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
+from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
 
 
 def _repo_root() -> Path:
@@ -62,13 +63,43 @@ _HEADLINE_OUTPUT_SCHEMA_JSON = json.dumps(
                 ),
             },
             "selected_fact_plan": {"type": "object"},
-            "claim_ledger": {"type": "array"},
+            "claim_ledger": {
+                "type": "array",
+                "minItems": 1,
+                "description": (
+                    "PROOF CRITICAL: array of OBJECT rows only — never a flat list of bul_* strings. "
+                    "Each row proves headline_line themes using candidate facts."
+                ),
+                "items": {
+                    "type": "object",
+                    "required": ["claim_text", "source_fact_ids"],
+                    "additionalProperties": True,
+                    "properties": {
+                        "claim_text": {"type": "string", "minLength": 1},
+                        "source_fact_ids": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {"type": "string"},
+                        },
+                    },
+                },
+            },
             "jd_alignment": {
                 "type": "object",
                 "description": (
                     "Must include targeting_only true, jd_used_as_proof false, briefing_used_as_proof false, "
-                    "selected_theme, anti_stuffing_check; JD/briefing are ranking only"
+                    "selected_theme, anti_stuffing_check; JD/briefing are ranking only. "
+                    "When U_TIER_COMPANION_CONTEXT in the assembled prompt is non-empty, MUST include "
+                    "companion_used_as_proof: false (boolean)."
                 ),
+                "properties": {
+                    "targeting_only": {"type": "boolean"},
+                    "jd_used_as_proof": {"type": "boolean"},
+                    "briefing_used_as_proof": {"type": "boolean"},
+                    "companion_used_as_proof": {"type": "boolean"},
+                    "selected_theme": {"type": "string"},
+                    "anti_stuffing_check": {"type": "string"},
+                },
             },
             "gap_notes": {"type": "array"},
             "change_log": {"type": "array"},
@@ -100,6 +131,7 @@ def build_headline_assembly_input(
     request_id: str,
     run_id: str,
     trace_root: str,
+    companion_context_nonempty: bool = False,
 ) -> PromptAssemblyInput:
     slots = load_headline_template_slots()
     plan = runtime_payload.get("selected_fact_plan") or {}
@@ -137,17 +169,33 @@ def build_headline_assembly_input(
         "These lines may shape emphasis but cannot prove claims."
     )
 
-    u0 = (
-        "Produce exactly ONE resume headline per R0 schema.\n"
-        "Return RAW JSON only: first character {, last character }. No markdown fences.\n"
-        "headline_line MUST be exactly: SVP Engineering | X | Y | Z — exact prefix 'SVP Engineering | ', "
-        "exactly three ' | ' separators (four non-empty segments), 10–13 words total, "
-        "no metrics, no employer or target company names, no inline source tags, no first person, no em dash.\n"
-        "claim_ledger: bul_* source_fact_ids only from C0.\n"
-        "jd_alignment must include jd_used_as_proof: false and briefing_used_as_proof: false.\n"
-        "self_check must match R0 (segment_count, separator_count, word_count, word_count_in_range, "
-        "no_employer_names, jd_used_as_targeting_only, etc.).\n"
+    u0_parts = [
+        "<role>You are writing one executive resume headline for an SVP Engineering candidate: "
+        "pick the three strongest fact-supported positioning themes for the target role; express them as SVP Engineering | X | Y | Z.</role>\n",
+        "North Star: headline_line MUST be exactly SVP Engineering | X | Y | Z — X/Y/Z are creative executive phrases from the fact ledger, ranked by JD/briefing relevance only (never proof).\n",
+        "Produce exactly ONE resume headline JSON object per R0 schema.\n",
+        "Return RAW JSON only: first character {, last character }. No markdown fences.\n",
+        "Anti-copy: do not default-copy examples, identity-reference lines, JD title, JD phrases, briefing phrases, or the base resume headline verbatim — "
+        "prefer fresh fact-led wording unless verbatim text is truly best and still compliant.\n",
+        "headline_line MUST use exact prefix 'SVP Engineering | ', exactly three ' | ' separators (four non-empty segments), 10–13 words total, ",
+        "no metrics, no employer or target company names, no candidate names, no inline source tags, no first person, no em dash.\n",
+        "claim_ledger MUST be an array of OBJECT rows with claim_text (non-empty string) and ",
+        "source_fact_ids (non-empty string array of bul_* IDs from C0). ",
+        "FORBIDDEN: flat arrays of strings such as [\"bul_unify_001\",\"bul_unify_005\"] — invalid for proof.\n",
+        "jd_alignment must include jd_used_as_proof: false and briefing_used_as_proof: false (both booleans).\n",
+    ]
+    if companion_context_nonempty:
+        u0_parts.append(
+            "Because U_TIER_COMPANION_CONTEXT is included below (non-empty), jd_alignment MUST also include "
+            "companion_used_as_proof: false exactly — boolean false, never true; omitting this key is invalid.\n"
+        )
+    u0_parts.append(
+        "self_check counts MUST match deterministic headline_line metrics: strip headline_line; replace every '|' "
+        "with one ASCII space; split on whitespace; word_count = token count (pipes are not tokens). "
+        "Then fill segment_count=4, separator_count=3, word_count from headline_line, "
+        "word_count_in_range, booleans per R0.\n"
     )
+    u0 = "".join(u0_parts)
 
     return PromptAssemblyInput(
         template_id="strategic_tailor_v1",
@@ -196,13 +244,16 @@ def compile_headline_prompt(
         request_id=run_id,
         run_id=run_id,
         trace_root=f"headline:{run_id}",
+        companion_context_nonempty=bool(companion_context.strip()),
     )
     tier = companion_context.strip() or None
-    return compile_section_prompt(
+    compiled = compile_section_prompt(
         assembly,
         section_id="headline",
         companion_u_tier=tier,
     )
+    ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
+    return augment_section_compiled_with_input_authority(compiled, allowed_source_fact_ids=ids)
 
 
 __all__ = [

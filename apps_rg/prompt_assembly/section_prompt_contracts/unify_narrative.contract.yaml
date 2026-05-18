@@ -21,6 +21,8 @@ notes: >
   W8 ledger-only citations: resume display text must not contain inline source/citation tags.
   Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable).
   jd_requirements / company_brief are targeting only, not proof.
+  North-star role capstone: platform roadmap, architecture, commercialization, reusable IP, enterprise deployment;
+  base anchor fact unify_narrative_base_* when role_narrative exists in canonical JSON.
   Companion context is U-tier only, not proof.
   Production narrative must run only after unify_bullets has X2/X1D/X3 evidence and product_quality_status PASS.
   W7 mechanical migration hardened with bullet-first dependency enforcement.

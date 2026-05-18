@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_x2 import (
@@ -12,12 +13,14 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     GENERIC_FILLER,
     INLINE_SOURCE_PATTERN,
     REQUIRED_JUDGE_PROVIDERS,
+    check_claim_ledger_claim_text_non_empty,
     check_json_parse_valid,
     check_judge_rows_present,
     check_judge_schema_valid,
     has_jd_phrase_copy,
     split_sentences,
 )
+from apps_rg.runtime.qwen_offline_contract_stub import offline_contract_stub_enabled
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, UNIFY_RUNTIME_TERM_PATTERNS
 from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
 
@@ -91,6 +94,107 @@ def _count_metric_hits(narrative: str) -> int:
     return hits
 
 
+REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS: tuple[str, ...] = (
+    "mocked_runtime_slice",
+    "provider not requested",
+    "mock fallback",
+    "mocked judge",
+    "plumbing only",
+    "test-only",
+    "plumbing_only",
+)
+
+IBM_NARRATIVE_THEME_TRIGGERS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    (
+        "bul_ibm_001",
+        (
+            "regulated financial",
+            "financial services",
+            "analytics platform",
+            "enterprise reliability",
+            "enterprise-scale",
+            "financial-sector",
+            "regulated sector",
+        ),
+    ),
+    (
+        "bul_ibm_002",
+        (
+            "migration",
+            "modernization",
+            "modernizing",
+            "migrating",
+            "cloud modernization",
+            "infrastructure modernization",
+        ),
+    ),
+    (
+        "bul_ibm_003",
+        (
+            "reusable platform",
+            "shared services",
+            "lifecycle management",
+            "operational burden",
+        ),
+    ),
+    (
+        "bul_ibm_004",
+        (
+            "lineage",
+            "observability",
+            "instrumentation",
+            "distributed data",
+        ),
+    ),
+    (
+        "bul_ibm_005",
+        (
+            "partnership",
+            "hyperscaler",
+            "hyperscalers",
+            "alliance",
+            "ecosystems",
+            "ecosystem",
+        ),
+    ),
+)
+
+
+def ibm_narrative_material_fact_ids_for_sentence(narrative_sentence: str) -> frozenset[str]:
+    nl = narrative_sentence.lower().strip()
+    ids: set[str] = set()
+    for fid, phrases in IBM_NARRATIVE_THEME_TRIGGERS:
+        if any(p in nl for p in phrases):
+            ids.add(fid)
+    return frozenset(ids)
+
+
+IBM_RESUME_JARGON_BANNED_PHRASES: tuple[str, ...] = (
+    "concentrated enterprise",
+    "reliability posture",
+    "migration cadence",
+    "client-facing instrumentation",
+    "stayed predictable",
+)
+
+
+def _product_fields_haystack_for_mock_language_gate(
+    *,
+    narrative_sentence: str,
+    parsed_output: dict[str, Any] | None,
+    claim_ledger: list[dict[str, Any]],
+) -> str:
+    parts: list[str] = [str(narrative_sentence or "")]
+    if isinstance(parsed_output, dict):
+        for key in ("change_log", "gap_notes", "self_check"):
+            parts.append(json.dumps(parsed_output.get(key), sort_keys=True, default=str))
+    for row in claim_ledger or []:
+        if isinstance(row, dict):
+            parts.append(str(row.get("claim_text") or ""))
+            parts.append(json.dumps(row, sort_keys=True, default=str))
+    return "\n".join(parts).lower()
+
+
 def _companion_ibm_bullets_have_metrics(companion_bullet_texts: str) -> bool:
     c = companion_bullet_texts.lower()
     return (
@@ -116,6 +220,11 @@ def run_ibm_narrative_x2_gates(
     model_name: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
+    allowed_fact_ids: list[str] | None = None,
+    test_only_mock_provider: bool = False,
+    artifacts_dir: Any | None = None,
+    text_claim_coverage: dict[str, Any] | None = None,
+    srfs_source_fact_slice_gate_active: bool = False,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -170,6 +279,52 @@ def run_ibm_narrative_x2_gates(
         "claim_ledger must map to IBM bullet facts only.",
     )
 
+    allow_runtime = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
+    bad_allow_tokens: list[str] = []
+    if allowed_fact_ids is None:
+        add(
+            "x2_claim_ledger_source_fact_ids_allow_list",
+            True,
+            "skipped_no_runtime_allow_list",
+            "invoke_with_runtime_allowed_fact_ids",
+            None,
+        )
+    elif not allow_runtime:
+        add(
+            "x2_claim_ledger_source_fact_ids_allow_list",
+            False,
+            "empty_allow_list",
+            "non_empty_allow_list",
+            "runtime_payload allowed_fact_ids was empty",
+        )
+    else:
+        for claim in claim_ledger:
+            if not isinstance(claim, dict):
+                continue
+            for tok in _iter_source_fact_id_tokens(claim.get("source_fact_ids")):
+                st = str(tok).strip()
+                if st and st not in allow_runtime:
+                    bad_allow_tokens.append(st)
+        allow_ok = not bad_allow_tokens
+        add(
+            "x2_claim_ledger_source_fact_ids_allow_list",
+            allow_ok,
+            bad_allow_tokens or "all_tokens_in_allowed_fact_ids",
+            sorted(allow_runtime),
+            None
+            if allow_ok
+            else f"claim_ledger source_fact_ids outside runtime allow-list: {bad_allow_tokens}",
+        )
+
+    ledger_text_ok, ledger_text_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
+    add(
+        "x2_claim_ledger_claim_text_non_empty",
+        ledger_text_ok,
+        ledger_text_reason or "all_rows_non_empty",
+        "non_empty_claim_text_each_row",
+        ledger_text_reason,
+    )
+
     serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
     scope_ids = _ledger_fact_ids(claim_ledger) | set(re.findall(r"bul_ibm_\d{3}", serialized))
     scope_ok = all(s.startswith("bul_ibm_") for s in scope_ids) and not any(
@@ -196,16 +351,42 @@ def run_ibm_narrative_x2_gates(
     jd_copy, jd_phrase = has_jd_phrase_copy(narrative_sentence, jd_text)
     add("x2_no_jd_only_claims", not jd_copy, jd_phrase or "none", "no long JD copy", "JD phrase copied as proof.")
 
+    jargon_hits = [p for p in IBM_RESUME_JARGON_BANNED_PHRASES if p in narrative_sentence.lower()]
+    add(
+        "x2_ibm_narrative_weak_resume_jargon_phrases",
+        not jargon_hits,
+        jargon_hits or "none",
+        "absent_durable_weak_phrases",
+        None
+        if not jargon_hits
+        else f"Weak/consulting-stacked phrasing not allowed in sentence: {jargon_hits}",
+    )
+
+    theme_required = ibm_narrative_material_fact_ids_for_sentence(narrative_sentence)
+    missing_themes = sorted(theme_required - ledger_ids)
+    add(
+        "x2_ibm_narrative_claim_theme_coverage",
+        not missing_themes,
+        {"themes_detected": sorted(theme_required), "missing_in_ledger_union": missing_themes},
+        "ledger_covers_all_detected_themes",
+        None
+        if not missing_themes
+        else (
+            "narrative_sentence material themes require matching bul_ibm_* in claim_ledger union; "
+            f"missing: {missing_themes}"
+        ),
+    )
+
     companion = companion_bullet_texts or ""
     metric_hits = _count_metric_hits(narrative_sentence)
     if companion and _companion_ibm_bullets_have_metrics(companion):
-        repetition_ok = metric_hits <= 1
+        repetition_ok = metric_hits == 0
         add(
             "x2_no_metric_repetition_unless_justified",
             repetition_ok,
             metric_hits,
-            "<=1 when IBM bullets already carry full metrics",
-            "Too many repeated metrics versus companion bullets.",
+            "0_when_companion_carries_full_IBM_metric_bundle",
+            "Do not replay bullet metric tokens when companion IBM bullets include the full KPI bundle.",
         )
     else:
         add(
@@ -313,6 +494,70 @@ def run_ibm_narrative_x2_gates(
     else:
         add("x2_x1d_schema_valid", False, "no judges", "present", "No judges.")
 
+    skip_mock_language_gate = bool(offline_contract_stub_enabled())
+    active_mock_language_gate = (
+        runtime_generation_status == "REAL_LLM"
+        and not test_only_mock_provider
+        and not skip_mock_language_gate
+    )
+
+    if not active_mock_language_gate:
+        add(
+            "x2_no_mock_or_plumbing_language_in_real_l2_output",
+            True,
+            "not_applicable",
+            "skipped",
+            None,
+        )
+    else:
+        haystack = _product_fields_haystack_for_mock_language_gate(
+            narrative_sentence=narrative_sentence,
+            parsed_output=parsed_output,
+            claim_ledger=claim_ledger,
+        )
+        offenders = [tok for tok in REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS if tok in haystack]
+        mock_lang_failure = (
+            f"L2 payload contains test/plumbing/mock phrasing tokens: {offenders}"
+            if offenders
+            else None
+        )
+        add(
+            "x2_no_mock_or_plumbing_language_in_real_l2_output",
+            not offenders,
+            offenders if offenders else "no_stale_mock_terms_detected",
+            "no_mock_plumbing_lexicon_tokens",
+            mock_lang_failure,
+        )
+
+    from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
+
+    if srfs_source_fact_slice_gate_active and allowed_fact_ids:
+        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+
+        coll_inr = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
+        allow_inr = {str(x).strip() for x in allowed_fact_ids if str(x).strip()}
+        ok_inr, env_inr, fail_inr = _srfs_w4.evaluate_srfs_slice_source_fact_gate(
+            section_id="ibm_narrative",
+            collected_ids=coll_inr,
+            allowed_fact_ids=allow_inr,
+        )
+        add(
+            "x2_ibm_narrative_source_fact_ids_within_srfs_slice",
+            ok_inr,
+            env_inr,
+            "srfs_slice_allowlist_exact",
+            fail_inr,
+        )
+
+    _allow = set(str(x) for x in (allowed_fact_ids or [])) or set(IBM_BULLET_IDS)
+    append_section_input_usage_x2_gates(
+        gates,
+        artifacts_dir=artifacts_dir or Path("artifacts/apps_rg/runtime_proofs/ibm_narrative"),
+        allowed_fact_ids=_allow,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=text_claim_coverage,
+    )
+
     return gates
 
 
@@ -325,7 +570,10 @@ def companion_ibm_bullets_have_full_metric_bundle(companion_bullet_texts: str) -
 
 
 __all__ = [
+    "IBM_NARRATIVE_THEME_TRIGGERS",
+    "IBM_RESUME_JARGON_BANNED_PHRASES",
     "run_ibm_narrative_x2_gates",
     "count_ibm_narrative_metric_hits",
     "companion_ibm_bullets_have_full_metric_bundle",
+    "ibm_narrative_material_fact_ids_for_sentence",
 ]

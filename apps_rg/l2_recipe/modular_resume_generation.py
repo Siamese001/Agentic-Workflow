@@ -20,7 +20,6 @@ from apps_rg.l2_recipe.modular_lane_adapter import (
     build_modular_lane_argv,
     build_section_provider_call_record,
     resolve_latest_lane_run_dir,
-    run_dispatch_main,
 )
 from apps_rg.l2_recipe.modular_lane_recipe_policy import summarize_modular_lane_recipe_policy
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
@@ -32,6 +31,7 @@ from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_o
 from apps_rg.runtime.assembly.final_resume_assembler import assemble_final_resume
 from apps_rg.runtime.assembly.final_resume_manifest import FinalResumePaths
 from apps_rg.runtime.locked_copy.locked_copy_builder import build_locked_copy
+from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
 from apps_rg.runtime.reports.generated_lane_rollup import (
     GENERATED_LANES,
     build_modular_lane_rollup,
@@ -39,15 +39,22 @@ from apps_rg.runtime.reports.generated_lane_rollup import (
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.run_bundle_index import repo_relative_posix
 from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+from apps_rg.runtime.section_cli_defaults import (
+    CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+    resolve_cli_x1d_judges,
+)
+from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
 
 # Same seven modules as ``apps_rg.runtime.orchestrate_full_resume`` (single SSOT).
+# competencies_dispatch remains listed for legacy argparse/import tooling parity — canonical lane runtime:
+# apps_rg.runtime.sections.competencies_lane (selected-section entry via python -m apps_rg --section competencies).
 LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
-    "apps_rg.runtime.dispatch.headline_dispatch",
+    "apps_rg.runtime.sections.headline_lane",
     "apps_rg.runtime.dispatch.executive_summary_dispatch",
     "apps_rg.runtime.dispatch.unify_bullets_dispatch",
     "apps_rg.runtime.dispatch.unify_narrative_dispatch",
-    "apps_rg.runtime.dispatch.ibm_bullets_dispatch",
+    "apps_rg.runtime.sections.ibm_bullets_lane",
     "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
     "apps_rg.runtime.dispatch.competencies_dispatch",
 )
@@ -55,8 +62,8 @@ LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
 
 PHASE0_PATH_INVENTORY_NOTES: dict[str, Any] = {
     "subprocess_cwd": (
-        "orchestrate_full_resume.run_orchestration uses subprocess with cwd=repo root; "
-        "lane argv: python -m <LANE_DISPATCH_MODULES[i]> ..."
+        "orchestrate_full_resume.run_orchestration invokes run_canonical_apps_rg_from_cli_primitives per section; "
+        "lane order matches GENERATED_LANES."
     ),
     "runtime_proofs_strings": [
         "orchestrate_full_resume.RUNTIME_PROOFS = artifacts/apps_rg/runtime_proofs",
@@ -319,7 +326,7 @@ class ModularResumeProfile:
     run_phase0_synthetic_assembly: bool = True
     validate_rg_output_fixture: bool = True
     phase1_invoke_real_lanes: bool = False
-    phase1_lane_provider: str = "mock"
+    phase1_lane_provider: str = "qwen_vllm"
     self_consistency_requested: int = 0
 
 
@@ -394,12 +401,38 @@ def run_modular_resume_generation(
             targeting=lane_targeting,
         )
         lane_run_dirs: dict[str, Path] = {}
+        _ = lane_argv  # argv shape retained for phase1_lane_inventory metadata
+        lane_mock_j_for_phase1 = False
+        tc = str(lane_targeting.target_company or "") if lane_targeting is not None else ""
+        tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
+        jd_txt = str(lane_targeting.jd_text or "") if lane_targeting is not None else ""
+        br_txt = str(lane_targeting.briefing_text or "") if lane_targeting is not None else ""
+        x1d_eff = resolve_cli_x1d_judges(None)
         try:
-            for lane, mod in zip(GENERATED_LANES, LANE_DISPATCH_MODULES):
+            for lane in GENERATED_LANES:
                 try:
-                    argv_lane = list(lane_argv)
-                    rc = run_dispatch_main(mod, argv_lane)
-                    lane_exec_status[lane] = "ok" if rc == 0 else f"exit_{rc}"
+                    result = run_canonical_apps_rg_from_cli_primitives(
+                        target_company=tc,
+                        target_role=tr,
+                        jd="",
+                        job_description_ref="",
+                        job_description_text=jd_txt,
+                        manual_brief=br_txt,
+                        resume_path="",
+                        source_resume_text="",
+                        generation_mode="strategic_tailor",
+                        artifact_dir="",
+                        section=lane,
+                        lane_provider=profile.phase1_lane_provider,
+                        lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+                        lane_temperature=default_temperature_for_section(lane),
+                        lane_x1d_judges=x1d_eff,
+                        lane_mock_judges=lane_mock_j_for_phase1,
+                    )
+                    if (result or {}).get("fault") == "temperature_range":
+                        lane_exec_status[lane] = "exit_2"
+                    else:
+                        lane_exec_status[lane] = "ok"
                 except Exception as exc:
                     lane_exec_status[lane] = f"error:{exc!s}"
             for lane in GENERATED_LANES:

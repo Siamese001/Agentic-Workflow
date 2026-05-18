@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_x1d import (
@@ -20,7 +21,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     resolve_x1d_provider_credentials,
 )
 
-JUDGE_RUBRIC_VERSION = "unify_narrative_x1d_v1_1"
+JUDGE_RUBRIC_VERSION = "unify_narrative_x1d_v1_2"
 
 NARRATIVE_RUBRIC = """
 You are evaluating one Unify Consulting role narrative sentence (complement to six bullets).
@@ -29,22 +30,25 @@ Return JSON only with: score_scale, score, threshold, pass, decisive_failure, fi
 Score contract:
 - score_scale must be "0_to_1" or "0_to_5" only.
 
-Rubric dimensions:
-1. factual_support: claims align with claim_ledger and bul_unify_* source facts.
-2. bullet_first_dependency: narrative clearly behaves as a capstone to accepted finalized bullets, not a standalone rewrite.
-3. executive_signal: SVP-level platform leadership, operating discipline, commercialization, and delivery momentum without hype.
-4. complementarity_vs_bullets: adds framing or synthesis; does not mechanically summarize all bullets.
-5. current_role_attention: Unify reads as the candidate's strongest current-position proof point for SVP Engineering screens.
-6. resume_voice: third person or implied subject; credible executive tone.
-7. ats_alignment_without_stuffing: relevant without JD dumping.
-8. anti_overfit: no JD-as-proof, no briefing-as-proof, no cross-employer facts.
+Rubric dimensions (must score each):
+1. north_star_alignment: role-level capstone emphasizing platform roadmap, core systems architecture,
+   commercialization, reusable IP / platform economics, and enterprise deployment within consulting-firm context.
+2. fact_ledger_grounding: every material claim in the narrative maps to claim_ledger and bul_unify_* and/or
+   unify_narrative_base_* resume facts (no JD/briefing/target-company-as-experience).
+3. jd_briefing_targeting: JD and briefing themes shape emphasis without becoming proof (belongs in jd_alignment object,
+   not the sentence as invented experience).
+4. complementarity_vs_bullets: synthesizes above the bullets without recap, checklist, or six-bullet walk.
+5. executive_signal: SVP Engineering platform leadership — governed runtime, commercialization, regulated enterprise scale.
+6. no_metric_rehash: avoids repeating bullet metrics unless narrowly justified; prefers conceptual commercialization language.
+7. no_cross_employer_leakage: no IBM, InsurTech, EY, education, or early-career contamination.
+8. resume_voice: third person or implied subject; credible executive tone; no hype.
 
 Decisive failure triggers:
-- first person or target employer misused as proof context for wrong company
-- unsupported metrics or IBM/InsurTech/EY leakage
-- multiple sentences or obvious six-bullet recap
-- missing or ignored finalized-bullets dependency
-- target company or briefing converted into candidate experience
+- merely summarizes the six bullets or mirrors bullet labels/metrics as the thesis
+- uses JD, briefing, or target company as proof of candidate experience
+- omits commercialization / reusable platform / IP angle when base anchor facts support that arc
+- lacks role-level platform mandate (reads like a delivery task list)
+- multiple sentences or bullet-list formatting
 """.strip()
 
 
@@ -101,6 +105,7 @@ def run_unify_narrative_judges(
     judge_keys: list[str],
     companion_bullets_context: str = "",
     mode: str = "blocked_if_unavailable",
+    artifact_base: Path | None = None,
 ) -> list[JudgeOutput]:
     input_payload = {
         "narrative_sentence": narrative_sentence,
@@ -160,11 +165,29 @@ def run_unify_narrative_judges(
 
         try:
             if key == "openai_chatgpt":
-                output = _call_openai(api_key, prompt, model, input_hash, key)
+                output = _call_openai(
+                    api_key, prompt, model, input_hash, key, artifact_base=artifact_base
+                )
             elif key == "anthropic_claude":
-                output = _call_anthropic(api_key, prompt, model, input_hash, key, model_source=model_source)
+                output = _call_anthropic(
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
+                )
             else:
-                output = _call_gemini(api_key, prompt, model, input_hash, key, model_source=model_source)
+                output = _call_gemini(
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    model_source=model_source,
+                    artifact_base=artifact_base,
+                )
             output.judge_id = f"x1d_{key}_unify_narrative"
             output.rubric_version = JUDGE_RUBRIC_VERSION
             outputs.append(output)

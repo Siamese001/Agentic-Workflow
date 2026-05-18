@@ -15,14 +15,54 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "factual_support": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "jd_fit": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "executive_presence": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "concision": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "specificity": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "seniority_signal": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "unsupported_claim_risk": { "type": ["number", "null"], "minimum": 1, "maximum": 5 },
-        "resume_usefulness": { "type": ["number", "null"], "minimum": 1, "maximum": 5 }
+        "factual_support": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Claim ledger alignment; no JD/briefing-as-proof leakage."
+        },
+        "jd_fit": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Target-role emphasis without JD keyword stuffing."
+        },
+        "executive_presence": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "SVP / platform-leader narrative density and synthesis (not bullet stacks)."
+        },
+        "concision": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Default 2–3 dense sentences; avoids sentence-stacked proof pacing."
+        },
+        "specificity": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Concrete platform/runtime nouns vs vague AI labels."
+        },
+        "seniority_signal": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Operating scope, lifecycle ownership, commercial awareness."
+        },
+        "unsupported_claim_risk": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Inverse-risk score: penalize unsupported metrics/credentials."
+        },
+        "resume_usefulness": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Hiring-manager usefulness of the executive summary paragraph."
+        }
       }
     },
     "human_notes": { "type": "string" },

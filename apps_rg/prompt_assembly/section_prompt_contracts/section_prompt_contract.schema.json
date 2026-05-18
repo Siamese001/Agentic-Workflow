@@ -27,6 +27,7 @@
       "enum": [
         "COMPOSE_NEW",
         "REWRITE_FROM_FACT_POOL",
+        "REWRITE_FROM_FACT_POOL_CONSTRAINED",
         "SUMMARIZE_ROLE_SCOPE",
         "LOCKED_DETERMINISTIC"
       ]

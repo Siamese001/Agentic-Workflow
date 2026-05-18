@@ -1,17 +1,54 @@
-"""App-local executive summary runtime seam.
+"""Legacy ``python -m`` entry for executive_summary — **retired from canonical CLI**.
 
-This module intentionally proves one real apps_rg section path only:
-canonical JSON -> executive_summary prompt payload -> provider -> X2 -> X1D -> X3 -> L6.
+Canonical path: ``python -m apps_rg --section executive_summary`` (see
+``apps_rg.runtime.sections.executive_summary_lane`` via
+``apps_rg.runtime.orchestration.canonical_dispatch``).
 
-It does not activate registry, does not edit v1 prompts, and does not touch agentic_core.
+This module remains as a **thin re-export** for tests and in-process recipe calls only.
+**Do not run** ``python -m apps_rg.runtime.dispatch.executive_summary_dispatch`` — it exits 2 with a
+deprecation message. Use ``python -m apps_rg --section executive_summary`` instead.
 
-**W3 classification (child plan apps-rg-agentic-core-boundary-remediation-child-f8e3c1):**
-``declared_temporary_slice`` — not the default governed package-driven PA/L2/Exit spine.
-Proof obligations: documented artifacts under ``artifacts/apps_rg/runtime_proofs/`` conventions;
-convergence tracked in ``w3_execution_path_convergence_f8e3c1.md``.
+For retirement inventory and replacement mapping, see:
+``artifacts/apps_rg/executive_summary_dispatch_retirement/*.md``.
 """
 from __future__ import annotations
 
+import argparse
+import sys
+
+from apps_rg.runtime.sections.executive_summary_lane import (  # noqa: F401 — public re-export
+    BRIEFING_DEFAULT,
+    EXEC_SUMMARY_TEMP_DEFAULT,
+    EXEC_SUMMARY_TEMP_RANGE,
+    JD_TEXT_DEFAULT,
+    LANE_KEY,
+    PROMPT_ID,
+    PROMPT_TEMPLATE,
+    REPO_ROOT,
+    TARGET_COMPANY_DEFAULT,
+    TARGET_TITLE_DEFAULT,
+    BASE_JSON_DEFAULT,
+    BASE_POINTER,
+    build_mock_output,
+    build_prompt_messages,
+    build_runtime_payload,
+    build_selected_fact_plan,
+    check_executive_summary_narrative_shape,
+    check_l2_resume_voice,
+    enrich_parsed_for_x2,
+    extract_allowed_facts,
+    infer_product_quality,
+    load_base_resume,
+    parse_model_json,
+    resolve_provider_model_name,
+    retry_qwen_for_synthesis,
+    run_executive_summary_execution,
+    sha16,
+    write_json,
+    write_x2_gate_outputs,
+)
+
+# W3 / import-time validation: keep on legacy module path for fixture stability.
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_DECLARED_TEMPORARY_SLICE,
     PLAN_SLUG,
@@ -22,697 +59,47 @@ W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
 W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
 validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
-import argparse
-import json
-import hashlib
-import re
-import sys
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
-
-# Load environment variables from .env file
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass  # dotenv not installed, rely on system env
-
-from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summary_prompt
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
-from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
-from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
-from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
-from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
-from apps_rg.runtime.shadow.executive_summary_l6 import build_l6_shadow_package
-
-
-PROMPT_ID = "executive_summary.generate_scratch_v1"
-EXEC_SUMMARY_TEMP_DEFAULT = 0.45
-EXEC_SUMMARY_TEMP_RANGE = (0.35, 0.55)
-TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
-TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
-JD_TEXT_DEFAULT = (
-    "enterprise AI platform leadership, agentic AI systems, runtime governance, "
-    "LLMOps, retrieval, production reliability, engineering leadership"
-)
-BRIEFING_DEFAULT = "regulated enterprise environment, platform modernization, AI governance, scalable delivery"
-
-
-def _find_repo_root() -> Path:
-    here = Path(__file__).resolve()
-    for parent in [here.parent, *here.parents]:
-        if (parent / "apps_rg" / "resume" / "base").exists():
-            return parent
-    return Path.cwd()
-
-
-REPO_ROOT = _find_repo_root()
-BASE_POINTER = REPO_ROOT / "apps_rg" / "resume" / "base" / "active_base_resume_pointer.json"
-BASE_JSON_DEFAULT = REPO_ROOT / "apps_rg" / "resume" / "base" / "amit_ayer_base_resume_v1.json"
-LANE_KEY = "executive_summary"
-PROMPT_TEMPLATE = REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "executive_summary.generate_scratch_v1.yaml"
-
-
-def sha16(value: str | bytes) -> str:
-    data = value.encode("utf-8") if isinstance(value, str) else value
-    return hashlib.sha256(data).hexdigest()[:16]
-
-
-def write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-
-
-def load_base_resume() -> tuple[dict[str, Any], Path, str]:
-    if BASE_POINTER.exists():
-        pointer = json.loads(BASE_POINTER.read_text(encoding="utf-8"))
-        ref = pointer.get("active_resume_path") or pointer.get("base_resume_json_ref") or "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
-        path = REPO_ROOT / ref
-    else:
-        path = BASE_JSON_DEFAULT
-    raw = path.read_text(encoding="utf-8")
-    return json.loads(raw), path, hashlib.sha256(raw.encode()).hexdigest()
-
-
-def extract_allowed_facts(base_resume: dict[str, Any]) -> tuple[list[dict[str, Any]], set[str]]:
-    """Collect bullets in résumé order; no hard-coded bullet IDs or employer filters."""
-    facts_obj = base_resume.get("facts", base_resume)
-    selected: list[dict[str, Any]] = []
-    for emp in facts_obj.get("employment", []):
-        employer = emp.get("employer", "")
-        for bullet in emp.get("bullets", []):
-            bid = bullet.get("bullet_id")
-            if not bid:
-                continue
-            selected.append(
-                {
-                    "fact_id": bid,
-                    "claim_text": bullet.get("text", ""),
-                    "source_employment": employer,
-                    "metric_raw": bullet.get("metric_raw", "") if bullet.get("has_metric") else "",
-                    "domain": bullet.get("domain", ""),
-                    "technologies": bullet.get("technologies", []),
-                }
-            )
-    allowed = {row["fact_id"] for row in selected}
-    for row in selected:
-        if row.get("metric_raw"):
-            allowed.add(f"{row['fact_id']}_metric_{sha16(row['metric_raw'])[:8]}")
-    return selected, allowed
-
-
-def build_selected_fact_plan(selected_facts: list[dict[str, Any]]) -> dict[str, Any]:
-    top = selected_facts[:4]
-    return {
-        "section_id": "executive_summary",
-        "selection_method": "resume_document_order_top_n",
-        "facts": top,
-        "required_fact_ids": [row["fact_id"] for row in top],
-    }
-
-
-def build_runtime_payload(*, base_json_path: Path, base_hash: str, selected_fact_plan: dict[str, Any], target_title: str, target_company: str, jd_text: str, briefing: str) -> dict[str, Any]:
-    return {
-        "run_id": datetime.now(timezone.utc).strftime("exec_summary_%Y%m%d_%H%M%S"),
-        "section_id": "executive_summary",
-        "prompt_id": PROMPT_ID,
-        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT)) if base_json_path.is_relative_to(REPO_ROOT) else str(base_json_path),
-        "base_resume_json_hash": base_hash,
-        "target_title": target_title,
-        "target_company": target_company,
-        "jd_text": jd_text,
-        "briefing": briefing,
-        "selected_fact_plan": selected_fact_plan,
-        "allowed_fact_ids": selected_fact_plan["required_fact_ids"],
-        "writable_context_scope": "executive_summary_only",
-        "full_resume_writable": False,
-        "monolithic_prompt_invoked": False,
-        "strategic_tailor_v1_invoked": False,
-    }
-
-
-L2_BRIDGE_PHRASE_PATTERN = re.compile(
-    r"\bthis (?:was|is) achieved (?:while|through|by)\b",
-    re.IGNORECASE,
-)
-L2_PASSIVE_CYCLE_PATTERN = re.compile(
-    r"\b(?:lab-to-production\s+)?cycle time was reduced\b",
-    re.IGNORECASE,
-)
-
-
-def check_l2_resume_voice(resume_display_text: str) -> tuple[bool, str | None]:
-    """Dispatch-level voice checks aligned with X2 first-person and bridge-phrase gates."""
-    from apps_rg.runtime.validators.executive_summary_x2 import FIRST_PERSON_PATTERN
-
-    if FIRST_PERSON_PATTERN.search(resume_display_text):
-        return False, "First-person pronoun found (third person only; never I/me/my/we/our)"
-    if L2_BRIDGE_PHRASE_PATTERN.search(resume_display_text):
-        return False, "Bridge phrase 'This was achieved...' is forbidden"
-    if L2_PASSIVE_CYCLE_PATTERN.search(resume_display_text):
-        return False, "Passive cycle-time phrasing (use active voice: reduced cycle time from...)"
-    return True, None
-
-
-def check_executive_summary_narrative_shape(
-    resume_display_text: str,
-    claim_ledger: list[dict[str, Any]] | None = None,
-) -> tuple[bool, str | None]:
-    """Dispatch-level narrative quality checks (not X2 gates): stacking and enumeration risk."""
-    from apps_rg.runtime.validators.executive_summary_x2 import ACTION_VERB_OPENERS, split_sentences
-
-    sentences = split_sentences(resume_display_text)
-    if not sentences:
-        return False, "Empty executive summary"
-
-    action_openers = set(ACTION_VERB_OPENERS) | {"generated", "integrated", "enhanced", "built"}
-    for sentence in sentences:
-        if sentence.count(",") >= 6:
-            return False, "Long capability enumeration list in a single sentence"
-
-    claims = claim_ledger or []
-    if len(sentences) >= 3 and claims and len(sentences) == len(claims):
-        action_starts = 0
-        for sentence in sentences:
-            first = sentence.split()[0].lower().strip(",.;:") if sentence.split() else ""
-            if first in action_openers:
-                action_starts += 1
-        if action_starts >= len(sentences) - 1:
-            return False, "One displayed sentence per claim-ledger row (sentence-stacked proof)"
-
-    return True, None
-
-
-def build_prompt_messages(runtime_payload: dict[str, Any]) -> list[dict[str, str]]:
-    """PA-assembled messages via ``section_prompt_adapter`` + executive_summary template (W4)."""
-    run_id = str(runtime_payload.get("run_id") or "exec_summary_prompt_build")
-    compiled = compile_executive_summary_prompt(runtime_payload, run_id=run_id)
-    return compiled.artifact.messages
-
-
-def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
-    """Lenient parse for downstream objects; X2 x2_json_parse_valid uses unmodified raw_output."""
-    text = raw.strip()
-    text = re.sub(r"^```(?:json)?", "", text).strip()
-    text = re.sub(r"```$", "", text).strip()
-    try:
-        parsed = json.loads(text)
-        if isinstance(parsed, dict):
-            return parsed, ""
-    except json.JSONDecodeError as exc:
-        return None, f"JSON parse failed: {exc}"
-    return None, "Model output was not a JSON object."
-
-
-def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    facts = list(runtime_payload["selected_fact_plan"]["facts"])
-    phrases = [str(f.get("claim_text") or "").strip() for f in facts if str(f.get("claim_text") or "").strip()]
-    if len(phrases) >= 2:
-        lead = "Enterprise AI platform leader who advanced " + " and ".join(phrases[:2]) + " across the scope described in selected facts."
-        tail_phrases = phrases[2:4] if len(phrases) > 2 else [phrases[-1]]
-        tail = "Built on " + " and ".join(tail_phrases) + " with active-voice delivery and governance discipline."
-    else:
-        lead = "Enterprise AI platform leader with platform delivery depth grounded in the selected canonical facts."
-        tail = "Extended technical governance and lifecycle patterns aligned with the same fact plan."
-    text = f"{lead} {tail}"
-
-    claims: list[dict[str, Any]] = []
-    for f in facts:
-        bid = str(f["fact_id"])
-        ids: list[str] = [bid]
-        if f.get("metric_raw"):
-            ids.append(f"{bid}_metric_{sha16(str(f['metric_raw']))[:8]}")
-        ct = str(f.get("claim_text") or "").strip() or bid
-        claims.append({"claim_text": ct, "source_fact_ids": ids})
-    return {
-        "resume_display_text": text,
-        "selected_fact_plan": runtime_payload["selected_fact_plan"],
-        "claim_ledger": claims,
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
-        "gap_notes": [],
-        "change_log": [{"operation": "mocked_runtime_slice", "reason": "provider not requested"}],
-        "self_check": {"no_first_person": True, "no_inline_source_tags": True, "fit_to_evidence": True},
-    }
-
-
-def infer_product_quality(
-    runtime_generation_status: str,
-    x2_gates: list[dict[str, Any]],
-    resume_display_text: str,
-    claim_ledger: list[dict[str, Any]] | None = None,
-) -> tuple[str, str]:
-    """Infer product quality with honest PARTIAL classification for stacked/bullet-like output."""
-    failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    if failed:
-        return "FAIL", f"X2 failed gates: {failed}"
-    if runtime_generation_status != "REAL_LLM":
-        return "PARTIAL", "Mocked or blocked generation can prove plumbing only."
-
-    from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
-
-    voice_ok, voice_reason = check_l2_resume_voice(resume_display_text)
-    if not voice_ok:
-        return "PARTIAL", f"Resume voice below executive summary standard: {voice_reason}"
-
-    narrative_ok, narrative_reason = check_executive_summary_narrative_shape(
-        resume_display_text, claim_ledger
-    )
-    if not narrative_ok:
-        return "PARTIAL", f"Narrative shape below executive summary standard: {narrative_reason}"
-
-    synthesis_ok, synthesis_reason = check_synthesis_quality(resume_display_text)
-    if not synthesis_ok:
-        return "PARTIAL", f"Synthesis quality below executive summary standard: {synthesis_reason}"
-
-    return "PASS", "REAL_LLM output passed all deterministic gates and synthesis quality."
-
-
-def retry_qwen_for_synthesis(
-    messages: list[dict[str, str]],
-    provider_payload: dict[str, Any],
-    raw_output: str,
-    parsed: dict[str, Any],
-) -> tuple[str, dict[str, Any], str]:
-    """One regeneration attempt when synthesis heuristics reject the first REAL_LLM draft."""
-    from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
-
-    resume_display_text = parsed.get("resume_display_text") or ""
-    claim_ledger = parsed.get("claim_ledger") or []
-    voice_ok, voice_reason = check_l2_resume_voice(resume_display_text)
-    narrative_ok, narrative_reason = check_executive_summary_narrative_shape(
-        resume_display_text, claim_ledger
-    )
-    syn_ok, syn_reason = check_synthesis_quality(resume_display_text)
-    if voice_ok and narrative_ok and syn_ok:
-        return raw_output, parsed, ""
-
-    reject_reason = voice_reason or narrative_reason or syn_reason or "narrative quality"
-    repair_messages = [
-        *messages,
-        {"role": "assistant", "content": raw_output},
-        {
-            "role": "user",
-            "content": (
-                f"SYNTHESIS REJECTED: {reject_reason}. "
-                "Internally compare at least two supported repair options; choose the densest rewrite still faithful to facts. "
-                "Return a NEW complete JSON object (RAW JSON only; first char {{, last char }}). "
-                "Rewrite resume_display_text as a dense executive paragraph using sentence role goals from the template; "
-                "use ONLY the selected facts already shown in the user message; do not introduce metrics or outcomes absent from those facts. "
-                "Combine roles across facts; never one sentence per source fact. "
-                "Where facts support it, cover executive identity plus commercial or scope arc, and technical governance plus delivery arc "
-                "in active voice (never passive 'cycle time was reduced'). "
-                "Collapse comma-separated capability lists. "
-                "THIRD PERSON ONLY — remove all I/me/my/we/our; never 'As an X, I...'. "
-                "Keep jd_used_as_proof=false when JD is targeting-only. "
-                "Forbidden: one sentence per claim-ledger row; Generated/Integrated/Enhanced as three parallel proofs; "
-                "'This was achieved while/through/by'; Productized/Designed/Strengthened/Standardized opener chain."
-            ),
-        },
-    ]
-    repair_payload = {**provider_payload, "messages": repair_messages}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
-    if result.runtime_generation_status != "REAL_LLM":
-        return raw_output, parsed, ""
-    new_raw = result.raw_model_output
-    new_parsed, new_err = parse_model_json(new_raw)
-    if new_parsed:
-        return new_raw, new_parsed, new_err
-    return raw_output, parsed, new_err
-
-
-def enrich_parsed_for_x2(
-    parsed: dict[str, Any] | None,
-    *,
-    coverage: dict[str, Any],
-    input_payload_hash: str,
-    allowed_fact_ids: set[str],
-) -> dict[str, Any] | None:
-    """Attach coverage and stable hashes for X2 metadata gates (same coverage object as artifact)."""
-    if parsed is None:
-        return None
-    enriched = dict(parsed)
-    enriched["text_claim_coverage"] = coverage
-    output_body = {
-        key: enriched[key]
-        for key in (
-            "resume_display_text",
-            "selected_fact_plan",
-            "claim_ledger",
-            "jd_alignment",
-            "gap_notes",
-            "change_log",
-            "self_check",
-            "text_claim_coverage",
-        )
-        if key in enriched
-    }
-    enriched["input_payload_hash"] = input_payload_hash
-    enriched["output_payload_hash"] = sha16(json.dumps(output_body, sort_keys=True))
-    enriched["claim_ledger_hash"] = sha16(json.dumps(enriched.get("claim_ledger") or [], sort_keys=True))
-    enriched["allowed_fact_ids_hash"] = sha16(json.dumps(sorted(allowed_fact_ids), sort_keys=True))
-    return enriched
-
-
-def resolve_provider_model_name(
-    provider_request_data: dict[str, Any] | None,
-    provider_result_data: dict[str, Any] | None,
-) -> str | None:
-    if provider_result_data:
-        model = provider_result_data.get("model")
-        if model:
-            return model
-    if provider_request_data:
-        model = provider_request_data.get("model")
-        if model:
-            return model
-    return None
-
-
-def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
-    failed = [g["gate_id"] for g in gates if not g["pass"]]
-    passed_count = sum(1 for g in gates if g["pass"])
-    failed_count = len(failed)
-    write_json(
-        path,
-        {
-            "gates": gates,
-            "failed_gates": failed,
-            "x2_passed": passed_count,
-            "x2_failed": failed_count,
-            "total_x2_gates": len(gates),
-        },
-    )
-
-
-def run_dispatch(args: argparse.Namespace) -> int:
-    base, base_path, base_hash = load_base_resume()
-    selected, allowed_fact_ids = extract_allowed_facts(base)
-    selected_fact_plan = build_selected_fact_plan(selected)
-    runtime_payload = build_runtime_payload(
-        base_json_path=base_path,
-        base_hash=base_hash,
-        selected_fact_plan=selected_fact_plan,
-        target_title=args.target_title,
-        target_company=args.target_company,
-        jd_text=args.jd_text,
-        briefing=args.briefing,
-    )
-    artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
-    input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    section_compiled = compile_executive_summary_prompt(runtime_payload, run_id=runtime_payload["run_id"])
-    messages = section_compiled.artifact.messages
-    compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
-    prompt_hash = sha16(compiled_prompt)
-    write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(
-        json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
-    write_json(
-        artifact_dir / "compiled_prompt_artifact.json",
-        {
-            "section_id": section_compiled.section_id,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
-            "provider_prompt_hash": prompt_hash,
-            "slot_count": section_compiled.artifact.slot_count,
-        },
-    )
-
-    provider_request_data = None
-    provider_result_data = None
-    raw_output = ""
-    parsed: dict[str, Any] | None = None
-    parse_error = ""
-    runtime_generation_status = "MOCKED"
-
-    if args.provider == "qwen_vllm":
-        provider_req, provider_payload = build_qwen_request(
-            messages=messages,
-            prompt_hash=prompt_hash,
-            input_payload_hash=input_payload_hash,
-            temperature=args.temperature,
-        )
-        provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
-        provider_request_data = provider_req.to_dict()
-        write_json(artifact_dir / "provider_request.json", provider_request_data)
-        result = call_qwen_vllm(provider_payload)
-        provider_result_data = result.to_dict()
-        raw_output = result.raw_model_output
-        runtime_generation_status = result.runtime_generation_status
-        write_json(artifact_dir / "provider_response.json", provider_result_data)
-        if result.runtime_generation_status == "REAL_LLM":
-            parsed, parse_error = parse_model_json(raw_output)
-            if parsed:
-                raw_output, parsed, parse_error = retry_qwen_for_synthesis(
-                    messages, provider_payload, raw_output, parsed
-                )
-        else:
-            parsed = None
-            parse_error = result.exact_provider_error or "provider blocked"
-    else:
-        parsed = build_mock_output(runtime_payload)
-        raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
-        runtime_generation_status = "MOCKED"
-        provider_request_data = {
-            "provider_requested": "mock",
-            "provider_attempted": False,
-            "mock_fallback_allowed": True,
-            "model": DEFAULT_QWEN_MODEL,
-            "prompt_hash": prompt_hash,
-            "input_payload_hash": input_payload_hash,
-        }
-        write_json(artifact_dir / "provider_request.json", provider_request_data)
-
-    resume_display_text = (parsed or {}).get("resume_display_text") or raw_output or ""
-    claim_ledger = list((parsed or {}).get("claim_ledger") or [])
-    coverage = build_sentence_claim_coverage(resume_display_text, claim_ledger, allowed_fact_ids)
-    parsed_for_x2 = enrich_parsed_for_x2(
-        parsed,
-        coverage=coverage,
-        input_payload_hash=input_payload_hash,
-        allowed_fact_ids=allowed_fact_ids,
-    )
-    model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
-    selected_facts_for_x2 = (parsed or {}).get("selected_fact_plan", {}).get("facts", selected_fact_plan.get("facts", []))
-    temperature = args.temperature if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT
-
-    l2_output = {
-        "run_id": runtime_payload["run_id"],
-        "section_id": "executive_summary",
-        "runtime_generation_status": runtime_generation_status,
-        "product_quality_status": "PENDING",
-        "product_quality_reason": "",
-        "resume_display_text": resume_display_text,
-        "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
-        "claim_ledger": claim_ledger,
-        "jd_alignment": (parsed or {}).get("jd_alignment")
-        or {"targeting_only": True, "jd_used_as_proof": False},
-        "gap_notes": (parsed or {}).get("gap_notes") or [],
-        "change_log": (parsed or {}).get("change_log") or [],
-        "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
-        "text_claim_coverage": coverage,
-        "prompt_id": PROMPT_ID,
-        "prompt_hash": prompt_hash,
-        "section_prompt_adapter": True,
-        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-        "compiler_template_id": section_compiled.artifact.template_id,
-        "input_payload_hash": input_payload_hash,
-        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
-        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
-        "allowed_fact_ids_hash": (parsed_for_x2 or {}).get("allowed_fact_ids_hash"),
-    }
-    write_json(artifact_dir / "l2_output.json", l2_output)
-    (artifact_dir / "resume_display_text.txt").write_text(resume_display_text + "\n", encoding="utf-8")
-    write_json(artifact_dir / "selected_fact_plan.json", l2_output["selected_fact_plan"])
-    write_json(artifact_dir / "claim_ledger.json", claim_ledger)
-    write_json(artifact_dir / "text_claim_coverage.json", coverage)
-
-    judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
-    judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
-    x1d = [j.to_dict() for j in run_llm_judges(resume_display_text=resume_display_text, claim_ledger=claim_ledger, judge_keys=judge_keys, mode=judge_mode)]
-    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
-
-    trace = {
-        "runtime_path": "apps_rg.runtime.dispatch.executive_summary_dispatch",
-        "prompt_id": PROMPT_ID,
-        "provider": args.provider,
-        "temperature": temperature,
-        "strategic_tailor_v1_invoked": False,
-        "monolithic_prompt_invoked": False,
-        "section_prompt_adapter": True,
-        "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-        "compiler_template_id": section_compiled.artifact.template_id,
-    }
-    trace = attach_reasoning_to_prompt_trace(
-        trace,
-        provider=args.provider,
-        lane_key=LANE_KEY,
-        provider_result_data=provider_result_data if isinstance(provider_result_data, dict) else None,
-    )
-    write_json(artifact_dir / "prompt_selection_trace.json", trace)
-    write_json(artifact_dir / "fact_check_result.json", {"passed": False, "failed_gates": [], "status": "pending"})
-    write_json(
-        artifact_dir / "real_l2_generation_result.json",
-        {
-            "provider_attempted": args.provider,
-            "runtime_generation_status": runtime_generation_status,
-            "prompt_hash": prompt_hash,
-            "model": model_name,
-            "input_payload_hash": input_payload_hash,
-            "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
-            "status": "pending",
-        },
-    )
-    write_json(artifact_dir / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
-    write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
-
-    x2 = [g.to_dict() for g in run_x2_gates(
-        resume_display_text=resume_display_text,
-        parsed_output=parsed_for_x2,
-        claim_ledger=claim_ledger,
-        text_claim_coverage=coverage,
-        allowed_fact_ids=allowed_fact_ids,
-        target_company=args.target_company,
-        jd_text=args.jd_text,
-        temperature=temperature,
-        runtime_generation_status=runtime_generation_status,
-        monolithic_prompt_invoked=False,
-        strategic_tailor_v1_invoked=False,
-        artifacts_dir=artifact_dir,
-        provider_requested=args.provider,
-        provider_attempted=args.provider,
-        model_name=model_name,
-        prompt_hash=prompt_hash,
-        compiled_prompt=compiled_prompt,
-        raw_output=raw_output,
-        target_role=args.target_role if hasattr(args, "target_role") else None,
-        selected_facts=selected_facts_for_x2,
-        x1d_judges=x1d,
-    )]
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
-    write_json(
-        artifact_dir / "fact_check_result.json",
-        {
-            "passed": not [g for g in x2 if not g["pass"]],
-            "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
-        },
-    )
-
-    product_quality_status, product_quality_reason = infer_product_quality(
-        runtime_generation_status, x2, resume_display_text, claim_ledger
-    )
-    l2_output["product_quality_status"] = product_quality_status
-    l2_output["product_quality_reason"] = product_quality_reason
-    write_json(artifact_dir / "l2_output.json", l2_output)
-
-    x3 = aggregate_x3(
-        resume_display_text=resume_display_text,
-        claim_ledger=claim_ledger,
-        x2_gates=x2,
-        x1d_judges=x1d,
-        runtime_generation_status=runtime_generation_status,
-        product_quality_status=product_quality_status,
-    )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
-
-    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT
-    l6 = build_l6_shadow_package(
-        artifact_dir=artifact_dir,
-        repo_root=REPO_ROOT,
-        prompt_id=PROMPT_ID,
-        temperature=l6_temp,
-        max_tokens=None,
-    )
-    write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
-    real_result = {
-        "provider_attempted": args.provider,
-        "provider_available": bool(provider_result_data and provider_result_data.get("provider_available")),
-        "exact_provider_error": (provider_result_data or {}).get("exact_provider_error"),
-        "runtime_generation_status": runtime_generation_status,
-        "prompt_id": PROMPT_ID,
-        "prompt_hash": prompt_hash,
-        "model": model_name,
-        "temperature": temperature,
-        "input_payload_hash": input_payload_hash,
-        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
-        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
-        "allowed_fact_ids_hash": (parsed_for_x2 or {}).get("allowed_fact_ids_hash"),
-        "raw_model_output": raw_output,
-        "parsed_model_output": parsed_for_x2,
-        "resume_display_text": resume_display_text,
-        "selected_fact_plan": l2_output["selected_fact_plan"],
-        "claim_ledger": claim_ledger,
-        "text_claim_coverage": coverage,
-        "fact_check_result": {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
-        "product_quality_status": product_quality_status,
-        "x3_disposition_ref": str(artifact_dir / "x3_disposition.json"),
-        "l6_shadow_eval_package_ref": str(artifact_dir / "l6_shadow_eval_package.json"),
-    }
-    write_json(artifact_dir / "real_l2_generation_result.json", real_result)
-    write_json(artifact_dir / "section_metric_receipt.json", {
-        "run_id": runtime_payload["run_id"],
-        "lane_id": "executive_summary",
-        "prompt_id": PROMPT_ID,
-        "prompt_hash": prompt_hash,
-        "input_payload_hash": input_payload_hash,
-        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
-        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
-        "runtime_generation_status": runtime_generation_status,
-        "product_quality_status": product_quality_status,
-        "x2_failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
-        "x3_code": x3.x3_code,
-    })
-    output_lines = []
-    output_lines.append("L2_EXECUTIVE_SUMMARY_OUTPUT:")
-    output_lines.append(resume_display_text if resume_display_text else f"BLOCKED: {parse_error}")
-    output_lines.append("")
-    output_lines.append("X1D_LLM_JUDGE_OUTPUTS:")
-    output_lines.append("| Provider | Mode | Score | Threshold | Pass | Decisive Failure | Error |")
-    output_lines.append("|---|---|---:|---:|---|---|---|")
-    for judge in x1d:
-        output_lines.append(
-            f"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('score')} | {judge.get('threshold')} | {judge.get('pass')} | {judge.get('decisive_failure')} | {judge.get('exact_provider_error') or ''} |"
-        )
-    output_lines.append("")
-    output_lines.append("X2_DETERMINISTIC_GATE_OUTPUTS:")
-    for gate in x2:
-        output_lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
-    output_lines.append("")
-    output_lines.append("X3_DISPOSITION:")
-    output_lines.append(json.dumps(x3.to_dict(), indent=2))
-    output_lines.append("")
-    output_lines.append("L6_SHADOW_EVAL_PACKAGE:")
-    output_lines.append(str(artifact_dir / "l6_shadow_eval_package.json"))
-    output_lines.append("offline_only=true")
-    output_text = "\n".join(output_lines)
-    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
-    print(output_text)
-    prq = str((provider_request_data or {}).get("provider_requested", args.provider))
-    pratt = (provider_request_data or {}).get("provider_attempted", False)
-    finalize_runtime_proof_run(
-        REPO_ROOT,
-        LANE_KEY,
-        args.provider,
-        artifact_dir,
-        run_id=runtime_payload["run_id"],
-        section_id="executive_summary",
-        runtime_generation_status=runtime_generation_status,
-        provider_requested=prq,
-        provider_attempted=pratt,
-        command=" ".join(sys.argv),
-    )
-    return 0 if args.allow_non_allow_exit_zero else (0 if x3.x3_code == "X3_ALLOW" else 2)
+__all__ = [
+    "BRIEFING_DEFAULT",
+    "EXEC_SUMMARY_TEMP_DEFAULT",
+    "EXEC_SUMMARY_TEMP_RANGE",
+    "JD_TEXT_DEFAULT",
+    "LANE_KEY",
+    "PROMPT_ID",
+    "PROMPT_TEMPLATE",
+    "REPO_ROOT",
+    "TARGET_COMPANY_DEFAULT",
+    "TARGET_TITLE_DEFAULT",
+    "BASE_JSON_DEFAULT",
+    "BASE_POINTER",
+    "W3_EXECUTION_PATH_BUCKET",
+    "W3_EXECUTION_PATH_PLAN_SLUG",
+    "build_mock_output",
+    "build_prompt_messages",
+    "build_runtime_payload",
+    "build_selected_fact_plan",
+    "build_parser",
+    "check_executive_summary_narrative_shape",
+    "check_l2_resume_voice",
+    "enrich_parsed_for_x2",
+    "extract_allowed_facts",
+    "infer_product_quality",
+    "load_base_resume",
+    "main",
+    "parse_model_json",
+    "resolve_provider_model_name",
+    "retry_qwen_for_synthesis",
+    "run_dispatch",
+    "run_executive_summary_execution",
+    "sha16",
+    "write_json",
+    "write_x2_gate_outputs",
+]
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run apps_rg executive_summary runtime seam.")
-    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="qwen_vllm")
+    parser = argparse.ArgumentParser(description="[LEGACY] Run apps_rg executive_summary — prefer `python -m apps_rg --section executive_summary`.")
+    parser.add_argument("--provider", choices=["mock", "qwen_vllm"], default="mock")
     parser.add_argument("--temperature", type=float, default=EXEC_SUMMARY_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
     parser.add_argument("--mock-judges", action="store_true", help="Use mocked judge rows for plumbing tests only.")
@@ -720,8 +107,29 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--target-company", default=TARGET_COMPANY_DEFAULT)
     parser.add_argument("--jd-text", default=JD_TEXT_DEFAULT)
     parser.add_argument("--briefing", default=BRIEFING_DEFAULT)
-    parser.add_argument("--allow-non-allow-exit-zero", action="store_true", help="Return exit code 0 even when X3 blocks/reviews, useful for inspection.")
+    parser.add_argument(
+        "--allow-non-allow-exit-zero",
+        action="store_true",
+        help="Return exit code 0 even when X3 blocks/reviews, useful for inspection.",
+    )
     return parser
+
+
+def run_dispatch(args: argparse.Namespace) -> int:
+    from apps_rg.runtime.section_cli_defaults import resolve_cli_lane_provider_with_source
+
+    if args.provider == "qwen_vllm":
+        lo, hi = EXEC_SUMMARY_TEMP_RANGE
+        if args.temperature < lo or args.temperature > hi:
+            print(
+                f"Temperature {args.temperature} is outside executive_summary profile ({lo}-{hi}).",
+                file=sys.stderr,
+            )
+            return 2
+    _p, args.provider_resolution_source = resolve_cli_lane_provider_with_source(args.provider)
+    ctx = run_executive_summary_execution(args)
+    print(ctx["output_text"])
+    return 0 if args.allow_non_allow_exit_zero else (0 if ctx["x3"].x3_code == "X3_ALLOW" else 2)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -730,4 +138,6 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    from apps_rg.runtime.deprecated_runtime_cli import exit_deprecated_dispatch_cli
+
+    raise SystemExit(exit_deprecated_dispatch_cli(section="executive_summary"))

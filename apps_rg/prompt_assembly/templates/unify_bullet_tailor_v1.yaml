@@ -27,6 +27,12 @@ sovereign_oath: |
   with generic "AI platform" gloss. LIGHT_PROTECTED means minimal copy edit only; MODERATE/HEAVY may reorder
   or compress but must retain the same causal claims, metrics, and technology nouns unless change_log documents removal with claim_ledger support.
 
+  SelectedRoleFactSet (SRFS): bullet and claim_ledger source_fact_ids must be ONLY tokens from the unify_bullets
+  slice allowlist (ALLOWED_SOURCE_FACT_IDS / allowed_fact_ids), including allowed metric-suffix hashes. JD, briefing,
+  target title, and target company steer which supported facts to emphasize — never proof; do not add partnerships,
+  products, customer types, domains, or metrics visible in JD unless the same substance is in a selected Unify fact.
+  Out-of-slice source_fact_ids fail deterministic X2 SRFS gates; omit unsupported claims rather than generalizing from JD.
+
 role_header_fields:
   company:
     source: "canonical_json.employment[exp_unify_001].employer"
@@ -233,6 +239,14 @@ payload_scope:
   output_tokens_estimate: "~1,200"
   context_window_required: "4K minimum"
   json_schema_strict: true
+
+# W5 — SSOT excerpt for contract tests (align with sovereign_oath SRFS block).
+w5_proof_targeting_harmonization: |
+  Proof: SelectedRoleFactSet facts for unify_bullets only; bullets and claim_ledger source_fact_ids must match this
+  section's allowlist. Targeting only: JD, briefing, target title, target company, companion sections — emphasis and
+  ordering, never proof; do not cite them as source_fact_ids. Out-of-slice source_fact_ids fail X2. No invented
+  employers, titles, tools, platforms, partners, alliances, domains, metrics, revenue, savings, percentages, or
+  regulated-industry claims unless those unify_bullets selected facts support them; drop unsupported claims rather than inferring from JD.
 
 metadata:
   produced_at: "2026-05-14"

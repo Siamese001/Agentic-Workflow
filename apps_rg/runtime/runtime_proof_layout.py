@@ -3,6 +3,8 @@
 Lane root: artifacts/apps_rg/runtime_proofs/<lane>/
 Pointers: latest_real_run.json (latest real-bucket attempt), latest_successful_real_run.json
 (accepted REAL_LLM qwen_vllm evidence for rollup), latest_mock_run.json.
+Each pointer and per-run ``run_manifest.json`` include ``artifact_links`` (repo-relative paths)
+plus explicit ``l2_output_repo_relative`` / ``l6_shadow_eval_package_repo_relative`` when present.
 """
 from __future__ import annotations
 
@@ -14,11 +16,13 @@ from pathlib import Path
 from typing import Any, Literal
 
 
+from apps_rg.runtime.run_bundle_index import emit_lane_runtime_proof_bundle_index
 from apps_rg.runtime.sections_root_manifest import require_manifest_for_modular_sections_root
 
-Bucket = Literal["real", "mock"]
+Bucket = Literal["real", "mock", "plumbing"]
 
 LATEST_SUCCESSFUL_REAL_FILENAME = "latest_successful_real_run.json"
+LATEST_PLUMBING_RUN_FILENAME = "latest_plumbing_run.json"
 
 # When set (absolute or repo-relative), lane prepare/finalize and optional dependency
 # resolution use ``<root>/<lane>/{mock|real}/<run_id>/`` instead of runtime_proofs.
@@ -94,7 +98,10 @@ def lane_root(repo: Path, lane: str) -> Path:
 
 
 def proof_bucket_for_provider(provider: str) -> Bucket:
-    return "mock" if provider == "mock" else "real"
+    """Mock harness runs land in ``mock/``; live ``qwen_vllm`` generation uses ``real/``."""
+    if str(provider or "").strip().lower() == "mock":
+        return "mock"
+    return "real"
 
 
 def run_dir(repo: Path, lane: str, bucket: Bucket, run_id: str) -> Path:
@@ -105,8 +112,15 @@ def rel_posix(path: Path, repo: Path) -> str:
     return path.relative_to(repo).as_posix()
 
 
-def prepare_runtime_proof_run_dir(repo: Path, lane: str, provider: str, run_id: str) -> Path:
-    bucket = proof_bucket_for_provider(provider)
+def prepare_runtime_proof_run_dir(
+    repo: Path,
+    lane: str,
+    provider: str,
+    run_id: str,
+    *,
+    placement_bucket: Bucket | None = None,
+) -> Path:
+    bucket: Bucket = placement_bucket if placement_bucket is not None else proof_bucket_for_provider(provider)
     msr = modular_sections_root_from_env(repo)
     if msr is not None:
         require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
@@ -162,6 +176,42 @@ def _is_accepted_real_llm_qwen_bundle(run_dir: Path) -> bool:
     return _provider_requested_lower(run_dir) == "qwen_vllm"
 
 
+# Repo-relative paths written under each proof run_dir (presence-checked at finalize).
+_RUNTIME_PROOF_LINK_FILENAMES: tuple[str, ...] = (
+    "l2_output.json",
+    "l6_shadow_eval_package.json",
+    "l6_shadow_learning.json",
+    "l6_future_run_proposals.json",
+    "x3_disposition.json",
+    "x2_gate_outputs.json",
+    "x1d_llm_judge_outputs.json",
+    "provider_request.json",
+    "compiled_prompt.txt",
+    "command_output.txt",
+    "real_l2_generation_result.json",
+    "prompt_selection_trace.json",
+    "section_input_usage_ledger.json",
+    "canonical_claim_ledger_v2.json",
+    "text_claim_coverage.json",
+    "parsed_output.json",
+    "selected_fact_plan.json",
+    "runtime_payload.json",
+    "provider_response.json",
+)
+
+
+def collect_runtime_proof_artifact_links(repo: Path, artifact_dir: Path) -> dict[str, str]:
+    """Map filename → repo-relative POSIX path for artifacts present under ``artifact_dir``."""
+    ad = artifact_dir.resolve()
+    rr = repo.resolve()
+    out: dict[str, str] = {}
+    for name in _RUNTIME_PROOF_LINK_FILENAMES:
+        p = ad / name
+        if p.is_file():
+            out[name] = rel_posix(p, rr)
+    return out
+
+
 def _should_write_latest_successful_real(
     bucket: Bucket,
     provider_requested: str,
@@ -191,22 +241,37 @@ def finalize_runtime_proof_run(
     provider_requested: str,
     provider_attempted: Any,
     command: str | None = None,
+    bundle_proof_strict: bool = False,
+    run_bundle_index_document_metadata: dict[str, Any] | None = None,
+    placement_bucket: Bucket | None = None,
+    **manifest_extras: Any,
 ) -> None:
-    """Write run_manifest.json and latest_{real|mock}_run.json under lane root."""
-    bucket = proof_bucket_for_provider(provider)
+    """Write run_manifest.json and latest_{real|mock|plumbing}_run.json under lane root."""
+    bucket: Bucket = placement_bucket if placement_bucket is not None else proof_bucket_for_provider(provider)
     generated_at_utc = datetime.now(timezone.utc).isoformat()
     cmd = command if command is not None else " ".join(sys.argv)
+    run_dir_rel = rel_posix(artifact_dir, repo)
+    artifact_links = collect_runtime_proof_artifact_links(repo, artifact_dir)
+
     manifest: dict[str, Any] = {
         "run_id": run_id,
         "generated_at_utc": generated_at_utc,
         "provider_requested": provider_requested,
         "provider_attempted": provider_attempted,
         "runtime_generation_status": runtime_generation_status,
+        "runtime_proof_placement_bucket": bucket,
         "command": cmd,
         "section_id": section_id,
+        "run_dir_repo_relative": run_dir_rel,
+        "artifact_links": artifact_links,
     }
+    manifest.update({k: v for k, v in manifest_extras.items()})
+    if "l2_output.json" in artifact_links:
+        manifest["l2_output_repo_relative"] = artifact_links["l2_output.json"]
+    if "l6_shadow_eval_package.json" in artifact_links:
+        manifest["l6_shadow_eval_package_repo_relative"] = artifact_links["l6_shadow_eval_package.json"]
     _write_json(artifact_dir / "run_manifest.json", manifest)
-    run_dir_rel = rel_posix(artifact_dir, repo)
+
     pointer: dict[str, Any] = {
         "run_id": run_id,
         "run_dir": run_dir_rel,
@@ -214,10 +279,21 @@ def finalize_runtime_proof_run(
         "provider_requested": provider_requested,
         "provider_attempted": provider_attempted,
         "runtime_generation_status": runtime_generation_status,
+        "runtime_proof_placement_bucket": bucket,
         "command": cmd,
         "section_id": section_id,
+        "run_dir_repo_relative": run_dir_rel,
+        "artifact_links": artifact_links,
     }
-    ptr_name = "latest_real_run.json" if bucket == "real" else "latest_mock_run.json"
+    if "l2_output.json" in artifact_links:
+        pointer["l2_output_repo_relative"] = artifact_links["l2_output.json"]
+    if "l6_shadow_eval_package.json" in artifact_links:
+        pointer["l6_shadow_eval_package_repo_relative"] = artifact_links["l6_shadow_eval_package.json"]
+    ptr_name = (
+        "latest_real_run.json"
+        if bucket == "real"
+        else ("latest_mock_run.json" if bucket == "mock" else LATEST_PLUMBING_RUN_FILENAME)
+    )
     msr = modular_sections_root_from_env(repo)
     if msr is not None:
         require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
@@ -230,6 +306,15 @@ def finalize_runtime_proof_run(
         artifact_dir,
     ):
         _write_json(ptr_root / LATEST_SUCCESSFUL_REAL_FILENAME, pointer)
+
+    emit_lane_runtime_proof_bundle_index(
+        repo,
+        lane,
+        artifact_dir,
+        run_id=run_id,
+        proof_contract_strict=bundle_proof_strict,
+        document_metadata=run_bundle_index_document_metadata,
+    )
 
 
 def load_latest_pointer(repo: Path, lane: str, bucket: Bucket) -> dict[str, Any] | None:

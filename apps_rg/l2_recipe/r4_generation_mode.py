@@ -11,9 +11,10 @@ for explicit monolithic envelope rollback.
 - ``legacy_full_resume`` → monolithic ``run_apps_rg_l2_envelope``
 - ``modular_section_lanes`` → same modular path as default
 
-For modular mode, section dispatch ``--provider`` defaults to ``mock``. Set
-``APPS_RG_MODULAR_LANE_PROVIDER=qwen_vllm`` for real vLLM generation (with
-``VLLM_BASE_URL`` / ``QWEN_VLLM_MODEL`` per ``qwen_vllm_provider``).
+For modular mode, section dispatch ``--provider`` defaults to ``qwen_vllm``
+(``VLLM_BASE_URL`` / ``QWEN_VLLM_MODEL`` per ``qwen_vllm_provider``). Contract
+tests may set ``APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1`` for deterministic output
+without a live server.
 
 Invalid values fail closed with ``RuntimeError`` (no silent coercion to ``legacy_full_resume``).
 """
@@ -28,7 +29,7 @@ ENV_APPS_RG_MODULAR_LANE_PROVIDER: Final[str] = "APPS_RG_MODULAR_LANE_PROVIDER"
 MODE_MODULAR_SECTION_LANES: Final[str] = "modular_section_lanes"
 MODE_LEGACY_FULL_RESUME: Final[str] = "legacy_full_resume"
 
-_MODULAR_LANE_PROVIDER_ALLOWED: Final[frozenset[str]] = frozenset({"mock", "qwen_vllm"})
+_MODULAR_LANE_PROVIDER_ALLOWED: Final[frozenset[str]] = frozenset({"qwen_vllm"})
 
 AppsRgR4GenerationMode = Literal["legacy_full_resume", "modular_section_lanes"]
 
@@ -56,13 +57,13 @@ def resolve_apps_rg_r4_generation_mode() -> AppsRgR4GenerationMode:
 def resolve_apps_rg_modular_lane_provider() -> str:
     """Section-lane provider for R4 modular Phase 1 dispatch argv (``--provider``).
 
-    Default ``mock`` preserves deterministic plumbing runs. Set
-    ``APPS_RG_MODULAR_LANE_PROVIDER=qwen_vllm`` for local OpenAI-compatible vLLM
-    (see ``VLLM_BASE_URL``, ``QWEN_VLLM_MODEL`` in ``qwen_vllm_provider``).
+    Default ``qwen_vllm`` targets local OpenAI-compatible vLLM (see
+    ``VLLM_BASE_URL``, ``QWEN_VLLM_MODEL``). Tests may use
+    ``APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1`` instead of a live server.
     """
     raw = os.environ.get(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "").strip().lower()
     if not raw:
-        return "mock"
+        return "qwen_vllm"
     if raw not in _MODULAR_LANE_PROVIDER_ALLOWED:
         msg = (
             f"INVALID_APPS_RG_MODULAR_LANE_PROVIDER: {raw!r} "

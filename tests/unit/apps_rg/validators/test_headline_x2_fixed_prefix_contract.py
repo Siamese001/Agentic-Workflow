@@ -4,7 +4,11 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from apps_rg.runtime.dispatch.headline_dispatch import build_mock_output, normalize_parsed_output
+from apps_rg.runtime.sections.headline_lane import (
+    build_mock_output,
+    normalize_parsed_output,
+    snapshot_raw_jd_alignment,
+)
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
 from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
 
@@ -43,9 +47,9 @@ def _base_kwargs(headline: str, **over) -> dict[str, Any]:
         "resume_support_blob": json.dumps({"employment": [], "header": {"name": "A B"}}),
         "employer_names_lower": ["contoso", "fabrikam"],
         "allowed_fact_ids": allowed,
-        "runtime_generation_status": "REAL_LLM",
-        "provider_requested": "qwen_vllm",
-        "provider_attempted": "qwen_vllm",
+        "runtime_generation_status": "MOCKED",
+        "provider_requested": "mock",
+        "provider_attempted": "mock",
         "raw_output": json.dumps(parsed),
         "x1d_judges": _fake_judges(),
         "companion_context": "",
@@ -147,9 +151,9 @@ def test_unsupported_claim_fact_ids_fail() -> None:
         resume_support_blob="{}",
         employer_names_lower=[],
         allowed_fact_ids={"bul_1"},
-        runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        runtime_generation_status="MOCKED",
+        provider_requested="mock",
+        provider_attempted="mock",
         raw_output=json.dumps(parsed),
         x1d_judges=_fake_judges(),
         companion_context="",
@@ -179,6 +183,93 @@ def test_dispatch_normalize_merges_schema_keys_for_parser() -> None:
     assert out["self_check"].get("segment_count") == 4
 
 
+def test_companion_nonempty_missing_companion_used_as_proof_fails() -> None:
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    kwargs = _base_kwargs(hl, companion_context="### executive_summary\nTone only.")
+    jd = kwargs["parsed_output"]["jd_alignment"]
+    jd.pop("companion_used_as_proof", None)
+    gates = run_headline_x2_gates(headline_line=hl, **kwargs)
+    assert "x2_headline_companion_context_not_proof" in _failed_ids(gates)
+
+
+def test_companion_nonempty_companion_used_as_proof_true_fails() -> None:
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    kwargs = _base_kwargs(hl, companion_context="### executive_summary\nTone only.")
+    kwargs["parsed_output"]["jd_alignment"]["companion_used_as_proof"] = True
+    gates = run_headline_x2_gates(headline_line=hl, **kwargs)
+    assert "x2_headline_companion_context_not_proof" in _failed_ids(gates)
+
+
+def test_companion_nonempty_companion_used_as_proof_false_passes() -> None:
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    kwargs = _base_kwargs(hl, companion_context="### executive_summary\nTone only.")
+    kwargs["parsed_output"]["jd_alignment"]["companion_used_as_proof"] = False
+    gates = run_headline_x2_gates(headline_line=hl, **kwargs)
+    assert "x2_headline_companion_context_not_proof" not in _failed_ids(gates)
+
+
+def test_companion_empty_missing_companion_used_as_proof_passes_gate() -> None:
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    kwargs = _base_kwargs(hl)
+    jd = kwargs["parsed_output"]["jd_alignment"]
+    jd.pop("companion_used_as_proof", None)
+    gates = run_headline_x2_gates(headline_line=hl, **kwargs)
+    assert "x2_headline_companion_context_not_proof" not in _failed_ids(gates)
+
+
+def test_companion_empty_companion_used_as_proof_true_fails() -> None:
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    kwargs = _base_kwargs(hl)
+    kwargs["parsed_output"]["jd_alignment"]["companion_used_as_proof"] = True
+    gates = run_headline_x2_gates(headline_line=hl, **kwargs)
+    assert "x2_headline_companion_context_not_proof" in _failed_ids(gates)
+
+
+def test_x2_companion_gate_prefers_raw_jd_alignment() -> None:
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    kwargs = _base_kwargs(hl, companion_context="### executive_summary\nTone only.")
+    po = kwargs["parsed_output"]
+    po["raw_jd_alignment"] = {
+        "targeting_only": True,
+        "jd_used_as_proof": False,
+        "briefing_used_as_proof": False,
+        "selected_theme": "t",
+        "anti_stuffing_check": "passed",
+    }
+    po["jd_alignment"] = {
+        **po["raw_jd_alignment"],
+        "companion_used_as_proof": False,
+    }
+    gates = run_headline_x2_gates(headline_line=hl, **kwargs)
+    assert "x2_headline_companion_context_not_proof" in _failed_ids(gates)
+
+
+def test_snapshot_raw_jd_alignment_unaffected_by_normalize_structural_defaults() -> None:
+    runtime_payload = {
+        "selected_fact_plan": {
+            "section_id": "headline",
+            "selection_method": "canonical_base_resume_employment_bullets",
+            "required_fact_ids": ["bul_unify_001", "bul_ibm_001", "bul_unify_004"],
+            "facts": [],
+        }
+    }
+    allowed = {"bul_unify_001", "bul_ibm_001", "bul_unify_004"}
+    mo = build_mock_output(runtime_payload)
+    mo["jd_alignment"] = {
+        "targeting_only": True,
+        "jd_used_as_proof": False,
+        "briefing_used_as_proof": False,
+        "selected_theme": "agentic_platforms",
+        "anti_stuffing_check": "passed",
+    }
+    snapshot_raw_jd_alignment(mo)
+    frozen = json.loads(json.dumps(mo["raw_jd_alignment"]))
+    out = normalize_parsed_output(mo, runtime_payload, allowed, str(mo["headline_line"]), companion_nonempty=True)
+    assert out is not None
+    assert out["raw_jd_alignment"] == frozen
+    assert "companion_used_as_proof" not in frozen
+
+
 def test_mocked_runtime_with_passing_x2_still_not_x3_allow() -> None:
     hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
     kwargs = _base_kwargs(
@@ -200,3 +291,22 @@ def test_mocked_runtime_with_passing_x2_still_not_x3_allow() -> None:
     )
     assert x3.x3_code != "X3_ALLOW"
     assert x3.pass_ is False
+
+
+_NEGATIVE_STYLE_GATE_IDS = (
+    "x2_no_first_person",
+    "x2_no_em_dash",
+    "x2_headline_no_inline_source_tags",
+)
+
+
+def test_passing_negative_style_gates_have_clean_evidence_fields() -> None:
+    """PASS rows must not reuse failure-only copy in observed_value/failure_reason."""
+    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
+    by_id = {g.gate_id: g for g in gates}
+    for gid in _NEGATIVE_STYLE_GATE_IDS:
+        g = by_id[gid]
+        assert g.pass_ is True
+        assert g.failure_reason is None
+        assert g.observed_value == "absent"

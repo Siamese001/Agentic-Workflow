@@ -5,20 +5,31 @@ allowed_stage: "L2_EXEC"
 rewrite_intent: "COMPETENCY_SELECTOR"
 
 purpose: |
-  Select and refine exactly 8 ENGINEERING & PLATFORM COMPETENCIES categories from verified inventory
-  (canonical JSON `facts.skills` / verified_skill_inventory).
-  Output format: "Category Label: term, term, term"
-  No full sentences. No bullets. No keyword dump.
-  Terms must map to source_fact_ids and augment bullets, not duplicate them.
+  Target-aware, fact-constrained SELECTION and GROUPING of exactly 8 ENGINEERING & PLATFORM COMPETENCIES categories.
+  Terms come only from verified employment-bullet inventory grounded in this lane's SelectedRoleFactSet allowlist when SRFS
+  is active; never derive competency proof from JD text or briefing alone.
+  JD/briefing influence emphasis, labels, and ordering only.
+  Output format intent: "Category Label: term, term, term" — compact noun phrases only; scannable executive capability index.
+  verified_skill_inventory is organizational/targeting scaffolding: labels and grouping may reference it, but proof tokens
+  on emitted terms must map to fact IDs present in the competencies SRFS slice (plus allowed metric derivatives) —
+  inventory rows alone are not proof when their fact IDs are outside that slice.
 
 sovereign_oath: |
-  VERIFIED ENGINEERING & PLATFORM COMPETENCIES ONLY — JD IS TARGETING CONTEXT ONLY
-  
-  I may ONLY use competency terms from verified_skill_inventory with valid source_fact_ids.
-  JD and briefing are TARGETING CONTEXT only — never proof.
-  I may NOT restate resume bullet outcomes or metrics.
-  I may NOT include unsupported JD-only competency terms.
-  I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without source support.
+  VERIFIED FACT POOL ONLY — JD/BRIEFING/TITLE/COMPANY ARE NEVER PROOF
+
+  Use the JD and briefing only to prioritize, label, order, and tune emphasis.
+  Do not use the JD, briefing, title, company, or companion generated sections as proof for any emitted competency term.
+
+  Every emitted competency term must trace to allowed source_fact_ids aligned with this section's SelectedRoleFactSet
+  allowlist when SRFS is active (canonical candidate_fact_id tokens and metric suffixes per runtime).
+
+  Professional Competencies must be a scannable executive capability index, not a narrative impact section.
+
+  verified_skill_inventory may organize or suggest labels, but treat it as targeting context unless each emitted term's
+  source_fact_id / source_fact_ids are drawn from competencies SRFS selected facts.
+
+  I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without source support from
+  selected competencies facts.
   I may NOT use em dash character anywhere.
   I may NOT copy more than 5 consecutive words from finalized bullets.
   I may NOT copy more than 4 consecutive words from JD.
@@ -28,36 +39,36 @@ sovereign_oath: |
 
 input_contract:
   required_fields:
-    - verified_skill_inventory
+    - name: verified_skill_inventory
       schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id], evidence_type}]}"
       description: "Engineering & platform competency rows verified from canonical JSON (`facts.skills`) with fact provenance"
-    - candidate_fact_map
+    - name: candidate_fact_map
       schema: "{facts: [{fact_id, fact_text, employment_source, bullet_references}]}"
       description: "Map of all candidate facts with bullet cross-references"
-    - finalized_bullets
+    - name: finalized_bullets
       schema: "{employment_entries: [{bullets: [{bullet_id, bullet_text}]}]}"
       access_level: "READ_ONLY_ANTI_DUPLICATION"
       constraint: "May not copy more than 5 consecutive words"
-    - jd_text
+    - name: jd_text
       access_level: "TARGETING_CONTEXT_ONLY"
       constraint: "May not copy more than 4 consecutive words; JD terms require source_fact_id mapping"
-    - briefing_insights
+    - name: briefing_insights
       access_level: "TARGETING_CONTEXT_ONLY"
       constraint: "Company research only — not proof source"
-    - required_category_count
+    - name: required_category_count
       value: 8
       constraint: "EXACTLY 8 — no more, no less"
 
 output_contract:
   format: "JSON"
   required_fields:
-    - competencies
+    - name: competencies
       type: "array"
       min_items: 8
       max_items: 8
       item_schema:
         category_label: "string (must match one of 8 base categories or supported equivalent)"
-        terms: "array[string] — comma-separated capability terms"
+        terms: "array[object] — each term {text, source_fact_id, source_fact_ids[], optional jd_signal_ids[]}"
         format: "Category Label: term, term, term"
         source_fact_ids: "array[string] — every term must map to at least one fact"
         augment_rationale: "string — how this category augments (not duplicates) bullets"
@@ -66,14 +77,14 @@ output_contract:
         - "Bullet characters (•, -, *)"
         - "Numbered lists"
         - "Keyword dump without taxonomy structure"
-    - excluded_jd_skills
+    - name: excluded_jd_skills
       type: "array"
       description: "JD-requested skills excluded due to lack of source_fact_id support"
       item_schema:
         skill_name: "string"
         exclusion_reason: "string"
         jd_context: "string"
-    - removed_or_rewritten_terms
+    - name: removed_or_rewritten_terms
       type: "array"
       description: "Terms from inventory that were removed or rewritten with rationale"
       item_schema:
@@ -81,7 +92,7 @@ output_contract:
         action: "enum[removed, rewritten, collapsed]"
         rationale: "string"
         replacement_term: "string or null"
-    - category_change_log
+    - name: category_change_log
       type: "array"
       description: "Per-category construction decisions"
       item_schema:
@@ -91,14 +102,14 @@ output_contract:
         terms_excluded: "array[string]"
         jd_influence: "string or null"
         rationale: "string"
-    - ats_alignment_report
+    - name: ats_alignment_report
       type: "object"
       schema:
         jd_keyword_coverage: "float 0.0-1.0"
         coverage_method: "enum[direct_mapping, synonym_equivalent, not_supported]"
         unsupported_jd_keywords: "array[string]"
         ats_optimization_notes: "string"
-    - overlap_check
+    - name: overlap_check
       type: "object"
       schema:
         bullet_text_similarity_scores: "array[float] — similarity to each finalized bullet"
@@ -106,17 +117,17 @@ output_contract:
         consecutive_words_from_bullets: "array[string] — any phrases > 5 words flagged"
         consecutive_words_from_jd: "array[string] — any phrases > 4 words flagged"
         overlap_check_passed: "boolean (must be true)"
-    - claim_ledger
+    - name: claim_ledger
       type: "array"
       item_schema:
         claim_text: "string"
         source_fact_id: "string"
         supported: "boolean"
         skill_category: "string"
-    - gap_notes
+    - name: gap_notes
       type: "array"
       description: "Unsupported JD requirements or competency gaps"
-    - self_check
+    - name: self_check
       type: "object"
       schema:
         exactly_8_categories: "boolean (must be true)"
@@ -174,7 +185,7 @@ format_rules:
     bad: "• Agentic AI Platforms — Expert in multi-agent orchestration and GraphRAG retrieval systems with policy-gated execution frameworks."
     bad_reason: "Uses bullets, full sentences, and restates bullet content"
   max_term_length: "5 words per term (compound concepts allowed)"
-  separator: ", " (comma + space)
+  separator: 'comma + space between terms'
   no_ending_punctuation: true
 
 forbidden_patterns:
@@ -248,6 +259,14 @@ payload_scope:
   output_tokens_estimate: "~800 (8 categories with terms)"
   context_window_required: "8K minimum"
   json_schema_strict: true
+
+# W5 — SSOT excerpt for contract tests (verified_skill_inventory vs SRFS slice).
+w5_proof_targeting_harmonization: |
+  Proof: SelectedRoleFactSet facts for competencies only; claim_ledger / term source_fact_ids must match this section's
+  allowlist. verified_skill_inventory is organizational/targeting context unless each emitted term's source_fact_ids
+  intersect the competencies SRFS slice. Targeting only: JD, briefing, title, company, companion sections — labels/order
+  only, never standalone proof. Out-of-slice source_fact_ids fail X2. No invented competency labels or domains unsupported by
+  selected facts; omit unsupported JD-only skills.
 
 metadata:
   produced_at: "2026-05-14"

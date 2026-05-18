@@ -19,9 +19,9 @@ from apps_rg.l2_recipe.steps import GenerateResumeStep
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 
 
-def test_resolve_modular_lane_provider_default_mock(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_modular_lane_provider_default_qwen_vllm(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, raising=False)
-    assert resolve_apps_rg_modular_lane_provider() == "mock"
+    assert resolve_apps_rg_modular_lane_provider() == "qwen_vllm"
 
 
 def test_resolve_modular_lane_provider_qwen(monkeypatch: pytest.MonkeyPatch) -> None:

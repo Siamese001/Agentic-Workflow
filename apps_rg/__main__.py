@@ -64,8 +64,13 @@ from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run i
 )
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
 from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
+from apps_rg.runtime.cli_section_execution_report import (
+    emit_cli_section_execution_summary,
+    section_lane_process_exit_code,
+)
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import find_repo_root
+from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
 
 __all__ = [
     "_assert_artifact_matches_company",
@@ -589,6 +594,96 @@ def _build_parser() -> argparse.ArgumentParser:
             "stdin when not a TTY. Saves under artifacts/apps_rg/cli_inputs/cli_<id>/"
         ),
     )
+    p.add_argument(
+        "--section",
+        default="",
+        choices=["", "headline", "executive_summary", "unify_bullets", "unify_narrative", "ibm_bullets", "ibm_narrative", "competencies"],
+        help="Run a single section lane through the apps_rg orchestrator (default: full R4 product).",
+    )
+    p.add_argument(
+        "--executive-summary",
+        action="store_true",
+        help="Alias for --section executive_summary.",
+    )
+    p.add_argument(
+        "--unify-bullets",
+        action="store_true",
+        help="Alias for --section unify_bullets.",
+    )
+    p.add_argument(
+        "--unify-narrative",
+        action="store_true",
+        help="Alias for --section unify_narrative.",
+    )
+    p.add_argument(
+        "--ibm-bullets",
+        action="store_true",
+        help="Alias for --section ibm_bullets.",
+    )
+    p.add_argument(
+        "--ibm-narrative",
+        action="store_true",
+        help="Alias for --section ibm_narrative.",
+    )
+    p.add_argument(
+        "--competencies",
+        action="store_true",
+        help="Alias for --section competencies.",
+    )
+    p.add_argument(
+        "--provider",
+        default=argparse.SUPPRESS,
+        choices=["mock", "qwen_vllm"],
+        help=(
+            "Optional override for section-only lanes (mock or qwen_vllm); when omitted, uses "
+            "APPS_RG_MODULAR_LANE_PROVIDER (see apps_rg.l2_recipe.r4_generation_mode). "
+            "Ignored for full R4 runs."
+        ),
+    )
+    p.add_argument(
+        "--allow-non-allow-exit-zero",
+        action="store_true",
+        help=(
+            "Return process exit 0 even when X3 is not ALLOW for section-only lanes "
+            "(override; may also set APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO). Does not change x3_disposition.json."
+        ),
+    )
+    p.add_argument(
+        "--x1d-judges",
+        default=argparse.SUPPRESS,
+        help=(
+            "Optional comma-separated X1D judge keys for section lanes; when omitted, uses "
+            "APPS_RG_E2E_X1D_JUDGES or the apps_rg default judge list."
+        ),
+    )
+    p.add_argument(
+        "--mock-judges",
+        action="store_true",
+        help="Use mocked judge rows (section-lane plumbing tests only; never runtime certification).",
+    )
+    p.add_argument(
+        "--allow-test-mock-judges",
+        action="store_true",
+        help="Test-only hatch: required together with `--mock-judges`.",
+    )
+    p.add_argument(
+        "--temperature",
+        type=float,
+        default=0.45,
+        help=(
+            "LLM temperature for qwen_vllm in section lanes including competencies "
+            "(each lane enforces its own allowed range)."
+        ),
+    )
+    p.add_argument(
+        "--selected-role-fact-set",
+        default="",
+        help=(
+            "Optional SelectedRoleFactSet JSON path for generated apps_rg sections. Supplies section-specific "
+            "proof pools through selected_facts_by_section.<section_id>. In SRFS mode, each section may only "
+            "prove claims using facts assigned to that section."
+        ),
+    )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
     return p
 
@@ -600,6 +695,18 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     """
     parser = _build_parser()
     args = parser.parse_args(argv)
+    if getattr(args, "executive_summary", False):
+        args.section = "executive_summary"
+    if getattr(args, "unify_bullets", False):
+        args.section = "unify_bullets"
+    if getattr(args, "unify_narrative", False):
+        args.section = "unify_narrative"
+    if getattr(args, "ibm_bullets", False):
+        args.section = "ibm_bullets"
+    if getattr(args, "ibm_narrative", False):
+        args.section = "ibm_narrative"
+    if getattr(args, "competencies", False):
+        args.section = "competencies"
     args.non_interactive = not args.interactive
 
     if not str(getattr(args, "resume", "") or "").strip():
@@ -607,14 +714,34 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         if dr:
             args.resume = dr
 
+    section_lane_ids = (
+        "headline",
+        "executive_summary",
+        "unify_bullets",
+        "unify_narrative",
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+    )
+    section_eff = str(getattr(args, "section", "") or "").strip().lower()
+    if section_eff == "executive_summary":
+        from apps_rg.runtime.section_cli_defaults import fill_executive_summary_cli_targets
+
+        try:
+            fill_executive_summary_cli_targets(args)
+        except SectionCliConfigError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            return 2
+
     # Wizard / cursor-prompts mode: if mandatory inputs are missing, write a
     # sentinel line and exit 7 so the calling process (Cursor Agent IDE) can prompt
     # the user for the missing fields.
     mandatory_missing = []
-    if not args.target_company:
-        mandatory_missing.append("--target-company")
-    if not args.target_role:
-        mandatory_missing.append("--target-role")
+    if section_eff not in section_lane_ids:
+        if not args.target_company:
+            mandatory_missing.append("--target-company")
+        if not args.target_role:
+            mandatory_missing.append("--target-role")
 
     if mandatory_missing and args.cursor_prompts:
         sentinel = (
@@ -648,8 +775,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
 
     _qdr = maybe_restart_qwen_vllm_for_apps_rg_run(
-        running_section_lane=False,
-        cli_provider=None,
+        running_section_lane=section_eff in section_lane_ids,
+        cli_provider=getattr(args, "provider", None),
     )
     if _qdr.get("performed"):
         print(
@@ -691,18 +818,81 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
     # Dispatch to the runtime pipeline
     try:
-        from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
+        if section_eff in section_lane_ids:
+            from apps_rg.runtime.orchestration.canonical_dispatch import (
+                run_canonical_apps_rg_from_cli_primitives,
+            )
+            from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
+                MOCK_JUDGES_REJECT_EXIT_CODE,
+                emit_mock_judges_blocked_stderr,
+            )
+            from apps_rg.runtime.section_cli_defaults import (
+                resolve_allow_non_allow_exit_zero,
+                resolve_cli_lane_provider_with_source,
+                resolve_cli_x1d_judges,
+            )
 
-        result = dispatch_apps_rg_run(
-            target_company=args.target_company,
-            target_role=args.target_role,
-            target_level=args.target_level,
-            jd=args.jd,
-            manual_brief=args.manual_brief,
-            resume_path=args.resume,
-            generation_mode=args.generation_mode,
-            artifact_dir=args.artifact_dir,
-        )
+            try:
+                lane_provider_eff, lane_provider_resolution_source = resolve_cli_lane_provider_with_source(
+                    getattr(args, "provider", None)
+                )
+            except SectionCliConfigError as exc:
+                print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+                return 2
+            except RuntimeError as exc:
+                print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+                return 2
+
+            plumbing_waiver = bool(getattr(args, "allow_non_allow_exit_zero", False))
+            if (
+                bool(args.mock_judges)
+                and not bool(getattr(args, "allow_test_mock_judges", False))
+                and not plumbing_waiver
+            ):
+                emit_mock_judges_blocked_stderr(dispatcher_label="apps_rg.__main__")
+                return MOCK_JUDGES_REJECT_EXIT_CODE
+
+            lane_judges_eff = resolve_cli_x1d_judges(getattr(args, "x1d_judges", None))
+            lane_mock_eff = bool(args.mock_judges)
+            section_allow_exit = resolve_allow_non_allow_exit_zero(
+                bool(getattr(args, "allow_non_allow_exit_zero", False))
+            )
+
+            result = run_canonical_apps_rg_from_cli_primitives(
+                target_company=args.target_company,
+                target_role=args.target_role,
+                target_level=args.target_level,
+                jd=args.jd,
+                manual_brief=args.manual_brief,
+                resume_path=args.resume,
+                generation_mode=args.generation_mode,
+                artifact_dir=args.artifact_dir,
+                section=section_eff,
+                lane_provider=lane_provider_eff,
+                lane_provider_resolution_source=lane_provider_resolution_source,
+                lane_temperature=args.temperature,
+                lane_x1d_judges=lane_judges_eff,
+                lane_mock_judges=lane_mock_eff,
+                lane_allow_non_allow_exit_zero=bool(getattr(args, "allow_non_allow_exit_zero", False)),
+                lane_allow_test_mock_judges=(
+                    bool(getattr(args, "allow_test_mock_judges", False))
+                    or (plumbing_waiver and bool(args.mock_judges))
+                ),
+                selected_role_fact_set=str(getattr(args, "selected_role_fact_set", "") or ""),
+            )
+        else:
+            from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
+
+            result = dispatch_apps_rg_run(
+                target_company=args.target_company,
+                target_role=args.target_role,
+                target_level=args.target_level,
+                jd=args.jd,
+                manual_brief=args.manual_brief,
+                resume_path=args.resume,
+                generation_mode=args.generation_mode,
+                artifact_dir=args.artifact_dir,
+            )
         status = result.get("exit_status", "unknown") if isinstance(result, dict) else "unknown"
         authorized = (
             bool(result.get("outcome_authorized"))
@@ -717,9 +907,59 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             ad_str = str(result["artifact_dir"])
             print(f"artifact_dir={ad_str}", flush=True)
             _print_paths_for_cursor_workspace(ad_str)
+        if section_eff in section_lane_ids:
+            res_dict = result if isinstance(result, dict) else {}
+            allow_exit_flag = bool(getattr(args, "allow_non_allow_exit_zero", False))
+            if res_dict.get("fault") == "temperature_range":
+                err = str(res_dict.get("error") or "temperature out of range")
+                print(err, file=sys.stderr, flush=True)
+                emit_cli_section_execution_summary(
+                    result=res_dict,
+                    lane_provider_resolution_source=lane_provider_resolution_source,
+                    allow_non_allow_exit_zero_effective=section_allow_exit,
+                    allow_non_allow_cli_flag=allow_exit_flag,
+                    process_exit_code=2,
+                )
+                return 2
+            es_txt = str((result or {}).get("executive_summary_cli_output_text") or "").strip()
+            if es_txt:
+                print(es_txt, flush=True)
+            ub_txt = str((result or {}).get("unify_bullets_cli_output_text") or "").strip()
+            if ub_txt:
+                print(ub_txt, flush=True)
+            un_txt = str((result or {}).get("unify_narrative_cli_output_text") or "").strip()
+            if un_txt:
+                print(un_txt, flush=True)
+            ib_txt = str((result or {}).get("ibm_bullets_cli_output_text") or "").strip()
+            if ib_txt:
+                print(ib_txt, flush=True)
+            in_txt = str((result or {}).get("ibm_narrative_cli_output_text") or "").strip()
+            if in_txt:
+                print(in_txt, flush=True)
+            co_txt = str((result or {}).get("competencies_cli_output_text") or "").strip()
+            if co_txt:
+                print(co_txt, flush=True)
+            hl_txt = str((result or {}).get("headline_cli_output_text") or "").strip()
+            if hl_txt:
+                print(hl_txt, flush=True)
+            rc = section_lane_process_exit_code(
+                result=res_dict,
+                allow_non_allow_exit_zero_effective=section_allow_exit,
+            )
+            emit_cli_section_execution_summary(
+                result=res_dict,
+                lane_provider_resolution_source=lane_provider_resolution_source,
+                allow_non_allow_exit_zero_effective=section_allow_exit,
+                allow_non_allow_cli_flag=allow_exit_flag,
+                process_exit_code=rc,
+            )
+            return rc
         if status != "success" or not authorized:
             return 1
         return 0
+    except SectionCliConfigError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+        return 2
     except Exception as exc:
         print(f"ERROR: apps_rg pipeline failed: {exc}", file=sys.stderr, flush=True)
         return 1

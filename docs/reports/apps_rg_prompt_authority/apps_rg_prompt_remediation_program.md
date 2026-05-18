@@ -188,7 +188,7 @@ apps_rg/prompt_assembly/section_prompt_contracts/
 
 ---
 
-## Wave 3 — apps_rg section PA adapter
+## Wave 3 — apps_rg per-lane PA adapter (`python -m apps_rg --section <lane>`)
 
 **Goal:** Seam for section lanes to consume PA-assembled prompts **without** `agentic_core` edits.
 
