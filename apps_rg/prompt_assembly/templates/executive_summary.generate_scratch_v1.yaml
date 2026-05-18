@@ -1,9 +1,10 @@
 # apps_rg Executive Summary Generate Scratch Template v1
-# Purpose: Executive summary  -  evidence-first prose in canonical base résumé register;
-#   JD_TEXT + BRIEFING prioritize among selected facts (targeting only); no JD stuffing.
+# Purpose: Polished SVP / agentic-AI-platform executive paragraph from selected facts;
+#   JD_TEXT + BRIEFING are targeting-only (emphasis, order, vocabulary tilt).
 # Authority: 8-slot PA model per ADR-023
 # Ownership: apps_rg
-# CRITICAL: Evidence-first flow, fit-to-evidence length only
+# Canonical run: python -m apps_rg --section executive_summary
+# CRITICAL: Synthesis without invention; 2–3 dense sentences by default; claim_ledger proves display claims.
 
 schema_version: "1.0"
 template_id: executive_summary.generate_scratch_v1
@@ -23,23 +24,57 @@ slot_bodies:
       <system_authority level="S0">
 
     <role>
-    Executive summary compiler only: reorganize and rephrase **selected_fact_plan** facts into one dense,
-    third-person executive paragraph. Zero authority to invent, infer, or embellish. Not a creative writer.
+    Executive summary compiler: synthesize **selected facts** (proof substrate from C0 / selected_fact_plan input)
+    into one polished, third-person executive paragraph. **No invention** beyond what selected facts support - but you
+    **must** weave supported facts into natural executive prose (synthesis is required, not optional).
     </role>
 
+    <executive_summary_north_star>
+    - Executive summary is **not** a bullet stack, **not** a fact-label translation, **not** one sentence per source fact.
+    - It is a **single polished executive paragraph** for an SVP Engineering / Agentic AI Platform leader.
+    - It **synthesizes** selected facts into a coherent narrative that sounds like the **canonical base résumé** executive
+      summary - dense, credible, technical, commercially aware, human-written - not generic recruiter prose.
+    - Avoid hype, filler, meta narration, and prompt-compliance scaffolding.
+    - Include **metrics and credentials only** when the current selected facts support them.
+    - **Never copy** E0 gold style-example metrics or credentials unless the **same substance** appears in selected facts.
+    - **SelectedRoleFactSet (SRFS):** Base-resume executive summary **style exemplars** (E0 positive example and the SRFS
+      appendix style-only one-shot reinforcement) teach **voice, structure, and executive density only**; they are **not**
+      proof. In SRFS mode do **not** treat the canonical base-resume top-N fact plan as proof; substantive claims and
+      ``claim_ledger`` rows must cite **only** ``selected_facts_by_section["executive_summary"]`` facts present under
+      ALLOWED_SOURCE_FACT_IDS (plus allowed ``*_metric_*`` hash IDs emitted there).
+    - **SRFS appendix** (when active): mandates ``SRFS_FIVE_PART_EXEC_ARCH_V1`` (**four- or five-sentence** density arc),
+      ``SRFS_SENTENCE_RESP_SEP_V1`` (**strict** lane separation: S1 thesis only, S2 mechanism only, S3 lifecycle bridge,
+      S4 measurable outcomes, S5 credibility), deterministic **word-count (95–160)** and **sentence-count (4–5)** gates,
+      **hard anti-chain** rules, **style-only** bad/good contrast, **governance cite or documented omission**
+      (gap_notes / self_check; JD/briefing never proof), **credential integration** without credential-led outcomes
+      sentences, **metric family** limits, and **legacy** ``SRFS_THREE_SENTENCE_EXEC_ARCH_V1`` marker retired for SRFS
+      runtime shape; proof remains C0 IDs only.
+    - JD / title / company / briefing may **tilt emphasis only**; they **never** prove capability.
+    - **Companion text from other generated sections** (other lanes, when present as context): targeting,
+      sequencing, and anti-repetition only - **not** proof. Do not cite companion content as source_fact_ids unless the
+      same fact token is explicitly part of **executive_summary** selected facts in ALLOWED_SOURCE_FACT_IDS.
+    - **claim_ledger** + **allowed source_fact_ids** are the only proof substrate for displayed material claims.
+    - **SRFS slice enforcement:** every claim_ledger source_fact_id must stay inside the executive_summary allowlist
+      (including allowed metric-hash suffixes). IDs from another section's slice, JD/briefing surrogates, or invented
+      tokens fail deterministic X2 SRFS gates - omit unsupported claims instead of generalizing.
+    </executive_summary_north_star>
+
     <objective>
-    Match canonical **base résumé** register: engineering executive density; concrete runtime, governance,
-    retrieval, orchestration, evaluation, and commercialization nouns when facts support them; quantified
-    impact when supported; credentials only when supported. No recruiter filler, no JD keyword stuffing.
-    **No word-count target. No fixed sentence-count target.** Final user-visible output is **RAW JSON only**
-    (see I0 ``<output_contract>``). Do not reveal chain-of-thought, branches, scoring, or deliberation text.
+    Match canonical **base résumé** register: engineering executive density; runtime, governance, retrieval, orchestration,
+    evaluation, and commercialization nouns when facts support them; quantified impact when supported; credentials only
+    when supported. No recruiter filler, no JD keyword stuffing.
+    **Default user-visible band:** ``resume_display_text`` is **2 or 3 period-delimited sentences** (dense executive
+    synthesis) for **non-SRFS** runs. **SelectedRoleFactSet (SRFS)** overrides to **4 or 5** sentences with deterministic
+    **95–160 word** bounds (see SRFS appendix / X2). Otherwise do not chase line caps. No label headings, no ``Label: detail`` stitching, no echo of
+    ``selected_fact_plan`` JSON. Final envelope is **RAW JSON only** (see I0 ``<output_contract>``).
+    Do not reveal chain-of-thought, branches, scoring, or deliberation text.
     </objective>
 
     # EVIDENCE-FIRST OATH (sovereign  -  I0 has ``<authority_boundary>`` and ``<evidence_law>``)
     1. NO FABRICATION beyond selected facts and claim_ledger support.
-    2. SELECTED_FACT_PLAN in C0 is ground truth for substantive claims.
-    3. Use **sentence role goals** in I0; combine or split roles; never one sentence per source fact;
-       never pad or cut supported proof for length.
+    2. Facts enumerated under SELECTED_FACT_PLAN / ALLOWED_SOURCE_FACT_IDS in C0 are the proof substrate for substantive claims.
+    3. Use **sentence role goals** in I0 inside the **2–3 sentence** cap; combine roles; never one sentence per source fact;
+       never pad or cut supported proof merely to hit a length target.
     4. JD_TEXT and BRIEFING: targeting for emphasis, order, vocabulary tilt only  -  never proof.
     5. Every material prose claim maps to claim_ledger; display text has no inline citations or fact IDs.
     6. jd_alignment.jd_used_as_proof must be false.
@@ -60,7 +95,7 @@ slot_bodies:
     </authority_boundary>
 
     # FIT TO EVIDENCE
-    No word-count optimization. No fixed sentence-count optimization.
+    No word-count optimization. **resume_display_text** is 2–3 sentences (sovereign band); do not pad with unsupported clauses or echo labels.
     Use I0 ``<sentence_role_goals>`` and evidence density; never pad a role; never drop supported proof for brevity.
 
   # ===========================================================================
@@ -73,12 +108,12 @@ slot_bodies:
         MUST_USE: Facts from selected_fact_plan where priority_rank >= 7
         SUPPORTING: Facts from selected_fact_plan where priority_rank 4-6
         CONTEXT: Facts from selected_fact_plan where priority_rank 1-3
-        NEVER_USE: candidate_facts not in selected_fact_plan
+        NEVER_USE: any purported résumé fact whose fact_id is **not** in ALLOWED_SOURCE_FACT_IDS / selected_fact_plan
         NEVER_USE_AS_PROOF: jd_requirements or company_brief
       </evidence_tier_selection>
 
       <authority_boundary>
-      selected_fact_plan is the only proof source.
+      Selected facts delivered in C0 (selected_fact_plan lines + ALLOWED_SOURCE_FACT_IDS) are the only proof substrate.
       JD_TEXT and BRIEFING are targeting context only.
       JD_TEXT and BRIEFING may influence emphasis, ordering, and vocabulary tilt.
       JD_TEXT and BRIEFING must never prove claims.
@@ -98,6 +133,8 @@ slot_bodies:
       Do not infer employers, titles, dates, tools, technologies, credentials, regulated context, revenue,
       scale, adoption, architecture, or outcomes beyond what selected facts support.
       Do not use target_company as an employer.
+      Do not treat broader skills or job-family language as proof unless the substance is represented in this section's
+      selected role facts.
       </evidence_law>
 
       <source_fact_id_tokens>
@@ -125,7 +162,8 @@ slot_bodies:
       evaluation, commercialization nouns when facts support them. Quantified impact when supported.
       No recruiter filler (Seasoned, Passionate, proven track record, cutting-edge, robust solutions in generic use).
       No JD keyword stuffing. No comma-pile capability lists; group and synthesize.
-      Forbidden visible meta-scaffolding phrases (Examples: ``selected facts``, ``governance discipline`` as rhetorical fluff,
+      Forbidden visible meta-scaffolding phrases (Examples: ``selected facts``, ``this summary``, ``the candidate``,
+      ``governance discipline`` as rhetorical fluff unless the exact phrase is supported by a selected fact,
       ``active-voice delivery`` as narration, ``same fact plan``, ``canonical facts used as proof``,
       ``across the scope described in selected facts``). Do not reuse internal claim labels as prose headings or
       ``Label: prose`` stitching in resume_display_text; merge titles into uninterrupted sentences without ``: ``.
@@ -138,10 +176,26 @@ slot_bodies:
       Preserve compound metrics exactly as facts support (e.g. dollar amounts, percentages, spans). Do not round away proof.
       </style_contract>
 
+      <north_star_synthesis_contract>
+      **SVP narrative quality (all executive_summary compiles):**
+      - Open with a **differentiated executive thesis** grounded in selected facts; avoid generic templated openers such as
+        ``Engineering executive with expertise in`` and thin ``expertise in`` framing that reads as recruiter filler.
+      - Weave **platform architecture**, **governance / reliability**, **engineering scale**, and **commercial outcomes**
+        into one **causal arc** when selected facts support them - not as a disconnected checklist or metric dump.
+      - **Anti-stacking:** prohibit metric-dump sentences, proof-list prose, and disconnected credential-only tails.
+        Do not chain unrelated beats with heavy comma splices or ``while``/``and`` glue patterns such as:
+        ``Architected X, reducing Y, while leading Z, generating A, and expanding B.``
+      - **Credentials:** do not end on a standalone credential-only sentence unless it materially strengthens fit for the
+        target role; fold credentials into a brief credibility clause inside a substantive sentence, or omit.
+      - Hold to **2–3 dense sentences**; concise, human, credible, executive-facing register.
+      - Avoid generic recruiter phrases including **proven track record**, **results-driven**, **seasoned leader**, and
+        other banned openers listed under FORBIDDEN_OPENERS.
+      </north_star_synthesis_contract>
+
       <sentence_role_goals>
       Do not optimize for word count.
-      Do not optimize for fixed sentence count.
-      Optimize for evidence density, executive narrative flow, and claim-ledger completeness.
+      Hold to **2 or 3 sentences** in ``resume_display_text`` while maximizing evidence density per sentence.
+      Optimize for executive narrative flow and claim-ledger completeness within that band.
 
       Use these sentence roles when selected facts support them:
       1. Executive identity and operating domain.
@@ -188,9 +242,11 @@ slot_bodies:
 
       <output_contract>
       Return **RAW JSON ONLY** as one object. First character `{`, last character `}`.
-      No markdown fences (no triple-backtick json). No preamble or postamble.
-      Top-level fields include resume_display_text, selected_fact_plan, claim_ledger, jd_alignment, gap_notes,
-      change_log, self_check (see `<self_check_requirements>`).
+      No ```json or ``` markdown fences around the object. No preamble or postamble.
+      Required top-level fields: ``resume_display_text`` (2–3 sentences), ``claim_ledger``, ``jd_alignment``, ``gap_notes``,
+      ``change_log``, ``self_check`` (see `<self_check_requirements>`).
+      **Do not emit ``selected_fact_plan`` or ``selected_fact_plan_used``** - runtime already materializes the plan to disk;
+      echoing it bloats completions and encourages label-stitching.
       resume_display_text has no [source:...], no bracket citations, no raw fact_id tokens.
       </output_contract>
 
@@ -212,13 +268,14 @@ slot_bodies:
       </self_check_requirements>
 
       <source_policy>
-      INPUT selected_fact_plan MUST be echoed as selected_fact_plan_used.
-      INPUT claim_ledger MUST expand to claim_ledger_emitted with source_fact_ids to selected facts only.
-      INPUT gap_notes MUST carry forward; unsupported JD items land here, not in resume_display_text as proof.
+      Treat C0 ``selected_fact_plan`` as read-only ground truth; **do not copy it back into JSON output**.
+      Emit **claim_ledger** as the only claim-bearing array: each row has non-empty ``claim_text`` and ``source_fact_ids``
+      drawn verbatim from ALLOWED_SOURCE_FACT_IDS. INPUT gap_notes MUST carry forward; unsupported JD items land here,
+      not in resume_display_text as proof.
       </source_policy>
 
       <claim_ledger_alignment>
-      Each claim_ledger_emitted row reflects material prose; display text stays tag-free.
+      Each claim_ledger row reflects material prose in resume_display_text; display text stays tag-free.
       </claim_ledger_alignment>
 
       <pre_output_checklist>
@@ -236,72 +293,22 @@ slot_bodies:
   # C0: EVIDENCE DATA  -  Planning Artifacts as Input
   # ===========================================================================
   C0: |
-    # C0_EVIDENCE_DATA  -  Planning Artifacts as Source
-    
-    ## SELECTED_FACT_PLAN (Ground Truth Selection)
-    <selected_fact_plan source="strategic_tailor_v1" confidence="1.0">
-    {{ selected_fact_plan | to_yaml }}
-    
-    # These facts have been strategically selected for this role.
-    # Your output MUST echo these as selected_fact_plan_used.
-    </selected_fact_plan>
-    
-    ## CLAIM_LEDGER (Planned Claims to Expand)
-    <claim_ledger source="strategic_tailor_v1" confidence="1.0">
-    {{ claim_ledger | to_yaml }}
-    
-    # These claims are planned for the executive summary.
-    # Your output MUST expand these as claim_ledger_emitted with prose citations.
-    </claim_ledger>
-    
-    ## CANDIDATE_FACTS (Full Truth Source)
-    <candidate_facts source="base_resume_json" confidence="1.0">
-    {{ candidate_facts | to_yaml }}
-    
-    # Reference for citation lookups and fact verification.
-    </candidate_facts>
-    
-    ## GAP_NOTES (Unsupported Requirements to Document)
-    <gap_notes source="strategic_tailor_v1" confidence="1.0">
-    {{ gap_notes | to_yaml }}
-    
-    # These JD requirements lack candidate evidence.
-    # Your output MUST carry these forward unchanged.
-    # DO NOT fabricate to fill gaps.
-    </gap_notes>
-    
-    ## JD_REQUIREMENTS (Targeting Context Only  -  Not Proof)
-    <jd_requirements source="job_description" confidence="0.0">
-    {{ jd_payload.text }}
-    
-    # These are TARGET requirements. They guide positioning.
-    # They are NEVER proof of candidate capability.
-    # If unsupported, they go to gap_notes.
-    </jd_requirements>
-    
-    ## COMPANY_BRIEF (Targeting Context Only  -  Advisory)
-    <company_brief source="research" confidence="0.0">
-    {{ company_brief.summary if company_brief else "No company brief available" }}
-    
-    # This is TARGET company context. It guides positioning tone.
-    # It is NEVER proof of candidate capability.
-    </company_brief>
+    # C0_EVIDENCE_DATA - injected at PA compile time (this slot body is documentation only for editors).
+    #
+    # Runtime compiles C0 from:
+    # - <selected_facts> … ground-truth lines + ALLOWED_SOURCE_FACT_IDS (proof substrate only)
+    # - <jd_requirements> … TARGET_TITLE, TARGET_COMPANY, JD_TEXT, BRIEFING (targeting context; never proof)
+    #
+    # The model MUST NOT echo selected_fact_plan / claim_ledger inputs back into JSON output; runtime owns those artifacts.
 
   # ===========================================================================
   # U0: USER TASK  -  Executive Summary Intent Only
   # ===========================================================================
   U0: |
-    # U0_USER_TASK  -  Executive Summary Intent
-    
-    TARGET_ROLE: {{ target_role }}
-    TARGET_COMPANY: {{ target_company }}
-    SENIORITY_BAND: {{ seniority_band }}
-    
-    GENERATION_MODE: executive_summary_generate_scratch
-    
-    # User intent summary: Generate executive summary from selected facts for
-    # {{ target_role }} at {{ target_company }}. Evidence-first flow. Fit-to-evidence.
-    # Emit selected_fact_plan_used, claim_ledger_emitted, gap_notes, jd_alignment, change_log.
+    # U0_USER_TASK - filled by PA from runtime payload (template placeholder for SSOT readability).
+    #
+    # Emit resume_display_text (default 2–3 dense sentences), claim_ledger, gap_notes,
+    # jd_alignment, change_log, self_check - never selected_fact_plan echo.
 
   # ===========================================================================
   # E0: EXECUTIVE SUMMARY EXAMPLES  -  Evidence-First Patterns
@@ -309,38 +316,30 @@ slot_bodies:
   E0: |
     <many_shot_examples>
 
-    <positive_example id="canonical_base_register">
-    Good:
-    Engineering executive building production-grade AI platforms and the runtime architecture that makes
-    autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems
-    that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution,
-    policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve
-    reliability, audited behavior, and deployment speed. Leads the full platform lifecycle across architecture,
-    operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable
-    platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded
-    gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex
-    AI capabilities into repeatable, production-ready infrastructure. Fellow of the Society of Actuaries with
-    advanced training in causal inference, statistics, and distributed systems engineering.
-    Why good: third person; dense platform and governance nouns; lifecycle and commercialization; quantified impact;
-    credential depth only because directly stated; synthesized prose, not keyword pile.
+    <positive_example id="exec_summary_gold_base_resume_001" authority="E0_STYLE_EXAMPLE_NOT_PROOF">
+    STYLE_EXAMPLE_NOT_PROOF - density/register/synthesis target only; **not** runtime proof.
+    Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure. Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and distributed systems engineering.
+    Why authoritative: third-person executive synthesis; platform + governance + lifecycle + commercial arc; metrics/credentials appear **only because this example assumes those facts exist** in the proof substrate.
+    Use for **voice and structure** - do **not** copy facts unless your current allowed source facts contain the same substance. See ``apps_rg/prompt_assembly/examples/executive_summary_examples.yaml`` id exec_summary_gold_base_resume_001.
     </positive_example>
 
-    <positive_example id="commercial_platform_lifecycle">
-    Good:
-    Engineering executive who operationalizes platform economics alongside engineering scale-out: standardizes
-    reusable services, tightens operating cadence across programs, and pairs delivery metrics with governance hooks
-    so adoption does not trade away controls. When facts support it, ties commercial outcomes to the same
-    platform primitives without inventing employers or targets.
-    Why good: operating model and commercialization role without JD mirroring; still third person and specific.
-    </positive_example>
+    <negative_example id="label_stitch_exec_summary">
+    Bad:
+    Enterprise Agentic AI Platform Architecture: designed and operationalized a governed agentic AI platform. Dependency Graph Accelerator: built software dependency graph intelligence.
+    Why bad: fact-title colon stitching; not executive synthesis.
+    </negative_example>
 
-    <positive_example id="technical_governance_evaluation">
-    Good:
-    Engineering executive accountable for evaluation discipline and telemetry on a governed agentic stack. Shapes
-    policy gates, replayable execution traces, and escalation paths so retrieval and orchestration stay provable
-    under production load, using concrete capability nouns from the fact set rather than generic AI labels.
-    Why good: runtime/governance/evaluation emphasis; no filler; stays proof-shaped.
-    </positive_example>
+    <negative_example id="meta_filler_exec_summary">
+    Bad:
+    Engineering executive across the scope described in selected facts with active-voice delivery and governance discipline.
+    Why bad: meta scaffolding; visible process language; fails deterministic meta-filler gates.
+    </negative_example>
+
+    <negative_example id="sentence_stacked_proof_exec_summary">
+    Bad:
+    Engineering executive specializing in governed agentic AI platforms. Built deterministic routing. Built GraphRAG retrieval. Built telemetry instrumentation. Reduced deployment cycles.
+    Why bad: one sentence per proof beat; reads like stacked bullets, not a polished paragraph.
+    </negative_example>
 
     <negative_example id="generic_recruiter_voice">
     Bad:
@@ -359,7 +358,7 @@ slot_bodies:
     <negative_example id="source_fact_stacking">
     Bad:
     Generated $22M in revenue. Expanded margins by 20%. Reclaimed $14M in capacity. Reduced deployment cycles.
-    Why bad: bullet-stacked proofs and metric-only pacing; not executive summary prose; reads like four resume bullets.
+    Why bad: bullet-stacked proofs; not synthesized executive prose (also do not paste gold-example metrics unless facts support them).
     </negative_example>
 
     <transformation_example id="proof_safe_jd_customization">
@@ -378,18 +377,14 @@ slot_bodies:
     Selected facts: employment and outcomes at Acme Corp; no role at TargetCo.
     JD/briefing: join TargetCo platform team.
     Bad output:
-    Engineering executive at TargetCo delivering the platform outcomes listed in selected facts.
+    Engineering executive at TargetCo delivering the platform outcomes evidenced in the résumé fact set.
     Correct output:
-    Engineering executive with platform delivery outcomes grounded in selected facts; TargetCo framing is targeting
+    Engineering executive with platform delivery outcomes grounded in evidenced facts; TargetCo framing is targeting
     context only, not an employment claim.
     Why corrected: avoids importing target_company as employer; facts still prove capability.
     </transformation_example>
 
     </many_shot_examples>
-
-    <negative_examples note="also_listed_above">
-    See negative_example entries inside many_shot_examples for recruiter voice, JD stuffing, and source-fact stacking.
-    </negative_examples>
 
 
   # ===========================================================================
@@ -433,16 +428,15 @@ slot_bodies:
     - target_role: string (from U0)
     - target_company: string (from U0)
     - generated_at: ISO8601 timestamp
-    - executive_summary: string (the prose summary)
-    - selected_fact_plan_used: object (echo of selected facts used)
-    - claim_ledger_emitted: array (expanded claims with citations)
+    - resume_display_text: string (default **2–3** period-delimited dense sentences; up to 4–5 only when section budget explicitly allows; not a word cap)
+    - claim_ledger: array (material claims with claim_text + source_fact_ids; runtime may also accept alias claim_ledger_emitted on parse)
     - jd_alignment: object (alignment mapping to JD requirements)
     - gap_notes: array (unsupported JD requirements carried forward)
     - change_log: array (modifications made from input to output)
     - self_check: object (validation fields)
     
     EXECUTIVE_SUMMARY_CONSTRAINTS:
-    - No word-count targets; no fixed sentence-count targets; optimize for evidence density and narrative flow
+    - resume_display_text: default 2 or 3 sentences (4–5 only if explicit section budget); no ``: `` clause stitching; no plan echo; no meta filler (see I0 style_contract)
     - Must open with role identity (role identity lead; not generic opener)
     - Every claim must have a claim_ledger row with non-empty claim_text (material prose for that row) and valid source_fact_ids; whitespace-only claim_text fails x2_claim_ledger_claim_text_non_empty
     - Each source_fact_ids entry must exactly match one string from ALLOWED_SOURCE_FACT_IDS in C0 (copy verbatim; no interior spaces; example invalid pattern: "bul_unify_ 003"; valid when listed: "bul_unify_003")
@@ -477,7 +471,7 @@ slot_bodies:
 # =============================================================================
 output_contract:
   format: json
-  schema_ref: executive_summary_v1_schema.json
+  schema_ref: apps_rg/runtime/dispatch/executive_summary_pa.py#r0_embedded_json_schema
   mime_type: application/json
   charset: utf-8
   
@@ -487,9 +481,8 @@ output_contract:
     - target_role
     - target_company
     - generated_at
-    - executive_summary
-    - selected_fact_plan_used
-    - claim_ledger_emitted
+    - resume_display_text
+    - claim_ledger
     - jd_alignment
     - gap_notes
     - change_log
@@ -526,13 +519,13 @@ validation_rules:
     severity: error
     pattern: "claim_ledger carries source_fact_ids"
   
-  - rule: selected_fact_plan_emitted
+  - rule: resume_display_text_present
     severity: error
-    required_field: "selected_fact_plan_used"
+    required_field: "resume_display_text"
   
-  - rule: claim_ledger_emitted
+  - rule: claim_ledger_present
     severity: error
-    required_field: "claim_ledger_emitted"
+    required_field: "claim_ledger"
   
   - rule: gap_notes_carried
     severity: error
@@ -541,6 +534,14 @@ validation_rules:
 # =============================================================================
 # Hash Fields for Determinism
 # =============================================================================
+# W5 - SSOT excerpt for contract tests (keep aligned with S0 / I0 evidence law).
+w5_proof_targeting_harmonization: |
+  Proof: SelectedRoleFactSet / selected role facts for executive_summary only; claim_ledger source_fact_ids must stay in ALLOWED_SOURCE_FACT_IDS
+  for this section (metric hashes allowed per runtime). Targeting only: JD, briefing, target title, target company,
+  companion outputs from other lanes - never proof unless the same fact token is in the executive_summary allowlist.
+  Out-of-slice IDs fail X2 SRFS gates. No invention of employers, titles, dates, tools, platforms, partners, metrics,
+  revenue, savings, percentages, or regulated claims unless selected facts support them; omit unsupported material.
+
 hash_fields:
   - template_id
   - version
