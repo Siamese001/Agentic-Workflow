@@ -1,8 +1,0 @@
-{
-  "applies_to_real_llm_generation": false,
-  "finish_reason_normalized": null,
-  "clean_completion": null,
-  "hop_finish_records": [],
-  "generation_completion_warning": "",
-  "generation_completion_notes": []
-}

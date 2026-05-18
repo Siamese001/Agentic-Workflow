@@ -1,8 +1,0 @@
-{
-  "section_id": "executive_summary",
-  "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
-  "compiler_template_id": "strategic_tailor_v1",
-  "pa_prompt_hash": "eb4b56570419f64fa209e993b9100420",
-  "provider_prompt_hash": "39e4cede3cfe6c4d",
-  "slot_count": 8
-}

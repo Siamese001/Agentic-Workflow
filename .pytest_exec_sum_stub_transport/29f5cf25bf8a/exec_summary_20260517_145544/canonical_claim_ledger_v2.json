@@ -1,8 +1,0 @@
-{
-  "schema": "canonical_claim_ledger_v2",
-  "claims": [],
-  "refs": {
-    "selected_fact_plan_path": "selected_fact_plan.json",
-    "text_claim_coverage_path": "text_claim_coverage.json"
-  }
-}
