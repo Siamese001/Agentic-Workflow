@@ -1,0 +1,218 @@
+{
+  "status": "PASS",
+  "scope": "apps_rg section-level SelectedRoleFactSet (SRFS) W1–W7 evidence closeout",
+  "manifest_version": "1",
+  "timestamp_utc": "2026-05-18T17:16:40Z",
+  "git": {
+    "commit": "49876a83adb52d65bbbf68d2ebf73c51176e28b4",
+    "branch_note": "main...origin/main [ahead 1] at evidence capture; working tree may contain unrelated local changes"
+  },
+  "sections": [
+    "headline",
+    "executive_summary",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "waves": {
+    "W1": "Shared SRFS helpers in apps_rg/runtime/sections/selected_role_fact_set.py (load, slice, plan, allowed IDs, X2 slice gate helper, W6 reporting normalizer).",
+    "W2": "Canonical CLI/dispatch threads selected_role_fact_set into all seven generated lanes (canonical_dispatch + apps_rg.__main__ --selected-role-fact-set).",
+    "W3": "Each lane consumes section SRFS proof pool when path supplied; fail-closed when SRFS mode with missing/empty slice (tests_apps_rg_srfs_w3_lane_adoption).",
+    "W4": "X2 per-section slice gates enforce source_fact_ids within section allowlist; synthetic and cross-slice IDs fail (test_apps_rg_srfs_w4_x2_slice_gates + validators/*_x2.py).",
+    "W5": "Prompt templates encode proof vs JD/briefing/targeting hierarchy (test_apps_rg_srfs_w5_prompt_hierarchy.py).",
+    "W6": "section_metric_receipt.json carries normalized SRFS reporting fields for every generated lane (test_apps_rg_srfs_w6_reporting.py + lane writes).",
+    "W7": "Broader fixtures (bare list vs nested facts, metrics, edge cases, representative runs, deterministic CLI smoke under offline stub; test_apps_rg_srfs_w7_broader_fixtures.py)."
+  },
+  "files_changed_summary": {
+    "runtime_core": [
+      "apps_rg/runtime/sections/selected_role_fact_set.py",
+      "apps_rg/runtime/sections/exec_summary_srfs_integration.py",
+      "apps_rg/runtime/orchestration/canonical_dispatch.py",
+      "apps_rg/__main__.py"
+    ],
+    "section_lanes": [
+      "apps_rg/runtime/sections/headline_lane.py",
+      "apps_rg/runtime/sections/executive_summary_lane.py",
+      "apps_rg/runtime/sections/unify_bullets_lane.py",
+      "apps_rg/runtime/sections/unify_narrative_lane.py",
+      "apps_rg/runtime/sections/ibm_bullets_lane.py",
+      "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "apps_rg/runtime/sections/competencies_lane.py"
+    ],
+    "prompt_dispatch": [
+      "apps_rg/runtime/dispatch/executive_summary_pa.py",
+      "apps_rg/runtime/dispatch/input_authority_prompt_block.py",
+      "apps_rg/prompt_assembly/templates/*.yaml (W5 hierarchy — headline, executive_summary, unify, IBM, competencies as scoped)"
+    ],
+    "x2_validators": [
+      "apps_rg/runtime/validators/headline_x2.py",
+      "apps_rg/runtime/validators/executive_summary_x2.py",
+      "apps_rg/runtime/validators/unify_bullets_x2.py",
+      "apps_rg/runtime/validators/unify_narrative_x2.py",
+      "apps_rg/runtime/validators/ibm_bullets_x2.py",
+      "apps_rg/runtime/validators/ibm_narrative_x2.py",
+      "apps_rg/runtime/validators/competencies_x2.py"
+    ],
+    "contract_tests": [
+      "tests/_apps_contract/test_apps_rg_srfs_w2_canonical_threading.py",
+      "tests/_apps_contract/test_apps_rg_srfs_w3_lane_adoption.py",
+      "tests/_apps_contract/test_apps_rg_srfs_w4_x2_slice_gates.py",
+      "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py",
+      "tests/_apps_contract/test_apps_rg_srfs_w6_reporting.py",
+      "tests/_apps_contract/test_apps_rg_srfs_w7_broader_fixtures.py",
+      "tests/_apps_contract/test_selected_role_fact_set_contract.py",
+      "tests/_apps_contract/test_exec_summary_runtime_slice.py",
+      "tests/unit/apps_rg/test_selected_role_fact_set_runtime.py"
+    ],
+    "fixtures": [
+      "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_bare_list.json",
+      "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json"
+    ],
+    "this_closeout_artifact": [
+      "docs/reports/apps_rg/srfs_per_section_w1_w7_closeout_manifest.json"
+    ]
+  },
+  "fixtures": {
+    "bare_list": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_bare_list.json",
+    "nested_facts": "artifacts/apps_rg/test_fixtures/srfs_w7/w7_realistic_nested_facts.json",
+    "note": "Fixture files are written/refreshed by W7 pytest module fixtures when tests run; commit to pin content."
+  },
+  "commands_run": [
+    {
+      "command": "python -m pytest tests/_apps_contract/test_apps_rg_srfs_w7_broader_fixtures.py -q --tb=short --override-ini=\"addopts=\"",
+      "exit_code": 0,
+      "result": "14 passed in 6.55s"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_apps_rg_srfs_w6_reporting.py -q --tb=short --override-ini=\"addopts=\"",
+      "exit_code": 0,
+      "result": "14 passed in 1.12s"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py -q --tb=short --override-ini=\"addopts=\"",
+      "exit_code": 0,
+      "result": "11 passed in 0.25s"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_apps_rg_srfs_w4_x2_slice_gates.py tests/_apps_contract/test_apps_rg_srfs_w3_lane_adoption.py tests/_apps_contract/test_apps_rg_srfs_w2_canonical_threading.py tests/_apps_contract/test_selected_role_fact_set_contract.py tests/unit/apps_rg/test_selected_role_fact_set_runtime.py -q --tb=short --override-ini=\"addopts=\"",
+      "exit_code": 0,
+      "result": "61 passed in 1.66s"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_exec_summary_runtime_slice.py -k \"srfs or selected_role\" -q --tb=short --override-ini=\"addopts=\"",
+      "exit_code": 0,
+      "result": "20 passed, 63 deselected in 6.08s"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_apps_rg_srfs_w7_broader_fixtures.py::test_w7_cli_headline_smoke_offline_stub -q --tb=short --override-ini=\"addopts=\"",
+      "exit_code": 0,
+      "result": "1 passed in 5.90s"
+    }
+  ],
+  "cli_smoke": {
+    "run": true,
+    "section": "headline",
+    "provider_mode": "offline_stub",
+    "env": {
+      "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"
+    },
+    "artifact_dir_example": "artifacts/apps_rg/runtime_proofs/_w7_cli_smoke_<10-hex>/headline_cli",
+    "artifact_dir_latest_observed": "artifacts/apps_rg/runtime_proofs/_w7_cli_smoke_8d62be4a8d/headline_cli",
+    "note": "artifact_dir must be under repo root; each run uses a unique _w7_cli_smoke_* directory."
+  },
+  "section_closeout_status": {
+    "headline": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    },
+    "executive_summary": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    },
+    "unify_bullets": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    },
+    "unify_narrative": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    },
+    "ibm_bullets": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    },
+    "ibm_narrative": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    },
+    "competencies": {
+      "srfs_slice_fixture_covered": true,
+      "dispatch_threaded": true,
+      "lane_consumes_srfs": true,
+      "x2_slice_gate_enforced": true,
+      "prompt_hierarchy_covered": true,
+      "reporting_covered": true,
+      "w7_fixture_covered": true
+    }
+  },
+  "proof_accounting": {
+    "structural_fixture_pytest": true,
+    "offline_stub_section_runs": true,
+    "offline_stub_cli_smoke": true,
+    "runtime_certification": false,
+    "live_provider_quality": false,
+    "full_resume_r4_srfs": false,
+    "full_resume_srfs_supported_flag": false
+  },
+  "explicit_non_claims": [
+    "No runtime certification (Fort Knox / INTEGRITY_PROOF) is asserted by this bundle.",
+    "No live Qwen/vLLM output-quality or latency proof; evidence uses offline contract stub and structural tests.",
+    "No full résumé R4 SRFS aggregation — modular_resume_generation.py remains unwired.",
+    "full_resume_srfs_supported remains false in normalized reporting.",
+    "agentic_core was not modified for this SRFS wave; no new product entrypoints were added."
+  ],
+  "open_gaps": [
+    "modular_resume_generation.py / full Résumé Package R4 SRFS path not integrated.",
+    "full_resume_srfs_supported intentionally remains false until full-resume SRFS is a product reality.",
+    "Real provider-backed regression (live Qwen, judge credentials, clean X3 ALLOW under REAL_LLM) not part of W1–W7 SRFS evidence.",
+    "Cross-section downstream aggregation / single bundle consumer for all section_metric_receipt.json files is outside this closeout (see separate aggregation gap reports if any)."
+  ],
+  "totals": {
+    "pytest_commands_run": 6,
+    "pytest_commands_all_exit_zero": true,
+    "tests_passed_sum_commands": "14+14+11+61+20+1 = 121 test outcomes across six invocations (overlap: none; exec slice run deselects non-matching tests)"
+  }
+}
