@@ -202,7 +202,10 @@ slot_bodies:
       2. Governed runtime, platform architecture, or autonomous systems capability.
       3. Platform lifecycle, operating model, engineering scale-out, or commercialization.
       4. Quantified business, reliability, capacity, margin, revenue, adoption, or deployment impact.
-      5. Credential, actuarial, statistical, causal inference, or distributed systems depth, only if directly supported.
+      5. Integrated credibility: weave proved AWS / Databricks / FSA (and FSA actuarial rigor when the cert fact
+         supports it) into governance and commercialization balance; name training domains only when verbatim in
+         fact_certs_001 claim_text.
+         Forbidden: bare credential inventory, ``record above``, ``as shown above``, or credential-pointer meta.
 
       Sentence role rules:
       - Combine roles when facts are thin.

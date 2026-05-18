@@ -136,10 +136,35 @@ class JudgeOutput:
     findings: list[str] = field(default_factory=list)
     cited_sentence_indexes: list[int] = field(default_factory=list)
     remediation_suggestions: list[str] = field(default_factory=list)
+    model_requested: str | None = None
+    model_actual: str | None = None
+    reasoning_effort: str | None = None
+    judge_packet_hash: str | None = None
+    judge_packet_ref: str | None = None
+    candidate_output_ref: str | None = None
+    allowed_fact_packet_ref: str | None = None
+    rubric_ref: str | None = None
+    rationale: str | None = None
+    fail_reasons: list[str] = field(default_factory=list)
+    unsupported_claims: list[str] = field(default_factory=list)
+    quality_flags: list[str] = field(default_factory=list)
+    mocked: bool = False
+    advisory_only: bool = False
+    model_tier: str | None = None
+    proof_eligible_judge: bool = False
+    fallback_used: bool = False
+    section_id: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["pass"] = data.pop("pass_")
+        if data.get("model_actual") is None:
+            data["model_actual"] = data.get("model_name")
+        if data.get("model_requested") is None:
+            data["model_requested"] = data.get("model_name")
+        data["mocked"] = data.get("evaluator_mode") == "MOCKED"
+        if data.get("fallback_model"):
+            data["fallback_used"] = True
         return data
 
 
@@ -706,7 +731,19 @@ def _make_model_backed_output(
         findings=list(result.get("findings", [])),
         cited_sentence_indexes=list(result.get("cited_sentence_indexes", [])),
         remediation_suggestions=list(result.get("remediation_suggestions", [])),
+        rationale=str(result.get("rationale") or "").strip() or None,
+        fail_reasons=[str(x) for x in (result.get("fail_reasons") or []) if str(x).strip()],
+        unsupported_claims=[str(x) for x in (result.get("unsupported_claims") or []) if str(x).strip()],
+        quality_flags=[str(x) for x in (result.get("quality_flags") or []) if str(x).strip()],
+        model_requested=model_name,
+        model_actual=model_name,
     )
+
+
+def _openai_reasoning_effort_supported(model: str) -> bool:
+    """True only for OpenAI model families that accept reasoning.effort in chat completions."""
+    mid = str(model or "").strip().lower()
+    return mid.startswith("gpt-5.5") or mid.startswith("o3") or mid.startswith("o4")
 
 
 def _call_openai(
@@ -717,6 +754,9 @@ def _call_openai(
     provider_key: str,
     *,
     artifact_base: Path | None = None,
+    reasoning_effort: str | None = None,
+    model_requested: str | None = None,
+    judge_receipt: dict[str, Any] | None = None,
 ) -> JudgeOutput:
     """Call OpenAI API with full artifact preservation."""
     # Build request payload
@@ -734,16 +774,29 @@ def _call_openai(
         ],
         "temperature": 0.1,
     }
-    # gpt-5.x models use max_completion_tokens
+    # gpt-5.x models use max_completion_tokens; reasoning.effort only on supported endpoints
     if model.startswith("gpt-5"):
         payload["max_completion_tokens"] = 900
+        effort = (reasoning_effort or "").strip()
+        if effort and _openai_reasoning_effort_supported(model):
+            payload["reasoning"] = {"effort": effort}
     else:
         payload["max_tokens"] = 900
         payload["response_format"] = {"type": "json_object"}
     
     # Write request artifact
     req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
-    _write_artifact(req_path, {"payload": payload, "input_hash": input_hash, "timestamp": datetime.now(timezone.utc).isoformat()})
+    req_doc: dict[str, Any] = {
+        "payload": payload,
+        "input_hash": input_hash,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "model_requested": model_requested or model,
+        "model_actual": model,
+        "reasoning_effort": reasoning_effort,
+    }
+    if judge_receipt:
+        req_doc["judge_receipt"] = judge_receipt
+    _write_artifact(req_path, req_doc)
     
     req = urllib.request.Request(
         "https://api.openai.com/v1/chat/completions",
@@ -818,7 +871,26 @@ def _call_openai(
     parse_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
     _write_artifact(parse_path, {"result": result, "raw_response_ref": str(raw_path)})
 
-    return _make_model_backed_output(provider_key, input_hash, model, result, raw_response_ref=str(raw_path))
+    out = _make_model_backed_output(provider_key, input_hash, model, result, raw_response_ref=str(raw_path))
+    return _attach_judge_receipt_fields(out, judge_receipt, model_requested=model_requested or model)
+
+
+def _attach_judge_receipt_fields(
+    output: JudgeOutput,
+    judge_receipt: dict[str, Any] | None,
+    *,
+    model_requested: str | None = None,
+) -> JudgeOutput:
+    if judge_receipt:
+        output.judge_packet_hash = judge_receipt.get("judge_packet_hash")
+        output.judge_packet_ref = judge_receipt.get("judge_packet_ref")
+        output.candidate_output_ref = judge_receipt.get("candidate_output_ref")
+        output.allowed_fact_packet_ref = judge_receipt.get("allowed_fact_packet_ref")
+        output.rubric_ref = judge_receipt.get("rubric_ref")
+    if model_requested:
+        output.model_requested = model_requested
+        output.model_actual = output.model_name
+    return output
 
 
 def _validate_judge_parse_result(
@@ -864,13 +936,19 @@ def _call_anthropic(
     *,
     model_source: str = "unknown",
     artifact_base: Path | None = None,
+    allow_model_fallback: bool | None = None,
+    model_requested: str | None = None,
+    judge_receipt: dict[str, Any] | None = None,
 ) -> JudgeOutput:
     """Call Anthropic API with full artifact preservation and model fallback handling."""
     original_model = model
     fallback_model = None
     
-    # Check for fallback permission
-    allow_fallback = os.environ.get("APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK", "").lower() == "true"
+    # Check for fallback permission (disabled on executive_summary GRADE_ONLY proof path)
+    if allow_model_fallback is None:
+        allow_fallback = os.environ.get("APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK", "").lower() == "true"
+    else:
+        allow_fallback = bool(allow_model_fallback)
     
     payload = {
         "model": model,
@@ -882,14 +960,19 @@ def _call_anthropic(
     
     # Write request artifact
     req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
-    _write_artifact(req_path, {
+    req_doc = {
         "payload": payload,
         "input_hash": input_hash,
         "original_model": original_model,
         "resolved_model": model,
         "resolved_model_source": model_source,
+        "model_requested": model_requested or model,
+        "model_actual": model,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-    })
+    }
+    if judge_receipt:
+        req_doc["judge_receipt"] = judge_receipt
+    _write_artifact(req_path, req_doc)
 
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
@@ -989,7 +1072,7 @@ def _call_anthropic(
             fallback_model=fallback_model,
         )
 
-    return _finish_judge_text_parse(
+    out = _finish_judge_text_parse(
         provider_key=provider_key,
         input_hash=input_hash,
         model_name=model,
@@ -998,7 +1081,10 @@ def _call_anthropic(
         original_model=original_model,
         fallback_model=fallback_model,
         artifact_base=artifact_base,
+        judge_receipt=judge_receipt,
+        model_requested=model_requested,
     )
+    return _attach_judge_receipt_fields(out, judge_receipt, model_requested=model_requested or model)
 
 
 def _call_anthropic_fallback(
@@ -1126,6 +1212,8 @@ def _finish_judge_text_parse(
     original_model: str | None = None,
     fallback_model: str | None = None,
     artifact_base: Path | None = None,
+    judge_receipt: dict[str, Any] | None = None,
+    model_requested: str | None = None,
 ) -> JudgeOutput:
     """Parse extracted judge text into JudgeOutput or blocked status."""
     if finish_reason and str(finish_reason).upper() not in ("STOP",):
@@ -1197,7 +1285,7 @@ def _finish_judge_text_parse(
         "fallback_model": fallback_model,
     })
 
-    return _make_model_backed_output(
+    out = _make_model_backed_output(
         provider_key,
         input_hash,
         model_name,
@@ -1206,6 +1294,7 @@ def _finish_judge_text_parse(
         original_model=original_model,
         fallback_model=fallback_model,
     )
+    return _attach_judge_receipt_fields(out, judge_receipt, model_requested=model_requested or model_name)
 
 
 def _call_gemini(
@@ -1217,6 +1306,8 @@ def _call_gemini(
     *,
     model_source: str = "unknown",
     artifact_base: Path | None = None,
+    model_requested: str | None = None,
+    judge_receipt: dict[str, Any] | None = None,
 ) -> JudgeOutput:
     """Call Gemini API with full artifact preservation."""
     payload = {
@@ -1237,12 +1328,16 @@ def _call_gemini(
         "url": safe_url,
         "resolved_model": model,
         "resolved_model_source": model_source,
+        "model_requested": model_requested or model,
+        "model_actual": model,
         "provider_key": provider_key,
         "request_timeout_seconds": 60,
         "gemini_max_retries_configured": retries,
         "input_hash": input_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+    if judge_receipt:
+        artifact_body["judge_receipt"] = judge_receipt
     if omitted_q:
         artifact_body["redacted_query_param_names"] = list(omitted_q)
     _write_artifact(req_path, artifact_body)
@@ -1324,6 +1419,8 @@ def _call_gemini(
         text=text,
         finish_reason=finish_reason,
         artifact_base=artifact_base,
+        judge_receipt=judge_receipt,
+        model_requested=model_requested,
     )
 
 
@@ -1364,18 +1461,70 @@ def run_llm_judges(
     judge_keys: list[str],
     mode: str = "blocked_if_unavailable",
     artifact_base: Path | None = None,
+    judge_packet: dict[str, Any] | None = None,
+    judge_packet_ref: str | None = None,
+    compiled_prompt: str | None = None,
+    section_id: str = "executive_summary",
 ) -> list[JudgeOutput]:
     """Run or block the requested provider judges.
 
     mode values:
     - blocked_if_unavailable: attempt real providers only when credentials exist, otherwise block.
     - mocked: emit clearly mocked rows for plumbing tests.
+
+    When ``judge_packet`` is provided (executive_summary GRADE_ONLY path), judges grade the packet
+    candidate and use enhanced proof model resolution — not the generator ``compiled_prompt``.
     """
-    input_payload = {"resume_display_text": resume_display_text, "claim_ledger": claim_ledger, "rubric": RUBRIC}
-    input_hash = hashlib.sha256(json.dumps(input_payload, sort_keys=True).encode()).hexdigest()[:16]
-    prompt = _build_judge_user_prompt(resume_display_text, claim_ledger)
+    from apps_rg.runtime.judges.executive_summary_judge_packet import judge_packet_hash as _exec_hash
+    from apps_rg.runtime.judges.executive_summary_judge_packet import (
+        render_judge_prompt_from_packet as _exec_render_packet,
+    )
+    from apps_rg.runtime.judges.grade_only_judge_packet import (
+        judge_packet_hash as _generic_hash,
+        render_judge_prompt_from_packet as _generic_render_packet,
+    )
+    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
+    from apps_rg.runtime.section_judge_policy import normalize_section_id
+
+    sid = normalize_section_id(section_id or (judge_packet or {}).get("section", "executive_summary"))
+    use_grade_only_packet = judge_packet is not None
+    if use_grade_only_packet:
+        render_packet = (
+            _exec_render_packet
+            if str(judge_packet.get("judge_packet_version", "")).startswith("executive_summary")
+            else _generic_render_packet
+        )
+        hash_packet = _exec_hash if "executive_summary" in str(judge_packet.get("judge_packet_version", "")) else _generic_hash
+    else:
+        render_packet = _generic_render_packet
+        hash_packet = _generic_hash
+    if use_grade_only_packet:
+        input_hash = hash_packet(judge_packet)
+        prompt = render_packet(judge_packet)
+        if compiled_prompt and compiled_prompt.strip()[:500] in prompt:
+            pass  # packet path must not embed generator prompt
+    else:
+        input_payload = {
+            "resume_display_text": resume_display_text,
+            "claim_ledger": claim_ledger,
+            "rubric": RUBRIC,
+        }
+        input_hash = hashlib.sha256(json.dumps(input_payload, sort_keys=True).encode()).hexdigest()[:16]
+        prompt = _build_judge_user_prompt(resume_display_text, claim_ledger)
+
+    base_receipt: dict[str, Any] | None = None
+    if use_grade_only_packet:
+        base_receipt = {
+            "judge_packet_hash": input_hash,
+            "judge_packet_ref": judge_packet_ref,
+            "candidate_output_ref": "candidate_output.resume_display_text",
+            "allowed_fact_packet_ref": "allowed_fact_packet",
+            "rubric_ref": judge_packet.get("rubric_ref") if judge_packet else None,
+        }
 
     outputs: list[JudgeOutput] = []
+    proof_eligible_judge = False
+    model_tier: str | None = None
     for key in judge_keys:
         if key not in PROVIDERS:
             outputs.append(_make_blocked_output(
@@ -1403,23 +1552,65 @@ def run_llm_judges(
             ))
             continue
         
-        model_source = "unknown"
-        if key == "gemini_pro":
-            model, model_source = _resolve_gemini_model(meta)
-        elif key == "anthropic_claude":
-            model, model_source = _resolve_anthropic_model(meta)
+        reasoning_effort: str | None = None
+        model_requested = ""
+        if use_grade_only_packet:
+            resolution = resolve_section_proof_judge_model(sid, key)
+            if resolution.blocked:
+                outputs.append(
+                    _make_blocked_output(
+                        key,
+                        input_hash,
+                        "BLOCKED_MODEL_CONFIG",
+                        "BLOCKED_MODEL_CONFIG",
+                        resolution.block_reason or "proof judge model unavailable",
+                        model_name=resolution.model_requested or "unconfigured",
+                    )
+                )
+                blocked = outputs[-1]
+                if base_receipt:
+                    blocked.judge_packet_hash = base_receipt.get("judge_packet_hash")
+                    blocked.judge_packet_ref = base_receipt.get("judge_packet_ref")
+                    blocked.model_requested = resolution.model_requested
+                blocked.section_id = sid
+                blocked.model_tier = resolution.model_tier
+                blocked.proof_eligible_judge = False
+                continue
+            model = resolution.model_actual
+            model_source = resolution.model_source
+            model_requested = resolution.model_requested
+            reasoning_effort = resolution.reasoning_effort
+            proof_eligible_judge = resolution.proof_eligible_judge
+            model_tier = resolution.model_tier
         else:
-            model_env = meta.get("model_env", meta["env"].replace("_API_KEY", "_MODEL"))
-            model = os.environ.get(model_env, "").strip()
-            model_source = model_env if model else "unknown"
-            if not model:
-                model = meta.get("default_model", "unknown")
-                model_source = "default"
+            model_source = "unknown"
+            if key == "gemini_pro":
+                model, model_source = _resolve_gemini_model(meta)
+            elif key == "anthropic_claude":
+                model, model_source = _resolve_anthropic_model(meta)
+            else:
+                model_env = meta.get("model_env", meta["env"].replace("_API_KEY", "_MODEL"))
+                model = os.environ.get(model_env, "").strip()
+                model_source = model_env if model else "unknown"
+                if not model:
+                    model = meta.get("default_model", "unknown")
+                    model_source = "default"
+            model_requested = model
+
+        receipt = dict(base_receipt) if base_receipt else None
 
         try:
             if key == "openai_chatgpt":
                 output = _call_openai(
-                    api_key, prompt, model, input_hash, key, artifact_base=artifact_base
+                    api_key,
+                    prompt,
+                    model,
+                    input_hash,
+                    key,
+                    artifact_base=artifact_base,
+                    reasoning_effort=reasoning_effort,
+                    model_requested=model_requested,
+                    judge_receipt=receipt,
                 )
             elif key == "anthropic_claude":
                 output = _call_anthropic(
@@ -1430,6 +1621,9 @@ def run_llm_judges(
                     key,
                     model_source=model_source,
                     artifact_base=artifact_base,
+                    allow_model_fallback=not use_grade_only_packet,
+                    model_requested=model_requested,
+                    judge_receipt=receipt,
                 )
             else:
                 output = _call_gemini(
@@ -1440,7 +1634,25 @@ def run_llm_judges(
                     key,
                     model_source=model_source,
                     artifact_base=artifact_base,
+                    model_requested=model_requested,
+                    judge_receipt=receipt,
                 )
+            if use_grade_only_packet:
+                output.section_id = sid
+                output.model_tier = model_tier
+                output.proof_eligible_judge = bool(
+                    proof_eligible_judge
+                    and output.evaluator_mode == "MODEL_BACKED"
+                    and not output.provider_blocked
+                )
+                if output.fallback_model:
+                    from apps_rg.runtime.judges.section_judge_profile import (
+                        is_forbidden_proof_judge_model,
+                    )
+
+                    if is_forbidden_proof_judge_model(str(output.fallback_model)):
+                        output.proof_eligible_judge = False
+                        output.fallback_used = True
             outputs.append(output)
         except Exception as exc:  # noqa: BLE001
             # Catch any unexpected errors and mark as blocked

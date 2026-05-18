@@ -56,6 +56,10 @@ from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
+from apps_rg.runtime.judges.executive_summary_judge_packet import (
+    build_executive_summary_judge_packet,
+    write_executive_summary_judge_packet,
+)
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
 from apps_rg.runtime.qwen_offline_contract_stub import (
@@ -744,8 +748,12 @@ def retry_qwen_for_synthesis(
                 "typos, or invented hash suffixes). "
                 "Do **not** add generic filler (**operational efficiency**, **seamless integration**) without a claim_ledger "
                 "row that ties the clause to ALLOWED_SOURCE_FACT_IDS. "
-                "Sentence 5 should be an **integrated credibility clause** (pair creds with applied depth), "
-                "not a bare `Holds ...` credential inventory opener. "
+                "Sentence 5 must be an **integrated credibility clause**: weave AWS / Databricks / FSA (and FSA "
+                "actuarial rigor when the cert fact supports it) into governance and commercialization balance; "
+                "name training domains **only** when verbatim in fact_certs_001 — **never** `record above` or "
+                "credential-pointer meta. "
+                "Not a bare `Holds ...` inventory or invented training domains. Forbidden: **applied depth**, "
+                "**documented credential training**, **credentialed foundation strength**. "
                 "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
                 + srfs_tail
             )
@@ -1021,6 +1029,36 @@ def run_executive_summary_execution(
             )
         if parsed:
             parsed = normalize_executive_summary_llm_output(parsed, selected_fact_plan)
+            _srfs_i = runtime_payload.get("srfs_integration")
+            if isinstance(_srfs_i, dict):
+                from apps_rg.runtime.sections.exec_summary_srfs_density_repair import (
+                    apply_srfs_density_micro_expansion,
+                    parsed_to_raw_model_output_json,
+                )
+                from apps_rg.runtime.sections.exec_summary_srfs_judge_safe import (
+                    apply_srfs_judge_safe_repair,
+                )
+
+                _srfs_facts = list(selected_fact_plan.get("facts") or [])
+                parsed, density_repair_meta = apply_srfs_density_micro_expansion(
+                    parsed, _srfs_i, selected_facts=_srfs_facts
+                )
+                if density_repair_meta:
+                    write_json(artifact_dir / "srfs_density_micro_repair.json", density_repair_meta)
+                parsed = apply_srfs_judge_safe_repair(
+                    parsed,
+                    _srfs_facts,
+                    _srfs_i,
+                )
+                parsed, density_post_judge_meta = apply_srfs_density_micro_expansion(
+                    parsed, _srfs_i, selected_facts=_srfs_facts
+                )
+                if density_post_judge_meta:
+                    density_repair_meta = {
+                        **(density_repair_meta or {}),
+                        "post_judge_safe_pass": density_post_judge_meta,
+                    }
+                raw_output = parsed_to_raw_model_output_json(parsed)
     elif str(result.runtime_generation_status) == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         parsed, parse_error = parse_model_json(raw_output)
         if parsed:
@@ -1123,6 +1161,22 @@ def run_executive_summary_execution(
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
+    judge_packet = build_executive_summary_judge_packet(
+        resume_display_text=resume_display_text,
+        claim_ledger=claim_ledger,
+        allowed_fact_packet=selected_facts_for_x2,
+        allowed_fact_ids=allowed_fact_ids,
+        target_title=str(args.target_title),
+        target_company=str(args.target_company),
+        jd_text=str(args.jd_text),
+        briefing_text=str(args.briefing),
+        parsed_output=parsed_for_x2,
+        srfs_integration=srfs_integration if isinstance(srfs_integration, dict) else None,
+    )
+    judge_packet_ref = write_executive_summary_judge_packet(
+        artifact_dir / "executive_summary_judge_packet.json",
+        judge_packet,
+    )
     x1d = [
         j.to_dict()
         for j in run_llm_judges(
@@ -1131,6 +1185,9 @@ def run_executive_summary_execution(
             judge_keys=judge_keys,
             mode=judge_mode,
             artifact_base=artifact_dir,
+            judge_packet=judge_packet,
+            judge_packet_ref=judge_packet_ref,
+            compiled_prompt=compiled_prompt,
         )
     ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
@@ -1171,6 +1228,9 @@ def run_executive_summary_execution(
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
 
+    pp_x2 = runtime_payload.get("proof_pool_metadata") or proof_pool_metadata or {}
+    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+
     x2 = [g.to_dict() for g in run_x2_gates(
         resume_display_text=resume_display_text,
         parsed_output=parsed_for_x2,
@@ -1194,7 +1254,19 @@ def run_executive_summary_execution(
         selected_facts=selected_facts_for_x2,
         x1d_judges=x1d,
         srfs_integration=srfs_integration,
+        proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
+        proof_pool_ref=str(pool.proof_pool_ref or ""),
+        proof_pool_digest=str(pool.proof_pool_digest or ""),
     )]
+    from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
+        write_x2_source_fact_pool_receipt,
+    )
+
+    for g in x2:
+        obs = g.get("observed_value")
+        if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
+            write_x2_source_fact_pool_receipt(artifact_dir, obs)
+            break
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
     write_json(
         artifact_dir / "fact_check_result.json",
@@ -1232,6 +1304,7 @@ def run_executive_summary_execution(
 
     proof_bundle = compute_lane_proof_bundle(
         args,
+        section_id="executive_summary",
         runtime_generation_status=runtime_generation_status,
         x1d_judges=x1d,
         x2_gates=x2,
