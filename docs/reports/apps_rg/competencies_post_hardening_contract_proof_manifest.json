@@ -1,0 +1,30 @@
+{
+  "schema_version": "competencies_contract_proof_manifest_v1",
+  "invocation": "python -m apps_rg --section competencies + APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1 + APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO=1 + mock judges",
+  "artifact_dir_repo_relative": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_132020",
+  "runtime_generation_status": "OFFLINE_CONTRACT_STUB",
+  "x3_code": "X3_REVIEW_MOCKED_PLUMBING_ONLY",
+  "product_quality_status": "PARTIAL",
+  "proof_eligible": false,
+  "provider_transport_gate_observed": "qwen_vllm->offline_contract_stub",
+  "canonical_aggregation_file": "competencies_section_output.json",
+  "l6_shadow_eval_package_ref": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_132020/l6_shadow_eval_package.json",
+  "l6_shadow_learning_ref": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_132020/l6_shadow_learning.json",
+  "provider_response_runtime_generation_status": "OFFLINE_CONTRACT_STUB",
+  "validation_errors": [],
+  "assertions_verified": [
+    "competencies_section_output.json exists",
+    "canonical_aggregation_note marks downstream SSOT",
+    "all competency terms are canonical objects with text, source_fact_id, source_fact_ids",
+    "display_lines contain Category Label: phrase pattern",
+    "claim_ledger row count equals emitted term count (24); claim_text non-empty",
+    "proof-boundary flags complete (targeting_only true; jd_used_as_proof false; briefing_used_as_proof false; companion_context_used_as_proof false)",
+    "x2_gate_rows_are_internally_consistent PASS",
+    "PASS style hygiene gates omit failure_reason and failure-like observed_value",
+    "provider transport observed qwen_vllm->offline_contract_stub",
+    "x3_code non-ALLOW under mocked judges",
+    "proof_eligible false (section output + x3_disposition)",
+    "L6 refs present on competencies_section_output.json; sidecars exist",
+    "L6 fields written after X3 bundle (refs only); no runtime mutation by close-out wording work"
+  ]
+}
