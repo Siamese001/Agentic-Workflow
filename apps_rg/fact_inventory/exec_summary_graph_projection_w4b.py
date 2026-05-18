@@ -104,6 +104,8 @@ BANNED_PHRASES_PROMPT_CONTRACT: tuple[str, ...] = (
     "distributed systems training",
     "fully autonomous production agents",
     "self-learning runtime",
+    "autonomous AGI without oversight",
+    "unsupervised production agents",
     "unsupported GraphRAG claims",
     "unsupported partner engineering claims",
 )
@@ -164,26 +166,17 @@ def _skill_id_excluded_from_source_fact_ids(content: str) -> dict[str, Any]:
 
 
 def _banned_phrases_enforced(content: str) -> dict[str, bool]:
-    """Map W4B contract phrases to compiled-prompt guardrails (PA + SRFS appendix)."""
+    """Map W4C contract phrases to compiled-prompt guardrails (srfs_forbidden_phrase_contract block)."""
     low = content.lower()
+    in_contract = "srfs_forbidden_phrase_contract" in low
+    contract_slice = low
+    if in_contract:
+        start = low.index("srfs_forbidden_phrase_contract")
+        contract_slice = low[start : start + 2500]
     return {
-        "applied depth": "applied depth" in low,
-        "documented credential training": "documented credential training" in low,
-        "quantitative methods training": (
-            "quantitative methods" in low
-            or ("causal inference" in low and "statistics" in low)
-        ),
-        "distributed systems training": "distributed systems" in low,
-        "fully autonomous production agents": (
-            "fully autonomous" in low or "autonomous production" in low
-        ),
-        "self-learning runtime": "self-learning" in low,
-        "unsupported GraphRAG claims": "graphrag" in low or "graph-aware retrieval" in low,
-        "unsupported partner engineering claims": (
-            "partner engineering" in low
-            or ("partner" in low and "forbidden" in low)
-        ),
-    }
+        phrase: phrase.lower() in contract_slice
+        for phrase in BANNED_PHRASES_PROMPT_CONTRACT
+    }  # case-insensitive match in forbidden-phrase contract slice
 
 
 def inspect_role_family_projection(
@@ -349,7 +342,7 @@ def inspect_role_family_projection(
         "exec_allocation_hints": [s.allocation_hint for s in exec_slices],
         "arsenal_influenced_reservation": any("arsenal" in (h or "") for h in [s.allocation_hint for s in exec_slices]),
         "srfs_auto_exec_fact_ids": [s.candidate_fact_id for s in exec_slices_srfs],
-        "prompt_forbidden_phrases_section_present": "forbidden phrases" in content.lower(),
+        "prompt_forbidden_phrases_section_present": "srfs_forbidden_phrase_contract" in content.lower(),
     }
 
 

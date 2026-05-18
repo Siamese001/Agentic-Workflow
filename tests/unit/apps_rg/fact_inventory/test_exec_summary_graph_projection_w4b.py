@@ -128,17 +128,11 @@ def test_jd_briefing_targeting_only(svp_inspection: dict) -> None:
 
 
 def test_banned_phrases_listed_in_compiled_prompt_contract(svp_inspection: dict) -> None:
-    """W4B banned-phrase contract must be represented in compiled PA guardrails."""
+    """W4C: all banned-phrase guardrails must appear in srfs_forbidden_phrase_contract block."""
     assert svp_inspection["prompt_forbidden_phrases_section_present"]
     enforced = svp_inspection["banned_phrases_enforced_in_prompt"]
-    required_literal = ("applied depth", "documented credential training", "distributed systems training")
-    for phrase in required_literal:
+    for phrase in BANNED_PHRASES_PROMPT_CONTRACT:
         assert enforced.get(phrase) is True, f"missing forbidden phrase contract: {phrase}"
-    covered = sum(1 for v in enforced.values() if v)
-    assert covered >= 5, f"expected >=5/8 banned-phrase guardrails in PA, got {covered}: {enforced}"
-    from apps_rg.runtime.sections.exec_summary_srfs_judge_safe import _BANNED_PROSE_FRAGMENTS
-
-    assert len(_BANNED_PROSE_FRAGMENTS) >= 8
 
 
 def test_allowed_packet_matches_srfs_slice(svp_inspection: dict) -> None:

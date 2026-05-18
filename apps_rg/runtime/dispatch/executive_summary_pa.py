@@ -195,6 +195,43 @@ SRFS_THREE_SENTENCE_EXEC_ARCH_MARKER = "SRFS_THREE_SENTENCE_EXEC_ARCH_V1"
 SRFS_FIVE_PART_EXEC_ARCH_MARKER = "SRFS_FIVE_PART_EXEC_ARCH_V1"
 # Sentence responsibility separation - five-part SRFS arc (prompt contract marker).
 SRFS_SENTENCE_RESP_SEP_MARKER = "SRFS_SENTENCE_RESP_SEP_V1"
+SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER = "SRFS_FORBIDDEN_PHRASE_CONTRACT_V1"
+
+# W4C: global resume_display_text bans (prompt contract; judge_safe may also strip at repair).
+SRFS_FORBIDDEN_PHRASES_ALWAYS: tuple[str, ...] = (
+    "applied depth",
+    "documented credential training",
+    "quantitative methods training",
+    "distributed systems training",
+    "fully autonomous production agents",
+    "self-learning runtime",
+    "autonomous AGI without oversight",
+    "unsupervised production agents",
+)
+
+
+def format_srfs_forbidden_phrase_guardrails_block() -> str:
+    """SRFS-only: explicit banned phrases + fact-supported exceptions for GraphRAG/partner engineering."""
+    always = ", ".join(SRFS_FORBIDDEN_PHRASES_ALWAYS)
+    return (
+        f'<srfs_forbidden_phrase_contract marker="{SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER}">\n'
+        "**Global forbidden phrases (never emit in resume_display_text):**\n"
+        f"- {always}.\n"
+        "- **Unsupported GraphRAG claims:** Do not introduce GraphRAG, graph-aware retrieval, or Graph-RAG "
+        "vocabulary unless **verbatim** in a selected fact claim_text for an ALLOWED_SOURCE_FACT_ID. When the "
+        "allowed claim_text includes GraphRAG or graph-aware retrieval, use **only** that fact-supported wording; "
+        "do not extrapolate beyond the proved claim line.\n"
+        "- **Unsupported partner engineering claims:** Do not introduce partner engineering, co-sell, ISV alliance, "
+        "or partner GTM vocabulary unless a selected ALLOWED_SOURCE_FACT_ID claim_text **explicitly** supports "
+        "partner / alliance / GTM substance. Do not infer partner engineering from JD_TEXT or BRIEFING alone.\n"
+        "- **JD/briefing non-proof:** JD_TEXT and BRIEFING are targeting-only; they **cannot** authorize GraphRAG, "
+        "partner engineering, autonomous runtime, or credential-training claims without matching proof IDs.\n"
+        "- **Preserve allowed fact text:** When claim_text for an ALLOWED_SOURCE_FACT_ID includes GraphRAG or partner "
+        "terms, you may reuse that exact vocabulary in prose tied to that fact_id; ban **unsupported extrapolation**, "
+        "not verbatim allowed-fact wording.\n"
+        "</srfs_forbidden_phrase_contract>\n\n"
+    )
+
 
 # Base-resume executive summary: style / density target only for SRFS appendix reinforcement (NOT runtime proof).
 SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
@@ -249,7 +286,8 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "drop platform context.\n"
         "- **Over-compression** of platform, governance, commercialization, and leadership arcs into **one** sentence.\n"
         "</srfs_anti_thinness>\n\n"
-        f'<srfs_five_part_exec_architecture marker="{SRFS_FIVE_PART_EXEC_ARCH_MARKER}">\n'
+        + format_srfs_forbidden_phrase_guardrails_block()
+        + f'<srfs_five_part_exec_architecture marker="{SRFS_FIVE_PART_EXEC_ARCH_MARKER}">\n'
         f'<srfs_sentence_responsibility_separation marker="{SRFS_SENTENCE_RESP_SEP_MARKER}">\n'
         "**SRFS five-part executive arc (exactly **four or five** period-delimited sentences; prefer **five**):**\n\n"
         "**Density contract (SRFS):** target **105–145 words** in `resume_display_text`; **hard minimum 95**, "
@@ -266,7 +304,8 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "Databricks, data pipelines, vector services, API gateways, identity controls, containerized microservices, "
         "HPC workflows, automated validation frameworks, Basel III / CCAR lineage).\n"
         "- **Forbidden unless verbatim in a selected fact claim_text:** deterministic routing, multi-agent "
-        "orchestration, graph-aware retrieval, sandboxed execution, replayable traces.\n"
+        "orchestration, graph-aware retrieval, GraphRAG, sandboxed execution, replayable traces (see "
+        f"``{SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER}`` for unsupported GraphRAG extrapolation).\n"
         "- **Must not include:** revenue, margin, dollars, org-scale spans, or credential nouns in this lane.\n\n"
         "**Sentence 3 - platform lifecycle / operating model / commercialization bridge:**\n"
         "- Connect architecture to **reusable services**, adoption, enterprise programs, or operating model **without** "
@@ -285,12 +324,13 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "- **Write an integrated credibility clause**, not a bare cert list: **bring** AWS / Databricks / FSA (or other "
         "proved tokens) into governed AI platform leadership, balancing engineering execution, governance, and "
         "commercialization when those themes appear in ALLOWED_SOURCE_FACT_IDS - **do not** invent training domains.\n"
-        "- **Forbidden phrases:** applied depth, documented credential training, credentialed foundation strength, "
-        "platform record above, record above.\n"
+        "- **Forbidden phrases:** applied depth, documented credential training, quantitative methods training, "
+        "distributed systems training, credentialed foundation strength, platform record above, record above "
+        f"(full list in ``{SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER}``).\n"
         "- **Preferred shape (when fact_certs_001 is in the pool):** weave AWS / Databricks / FSA (and FSA "
         "actuarial rigor when the cert fact mentions Fellow of the Society of Actuaries) into governance and "
-        "commercialization balance; **do not** name causal inference, statistics, or distributed systems unless "
-        "those tokens appear verbatim in fact_certs_001 claim_text.\n"
+        "commercialization balance; **do not** name causal inference, statistics, quantitative methods training, "
+        "or distributed systems training unless those tokens appear verbatim in fact_certs_001 claim_text.\n"
         "- **Must not start** with **`Holds`**, **`Holds certifications`**, or a **bare credential inventory** "
         "(comma-separated cert labels only).\n"
         "- `Fellow of ...` may appear **inside** Sentence 5 when proved, but avoid leading with a thin **Holds ...** opener.\n\n"
@@ -556,6 +596,7 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
         allowed_source_fact_ids=ids,
         selected_role_fact_set_mode=srfs_mode,
         proof_pool_mode=proof_pool_mode,
+        skills_authority_metadata=pp if isinstance(pp, dict) else None,
     )
     if srfs_mode:
         appendix = format_srfs_role_adaptive_appendix(srfs)
@@ -577,11 +618,14 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
 
 __all__ = [
     "SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR",
+    "SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER",
+    "SRFS_FORBIDDEN_PHRASES_ALWAYS",
     "SRFS_STYLE_ONESHOT_MARKER",
     "SRFS_THREE_SENTENCE_EXEC_ARCH_MARKER",
     "SRFS_SENTENCE_RESP_SEP_MARKER",
     "build_executive_summary_assembly_input",
     "compile_executive_summary_prompt",
+    "format_srfs_forbidden_phrase_guardrails_block",
     "format_srfs_role_adaptive_appendix",
     "format_srfs_style_only_quality_oneshot_block",
     "load_executive_summary_template_slots",
