@@ -1,0 +1,178 @@
+{
+  "schema": "apps_rg.final_resume_aggregation_hardening_w1_w4_manifest.v1",
+  "generated_at_utc": "2026-05-18T23:23:00Z",
+  "status": "PASS",
+  "status_note": "Coherent rollup pin + assembly gates_all_pass; product ALLOW not claimed",
+  "waves": {
+    "W1": {
+      "modules": [
+        "apps_rg/runtime/aggregation/run_fingerprint.py",
+        "apps_rg/runtime/aggregation/preflight.py"
+      ],
+      "artifacts": [
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/orchestration_fingerprint.json"
+      ]
+    },
+    "W2": {
+      "modules": [
+        "apps_rg/runtime/aggregation/section_sealed_index.py"
+      ],
+      "fields_added": [
+        "section_digest",
+        "proof_pool_ref",
+        "proof_pool_digest",
+        "section_input_usage_ledger.json",
+        "x2_source_fact_pool_receipt.json",
+        "canonical_claim_ledger_v2.json"
+      ]
+    },
+    "W3": {
+      "modules": [
+        "apps_rg/runtime/aggregation/cross_section_x2.py"
+      ],
+      "artifacts": [
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/cross_section_x2_gate_outputs.json",
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/kept_removed_claims.json",
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/overlap_decisions.json"
+      ]
+    },
+    "W4": {
+      "receipt_id": "final_resume_assembly_receipt_v2",
+      "tests": [
+        "tests/unit/apps_rg/test_aggregation_run_fingerprint.py",
+        "tests/_apps_contract/test_apps_rg_aggregation_run_fingerprint.py",
+        "tests/_apps_contract/test_apps_rg_cross_section_x2.py"
+      ]
+    }
+  },
+  "files_changed": [
+    "apps_rg/runtime/aggregation/__init__.py",
+    "apps_rg/runtime/aggregation/_digest_utils.py",
+    "apps_rg/runtime/aggregation/run_fingerprint.py",
+    "apps_rg/runtime/aggregation/section_sealed_index.py",
+    "apps_rg/runtime/aggregation/preflight.py",
+    "apps_rg/runtime/aggregation/cross_section_x2.py",
+    "apps_rg/runtime/assembly/final_resume_assembler.py",
+    "apps_rg/runtime/assembly/final_resume_x2.py",
+    "tools/apps_rg/build_coherent_aggregation_rollup.py",
+    "tests/unit/apps_rg/test_aggregation_run_fingerprint.py",
+    "tests/_apps_contract/test_apps_rg_aggregation_run_fingerprint.py",
+    "tests/_apps_contract/test_apps_rg_cross_section_x2.py",
+    "tests/_apps_contract/test_final_resume_assembly.py",
+    "docs/reports/apps_rg/final_resume_aggregation_hardening_w1_w4.md",
+    "docs/reports/apps_rg/final_resume_aggregation_hardening_w1_w4_manifest.json"
+  ],
+  "commands": [
+    {
+      "cmd": "python -m compileall apps_rg -q",
+      "exit_code": 0
+    },
+    {
+      "cmd": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write",
+      "exit_code": 0
+    },
+    {
+      "cmd": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+      "exit_code": 0,
+      "gates_all_pass": true
+    },
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"aggregation or overlap or final_resume or claim_ledger or run_fingerprint\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 7
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and (aggregation or overlap or final_resume or claim_ledger or run_fingerprint or cross_section_x2)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 15
+    },
+    {
+      "cmd": "git diff HEAD -- agentic_core",
+      "exit_code": 0,
+      "output": "empty"
+    }
+  ],
+  "run_fingerprint_matrix": {
+    "orchestration_id": "c55e027a27c6f2a6d500fac33677bb77",
+    "same_date_prefix_coherent": true,
+    "jd_digest_coherent": "78ed93b3d9eb1bcb5685b3b01ea197c3b34ad3461166bc72f9a8e3318085fea2",
+    "briefing_digest_coherent": "4cb0168e0756ed098bfe9690a172bedaf826dbef579921cfdba7600ea1285acd"
+  },
+  "fail_closed_gates": [
+    "x2_preflight_required_proof_artifacts_present",
+    "x2_preflight_section_x2_all_pass",
+    "x2_preflight_pool_receipt_pass",
+    "x2_preflight_no_blocked_x3",
+    "x2_preflight_no_review_without_product_pass",
+    "x2_cross_section_repeated_metric"
+  ],
+  "agentic_core_diff_empty": true,
+  "explicit_non_claims": [
+    "product_allow_claimed is false on receipt v2",
+    "Structural and cross-section X2 are not product ALLOW",
+    "Does not call R1B section-level cache",
+    "JD and briefing remain targeting/context only"
+  ],
+  "files_changed_links": [
+    {
+      "path": "apps_rg/runtime/aggregation/__init__.py",
+      "markdown": "[__init__.py](apps_rg/runtime/aggregation/__init__.py)"
+    },
+    {
+      "path": "apps_rg/runtime/aggregation/_digest_utils.py",
+      "markdown": "[_digest_utils.py](apps_rg/runtime/aggregation/_digest_utils.py)"
+    },
+    {
+      "path": "apps_rg/runtime/aggregation/run_fingerprint.py",
+      "markdown": "[run_fingerprint.py](apps_rg/runtime/aggregation/run_fingerprint.py)"
+    },
+    {
+      "path": "apps_rg/runtime/aggregation/section_sealed_index.py",
+      "markdown": "[section_sealed_index.py](apps_rg/runtime/aggregation/section_sealed_index.py)"
+    },
+    {
+      "path": "apps_rg/runtime/aggregation/preflight.py",
+      "markdown": "[preflight.py](apps_rg/runtime/aggregation/preflight.py)"
+    },
+    {
+      "path": "apps_rg/runtime/aggregation/cross_section_x2.py",
+      "markdown": "[cross_section_x2.py](apps_rg/runtime/aggregation/cross_section_x2.py)"
+    },
+    {
+      "path": "apps_rg/runtime/assembly/final_resume_assembler.py",
+      "markdown": "[final_resume_assembler.py](apps_rg/runtime/assembly/final_resume_assembler.py)"
+    },
+    {
+      "path": "apps_rg/runtime/assembly/final_resume_x2.py",
+      "markdown": "[final_resume_x2.py](apps_rg/runtime/assembly/final_resume_x2.py)"
+    },
+    {
+      "path": "tools/apps_rg/build_coherent_aggregation_rollup.py",
+      "markdown": "[build_coherent_aggregation_rollup.py](tools/apps_rg/build_coherent_aggregation_rollup.py)"
+    },
+    {
+      "path": "tests/unit/apps_rg/test_aggregation_run_fingerprint.py",
+      "markdown": "[test_aggregation_run_fingerprint.py](tests/unit/apps_rg/test_aggregation_run_fingerprint.py)"
+    },
+    {
+      "path": "tests/_apps_contract/test_apps_rg_aggregation_run_fingerprint.py",
+      "markdown": "[test_apps_rg_aggregation_run_fingerprint.py](tests/_apps_contract/test_apps_rg_aggregation_run_fingerprint.py)"
+    },
+    {
+      "path": "tests/_apps_contract/test_apps_rg_cross_section_x2.py",
+      "markdown": "[test_apps_rg_cross_section_x2.py](tests/_apps_contract/test_apps_rg_cross_section_x2.py)"
+    },
+    {
+      "path": "tests/_apps_contract/test_final_resume_assembly.py",
+      "markdown": "[test_final_resume_assembly.py](tests/_apps_contract/test_final_resume_assembly.py)"
+    },
+    {
+      "path": "docs/reports/apps_rg/final_resume_aggregation_hardening_w1_w4.md",
+      "markdown": "[final_resume_aggregation_hardening_w1_w4.md](docs/reports/apps_rg/final_resume_aggregation_hardening_w1_w4.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/final_resume_aggregation_hardening_w1_w4_manifest.json",
+      "markdown": "[final_resume_aggregation_hardening_w1_w4_manifest.json](docs/reports/apps_rg/final_resume_aggregation_hardening_w1_w4_manifest.json)"
+    }
+  ]
+}

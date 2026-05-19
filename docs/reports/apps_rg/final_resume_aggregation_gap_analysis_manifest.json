@@ -1,0 +1,328 @@
+{
+  "schema": "apps_rg.final_resume_aggregation_gap_analysis_manifest.v1",
+  "generated_at_utc": "2026-05-18T23:16:00Z",
+  "status": "PARTIAL",
+  "status_note": "Structural assembly and final_resume_x2 PASS on current rollup; target contract gaps remain for cross-section overlap, aggregate claim/proof-pool refs, overlap receipt, and orchestration coherence.",
+  "canonical_aggregation_entrypoint": {
+    "command": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+    "module": "apps_rg.runtime.assembly.final_resume_assembler",
+    "orchestrator": "apps_rg.runtime.orchestrate_full_resume",
+    "rollup_module": "apps_rg.runtime.reports.generated_lane_rollup",
+    "package_x3_module": "apps_rg.runtime.package.resume_package_x3"
+  },
+  "aggregation_codepath_map": [
+    {
+      "step": 1,
+      "component": "generated_lane_rollup.py",
+      "output": "artifacts/apps_rg/runtime_proofs/generated_lane_rollup/generated_lane_rollup.json"
+    },
+    {
+      "step": 2,
+      "component": "locked_copy_manifest",
+      "output": "artifacts/apps_rg/runtime_proofs/locked_copy/locked_copy_manifest.json"
+    },
+    {
+      "step": 3,
+      "component": "final_resume_assembler.assemble_final_resume",
+      "outputs": [
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume.json",
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_manifest.json",
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_x2_gate_outputs.json",
+        "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_receipt.json"
+      ]
+    },
+    {
+      "step": 4,
+      "component": "resume_package_x3",
+      "output": "package disposition rollup (optional post-assembly)"
+    }
+  ],
+  "section_input_matrix": {
+    "generated_lanes": [
+      "headline",
+      "executive_summary",
+      "unify_narrative",
+      "unify_bullets",
+      "ibm_narrative",
+      "ibm_bullets",
+      "competencies"
+    ],
+    "locked_embedded": [
+      "insurtech",
+      "ey",
+      "early_career",
+      "education",
+      "certifications"
+    ],
+    "locked_invariants": [
+      "company_names",
+      "titles",
+      "locations",
+      "dates"
+    ],
+    "canonical_order": [
+      "headline",
+      "executive_summary",
+      "unify_narrative",
+      "unify_bullets",
+      "ibm_narrative",
+      "ibm_bullets",
+      "insurtech",
+      "ey",
+      "early_career",
+      "competencies",
+      "education",
+      "certifications"
+    ],
+    "rollup_resolution": "latest_successful_real_run.json per lane",
+    "embedded_shape": "generated_lane: l2_output_snapshot verbatim; locked: copied_text_exact"
+  },
+  "proof_source_matrix": {
+    "base_resume": {
+      "section_authority": "BASE_RESUME_SOURCE",
+      "aggregate_check": "canonical_base_resume_sha256 vs locked manifest",
+      "survival": "PASS"
+    },
+    "srfs_skills_ledger": {
+      "section_authority": "proof_pool_ref in usage ledger",
+      "aggregate_check": "ABSENT",
+      "survival": "PARTIAL embedded in L2 only"
+    },
+    "jd_text": {
+      "section_authority": "TARGETING_INPUT",
+      "aggregate_check": "ABSENT",
+      "survival": "jd_alignment in L2 snapshot only"
+    },
+    "briefing": {
+      "section_authority": "CONTEXT_INPUT",
+      "aggregate_check": "ABSENT",
+      "survival": "not in assembly refs"
+    },
+    "claim_ledger_files": {
+      "section_files": [
+        "claim_ledger.json",
+        "canonical_claim_ledger_v2.json"
+      ],
+      "aggregate_refs": "ABSENT top-level",
+      "survival": "PARTIAL in l2_output_snapshot.claim_ledger"
+    }
+  },
+  "targeting_inputs_proof": {
+    "jd_used_as_proof_at_section": false,
+    "jd_targeting_only_in_l2": true,
+    "briefing_non_proof_in_usage_ledger": true,
+    "aggregate_jd_digest_coherence_gate": "ABSENT",
+    "aggregate_briefing_digest_coherence_gate": "ABSENT"
+  },
+  "overlap_handling_matrix": {
+    "exact_duplicate": {
+      "aggregate": "ABSENT",
+      "section_local": "competencies dedupe only"
+    },
+    "near_duplicate": {
+      "aggregate": "ABSENT",
+      "section_local": "competencies near-duplicate collapse"
+    },
+    "same_claim_different_wording": {
+      "aggregate": "ABSENT"
+    },
+    "repeated_metric": {
+      "aggregate": "ABSENT"
+    },
+    "unsupported_carryover": {
+      "aggregate": "ABSENT",
+      "section_local": "bullet pool receipt FAIL on latest mocks per readiness audit"
+    },
+    "section_intent_conflict": {
+      "aggregate": "ABSENT",
+      "section_local": "unify_narrative n-gram; ibm L6 overlap notes"
+    }
+  },
+  "claim_provenance_survival_matrix": {
+    "section_hash": "PRESENT per section in final_resume",
+    "section_digest_named_field": "ABSENT",
+    "claim_ledger_in_l2_snapshot": "PRESENT",
+    "claim_ledger_sidecar_ref": "ABSENT in source_artifact_refs",
+    "source_fact_ids_in_ledger_rows": "PRESENT in embedded L2",
+    "proof_pool_ref_in_assembly": "ABSENT",
+    "section_input_usage_ledger_in_assembly": "ABSENT",
+    "x2_source_fact_pool_receipt_in_assembly": "ABSENT"
+  },
+  "final_aggregation_receipt_coverage": {
+    "present_fields": [
+      "receipt_id",
+      "emitted_at_utc",
+      "final_resume_json",
+      "final_resume_manifest_json",
+      "final_resume_x2_gate_outputs_json",
+      "final_resume_hash",
+      "gates_all_pass",
+      "failed_gate_ids"
+    ],
+    "missing_fields": [
+      "kept_claims",
+      "removed_claims",
+      "rewritten_claims",
+      "overlap_decisions",
+      "per_lane_claim_ledger_digests",
+      "cross_section_x2_gate_outputs",
+      "orchestration_fingerprint"
+    ]
+  },
+  "x2_x3_coverage_matrix": {
+    "final_resume_x2": {
+      "present": true,
+      "gates_passed_on_audit_run": true,
+      "scope": "structural provenance only"
+    },
+    "cross_section_x2": {
+      "present": false,
+      "blueprint": "apps_rg_post_section_aggregation_hardening_20260517.md"
+    },
+    "section_x2": {
+      "present": true,
+      "rollup_x2_failed": 0,
+      "latest_pointer_risk": "bullet lanes FAIL on May 18 mocks per readiness audit"
+    },
+    "assembler_x3_block_check": false,
+    "resume_package_x3": {
+      "present": true,
+      "not_run_in_audit": true
+    }
+  },
+  "test_coverage_matrix": {
+    "compileall_apps_rg": {
+      "exit_code": 0
+    },
+    "unit_pytest_filtered": {
+      "exit_code": 0,
+      "passed": 5,
+      "skipped": 6
+    },
+    "contract_pytest_filtered": {
+      "exit_code": 0,
+      "passed": 9,
+      "skipped": 1
+    },
+    "test_final_resume_assembly_full_module_under_filter": false,
+    "missing_test_modules": [
+      "test_apps_rg_aggregation_run_fingerprint.py",
+      "test_apps_rg_cross_section_x2.py"
+    ]
+  },
+  "runtime_proof": {
+    "command": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+    "exit_code": 0,
+    "gates_all_pass": true,
+    "final_resume_hash": "35e071b829603b3d5663a6156b86e9248687e6cfcca2f3c4b548d9da7f070d9a"
+  },
+  "r1b_w7_w12_closeout": {
+    "manifest": "docs/reports/apps_rg/r1b_w7_w12_closeout_manifest.json",
+    "status": "PASS",
+    "relevance_to_aggregation": "orthogonal semantic cache lifecycle; assembly does not invoke R1B section cache"
+  },
+  "gaps_p0": [
+    "No cross-section overlap/dedup at aggregate scope",
+    "final_resume_receipt lacks kept/removed/rewritten/overlap decision fields",
+    "source_artifact_refs omit usage ledger, pool receipt, canonical_claim_ledger_v2",
+    "Assembler does not gate on failing section pool receipt or blocked X3",
+    "No section_digest field distinct from section_hash"
+  ],
+  "gaps_p1": [
+    "No orchestration run fingerprint / same-run identity enforcement",
+    "apps_rg/runtime/aggregation/* blueprint modules not implemented",
+    "Thin pytest coverage under aggregation keyword filter",
+    "Dual SSOT: final_resume.json vs modular rg_output"
+  ],
+  "gaps_p2": [
+    "srfs_receipt_aggregator not wired to assembly",
+    "Package final_x3_code vs spine Exit nomenclature risk",
+    "R1B closeout does not close aggregation contract gaps"
+  ],
+  "recommended_next_prompt": "Implement apps_rg/runtime/aggregation/{run_fingerprint,section_sealed_index,cross_section_x2}.py per hardening blueprint; extend final_resume_receipt with overlap/claim fields; add final_resume_x2 gate for failing pool receipt; add contract tests; single-orchestration rollup regen before assembly proof. No agentic_core, no prompt changes, no X2 weakening.",
+  "agentic_core_diff_empty": true,
+  "explicit_non_claims": [
+    "Does not assert product ALLOW or runtime certification.",
+    "Does not assert latest pointer runs are assembly-safe when rollup references older runs.",
+    "Does not claim R1B cache satisfies aggregation contract.",
+    "Does not claim assembled resume is duplicate-free across sections.",
+    "JD and briefing are targeting-only; this audit does not re-run section X2 on assembled text for JD-as-proof."
+  ],
+  "files_changed": [
+    "docs/reports/apps_rg/final_resume_aggregation_gap_analysis.md",
+    "docs/reports/apps_rg/final_resume_aggregation_gap_analysis_manifest.json"
+  ],
+  "commands": [
+    {
+      "cmd": "python -m compileall apps_rg -q",
+      "exit_code": 0
+    },
+    {
+      "cmd": "pytest tests/unit/apps_rg -k \"aggregation or overlap or final_resume or claim_ledger\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 5,
+      "skipped": 6
+    },
+    {
+      "cmd": "pytest tests/_apps_contract -k \"apps_rg and (aggregation or overlap or final_resume or claim_ledger)\" -q --tb=short",
+      "exit_code": 0,
+      "passed": 9,
+      "skipped": 1
+    },
+    {
+      "cmd": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+      "exit_code": 0,
+      "gates_all_pass": true
+    },
+    {
+      "cmd": "git diff HEAD -- agentic_core",
+      "exit_code": 0,
+      "output": "empty"
+    }
+  ],
+  "artifacts": [
+    "docs/reports/apps_rg/final_resume_aggregation_gap_analysis.md",
+    "docs/reports/apps_rg/final_resume_aggregation_gap_analysis_manifest.json",
+    "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume.json",
+    "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_x2_gate_outputs.json",
+    "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_receipt.json"
+  ],
+  "upstream_reports": [
+    "docs/reports/apps_rg/apps_rg_post_section_aggregation_gap_20260517.md",
+    "docs/reports/apps_rg/apps_rg_post_section_aggregation_hardening_20260517.md",
+    "docs/reports/apps_rg/apps_rg_post_section_aggregation_readiness_audit.md",
+    "docs/reports/apps_rg/r1b_w7_w12_closeout_manifest.json"
+  ],
+  "files_changed_links": [
+    {
+      "path": "docs/reports/apps_rg/final_resume_aggregation_gap_analysis.md",
+      "markdown": "[final_resume_aggregation_gap_analysis.md](docs/reports/apps_rg/final_resume_aggregation_gap_analysis.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/final_resume_aggregation_gap_analysis_manifest.json",
+      "markdown": "[final_resume_aggregation_gap_analysis_manifest.json](docs/reports/apps_rg/final_resume_aggregation_gap_analysis_manifest.json)"
+    }
+  ],
+  "artifacts_links": [
+    {
+      "path": "docs/reports/apps_rg/final_resume_aggregation_gap_analysis.md",
+      "markdown": "[final_resume_aggregation_gap_analysis.md](docs/reports/apps_rg/final_resume_aggregation_gap_analysis.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/final_resume_aggregation_gap_analysis_manifest.json",
+      "markdown": "[final_resume_aggregation_gap_analysis_manifest.json](docs/reports/apps_rg/final_resume_aggregation_gap_analysis_manifest.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume.json",
+      "markdown": "[final_resume.json](artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_x2_gate_outputs.json",
+      "markdown": "[final_resume_x2_gate_outputs.json](artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_x2_gate_outputs.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_receipt.json",
+      "markdown": "[final_resume_receipt.json](artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_receipt.json)"
+    }
+  ]
+}
