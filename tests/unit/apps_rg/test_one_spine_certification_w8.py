@@ -1,0 +1,160 @@
+"""Wave 8: one-spine certification and proof eligibility receipts."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+from apps_rg.runtime.section_fec_bridge import wire_section_fec_bridge_for_lane
+from apps_rg.runtime.section_front_spine_bridge import (
+    activate_fixture_dev_bypass,
+    build_section_front_spine_from_args,
+    deactivate_fixture_dev_bypass,
+)
+from apps_rg.runtime.section_l2_lane_integration import (
+    finalize_section_l2_after_output,
+    prepare_section_l2_before_provider,
+)
+from apps_rg.runtime.section_one_spine_certification import (
+    ONE_SPINE_CERTIFICATION_RECEIPT_ARTIFACT,
+    PRODUCT_CERTIFICATION_RECEIPT_ARTIFACT,
+    PROOF_ELIGIBILITY_RECEIPT_ARTIFACT,
+    SectionOneSpineCertificationPreconditionError,
+    assert_certification_preconditions,
+    emit_section_one_spine_certification_artifacts,
+    inspect_one_spine_chain,
+)
+from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
+    finalize_section_runtime_exhaust_before_l6,
+)
+from tests.unit.apps_rg.test_one_spine_fec_bridge_w5a import W5A_SECTIONS, _args, _minimal_pool
+
+REPO = Path(__file__).resolve().parents[3]
+
+
+def _write_json(path: Path, doc: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+
+
+def _minimal_chain(tmp_path: Path, section_id: str) -> dict:
+    spine = build_section_front_spine_from_args(section_id=section_id, args=_args(), repo_root=REPO)
+    pool = _minimal_pool(section_id)
+    payload: dict = {"allowed_fact_ids": list(pool.allowed_fact_ids_ordered), "run_id": "w8"}
+    wire_section_fec_bridge_for_lane(
+        artifact_dir=tmp_path,
+        section_id=section_id,
+        front_spine=spine,
+        pool=pool,
+        runtime_payload=payload,
+    )
+    _write_json(
+        tmp_path / "compiled_prompt_artifact.json",
+        {
+            "evidence_contract_consumed": True,
+            "fec_bridge_mode": "section_fec_bridge",
+            "raw_proof_pool_direct_to_pa": False,
+        },
+    )
+    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="qwen_vllm")
+    _write_json(tmp_path / "provider_request.json", {})
+    _write_json(tmp_path / "provider_response.json", {})
+    _write_json(tmp_path / "l2_output.json", {})
+    _write_json(tmp_path / "x2_gate_outputs.json", [{"gate_id": "g1", "pass": True}])
+    _write_json(tmp_path / "x3_disposition.json", {"x3_code": "X3_BLOCK", "pass": False})
+    finalize_section_l2_after_output(tmp_path, section_id, payload)
+    finalize_section_exit_after_l2(tmp_path, section_id, payload)
+    finalize_section_runtime_exhaust_before_l6(tmp_path, section_id, payload, repo_root=REPO)
+    return payload
+
+
+@pytest.mark.parametrize("section_id", W5A_SECTIONS)
+def test_inspect_chain_complete_after_full_run(section_id: str, tmp_path: Path):
+    _minimal_chain(tmp_path, section_id)
+    chain = inspect_one_spine_chain(tmp_path)
+    assert chain["all_required_artifacts_present"] is True
+    assert chain["required_chain_complete"] is True
+
+
+def test_missing_artifact_blocks_chain_complete(tmp_path: Path):
+    _minimal_chain(tmp_path, "headline")
+    (tmp_path / "exit_disposition_receipt.json").unlink()
+    chain = inspect_one_spine_chain(tmp_path)
+    assert chain["required_chain_complete"] is False
+
+
+def test_certification_emits_three_receipts(tmp_path: Path):
+    payload = _minimal_chain(tmp_path, "headline")
+    proof_bundle = {
+        "proof_eligible": True,
+        "test_only_mock_provider": False,
+        "test_only_mock_judges": False,
+    }
+    emit_section_one_spine_certification_artifacts(
+        tmp_path,
+        section_id="headline",
+        runtime_payload=payload,
+        proof_bundle=proof_bundle,
+        runtime_generation_status="REAL_LLM",
+    )
+    assert (tmp_path / ONE_SPINE_CERTIFICATION_RECEIPT_ARTIFACT).is_file()
+    assert (tmp_path / PROOF_ELIGIBILITY_RECEIPT_ARTIFACT).is_file()
+    assert (tmp_path / PRODUCT_CERTIFICATION_RECEIPT_ARTIFACT).is_file()
+    cert = json.loads((tmp_path / ONE_SPINE_CERTIFICATION_RECEIPT_ARTIFACT).read_text(encoding="utf-8"))
+    assert cert["required_chain_complete"] is True
+    pe = json.loads((tmp_path / PROOF_ELIGIBILITY_RECEIPT_ARTIFACT).read_text(encoding="utf-8"))
+    assert pe["fixture_dev_only"] is False
+    assert pe["x3_allow_is_separate_from_chain"] is True
+    pc = json.loads((tmp_path / PRODUCT_CERTIFICATION_RECEIPT_ARTIFACT).read_text(encoding="utf-8"))
+    assert pc["full_apps_contract_suite_certified"] is False
+    assert pc["durable_write_certified"] is False
+
+
+def test_x3_block_still_chain_complete(tmp_path: Path):
+    payload = _minimal_chain(tmp_path, "unify_bullets")
+    chain = inspect_one_spine_chain(tmp_path)
+    assert chain["required_chain_complete"] is True
+    pe = json.loads(
+        emit_section_one_spine_certification_artifacts(
+            tmp_path,
+            section_id="unify_bullets",
+            runtime_payload=payload,
+            proof_bundle={"proof_eligible": False},
+            runtime_generation_status="REAL_LLM",
+        )["proof_eligibility_receipt"].read_text(encoding="utf-8")
+    )
+    assert pe["x3_code"] == "X3_BLOCK"
+    cert = json.loads((tmp_path / ONE_SPINE_CERTIFICATION_RECEIPT_ARTIFACT).read_text(encoding="utf-8"))
+    assert cert["x3_allow_required_for_chain"] is False
+
+
+def test_fixture_dev_blocks_product_certification(tmp_path: Path):
+    payload = _minimal_chain(tmp_path, "competencies")
+    activate_fixture_dev_bypass(non_product_certified=True)
+    try:
+        emit_section_one_spine_certification_artifacts(
+            tmp_path,
+            section_id="competencies",
+            runtime_payload=payload,
+            proof_bundle={"proof_eligible": True},
+            runtime_generation_status="REAL_LLM",
+        )
+        pc = json.loads((tmp_path / PRODUCT_CERTIFICATION_RECEIPT_ARTIFACT).read_text(encoding="utf-8"))
+        assert pc["product_certification"] == "NOT_CLAIMED"
+        assert pc["fixture_dev_only"] is True
+    finally:
+        deactivate_fixture_dev_bypass()
+
+
+def test_certification_bypass_raises(tmp_path: Path):
+    _minimal_chain(tmp_path, "headline")
+    chain = inspect_one_spine_chain(tmp_path)
+    with pytest.raises(SectionOneSpineCertificationPreconditionError):
+        assert_certification_preconditions(
+            {"certification_bypass_without_chain": True, "product_visible": True},
+            tmp_path,
+            chain=chain,
+            product_certification="ONE_SPINE_SECTION_CERTIFIED",
+        )

@@ -1,0 +1,201 @@
+{
+  "schema_version": "one_spine_guardrail_closeout_v1",
+  "generated_at_utc": "2026-05-19T15:02:29.228918+00:00",
+  "plan_slug": "one-canonical-spine",
+  "waves_completed": [
+    "1",
+    "2"
+  ],
+  "status": "PARTIAL",
+  "status_note": "PARTIAL — not PASS. Wave 1-2 inventory, guardrails, and targeted one-spine tests pass. Full tests/_apps_contract certification is NOT claimed: broad run aborted with no final summary (non-dispositive). Product certification NOT_CLAIMED.",
+  "suite_status": {
+    "ONE_SPINE_TARGETED_TESTS": "PASS",
+    "UNIT_GUARDRAILS": "PASS",
+    "FULL_APPS_CONTRACT_SUITE": "INCOMPLETE_ABORTED",
+    "PRODUCT_CERTIFICATION": "NOT_CLAIMED"
+  },
+  "accepted_evidence": {
+    "one_spine_contract_tests": "tests/_apps_contract/test_one_spine_section_path_contracts.py — 5/5 PASS (run separately)",
+    "unit_guardrail_tests": "tests/unit/apps_rg/test_one_spine_section_guardrails.py — 7/7 PASS (run separately)",
+    "combined_targeted_run": "12/12 PASS when run together",
+    "full_apps_contract_suite": "Attempted; aborted ~22 min at ~48% with visible F markers and no final summary — documented as incomplete; non-dispositive for product certification",
+    "full_unit_apps_rg_suite": "Attempted separately: 642 passed / 20 failed / 6 skipped — failures outside one-spine scope; not used as wave PASS gate",
+    "targeted_proof_scope": "One-spine kill-switch / guardrail tests are green and stand as targeted proof for this wave only"
+  },
+  "two_paths_found": true,
+  "canonical_spine_target": [
+    "U0",
+    "L1",
+    "L0",
+    "C0",
+    "PA",
+    "L2",
+    "Exit",
+    "UWG",
+    "L4",
+    "L6"
+  ],
+  "section_cli_status": {
+    "user_facing_command_preserved": true,
+    "classification": "lane_scoped_invocation_target",
+    "missing_canonical_contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "PromptEnvelope",
+      "CompiledPromptArtifact",
+      "L2ExecutionPacket",
+      "SealedL2Artifact",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "lane_local_artifacts": [
+      "runtime_payload.json",
+      "c03_graphrag_bound.json",
+      "final_evidence_contract_snapshot.json",
+      "selected_role_fact_set_ref.json",
+      "compiled_prompt.txt",
+      "compiled_prompt_artifact.json",
+      "provider_request.json",
+      "provider_response.json",
+      "l2_output.json",
+      "x2_gate_outputs.json",
+      "x1d_llm_judge_outputs.json",
+      "x3_disposition.json",
+      "section_metric_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "section_runtime_proof_bundle.json",
+      "artifact_inventory.json",
+      "section_input_usage_ledger.json"
+    ],
+    "srfs_proof_pool": "selected_role_fact_set / SRFS modes on other lanes",
+    "graph_proof_pool": "augmented_skills_graph + section_graph_binding_shim"
+  },
+  "guardrails_added": [
+    "apps_rg/runtime/section_spine_terminology.py",
+    "apps_rg/runtime/one_spine_inventory.py",
+    "c03_graphrag_bound enrich_section_graph_binding_doc metadata",
+    "executive_summary_proof_bundle spine_classification",
+    "input_authority_prompt_block truthful graph substrate line",
+    "tests/unit/apps_rg/test_one_spine_section_guardrails.py",
+    "tests/_apps_contract/test_one_spine_section_path_contracts.py"
+  ],
+  "renames_or_aliases": [
+    {
+      "path": "apps_rg/runtime/c03_graphrag_bound.py",
+      "current_name": "C0.3 GraphRAG binding",
+      "recommended_name": "section_graph_binding_shim (C0.3-compatible receipt only)",
+      "artifact_file": "c03_graphrag_bound.json",
+      "recommended_artifact_file": "section_graph_binding.json",
+      "changed_now": "metadata_fields_added",
+      "reason": "Static ledger neighbor expansion is not agentic_core graph traverse"
+    },
+    {
+      "path": "final_evidence_contract_snapshot.json",
+      "current_name": "final_evidence_contract_snapshot",
+      "recommended_name": "section_graph_binding_fec_snapshot.json",
+      "changed_now": false,
+      "reason": "Filename kept for compat; doc now marks fec_shape_only"
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/input_authority_prompt_block.py",
+      "current_name": "C0.3 GraphRAG-bound",
+      "recommended_name": "section graph binding (C0.3-shim)",
+      "changed_now": true,
+      "reason": "Prompt INPUT_AUTHORITY must not imply full C0.3"
+    },
+    {
+      "path": "apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py",
+      "current_name": "C0.3 GraphRAG live proof",
+      "recommended_name": "section graph binding live proof",
+      "changed_now": "docstring",
+      "reason": "Validator checks lane graph pool, not spine C0"
+    },
+    {
+      "path": "runtime_exhaust_bundle.json",
+      "current_name": "runtime_exhaust_bundle",
+      "recommended_name": "section_runtime_exhaust_bundle (spine alias documented in proof bundle)",
+      "changed_now": "spine_classification metadata in proof bundle builder",
+      "reason": "Same basename as spine contract but lane-local schema"
+    }
+  ],
+  "explicit_non_claims": [
+    "no claim of full canonical C0.2 dense retrieval unless Chroma/BGE dense path ran",
+    "no claim of full canonical C0.3 graph traverse unless RouteContract + ACL-bound traverse ran",
+    "no claim of canonical C0.5 FinalEvidenceContract unless spine FEC was emitted and consumed by spine PA",
+    "no claim of durable write unless UWG commit path executed",
+    "section runtime_exhaust_bundle.json is lane-local exhaust refs, not spine RuntimeExhaustBundle",
+    "no claim that all apps_rg contract tests pass",
+    "no claim of full canonical product certification",
+    "no claim that pre-existing contract failures were resolved",
+    "no claim that the section CLI is fully migrated into canonical C0/PA/L2/Exit unless the canonical contract chain is emitted"
+  ],
+  "open_gaps": [
+    "Broad tests/_apps_contract suite needs bounded follow-up triage: full run aborted ~22 minutes at ~48% with no final summary and many F markers (non-dispositive)",
+    "Route section lanes through U0 package validation → ValidatedRequest before proof pool",
+    "Emit spine RouteContract + call agentic_core c0_retrieve_apps_rg for grounded lanes",
+    "Replace section_graph_binding_shim with C0 output or wrap shim as explicit C0.3 sub-step under route",
+    "Consume spine FinalEvidenceContract in section PA (or merge section PA into spine PA)",
+    "Emit spine ExitDispositionReceipt + SealedL2Artifact; map section X3 to Exit only as read-only mirror",
+    "Optional UWG/L4 only when product requests durable write",
+    "Broad tests/_apps_contract suite needs bounded follow-up triage: full run aborted ~22 minutes at ~48% with no final summary and many F markers (non-dispositive)."
+  ],
+  "forbidden_files_touched": {
+    "agentic_core": false,
+    "explanation": "apps_rg-local only"
+  },
+  "tests_added_or_updated": [
+    "tests/unit/apps_rg/test_one_spine_section_guardrails.py",
+    "tests/_apps_contract/test_one_spine_section_path_contracts.py"
+  ],
+  "spine_classification_sample": {
+    "spine_mode": "section_lane_modular",
+    "invocation": "python -m apps_rg --section <lane>",
+    "is_second_spine": false,
+    "is_canonical_c0_path": false,
+    "observed_chain": [
+      "CLI",
+      "canonical_dispatch.section_branch",
+      "proof_pool_resolver",
+      "section_graph_binding_shim",
+      "section_PA",
+      "section_L2",
+      "section_X2",
+      "section_X1D",
+      "section_X3",
+      "section_L6_shadow"
+    ],
+    "canonical_target_chain": [
+      "U0",
+      "L1",
+      "L0",
+      "C0",
+      "PA",
+      "L2",
+      "Exit",
+      "UWG",
+      "L4",
+      "L6"
+    ],
+    "missing_canonical_contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "PromptEnvelope",
+      "CompiledPromptArtifact",
+      "L2ExecutionPacket",
+      "SealedL2Artifact",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "explicit_non_claims": [
+      "no claim of full canonical C0.2 dense retrieval unless Chroma/BGE dense path ran",
+      "no claim of full canonical C0.3 graph traverse unless RouteContract + ACL-bound traverse ran",
+      "no claim of canonical C0.5 FinalEvidenceContract unless spine FEC was emitted and consumed by spine PA",
+      "no claim of durable write unless UWG commit path executed",
+      "section runtime_exhaust_bundle.json is lane-local exhaust refs, not spine RuntimeExhaustBundle"
+    ]
+  }
+}

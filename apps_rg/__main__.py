@@ -329,6 +329,7 @@ def _prompt_jd_interactive() -> str:
 def _gather_interactive_fields(args: argparse.Namespace) -> None:
     """Prompt for JD + briefing and save under ``artifacts/apps_rg/cli_inputs/cli_<id>/``."""
     _reject_interactive_without_stdin_batch()
+    exec_summary_lane = str(getattr(args, "section", "") or "").strip().lower() == "executive_summary"
     if not str(args.target_company).strip():
         print("Target company: ", end="", flush=True)
         args.target_company = _cli_input().strip()
@@ -352,11 +353,14 @@ def _gather_interactive_fields(args: argparse.Namespace) -> None:
         print("Job posting title as listed on the JD (Enter to use target role):", flush=True)
         posting_title = _cli_input().strip() or str(args.target_role).strip()
 
-        print(
+        jd_prompt = (
             "\nJD — path to .txt/.json, paste JSON {{title, description}}, "
-            "or a one-line summary (Enter to skip):",
-            flush=True,
+            "or a one-line summary (required):"
+            if exec_summary_lane
+            else "\nJD — path to .txt/.json, paste JSON {{title, description}}, "
+            "or a one-line summary (Enter to skip):"
         )
+        print(jd_prompt, flush=True)
         jd_guess = _cli_input().strip()
         if jd_guess.strip():
             jd_path = _materialize_jd_file(
@@ -369,10 +373,13 @@ def _gather_interactive_fields(args: argparse.Namespace) -> None:
             print(f"  JD saved: {jd_path}", flush=True)
 
     if not str(args.manual_brief).strip():
-        print(
-            "\nResearch briefing — local file path, https URL, or short paste (optional, Enter to skip):",
-            flush=True,
+        brief_prompt = (
+            "\nResearch briefing — local file path, https URL, or short paste (required):"
+            if exec_summary_lane
+            else "\nResearch briefing — local file path, https URL, or short paste "
+            "(optional, Enter to skip):"
         )
+        print(brief_prompt, flush=True)
         brief_guess = _cli_input().strip()
         if brief_guess:
             brief_path = _materialize_brief_file(_session_dir(), brief_guess, _fetch_url_text)
@@ -719,11 +726,28 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         "competencies",
     )
     section_eff = str(getattr(args, "section", "") or "").strip().lower()
-    if section_eff == "executive_summary":
-        from apps_rg.runtime.section_cli_defaults import fill_executive_summary_cli_targets
 
+    if args.interactive:
+        _gather_interactive_fields(args)
+
+    if section_eff == "executive_summary":
+        from apps_rg.runtime.section_cli_defaults import (
+            collect_executive_summary_mandatory_missing,
+            validate_executive_summary_mandatory_inputs,
+        )
+
+        exec_missing = collect_executive_summary_mandatory_missing(args)
+        if exec_missing and args.cursor_prompts:
+            sentinel = (
+                f"CASCADE_WIZARD_SENTINEL: mandatory inputs missing: "
+                f"{', '.join(exec_missing)}. "
+                "Please provide target company, target role, JD (--jd), and briefing "
+                "(--manual-brief) to proceed."
+            )
+            print(sentinel, flush=True)
+            return 7
         try:
-            fill_executive_summary_cli_targets(args)
+            validate_executive_summary_mandatory_inputs(args)
         except SectionCliConfigError as exc:
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
             return 2
@@ -746,9 +770,6 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         )
         print(sentinel, flush=True)
         return 7
-
-    if args.interactive:
-        _gather_interactive_fields(args)
 
     if args.dry_run:
         print("DRY RUN: apps_rg pipeline validation complete (no LLM call).", flush=True)

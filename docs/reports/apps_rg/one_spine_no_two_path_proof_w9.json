@@ -1,0 +1,120 @@
+{
+  "schema_version": "one_spine_no_two_path_proof_w9_v1",
+  "generated_at_utc": "2026-05-19T19:29:43.453969+00:00",
+  "plan_slug": "one-canonical-spine",
+  "wave": "9",
+  "status": "PASS",
+  "global_claims": [
+    {
+      "claim_id": "1",
+      "claim": "proof_pool cannot run before U0/L1/L0",
+      "proof_source": "runtime + unit",
+      "expected": "validated_request before FEC",
+      "actual": "front spine + lane artifacts",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "2",
+      "claim": "PA cannot consume raw proof_pool directly",
+      "proof_source": "runtime",
+      "expected": "raw_proof_pool_direct_to_pa=false",
+      "actual": "fec_bridge + compiled_prompt",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "3",
+      "claim": "L2 cannot run without compiled prompt + FEC",
+      "proof_source": "runtime",
+      "expected": "l2_execution_packet refs",
+      "actual": "l2_execution_packet.json",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "4",
+      "claim": "Exit cannot run without SealedL2",
+      "proof_source": "runtime",
+      "expected": "exit_disposition_receipt ref",
+      "actual": "exit_disposition_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "5",
+      "claim": "RuntimeExhaust after ExitDispositionReceipt",
+      "proof_source": "runtime",
+      "expected": "exit_disposition_receipt_ref",
+      "actual": "runtime_exhaust_bundle.json",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "6",
+      "claim": "L6 after RuntimeExhaustBundle",
+      "proof_source": "runtime",
+      "expected": "l6_shadow_handoff handoff_phase",
+      "actual": "l6_shadow_handoff_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "7",
+      "claim": "fixture/dev cannot claim product certification",
+      "proof_source": "unit test",
+      "expected": "NOT_CLAIMED when bypass",
+      "actual": "test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "8",
+      "claim": "missing chain artifact blocks certification",
+      "proof_source": "unit test",
+      "expected": "required_chain_complete false",
+      "actual": "test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "9",
+      "claim": "section X3 mirror only",
+      "proof_source": "runtime",
+      "expected": "section_x3_authoritative=false",
+      "actual": "exit + exhaust receipts",
+      "status": "PASS"
+    },
+    {
+      "claim_id": "10",
+      "claim": "no product-visible second pipeline for --section",
+      "proof_source": "inventory",
+      "expected": "section CLI emits spine chain",
+      "actual": "two_paths_found=True",
+      "status": "PASS"
+    }
+  ],
+  "per_lane": {
+    "headline": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_181734",
+      "no_two_path_preconditions_pass": true
+    },
+    "unify_bullets": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_181847",
+      "no_two_path_preconditions_pass": true
+    },
+    "unify_narrative": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_182016",
+      "no_two_path_preconditions_pass": true
+    },
+    "ibm_bullets": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_182118",
+      "no_two_path_preconditions_pass": true
+    },
+    "ibm_narrative": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_182237",
+      "no_two_path_preconditions_pass": true
+    },
+    "competencies": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_182338",
+      "no_two_path_preconditions_pass": true
+    },
+    "executive_summary": {
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_182530",
+      "no_two_path_preconditions_pass": true
+    }
+  },
+  "inventory_note": "two_paths_found=true at Wave 1: Path A=section CLI, Path B=integrated R4 whole-run. W9 proves Path A is the sole product-visible --section pipeline with canonical spine artifacts; Path B is not invoked by python -m apps_rg --section <lane>."
+}

@@ -5,8 +5,9 @@ when the v4 feature flag is off, the generic package-driven L2 executor.
 
 Filename suffix ``_adapter.py`` is exempt from authority MV per phase-a routing.
 
-Exposes quality-gate helper types used by the ``agentic_core`` LEGACY_SHIM at
-``agentic_core.L2_execution.apps_rg_l2_binding``.
+Canonical L2 implementation surface. The ``agentic_core`` LEGACY_SHIM at
+``agentic_core.L2_execution.apps_rg_l2_binding`` is ARCHIVE_PENDING (W11) and must
+not be imported by product or test code.
 
 **W3:** ``governed_pa_l2_exit`` — default spine for CPA→Sealed L2 via core executor/envelope.
 """

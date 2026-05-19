@@ -1,0 +1,76 @@
+{
+  "schema_version": "one_spine_front_bridge_w3_v1",
+  "generated_at_utc": "2026-05-19T15:15:01.701502+00:00",
+  "plan_slug": "one-canonical-spine",
+  "wave": 3,
+  "status": "PASS",
+  "status_note": "Front-spine bridge enforced for product-visible proof_pool via load_section_proof_for_lane; kill switch enabled by default.",
+  "contracts_added_or_emitted": [
+    "ValidatedRequest",
+    "L1PlanContract",
+    "RouteContract"
+  ],
+  "product_visible_kill_switch": {
+    "enabled": true,
+    "env_disable": "APPS_RG_SECTION_FRONT_SPINE_KILL_SWITCH=0"
+  },
+  "section_cli_preserved": true,
+  "proof_pool_preconditions": {
+    "required_before_resolver": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract"
+    ],
+    "enforcement_module": "apps_rg/runtime/section_front_spine_bridge.py",
+    "entry_for_product_lanes": "apps_rg/runtime/proof_pool_lane_integration.py::load_section_proof_for_lane"
+  },
+  "fixture_dev_only_bypass_rule": {
+    "allowed": true,
+    "requires": "non_product_certified=True or tests/_apps_contract conftest activate_fixture_dev_bypass",
+    "product_certification": "NOT_CLAIMED when bypass active"
+  },
+  "observed_chain": [
+    "CLI",
+    "canonical_dispatch.section_branch",
+    "section_front_spine_bridge",
+    "U0",
+    "L1",
+    "L0",
+    "proof_pool_resolver",
+    "section_graph_binding_shim",
+    "section_PA",
+    "section_L2",
+    "section_X2",
+    "section_X1D",
+    "section_X3",
+    "section_L6_shadow"
+  ],
+  "missing_downstream_canonical_contracts": [
+    "FinalEvidenceContract",
+    "PromptEnvelope",
+    "CompiledPromptArtifact",
+    "L2ExecutionPacket",
+    "SealedL2Artifact",
+    "ExitDispositionReceipt",
+    "RuntimeExhaustBundle"
+  ],
+  "downstream_spine_lane_mode": "section_lane_modular",
+  "explicit_non_claims": [
+    "no claim of full canonical C0.2, C0.3, or C0.5",
+    "no claim of spine ExitDispositionReceipt or RuntimeExhaustBundle",
+    "no claim of full canonical product certification",
+    "no claim that all tests/_apps_contract pass",
+    "no claim that section CLI is fully migrated past L0"
+  ],
+  "open_gaps": [
+    "Wire spine C0 retrieve + FinalEvidenceContract before section PA for grounded lanes",
+    "Map section X3 to spine ExitDispositionReceipt",
+    "Bounded tests/_apps_contract triage (full suite still non-dispositive)"
+  ],
+  "forbidden_files_touched": {
+    "agentic_core": false
+  },
+  "tests_added": [
+    "tests/unit/apps_rg/test_one_spine_front_bridge_w3.py"
+  ]
+}

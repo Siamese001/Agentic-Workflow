@@ -1,0 +1,10 @@
+{
+  "schema_version": "section_front_spine_precondition_blocked_proof_v1",
+  "generated_at_utc": "2026-05-19T15:34:05.600834+00:00",
+  "product_visible": true,
+  "fixture_dev_only": false,
+  "non_product_certified": false,
+  "raised": true,
+  "error_type": "SectionFrontSpinePreconditionError",
+  "message": "proof_pool_resolver blocked: missing SectionFrontSpineBridge (ValidatedRequest, L1PlanContract, RouteContract required before proof_pool)"
+}

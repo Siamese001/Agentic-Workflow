@@ -1,0 +1,220 @@
+{
+  "schema_version": "one_spine_section_path_inventory_v1",
+  "generated_at_utc": "2026-05-19T15:02:29.228918+00:00",
+  "plan_slug": "one-canonical-spine",
+  "waves_completed": [
+    "1"
+  ],
+  "two_paths_found": true,
+  "canonical_spine_target": [
+    "U0",
+    "L1",
+    "L0",
+    "C0",
+    "PA",
+    "L2",
+    "Exit",
+    "UWG",
+    "L4",
+    "L6"
+  ],
+  "path_a_section_cli": {
+    "entry": "apps_rg/__main__.py",
+    "dispatch": "apps_rg/runtime/orchestration/canonical_dispatch.py::run_canonical_apps_rg_from_cli_primitives",
+    "branch": "section id in {executive_summary, headline, unify_bullets, ...} → _run_*_lane_from_cli",
+    "exemplar_lane": "executive_summary",
+    "exemplar_module": "apps_rg/runtime/sections/executive_summary_lane.py",
+    "observed_chain": [
+      "CLI",
+      "canonical_dispatch.section_branch",
+      "proof_pool_resolver",
+      "section_graph_binding_shim",
+      "section_PA",
+      "section_L2",
+      "section_X2",
+      "section_X1D",
+      "section_X3",
+      "section_L6_shadow"
+    ],
+    "proof_pool": "apps_rg/runtime/proof_pool_resolver.py → augmented_skills_graph (exec summary graph-only)",
+    "graph_binding": "apps_rg/runtime/c03_graphrag_bound.py → c03_graphrag_bound.json",
+    "pa": "apps_rg/runtime/dispatch/executive_summary_pa.py",
+    "l2": "section provider gateway (qwen_vllm / stub)",
+    "exit_surface": "section-local x3_disposition.json + x2_gate_outputs.json (not spine ExitDispositionReceipt)",
+    "uwg_l4": "not invoked",
+    "l6": "apps_rg/runtime/shadow/executive_summary_l6.py (shadow only)"
+  },
+  "path_b_canonical_r4": {
+    "entry": "apps_rg/__main__.py (no --section) OR dispatch_apps_rg_run",
+    "dispatch": "canonical_dispatch → run_integrated_r4_deterministic_pipeline",
+    "spine_module": "agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py",
+    "c0_pa_wiring": "agentic_core/runtime/entry/apps_rg_dispatch.py::run_ag2_retrieval_and_prompt (ValidatedRequest → c0_retrieve_apps_rg → pa_compose_apps_rg)",
+    "dense_c0_optional": "apps_rg/runtime/bindings/c0_binding.py (Chroma C0.2 when EMBEDDING_ENABLED + CHROMA_PERSIST_DIR)",
+    "observed_chain": [
+      "U0",
+      "L1",
+      "L0",
+      "C0",
+      "PA",
+      "L2",
+      "Exit",
+      "UWG",
+      "L4",
+      "L6"
+    ]
+  },
+  "contract_bypass_matrix": [
+    {
+      "contract_type": "ValidatedRequest",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "CLI args + runtime_payload.json (unvalidated spine contract)",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "L1PlanContract",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "none",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "RouteContract",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "none",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "FinalEvidenceContract",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "final_evidence_contract_snapshot.json (FEC-shaped snapshot only; fec_shape_only)",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "PromptEnvelope",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "compiled_prompt_artifact.json (section-local, not spine PromptEnvelope)",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "CompiledPromptArtifact",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "compiled_prompt_artifact.json (section CPA shape)",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "L2ExecutionPacket",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "l2_output.json + provider_* (section-local)",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "SealedL2Artifact",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "none",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "ExitDispositionReceipt",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "x3_disposition.json (section X3 aggregate, not spine Exit receipt)",
+      "canonical_r4_emits": true
+    },
+    {
+      "contract_type": "RuntimeExhaustBundle",
+      "section_cli_emits_canonical": false,
+      "section_cli_substitute": "runtime_exhaust_bundle.json (lane-local refs bundle)",
+      "canonical_r4_emits": true
+    }
+  ],
+  "section_cli_status": {
+    "user_facing_command_preserved": true,
+    "classification": "lane_scoped_invocation_target",
+    "missing_canonical_contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "PromptEnvelope",
+      "CompiledPromptArtifact",
+      "L2ExecutionPacket",
+      "SealedL2Artifact",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "lane_local_artifacts": [
+      "runtime_payload.json",
+      "c03_graphrag_bound.json",
+      "final_evidence_contract_snapshot.json",
+      "selected_role_fact_set_ref.json",
+      "compiled_prompt.txt",
+      "compiled_prompt_artifact.json",
+      "provider_request.json",
+      "provider_response.json",
+      "l2_output.json",
+      "x2_gate_outputs.json",
+      "x1d_llm_judge_outputs.json",
+      "x3_disposition.json",
+      "section_metric_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "section_runtime_proof_bundle.json",
+      "artifact_inventory.json",
+      "section_input_usage_ledger.json"
+    ],
+    "srfs_proof_pool": "selected_role_fact_set / SRFS modes on other lanes",
+    "graph_proof_pool": "augmented_skills_graph + section_graph_binding_shim"
+  },
+  "misnamed_c0_artifacts": [
+    {
+      "path": "apps_rg/runtime/c03_graphrag_bound.py",
+      "current_name": "C0.3 GraphRAG binding",
+      "recommended_name": "section_graph_binding_shim (C0.3-compatible receipt only)",
+      "artifact_file": "c03_graphrag_bound.json",
+      "recommended_artifact_file": "section_graph_binding.json",
+      "changed_now": "metadata_fields_added",
+      "reason": "Static ledger neighbor expansion is not agentic_core graph traverse"
+    },
+    {
+      "path": "final_evidence_contract_snapshot.json",
+      "current_name": "final_evidence_contract_snapshot",
+      "recommended_name": "section_graph_binding_fec_snapshot.json",
+      "changed_now": false,
+      "reason": "Filename kept for compat; doc now marks fec_shape_only"
+    },
+    {
+      "path": "apps_rg/runtime/dispatch/input_authority_prompt_block.py",
+      "current_name": "C0.3 GraphRAG-bound",
+      "recommended_name": "section graph binding (C0.3-shim)",
+      "changed_now": true,
+      "reason": "Prompt INPUT_AUTHORITY must not imply full C0.3"
+    },
+    {
+      "path": "apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py",
+      "current_name": "C0.3 GraphRAG live proof",
+      "recommended_name": "section graph binding live proof",
+      "changed_now": "docstring",
+      "reason": "Validator checks lane graph pool, not spine C0"
+    },
+    {
+      "path": "runtime_exhaust_bundle.json",
+      "current_name": "runtime_exhaust_bundle",
+      "recommended_name": "section_runtime_exhaust_bundle (spine alias documented in proof bundle)",
+      "changed_now": "spine_classification metadata in proof bundle builder",
+      "reason": "Same basename as spine contract but lane-local schema"
+    }
+  ],
+  "explicit_non_claims": [
+    "no claim of full canonical C0.2 dense retrieval unless Chroma/BGE dense path ran",
+    "no claim of full canonical C0.3 graph traverse unless RouteContract + ACL-bound traverse ran",
+    "no claim of canonical C0.5 FinalEvidenceContract unless spine FEC was emitted and consumed by spine PA",
+    "no claim of durable write unless UWG commit path executed",
+    "section runtime_exhaust_bundle.json is lane-local exhaust refs, not spine RuntimeExhaustBundle"
+  ],
+  "open_gaps": [
+    "Broad tests/_apps_contract suite needs bounded follow-up triage: full run aborted ~22 minutes at ~48% with no final summary and many F markers (non-dispositive)",
+    "Route section lanes through U0 package validation → ValidatedRequest before proof pool",
+    "Emit spine RouteContract + call agentic_core c0_retrieve_apps_rg for grounded lanes",
+    "Replace section_graph_binding_shim with C0 output or wrap shim as explicit C0.3 sub-step under route",
+    "Consume spine FinalEvidenceContract in section PA (or merge section PA into spine PA)",
+    "Emit spine ExitDispositionReceipt + SealedL2Artifact; map section X3 to Exit only as read-only mirror",
+    "Optional UWG/L4 only when product requests durable write"
+  ]
+}

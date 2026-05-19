@@ -1,0 +1,1095 @@
+{
+  "schema_version": "one_spine_certification_w8_all_lanes_v1",
+  "generated_at_utc": "2026-05-19T17:30:13.608951+00:00",
+  "plan_slug": "one-canonical-spine",
+  "wave": "8",
+  "status": "PASS",
+  "lanes_proven": [
+    "headline",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies",
+    "executive_summary"
+  ],
+  "lanes_not_proven": [],
+  "lane_summaries": {
+    "headline": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130",
+      "run_dir": "headline_20260519_172130",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": true,
+      "product_certification": "ONE_SPINE_SECTION_CERTIFIED",
+      "x3_code": "X3_ALLOW",
+      "blocker": ""
+    },
+    "unify_bullets": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247",
+      "run_dir": "unify_bullets_20260519_172247",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": false,
+      "product_certification": "NOT_CLAIMED",
+      "x3_code": "X3_BLOCK",
+      "blocker": ""
+    },
+    "unify_narrative": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415",
+      "run_dir": "unify_narrative_20260519_172415",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": false,
+      "product_certification": "NOT_CLAIMED",
+      "x3_code": "X3_BLOCK",
+      "blocker": ""
+    },
+    "ibm_bullets": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455",
+      "run_dir": "ibm_bullets_20260519_172455",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": true,
+      "product_certification": "ONE_SPINE_SECTION_CERTIFIED",
+      "x3_code": "X3_ALLOW",
+      "blocker": ""
+    },
+    "ibm_narrative": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614",
+      "run_dir": "ibm_narrative_20260519_172614",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": true,
+      "product_certification": "ONE_SPINE_SECTION_CERTIFIED",
+      "x3_code": "X3_ALLOW",
+      "blocker": ""
+    },
+    "competencies": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707",
+      "run_dir": "competencies_20260519_172707",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": true,
+      "product_certification": "ONE_SPINE_SECTION_CERTIFIED",
+      "x3_code": "X3_ALLOW",
+      "blocker": ""
+    },
+    "executive_summary": {
+      "status": "PASS",
+      "artifact_root": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846",
+      "run_dir": "exec_summary_20260519_172846",
+      "runtime_exit_code": 0,
+      "required_chain_complete": true,
+      "proof_eligible": true,
+      "product_certification": "ONE_SPINE_SECTION_CERTIFIED",
+      "x3_code": "X3_ALLOW",
+      "blocker": ""
+    }
+  },
+  "artifact_proof_matrix": [
+    {
+      "lane": "headline",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "True/chain_complete_and_lane_proof_bundle_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "ONE_SPINE_SECTION_CERTIFIED/chain_artifacts_and_proof_eligibility_pass",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "headline",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section headline --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260519_172130/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "False/lane_proof_bundle_not_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "NOT_CLAIMED/lane_proof_bundle_not_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section unify_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260519_172247/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "False/lane_proof_bundle_not_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "NOT_CLAIMED/lane_proof_bundle_not_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_narrative",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section unify_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260519_172415/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "True/chain_complete_and_lane_proof_bundle_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "ONE_SPINE_SECTION_CERTIFIED/chain_artifacts_and_proof_eligibility_pass",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_bullets",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section ibm_bullets --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_172455/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "True/chain_complete_and_lane_proof_bundle_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "ONE_SPINE_SECTION_CERTIFIED/chain_artifacts_and_proof_eligibility_pass",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "ibm_narrative",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section ibm_narrative --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260519_172614/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "True/chain_complete_and_lane_proof_bundle_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "ONE_SPINE_SECTION_CERTIFIED/chain_artifacts_and_proof_eligibility_pass",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "competencies",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section competencies --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260519_172707/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "1. All required chain artifacts exist",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_artifacts_present",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "2. Chain artifact upstream refs valid",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/one_spine_certification_receipt.json",
+      "fields_inspected": "all_required_refs_valid",
+      "expected": "true",
+      "actual": "True",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "3. one_spine_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/one_spine_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "OneSpineCertificationReceipt",
+      "actual": "OneSpineCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "4. required_chain_complete only when artifacts+refs pass",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/one_spine_certification_receipt.json",
+      "fields_inspected": "required_chain_complete",
+      "expected": "true iff present+refs",
+      "actual": "chain=True; present=True; refs=True",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "5. proof_eligibility_receipt emitted",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/proof_eligibility_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProofEligibilityReceipt",
+      "actual": "ProofEligibilityReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "6. proof_eligible justified",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/proof_eligibility_receipt.json",
+      "fields_inspected": "proof_eligible, proof_eligibility_reason",
+      "expected": "field present",
+      "actual": "True/chain_complete_and_lane_proof_bundle_eligible",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "7. fixture_dev_only=false on product run",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/proof_eligibility_receipt.json",
+      "fields_inspected": "fixture_dev_only",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "8. product_certification_receipt emitted",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/product_certification_receipt.json",
+      "fields_inspected": "contract_type",
+      "expected": "ProductCertificationReceipt",
+      "actual": "ProductCertificationReceipt",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "9. product_certification justified by chain",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/product_certification_receipt.json",
+      "fields_inspected": "product_certification, product_certification_reason",
+      "expected": "NOT_CLAIMED or ONE_SPINE_SECTION_CERTIFIED",
+      "actual": "ONE_SPINE_SECTION_CERTIFIED/chain_artifacts_and_proof_eligibility_pass",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "10. X3_ALLOW not required for chain",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/one_spine_certification_receipt.json",
+      "fields_inspected": "x3_allow_required_for_chain",
+      "expected": "false",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "11. durable_write_certified=false without UWG",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/product_certification_receipt.json",
+      "fields_inspected": "durable_write_certified",
+      "expected": "false unless UWG",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "12. full_apps_contract_suite_certified=false",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/product_certification_receipt.json",
+      "fields_inspected": "full_apps_contract_suite_certified",
+      "expected": "false unless suite passed",
+      "actual": "False",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "13. Kill switch (unit test missing artifact)",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/one_spine_certification_receipt.json",
+      "fields_inspected": "certification_kill_switch",
+      "expected": "blocks incomplete chain certification claim",
+      "actual": "see tests/unit/apps_rg/test_one_spine_certification_w8.py",
+      "status": "PASS"
+    },
+    {
+      "lane": "executive_summary",
+      "claim": "14. Fixture/dev non-certified",
+      "runtime_command": "python -m apps_rg --section executive_summary --target-company \"Unify Consulting\" --target-role \"SVP Engineering, Agentic AI Platforms\" --jd apps_rg/config/default_jd_targeting.txt --manual-brief apps_rg/config/default_targeting_briefing.txt --allow-non-allow-exit-zero",
+      "artifact_path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_172846/proof_eligibility_receipt.json",
+      "fields_inspected": "non_product_certified, fixture_dev_only",
+      "expected": "fixture_dev_only false on product run",
+      "actual": "False/False",
+      "status": "PASS"
+    }
+  ],
+  "proof_claims": [
+    "all 7 lanes emit one_spine_certification_receipt.json from runtime chain inspection",
+    "proof_eligibility_receipt.json justifies proof_eligible separately from X3_ALLOW",
+    "product_certification_receipt.json never claims full apps contract suite unless suite passed"
+  ],
+  "not_proven_claims": [],
+  "explicit_non_claims": [
+    "not durable write / UWG unless UWG artifacts exist",
+    "not full tests/_apps_contract certification unless full suite completed",
+    "not claim all lanes X3_ALLOW",
+    "not agentic_core-native transport unless actually used"
+  ],
+  "forbidden_files_touched": {
+    "agentic_core": false
+  },
+  "next_safe_wave": "Plan closeout: one-canonical-spine master receipt",
+  "blockers": []
+}

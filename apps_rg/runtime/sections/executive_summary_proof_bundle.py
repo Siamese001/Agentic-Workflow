@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from apps_rg.runtime.section_spine_terminology import section_lane_spine_classification
+
 _CANONICAL_PRODUCER = "apps_rg_canonical_section_runtime"
 
 
@@ -140,11 +142,15 @@ def build_runtime_exhaust_bundle(
         p = artifact_dir / name
         return _repo_rel(repo_root, p) if p.is_file() else None
 
+    spine = section_lane_spine_classification()
     return {
         "schema_version": "runtime_exhaust_bundle_v1",
         "section_id": "executive_summary",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "producer": _CANONICAL_PRODUCER,
+        "spine_classification": spine,
+        "lane_local_runtime_exhaust": True,
+        "claims_spine_runtime_exhaust_bundle": False,
         "runtime_terminal_boundary": "x3_exit_post_aggregation",
         "x3_code": x3.get("x3_code"),
         "x2_failed_gate_ids": list(failed_gate_ids),
@@ -175,11 +181,13 @@ def build_section_runtime_proof_bundle(
         "agentic_core_spine_proof.json",
         "integrated_runtime_artifact_manifest.json",
     ]
+    spine = section_lane_spine_classification()
     return {
         "schema_version": "section_runtime_proof_bundle_v1",
         "section_id": "executive_summary",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "producer": _CANONICAL_PRODUCER,
+        "spine_classification": spine,
         "proof_status": "INCOMPLETE",
         "missing_proof_surfaces": l7_surfaces,
         "certified": False,
@@ -208,16 +216,7 @@ def emit_executive_summary_post_x3_proof_artifacts(
         encoding="utf-8",
     )
 
-    exhaust = build_runtime_exhaust_bundle(
-        repo_root=repo_root,
-        artifact_dir=artifact_dir,
-        x3=x3d,
-        failed_gate_ids=failed,
-    )
-    (artifact_dir / "runtime_exhaust_bundle.json").write_text(
-        json.dumps(exhaust, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    # runtime_exhaust_bundle.json is emitted by section_runtime_exhaust_spine_receipt (Wave 7).
 
 
 def write_executive_summary_artifact_inventory(*, repo_root: Path, artifact_dir: Path) -> None:

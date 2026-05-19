@@ -246,9 +246,69 @@ def _run_executive_summary_lane_from_cli(
     """Section-only run: same artifacts as legacy dispatch; does not invoke ``dispatch_apps_rg_run``."""
     from apps_rg.runtime.sections import executive_summary_lane as lane
 
+    tc = str(target_company).strip()
+    tr = str(target_role).strip()
+    if not tc or not tr:
+        return {
+            "exit_status": "error",
+            "execution_status": "failed",
+            "outcome_authorized": False,
+            "error": "executive_summary requires --target-company and --target-role",
+            "x3_disposition": "",
+            "fault": "missing_targeting_inputs",
+            "artifact_dir": "",
+            "run_id": "",
+            "request_id": "",
+            "l7_how_trace_emitted": False,
+            "terminal_r5": False,
+        }
+
+    jd_legacy = str(jd).strip()
+    jd_ref = str(job_description_ref).strip()
+    jd_txt = str(job_description_text).strip()
+    if jd_legacy and not jd_ref and not jd_txt:
+        p = Path(jd_legacy)
+        if p.is_file():
+            jd_ref = jd_legacy
+        else:
+            jd_txt = jd_legacy
+
+    from apps_rg.runtime.briefing_resolution import BriefingResolutionError, resolve_briefing_for_lanes
+    from apps_rg.runtime.jd_resolution import JdResolutionError, resolve_jd_for_lanes
+
+    try:
+        jd_resolved = resolve_jd_for_lanes(
+            job_description_ref=jd_ref or None,
+            job_description_text=jd_txt or None,
+            target_company=tc,
+            target_role=tr,
+            require_run_specific=True,
+        )
+        brief_resolved = resolve_briefing_for_lanes(
+            briefing_artifact_ref=str(manual_brief).strip() or None,
+            require_run_specific=True,
+        )
+    except (JdResolutionError, BriefingResolutionError) as exc:
+        return {
+            "exit_status": "error",
+            "execution_status": "failed",
+            "outcome_authorized": False,
+            "error": str(exc),
+            "x3_disposition": "",
+            "fault": "missing_targeting_inputs",
+            "artifact_dir": "",
+            "run_id": "",
+            "request_id": "",
+            "l7_how_trace_emitted": False,
+            "terminal_r5": False,
+        }
+
+    jd_text = jd_resolved.description
+    briefing = brief_resolved.text
+
     raw_request = build_raw_request_for_r4(
-        target_company=target_company,
-        target_role=target_role,
+        target_company=tc,
+        target_role=tr,
         target_level=target_level,
         jd=jd,
         job_description_ref=job_description_ref,
@@ -258,17 +318,6 @@ def _run_executive_summary_lane_from_cli(
         source_resume_text=source_resume_text,
         generation_mode=generation_mode,
     )
-    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
-    jd_text = (
-        str(jp.get("description") or jp.get("title") or "").strip()
-    )
-    if not jd_text:
-        jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
-    if not str(briefing).strip():
-        from apps_rg.runtime.section_cli_defaults import default_targeting_briefing_text
-
-        briefing = default_targeting_briefing_text()
 
     eff_prov = _effective_lane_provider(lane_provider)
     from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source
@@ -284,11 +333,11 @@ def _run_executive_summary_lane_from_cli(
         x1d_judges=str(lane_x1d_judges),
         mock_judges=bool(lane_mock_judges),
         allow_test_mock_judges=bool(lane_allow_test_mock_judges),
-        target_title=str(target_role).strip() or lane.TARGET_TITLE_DEFAULT,
-        target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
+        target_title=tr,
+        target_company=tc,
         jd_text=jd_text,
         briefing=briefing,
-        target_role=str(target_role).strip() or None,
+        target_role=tr,
         selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )

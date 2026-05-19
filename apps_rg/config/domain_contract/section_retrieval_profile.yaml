@@ -76,7 +76,7 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]
