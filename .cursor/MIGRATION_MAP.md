@@ -1,4 +1,9 @@
 # Cursor to Cursor Migration Map
+
+> **W1 SSOT (2026-05-19):** Author new governance in `.cursor/rules/*.mdc` only.  
+> `.windsurf/rules/*.md` is a **read-only mirror** for legacy CI/budget reporting — see [.windsurf/rules/README.md](../.windsurf/rules/README.md).  
+> **W3 hooks (2026-05-19):** `afterAgentResponse` → single [`after_agent_governance_dispatch.py`](../.cursor/hooks/after_agent_governance_dispatch.py) (ADG + Author-Gate chain + Notion audit + in-process dispatch).
+
 ## Rule conversion
 | Original Cursor rule | Cursor rule | Trigger | alwaysApply | Globs | Description |
 |---|---|---|---:|---|---|

@@ -1,6 +1,6 @@
 ---
 name: pytest-mcp
-description: Test discovery, execution, coverage analysis, and pytest configuration inspection via the in-house pytest_mcp server. Invoke when the user asks to run tests, find tests, check coverage, inspect pytest config, or verify a code change against the test suite. Distinguishes pytest_mcp (structured tool surface) from raw pytest CLI via run_command. See sibling skill testing-framework for test-rigor invariants and ADG-backed scope selection.
+description: Test discovery, execution, coverage analysis, and pytest configuration inspection via the in-house pytest_mcp server. Invoke when the user asks to run tests, find tests, check coverage, inspect pytest config, or verify a code change against the test suite. Distinguishes pytest_mcp (structured tool surface) from raw pytest CLI via run_command. See sibling skill testing-framework for test-rigor invariants and.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §10
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §10 — Pytest MCP (2026-05-12, W4.P2).

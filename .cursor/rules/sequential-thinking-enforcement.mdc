@@ -10,6 +10,7 @@ alwaysApply: false
 
 # Structured Reasoning Threshold
 
+> **Tier map (W2 dedupe):** Invariants → **this rule**. Full phase procedure → `structured-reasoning` skill. Slash alias → `/structured-reasoning` workflow (thin pointer only).
 
 ## When Structured Reasoning is Required
 

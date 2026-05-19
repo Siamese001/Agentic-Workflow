@@ -1,12 +1,11 @@
 ---
 name: author-gate-ui-renderer
-description: Render a condensed, high-signal recommendation card before ask_user_question for Author-Gate decisions. Invoke AFTER author-gate-packet-builder emits the AUTHOR_GATE_PACKET block and BEFORE ask_user_question. Reads the emitted packet JSON and produces a compressed card showing the recommended option, confidence band, precedent verdict, "what would flip" top-2, blast radius, hotspot rank, and reason-code palette. Keeps reviewer attention focused on the ≤3 signals that change the decision.
+description: Render a condensed, high-signal recommendation card before ask_user_question for Author-Gate decisions. Invoke AFTER author-gate-packet-builder emits the AUTHOR_GATE_PACKET block and BEFORE ask_user_question. Reads the emitted packet JSON and produces a compressed card showing the recommended option, confidence band, precedent verdict, "what would flip" top-2, blast radius, hotspot rank, and reason-code palette.
 metadata:
   enforcement_layer: cursor
   enforcement_timing: before_ask_user_question
   enforcement_type: behavioural
 ---
-
 # Author-Gate UI Renderer
 
 **PURPOSE:** Compress the Author-Gate packet into a 6-line recommendation card the approver can scan in <5 seconds.

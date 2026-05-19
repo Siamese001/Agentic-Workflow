@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-05-19T18:00:00+00:00",
+  "PLAN_ID": "cursor-governance-two-tier-b4e8f2",
+  "STATUS": "PASS",
+  "POLICY_OPTION": "A",
+  "WAVES_COMPLETED": [
+    "W0",
+    "W1",
+    "W2",
+    "W3",
+    "W3R",
+    "W4",
+    "W5"
+  ],
+  "TIER_1_TOTAL_BYTES_FINAL": 18460,
+  "TIER_1_HEADROOM_BYTES_FINAL": 32740,
+  "TIER_1_THRESHOLD_BYTES": 51200,
+  "ALWAYS_APPLY_COUNT_FINAL": 4,
+  "ALWAYS_APPLY_RULES_FINAL": [
+    "000-agentic-core-operating-contract.mdc",
+    "001-cursor-runtime-seam-execution.mdc",
+    "002-pass-blocked-proof-contract.mdc",
+    "003-cursor-author-gate-hitl.mdc"
+  ],
+  "AGENTS_MD_BYTES_FINAL": 9179,
+  "ACTIVE_PLANS_FINAL": 10,
+  "ARCHIVED_PLANS_TOTAL": 490,
+  "ARCHIVE_FOLDER": ".cursor/plans/_archive/2026-05/",
+  "DUPLICATE_TRIPLES_BEFORE": 8,
+  "DUPLICATE_TRIPLES_AFTER": 0,
+  "HOOK_STRATEGY": "dispatcher",
+  "HOOKS_AFTER_AGENT_RESPONSE": [
+    "after_agent_governance_dispatch.py"
+  ],
+  "POST_AGENT_SCRIPTS_TOTAL": 41,
+  "HOOK_REQUIRED_COUNT": 17,
+  "SKILLS_TOTAL": 35,
+  "SKILLS_PASS": 31,
+  "SKILLS_WARN": 4,
+  "SKILLS_FAIL": 0,
+  "MCP_INTEGRATION_BYTES_BEFORE": 18264,
+  "MCP_INTEGRATION_BYTES_AFTER": 3989,
+  "ORPHAN_REFERENCES_BEFORE": 507,
+  "ORPHAN_REFERENCES_AFTER": 0,
+  "COMMANDS_RUN": [
+    {
+      "command": "python ops_scripts/ci/check_always_on_token_budget.py",
+      "exit_code": 0,
+      "scope": "in-plan"
+    },
+    {
+      "command": "python .cursor/scripts/check_cursor_optimized_config.py",
+      "exit_code": 0,
+      "scope": "in-plan"
+    },
+    {
+      "command": "python ops_scripts/ci/check_skill_description_quality.py",
+      "exit_code": 0,
+      "scope": "in-plan"
+    },
+    {
+      "command": "python ops_scripts/ci/check_mcp_sync_integrity.py",
+      "exit_code": 0,
+      "scope": "in-plan"
+    },
+    {
+      "command": "python ops_scripts/ci/check_ag_hook_wiring.py",
+      "exit_code": 0,
+      "scope": "in-plan"
+    },
+    {
+      "command": "python ops_scripts/ci/check_graph_layer_evidence.py",
+      "exit_code": 0,
+      "scope": "in-plan"
+    },
+    {
+      "command": "python .cursor/scripts/check_cursor_native_config.py --strict",
+      "exit_code": 1,
+      "scope": "out-of-plan",
+      "note": "pre-existing legacy Windsurf path/token references in rules and hooks"
+    },
+    {
+      "command": "python ops_scripts/ci/run_contract_gates.py",
+      "exit_code": 1,
+      "scope": "out-of-plan",
+      "note": "pre-existing check_10c_pilot_proof_evidence.py HEAD drift (EVIDENCE_PRESENT)"
+    },
+    {
+      "command": "git diff -- agentic_core apps_rg",
+      "exit_code": 0,
+      "note": "working tree has unrelated dirty files; W5 made no edits under these paths"
+    }
+  ],
+  "REMAINING_KNOWN_FAILURES": [
+    {
+      "gate": "ops_scripts/ci/check_10c_pilot_proof_evidence.py",
+      "via": "run_contract_gates.py",
+      "exit_code": 1,
+      "summary": "18+ 10C-REQ-* rows FAIL with status=EVIDENCE_PRESENT (pilot proof HEAD drift)",
+      "in_plan_scope": false
+    },
+    {
+      "gate": ".cursor/scripts/check_cursor_native_config.py --strict",
+      "exit_code": 1,
+      "summary": "Forbidden legacy Windsurf tokens/paths in .cursor/rules and hook scripts (mirror not deleted by design)",
+      "in_plan_scope": false
+    }
+  ],
+  "EVIDENCE_ARTIFACTS": {
+    "tier_inventory": "docs/reports/cursor/governance_tier_inventory.json",
+    "w2_dedupe": "docs/reports/cursor/governance_w2_dedupe_report.json",
+    "w3_hook_matrix": "docs/reports/cursor/governance_w3_hook_audit_matrix.json",
+    "w3_archive_manifest": "docs/reports/cursor/governance_w3_plan_archive_manifest.json",
+    "w3r_remediation": "docs/reports/cursor/governance_w3_remediation_receipt.json",
+    "w4_skill_hygiene": "docs/reports/cursor/governance_w4_skill_hygiene_report.json",
+    "closeout_md": "docs/reports/cursor/governance_two_tier_closeout.md",
+    "closeout_manifest": "docs/reports/cursor/governance_two_tier_closeout_manifest.json",
+    "plan_ssot": ".cursor/plans/cursor-governance-two-tier-b4e8f2.md"
+  },
+  "NOTION_SYNC": {
+    "status": "Completed",
+    "slug": "cursor-governance-two-tier-b4e8f2",
+    "receipt": "docs/reports/cursor/governance_notion_wave_sync_receipt.json",
+    "patch_script": "tools/notion/patch_cursor_governance_two_tier_completed.py"
+  },
+  "SESSION_FOLLOWUP_10C": {
+    "resync_script": "tools/requirements/resync_proof_bundle_git_heads.py",
+    "bundles_updated": 198,
+    "gate": "ops_scripts/ci/check_10c_pilot_proof_evidence.py --skip-pytest"
+  },
+  "EXPLICIT_NON_CLAIMS": [
+    "Full repository CI green not claimed (10C pilot gate fails)",
+    "Runtime RAG (anthropic-rag-gaps-7f3c2a) not executed",
+    ".windsurf/ mirror not deleted (frozen per W1)",
+    "agentic_core not modified by this plan",
+    "apps_rg runtime/product code not modified by this plan",
+    "10C pilot proof-evidence not remediated in W5",
+    "Windsurf native-config strict violations not remediated in W5",
+    "W4.3 learnings-loop writer deferred",
+    "Notion Plans DB row update not performed in W5 (operator follow-up)",
+    "Memory MCP entity writeback deferred (optional W5.1 follow-up)"
+  ],
+  "FORBIDDEN_FILES_TOUCHED": false,
+  "CONSOLIDATION_CLAIM": "Cursor governance two-tier consolidation (Option A) is COMPLETE for plan cursor-governance-two-tier-b4e8f2 scope only."
+}

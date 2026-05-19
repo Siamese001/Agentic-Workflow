@@ -1,12 +1,11 @@
 ---
 name: fortknox-evidence
-description: Runtime-certification evidence discipline — hostile verifier, atomic assertions, compiler-is-the-only-status-authority, mutation-rejection pairing, positive-control canary. Invoke for any task mentioning certification, runtime certification, signoff, evidence, attestation, proof bundle, `RTC-REQ-*`, `compile_requirement_signoff.py`, `verify_final_requirement_signoff_bundle.py`, or `generate_mutation_rejection_report.py`. Grounded in SLSA L3 / in-toto / Sigstore / Critic-Agent doctrine.
+description: Runtime-certification evidence discipline — hostile verifier, atomic assertions, compiler-is-the-only-status-authority, mutation-rejection pairing, positive-control canary. Invoke for any task mentioning certification, runtime certification, signoff, evidence, attestation, proof bundle, `RTC-REQ-*`, `compile_requirement_signoff.py`, `verify_final_requirement_signoff_bundle.py`, or.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: evidence_discipline
 ---
-
 # Fort Knox Evidence Skill
 
 In-house certification-evidence discipline. No upstream MCP surface — the integrity comes from deterministic scripts, schemas, and hashes.

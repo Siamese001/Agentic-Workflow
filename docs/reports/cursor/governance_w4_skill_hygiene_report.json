@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-05-19T13:45:00+00:00",
+  "plan_id": "cursor-governance-two-tier-b4e8f2",
+  "wave": "W4",
+  "STATUS": "PASS",
+  "SKILLS_TOTAL": 35,
+  "SKILLS_PASS": 31,
+  "SKILLS_FAIL": 0,
+  "SKILLS_WARN": 4,
+  "SKILLS_WARN_NAMES": [
+    "app-leakage-refactor",
+    "core-boundary-audit",
+    "scope-containment",
+    "u0-app-customization"
+  ],
+  "MCP_INTEGRATION_BEFORE_BYTES": 18264,
+  "MCP_INTEGRATION_AFTER_BYTES": 3989,
+  "SPLIT_FILES_CREATED": [
+    ".cursor/skills/mcp-integration/sections/01-filesystem-mcp.md",
+    ".cursor/skills/mcp-integration/sections/02-redis-cache.md",
+    ".cursor/skills/mcp-integration/sections/03-deepwiki.md",
+    ".cursor/skills/mcp-integration/sections/04-context7.md",
+    ".cursor/skills/mcp-integration/sections/05-playwright.md",
+    ".cursor/skills/mcp-integration/sections/06-vector-db.md",
+    ".cursor/skills/mcp-integration/sections/07-notion.md",
+    ".cursor/skills/mcp-integration/sections/08-tavily-research.md",
+    ".cursor/skills/mcp-integration/sections/09-otel-telemetry.md",
+    ".cursor/skills/mcp-integration/sections/10-pytest-mcp.md",
+    ".cursor/skills/mcp-integration/sections/11-gitkraken.md",
+    ".cursor/skills/mcp-integration/sections/12-memory-mcp.md",
+    ".cursor/skills/mcp-integration/sections/13-task-manager-mcp.md"
+  ],
+  "DESCRIPTION_RULES_ENFORCED": {
+    "desc_min_chars": 60,
+    "desc_max_chars": 420,
+    "when_trigger_required": true,
+    "body_duplication_warn_threshold": 0.55,
+    "mcp_integration_max_bytes": 8192
+  },
+  "INTENTIONAL_EXCEPTIONS": "ops_scripts/ci/baselines/skill_description_exceptions.json (empty)",
+  "TIER_1_TOTAL_BYTES": 18460,
+  "ALWAYS_APPLY_COUNT": 4,
+  "FILES_CHANGED": [
+    "ops_scripts/ci/check_skill_description_quality.py",
+    "ops_scripts/ci/baselines/skill_description_exceptions.json",
+    "ops_scripts/ci/run_contract_gates.py",
+    ".cursor/skills/mcp-integration/SKILL.md",
+    ".cursor/skills/mcp-integration/sections/",
+    "tools/cursor/trim_skill_descriptions_w4.py",
+    ".cursor/skills/*/SKILL.md (16 descriptions trimmed)"
+  ],
+  "COMMANDS_RUN": [
+    {
+      "command": "python ops_scripts/ci/check_skill_description_quality.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/ci/check_always_on_token_budget.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python .cursor/scripts/check_cursor_optimized_config.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/ci/check_mcp_sync_integrity.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/ci/check_ag_hook_wiring.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/ci/run_contract_gates.py",
+      "exit_code": 1,
+      "note": "pre-existing 10C pilot proof-evidence HEAD drift only; graph-layer + skill gates passed earlier in run"
+    },
+    {
+      "command": "python .cursor/scripts/check_cursor_native_config.py --strict",
+      "exit_code": 1,
+      "note": "pre-existing legacy Windsurf hook refs"
+    }
+  ],
+  "NON_CLAIMS": [
+    "W5 closeout not executed",
+    "Full two-tier consolidation not complete",
+    "runtime RAG not touched",
+    ".windsurf not deleted",
+    "agentic_core / apps_rg product runtime not modified by W4"
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 name: memory-mcp
-description: Persistent SQLite-backed knowledge graph for Cursor Agent — survives Cursor restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from Cursor's built-in create_memory and from vector_db (semantic search, not episodic recall). See sibling skill writeback-discipline for entity/observation shapes.
+description: Persistent SQLite-backed knowledge graph for Cursor Agent — survives Cursor restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from Cursor's built-in.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §12
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §12 — Memory MCP (2026-05-12, W4.P2).

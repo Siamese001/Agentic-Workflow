@@ -12,26 +12,13 @@ alwaysApply: false
 
 > **Packet shape SSOT**: `.cursor/schemas/author_gate_packet.schema.json`. This rule defines *when to fire* and *score discipline*; field-level shape defers to the schema.
 
-## The Pipeline (constitutional invariant — short form)
+## Pipeline (Tier 1 — do not duplicate here)
 
-When facing an author-gate decision point:
+When facing an author-gate decision point, follow **`.cursor/rules/003-cursor-author-gate-hitl.mdc`** (always-on). This rule adds emitter/schema enforcement, continuous-execution discipline, anti-pattern extensions, and calibration — not a second pipeline.
 
-1. **STOP** before action
-2. **Generate** all plausible candidates
-3. **Score** 0.00–1.00 (`confidence_score`)
-4. **Filter** below `surface_threshold` (0.72 prod / 0.60 bootstrap)
-5. **Dominance**: top ≥0.85 AND gap ≥0.12 → surface alone
-6. **Material distinctness**: collapse cosmetic variants
-7. **Surface 1–N options** via `ask_user_question` — analysis INSIDE description, not chat prose. Every option MUST satisfy the **four-requirement contract**:
-   - **Cursor Agent clickable** — options reach `ask_user_question` (not prose)
-   - **Confidence prefix** — `[confidence=0.NN]` or `[RECOMMENDED ⭐ confidence=0.NN]`
-   - **Tradeoff segment** — ` · trade-off: <≥20 chars>`
-   - **Leading-option star** — `⭐` on exactly one option (top surfaced score); label carries `⭐ Recommended —`
+**Four-requirement contract** (enforced on every surfaced option): clickable via `ask_user_question`; confidence prefix; ` · trade-off:` segment; exactly one `⭐` on the leading option.
 
-   **Pipeline Completion Invariant**: Every `AUTHOR_GATE_PACKET:` MUST be followed by `ask_user_question` in the **same response**. Enforced by `post_cursor_agent_author_gate_pipeline_audit.py` and `post_cursor_agent_ask_user_question_packet_audit.py`. **Forbidden**: packet without same-response ask; deferring to follow-up; relying on user manual trigger. **Bypass**: `AG_PIPELINE_AUDIT_BYPASS=1`.
-
-8. **Wait** for explicit user selection
-9. **Execute** chosen option; emit `DECISION_CAPTURED:` marker (refactor-class only) as **first plain-text line** of the response
+**Pipeline completion:** every `AUTHOR_GATE_PACKET:` MUST be followed by `ask_user_question` in the **same response** (`post_cursor_agent_author_gate_pipeline_audit.py`). **Bypass:** `AG_PIPELINE_AUDIT_BYPASS=1`.
 
 ## Canonical-emitter invariant
 

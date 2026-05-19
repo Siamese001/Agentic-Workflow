@@ -38,7 +38,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = ROOT / ".windsurf" / "plans"
+# Active-plan evaluation SSOT (W3 archive): top-level `.cursor/plans/*.md` only.
+PLANS_DIR = ROOT / ".cursor" / "plans"
+_ACTIVE_PLAN_EXCLUDE_NAMES = frozenset({"README.md", "CURSOR_RUNTIME_SEAM_TEMPLATE.md"})
 LOG_DIR = ROOT / "artifacts" / "windsurf"
 LOG_FILE = LOG_DIR / "graph_layer_violations.jsonl"
 BASELINE_FILE = ROOT / "ops_scripts" / "ci" / "baselines" / "graph_layer_evidence_baseline.json"
@@ -266,16 +268,42 @@ def _load_baseline() -> set[str]:
     return set(data.get("grandfathered_plans", []))
 
 
-def _plan_relpaths_on_disk() -> set[str]:
+def _plan_relpaths_on_disk(*, include_archive: bool = True) -> set[str]:
     """All ``*.md`` paths under canonical plan dirs, relative to repo root."""
     rels: set[str] = set()
     for base in _PLAN_INTEGRITY_ROOTS:
         if not base.is_dir():
             continue
         for p in base.rglob("*.md"):
-            if p.is_file():
-                rels.add(str(p.relative_to(ROOT)).replace("\\", "/"))
+            if not p.is_file():
+                continue
+            if not include_archive and "_archive" in p.parts:
+                continue
+            rels.add(str(p.relative_to(ROOT)).replace("\\", "/"))
     return rels
+
+
+def _baseline_entry_resolves(entry: str, existing_rel: set[str]) -> bool:
+    """True when a grandfathered path exists at listed path, alias, or under ``_archive/``."""
+    for alias in _grandfather_path_aliases(entry):
+        if alias in existing_rel:
+            return True
+    # W3 archive: `.cursor/plans/foo.md` may live at `.cursor/plans/_archive/YYYY-MM/foo.md`
+    for prefix in (".cursor/plans/", ".windsurf/plans/"):
+        if not entry.startswith(prefix):
+            continue
+        leaf = entry[len(prefix) :]
+        if leaf.startswith("_archive/"):
+            continue
+        name = Path(leaf).name
+        for base in _PLAN_INTEGRITY_ROOTS:
+            archive_root = base / "_archive"
+            if not archive_root.is_dir():
+                continue
+            for hit in archive_root.rglob(name):
+                if hit.is_file() and hit.name == name:
+                    return True
+    return False
 
 
 def _grandfather_path_aliases(rel: str) -> set[str]:
@@ -288,6 +316,18 @@ def _grandfather_path_aliases(rel: str) -> set[str]:
     elif rel.startswith(prefix_cc):
         aliases.add(prefix_ws + rel[len(prefix_cc) :])
     return aliases
+
+
+def _plan_is_grandfathered(baseline: set[str], rel: str) -> bool:
+    """True when ``rel`` is covered by a baseline entry (including archived relocations)."""
+    if baseline.intersection(_grandfather_path_aliases(rel)):
+        return True
+    name = Path(rel).name
+    existing = _plan_relpaths_on_disk(include_archive=True)
+    for entry in baseline:
+        if Path(entry).name == name and _baseline_entry_resolves(entry, existing):
+            return True
+    return False
 
 
 def _validate_baseline_integrity(baseline: set[str]) -> list[str]:
@@ -320,10 +360,10 @@ def _validate_baseline_integrity(baseline: set[str]) -> list[str]:
         except (OSError, json.JSONDecodeError) as exc:
             issues.append(f"baseline_parse_error — {type(exc).__name__}: {exc}")
 
-    # Orphan detection — every baseline entry must exist on disk under a plan root.
-    existing_rel = _plan_relpaths_on_disk()
+    # Orphan detection — baseline entry must exist (top-level, alias, or archived relocation).
+    existing_rel = _plan_relpaths_on_disk(include_archive=True)
     for entry in sorted(baseline):
-        if entry not in existing_rel:
+        if not _baseline_entry_resolves(entry, existing_rel):
             issues.append(f"baseline_orphan_entry — {entry!r} is grandfathered but no such plan exists")
 
     return issues
@@ -334,7 +374,11 @@ def main() -> int:
         print(f"[check_graph_layer_evidence] plans dir missing: {PLANS_DIR}")
         return 0  # Not blocking on missing dir — no plans to check
 
-    plans = sorted(p for p in PLANS_DIR.rglob("*.md") if p.is_file())
+    plans = sorted(
+        p
+        for p in PLANS_DIR.glob("*.md")
+        if p.is_file() and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
+    )
     if not plans:
         print("[check_graph_layer_evidence] no plans found — OK")
         return 0
@@ -358,7 +402,7 @@ def main() -> int:
     skipped_grandfathered = 0
     for idx, plan in enumerate(plans, 1):
         rel = str(plan.relative_to(ROOT)).replace("\\", "/")
-        if baseline.intersection(_grandfather_path_aliases(rel)):
+        if _plan_is_grandfathered(baseline, rel):
             skipped_grandfathered += 1
             continue
         print(f"  [{idx}/{len(plans)}] evaluating {plan.relative_to(ROOT)}")

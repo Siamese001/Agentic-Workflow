@@ -1,7 +1,11 @@
 ---
 description: |
-  P0/P1/P2 ADG burndown in plan waves — execution tone: no spoonfeeding; seam-first patch + proof. Pair with adg-analysis-procedures.mdc for the full hotspot protocol.
-alwaysApply: true
+  Apply when burning down P0/P1/P2 from plan waves, adg_violations, adg_p0_wave_plan, or artifacts/adg/ — seam-first patch + proof. Pair with adg-analysis-procedures.mdc.
+alwaysApply: false
+globs:
+  - artifacts/adg/**
+  - .cursor/plans/*adg*
+  - .cursor/plans/*burndown*
 ---
 
 # P-Band burndown waves — execution discipline

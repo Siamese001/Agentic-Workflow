@@ -281,6 +281,30 @@ DoD-5: Reports on disk
 
 ---
 
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Graph-only `executive_summary` proof is anchored on C0.3 GraphRAG + augmented-skills-graph authority (completed W1–W2). Graph-layer primitives cited for scope validation:
+
+| Primitive | Role |
+|-----------|------|
+| `mv_hotspot_centrality` | Confirms graph binding nodes are not orphan importers |
+| `mv_blast_radius` | Limits section-runtime edits to apps_rg overlay |
+| `mv_chokepoints` | Validates orchestration path through proof pool + Exit |
+| `flows_to` | C0.3 → section runtime → X2 gate chain |
+| `reads_from` | GraphRAG retrieval reads bound artifact only |
+| `v_p1_apps_rg_surface` | Apps overlay seam classification (inventory cross-ref) |
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node / seam | Archetype | ADG Surface | Notes |
+|------|-------------|-----------|-------------|-------|
+| 1 | `apps_rg/runtime/section_runtime/executive_summary` | ORCHESTRATOR | Execution Surface | Section CLI + lane |
+| 2 | `apps_rg/proof_pool/augmented_skills_graph` | STATE_NODE | State Surface | Graph-only proof pool |
+| 3 | `agentic_core/C0_context/*` (GraphRAG bind) | CENTRAL_DEPENDENCY | Observability Surface | C0.3 binding checks |
+| 4 | Exit / X3 disposition enforcer | SAFETY_GATEKEEPER | Security Surface | X3_ALLOW proof eligibility |
+
+---
+
 ## Notion Summary
 
 Retrospective plan registered 2026-05-19. All waves W1–W11 completed. Final status: **Completed**. Primary artifact: graph-only executive_summary live proof PASS with X3_ALLOW.

@@ -1,6 +1,6 @@
 ---
 name: playwright
-description: Browser automation, accessibility-tree snapshots, end-to-end UI verification, screenshots, network capture, and form filling via the Playwright MCP server. Invoke when the user asks to test a web flow, verify UI behavior, take a screenshot, capture network requests, automate browser actions, or run end-to-end checks against a live site. Distinguishes Playwright MCP's snapshot/click/fill/evaluate/screenshot surface from static HTTP fetching (use direct httpx in code or read_url_content for one-off fetches). Adapts the upstream Playwright skills (https://playwright.dev/agent-cli/skills) to the Cursor MCP architecture.
+description: Browser automation, accessibility-tree snapshots, end-to-end UI verification, screenshots, network capture, and form filling via the Playwright MCP server. Invoke when the user asks to test a web flow, verify UI behavior, take a screenshot, capture network requests, automate browser actions, or run end-to-end checks against a live site. Distinguishes Playwright MCP's snapshot/click/fill/evaluate/screenshot surface.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §5
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §5 — Playwright (2026-05-12, W4.P2).

@@ -1,47 +1,30 @@
-"""CI gate — enforce Anthropic two-tier compliance for always_on rules.
+"""CI gate — Anthropic two-tier Tier-1 budget (Cursor-native SSOT).
 
-Per Anthropic's "Architecture of Agentic RAG" (Apr 2026), knowledge files /
-always-on rules exceeding ~50 KB / 12,000 tokens trigger autonomous context
-compaction, where the model arbitrarily discards instructions to free space.
+Measures and enforces:
+- ``.cursor/rules/*.mdc`` with ``alwaysApply: true``
+- ``AGENTS.md``
 
-This gate sums the bytes of every `.cursor/rules/*.md` file with frontmatter
-`trigger: always_on` and fails the commit if the total exceeds the threshold.
+Reports separately (not summed into Tier-1 fail threshold):
+- ``.windsurf/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
 
-Threshold:
-- 51,200 bytes  (50 KB hard limit per Anthropic doctrine)
-- 12,800 tokens (≈ bytes / 4)
+Writes: ``docs/reports/cursor/governance_tier_inventory.json``
 
-Bypass: ALWAYS_ON_BUDGET_BYPASS=1 environment variable.
+Threshold: 51,200 bytes (~12,800 tokens). Bypass: ``ALWAYS_ON_BUDGET_BYPASS=1``.
 """
 
 from __future__ import annotations
 
 import os
-import re
 import sys
 from pathlib import Path
 
-THRESHOLD_BYTES = 51_200
-REPO_ROOT = Path(__file__).resolve().parents[2]
-RULES_DIR = REPO_ROOT / ".windsurf" / "rules"
-TRIGGER_RE = re.compile(r"^trigger:\s*(\w+)", re.MULTILINE)
-
-
-def _scan() -> tuple[int, list[tuple[int, str]]]:
-    total = 0
-    rows: list[tuple[int, str]] = []
-    for f in sorted(RULES_DIR.glob("*.md")):
-        try:
-            txt = f.read_text(encoding="utf-8")
-        except OSError:
-            continue
-        m = TRIGGER_RE.search(txt)
-        if m and m.group(1) == "always_on":
-            sz = len(txt.encode("utf-8"))
-            rows.append((sz, f.name))
-            total += sz
-    rows.sort(reverse=True)
-    return total, rows
+from governance_tier_measurement import (
+    THRESHOLD_BYTES,
+    build_inventory,
+    scan_windsurf_always_on_md,
+    tier1_cursor_total,
+    write_inventory,
+)
 
 
 def main() -> int:
@@ -52,33 +35,50 @@ def main() -> int:
         )
         return 0
 
-    total, rows = _scan()
-    print(f"always_on rules: {len(rows)}")
-    for sz, name in rows:
-        print(f"  {sz:>6}  {name}")
-    print(f"\nTOTAL: {total:,} bytes (~{total // 4:,} tokens)")
+    tier1_total, tier1_rows = tier1_cursor_total()
+    windsurf_rows = scan_windsurf_always_on_md()
+    windsurf_total = sum(r.bytes for r in windsurf_rows)
+
+    inventory_path = write_inventory(wave=os.environ.get("GOVERNANCE_INVENTORY_WAVE", "W0"))
+    print(f"[always-on-budget] inventory: {inventory_path}")
+
+    print("tier_1_cursor_native (alwaysApply .mdc + AGENTS.md):")
+    for row in tier1_rows:
+        print(f"  {row.bytes:>6}  {row.rel_path}")
+    print(
+        f"\nTIER_1_TOTAL: {tier1_total:,} bytes (~{tier1_total // 4:,} tokens)"
+    )
     print(f"Threshold: {THRESHOLD_BYTES:,} bytes ({THRESHOLD_BYTES // 4:,} tokens)")
 
-    if total > THRESHOLD_BYTES:
-        delta = total - THRESHOLD_BYTES
+    print("\nwindsurf_legacy_always_on (reported separately, not in Tier-1 sum):")
+    print(f"  files: {len(windsurf_rows)}")
+    for row in windsurf_rows:
+        print(f"  {row.bytes:>6}  {row.rel_path}")
+    print(f"  WINDSURF_ALWAYS_ON_TOTAL: {windsurf_total:,} bytes (~{windsurf_total // 4:,} tokens)")
+
+    if tier1_total > THRESHOLD_BYTES:
+        delta = tier1_total - THRESHOLD_BYTES
         pct = delta / THRESHOLD_BYTES * 100
         print(
-            f"\n[always-on-budget] FAIL: {delta:,} bytes over ({pct:.1f}% over)",
+            f"\n[always-on-budget] FAIL: Tier-1 {delta:,} bytes over ({pct:.1f}% over)",
             file=sys.stderr,
         )
         print(
-            "Anthropic doctrine: always_on >50 KB triggers context compaction.",
-            file=sys.stderr,
-        )
-        print(
-            "Demote a rule to trigger=model_decision or trim procedural detail "
-            "to a skill.",
+            "Demote alwaysApply rules or compress AGENTS.md; move prose to skills.",
             file=sys.stderr,
         )
         print("Bypass: ALWAYS_ON_BUDGET_BYPASS=1", file=sys.stderr)
         return 1
 
-    print(f"\n[always-on-budget] PASS ({THRESHOLD_BYTES - total:,} bytes under threshold)")
+    print(
+        f"\n[always-on-budget] PASS Tier-1 ({THRESHOLD_BYTES - tier1_total:,} bytes headroom)"
+    )
+    if windsurf_total > THRESHOLD_BYTES:
+        print(
+            f"[always-on-budget] WARN: windsurf legacy always_on alone is "
+            f"{windsurf_total:,} bytes (mirror; W1 will demote per Option A)",
+            file=sys.stderr,
+        )
     return 0
 
 

@@ -1,13 +1,14 @@
 ---
 name: author-gate-packet-builder
-description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime HITL (v30 step [5] / ADR-023). This skill consults precedent, constructs the AG-10 option shape with didactic fields + gold-star on the recommended option, and writes AUTHOR_GATE_PACKET (with HITL_PACKET legacy alias) that post_cursor_agent_author_gate_capture consumes. Third person, deterministic, invoked before ask_user_question.
+description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime HITL (v30 step [5] / ADR-023). This skill consults precedent, constructs the AG-10 option shape with didactic.
 metadata:
   enforcement_layer: cursor
   enforcement_timing: before_author_gate
   enforcement_type: behavioural
 ---
-
 # Author-Gate Packet Builder
+
+> **Tier map:** Tier-1 invariant pipeline → `003-cursor-author-gate-hitl.mdc`. This skill is procedural SSOT for packet emission. Workflow `/author-gate-decision-gate` is a thin alias only.
 
 **PURPOSE:** Turn ambiguous Author-Gate decisions into schema-valid, didactic packets.
 

@@ -1,6 +1,6 @@
 ---
 name: context7
-description: Up-to-date, versioned official documentation for external libraries, frameworks, SDKs, APIs, CLI tools, and cloud services via the Context7 MCP server. Invoke whenever the user asks about an external package's API syntax, configuration, version migration, library-specific debugging, setup instructions, or CLI usage — even well-known libraries like React, Next.js, Prisma, Express, Tailwind, Django, Spring Boot. Distinguishes Context7 (external library docs) from deepwiki (GitHub repo wiki) and adg_sqlite (this repo's own code). Adapts upstream Context7 (https://context7.com/docs/skills) to the Cursor MCP architecture.
+description: Up-to-date, versioned official documentation for external libraries, frameworks, SDKs, APIs, CLI tools, and cloud services via the Context7 MCP server. Invoke whenever the user asks about an external package's API syntax, configuration, version migration, library-specific debugging, setup instructions, or CLI usage — even well-known libraries like React, Next.js, Prisma, Express, Tailwind, Django, Spring Boot.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §4
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §4 — Context7 (2026-05-12, W4.P2).

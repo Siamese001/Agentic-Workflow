@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-05-19T20:00:00+00:00",
+  "plan_id": "cursor-governance-two-tier-b4e8f2",
+  "STATUS": "PASS",
+  "waves_synced": ["W0", "W1", "W2", "W3", "W3R", "W4", "W5"],
+  "ancillary_session_work": {
+    "10c_proof_bundle_head_resync": {
+      "tool": "tools/requirements/resync_proof_bundle_git_heads.py",
+      "files_updated": 198,
+      "note": "Post-W5; fixes P4b HEAD drift for check_10c_pilot_proof_evidence.py"
+    }
+  },
+  "notion": {
+    "slug": "cursor-governance-two-tier-b4e8f2",
+    "target_status": "Completed",
+    "patch_script": "tools/notion/patch_cursor_governance_two_tier_completed.py",
+    "wave_lifecycle_markers": "embedded in plan Notion Summary + emit-from-stdin"
+  },
+  "disk": {
+    "plan_ssot": ".cursor/plans/cursor-governance-two-tier-b4e8f2.md",
+    "closeout_md": "docs/reports/cursor/governance_two_tier_closeout.md",
+    "closeout_manifest": "docs/reports/cursor/governance_two_tier_closeout_manifest.json"
+  }
+}

@@ -6,7 +6,7 @@ alwaysApply: false
 
 <!-- Converted from `.cursor/rules/plan-update-enforcement.md`. Original Cursor trigger: `always_on`. -->
 
-> See `plan-lifecycle-procedures.md` for full procedural guidance on plan updates.
+> See `plan-governance` skill for full procedural guidance on plan updates.
 
 # Plan Update Enforcement — Core Invariant
 
@@ -28,10 +28,10 @@ AUTHORIZATION_DECISION: plan=<slug-6hex> decision=ACCEPTED|DEFERRED|SPLIT_TO_NEW
 
 | Topic | Location |
 |-------|----------|
-| Four-step discipline | `plan-lifecycle-procedures.md` §2 |
-| DISCOVERED_SCOPE marker | `plan-lifecycle-procedures.md` §2 |
-| SCOPE_EXPANSION marker | `plan-lifecycle-procedures.md` §2 |
-| Required plan updates | `plan-lifecycle-procedures.md` §2 |
+| Four-step discipline | `plan-governance` skill §2 |
+| DISCOVERED_SCOPE marker | `plan-governance` skill §2 |
+| SCOPE_EXPANSION marker | `plan-governance` skill §2 |
+| Required plan updates | `plan-governance` skill §2 |
 
 ## Bypass
 
@@ -41,4 +41,4 @@ AUTHORIZATION_DECISION: plan=<slug-6hex> decision=ACCEPTED|DEFERRED|SPLIT_TO_NEW
 
 ---
 
-**Core invariant preserved.** Full procedures moved to `plan-lifecycle-procedures.md` (W3.P3 2026-05-12).
+**Core invariant preserved.** Full procedures: `.cursor/skills/plan-governance/SKILL.md` (W2 governance dedupe).

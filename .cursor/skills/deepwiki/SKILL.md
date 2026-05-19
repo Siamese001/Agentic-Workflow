@@ -1,6 +1,6 @@
 ---
 name: deepwiki
-description: AI-powered structured documentation and Q&A for any third-party GitHub repository via the DeepWiki MCP server. Invoke when the user asks about an external GitHub project's architecture, file layout, how a specific feature is implemented in another codebase, or wants to ask a free-form question about a public repo. Distinguishes DeepWiki (third-party GitHub) from context7 (published library docs) and adg_sqlite (this repo's own code). Adapts the upstream DeepWiki MCP (https://github.com/deepwiki/deepwiki-mcp) for the Cursor MCP architecture.
+description: AI-powered structured documentation and Q&A for any third-party GitHub repository via the DeepWiki MCP server. Invoke when the user asks about an external GitHub project's architecture, file layout, how a specific feature is implemented in another codebase, or wants to ask a free-form question about a public repo. Distinguishes DeepWiki (third-party GitHub) from context7 (published library docs) and adg_sqlite (this.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §3
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §3 — DeepWiki (2026-05-12, W4.P2).

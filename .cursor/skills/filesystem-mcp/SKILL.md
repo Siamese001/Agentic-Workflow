@@ -1,6 +1,6 @@
 ---
 name: filesystem-mcp
-description: Filesystem operations — directory trees, multi-file reads, recursive search, write/move/edit — via the in-house filesystem MCP server. Invoke ONLY when native Cursor Agent file tools are insufficient — multi-file batch reads, full directory trees, or operations on directories outside the active workspace. For ordinary single-file reads, prefer native read_file. For ordinary single-file writes, prefer native edit/write_to_file. The filesystem MCP is the secondary path, not the default.
+description: Filesystem operations — directory trees, multi-file reads, recursive search, write/move/edit — via the in-house filesystem MCP server. Invoke ONLY when native Cursor Agent file tools are insufficient — multi-file batch reads, full directory trees, or operations on directories outside the active workspace. For ordinary single-file reads, prefer native read_file. For ordinary single-file writes, prefer native.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §1
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §1 — Filesystem MCP (2026-05-12, W4.P2).

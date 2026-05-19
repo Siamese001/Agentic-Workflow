@@ -1,12 +1,11 @@
 ---
 name: adg-sqlite
-description: AST Dependency Graph analysis — node lookup by ID/file/layer, edge fan-in/fan-out, layer violations, P0 wave plans, snapshot health — via the in-house adg_sqlite MCP server. Invoke for ANY dependency, import, consumer, reference, blast-radius, or who-uses-X / what-depends-on-Y query. Distinguishes ADG MCP (structural code analysis) from grep_search (FORBIDDEN for deps) and from runtime ADG (otel_mcp). Wraps the canonical SQLite snapshot at artifacts/adg/adg_indexed_<ts>.sqlite. See sibling skill graph-analysis for the broader retrieval-tool decision tree.
+description: AST Dependency Graph analysis — node lookup by ID/file/layer, edge fan-in/fan-out, layer violations, P0 wave plans, snapshot health — via the in-house adg_sqlite MCP server. Invoke for ANY dependency, import, consumer, reference, blast-radius, or who-uses-X / what-depends-on-Y query. Distinguishes ADG MCP (structural code analysis) from grep_search (FORBIDDEN for deps) and from runtime ADG (otel_mcp). Wraps the.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
 ---
-
 # ADG SQLite Skill
 
 In-house MCP — no upstream vendor. The canonical static dependency graph for this repo.

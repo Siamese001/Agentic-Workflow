@@ -8,7 +8,9 @@ alwaysApply: false
 
 # ADG Analysis Procedures
 
-> Procedural companion to `adg-canonical-invariants.md` (always-on invariants).  
+> **Tier map (W2 dedupe):** Invariants → `adg-canonical-invariants.mdc`, `adg-graph-layer-enforcement.mdc`. On-demand procedures → **this rule** + `adg-p-band-burn-down-discipline.mdc` (globs). Tool routing → `adg-sqlite` + `graph-analysis` skills. Workflow aliases → `/adg-repair-loop`, `/adg-test-triage-gate` (no duplicate bodies). Legacy mirror → `.windsurf/rules/` (read-only).
+
+> Procedural companion to `adg-canonical-invariants.mdc`.  
 > **ADG SQLite = canonical truth; Redis = hot projection; artifacts = pre-computed analyses.**
 
 ---

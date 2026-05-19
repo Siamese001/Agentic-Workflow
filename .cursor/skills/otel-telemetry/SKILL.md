@@ -1,6 +1,6 @@
 ---
 name: otel-telemetry
-description: OpenTelemetry traces, anomaly detection, policy decisions, healing chain inspection, runtime ADG ingest, and per-agent span analysis via the in-house otel_mcp server. Invoke when the user asks about runtime behavior — traces, spans, anomalies, policy decisions, agent invocation history, healing chains, or when telemetry must be ingested into the runtime ADG. Distinguishes runtime ADG (otel_mcp — what happened at runtime) from static ADG (adg_sqlite — what the code structure is). Do not conflate the two.
+description: OpenTelemetry traces, anomaly detection, policy decisions, healing chain inspection, runtime ADG ingest, and per-agent span analysis via the in-house otel_mcp server. Invoke when the user asks about runtime behavior — traces, spans, anomalies, policy decisions, agent invocation history, healing chains, or when telemetry must be ingested into the runtime ADG. Distinguishes runtime ADG (otel_mcp — what happened at.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §9
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §9 — OTel Telemetry (2026-05-12, W4.P2).

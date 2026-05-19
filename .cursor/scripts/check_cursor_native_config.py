@@ -7,7 +7,15 @@ ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT.parent
 TEXT_EXTS = {'.md', '.mdc', '.txt', '.json', '.py', '.js', '.ps1', '.yaml', '.yml', '.toml', '.ini', '.sql', '.marker'}
 DEFAULT_LEGACY_TOKENS = ['Cursor Agent', 'Cursor', 'Cursor', '.cursor', 'post_cursor_agent', 'pre_cursor_agent', 'mcp.json']
-CURSOR_HOOK_EVENTS = {'beforeSubmitPrompt', 'beforeShellExecution', 'beforeMCPExecution', 'beforeReadFile', 'afterFileEdit', 'stop'}
+CURSOR_HOOK_EVENTS = {
+    'beforeSubmitPrompt',
+    'beforeShellExecution',
+    'beforeMCPExecution',
+    'beforeReadFile',
+    'afterFileEdit',
+    'afterAgentResponse',
+    'stop',
+}
 LEGACY_HOOK_EVENTS = {'pre_read_code','pre_run_command','pre_write_code','post_write_code','post_run_command','post_cursor_agent_response','pre_user_prompt','pre_mcp_tool_use','post_mcp_tool_use'}
 
 
@@ -52,9 +60,12 @@ def check():
     failures = []
     warnings = []
 
-    # Active legacy token scan.
+    # Active legacy token scan (config/scripts only — plans may cite Windsurf historically; W3 archives).
     for path in ROOT.rglob('*'):
         if not path.is_file() or is_allowed(path, allowed_paths):
+            continue
+        rel_path = rel(path)
+        if rel_path.startswith('.cursor/plans/'):
             continue
         text = read_text(path)
         if text is None:

@@ -1,0 +1,481 @@
+{
+  "generated_at": "2026-05-19T13:22:53.951911+00:00",
+  "plan_id": "cursor-governance-two-tier-b4e8f2",
+  "wave": "W3A",
+  "hook_strategy": "dispatcher",
+  "hooks_json_after_agent_response": [
+    "after_agent_governance_dispatch.py"
+  ],
+  "post_agent_scripts_total": 41,
+  "counts": {
+    "hook_required": 17,
+    "ci_required": 0,
+    "manual_only": 12,
+    "obsolete_candidate": 12,
+    "duplicate_candidate": 3
+  },
+  "matrix": [
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_adg_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": "ops_scripts/ci/run_contract_gates.py (AG/ADG artifact gates)",
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_adr_registry_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "Notion ADR registry archived 2026-05-02; capture optional",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_ag_queue_drain_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_ag_queue_seed_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_ask_user_question_packet_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": "ops_scripts/ci/run_contract_gates.py (AG/ADG artifact gates)",
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "superseded by capture + miss_detector + schema/ui audits",
+      "duplicate_overlap_refs": [
+        "post_cursor_agent_author_gate_capture.py",
+        "post_cursor_agent_author_gate_miss_detector.py"
+      ],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": "ops_scripts/ci/run_contract_gates.py (AG/ADG artifact gates)",
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_miss_detector.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": "ops_scripts/ci/run_contract_gates.py (AG/ADG artifact gates)",
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_pipeline_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": "ops_scripts/ci/run_contract_gates.py (AG/ADG artifact gates)",
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_schema_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_suite.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "orchestration duplicate of individual AG audits",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_author_gate_ui_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": "ops_scripts/ci/run_contract_gates.py (AG/ADG artifact gates)",
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_cleanup.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "native handler in dispatch",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_deferred_scope_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_dispatch.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_fortknox_integrity_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_grep_budget_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "native handler in dispatch",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_heartbeat.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "native handler in dispatch; not standalone hook",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_long_command_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_mcp_hygiene_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_mcp_orphan_reap.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_mcp_preflight_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_next_step_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_next_step_miss_detector.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_notion_plan_identity_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [
+        "post_cursor_agent_notion_plans_status_audit.py"
+      ],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_notion_plans_status_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "superseded by unified_notion_status_auditor in governance hook",
+      "duplicate_overlap_refs": [
+        "tools/notion/unified_notion_status_auditor.py"
+      ],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plan_complete_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "CI + lifecycle capture cover completion",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plan_creation_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "overlap plan_registration_capture + CI plan gates",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plan_evidence_gate.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plan_lifecycle_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plan_registration_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plan_scope_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_plans_dup_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "advisory; manual or periodic CI",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_read_budget_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "native handler in dispatch",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_resource_budget_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_router_decision_audit.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_scope_drift_detector.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_token_telemetry.py",
+      "current_hook_status": "not_in_after_agent_chain",
+      "recommended_disposition": "obsolete_candidate",
+      "reason": "native handler in dispatch",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": "retained_unreachable_ok_w3"
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_wave_completion_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "manual_only",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": null,
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    },
+    {
+      "script_path": ".cursor/scripts/post_cursor_agent_writeback_audit.py",
+      "current_hook_status": "wired_via_governance_dispatch",
+      "recommended_disposition": "hook_required",
+      "reason": "governance W3 matrix classification",
+      "duplicate_overlap_refs": [],
+      "required_trigger": "afterAgentResponse",
+      "ci_command": null,
+      "deletion_status": "not_deleted_w3",
+      "non_claim": null
+    }
+  ],
+  "explicit_non_claims": [
+    "no post_cursor_agent scripts deleted in W3",
+    "legacy after_agent_* hook files retained but unwired from hooks.json"
+  ]
+}

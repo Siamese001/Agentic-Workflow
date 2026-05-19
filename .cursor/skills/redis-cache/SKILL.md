@@ -1,6 +1,6 @@
 ---
 name: redis-cache
-description: Redis cache inspection — health, key scanning, TTL checks, namespace stats, hash/string/list/zset reads, bounded namespace flushing — via the in-house redis MCP server. Invoke when the user asks about Redis cache state, ADG hot-cache status, coordination fabric keys, key expiry, or needs to invalidate a specific cache namespace. Distinguishes Redis MCP (cache state) from adg_sqlite (canonical truth). Redis is the hot projection; SQLite is the source of truth.
+description: Redis cache inspection — health, key scanning, TTL checks, namespace stats, hash/string/list/zset reads, bounded namespace flushing — via the in-house redis MCP server. Invoke when the user asks about Redis cache state, ADG hot-cache status, coordination fabric keys, key expiry, or needs to invalidate a specific cache namespace. Distinguishes Redis MCP (cache state) from adg_sqlite (canonical truth). Redis is the.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §2
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §2 — Redis Cache (2026-05-12, W4.P2).

@@ -1,6 +1,6 @@
 ---
 name: task-manager-mcp
-description: Structured task decomposition, status tracking, and lessons-learned capture via the in-house task_manager MCP server. Invoke ONLY when the user explicitly requests tracked multi-step work — "track this as tasks", "decompose this into subtasks", "create a task for X". Do NOT auto-invoke for ordinary multi-step work; that's what the structured-reasoning skill (SR_PLAN/SR_EXECUTE) is for. The task manager is for durable, queryable task state across sessions.
+description: Structured task decomposition, status tracking, and lessons-learned capture via the in-house task_manager MCP server. Invoke ONLY when the user explicitly requests tracked multi-step work — "track this as tasks", "decompose this into subtasks", "create a task for X". Do NOT auto-invoke for ordinary multi-step work; that's what the structured-reasoning skill (SR_PLAN/SR_EXECUTE) is for. The task manager is for.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §13
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §13 — Task Manager MCP (2026-05-12, W4.P2).

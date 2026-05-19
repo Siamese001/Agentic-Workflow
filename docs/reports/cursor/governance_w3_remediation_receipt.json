@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-05-19T13:45:00+00:00",
+  "plan_id": "cursor-governance-two-tier-b4e8f2",
+  "wave": "W3R",
+  "STATUS": "PASS",
+  "ROOT_CAUSE": "check_graph_layer_evidence.py baseline integrity required each grandfathered path to exist as a top-level .cursor/plans/*.md file. W3 moved ~490 plans to .cursor/plans/_archive/2026-05/, so baseline entries still pointed at top-level paths that no longer exist (baseline_orphan_entry). Active-plan evaluation also used .windsurf/plans instead of .cursor/plans SSOT.",
+  "ORPHAN_REFERENCE_COUNT_BEFORE": 507,
+  "ORPHAN_REFERENCE_COUNT_AFTER": 0,
+  "FILES_CHANGED": [
+    "ops_scripts/ci/check_graph_layer_evidence.py",
+    ".cursor/plans/l2-rationalization-waves-c8e4f1.md",
+    ".cursor/plans/exec-summary-graph-only-b5a963.md",
+    ".cursor/plans/graph-skills-hardening-f3a8c1.md"
+  ],
+  "ACTIVE_PLANS_COUNT": 10,
+  "ARCHIVED_PLANS_COUNT": 490,
+  "ARCHIVE_FOLDER": ".cursor/plans/_archive/2026-05/",
+  "COMMANDS_RUN": [
+    {
+      "command": "python ops_scripts/ci/check_graph_layer_evidence.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"orphan integrity probe (pre-W3R logic)\"",
+      "exit_code": 0,
+      "note": "ORPHAN_BEFORE=507 ORPHAN_AFTER=0"
+    }
+  ],
+  "REMEDIATION_ACTIONS": [
+    "PLANS_DIR SSOT → .cursor/plans (top-level active scan only; _archive excluded from evaluation)",
+    "_baseline_entry_resolves() accepts top-level, alias, or _archive/**/<basename>",
+    "_plan_is_grandfathered() matches archived relocations by basename",
+    "Added §22 ADG_GRAPH_LAYER_EVIDENCE + ADG_HOTSPOT_REPORT to active refactor plans missing sections (not baseline bypass)"
+  ],
+  "NON_CLAIMS": [
+    "Did not unarchive plans",
+    "Did not delete archived plans",
+    "Did not weaken graph-layer gate thresholds",
+    "W4/W5 not executed in this receipt",
+    "run_contract_gates.py may still fail on pre-existing 10C pilot proof-evidence (out of W3R scope)"
+  ]
+}

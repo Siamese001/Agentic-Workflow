@@ -44,8 +44,10 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HOOKS_PATH = REPO_ROOT / ".cursor" / "hooks.json"
 VIOLATIONS_OUT = REPO_ROOT / "artifacts" / "cursor" / "ag_hook_wiring_violations.json"
-CURSOR_AG_CHAIN_HOOK = REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py"
-CURSOR_AG_CHAIN_NAME = "after_agent_author_gate_audits.py"
+CURSOR_AG_CHAIN_HOOKS: tuple[Path, str] = (
+    (REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py", "after_agent_governance_dispatch.py"),
+    (REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py", "after_agent_author_gate_audits.py"),
+)
 
 BYPASS_ENV = "AG_HOOK_WIRING_BYPASS"
 FAIL_CLOSED_ENV = "AG_HOOK_WIRING_FAIL_CLOSED"
@@ -83,6 +85,7 @@ AG_AUDIT_TRIGGER_SCRIPTS = {
     "post_cursor_agent_ask_user_question_packet_audit.py",
     "post_cursor_agent_author_gate_capture.py",
     "after_agent_author_gate_audits.py",
+    "after_agent_governance_dispatch.py",
 }
 
 
@@ -128,14 +131,17 @@ def _hooks_for_pre_user_prompt(hooks_data: dict[str, Any]) -> list[dict[str, Any
 
 
 def _cursor_ag_chain_covers(script: str, post_by_name: dict[str, dict[str, Any]]) -> bool:
-    """True if the unified Cursor chain hook is wired and enumerates ``script``."""
-    if CURSOR_AG_CHAIN_NAME not in post_by_name:
-        return False
-    try:
-        text = CURSOR_AG_CHAIN_HOOK.read_text(encoding="utf-8")
-    except OSError:
-        return False
-    return script in text
+    """True if a unified Cursor chain hook is wired and enumerates ``script``."""
+    for hook_path, hook_name in CURSOR_AG_CHAIN_HOOKS:
+        if hook_name not in post_by_name:
+            continue
+        try:
+            text = hook_path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if script in text:
+            return True
+    return False
 
 
 def _effective_show_output(hook: dict[str, Any], req_show: bool) -> bool:

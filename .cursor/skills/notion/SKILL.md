@@ -1,6 +1,6 @@
 ---
 name: notion
-description: Notion workspace integration — page CRUD, database queries, comments, block manipulation — for ADRs, Author-Gate decisions, MCP registry, plan/wave/phase status, SC/AP violation backlog, anti-pattern burndown. Invoke when the user asks for plan status, phase progress, wave status, ADR registry, decision history, MCP server status, what's blocked, or any project-management state. Distinguishes Notion writeback discipline (this skill) from filesystem reads. Wraps upstream Notion MCP (https://developers.notion.com/guides/mcp/mcp) for the Cursor architecture.
+description: Notion workspace integration — page CRUD, database queries, comments, block manipulation — for ADRs, Author-Gate decisions, MCP registry, plan/wave/phase status, SC/AP violation backlog, anti-pattern burndown. Invoke when the user asks for plan status, phase progress, wave status, ADR registry, decision history, MCP server status, what's blocked, or any project-management state. Distinguishes Notion writeback.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §7
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §7 — Notion (2026-05-12, W4.P2).

@@ -1,6 +1,6 @@
 ---
 name: gitkraken
-description: Git operations, GitLens-grade history/blame/worktree analysis, pull request creation/review, and issue management across GitHub/GitLab/Bitbucket/Azure DevOps/Jira/Linear via the GitKraken MCP server. Invoke when the user asks for git status, commits, branches, log/diff, blame, worktrees, pull requests, code reviews, or cross-provider issue tracking. Distinguishes GitKraken's unified PR/issue surface from raw git CLI use. Adapts upstream GitKraken MCP guidance (https://help.gitkraken.com/mcp/mcp-getting-started/) to the Cursor MCP architecture.
+description: Git operations, GitLens-grade history/blame/worktree analysis, pull request creation/review, and issue management across GitHub/GitLab/Bitbucket/Azure DevOps/Jira/Linear via the GitKraken MCP server. Invoke when the user asks for git status, commits, branches, log/diff, blame, worktrees, pull requests, code reviews, or cross-provider issue tracking. Distinguishes GitKraken's unified PR/issue surface from raw git CLI.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §11
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §11 — GitKraken (2026-05-12, W4.P2).

@@ -13,7 +13,7 @@ metadata:
 
 **Prerequisite**: None. This skill is self-contained.
 
-**Invocation**: Automatically applies to all T2/T3 tasks. Manually via `/structured-reasoning`.
+**Invocation**: Automatically applies to all T2/T3 tasks. Manually via `/structured-reasoning` (workflow is a thin alias to this skill — do not duplicate phase bodies in the workflow file).
 
 ---
 

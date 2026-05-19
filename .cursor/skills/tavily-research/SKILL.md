@@ -1,6 +1,6 @@
 ---
 name: tavily-research
-description: Web search, page extraction, site mapping, full-site crawl, and multi-source research via the Tavily MCP server. Invoke this skill when the user asks to search the web, look something up online, research a topic, find recent news or upstream issues, extract content from a URL, crawl a documentation site, or build a competitive/market analysis. Distinguishes Tavily's five tools (search/extract/map/crawl/research) and routes to the correct one. Adapts the upstream Tavily Agent Skills (https://docs.tavily.com/documentation/agent-skills) to the Cursor MCP architecture.
+description: Web search, page extraction, site mapping, full-site crawl, and multi-source research via the Tavily MCP server. Invoke this skill when the user asks to search the web, look something up online, research a topic, find recent news or upstream issues, extract content from a URL, crawl a documentation site, or build a competitive/market analysis. Distinguishes Tavily's five tools (search/extract/map/crawl/research) and.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,7 +8,6 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-
 # ⚠️ DEPRECATED — Redirected to mcp-integration §8
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §8 — Tavily Research (2026-05-12, W4.P2).

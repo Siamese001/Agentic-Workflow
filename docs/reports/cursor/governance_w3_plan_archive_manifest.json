@@ -1,0 +1,561 @@
+{
+  "generated_at": "2026-05-19T13:23:31.314087+00:00",
+  "plan_id": "cursor-governance-two-tier-b4e8f2",
+  "wave": "W3B",
+  "archive_date_folder": ".cursor/plans/_archive/2026-05/",
+  "pass_number": 2,
+  "active_plans_before": 93,
+  "active_plans_after": 9,
+  "archived_plan_count": 84,
+  "skipped_ambiguous_count": 0,
+  "kept_active": [
+    {
+      "path": ".cursor/plans/10c-proof-bundle-current-head-a8f4c2.md",
+      "reason": "open_wave_progress_todo"
+    },
+    {
+      "path": ".cursor/plans/adg-forensic-tier1-burndown-e8f3c1.md",
+      "reason": "open_wave_progress_todo"
+    },
+    {
+      "path": ".cursor/plans/apps-rg-exit-disposition-smoke-b7e2d9.md",
+      "reason": "open_wave_progress_todo"
+    },
+    {
+      "path": ".cursor/plans/apps-rg-pa-w10-5-section-signal-hardening-c4f2a1.md",
+      "reason": "open_wave_progress_todo"
+    },
+    {
+      "path": ".cursor/plans/cursor-governance-two-tier-b4e8f2.md",
+      "reason": "w3_mandatory_active_plan"
+    },
+    {
+      "path": ".cursor/plans/fortknox-runtime-dual-track-b7c4e2.md",
+      "reason": "open_wave_progress_todo"
+    },
+    {
+      "path": ".cursor/plans/l2-rationalization-waves-c8e4f1.md",
+      "reason": "in_progress_open_wave_row"
+    },
+    {
+      "path": ".cursor/plans/l5-fanin-architecture-reduction-e7c4a2.md",
+      "reason": "in_progress_open_wave_row"
+    },
+    {
+      "path": ".cursor/plans/semantic-cache-fingerprint-proof-c9f1a3.md",
+      "reason": "open_wave_progress_todo"
+    }
+  ],
+  "archived": [
+    {
+      "source": ".cursor/plans/adg-architectural-p0-violations-cleanup-bced9c.md",
+      "destination": ".cursor/plans/_archive/2026-05/adg-architectural-p0-violations-cleanup-bced9c.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/adg-cascading-ratchet-defer-exit-a41828.md",
+      "destination": ".cursor/plans/_archive/2026-05/adg-cascading-ratchet-defer-exit-a41828.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/adg-tree-sitter-parser-exploration-b1c517.md",
+      "destination": ".cursor/plans/_archive/2026-05/adg-tree-sitter-parser-exploration-b1c517.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/adg-truth-expansion-r5w1-a8f3c2.md",
+      "destination": ".cursor/plans/_archive/2026-05/adg-truth-expansion-r5w1-a8f3c2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/adg-write-sovereignty-cleanup-8bf0da.md",
+      "destination": ".cursor/plans/_archive/2026-05/adg-write-sovereignty-cleanup-8bf0da.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md",
+      "destination": ".cursor/plans/_archive/2026-05/agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/agentic-core-governance-w9-runtime-migration-a7e3b2.md",
+      "destination": ".cursor/plans/_archive/2026-05/agentic-core-governance-w9-runtime-migration-a7e3b2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/agentic-core-spine-contract-hardening-a7d4e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/agentic-core-spine-contract-hardening-a7d4e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/agentic-core-static-apps-customization-governance-a1b2c3.md",
+      "destination": ".cursor/plans/_archive/2026-05/agentic-core-static-apps-customization-governance-a1b2c3.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/agentic-spine-diagram-refinement-a3f7c2.md",
+      "destination": ".cursor/plans/_archive/2026-05/agentic-spine-diagram-refinement-a3f7c2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/app-wizard-lic-scope-capture-f8d3e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/app-wizard-lic-scope-capture-f8d3e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-architect-pattern-hardening-d7e4f9.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-architect-pattern-hardening-d7e4f9.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-core-contract-rectification-a8f3c2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-core-contract-rectification-a8f3c2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-cross-app-precursors-c94c71.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-cross-app-precursors-c94c71.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-embedding-gap-analysis-8f7d2e.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-embedding-gap-analysis-8f7d2e.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-hop-substrate-f7751b.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-hop-substrate-f7751b.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-hop-substrate-four-apps-b4a2c9.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-hop-substrate-four-apps-b4a2c9.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-ag8-golden-template-adoption-f3c2e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-ag9-prompt-authority-coverage-e5f2a8.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-ag9-prompt-authority-coverage-e5f2a8.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-hop-domain-logic-b8c4c4.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-hop-domain-logic-b8c4c4.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-r3r4-managed-workflow-w3.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-r3r4-managed-workflow-w3.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-lic-rg-parity-gap-close-f7a4c9.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-lic-rg-parity-gap-close-f7a4c9.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-qna-bootstrap-c4f2a8.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-qna-bootstrap-c4f2a8.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-qna-golden-spine-restoration-a7c8d3.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-qna-golden-spine-restoration-a7c8d3.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-qna-spine-alignment-a7f4c2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-qna-spine-alignment-a7f4c2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-research-ag9-golden-template-adoption-e4f2b8.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-research-ag9-golden-template-adoption-e4f2b8.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-research-blend-baseline-c74787.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-research-blend-baseline-c74787.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-research-deferred-scope-2-f3a9c1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-research-deferred-scope-2-f3a9c1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-research-spine-alignment-c0-briefing-2f8a4b.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-research-spine-alignment-c0-briefing-2f8a4b.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-research-spine-deferred-followup-9c3e1a.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-research-spine-deferred-followup-9c3e1a.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-e2e-runtime-partial-scope-a4f981.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-e2e-runtime-partial-scope-a4f981.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-ensemble-judge-restoration-a7c4e2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-ensemble-judge-restoration-a7c4e2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-exit-gate-harness-wiring-e4b7f2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-exit-gate-harness-wiring-e4b7f2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-golden-state-section-generation-a4f9e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-golden-state-section-generation-a4f9e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-hop4a-authority-and-judging-c3d7e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-hop4a-authority-and-judging-c3d7e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-l2-recipe-adapter-b7c3e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-l2-recipe-adapter-b7c3e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-provider-authenticity-gate-c4f8b2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-provider-authenticity-gate-c4f8b2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-r1b-semantic-cache-hardening-c8d4a2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-r1b-semantic-cache-hardening-c8d4a2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-reasoning-receipt-binding-d9e4f2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-reasoning-receipt-binding-d9e4f2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-runtime-gate-catalog-c4d7e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-runtime-gate-catalog-c4d7e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-spearman-spine-remediation-f3c9a1.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-spearman-spine-remediation-f3c9a1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-substrate-deep-migration-600595.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-substrate-deep-migration-600595.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-w13-apps-contract-triage-c4d7e2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-w13-apps-contract-triage-c4d7e2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-rg-w14-quality-benchmark-f1a9b3.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-rg-w14-quality-benchmark-f1a9b3.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-test-surface-consolidation-11acd9-v2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-test-surface-consolidation-11acd9-v2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-test-surface-consolidation-11acd9.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-test-surface-consolidation-11acd9.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/apps-test-surface-deferred-f3c8b2.md",
+      "destination": ".cursor/plans/_archive/2026-05/apps-test-surface-deferred-f3c8b2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/author-gate-deferred-scope-b8c1d4.md",
+      "destination": ".cursor/plans/_archive/2026-05/author-gate-deferred-scope-b8c1d4.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/chroma-graphrag-core-wiring-gaps-b3f7a1.md",
+      "destination": ".cursor/plans/_archive/2026-05/chroma-graphrag-core-wiring-gaps-b3f7a1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/chroma-graphrag-lic-rg-research-f4a2e9.md",
+      "destination": ".cursor/plans/_archive/2026-05/chroma-graphrag-lic-rg-research-f4a2e9.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/cursor-windsurf-hook-migration-e7c1a4.md",
+      "destination": ".cursor/plans/_archive/2026-05/cursor-windsurf-hook-migration-e7c1a4.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/d-bucket-w2-burndown-a2c4f1.md",
+      "destination": ".cursor/plans/_archive/2026-05/d-bucket-w2-burndown-a2c4f1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/d-bucket-w3-burndown-b3d5e2.md",
+      "destination": ".cursor/plans/_archive/2026-05/d-bucket-w3-burndown-b3d5e2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/d-bucket-w4-burndown-c4e6f3.md",
+      "destination": ".cursor/plans/_archive/2026-05/d-bucket-w4-burndown-c4e6f3.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/enforcement-mechanisms-top5-c4d8a2.md",
+      "destination": ".cursor/plans/_archive/2026-05/enforcement-mechanisms-top5-c4d8a2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md",
+      "destination": ".cursor/plans/_archive/2026-05/fortknox-100pct-static-runtime-gap-9a3d4f.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/holistic-plan-status-discipline-d4e8a1.md",
+      "destination": ".cursor/plans/_archive/2026-05/holistic-plan-status-discipline-d4e8a1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/llm-containment-hooks-rules-c7a91b.md",
+      "destination": ".cursor/plans/_archive/2026-05/llm-containment-hooks-rules-c7a91b.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/next-step-gate-ci-workflow-8733a6.md",
+      "destination": ".cursor/plans/_archive/2026-05/next-step-gate-ci-workflow-8733a6.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-adapter-scaffold-test-hardening-d7e2f1.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-adapter-scaffold-test-hardening-d7e2f1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-backlog-human-scoring-e7a941.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-backlog-human-scoring-e7a941.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-backlog-residual-cleanup-c3d8f2.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-backlog-residual-cleanup-c3d8f2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-backlog-schema-refactor-7c3d9e.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-backlog-schema-refactor-7c3d9e.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-enforcement-consolidation-e8f3a2.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-enforcement-consolidation-e8f3a2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-plans-new-status-enforcement-c9f2a3.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-plans-new-status-enforcement-c9f2a3.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-sync-enforcement-hardening-f5a2c1.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-sync-enforcement-hardening-f5a2c1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/notion-test-hardening-deferred-scope-a7b4c9.md",
+      "destination": ".cursor/plans/_archive/2026-05/notion-test-hardening-deferred-scope-a7b4c9.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/plan-complete-marker-enforcement-d2e9f1.md",
+      "destination": ".cursor/plans/_archive/2026-05/plan-complete-marker-enforcement-d2e9f1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/plan-complete-notion-status-enforcement-a7e2d1.md",
+      "destination": ".cursor/plans/_archive/2026-05/plan-complete-notion-status-enforcement-a7e2d1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/plan-markdown-update-enforcement-a7d4e1.md",
+      "destination": ".cursor/plans/_archive/2026-05/plan-markdown-update-enforcement-a7d4e1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md",
+      "destination": ".cursor/plans/_archive/2026-05/qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/rag-dim-activation-c4f8b2.md",
+      "destination": ".cursor/plans/_archive/2026-05/rag-dim-activation-c4f8b2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/rca-wave-marker-emission-gap-c7d3f1.md",
+      "destination": ".cursor/plans/_archive/2026-05/rca-wave-marker-emission-gap-c7d3f1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/routing-decision-process-enhancement-9c7e4d.md",
+      "destination": ".cursor/plans/_archive/2026-05/routing-decision-process-enhancement-9c7e4d.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/rtc-w1-phase5-cache-safety-veto-e8a4d2.md",
+      "destination": ".cursor/plans/_archive/2026-05/rtc-w1-phase5-cache-safety-veto-e8a4d2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/ssot-consolidation-cleanup-b7f3a1.md",
+      "destination": ".cursor/plans/_archive/2026-05/ssot-consolidation-cleanup-b7f3a1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/test-coverage-waves-f8f5a7.md",
+      "destination": ".cursor/plans/_archive/2026-05/test-coverage-waves-f8f5a7.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/w6-emit-contract-deferred-scope-c3f7a1.md",
+      "destination": ".cursor/plans/_archive/2026-05/w6-emit-contract-deferred-scope-c3f7a1.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/wave-completion-markdown-enforcement-c4e7b2.md",
+      "destination": ".cursor/plans/_archive/2026-05/wave-completion-markdown-enforcement-c4e7b2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/wave-status-completion-enforcement-d4f8e2.md",
+      "destination": ".cursor/plans/_archive/2026-05/wave-status-completion-enforcement-d4f8e2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/windsurf-maintenance-2026-q2-0f3564.md",
+      "destination": ".cursor/plans/_archive/2026-05/windsurf-maintenance-2026-q2-0f3564.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    },
+    {
+      "source": ".cursor/plans/wire-sqlite-decision-ledger-e8f3a2.md",
+      "destination": ".cursor/plans/_archive/2026-05/wire-sqlite-decision-ledger-e8f3a2.md",
+      "reason": "stale_or_completed_not_in_progress",
+      "archived_at": "2026-05-19T13:23:31.314087+00:00"
+    }
+  ],
+  "skipped_ambiguous": [],
+  "no_delete_assertion": true,
+  "explicit_non_claims": [
+    "cursor-governance-two-tier-b4e8f2.md never archived",
+    "no plan bodies rewritten except move metadata in manifest"
+  ]
+}

@@ -11,13 +11,7 @@
     ],
     "afterAgentResponse": [
       {
-        "command": "python .cursor/hooks/after_agent_adg_audit.py"
-      },
-      {
-        "command": "python .cursor/hooks/after_agent_notion_status_audit.py"
-      },
-      {
-        "command": "python .cursor/hooks/after_agent_author_gate_audits.py"
+        "command": "python .cursor/hooks/after_agent_governance_dispatch.py"
       }
     ],
     "beforeShellExecution": [
