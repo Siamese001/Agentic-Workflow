@@ -62,14 +62,28 @@ def slice_row_to_plan_fact(
     *,
     section_id: str = "executive_summary",
 ) -> dict[str, Any]:
-    """Map a SRFS JSON row to a plan ``fact`` dict; HIGH confidence only (proof rows)."""
+    """Map a SRFS JSON row to a plan ``fact`` dict.
+
+    HIGH confidence always allowed. MEDIUM allowed only when registry-backed
+    ``verification_status`` is ``eligible_medium_with_source_trace`` (commercial seam).
+    """
     cid = str(slice_row.get("candidate_fact_id") or "").strip()
     if not cid:
         raise ValueError(f"SRFS {section_id} slice row missing candidate_fact_id")
     conf = str(slice_row.get("confidence") or "").strip().upper()
-    if conf != "HIGH":
+    vstat = str(slice_row.get("verification_status") or "").strip()
+    if conf == "HIGH":
+        pass
+    elif conf == "MEDIUM" and vstat == "eligible_medium_with_source_trace":
+        trace = slice_row.get("source_trace_archive_relpaths") or []
+        if not trace:
+            raise ValueError(
+                f"SRFS {section_id} fact {cid} is claim-eligible MEDIUM but missing source_trace_archive_relpaths"
+            )
+    else:
         raise ValueError(
-            f"SRFS {section_id} fact {cid} has confidence {conf!r}; only HIGH rows may supply proof"
+            f"SRFS {section_id} fact {cid} has confidence {conf!r} verification={vstat!r}; "
+            "only HIGH or claim-eligible MEDIUM with source trace may supply proof"
         )
     claim = str(slice_row.get("claim_text") or "").strip()
     mr = _metric_raw_from_slice(slice_row)
@@ -77,8 +91,10 @@ def slice_row_to_plan_fact(
         "fact_id": cid,
         "claim_text": claim,
         "candidate_fact_id": cid,
-        "srfs_verification_status": slice_row.get("verification_status"),
+        "srfs_verification_status": vstat or slice_row.get("verification_status"),
         "confidence": conf,
+        "claim_eligible_medium": bool(slice_row.get("claim_eligible_medium")),
+        "source_trace_archive_relpaths": list(slice_row.get("source_trace_archive_relpaths") or ()),
         "metric_values": tuple(slice_row.get("metric_values") or ()),
         "company_lane": slice_row.get("company_lane"),
         "role_families_supported": slice_row.get("role_families_supported") or [],
@@ -361,6 +377,9 @@ def broad_skills_ledger_proof_pool_metadata(
         "selected_role_fact_set_used": False,
         "broad_skills_ledger_used": True,
         "broad_skills_ledger_ref": str(ledger_ref),
+        "candidate_fact_ledger_ref": str(ledger_ref),
+        "broad_skills_ledger_claim_evidence_only": True,
+        "broad_skills_ledger_skills_authority": False,
         "srfs_section_id": section_id,
         "candidate_fact_pool_count": int(candidate_fact_pool_count),
         "allowed_fact_ids_count": n,

@@ -1,0 +1,674 @@
+{
+  "generated_at_utc": "2026-05-19T01:11:03Z",
+  "status": "PASS",
+  "medium_fact_review": [
+    {
+      "candidate_fact_id": "fact_sales_accounts_001",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Strategic Account Executive.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 16,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.875,
+            "tokens_matched": 14,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.688,
+            "tokens_matched": 11,
+            "tokens_total": 16
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_002",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Strategic Account Executive.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 15,
+            "tokens_total": 15
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_003",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 20,
+            "tokens_total": 20
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_001",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Partner Development Manager.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 23,
+            "tokens_total": 23
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_002",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Partner Development Manager.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 18,
+            "tokens_total": 18
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_003",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Partner Development Manager.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 16,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.812,
+            "tokens_matched": 13,
+            "tokens_total": 16
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_004",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 18,
+            "tokens_total": 18
+          },
+          {
+            "source_resume_variant": "Chief Technology Officer - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Chief_Technology_Officer_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.611,
+            "tokens_matched": 11,
+            "tokens_total": 18
+          },
+          {
+            "source_resume_variant": "Field CTO - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Field_CTO_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.667,
+            "tokens_matched": 12,
+            "tokens_total": 18
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Chief_Technology_Officer_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Field_CTO_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_001",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 14,
+            "tokens_total": 14
+          },
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.643,
+            "tokens_matched": 9,
+            "tokens_total": 14
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_002",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 0.929,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.929,
+            "tokens_matched": 13,
+            "tokens_total": 14
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_003",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 0.923,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.923,
+            "tokens_matched": 12,
+            "tokens_total": 13
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_004",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 0.938,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.938,
+            "tokens_matched": 15,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.75,
+            "tokens_matched": 12,
+            "tokens_total": 16
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_005",
+      "decision": "claim_eligible_medium",
+      "promotion": "claim_eligible_medium",
+      "confidence_unchanged": "MEDIUM",
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 12,
+            "tokens_total": 12
+          }
+        ],
+        "missing_variants": []
+      },
+      "source_trace_archive_relpaths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    }
+  ],
+  "promoted_to_high": [],
+  "claim_eligible_medium": [
+    "fact_sales_accounts_001",
+    "fact_sales_accounts_002",
+    "fact_sales_accounts_003",
+    "fact_partnerships_gtm_001",
+    "fact_partnerships_gtm_002",
+    "fact_partnerships_gtm_003",
+    "fact_partnerships_gtm_004",
+    "fact_revenue_ops_001",
+    "fact_revenue_ops_002",
+    "fact_revenue_ops_003",
+    "fact_revenue_ops_004",
+    "fact_revenue_ops_005"
+  ],
+  "rejected_facts": [],
+  "before_after_authoritative_commercial_facts": {
+    "before_count": 0,
+    "after_count": 11,
+    "before_ids": [],
+    "after_ids": [
+      "fact_partnerships_gtm_001",
+      "fact_partnerships_gtm_002",
+      "fact_partnerships_gtm_003",
+      "fact_revenue_ops_001",
+      "fact_revenue_ops_002",
+      "fact_revenue_ops_003",
+      "fact_revenue_ops_004",
+      "fact_revenue_ops_005",
+      "fact_sales_accounts_001",
+      "fact_sales_accounts_002",
+      "fact_sales_accounts_003"
+    ]
+  },
+  "section_fact_selection": {
+    "before": {
+      "headline": [
+        {
+          "candidate_fact_id": "fact_engineering_platform_006",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_quant_hpc_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_quant_hpc_003",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_consulting_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_002",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        }
+      ],
+      "executive_summary": [
+        {
+          "candidate_fact_id": "fact_certs_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_004",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_exec_002",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_governance_003",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_quant_hpc_002",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        }
+      ],
+      "unify_bullets": [
+        {
+          "candidate_fact_id": "fact_engineering_platform_003",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_005",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        }
+      ],
+      "unify_narrative": [],
+      "ibm_bullets": [],
+      "ibm_narrative": [],
+      "competencies": []
+    },
+    "after": {
+      "headline": [
+        {
+          "candidate_fact_id": "fact_engineering_platform_006",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_quant_hpc_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_quant_hpc_003",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_consulting_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_002",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        }
+      ],
+      "executive_summary": [
+        {
+          "candidate_fact_id": "fact_certs_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_004",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_001",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_exec_002",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_governance_003",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_quant_hpc_002",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_with_metrics_requires_source_trace",
+          "claim_eligible_medium": false
+        }
+      ],
+      "unify_bullets": [
+        {
+          "candidate_fact_id": "fact_revenue_ops_003",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_sales_accounts_001",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_partnerships_gtm_001",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_partnerships_gtm_003",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_003",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        },
+        {
+          "candidate_fact_id": "fact_engineering_platform_005",
+          "confidence": "HIGH",
+          "verification_status": "eligible_high_qualitative",
+          "claim_eligible_medium": false
+        }
+      ],
+      "unify_narrative": [],
+      "ibm_bullets": [
+        {
+          "candidate_fact_id": "fact_revenue_ops_004",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_revenue_ops_002",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_revenue_ops_001",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_partnerships_gtm_002",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_revenue_ops_005",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        },
+        {
+          "candidate_fact_id": "fact_sales_accounts_002",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        }
+      ],
+      "ibm_narrative": [
+        {
+          "candidate_fact_id": "fact_sales_accounts_003",
+          "confidence": "MEDIUM",
+          "verification_status": "eligible_medium_with_source_trace",
+          "claim_eligible_medium": true
+        }
+      ],
+      "competencies": []
+    }
+  },
+  "claim_eligible_medium_by_section_after": {
+    "headline": [],
+    "executive_summary": [],
+    "unify_bullets": [
+      "fact_revenue_ops_003",
+      "fact_sales_accounts_001",
+      "fact_partnerships_gtm_001",
+      "fact_partnerships_gtm_003"
+    ],
+    "unify_narrative": [],
+    "ibm_bullets": [
+      "fact_revenue_ops_004",
+      "fact_revenue_ops_002",
+      "fact_revenue_ops_001",
+      "fact_partnerships_gtm_002",
+      "fact_revenue_ops_005",
+      "fact_sales_accounts_002"
+    ],
+    "ibm_narrative": [
+      "fact_sales_accounts_003"
+    ],
+    "competencies": []
+  },
+  "medium_confirmation_queue_commercial_after": [],
+  "blocked_never_promote": [
+    "fact_customer_success_001",
+    "fact_sales_accounts_004",
+    "fact_sales_accounts_005"
+  ],
+  "eligibility_registry_path": "apps_rg/config/fact_inventory/commercial_claim_eligibility.yaml",
+  "scope_control": {
+    "agentic_core_touched": false,
+    "section_prompts_touched": false
+  },
+  "explicit_non_claims": [
+    "No live Qwen or provider run",
+    "JD/briefing used for role-family inference only",
+    "No global MEDIUM\u2192authoritative; headline/exec remain HIGH-only",
+    "fact_sales_accounts_004/005 not promoted per guardrail"
+  ]
+}

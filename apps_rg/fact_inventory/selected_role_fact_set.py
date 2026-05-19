@@ -34,6 +34,7 @@ CompanyLaneLiteral = Literal["ibm_only", "unify", "other"]
 VerificationStatusLiteral = Literal[
     "eligible_high_qualitative",
     "eligible_high_with_metrics_requires_source_trace",
+    "eligible_medium_with_source_trace",
     "human_review_medium",
     "blocked_low_confidence",
     "blocked_needs_verification",
@@ -77,7 +78,9 @@ _STOPWORD = frozenset(
 
 _DEFAULT_CONFIDENCE_POLICY = (
     "HIGH → external-validation candidate buckets by section (ledger-provisional facts). "
-    "MEDIUM → human confirmation queue only (not external-ready selections). "
+    "MEDIUM with registry claim_eligible_medium + archive source_trace → bullet/narrative "
+    "section pools only (verification=eligible_medium_with_source_trace). "
+    "Other MEDIUM → human confirmation queue only. "
     "LOW / NEEDS_VERIFICATION → blocked from external-ready selections."
 )
 
@@ -133,6 +136,8 @@ class SelectedLedgerFactSlice:
     verification_status: VerificationStatusLiteral
     company_lane: CompanyLaneLiteral
     allocation_hint: str = ""
+    claim_eligible_medium: bool = False
+    source_trace_archive_relpaths: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -196,13 +201,27 @@ def ledger_row_to_slice(
             "eligible_high_with_metrics_requires_source_trace" if metrics else "eligible_high_qualitative"
         )
     elif conf == "MEDIUM":
-        vstat = "human_review_medium"
+        from apps_rg.fact_inventory.commercial_claim_eligibility import (
+            claim_eligible_verification_status_for_row,
+        )
+
+        eligible_vstat = claim_eligible_verification_status_for_row(row)
+        vstat = eligible_vstat if eligible_vstat else "human_review_medium"
     elif conf == "LOW":
         vstat = "blocked_low_confidence"
     else:
         vstat = "blocked_needs_verification"
 
     lane = classify_company_lane(str(row.get("company") or ""))
+    claim_eligible = vstat == "eligible_medium_with_source_trace"
+    trace_paths: tuple[str, ...] = ()
+    if claim_eligible:
+        from apps_rg.fact_inventory.commercial_claim_eligibility import registry_fact_entry
+
+        entry = registry_fact_entry(str(row["candidate_fact_id"]))
+        if entry:
+            raw_paths = entry.get("source_trace_archive_relpaths") or []
+            trace_paths = tuple(str(p) for p in raw_paths if str(p).strip())
     return SelectedLedgerFactSlice(
         candidate_fact_id=row["candidate_fact_id"],
         claim_text=str(row["claim_text"]),
@@ -218,6 +237,8 @@ def ledger_row_to_slice(
         verification_status=vstat,
         company_lane=lane,
         allocation_hint=allocation_hint,
+        claim_eligible_medium=claim_eligible,
+        source_trace_archive_relpaths=trace_paths,
     )
 
 
@@ -652,6 +673,16 @@ def select_candidate_facts_for_role(
 
     high_rows, medium_rows, low_rows, nv_rows = _partition_rows(row_dicts)
 
+    from apps_rg.fact_inventory.commercial_claim_eligibility import (
+        merge_claim_eligible_into_lane_pool,
+        split_medium_rows_by_eligibility,
+    )
+
+    claim_eligible_medium_rows, medium_confirmation_rows = split_medium_rows_by_eligibility(
+        medium_rows,
+        repo_root=root,
+    )
+
     blocked: list[BlockedFactSlice] = []
     for r in low_rows:
         pj = ledger_row_to_slice(r, taxonomy=taxonomy, allocation_hint="blocked_low")
@@ -696,7 +727,7 @@ def select_candidate_facts_for_role(
             suggested_section=_suggest_confirmation_section(r),
         )
         for r in sorted(
-            medium_rows,
+            medium_confirmation_rows,
             key=lambda row: (
                 classify_company_lane(str(row.get("company") or "")),
                 row["candidate_fact_id"],
@@ -758,7 +789,13 @@ def select_candidate_facts_for_role(
             max_per_domain_family=2,
         )
 
-    ub_pool = _exclude_ids(high_unify_sorted, used_global)
+    ub_pool = merge_claim_eligible_into_lane_pool(
+        _exclude_ids(high_unify_sorted, used_global),
+        claim_eligible_medium_rows,
+        lane="unify",
+        taxonomy=taxonomy,
+        role_family_priorities=role_family_priorities,
+    )
     ub_slices, used_global = _take_unique(
         ub_pool,
         6 if ub_pool else 0,
@@ -768,9 +805,16 @@ def select_candidate_facts_for_role(
     )
     unify_bullet_ids = {s.candidate_fact_id for s in ub_slices}
 
+    unify_n_base = merge_claim_eligible_into_lane_pool(
+        _exclude_ids(high_unify_sorted, unify_bullet_ids | used_global),
+        claim_eligible_medium_rows,
+        lane="unify",
+        taxonomy=taxonomy,
+        role_family_priorities=role_family_priorities,
+    )
     unify_n_pool = [
         r
-        for r in _sorted_narrative_pool(_exclude_ids(high_unify_sorted, unify_bullet_ids | used_global), min_len=120)
+        for r in _sorted_narrative_pool(unify_n_base, min_len=120)
         if classify_company_lane(str(r.get("company") or "")) == "unify"
     ]
     un_slices, used_global = _take_unique(
@@ -782,7 +826,13 @@ def select_candidate_facts_for_role(
     )
 
     ib_sorted = sorted_high_rows_global(high_ibm_sorted, role_family_priorities=role_family_priorities, taxonomy=taxonomy)
-    ib_b_pool = _exclude_ids(ib_sorted, used_global)
+    ib_b_pool = merge_claim_eligible_into_lane_pool(
+        _exclude_ids(ib_sorted, used_global),
+        claim_eligible_medium_rows,
+        lane="ibm_only",
+        taxonomy=taxonomy,
+        role_family_priorities=role_family_priorities,
+    )
     ib_b_slices, used_global = _take_unique(
         ib_b_pool,
         min(6, len(ib_b_pool)) if ib_b_pool else 0,
@@ -792,9 +842,16 @@ def select_candidate_facts_for_role(
     )
     ib_bullet_ids_local = {s.candidate_fact_id for s in ib_b_slices}
 
+    ib_n_base = merge_claim_eligible_into_lane_pool(
+        _exclude_ids(ib_sorted, ib_bullet_ids_local | used_global),
+        claim_eligible_medium_rows,
+        lane="ibm_only",
+        taxonomy=taxonomy,
+        role_family_priorities=role_family_priorities,
+    )
     ib_n_candidates = [
         r
-        for r in _sorted_narrative_pool(_exclude_ids(ib_sorted, ib_bullet_ids_local | used_global), min_len=100)
+        for r in _sorted_narrative_pool(ib_n_base, min_len=100)
         if classify_company_lane(str(r.get("company") or "")) == "ibm_only"
     ]
     ibn_slices, used_global = _take_unique(

@@ -1,0 +1,531 @@
+{
+  "generated_at_utc": "2026-05-19T08:17:47Z",
+  "status": "PASS",
+  "profile_id": "CHIEF_REVENUE_OFFICER_COMPOSITE",
+  "fixture": {
+    "target_company": "Acme Revenue Corp",
+    "target_role": "Chief Revenue Officer revenue operations pipeline Salesforce forecasting strategic alliances customer success commercialization",
+    "jd_text": "RevOps pipeline analytics Salesforce forecast enterprise sales partnerships IBM AWS alliance customer success retention NRR stakeholder alignment subscription pricing M&A synergy",
+    "briefing_text": "CRO composite targeting fixture \u2014 JD/briefing labeling only; not proof."
+  },
+  "role_family_priorities": [
+    {
+      "role_family": "REVENUE_OPERATIONS",
+      "score": 3,
+      "evidence_terms": [
+        "forecasting",
+        "pipeline analytics",
+        "revops"
+      ],
+      "source_channels": [
+        "jd",
+        "target_role"
+      ]
+    },
+    {
+      "role_family": "PARTNERSHIPS_GTM",
+      "score": 2,
+      "evidence_terms": [
+        "alliances",
+        "partnerships"
+      ],
+      "source_channels": [
+        "jd",
+        "target_role"
+      ]
+    },
+    {
+      "role_family": "STRATEGIC_FINANCE",
+      "score": 2,
+      "evidence_terms": [
+        "m&a",
+        "synergy"
+      ],
+      "source_channels": [
+        "jd"
+      ]
+    },
+    {
+      "role_family": "CUSTOMER_SUCCESS",
+      "score": 1,
+      "evidence_terms": [
+        "customer success"
+      ],
+      "source_channels": [
+        "jd",
+        "target_role"
+      ]
+    },
+    {
+      "role_family": "PRODUCT_TECHNICAL_STRATEGY",
+      "score": 1,
+      "evidence_terms": [
+        "commercialization"
+      ],
+      "source_channels": [
+        "target_role"
+      ]
+    },
+    {
+      "role_family": "SALES_STRATEGIC_ACCOUNTS",
+      "score": 1,
+      "evidence_terms": [
+        "enterprise sales"
+      ],
+      "source_channels": [
+        "jd"
+      ]
+    }
+  ],
+  "composite_projection": {
+    "taxonomy_ids": [
+      "CUSTOMER_SUCCESS",
+      "EXECUTIVE_LEADERSHIP",
+      "PARTNERSHIPS_GTM",
+      "PRODUCT_TECHNICAL_STRATEGY",
+      "REVENUE_OPERATIONS",
+      "SALES_STRATEGIC_ACCOUNTS",
+      "STRATEGIC_FINANCE"
+    ],
+    "pillar_ids": [
+      "pillar_customer_stakeholder",
+      "pillar_executive_leadership",
+      "pillar_partner_gtm_alliances",
+      "pillar_presales_solutioning",
+      "pillar_revenue_commercialization",
+      "pillar_revenue_operations",
+      "pillar_strategic_finance_saas"
+    ],
+    "commercial_skills_in_projection": [
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
+      "skill_customer_nrr_predictive_analytics_20pct",
+      "skill_customer_satisfaction_nps_25pct",
+      "skill_finance_cost_optimization_dashboards",
+      "skill_finance_ma_synergy_due_diligence",
+      "skill_partner_cloud_vendor_joint_gtm",
+      "skill_partner_ibm_aws_alliance_joint_revenue",
+      "skill_sales_global_financial_institutions_leadership",
+      "skill_sales_modernization_deals_15m"
+    ],
+    "commercial_skills_external_eligible": [
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
+      "skill_customer_nrr_predictive_analytics_20pct",
+      "skill_customer_satisfaction_nps_25pct",
+      "skill_finance_cost_optimization_dashboards",
+      "skill_finance_ma_synergy_due_diligence",
+      "skill_partner_cloud_vendor_joint_gtm",
+      "skill_partner_ibm_aws_alliance_joint_revenue",
+      "skill_sales_global_financial_institutions_leadership",
+      "skill_sales_modernization_deals_15m"
+    ],
+    "archive_only_context_skill_ids": [
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
+      "skill_customer_nrr_predictive_analytics_20pct",
+      "skill_customer_satisfaction_nps_25pct"
+    ],
+    "derived_with_fact_skill_ids": [
+      "skill_finance_cost_optimization_dashboards",
+      "skill_finance_ma_synergy_due_diligence",
+      "skill_partner_cloud_vendor_joint_gtm",
+      "skill_partner_ibm_aws_alliance_joint_revenue",
+      "skill_partner_partner_revenue_3m",
+      "skill_revops_salesforce_forecast_pipeline",
+      "skill_revops_salesforce_pipeline_analytics",
+      "skill_revops_usage_based_subscription_forecasting",
+      "skill_sales_global_financial_institutions_leadership",
+      "skill_sales_modernization_deals_15m",
+      "skill_agentic_platform_productization",
+      "skill_ai_platform_commercialization",
+      "skill_app_specific_runtime_overlay_design",
+      "skill_enterprise_workflow_adoption",
+      "skill_operating_model_for_agentic_ai",
+      "skill_reusable_ai_ip_design",
+      "skill_agent_to_human_handoff_design",
+      "skill_agentic_control_plane_design",
+      "skill_ai_governance_certification",
+      "skill_app_overlay_runtime_binding",
+      "skill_approval_gated_workflow_design",
+      "skill_audit_grade_observability",
+      "skill_authority_and_registry_binding",
+      "skill_authority_ordered_prompt_packaging",
+      "skill_bounded_agent_execution",
+      "skill_bounded_fanout_and_retry_design",
+      "skill_cache_fallback_grounded_action_routing",
+      "skill_confidence_based_escalation",
+      "skill_context_engineering",
+      "skill_contradiction_and_lineage_handling",
+      "skill_dense_sparse_exact_retrieval_design",
+      "skill_dependency_and_join_control",
+      "skill_deterministic_route_selection",
+      "skill_evidence_contract_design",
+      "skill_exit_disposition_governance",
+      "skill_external_egress_control",
+      "skill_fail_closed_gate_semantics",
+      "skill_governed_agentic_systems_architecture",
+      "skill_graph_aware_relationship_grounding",
+      "skill_hitl_escalation_architecture",
+      "skill_human_review_freeze_and_resume",
+      "skill_human_review_reclearance_controls",
+      "skill_instruction_data_boundary_design",
+      "skill_layered_runtime_spine_design",
+      "skill_learning_firewall_controls",
+      "skill_llm_judge_packet_design",
+      "skill_managed_workflow_orchestration",
+      "skill_metadata_acl_freshness_filtering",
+      "skill_multi_step_quality_loop_design",
+      "skill_no_bypass_proof_controls",
+      "skill_no_direct_write_runtime_design",
+      "skill_origin_trust_and_content_boundary",
+      "skill_output_quality_and_schema_gates",
+      "skill_policy_bound_runtime_design",
+      "skill_prompt_assembly_architecture",
+      "skill_prompt_injection_airlock_design",
+      "skill_provider_and_egress_governance",
+      "skill_receipt_and_artifact_chain_design",
+      "skill_replayable_runtime_design",
+      "skill_retry_and_thrash_guard_design",
+      "skill_reusable_agentic_platform_architecture",
+      "skill_risk_and_hitl_route_posture",
+      "skill_route_contract_design",
+      "skill_route_replay_and_idempotency_design",
+      "skill_runtime_gate_mesh_design",
+      "skill_runtime_proof_bundle_design",
+      "skill_runtime_resilience_controls",
+      "skill_sandboxed_execution_design",
+      "skill_schema_bound_generation",
+      "skill_side_effect_bounded_action_design",
+      "skill_static_governance_drift_detection",
+      "skill_x1_x2_x3_exit_control"
+    ],
+    "linked_fact_ids_from_external_skills": [
+      "fact_certs_001",
+      "fact_engineering_platform_001",
+      "fact_engineering_platform_002",
+      "fact_engineering_platform_003",
+      "fact_engineering_platform_004",
+      "fact_exec_001",
+      "fact_exec_002",
+      "fact_governance_001",
+      "fact_governance_002",
+      "fact_governance_003",
+      "fact_governance_004",
+      "fact_governance_005",
+      "fact_partnerships_gtm_001",
+      "fact_partnerships_gtm_002",
+      "fact_partnerships_gtm_003",
+      "fact_partnerships_gtm_004",
+      "fact_quant_hpc_003",
+      "fact_revenue_ops_001",
+      "fact_revenue_ops_002",
+      "fact_revenue_ops_003",
+      "fact_revenue_ops_004",
+      "fact_revenue_ops_005",
+      "fact_sales_accounts_001",
+      "fact_sales_accounts_002",
+      "fact_sales_accounts_003",
+      "fact_solutions_001"
+    ],
+    "commercial_skills_by_section": {
+      "headline": [
+        "skill_commercial_board_level_stakeholder_alignment"
+      ],
+      "executive_summary": [
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_partner_ibm_aws_alliance_joint_revenue",
+        "skill_sales_global_financial_institutions_leadership",
+        "skill_sales_modernization_deals_15m",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
+        "skill_customer_nrr_predictive_analytics_20pct"
+      ],
+      "unify_bullets": [
+        "skill_finance_cost_optimization_dashboards",
+        "skill_partner_cloud_vendor_joint_gtm",
+        "skill_customer_satisfaction_nps_25pct"
+      ],
+      "unify_narrative": [
+        "skill_sales_global_financial_institutions_leadership",
+        "skill_sales_modernization_deals_15m",
+        "skill_customer_nrr_predictive_analytics_20pct"
+      ],
+      "ibm_bullets": [
+        "skill_sales_modernization_deals_15m"
+      ],
+      "ibm_narrative": [],
+      "competencies": [
+        "skill_partner_cloud_vendor_joint_gtm",
+        "skill_partner_ibm_aws_alliance_joint_revenue",
+        "skill_customer_satisfaction_nps_25pct"
+      ]
+    }
+  },
+  "section_skill_selection": {
+    "headline": [
+      "skill_commercial_board_level_stakeholder_alignment"
+    ],
+    "executive_summary": [
+      "skill_finance_cost_optimization_dashboards",
+      "skill_finance_ma_synergy_due_diligence",
+      "skill_partner_ibm_aws_alliance_joint_revenue",
+      "skill_sales_global_financial_institutions_leadership",
+      "skill_sales_modernization_deals_15m",
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
+      "skill_customer_nrr_predictive_analytics_20pct"
+    ],
+    "unify_bullets": [
+      "skill_finance_cost_optimization_dashboards",
+      "skill_partner_cloud_vendor_joint_gtm",
+      "skill_customer_satisfaction_nps_25pct"
+    ],
+    "unify_narrative": [
+      "skill_sales_global_financial_institutions_leadership",
+      "skill_sales_modernization_deals_15m",
+      "skill_customer_nrr_predictive_analytics_20pct"
+    ],
+    "ibm_bullets": [
+      "skill_sales_modernization_deals_15m"
+    ],
+    "ibm_narrative": [],
+    "competencies": [
+      "skill_partner_cloud_vendor_joint_gtm",
+      "skill_partner_ibm_aws_alliance_joint_revenue",
+      "skill_customer_satisfaction_nps_25pct"
+    ]
+  },
+  "section_fact_selection": {
+    "headline": [
+      {
+        "candidate_fact_id": "fact_engineering_platform_006",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_quant_hpc_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_quant_hpc_003",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_consulting_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_002",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      }
+    ],
+    "executive_summary": [
+      {
+        "candidate_fact_id": "fact_certs_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_004",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_exec_002",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_governance_003",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_quant_hpc_002",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      }
+    ],
+    "unify_bullets": [
+      {
+        "candidate_fact_id": "fact_revenue_ops_003",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_sales_accounts_001",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_partnerships_gtm_001",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_partnerships_gtm_003",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_003",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_005",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      }
+    ],
+    "unify_narrative": [],
+    "ibm_bullets": [
+      {
+        "candidate_fact_id": "fact_revenue_ops_004",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_revenue_ops_002",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_revenue_ops_001",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_partnerships_gtm_002",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_revenue_ops_005",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_sales_accounts_002",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      }
+    ],
+    "ibm_narrative": [
+      {
+        "candidate_fact_id": "fact_sales_accounts_003",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace"
+      }
+    ],
+    "competencies": []
+  },
+  "authoritative_claim_pool_fact_ids": [
+    "fact_certs_001",
+    "fact_consulting_001",
+    "fact_engineering_platform_001",
+    "fact_engineering_platform_002",
+    "fact_engineering_platform_003",
+    "fact_engineering_platform_004",
+    "fact_engineering_platform_005",
+    "fact_engineering_platform_006",
+    "fact_exec_002",
+    "fact_governance_003",
+    "fact_partnerships_gtm_001",
+    "fact_partnerships_gtm_002",
+    "fact_partnerships_gtm_003",
+    "fact_quant_hpc_001",
+    "fact_quant_hpc_002",
+    "fact_quant_hpc_003",
+    "fact_revenue_ops_001",
+    "fact_revenue_ops_002",
+    "fact_revenue_ops_003",
+    "fact_revenue_ops_004",
+    "fact_revenue_ops_005",
+    "fact_sales_accounts_001",
+    "fact_sales_accounts_002",
+    "fact_sales_accounts_003"
+  ],
+  "authoritative_commercial_fact_ids": [
+    "fact_partnerships_gtm_001",
+    "fact_partnerships_gtm_002",
+    "fact_partnerships_gtm_003",
+    "fact_revenue_ops_001",
+    "fact_revenue_ops_002",
+    "fact_revenue_ops_003",
+    "fact_revenue_ops_004",
+    "fact_revenue_ops_005",
+    "fact_sales_accounts_001",
+    "fact_sales_accounts_002",
+    "fact_sales_accounts_003"
+  ],
+  "claim_eligible_medium_registry_ids": [
+    "fact_partnerships_gtm_001",
+    "fact_partnerships_gtm_002",
+    "fact_partnerships_gtm_003",
+    "fact_partnerships_gtm_004",
+    "fact_revenue_ops_001",
+    "fact_revenue_ops_002",
+    "fact_revenue_ops_003",
+    "fact_revenue_ops_004",
+    "fact_revenue_ops_005",
+    "fact_sales_accounts_001",
+    "fact_sales_accounts_002",
+    "fact_sales_accounts_003"
+  ],
+  "medium_confirmation_queue_fact_ids": [],
+  "archive_only_context": {
+    "skill_ids": [
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
+      "skill_customer_nrr_predictive_analytics_20pct",
+      "skill_customer_satisfaction_nps_25pct"
+    ],
+    "note": "Archive-only commercial skills may rank as external-eligible skills but have no fact_id_links; SRFS authoritative pool is HIGH plus registry claim-eligible MEDIUM in bullet/narrative lanes only.",
+    "in_authoritative_fact_pool": []
+  },
+  "blocked_facts": [
+    {
+      "candidate_fact_id": "fact_customer_success_001",
+      "confidence": "LOW",
+      "block_reason": "LOW_CONFIDENCE_BLOCK_FOR_EXTERNAL_SELECTION"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_004",
+      "confidence": "NEEDS_VERIFICATION",
+      "block_reason": "METRIC_OR_ASSERTION_NEEDS_SOURCE_VERIFICATION"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_005",
+      "confidence": "NEEDS_VERIFICATION",
+      "block_reason": "METRIC_OR_ASSERTION_NEEDS_SOURCE_VERIFICATION"
+    }
+  ],
+  "rejected_facts_excluded_from_authoritative_pool": [
+    "fact_customer_success_001",
+    "fact_sales_accounts_004",
+    "fact_sales_accounts_005"
+  ],
+  "violations": [],
+  "scope_control": {
+    "agentic_core_touched": false,
+    "section_prompts_touched": false,
+    "skills_graph_mutated": false
+  },
+  "explicit_non_claims": [
+    "No live Qwen run",
+    "JD/briefing used for role-family keyword inference only",
+    "No SRFS/X2/X3 gate changes"
+  ]
+}
