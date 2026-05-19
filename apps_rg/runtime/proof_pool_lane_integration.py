@@ -72,6 +72,40 @@ def apply_proof_pool_to_usage_ledger(doc: dict[str, Any], pool: SectionProofPool
             "authority": "CLAIM_EVIDENCE",
             "ref": pool.srfs_ref,
         }
+    pp_meta = pool.proof_pool_metadata or {}
+    if pp_meta.get("augmented_skills_graph_present"):
+        riu["augmented_skills_graph"] = {
+            "required": True,
+            "used": True,
+            "authority": "SKILLS_COMPETENCY_AUTHORITY",
+            "ref": pp_meta.get("augmented_skills_graph_ref") or pp_meta.get("graph_ref"),
+        }
+    elif str(pp_meta.get("skills_source_authority_status") or "") == "BLOCKED":
+        riu["augmented_skills_graph"] = {
+            "required": True,
+            "used": False,
+            "authority": "SKILLS_AUTHORITY_BLOCKED",
+            "ref": pp_meta.get("augmented_skills_graph_ref") or pp_meta.get("graph_ref"),
+        }
+    if pp_meta.get("legacy_skills_ledger_ref"):
+        riu["legacy_skills_ledger"] = {
+            "required": False,
+            "used": False,
+            "authority": "DEPRECATED_REFERENCE",
+            "ref": pp_meta.get("legacy_skills_ledger_ref"),
+        }
+    claim_type = str(pp_meta.get("claim_evidence_source_type") or "")
+    if claim_type:
+        riu["claim_evidence"] = {
+            "required": True,
+            "used": True,
+            "authority": "CLAIM_EVIDENCE",
+            "source_type": claim_type,
+            "ref": pp_meta.get("claim_evidence_source_ref"),
+        }
+    out["claim_evidence_source_type"] = pp_meta.get("claim_evidence_source_type")
+    out["skills_authority_source_type"] = pp_meta.get("skills_authority_source_type")
+    out["skills_authority_status"] = pp_meta.get("skills_authority_status")
     out["required_input_usage"] = riu
     return out
 

@@ -1,0 +1,137 @@
+{
+  "report_id": "augmented_skills_graph_section_source_audit",
+  "generated_at": "2026-05-18",
+  "wave": 1,
+  "overall_verdict": "PARTIAL",
+  "summary": "Augmented skills graph SSOT is master_skills_arsenal_ledger.json (W4A graph_metadata). Runtime proof-pool resolver now attaches augmented_skills_graph skills authority on every section path; candidate fact ledger remains claim-evidence substrate under legacy broad_skills_ledger label.",
+  "canonical_artifacts": {
+    "augmented_skills_graph": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "augmented_skills_graph_module": "apps_rg/fact_inventory/augmented_skills_graph.py",
+    "legacy_candidate_fact_ledger": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "legacy_label_runtime": "broad_skills_ledger"
+  },
+  "section_matrix": [
+    {
+      "section": "headline",
+      "runtime_lane": "apps_rg/runtime/sections/headline_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/headline_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/headline_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py::resolve_section_proof_pool",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger (candidate_fact_ledger) | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["proof_pool_metadata.source_authority", "proof_pool_metadata.skills_source_type", "INPUT_AUTHORITY augmented skills graph block"],
+      "receipt_fields": ["section_input_usage_ledger.source_authority", "input_refs.graph_ref", "x2_source_fact_pool_receipt.proof_source"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY (claim evidence label broad_skills_ledger)",
+      "verdict": "PARTIAL"
+    },
+    {
+      "section": "executive_summary",
+      "runtime_lane": "apps_rg/runtime/sections/executive_summary_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/executive_summary_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/executive_summary_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py + exec_summary_srfs_arsenal (ranking)",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["proof_pool_metadata", "INPUT_AUTHORITY", "SRFS appendix when active"],
+      "receipt_fields": ["section_input_usage_ledger", "x2_source_fact_pool_receipt"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY + arsenal ranking via exec_summary_srfs_arsenal",
+      "verdict": "PARTIAL"
+    },
+    {
+      "section": "competencies",
+      "runtime_lane": "apps_rg/runtime/sections/competencies_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/competencies_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["verified_skill_inventory (base resume scaffolding)", "proof_pool_metadata augmented graph"],
+      "receipt_fields": ["section_input_usage_ledger", "competencies_section_output.json"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY; template still names verified_skill_inventory",
+      "verdict": "PARTIAL"
+    },
+    {
+      "section": "unify_bullets",
+      "runtime_lane": "apps_rg/runtime/sections/unify_bullets_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/unify_bullets_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/unify_bullets_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["proof_pool_metadata", "INPUT_AUTHORITY"],
+      "receipt_fields": ["section_input_usage_ledger", "x2_source_fact_pool_receipt"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY",
+      "verdict": "PARTIAL"
+    },
+    {
+      "section": "unify_narrative",
+      "runtime_lane": "apps_rg/runtime/sections/unify_narrative_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/unify_narrative_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/unify_narrative_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["proof_pool_metadata", "INPUT_AUTHORITY"],
+      "receipt_fields": ["section_input_usage_ledger", "x2_source_fact_pool_receipt"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY",
+      "verdict": "PARTIAL"
+    },
+    {
+      "section": "ibm_bullets",
+      "runtime_lane": "apps_rg/runtime/sections/ibm_bullets_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/ibm_bullets_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/ibm_bullets_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["proof_pool_metadata", "INPUT_AUTHORITY"],
+      "receipt_fields": ["section_input_usage_ledger", "x2_source_fact_pool_receipt"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY",
+      "verdict": "PARTIAL"
+    },
+    {
+      "section": "ibm_narrative",
+      "runtime_lane": "apps_rg/runtime/sections/ibm_narrative_lane.py",
+      "pa_dispatcher": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "pa_template_compiler": "apps_rg/runtime/dispatch/ibm_narrative_pa.py",
+      "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
+      "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
+      "skills_authority": "augmented_skills_graph",
+      "prompt_payload_fields": ["proof_pool_metadata", "INPUT_AUTHORITY", "source_authority_hierarchy in template"],
+      "receipt_fields": ["section_input_usage_ledger", "x2_source_fact_pool_receipt"],
+      "legacy_skills_ledger_referenced": true,
+      "legacy_role": "DEPRECATED_NON_AUTHORITY",
+      "verdict": "PARTIAL"
+    }
+  ],
+  "legacy_ledger_references": [
+    {"symbol": "broad_skills_ledger", "classification": "DEPRECATED_NON_AUTHORITY", "notes": "Runtime label for candidate_fact_ledger claim pool; skills_authority=false in metadata"},
+    {"symbol": "master_candidate_skills_fact_ledger", "classification": "DEPRECATED_NON_AUTHORITY", "notes": "legacy_skills_ledger_ref in augmented graph metadata"},
+    {"symbol": "master_skills_arsenal_ledger", "classification": "CONFIRMED_AUGMENTED_GRAPH", "notes": "W4A graph; skills SSOT"},
+    {"symbol": "verified_skill_inventory", "classification": "DEPRECATED_NON_AUTHORITY", "notes": "Competencies template scaffolding from base resume facts.skills"},
+    {"symbol": "load_master_skills_arsenal_ledger", "classification": "TEST_FIXTURE_ONLY", "notes": "Also production loader behind augmented_skills_graph.py"}
+  ],
+  "augmented_graph_references": [
+    "apps_rg/fact_inventory/augmented_skills_graph.py",
+    "apps_rg/runtime/proof_pool_resolver.py::_merge_skills_authority_metadata",
+    "apps_rg/runtime/dispatch/input_authority_prompt_block.py",
+    "apps_rg/runtime/proof_pool_lane_integration.py"
+  ],
+  "gaps": [
+    "proof_source string still broad_skills_ledger for claim pool (not renamed to avoid X2 breakage)",
+    "Competencies verified_skill_inventory not yet projected from graph rows",
+    "Historical docs/reports and runtime proof bundles pre-wiring still cite broad_skills_ledger only"
+  ],
+  "commands": {
+    "git_diff_agentic_core": "exit 0 empty",
+    "compileall_apps_rg": "exit 0",
+    "rg_legacy": "unavailable in shell; used workspace Grep equivalent",
+    "rg_augmented": "unavailable in shell; used workspace Grep equivalent"
+  }
+}

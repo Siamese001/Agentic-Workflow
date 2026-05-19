@@ -1,0 +1,46 @@
+{
+  "report_id": "augmented_skills_graph_x2_source_boundary",
+  "generated_at": "2026-05-18",
+  "wave": 1,
+  "status": "PASS",
+  "dual_source_fields": {
+    "claim_evidence_source_type": "candidate_fact_ledger | selected_role_fact_set | base_resume_fallback",
+    "claim_evidence_source_ref": "path to active claim pool artifact",
+    "claim_evidence_source_digest": "sha256 of claim pool plan or ledger",
+    "claim_evidence_substrate_type": "candidate_fact_ledger (when SRFS active)",
+    "claim_evidence_substrate_ref": "canonical candidate fact ledger path",
+    "skills_authority_source_type": "augmented_skills_graph",
+    "skills_authority_graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "skills_authority_graph_digest": "sha256 of graph JSON",
+    "skills_authority_graph_version": "master_skills_arsenal_graph_v1",
+    "skills_authority_status": "PASS | BLOCKED | UNKNOWN",
+    "legacy_skills_ledger_ref": "deprecated_reference only when present",
+    "deprecated_non_authority": true,
+    "broad_skills_ledger_claim_evidence_only": true,
+    "broad_skills_ledger_skills_authority": false
+  },
+  "x2_boundary": {
+    "proof_pool_source_fact_validation": "receipt includes claim_evidence_source_type, skills_authority_source_type, skills_authority_status, skills_authority_x2_boundary",
+    "broad_skills_ledger_as_skills_authority": "FAIL closed in validator if legacy_broad_skills_ledger_skills_authority true or skills_authority_source_type broad_skills_ledger",
+    "missing_graph": "skills_authority_status BLOCKED; skills_authority_x2_boundary NOT_PASS; never PASS",
+    "usage_ledger_extension": "skills_authority_x2_boundary derived from skills_authority_status"
+  },
+  "competencies": {
+    "verified_skill_inventory_projection": "build_verified_skill_inventory_projection from graph skill_rows",
+    "projection_from_graph": true,
+    "verified_skill_inventory_deprecated": "base resume facts.skills marked deprecated_non_authority",
+    "competencies_pa_prompt": "includes VERIFIED_SKILL_INVENTORY_PROJECTION block when graph PASS"
+  },
+  "backward_compat": {
+    "proof_pool_type": "preserved (broad_skills_ledger | selected_role_fact_set | base_resume_fallback)",
+    "proof_source": "preserved for X2 claim pool gates",
+    "input_authority": "CANDIDATE FACT LEDGER label for claim pool; AUGMENTED SKILLS GRAPH for skills"
+  },
+  "modules_touched": [
+    "apps_rg/fact_inventory/augmented_skills_graph.py",
+    "apps_rg/runtime/proof_pool_resolver.py",
+    "apps_rg/runtime/validators/proof_pool_source_fact_validation.py",
+    "apps_rg/runtime/dispatch/competencies_pa.py",
+    "apps_rg/runtime/proof_pool_lane_integration.py"
+  ]
+}

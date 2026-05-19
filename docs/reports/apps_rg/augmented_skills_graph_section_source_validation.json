@@ -1,0 +1,18 @@
+{
+  "report_id": "augmented_skills_graph_section_source_validation",
+  "generated_at": "2026-05-18",
+  "wave": 2,
+  "status": "PARTIAL",
+  "tests_added": "tests/_apps_contract/test_apps_rg_augmented_skills_graph_source_authority.py",
+  "test_results": {
+    "test_apps_rg_augmented_skills_graph_source_authority.py": "31 passed",
+    "test_apps_rg_executive_summary_l2_proof_pool_alignment.py": "5 passed (updated assertions)",
+    "tests/_apps_contract -k skills_graph|augmented_skills|source_authority|proof_pool": "60 passed, 5 failed (pre-existing: w9 judge harness, unify_bullets ledger allocation)",
+    "tests/unit/apps_rg -k filter": "0 selected (no matching unit tests)"
+  },
+  "negative_control_results": {
+    "missing_graph_path": "skills_source_authority_status=BLOCKED; prompt states do not treat broad_skills_ledger as skills SSOT",
+    "resolver_with_missing_graph_env": "claim pool may still resolve; skills metadata BLOCKED"
+  },
+  "section_contract": "all seven sections pass _assert_augmented_skills_authority in test_all_seven_sections_pass_same_source_authority_contract"
+}

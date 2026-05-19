@@ -1,0 +1,89 @@
+{
+  "report_id": "augmented_skills_graph_all_sections_receipt_refresh",
+  "generated_at": "2026-05-18",
+  "wave": 2,
+  "status": "PASS",
+  "proof_mode": "mock (--provider mock --mock-judges --allow-test-mock-judges)",
+  "sections": [
+    {
+      "section": "headline",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/mock/headline_20260518_210501",
+      "section_input_usage_ledger": true,
+      "claim_evidence_source_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "legacy_broad_skills_ledger_skills_authority": false,
+      "skills_fallback_to_candidate_ledger": false,
+      "verdict": "PASS"
+    },
+    {
+      "section": "executive_summary",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/mock/exec_summary_20260518_210249",
+      "section_input_usage_ledger": true,
+      "claim_evidence_source_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "legacy_broad_skills_ledger_skills_authority": false,
+      "skills_fallback_to_candidate_ledger": false,
+      "verdict": "PASS"
+    },
+    {
+      "section": "competencies",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/mock/competencies_20260518_210351",
+      "section_input_usage_ledger": true,
+      "claim_evidence_source_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "compiled_prompt_has_projection": true,
+      "verdict": "PASS"
+    },
+    {
+      "section": "unify_bullets",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/mock/unify_bullets_20260518_210704",
+      "claim_evidence_source_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "base_resume_fallback_used": false,
+      "resolver_fix": "unify company-hint slice when SRFS empty",
+      "verdict": "PASS"
+    },
+    {
+      "section": "unify_narrative",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/mock/unify_narrative_20260518_210717",
+      "claim_evidence_source_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "verdict": "PASS"
+    },
+    {
+      "section": "ibm_bullets",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/mock/ibm_bullets_20260518_210625",
+      "claim_evidence_source_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "verdict": "PASS"
+    },
+    {
+      "section": "ibm_narrative",
+      "cli_exit": 0,
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/mock (latest_mock_run pointer)",
+      "claim_evidence_source_type": "selected_role_fact_set",
+      "claim_evidence_substrate_type": "candidate_fact_ledger",
+      "skills_authority_source_type": "augmented_skills_graph",
+      "skills_authority_status": "PASS",
+      "verdict": "PASS"
+    }
+  ],
+  "tests": {
+    "test_apps_rg_augmented_skills_graph_all_sections_runtime_receipts.py": "7 passed",
+    "test_apps_rg_augmented_skills_graph_dual_source_all_sections.py": "10 passed",
+    "test_apps_rg_augmented_skills_graph_source_authority.py": "31 passed"
+  }
+}

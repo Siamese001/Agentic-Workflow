@@ -14,6 +14,7 @@ def format_input_authority_block(
     allowed_source_fact_ids: Sequence[str],
     selected_role_fact_set_mode: bool = False,
     proof_pool_mode: str = "base_resume_fallback",
+    skills_authority_metadata: dict[str, Any] | None = None,
 ) -> str:
     if selected_role_fact_set_mode or proof_pool_mode == "srfs":
         substrate = (
@@ -21,16 +22,36 @@ def format_input_authority_block(
         )
     elif proof_pool_mode == "broad_skills_ledger":
         substrate = (
-            "- CLAIM SUPPORT POOL (BROAD SKILLS LEDGER): governed candidate_fact_id rows — sole substrate for factual claims"
+            "- CLAIM SUPPORT POOL (CANDIDATE FACT LEDGER): governed candidate_fact_id rows — "
+            "sole substrate for factual claims (not skills/competency authority; see augmented skills graph)"
         )
     else:
         substrate = (
             "- CLAIM SUPPORT POOL (BASE RESUME FALLBACK): canonical employment bullets — explicit fallback; "
             "not ledger/SRFS primary"
         )
+    skills_meta = skills_authority_metadata or {}
+    skills_lines: list[str] = []
+    if skills_meta.get("augmented_skills_graph_present"):
+        skills_lines.append(
+            "- SKILLS/COMPETENCY AUTHORITY (AUGMENTED SKILLS GRAPH): "
+            f"{skills_meta.get('graph_ref')} — sole authority for skills/competency inputs "
+            f"(version {skills_meta.get('graph_version')})"
+        )
+    elif str(skills_meta.get("skills_source_authority_status") or "") == "BLOCKED":
+        skills_lines.append(
+            "- SKILLS/COMPETENCY AUTHORITY: BLOCKED — augmented skills graph unavailable; "
+            "do not treat broad_skills_ledger or candidate_fact_ledger as skills SSOT"
+        )
+    if skills_meta.get("legacy_skills_ledger_ref"):
+        skills_lines.append(
+            "- LEGACY SKILLS LEDGER (deprecated_reference only): "
+            f"{skills_meta.get('legacy_skills_ledger_ref')} — not skills authority"
+        )
     lines = [
         "INPUT_AUTHORITY:",
         substrate,
+        *skills_lines,
         "- JD_TEXT: TARGETING_INPUT (mandatory; guides prioritization and wording; not claim evidence)",
         "- TARGET_TITLE: POSITIONING_INPUT (mandatory; not claim evidence)",
         "- TARGET_COMPANY: POSITIONING_INPUT (mandatory; not claim evidence)",
@@ -56,12 +77,14 @@ def augment_section_compiled_with_input_authority(
     allowed_source_fact_ids: Sequence[str],
     selected_role_fact_set_mode: bool = False,
     proof_pool_mode: str = "base_resume_fallback",
+    skills_authority_metadata: dict[str, Any] | None = None,
 ) -> SectionCompiledPrompt:
     """Return a copy of ``compiled`` with INPUT_AUTHORITY appended to the last message."""
     block = format_input_authority_block(
         allowed_source_fact_ids=allowed_source_fact_ids,
         selected_role_fact_set_mode=selected_role_fact_set_mode,
         proof_pool_mode=proof_pool_mode,
+        skills_authority_metadata=skills_authority_metadata,
     )
     art = compiled.artifact
     msgs = [dict(m) for m in art.messages]
@@ -85,12 +108,15 @@ def finalize_section_compiled_with_proof_pool(
 ) -> SectionCompiledPrompt:
     """Append INPUT_AUTHORITY using runtime proof_pool_metadata when present."""
     ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
-    mode = proof_pool_mode_from_metadata(runtime_payload.get("proof_pool_metadata"))
+    pp_meta = runtime_payload.get("proof_pool_metadata") or {}
+    mode = proof_pool_mode_from_metadata(pp_meta if isinstance(pp_meta, dict) else None)
+    skills_meta = pp_meta if isinstance(pp_meta, dict) else None
     return augment_section_compiled_with_input_authority(
         compiled,
         allowed_source_fact_ids=ids,
         selected_role_fact_set_mode=(mode == "srfs"),
         proof_pool_mode=mode,
+        skills_authority_metadata=skills_meta,
     )
 
 

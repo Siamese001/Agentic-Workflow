@@ -116,8 +116,29 @@ def build_competencies_assembly_input(
     run_id: str,
     trace_root: str,
 ) -> PromptAssemblyInput:
+    from apps_rg.fact_inventory.augmented_skills_graph import build_verified_skill_inventory_projection
+
     slots = load_competencies_template_slots()
     plan = runtime_payload.get("selected_fact_plan") or {}
+    pp_meta = runtime_payload.get("proof_pool_metadata") or {}
+    allowed_raw = runtime_payload.get("allowed_fact_ids") or []
+    allowed_set = {str(x) for x in allowed_raw} if isinstance(allowed_raw, (list, tuple)) else set()
+    skill_projection_block = ""
+    if pp_meta.get("augmented_skills_graph_present") or pp_meta.get("skills_authority_status") == "PASS":
+        try:
+            proj = build_verified_skill_inventory_projection(
+                section_id="competencies",
+                allowed_fact_ids=allowed_set,
+            )
+            skill_projection_block = (
+                "\nVERIFIED_SKILL_INVENTORY_PROJECTION (graph-authoritative; not base-resume facts.skills):\n"
+                + json.dumps(proj.get("verified_skill_inventory_projection") or {}, ensure_ascii=False)[:4500]
+                + "\nprojection_from_graph=true; source_authority=augmented_skills_graph\n"
+            )
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            skill_projection_block = (
+                "\nVERIFIED_SKILL_INVENTORY_PROJECTION: BLOCKED — augmented skills graph unavailable\n"
+            )
     stub = json.dumps(
         {
             "section_id": plan.get("section_id") or "competencies",
@@ -133,8 +154,7 @@ def build_competencies_assembly_input(
     jd = str(runtime_payload.get("jd_text") or "")
     briefing = str(runtime_payload.get("briefing") or "")
 
-    allowed_raw = runtime_payload.get("allowed_fact_ids") or []
-    allowed_list = [str(x) for x in allowed_raw] if isinstance(allowed_raw, (list, tuple)) else []
+    allowed_list = sorted(allowed_set)
     allowed_block = ""
     if allowed_list:
         allowed_block = (
@@ -143,9 +163,10 @@ def build_competencies_assembly_input(
         )
 
     c0_facts = (
-        "CANONICAL_EMPLOYMENT_BULLETS (proof source only — use ONLY fact ids from this list):\n"
+        "CANONICAL_EMPLOYMENT_BULLETS (claim evidence — candidate_fact_ledger slice; NOT skills authority):\n"
         + fact_lines.strip()
         + allowed_block
+        + skill_projection_block
         + "\n\nSELECTED_FACT_PLAN_STUB (echo this shape in output only; do not paste facts[] array):\n"
         + stub
     )
@@ -168,7 +189,9 @@ def build_competencies_assembly_input(
         "The professional Competencies section must be a scannable executive capability index, "
         "not a narrative impact section.\n"
         "Every emitted competency term must trace to allowed source_fact_ids from the canonical base resume "
-        "or C0 candidate facts.\n\n"
+        "or C0 candidate facts.\n"
+        "- Copy source_fact_id strings EXACTLY from ALLOWED_SOURCE_FACT_IDS / C0 (no typos such as fact_g_overnance_003).\n"
+        "- Skill taxonomy phrasing may be informed by VERIFIED_SKILL_INVENTORY_PROJECTION; claim ids remain bul_* / fact_* only.\n\n"
         "DISPLAY PATTERN (resume-facing intent): Category Label: compact phrase, compact phrase, compact phrase\n"
         "Do NOT use full sentences, impact narratives, metrics, or accomplishment prose inside terms.\n\n"
         "Return RAW JSON only: first character {, last character }. No ``` fences.\n\n"

@@ -27,6 +27,14 @@ from apps_rg.fact_inventory.selected_role_fact_set import (
     select_candidate_facts_for_role,
 )
 from apps_rg.runtime.resume_resolution import ResumeResolutionError, load_lane_base_resume_json
+from apps_rg.fact_inventory.augmented_skills_graph import (
+    CLAIM_EVIDENCE_SOURCE_TYPE_BASE_RESUME,
+    CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
+    CLAIM_EVIDENCE_SOURCE_TYPE_SRFS,
+    claim_evidence_fields,
+    merge_dual_source_proof_pool_metadata,
+    resolve_augmented_skills_graph_authority,
+)
 from apps_rg.runtime.sections.selected_role_fact_set import (
     base_proof_pool_metadata,
     broad_skills_ledger_proof_pool_metadata,
@@ -35,6 +43,21 @@ from apps_rg.runtime.sections.selected_role_fact_set import (
     resolve_srfs_section_proof_bundle,
     slice_row_to_plan_fact,
 )
+
+
+def _merge_dual_source_metadata(
+    meta: dict[str, Any],
+    *,
+    repo_root: Path,
+    claim_evidence: dict[str, Any],
+) -> dict[str, Any]:
+    """Attach explicit claim-evidence + skills-authority fields; never alias ledger as skills SSOT."""
+    skills = resolve_augmented_skills_graph_authority(repo_root=repo_root)
+    return merge_dual_source_proof_pool_metadata(
+        meta,
+        claim_evidence=claim_evidence,
+        skills_authority=skills,
+    )
 
 PROOF_SOURCE_SRFS = "srfs"
 PROOF_SOURCE_BROAD_SKILLS_LEDGER = "broad_skills_ledger"
@@ -86,6 +109,9 @@ def _slice_to_plan_fact(sl: SelectedLedgerFactSlice, *, section_id: str) -> dict
         "candidate_fact_id": sl.candidate_fact_id,
         "claim_text": sl.claim_text,
         "confidence": sl.confidence,
+        "verification_status": sl.verification_status,
+        "claim_eligible_medium": sl.claim_eligible_medium,
+        "source_trace_archive_relpaths": list(sl.source_trace_archive_relpaths),
         "metric_values": list(sl.metric_values),
         "technologies": list(sl.capability_tags),
         "domain": sl.domain_family,
@@ -115,6 +141,35 @@ def _ledger_rows_matching_hints(ledger: dict[str, Any], hints: tuple[str, ...]) 
     return rows
 
 
+def _stamp_unify_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any], list[str], set[str]]:
+    """Map ledger ``fact_*`` rows to canonical ``bul_unify_*`` ids for X2 bullet gates."""
+    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+
+    section_id = str(plan.get("section_id") or "")
+    if section_id not in ("unify_bullets", "unify_narrative"):
+        facts = list(plan.get("facts") or [])
+        ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+        return plan, ordered, allowed
+    facts = list(plan.get("facts") or [])
+    if not facts or str(facts[0].get("fact_id") or "").startswith("bul_unify_"):
+        ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+        return plan, ordered, allowed
+    for idx, fact in enumerate(facts[: len(UNIFY_BULLET_IDS)]):
+        if idx >= len(UNIFY_BULLET_IDS):
+            break
+        ledger_id = str(fact.get("fact_id") or fact.get("candidate_fact_id") or "").strip()
+        if ledger_id:
+            fact["ledger_candidate_fact_id"] = ledger_id
+        fact["fact_id"] = UNIFY_BULLET_IDS[idx]
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    stamped = {
+        **plan,
+        "facts": facts,
+        "required_fact_ids": [str(f["fact_id"]) for f in facts],
+    }
+    return stamped, ordered, allowed
+
+
 def _ledger_company_hint_slice(
     ledger: dict[str, Any],
     *,
@@ -128,13 +183,13 @@ def _ledger_company_hint_slice(
     rows.sort(key=lambda r: str(r.get("candidate_fact_id") or ""))
     picked = rows[:limit]
     facts = [slice_row_to_plan_fact(r, section_id=section_id) for r in picked]
-    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     plan = {
         "section_id": section_id,
         "selection_method": f"broad_skills_ledger_{section_id}_company_hint",
         "facts": facts,
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
     }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
     return plan, ordered, allowed
 
 
@@ -220,36 +275,63 @@ def _allocate_from_ledger(
         rows = ledger.get("candidate_facts") or []
         plan = _build_competencies_ledger_plan([r for r in rows if isinstance(r, dict)])
         return _sanitize_plan(plan), list(plan["_allowed_ordered"]), set(plan["_allowed_set"])
-    if not slice_rows:
-        hint_map = {
-            "ibm_bullets": ("ibm",),
-            "ibm_narrative": ("ibm",),
-            "unify_narrative": ("unify",),
-        }
-        limits = {
-            "ibm_bullets": 6,
-            "ibm_narrative": 6,
-            "unify_narrative": 6,
-        }
+    hint_map = {
+        "ibm_bullets": ("ibm",),
+        "ibm_narrative": ("ibm",),
+        "unify_bullets": ("unify",),
+        "unify_narrative": ("unify",),
+    }
+    min_section_facts = {
+        "ibm_bullets": 6,
+        "ibm_narrative": 6,
+        "unify_bullets": 6,
+        "unify_narrative": 6,
+    }
+
+    def _company_hint_plan_if_sufficient() -> tuple[dict[str, Any], list[str], set[str]] | None:
         hints = hint_map.get(section_id)
-        if hints:
-            hinted = _ledger_company_hint_slice(
-                ledger,
-                section_id=section_id,
-                hints=hints,
-                limit=limits.get(section_id, 6),
-            )
-            if hinted is not None:
+        if not hints:
+            return None
+        min_required = min_section_facts.get(section_id, 0)
+        hinted = _ledger_company_hint_slice(
+            ledger,
+            section_id=section_id,
+            hints=hints,
+            limit=min_required or 6,
+        )
+        if hinted is None:
+            return None
+        plan, _ordered, _allowed = hinted
+        fact_count = len(plan.get("facts") or [])
+        if min_required and fact_count < min_required:
+            # Ledger-backed company-hint facts still beat base-resume fallback when
+            # role allocation is empty or thin (e.g. IBM lane with <6 ledger rows).
+            if fact_count > 0:
                 return hinted
+            return None
+        return hinted
+
+    if not slice_rows:
+        hinted = _company_hint_plan_if_sufficient()
+        if hinted is not None:
+            return hinted
         raise ValueError(f"ledger allocation produced empty slice for {section_id!r}")
     facts = [_slice_to_plan_fact(sl, section_id=section_id) for sl in slice_rows]
-    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    min_req = min_section_facts.get(section_id, 0)
+    if min_req and len(facts) < min_req:
+        hinted = _company_hint_plan_if_sufficient()
+        if hinted is not None:
+            return hinted
+        raise ValueError(
+            f"ledger allocation produced insufficient facts for {section_id!r}: {len(facts)} < {min_req}"
+        )
     plan = {
         "section_id": section_id,
         "selection_method": f"broad_skills_ledger_{section_id}",
         "facts": facts,
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
     }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
     return _sanitize_plan(plan), ordered, allowed
 
 
@@ -330,12 +412,30 @@ def resolve_section_proof_pool(
     base_ref_str = str(base_path.relative_to(root)) if base_path.is_relative_to(root) else str(base_path)
     override_used = bool(resume_ref)
 
+    cand_ledger_default = default_ledger_path(root)
+    cand_ledger_ref = (
+        str(cand_ledger_default.relative_to(root))
+        if cand_ledger_default.is_relative_to(root)
+        else str(cand_ledger_default)
+    )
+
     srfs_path = str(selected_role_fact_set_path or "").strip()
     if srfs_path:
         plan, ordered, allowed, meta = resolve_srfs_section_proof_bundle(srfs_path, section)
         facts = list(plan.get("facts") or [])
         bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
         digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+        meta = _merge_dual_source_metadata(
+            meta,
+            repo_root=root,
+            claim_evidence=claim_evidence_fields(
+                source_type=CLAIM_EVIDENCE_SOURCE_TYPE_SRFS,
+                source_ref=srfs_path,
+                source_digest=digest,
+                substrate_type=CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
+                substrate_ref=cand_ledger_ref,
+            ),
+        )
         return SectionProofPool(
             section=section,
             proof_source=PROOF_SOURCE_SRFS,
@@ -388,6 +488,15 @@ def resolve_section_proof_pool(
             allowed_fact_ids_count=len(allowed),
             ledger_ref=ledger_ref_str,
         )
+        meta = _merge_dual_source_metadata(
+            meta,
+            repo_root=root,
+            claim_evidence=claim_evidence_fields(
+                source_type=CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
+                source_ref=ledger_ref_str,
+                source_digest=ledger_digest,
+            ),
+        )
         digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
         return SectionProofPool(
             section=section,
@@ -432,6 +541,15 @@ def resolve_section_proof_pool(
         candidate_fact_pool_count=len(plan.get("facts") or []),
         allowed_fact_ids_count=len(allowed_set),
         fallback_reason="broad_skills_ledger_unavailable_or_empty",
+    )
+    meta = _merge_dual_source_metadata(
+        meta,
+        repo_root=root,
+        claim_evidence=claim_evidence_fields(
+            source_type=CLAIM_EVIDENCE_SOURCE_TYPE_BASE_RESUME,
+            source_ref=base_ref_str,
+            source_digest=base_hash,
+        ),
     )
     digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
     return SectionProofPool(
@@ -484,7 +602,37 @@ def proof_pool_usage_ledger_extension(pool: SectionProofPool) -> dict[str, Any]:
     else:
         input_authority_patch["base_resume"] = "CLAIM_EVIDENCE_FALLBACK"
 
-    return {
+    pp_meta = dict(pool.proof_pool_metadata or {})
+    skills_status = str(pp_meta.get("skills_source_authority_status") or "")
+    skills_authority_patch: dict[str, str] = {}
+    if pp_meta.get("augmented_skills_graph_present"):
+        skills_authority_patch["augmented_skills_graph"] = "SKILLS_COMPETENCY_AUTHORITY"
+    elif skills_status == "BLOCKED":
+        skills_authority_patch["augmented_skills_graph"] = "SKILLS_AUTHORITY_BLOCKED"
+    if pool.broad_skills_ledger_present:
+        skills_authority_patch["broad_skills_ledger"] = "CLAIM_EVIDENCE_ONLY_DEPRECATED_SKILLS_LABEL"
+    input_authority_patch = {**input_authority_patch, **skills_authority_patch}
+
+    input_refs = {
+        "proof_pool_ref": pool.proof_pool_ref,
+        "proof_pool_digest": pool.proof_pool_digest,
+        "broad_skills_ledger_ref": pool.broad_skills_ledger_ref or None,
+        "broad_skills_ledger_digest": pool.broad_skills_ledger_digest or None,
+        "srfs_ref": pool.srfs_ref or None,
+        "base_resume_override_used": pool.base_resume_override_used,
+    }
+    for key in (
+        "augmented_skills_graph_ref",
+        "augmented_skills_graph_digest",
+        "graph_ref",
+        "graph_digest",
+        "graph_version",
+        "legacy_skills_ledger_ref",
+    ):
+        if pp_meta.get(key):
+            input_refs[key] = pp_meta.get(key)
+
+    ext: dict[str, Any] = {
         "proof_source": pool.proof_source,
         "proof_pool_ref": pool.proof_pool_ref,
         "proof_pool_digest": pool.proof_pool_digest,
@@ -500,16 +648,47 @@ def proof_pool_usage_ledger_extension(pool: SectionProofPool) -> dict[str, Any]:
         "evidence_boundary": {
             "claim_evidence_sources": claim_support,
             "non_evidence_inputs": ["jd_text", "target_title", "target_company", "briefing_research"],
+            "skills_competency_authority": "augmented_skills_graph",
         },
-        "input_refs": {
-            "proof_pool_ref": pool.proof_pool_ref,
-            "proof_pool_digest": pool.proof_pool_digest,
-            "broad_skills_ledger_ref": pool.broad_skills_ledger_ref or None,
-            "broad_skills_ledger_digest": pool.broad_skills_ledger_digest or None,
-            "srfs_ref": pool.srfs_ref or None,
-            "base_resume_override_used": pool.base_resume_override_used,
-        },
+        "input_refs": input_refs,
     }
+    for key in (
+        "source_authority",
+        "skills_source_type",
+        "skills_source_authority_status",
+        "skills_authority_source_type",
+        "skills_authority_graph_ref",
+        "skills_authority_graph_digest",
+        "skills_authority_graph_version",
+        "skills_authority_status",
+        "claim_evidence_source_type",
+        "claim_evidence_source_ref",
+        "claim_evidence_source_digest",
+        "claim_evidence_substrate_type",
+        "claim_evidence_substrate_ref",
+        "augmented_skills_graph_present",
+        "augmented_skills_graph_ref",
+        "augmented_skills_graph_digest",
+        "graph_ref",
+        "graph_digest",
+        "graph_version",
+        "legacy_skills_ledger_ref",
+        "legacy_skills_ledger_role",
+        "legacy_broad_skills_ledger_skills_authority",
+        "broad_skills_ledger_claim_evidence_only",
+        "broad_skills_ledger_skills_authority",
+        "deprecated_non_authority",
+        "skills_authority_block_reason",
+    ):
+        if key in pp_meta:
+            ext[key] = pp_meta[key]
+    if pp_meta.get("skills_authority_status") in ("BLOCKED", "UNKNOWN", ""):
+        ext["skills_authority_x2_boundary"] = "NOT_PASS"
+    elif pp_meta.get("skills_authority_status") == "PASS":
+        ext["skills_authority_x2_boundary"] = "PASS"
+    else:
+        ext["skills_authority_x2_boundary"] = "UNKNOWN"
+    return ext
 
 
 __all__ = [
