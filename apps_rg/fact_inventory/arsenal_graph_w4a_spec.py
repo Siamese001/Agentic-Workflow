@@ -113,6 +113,7 @@ CAREER_EPOCHS: list[dict[str, Any]] = [
             "pillar_presales_solutioning",
             "pillar_cloud_data_aws",
             "pillar_revenue_commercialization",
+            "pillar_revenue_operations",
             "pillar_customer_stakeholder",
         ],
     },

@@ -1,0 +1,24 @@
+# Composite projection profiles — weighted blends over canonical role_families only.
+# These are NOT role_families entries in master_role_family_taxonomy.yaml.
+
+schema_version: "1"
+description: >-
+  JD targeting may reference composite profiles by id. Skills authority and SRFS
+  still resolve facts through canonical role_family ids listed under taxonomy_ids.
+
+composite_profiles:
+  - id: CHIEF_REVENUE_OFFICER_COMPOSITE
+    label: Chief Revenue Officer (composite projection)
+    profile_kind: composite_role_family_projection
+    arsenal_ledger_key: CHIEF_REVENUE_OFFICER_COMPOSITE
+    taxonomy_ids:
+      - REVENUE_OPERATIONS
+      - SALES_STRATEGIC_ACCOUNTS
+      - PARTNERSHIPS_GTM
+      - CUSTOMER_SUCCESS
+      - STRATEGIC_FINANCE
+      - EXECUTIVE_LEADERSHIP
+      - PRODUCT_TECHNICAL_STRATEGY
+    notes: >-
+      No standalone CRO role family. Use for CRO-targeting JD emphasis only;
+      proof remains fact-ledger and skills-graph bound.

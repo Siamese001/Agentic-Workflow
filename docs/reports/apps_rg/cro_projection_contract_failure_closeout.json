@@ -1,0 +1,99 @@
+{
+  "generated_at_utc": "2026-05-18T23:45:00Z",
+  "verification": {
+    "broad_contract_filter": "197 passed, 1 skipped, 0 failed",
+    "command": "python -m pytest tests/_apps_contract -k \"skills or arsenal or srfs or role_family\" -q --tb=short -p no:xdist"
+  },
+  "scope": "Broad contract filter: skills or arsenal or srfs or role_family",
+  "prior_failure_count": 8,
+  "classification_summary": {
+    "fixed": 8,
+    "quarantined_pre_existing_unrelated": 0,
+    "regression_from_cro_hardening": 0
+  },
+  "failures": [
+    {
+      "test": "tests/_apps_contract/test_apps_rg_domain_config_profiles.py::TestW3ProfileFilesExist::test_section_prompt_file_exists[skills_block.yaml]",
+      "assertion": "Missing apps_rg/config/section_prompts/skills_block.yaml",
+      "expected": "skills_block.yaml exists on disk",
+      "actual": "section_prompts directory absent; skills_block.yaml missing",
+      "root_cause": "Pre-existing config gap after slim runtime consolidation; -k filter matches skills substring only",
+      "classification": "fixed",
+      "fix": "Restored skills_block.yaml from commit 0b49b51f53 (W6 spine restoration)"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_domain_config_profiles.py::TestSectionPromptProfiles::test_section_prompt_structure[skills_block.yaml-skills_block]",
+      "assertion": "FileNotFoundError skills_block.yaml",
+      "expected": "Valid section prompt YAML with node_id, slot_requirements, output_schema_ref, prompt_boundary_rules",
+      "actual": "File missing",
+      "root_cause": "Same missing skills_block.yaml",
+      "classification": "fixed",
+      "fix": "Restored skills_block.yaml"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_domain_config_profiles.py::TestNoRuntimeImportsInConfigFiles::test_no_quarantine_module_import_in_section_prompt[skills_block.yaml]",
+      "assertion": "FileNotFoundError skills_block.yaml",
+      "expected": "Readable YAML without quarantined module imports",
+      "actual": "File missing",
+      "root_cause": "Same missing skills_block.yaml",
+      "classification": "fixed",
+      "fix": "Restored skills_block.yaml"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py::TestPAResolvesSectionPrompts::test_apps_rg_pa_resolves_section_prompt_profiles[skills_block]",
+      "assertion": "missing_required_template: no section prompt file for node_id='skills_block'",
+      "expected": "ManagedPromptArtifact is_valid with section_prompt_ref set",
+      "actual": "PA resolver fail-closed when section prompt file absent",
+      "root_cause": "Same missing skills_block.yaml",
+      "classification": "fixed",
+      "fix": "Restored skills_block.yaml"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py::TestPABindsOutputSchema::test_output_schema_ref_non_empty_for_all_nodes[skills_block]",
+      "assertion": "missing_required_template for skills_block",
+      "expected": "Non-empty output_schema_ref on valid artifact",
+      "actual": "Artifact invalid due to missing template",
+      "root_cause": "Same missing skills_block.yaml",
+      "classification": "fixed",
+      "fix": "Restored skills_block.yaml"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py::TestSectionPromptSlotRefs::test_section_prompt_slots_are_valid_bom_slots[skills_block.yaml]",
+      "assertion": "FileNotFoundError skills_block.yaml",
+      "expected": "slot_requirements reference valid BOM slots (S0, I0, C0, etc.)",
+      "actual": "File missing",
+      "root_cause": "Same missing skills_block.yaml",
+      "classification": "fixed",
+      "fix": "Restored skills_block.yaml"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py::test_default_resolves_broad_skills_ledger_when_srfs_absent[ibm_bullets]",
+      "assertion": "proof_source == broad_skills_ledger; got base_resume_fallback",
+      "expected": "Candidate ledger (or company-hint slice) when SRFS absent",
+      "actual": "Fallback because IBM company-hint had 3 facts < min_section_facts 6",
+      "root_cause": "Pre-existing proof-pool threshold; not caused by CRO graph edits",
+      "classification": "fixed",
+      "fix": "proof_pool_resolver: partial company-hint slice uses ledger when fact_count > 0"
+    },
+    {
+      "test": "tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py::test_default_resolves_broad_skills_ledger_when_srfs_absent[ibm_narrative]",
+      "assertion": "proof_source == broad_skills_ledger; got base_resume_fallback",
+      "expected": "Same as ibm_bullets",
+      "actual": "Same min-facts gate",
+      "root_cause": "Same as ibm_bullets",
+      "classification": "fixed",
+      "fix": "Same proof_pool_resolver partial-hint fix"
+    }
+  ],
+  "quarantined_gaps": [],
+  "cro_profile_invariants": {
+    "standalone_cro_role_family_in_taxonomy": false,
+    "composite_profile_id": "CHIEF_REVENUE_OFFICER_COMPOSITE",
+    "low_needs_verification_facts_promoted_to_skills": false
+  },
+  "explicit_non_claims": [
+    "Other section_prompts YAML files (header_block, etc.) remain absent but are out of scope for this -k filter unless 'skills' appears in test name.",
+    "Restored skills_block is deterministic-extraction profile; does not assert new resume skills.",
+    "Partial IBM ledger slice (3 facts) is claim-evidence only; not expanded CS/marketing authority."
+  ]
+}

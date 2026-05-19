@@ -1,0 +1,196 @@
+{
+  "generated_at_utc": "2026-05-18T23:33:34Z",
+  "profile_id": "CHIEF_REVENUE_OFFICER_COMPOSITE",
+  "profile_label": "Chief Revenue Officer (composite projection)",
+  "profile_kind": "composite_role_family_projection",
+  "role_family_weights": {
+    "REVENUE_OPERATIONS": 1.0,
+    "SALES_STRATEGIC_ACCOUNTS": 0.95,
+    "PARTNERSHIPS_GTM": 0.9,
+    "CUSTOMER_SUCCESS": 0.85,
+    "STRATEGIC_FINANCE": 0.8,
+    "EXECUTIVE_LEADERSHIP": 0.75,
+    "PRODUCT_TECHNICAL_STRATEGY": 0.7
+  },
+  "taxonomy_ids": [
+    "REVENUE_OPERATIONS",
+    "SALES_STRATEGIC_ACCOUNTS",
+    "PARTNERSHIPS_GTM",
+    "CUSTOMER_SUCCESS",
+    "STRATEGIC_FINANCE",
+    "EXECUTIVE_LEADERSHIP",
+    "PRODUCT_TECHNICAL_STRATEGY"
+  ],
+  "top_weighted_pillars": [
+    {
+      "pillar_id": "pillar_revenue_operations",
+      "weight": 1.0
+    },
+    {
+      "pillar_id": "pillar_revenue_commercialization",
+      "weight": 0.95
+    },
+    {
+      "pillar_id": "pillar_partner_gtm_alliances",
+      "weight": 0.9
+    },
+    {
+      "pillar_id": "pillar_presales_solutioning",
+      "weight": 0.85
+    },
+    {
+      "pillar_id": "pillar_customer_stakeholder",
+      "weight": 0.8
+    },
+    {
+      "pillar_id": "pillar_strategic_finance_saas",
+      "weight": 0.75
+    },
+    {
+      "pillar_id": "pillar_executive_leadership",
+      "weight": 0.7
+    }
+  ],
+  "deprioritize_pillars": [
+    "pillar_derivatives_structured",
+    "pillar_greeks_hedging",
+    "pillar_actuarial_foundation",
+    "pillar_embedded_options_insurance",
+    "pillar_trading_hpc",
+    "pillar_agentic_ai_platforms"
+  ],
+  "standalone_cro_role_family_present": false,
+  "facts_newly_wired": [],
+  "new_skill_rows": [],
+  "facts_rejected": [
+    {
+      "candidate_fact_id": "fact_customer_success_001",
+      "reason": "LOW confidence; not promoted to authoritative skill rows"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_004",
+      "reason": "NEEDS_VERIFICATION; renewal rate not wired to new RevOps skills"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_005",
+      "reason": "NEEDS_VERIFICATION; CRM forecasting uplift not wired without confirmation"
+    }
+  ],
+  "under_linked_commercial_facts_remaining": [
+    {
+      "candidate_fact_id": "fact_data_analytics_003",
+      "confidence": "MEDIUM",
+      "reason": "not_linked_to_any_pillar_source_refs"
+    },
+    {
+      "candidate_fact_id": "fact_data_analytics_004",
+      "confidence": "MEDIUM",
+      "reason": "not_linked_to_any_pillar_source_refs"
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_004",
+      "confidence": "MEDIUM",
+      "reason": "not_linked_to_any_pillar_source_refs"
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_005",
+      "confidence": "MEDIUM",
+      "reason": "not_linked_to_any_pillar_source_refs"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_004",
+      "confidence": "NEEDS_VERIFICATION",
+      "reason": "not_linked_to_any_pillar_source_refs"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_005",
+      "confidence": "NEEDS_VERIFICATION",
+      "reason": "not_linked_to_any_pillar_source_refs"
+    }
+  ],
+  "unsupported_cro_capability_gaps": [
+    {
+      "capability_id": "marketing_demand_generation",
+      "description": "ABM, MQL/SQL, paid demand gen, brand/campaign ops"
+    },
+    {
+      "capability_id": "customer_success_authoritative",
+      "description": "NRR/GRR, health scores, QBR cadence as confirmed facts"
+    },
+    {
+      "capability_id": "quota_carrying_ae_primary",
+      "description": "Primary quota-carrying AE scope (design pending source)"
+    },
+    {
+      "capability_id": "marketing_org_leadership",
+      "description": "Full marketing org P&L and team build-out"
+    },
+    {
+      "capability_id": "board_investor_narrative",
+      "description": "Board/investor relations as primary CRO accountability"
+    }
+  ],
+  "archive_mining": [
+    {
+      "variant": "sales",
+      "status": "PRESENT",
+      "path": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+      "char_count": "9838",
+      "has_marketing_signal": "True",
+      "has_cs_signal": "True"
+    },
+    {
+      "variant": "vp_finance_sales_marketing",
+      "status": "PRESENT",
+      "path": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "char_count": "8022",
+      "has_marketing_signal": "True",
+      "has_cs_signal": "False"
+    },
+    {
+      "variant": "customer_success",
+      "status": "PRESENT",
+      "path": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "char_count": "8072",
+      "has_marketing_signal": "True",
+      "has_cs_signal": "True"
+    },
+    {
+      "variant": "revenue_operations",
+      "status": "PRESENT",
+      "path": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Revenue_Operations_-_Amit_Ayer.txt",
+      "char_count": "8917",
+      "has_marketing_signal": "True",
+      "has_cs_signal": "True"
+    }
+  ],
+  "explicit_non_claims": [
+    "JD and briefing text are targeting-only; never proof.",
+    "LOW and NEEDS_VERIFICATION candidate facts are not promoted to authoritative external skills.",
+    "CHIEF_REVENUE_OFFICER_COMPOSITE is not a role_families taxonomy id.",
+    "Head of Customer Success variant metrics (e.g. 20% NRR) are not resume claims until confirmed facts exist.",
+    "Marketing demand-gen depth beyond archive GTM-alignment phrases is not asserted as proven skills."
+  ],
+  "design_stats": {
+    "pillar_count": 19,
+    "actuarial_matrix_rows": 22,
+    "partner_gtm_matrix_rows": 16,
+    "pending_source_rows": 9,
+    "linked_existing_facts": 42,
+    "revenue_operations_matrix_rows": 5,
+    "role_family_projection_profile_count": 9
+  },
+  "ledger_metadata": {
+    "schema_version": "master_skills_arsenal_graph_v1",
+    "extends": "master_candidate_skills_fact_ledger",
+    "design_source": "docs/reports/apps_rg/master_skills_arsenal_ledger_design.json",
+    "materialized_from": "apps_rg/fact_inventory/materialize_arsenal_from_design.py",
+    "status": "arsenal_ledger_requires_human_confirmation",
+    "candidate_fact_ledger_ref": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "w4a_hardened": true,
+    "pillar_count": 19,
+    "skill_row_count": 121,
+    "deep_agentic_row_count": 78,
+    "capability_domain_count": 14
+  }
+}

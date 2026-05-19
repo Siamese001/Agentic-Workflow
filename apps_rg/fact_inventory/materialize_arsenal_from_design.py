@@ -21,6 +21,29 @@ DOMAIN_TO_PILLAR: dict[str, str] = {
     "insurance_liabilities": "pillar_embedded_options_insurance",
 }
 
+PILLAR_REVOPS = "pillar_revenue_operations"
+
+REVOPS_SKILL_TO_PILLAR: dict[str, str] = {
+    "salesforce_pipeline_analytics": PILLAR_REVOPS,
+    "salesforce_forecast_pipeline": PILLAR_REVOPS,
+    "usage_based_subscription_forecasting": PILLAR_REVOPS,
+    "sales_forecasting_frameworks": PILLAR_REVOPS,
+    "multi_channel_gtm_alignment": PILLAR_REVOPS,
+}
+
+COMMERCIAL_SKILL_TO_PILLAR: dict[str, str] = {
+    "modernization_deals_15m": "pillar_revenue_commercialization",
+    "global_financial_institutions_sales_leadership": "pillar_customer_stakeholder",
+    "ibm_aws_alliance_joint_revenue": "pillar_partner_gtm_alliances",
+    "cloud_vendor_joint_gtm": "pillar_partner_gtm_alliances",
+    "finance_cost_optimization_dashboards": "pillar_strategic_finance_saas",
+    "ma_synergy_due_diligence": "pillar_strategic_finance_saas",
+    "net_revenue_retention_predictive_analytics": "pillar_customer_stakeholder",
+    "customer_satisfaction_nps_program": "pillar_customer_stakeholder",
+    "board_level_stakeholder_alignment": "pillar_executive_leadership",
+    "gtm_investment_pipeline_decisions": "pillar_revenue_operations",
+}
+
 PARTNER_SKILL_TO_PILLAR: dict[str, str] = {
     "aws_ecosystem": "pillar_cloud_data_aws",
     "cloud_partner_ecosystem": "pillar_cloud_data_aws",
@@ -89,6 +112,96 @@ def _matrix_actuarial_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _matrix_revops_row(row: dict[str, Any]) -> dict[str, Any]:
+    support = str(row["support_status"])
+    user_confirmed = support == "USER_CONFIRMED_PENDING_SOURCE"
+    activation, visibility, human_req = _activation_and_visibility(support, user_confirmed)
+    skill_key = str(row.get("skill") or "")
+    src_files = [str(row["source_resume_file"])] if row.get("source_resume_file") else []
+    snippets = [str(row["source_evidence"])] if row.get("source_evidence") else []
+    fact_links: list[str] = []
+    if row.get("linked_fact_id"):
+        fact_links.append(str(row["linked_fact_id"]))
+    risk_raw = str(row.get("risk_notes") or "low").lower()
+    evidence_risk = "medium" if "medium" in risk_raw else ("high" if "high" in risk_raw else "low")
+    ext_policy = (
+        "derived_supported_with_fact"
+        if support == "DERIVED_SUPPORTED" and fact_links
+        else "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    )
+    return {
+        "skill_id": row["skill_id"],
+        "fact_id_links": fact_links,
+        "pillar": REVOPS_SKILL_TO_PILLAR.get(skill_key, PILLAR_REVOPS),
+        "subpillar": skill_key,
+        "career_stage": "cross_career",
+        "source_resume_files": src_files,
+        "source_snippets": snippets,
+        "user_confirmed": user_confirmed,
+        "support_level": support,
+        "role_family_weights": _role_weights(list(row.get("role_relevance") or [])),
+        "allowed_phrases": list(row.get("allowed_phrases") or []),
+        "forbidden_phrases": [],
+        "allowed_sections": list(row.get("where_to_use") or []),
+        "visibility_rule": visibility,
+        "evidence_risk": evidence_risk,
+        "activation_status": activation,
+        "human_confirmation_required": human_req,
+        "external_claim_policy": ext_policy,
+        "projection_behavior": "rank_and_project_facts",
+        "career_epoch": "epoch_partner_gtm_revenue_leadership",
+        "domain_id": "domain_revenue_operations",
+        "domain": "Revenue Operations",
+        "capability": skill_key,
+    }
+
+
+def _matrix_commercial_row(row: dict[str, Any]) -> dict[str, Any]:
+    support = str(row["support_status"])
+    user_confirmed = support == "USER_CONFIRMED_PENDING_SOURCE"
+    activation, visibility, human_req = _activation_and_visibility(support, user_confirmed)
+    skill_key = str(row.get("skill") or "")
+    target_pillar = str(row.get("target_pillar") or "")
+    src_files = [str(row["source_resume_file"])] if row.get("source_resume_file") else []
+    snippets = [str(row["source_evidence"])] if row.get("source_evidence") else []
+    fact_links: list[str] = []
+    if row.get("linked_fact_id"):
+        fact_links.append(str(row["linked_fact_id"]))
+    risk_raw = str(row.get("risk_notes") or "low").lower()
+    evidence_risk = "medium" if "medium" in risk_raw else ("high" if "high" in risk_raw else "low")
+    ext_policy = (
+        "derived_supported_with_fact"
+        if support == "DERIVED_SUPPORTED" and fact_links
+        else "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    )
+    pillar = target_pillar or COMMERCIAL_SKILL_TO_PILLAR.get(skill_key, "pillar_revenue_commercialization")
+    return {
+        "skill_id": row["skill_id"],
+        "fact_id_links": fact_links,
+        "pillar": pillar,
+        "subpillar": skill_key,
+        "career_stage": "cross_career",
+        "source_resume_files": src_files,
+        "source_snippets": snippets,
+        "user_confirmed": user_confirmed,
+        "support_level": support,
+        "role_family_weights": _role_weights(list(row.get("role_relevance") or [])),
+        "allowed_phrases": list(row.get("allowed_phrases") or []),
+        "forbidden_phrases": [],
+        "allowed_sections": list(row.get("where_to_use") or []),
+        "visibility_rule": visibility,
+        "evidence_risk": evidence_risk,
+        "activation_status": activation,
+        "human_confirmation_required": human_req,
+        "external_claim_policy": ext_policy,
+        "projection_behavior": "rank_and_project_facts",
+        "career_epoch": "epoch_partner_gtm_revenue_leadership",
+        "domain_id": "domain_commercial_expansion",
+        "domain": "Commercial Expansion",
+        "capability": skill_key,
+    }
+
+
 def _matrix_partner_row(row: dict[str, Any]) -> dict[str, Any]:
     support = str(row["support_status"])
     user_confirmed = support == "USER_CONFIRMED_PENDING_SOURCE"
@@ -147,7 +260,9 @@ def _normalize_pillars(pillars: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def build_ledger_payload(design: dict[str, Any]) -> dict[str, Any]:
     actuarial_rows = [_matrix_actuarial_row(r) for r in design.get("actuarial_career_matrix") or []]
     partner_rows = [_matrix_partner_row(r) for r in design.get("partner_gtm_matrix") or []]
-    legacy_matrix = actuarial_rows + partner_rows
+    revops_rows = [_matrix_revops_row(r) for r in design.get("revenue_operations_matrix") or []]
+    commercial_rows = [_matrix_commercial_row(r) for r in design.get("commercial_expansion_matrix") or []]
+    legacy_matrix = actuarial_rows + partner_rows + revops_rows + commercial_rows
     pillars = _normalize_pillars(design.get("capability_taxonomy") or [])
 
     w4a = build_w4a_graph_package(pillars=pillars, legacy_skill_rows=legacy_matrix)
@@ -201,6 +316,8 @@ def build_ledger_payload(design: dict[str, Any]) -> dict[str, Any]:
         "skill_rows": skill_rows,
         "actuarial_career_matrix": design.get("actuarial_career_matrix") or [],
         "partner_gtm_matrix": design.get("partner_gtm_matrix") or [],
+        "revenue_operations_matrix": design.get("revenue_operations_matrix") or [],
+        "commercial_expansion_matrix": design.get("commercial_expansion_matrix") or [],
         "role_family_projection_profiles": design.get("role_family_projection_map") or {},
         "validation_rules": {
             "jd_briefing_never_proof": True,

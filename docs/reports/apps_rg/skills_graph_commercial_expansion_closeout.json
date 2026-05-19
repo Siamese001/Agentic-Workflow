@@ -1,0 +1,156 @@
+{
+  "generated_at_utc": "2026-05-18T23:33:34Z",
+  "status": "PASS",
+  "scope": "skills_graph_commercial_expansion",
+  "before_after_counts": {
+    "before": {
+      "pillar_count": 19,
+      "skill_row_count": 121,
+      "projection_profile_count": 9
+    },
+    "after": {
+      "pillar_count": 19,
+      "skill_row_count": 131,
+      "projection_profile_count": 9
+    }
+  },
+  "new_pillars": [],
+  "new_skills": [
+    {
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "pillar": "pillar_revenue_commercialization",
+      "linked_fact_id": "fact_sales_accounts_002",
+      "evidence_source": "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_sales_global_financial_institutions_leadership",
+      "pillar": "pillar_customer_stakeholder",
+      "linked_fact_id": "fact_sales_accounts_003",
+      "evidence_source": "Sales_-_Amit_Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "pillar": "pillar_partner_gtm_alliances",
+      "linked_fact_id": "fact_partnerships_gtm_002",
+      "evidence_source": "Partnerships_Alliances_-_Amit_Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+      "pillar": "pillar_partner_gtm_alliances",
+      "linked_fact_id": "fact_partnerships_gtm_004",
+      "evidence_source": "Sales_-_Amit_Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "pillar": "pillar_strategic_finance_saas",
+      "linked_fact_id": "fact_revenue_ops_004",
+      "evidence_source": "Strategic_Finance_-_Amit_Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "pillar": "pillar_strategic_finance_saas",
+      "linked_fact_id": "fact_revenue_ops_005",
+      "evidence_source": "Strategic_Finance_-_Amit_Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "pillar": "pillar_customer_stakeholder",
+      "linked_fact_id": null,
+      "evidence_source": "Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_customer_satisfaction_nps_25pct",
+      "pillar": "pillar_customer_stakeholder",
+      "linked_fact_id": null,
+      "evidence_source": "Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "pillar": "pillar_executive_leadership",
+      "linked_fact_id": null,
+      "evidence_source": "Sales_-_Amit_Ayer.txt",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "pillar": "pillar_revenue_operations",
+      "linked_fact_id": null,
+      "evidence_source": "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    }
+  ],
+  "facts_newly_wired": [
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_004",
+      "pillar_id": "pillar_partner_gtm_alliances",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "rejected_facts": [
+    {
+      "candidate_fact_id": "fact_customer_success_001",
+      "reason": "LOW confidence; archive-backed CS skills used instead of authoritative fact link"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_004",
+      "reason": "NEEDS_VERIFICATION; 93% renewal rate not wired"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_005",
+      "reason": "NEEDS_VERIFICATION; CRM forecasting uplift not wired"
+    }
+  ],
+  "unsupported_gaps": [
+    {
+      "gap_id": "marketing_demand_generation",
+      "reason": "No MEDIUM/HIGH candidate facts; only narrative marketing language in variants"
+    },
+    {
+      "gap_id": "primary_quota_carrying_ae",
+      "reason": "No confirmed personal quota scope as primary AE accountability"
+    },
+    {
+      "gap_id": "board_investor_relations_primary",
+      "reason": "Board alignment phrasing only; no investor-relations primary role evidence"
+    },
+    {
+      "gap_id": "marketing_org_pnl",
+      "reason": "VP Finance Sales & Marketing title does not establish marketing org P&L ownership"
+    }
+  ],
+  "skill_row_patches": [
+    {
+      "skill_id": "skill_partner_partner_revenue_3m",
+      "action": "linked_fact_id_set",
+      "linked_fact_id": "fact_partnerships_gtm_001",
+      "support_status": "DERIVED_SUPPORTED"
+    }
+  ],
+  "partner_revenue_3m_fact_wired": true,
+  "standalone_cro_role_family_added": false,
+  "verification": {
+    "apply_cro_projection_hardening": "exit 0",
+    "apply_commercial_skills_expansion": "exit 0",
+    "json_tool_ledger": "exit 0",
+    "pytest_fact_inventory": "81 passed",
+    "pytest_contract_skills_filter": "197 passed, 1 skipped"
+  },
+  "scope_control": {
+    "section_prompts_touched": false,
+    "agentic_core_touched": false,
+    "resume_pa_prompt_profile_touched": false
+  },
+  "explicit_non_claims": [
+    "No live LLM run",
+    "No JD/briefing used as proof",
+    "No SRFS/X2/X3 gate changes"
+  ]
+}

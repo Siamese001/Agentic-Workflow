@@ -7,8 +7,8 @@
     "status": "arsenal_ledger_requires_human_confirmation",
     "candidate_fact_ledger_ref": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
     "w4a_hardened": true,
-    "pillar_count": 18,
-    "skill_row_count": 116,
+    "pillar_count": 19,
+    "skill_row_count": 131,
     "deep_agentic_row_count": 78,
     "capability_domain_count": 14
   },
@@ -17,8 +17,8 @@
     "w4a_hardened": true,
     "primary_taxonomy": "capability_domain",
     "source_coded_taxonomy_forbidden_as_primary": true,
-    "node_count": 155,
-    "edge_count": 1058,
+    "node_count": 171,
+    "edge_count": 1144,
     "deep_agentic_row_count": 78
   },
   "graph_layers": [
@@ -208,7 +208,8 @@
       "source_refs": [
         "fact_partnerships_gtm_001",
         "fact_partnerships_gtm_002",
-        "fact_partnerships_gtm_003"
+        "fact_partnerships_gtm_003",
+        "fact_partnerships_gtm_004"
       ],
       "projection_behavior": "graph_structure",
       "external_claim_policy": "skill_projection_not_proof"
@@ -257,6 +258,24 @@
       "source_refs": [
         "fact_engineering_platform_006",
         "fact_sales_accounts_001",
+        "fact_revenue_ops_003",
+        "fact_sales_accounts_002"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "node_id": "pillar_revenue_operations",
+      "node_type": "domain_pillar",
+      "label": "Revenue Operations / Pipeline Governance",
+      "description": "Pipeline instrumentation, Salesforce analytics, forecasting rigor, and revenue process design across sales and finance.",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
         "fact_revenue_ops_003"
       ],
       "projection_behavior": "graph_structure",
@@ -429,7 +448,9 @@
       "source_refs": [
         "fact_revenue_ops_003",
         "fact_revenue_ops_005",
-        "fact_consulting_002"
+        "fact_consulting_002",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002"
       ],
       "projection_behavior": "graph_structure",
       "external_claim_policy": "skill_projection_not_proof"
@@ -444,7 +465,6 @@
       "activation_status": "DRAFT",
       "evidence_risk": "low",
       "source_refs": [
-        "fact_customer_success_001",
         "fact_sales_accounts_003",
         "fact_exec_001"
       ],
@@ -1146,6 +1166,201 @@
       "node_id": "skill_partner_partner_revenue_3m",
       "node_type": "skill_row",
       "label": "partner_revenue_3m",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_revops_salesforce_pipeline_analytics",
+      "node_type": "skill_row",
+      "label": "salesforce_pipeline_analytics",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_revops_salesforce_forecast_pipeline",
+      "node_type": "skill_row",
+      "label": "salesforce_forecast_pipeline",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_revops_usage_based_subscription_forecasting",
+      "node_type": "skill_row",
+      "label": "usage_based_subscription_forecasting",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_revops_sales_forecasting_frameworks",
+      "node_type": "skill_row",
+      "label": "sales_forecasting_frameworks",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_revops_multi_channel_gtm_alignment",
+      "node_type": "skill_row",
+      "label": "multi_channel_gtm_alignment",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_sales_modernization_deals_15m",
+      "node_type": "skill_row",
+      "label": "modernization_deals_15m",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_sales_global_financial_institutions_leadership",
+      "node_type": "skill_row",
+      "label": "global_financial_institutions_sales_leadership",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "node_type": "skill_row",
+      "label": "ibm_aws_alliance_joint_revenue",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "node_type": "skill_row",
+      "label": "cloud_vendor_joint_gtm",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_finance_cost_optimization_dashboards",
+      "node_type": "skill_row",
+      "label": "finance_cost_optimization_dashboards",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_finance_ma_synergy_due_diligence",
+      "node_type": "skill_row",
+      "label": "ma_synergy_due_diligence",
+      "description": "[",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "node_type": "skill_row",
+      "label": "net_revenue_retention_predictive_analytics",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_customer_satisfaction_nps_25pct",
+      "node_type": "skill_row",
+      "label": "customer_satisfaction_nps_program",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_commercial_board_level_stakeholder_alignment",
+      "node_type": "skill_row",
+      "label": "board_level_stakeholder_alignment",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "DRAFT",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_commercial_gtm_investment_pipeline",
+      "node_type": "skill_row",
+      "label": "gtm_investment_pipeline_decisions",
       "description": "[",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
@@ -2806,6 +3021,26 @@
       "edge_type": "identity_supported_by_pillar",
       "source_node_id": "identity_amit_ayer_governed_ai_platform_leader",
       "target_node_id": "pillar_revenue_commercialization",
+      "rationale": "Identity supported by pillar",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_pillar_epoch_partner_gtm_revenue_leadership_pillar_revenue_operations",
+      "edge_type": "epoch_contains_pillar",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "pillar_revenue_operations",
+      "rationale": "Epoch contains domain pillar",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_identity_pillar_pillar_revenue_operations",
+      "edge_type": "identity_supported_by_pillar",
+      "source_node_id": "identity_amit_ayer_governed_ai_platform_leader",
+      "target_node_id": "pillar_revenue_operations",
       "rationale": "Identity supported by pillar",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -4872,11 +5107,21 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_internal_only_skill_partner_partner_revenue_3m",
-      "edge_type": "skill_projection_only_internal",
+      "edge_id": "edge_skill_fact_skill_partner_partner_revenue_3m_fact_partnerships_gtm_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_partner_partner_revenue_3m",
+      "target_node_id": "fact_partnerships_gtm_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_partner_partner_revenue_3m",
+      "edge_type": "skill_external_claim_eligible",
       "source_node_id": "skill_partner_partner_revenue_3m",
       "target_node_id": "policy_external_claim_policy",
-      "rationale": "Internal ranking only",
+      "rationale": "Conditionally eligible when fact active",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -4887,6 +5132,836 @@
       "source_node_id": "skill_partner_partner_revenue_3m",
       "target_node_id": "section_unify_bullets",
       "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_revops_salesforce_pipeline_analytics",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_revenue_operations",
+      "target_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_revops_salesforce_pipeline_analytics",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_revops_salesforce_pipeline_analytics_fact_revenue_ops_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "target_node_id": "fact_revenue_ops_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_revops_salesforce_pipeline_analytics",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_salesforce_pipeline_analytics_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_salesforce_pipeline_analytics_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_salesforce_pipeline_analytics_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_salesforce_pipeline_analytics",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_revops_salesforce_forecast_pipeline",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_revenue_operations",
+      "target_node_id": "skill_revops_salesforce_forecast_pipeline",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_revops_salesforce_forecast_pipeline",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_revops_salesforce_forecast_pipeline",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_revops_salesforce_forecast_pipeline_fact_revenue_ops_002",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_revops_salesforce_forecast_pipeline",
+      "target_node_id": "fact_revenue_ops_002",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_revops_salesforce_forecast_pipeline",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_revops_salesforce_forecast_pipeline",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_salesforce_forecast_pipeline_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_salesforce_forecast_pipeline",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_salesforce_forecast_pipeline_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_salesforce_forecast_pipeline",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_revops_usage_based_subscription_forecasting",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_revenue_operations",
+      "target_node_id": "skill_revops_usage_based_subscription_forecasting",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_revops_usage_based_subscription_forecasting",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_revops_usage_based_subscription_forecasting",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_revops_usage_based_subscription_forecasting_fact_revenue_ops_003",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_revops_usage_based_subscription_forecasting",
+      "target_node_id": "fact_revenue_ops_003",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_revops_usage_based_subscription_forecasting",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_revops_usage_based_subscription_forecasting",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_usage_based_subscription_forecasting_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_usage_based_subscription_forecasting",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_usage_based_subscription_forecasting_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_usage_based_subscription_forecasting",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_revops_sales_forecasting_frameworks",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_revenue_operations",
+      "target_node_id": "skill_revops_sales_forecasting_frameworks",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_revops_sales_forecasting_frameworks",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_revops_sales_forecasting_frameworks",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_internal_only_skill_revops_sales_forecasting_frameworks",
+      "edge_type": "skill_projection_only_internal",
+      "source_node_id": "skill_revops_sales_forecasting_frameworks",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Internal ranking only",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_sales_forecasting_frameworks_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_sales_forecasting_frameworks",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_revops_multi_channel_gtm_alignment",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_revenue_operations",
+      "target_node_id": "skill_revops_multi_channel_gtm_alignment",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_revops_multi_channel_gtm_alignment",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_revops_multi_channel_gtm_alignment",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_internal_only_skill_revops_multi_channel_gtm_alignment",
+      "edge_type": "skill_projection_only_internal",
+      "source_node_id": "skill_revops_multi_channel_gtm_alignment",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Internal ranking only",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_multi_channel_gtm_alignment_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_multi_channel_gtm_alignment",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_revops_multi_channel_gtm_alignment_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_revops_multi_channel_gtm_alignment",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_sales_modernization_deals_15m",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_sales_modernization_deals_15m",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_sales_modernization_deals_15m",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_sales_modernization_deals_15m",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_sales_modernization_deals_15m_fact_sales_accounts_002",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_sales_modernization_deals_15m",
+      "target_node_id": "fact_sales_accounts_002",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_sales_modernization_deals_15m",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_sales_modernization_deals_15m",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_sales_modernization_deals_15m_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_sales_modernization_deals_15m",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_sales_modernization_deals_15m_ibm_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_sales_modernization_deals_15m",
+      "target_node_id": "section_ibm_bullets",
+      "rationale": "Allowed in ibm_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_sales_modernization_deals_15m_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_sales_modernization_deals_15m",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_sales_global_financial_institutions_leadership",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_sales_global_financial_institutions_leadership",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_sales_global_financial_institutions_leadership",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_sales_global_financial_institutions_leadership",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_sales_global_financial_institutions_leadership_fact_sales_accounts_003",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_sales_global_financial_institutions_leadership",
+      "target_node_id": "fact_sales_accounts_003",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_sales_global_financial_institutions_leadership",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_sales_global_financial_institutions_leadership",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_sales_global_financial_institutions_leadership_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_sales_global_financial_institutions_leadership",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_sales_global_financial_institutions_leadership_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_sales_global_financial_institutions_leadership",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_partner_ibm_aws_alliance_joint_revenue",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_partner_ibm_aws_alliance_joint_revenue",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_partner_ibm_aws_alliance_joint_revenue_fact_partnerships_gtm_002",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "target_node_id": "fact_partnerships_gtm_002",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_partner_ibm_aws_alliance_joint_revenue",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_partner_ibm_aws_alliance_joint_revenue_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_partner_ibm_aws_alliance_joint_revenue_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_partner_cloud_vendor_joint_gtm",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_partner_cloud_vendor_joint_gtm",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_partner_cloud_vendor_joint_gtm_fact_partnerships_gtm_004",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "target_node_id": "fact_partnerships_gtm_004",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_partner_cloud_vendor_joint_gtm",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_partner_cloud_vendor_joint_gtm_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_partner_cloud_vendor_joint_gtm_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_partner_cloud_vendor_joint_gtm",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_finance_cost_optimization_dashboards",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_finance_cost_optimization_dashboards",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_finance_cost_optimization_dashboards",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_finance_cost_optimization_dashboards",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_finance_cost_optimization_dashboards_fact_revenue_ops_004",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_finance_cost_optimization_dashboards",
+      "target_node_id": "fact_revenue_ops_004",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_finance_cost_optimization_dashboards",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_finance_cost_optimization_dashboards",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_finance_cost_optimization_dashboards_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_finance_cost_optimization_dashboards",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_finance_cost_optimization_dashboards_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_finance_cost_optimization_dashboards",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_finance_ma_synergy_due_diligence",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_finance_ma_synergy_due_diligence",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_finance_ma_synergy_due_diligence",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_finance_ma_synergy_due_diligence",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_finance_ma_synergy_due_diligence_fact_revenue_ops_005",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_finance_ma_synergy_due_diligence",
+      "target_node_id": "fact_revenue_ops_005",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_finance_ma_synergy_due_diligence",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_finance_ma_synergy_due_diligence",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_finance_ma_synergy_due_diligence_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_finance_ma_synergy_due_diligence",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_customer_nrr_predictive_analytics_20pct",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_customer_nrr_predictive_analytics_20pct",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_internal_only_skill_customer_nrr_predictive_analytics_20pct",
+      "edge_type": "skill_projection_only_internal",
+      "source_node_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Internal ranking only",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_customer_nrr_predictive_analytics_20pct_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_customer_nrr_predictive_analytics_20pct_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_customer_satisfaction_nps_25pct",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_customer_satisfaction_nps_25pct",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_customer_satisfaction_nps_25pct",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_customer_satisfaction_nps_25pct",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_internal_only_skill_customer_satisfaction_nps_25pct",
+      "edge_type": "skill_projection_only_internal",
+      "source_node_id": "skill_customer_satisfaction_nps_25pct",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Internal ranking only",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_customer_satisfaction_nps_25pct_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_customer_satisfaction_nps_25pct",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_customer_satisfaction_nps_25pct_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_customer_satisfaction_nps_25pct",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_commercial_board_level_stakeholder_alignment",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_commercial_board_level_stakeholder_alignment",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_commercial_board_level_stakeholder_alignment",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_commercial_board_level_stakeholder_alignment",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_internal_only_skill_commercial_board_level_stakeholder_alignment",
+      "edge_type": "skill_projection_only_internal",
+      "source_node_id": "skill_commercial_board_level_stakeholder_alignment",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Internal ranking only",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_commercial_board_level_stakeholder_alignment_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_commercial_board_level_stakeholder_alignment",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_commercial_board_level_stakeholder_alignment_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_commercial_board_level_stakeholder_alignment",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_commercial_gtm_investment_pipeline",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_commercial_expansion",
+      "target_node_id": "skill_commercial_gtm_investment_pipeline",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_commercial_gtm_investment_pipeline",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_partner_gtm_revenue_leadership",
+      "target_node_id": "skill_commercial_gtm_investment_pipeline",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_internal_only_skill_commercial_gtm_investment_pipeline",
+      "edge_type": "skill_projection_only_internal",
+      "source_node_id": "skill_commercial_gtm_investment_pipeline",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Internal ranking only",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_commercial_gtm_investment_pipeline_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_commercial_gtm_investment_pipeline",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -4942,20 +6017,20 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_governed_agentic_systems_architecture_repo_b4ff31",
+      "edge_id": "edge_skill_repo_skill_governed_agentic_systems_architecture_repo_c7c103",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_governed_agentic_systems_architecture",
-      "target_node_id": "repo_b4ff31",
+      "target_node_id": "repo_c7c103",
       "rationale": "Repo evidence: AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_governed_agentic_systems_architecture_repo_c785d7",
+      "edge_id": "edge_skill_repo_skill_governed_agentic_systems_architecture_repo_2519e7",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_governed_agentic_systems_architecture",
-      "target_node_id": "repo_c785d7",
+      "target_node_id": "repo_2519e7",
       "rationale": "Repo evidence: docs/architecture/adr/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5062,10 +6137,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_layered_runtime_spine_design_repo_41b1ca",
+      "edge_id": "edge_skill_repo_skill_layered_runtime_spine_design_repo_98216b",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_layered_runtime_spine_design",
-      "target_node_id": "repo_41b1ca",
+      "target_node_id": "repo_98216b",
       "rationale": "Repo evidence: .cursor/rules/000-agentic-core-operating-contract.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5172,10 +6247,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_agentic_control_plane_design_repo_da4a1a",
+      "edge_id": "edge_skill_repo_skill_agentic_control_plane_design_repo_749447",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_agentic_control_plane_design",
-      "target_node_id": "repo_da4a1a",
+      "target_node_id": "repo_749447",
       "rationale": "Repo evidence: agentic_core/AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5272,10 +6347,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_app_overlay_runtime_binding_repo_a7c43b",
+      "edge_id": "edge_skill_repo_skill_app_overlay_runtime_binding_repo_dad95f",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_app_overlay_runtime_binding",
-      "target_node_id": "repo_a7c43b",
+      "target_node_id": "repo_dad95f",
       "rationale": "Repo evidence: apps_rg/AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5372,10 +6447,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_reusable_agentic_platform_architecture_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_reusable_agentic_platform_architecture_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_reusable_agentic_platform_architecture",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5472,10 +6547,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_intent_interpretation_and_ambiguity_framing_repo_8dcc20",
+      "edge_id": "edge_skill_repo_skill_intent_interpretation_and_ambiguity_framing_repo_197cbc",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_intent_interpretation_and_ambiguity_framing",
-      "target_node_id": "repo_8dcc20",
+      "target_node_id": "repo_197cbc",
       "rationale": "Repo evidence: agentic_core/L2_execution/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5562,10 +6637,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_bounded_planning_contracts_repo_049076",
+      "edge_id": "edge_skill_repo_skill_bounded_planning_contracts_repo_481a19",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_bounded_planning_contracts",
-      "target_node_id": "repo_049076",
+      "target_node_id": "repo_481a19",
       "rationale": "Repo evidence: .cursor/rules/sequential-thinking-enforcement.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5652,10 +6727,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_lowest_viable_agency_design_repo_b4ff31",
+      "edge_id": "edge_skill_repo_skill_lowest_viable_agency_design_repo_c7c103",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_lowest_viable_agency_design",
-      "target_node_id": "repo_b4ff31",
+      "target_node_id": "repo_c7c103",
       "rationale": "Repo evidence: AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5742,10 +6817,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_task_decomposition_for_agentic_workflows_repo_b3eb83",
+      "edge_id": "edge_skill_repo_skill_task_decomposition_for_agentic_workflows_repo_43438d",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_task_decomposition_for_agentic_workflows",
-      "target_node_id": "repo_b3eb83",
+      "target_node_id": "repo_43438d",
       "rationale": "Repo evidence: agentic_core/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5832,10 +6907,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_planning_prior_and_policy_context_use_repo_2b742d",
+      "edge_id": "edge_skill_repo_skill_planning_prior_and_policy_context_use_repo_6f31ae",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_planning_prior_and_policy_context_use",
-      "target_node_id": "repo_2b742d",
+      "target_node_id": "repo_6f31ae",
       "rationale": "Repo evidence: .cursor/skills/refactor-decision-memory/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -5922,10 +6997,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_deterministic_route_selection_repo_c8934e",
+      "edge_id": "edge_skill_repo_skill_deterministic_route_selection_repo_df9afa",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_deterministic_route_selection",
-      "target_node_id": "repo_c8934e",
+      "target_node_id": "repo_df9afa",
       "rationale": "Repo evidence: apps_rg/runtime/orchestration/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6022,10 +7097,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_route_contract_design_repo_405374",
+      "edge_id": "edge_skill_repo_skill_route_contract_design_repo_ce6d00",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_route_contract_design",
-      "target_node_id": "repo_405374",
+      "target_node_id": "repo_ce6d00",
       "rationale": "Repo evidence: apps_rg/runtime/orchestration/canonical_dispatch.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6122,10 +7197,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_cache_fallback_grounded_action_routing_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_cache_fallback_grounded_action_routing_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_cache_fallback_grounded_action_routing",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6222,10 +7297,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_risk_and_hitl_route_posture_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_risk_and_hitl_route_posture_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_risk_and_hitl_route_posture",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6322,10 +7397,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_route_replay_and_idempotency_design_repo_116620",
+      "edge_id": "edge_skill_repo_skill_route_replay_and_idempotency_design_repo_009cf9",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_route_replay_and_idempotency_design",
-      "target_node_id": "repo_116620",
+      "target_node_id": "repo_009cf9",
       "rationale": "Repo evidence: apps_rg/runtime/proof_pool_resolver.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6422,10 +7497,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_managed_workflow_orchestration_repo_c8934e",
+      "edge_id": "edge_skill_repo_skill_managed_workflow_orchestration_repo_df9afa",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_managed_workflow_orchestration",
-      "target_node_id": "repo_c8934e",
+      "target_node_id": "repo_df9afa",
       "rationale": "Repo evidence: apps_rg/runtime/orchestration/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6522,10 +7597,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_dependency_and_join_control_repo_708e1c",
+      "edge_id": "edge_skill_repo_skill_dependency_and_join_control_repo_244b9e",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_dependency_and_join_control",
-      "target_node_id": "repo_708e1c",
+      "target_node_id": "repo_244b9e",
       "rationale": "Repo evidence: artifacts/adg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6622,10 +7697,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_bounded_fanout_and_retry_design_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_bounded_fanout_and_retry_design_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_bounded_fanout_and_retry_design",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6722,10 +7797,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_workflow_checkpointing_and_resumability_repo_b3eb83",
+      "edge_id": "edge_skill_repo_skill_workflow_checkpointing_and_resumability_repo_43438d",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_workflow_checkpointing_and_resumability",
-      "target_node_id": "repo_b3eb83",
+      "target_node_id": "repo_43438d",
       "rationale": "Repo evidence: agentic_core/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6812,10 +7887,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_multi_step_quality_loop_design_repo_08d876",
+      "edge_id": "edge_skill_repo_skill_multi_step_quality_loop_design_repo_518389",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_multi_step_quality_loop_design",
-      "target_node_id": "repo_08d876",
+      "target_node_id": "repo_518389",
       "rationale": "Repo evidence: apps_rg/runtime/validators/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -6922,10 +7997,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_context_engineering_repo_013bcd",
+      "edge_id": "edge_skill_repo_skill_context_engineering_repo_28a448",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_context_engineering",
-      "target_node_id": "repo_013bcd",
+      "target_node_id": "repo_28a448",
       "rationale": "Repo evidence: apps_rg/runtime/dispatch/input_authority_prompt_block.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7022,10 +8097,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_dense_sparse_exact_retrieval_design_repo_c9f407",
+      "edge_id": "edge_skill_repo_skill_dense_sparse_exact_retrieval_design_repo_f50b22",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_dense_sparse_exact_retrieval_design",
-      "target_node_id": "repo_c9f407",
+      "target_node_id": "repo_f50b22",
       "rationale": "Repo evidence: apps_rg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7122,10 +8197,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_metadata_acl_freshness_filtering_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_metadata_acl_freshness_filtering_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_metadata_acl_freshness_filtering",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7222,10 +8297,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_evidence_contract_design_repo_116620",
+      "edge_id": "edge_skill_repo_skill_evidence_contract_design_repo_009cf9",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_evidence_contract_design",
-      "target_node_id": "repo_116620",
+      "target_node_id": "repo_009cf9",
       "rationale": "Repo evidence: apps_rg/runtime/proof_pool_resolver.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7322,10 +8397,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_graph_aware_relationship_grounding_repo_708e1c",
+      "edge_id": "edge_skill_repo_skill_graph_aware_relationship_grounding_repo_244b9e",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_graph_aware_relationship_grounding",
-      "target_node_id": "repo_708e1c",
+      "target_node_id": "repo_244b9e",
       "rationale": "Repo evidence: artifacts/adg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7422,10 +8497,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_contradiction_and_lineage_handling_repo_dffbc1",
+      "edge_id": "edge_skill_repo_skill_contradiction_and_lineage_handling_repo_fbea34",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_contradiction_and_lineage_handling",
-      "target_node_id": "repo_dffbc1",
+      "target_node_id": "repo_fbea34",
       "rationale": "Repo evidence: apps_rg/fact_inventory/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7522,10 +8597,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_prompt_assembly_architecture_repo_44631f",
+      "edge_id": "edge_skill_repo_skill_prompt_assembly_architecture_repo_a12b1e",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_prompt_assembly_architecture",
-      "target_node_id": "repo_44631f",
+      "target_node_id": "repo_a12b1e",
       "rationale": "Repo evidence: apps_rg/runtime/dispatch/executive_summary_pa.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7622,10 +8697,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_instruction_data_boundary_design_repo_013bcd",
+      "edge_id": "edge_skill_repo_skill_instruction_data_boundary_design_repo_28a448",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_instruction_data_boundary_design",
-      "target_node_id": "repo_013bcd",
+      "target_node_id": "repo_28a448",
       "rationale": "Repo evidence: apps_rg/runtime/dispatch/input_authority_prompt_block.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7722,10 +8797,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_authority_ordered_prompt_packaging_repo_44631f",
+      "edge_id": "edge_skill_repo_skill_authority_ordered_prompt_packaging_repo_a12b1e",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_authority_ordered_prompt_packaging",
-      "target_node_id": "repo_44631f",
+      "target_node_id": "repo_a12b1e",
       "rationale": "Repo evidence: apps_rg/runtime/dispatch/executive_summary_pa.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7822,10 +8897,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_schema_bound_generation_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_schema_bound_generation_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_schema_bound_generation",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -7922,10 +8997,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_prompt_injection_airlock_design_repo_044642",
+      "edge_id": "edge_skill_repo_skill_prompt_injection_airlock_design_repo_28b582",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_prompt_injection_airlock_design",
-      "target_node_id": "repo_044642",
+      "target_node_id": "repo_28b582",
       "rationale": "Repo evidence: apps_rg/runtime/dispatch/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8022,10 +9097,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_bounded_agent_execution_repo_b4ff31",
+      "edge_id": "edge_skill_repo_skill_bounded_agent_execution_repo_c7c103",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_bounded_agent_execution",
-      "target_node_id": "repo_b4ff31",
+      "target_node_id": "repo_c7c103",
       "rationale": "Repo evidence: AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8122,10 +9197,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_tool_and_model_registry_control_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_tool_and_model_registry_control_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_tool_and_model_registry_control",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8212,10 +9287,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_sandboxed_execution_design_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_sandboxed_execution_design_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_sandboxed_execution_design",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8312,10 +9387,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_external_egress_control_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_external_egress_control_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_external_egress_control",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8412,10 +9487,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_side_effect_bounded_action_design_repo_41b1ca",
+      "edge_id": "edge_skill_repo_skill_side_effect_bounded_action_design_repo_98216b",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_side_effect_bounded_action_design",
-      "target_node_id": "repo_41b1ca",
+      "target_node_id": "repo_98216b",
       "rationale": "Repo evidence: .cursor/rules/000-agentic-core-operating-contract.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8512,10 +9587,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_no_direct_write_runtime_design_repo_b4ff31",
+      "edge_id": "edge_skill_repo_skill_no_direct_write_runtime_design_repo_c7c103",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_no_direct_write_runtime_design",
-      "target_node_id": "repo_b4ff31",
+      "target_node_id": "repo_c7c103",
       "rationale": "Repo evidence: AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8612,10 +9687,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_same_authority_runtime_repair_repo_01ef8d",
+      "edge_id": "edge_skill_repo_skill_same_authority_runtime_repair_repo_68fce9",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_same_authority_runtime_repair",
-      "target_node_id": "repo_01ef8d",
+      "target_node_id": "repo_68fce9",
       "rationale": "Repo evidence: agentic_core/L2_execution/healers/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8702,10 +9777,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_retry_and_thrash_guard_design_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_retry_and_thrash_guard_design_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_retry_and_thrash_guard_design",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8802,10 +9877,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_schema_and_output_repair_repo_5ef676",
+      "edge_id": "edge_skill_repo_skill_schema_and_output_repair_repo_8840a5",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_schema_and_output_repair",
-      "target_node_id": "repo_5ef676",
+      "target_node_id": "repo_8840a5",
       "rationale": "Repo evidence: apps_rg/runtime/sections/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8892,10 +9967,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_deterministic_trim_and_reformat_repo_2063d0",
+      "edge_id": "edge_skill_repo_skill_deterministic_trim_and_reformat_repo_65ef72",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_deterministic_trim_and_reformat",
-      "target_node_id": "repo_2063d0",
+      "target_node_id": "repo_65ef72",
       "rationale": "Repo evidence: apps_rg/runtime/sections/exec_summary_srfs_judge_safe.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -8982,10 +10057,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_runtime_resilience_controls_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_runtime_resilience_controls_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_runtime_resilience_controls",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9082,10 +10157,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_runtime_gate_mesh_design_repo_08d876",
+      "edge_id": "edge_skill_repo_skill_runtime_gate_mesh_design_repo_518389",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_runtime_gate_mesh_design",
-      "target_node_id": "repo_08d876",
+      "target_node_id": "repo_518389",
       "rationale": "Repo evidence: apps_rg/runtime/validators/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9182,10 +10257,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_fail_closed_gate_semantics_repo_b4ff31",
+      "edge_id": "edge_skill_repo_skill_fail_closed_gate_semantics_repo_c7c103",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_fail_closed_gate_semantics",
-      "target_node_id": "repo_b4ff31",
+      "target_node_id": "repo_c7c103",
       "rationale": "Repo evidence: AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9282,10 +10357,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_output_quality_and_schema_gates_repo_61cf23",
+      "edge_id": "edge_skill_repo_skill_output_quality_and_schema_gates_repo_41f3b1",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_output_quality_and_schema_gates",
-      "target_node_id": "repo_61cf23",
+      "target_node_id": "repo_41f3b1",
       "rationale": "Repo evidence: apps_rg/runtime/validators/executive_summary_x2.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9392,10 +10467,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_x1_x2_x3_exit_control_repo_812dce",
+      "edge_id": "edge_skill_repo_skill_x1_x2_x3_exit_control_repo_e1ff8f",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_x1_x2_x3_exit_control",
-      "target_node_id": "repo_812dce",
+      "target_node_id": "repo_e1ff8f",
       "rationale": "Repo evidence: apps_rg/runtime/exit/executive_summary_x3.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9492,10 +10567,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_llm_judge_packet_design_repo_cf9e7c",
+      "edge_id": "edge_skill_repo_skill_llm_judge_packet_design_repo_553ecb",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_llm_judge_packet_design",
-      "target_node_id": "repo_cf9e7c",
+      "target_node_id": "repo_553ecb",
       "rationale": "Repo evidence: apps_rg/runtime/judges/executive_summary_judge_packet.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9592,10 +10667,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_multi_judge_calibration_repo_cc28ac",
+      "edge_id": "edge_skill_repo_skill_multi_judge_calibration_repo_c3928e",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_multi_judge_calibration",
-      "target_node_id": "repo_cc28ac",
+      "target_node_id": "repo_c3928e",
       "rationale": "Repo evidence: apps_rg/runtime/judges/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9682,10 +10757,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_exit_disposition_governance_repo_e87a2a",
+      "edge_id": "edge_skill_repo_skill_exit_disposition_governance_repo_2a89a8",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_exit_disposition_governance",
-      "target_node_id": "repo_e87a2a",
+      "target_node_id": "repo_2a89a8",
       "rationale": "Repo evidence: apps_rg/runtime/exit/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9782,10 +10857,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_ai_governance_certification_repo_b1467a",
+      "edge_id": "edge_skill_repo_skill_ai_governance_certification_repo_14713d",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_ai_governance_certification",
-      "target_node_id": "repo_b1467a",
+      "target_node_id": "repo_14713d",
       "rationale": "Repo evidence: artifacts/certification/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9882,10 +10957,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_authority_and_registry_binding_repo_b3eb83",
+      "edge_id": "edge_skill_repo_skill_authority_and_registry_binding_repo_43438d",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_authority_and_registry_binding",
-      "target_node_id": "repo_b3eb83",
+      "target_node_id": "repo_43438d",
       "rationale": "Repo evidence: agentic_core/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -9982,10 +11057,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_policy_bound_runtime_design_repo_433bca",
+      "edge_id": "edge_skill_repo_skill_policy_bound_runtime_design_repo_95e1fb",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_policy_bound_runtime_design",
-      "target_node_id": "repo_433bca",
+      "target_node_id": "repo_95e1fb",
       "rationale": "Repo evidence: .cursor/rules/constitutional.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10082,10 +11157,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_origin_trust_and_content_boundary_repo_dffbc1",
+      "edge_id": "edge_skill_repo_skill_origin_trust_and_content_boundary_repo_fbea34",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_origin_trust_and_content_boundary",
-      "target_node_id": "repo_dffbc1",
+      "target_node_id": "repo_fbea34",
       "rationale": "Repo evidence: apps_rg/fact_inventory/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10182,10 +11257,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_provider_and_egress_governance_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_provider_and_egress_governance_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_provider_and_egress_governance",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10282,10 +11357,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_human_review_reclearance_controls_repo_9ec96a",
+      "edge_id": "edge_skill_repo_skill_human_review_reclearance_controls_repo_f6dee7",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_human_review_reclearance_controls",
-      "target_node_id": "repo_9ec96a",
+      "target_node_id": "repo_f6dee7",
       "rationale": "Repo evidence: apps_rg/fact_inventory/selected_role_fact_set.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10382,10 +11457,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_static_governance_drift_detection_repo_708e1c",
+      "edge_id": "edge_skill_repo_skill_static_governance_drift_detection_repo_244b9e",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_static_governance_drift_detection",
-      "target_node_id": "repo_708e1c",
+      "target_node_id": "repo_244b9e",
       "rationale": "Repo evidence: artifacts/adg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10492,10 +11567,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_replayable_runtime_design_repo_76bc88",
+      "edge_id": "edge_skill_repo_skill_replayable_runtime_design_repo_f9c178",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_replayable_runtime_design",
-      "target_node_id": "repo_76bc88",
+      "target_node_id": "repo_f9c178",
       "rationale": "Repo evidence: artifacts/apps_rg/runtime_proofs/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10592,10 +11667,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_audit_grade_observability_repo_cfe094",
+      "edge_id": "edge_skill_repo_skill_audit_grade_observability_repo_8578ce",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_audit_grade_observability",
-      "target_node_id": "repo_cfe094",
+      "target_node_id": "repo_8578ce",
       "rationale": "Repo evidence: tools/mcp/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10692,10 +11767,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_receipt_and_artifact_chain_design_repo_8fb026",
+      "edge_id": "edge_skill_repo_skill_receipt_and_artifact_chain_design_repo_a7f337",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_receipt_and_artifact_chain_design",
-      "target_node_id": "repo_8fb026",
+      "target_node_id": "repo_a7f337",
       "rationale": "Repo evidence: .cursor/rules/artifact-provenance-discipline.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10792,10 +11867,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_no_bypass_proof_controls_repo_5819ae",
+      "edge_id": "edge_skill_repo_skill_no_bypass_proof_controls_repo_a236d6",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_no_bypass_proof_controls",
-      "target_node_id": "repo_5819ae",
+      "target_node_id": "repo_a236d6",
       "rationale": "Repo evidence: .cursor/rules/002-pass-blocked-proof-contract.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10892,10 +11967,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_runtime_proof_bundle_design_repo_76bc88",
+      "edge_id": "edge_skill_repo_skill_runtime_proof_bundle_design_repo_f9c178",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_runtime_proof_bundle_design",
-      "target_node_id": "repo_76bc88",
+      "target_node_id": "repo_f9c178",
       "rationale": "Repo evidence: artifacts/apps_rg/runtime_proofs/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -10992,10 +12067,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_trace_and_reconstruction_design_repo_ba41a2",
+      "edge_id": "edge_skill_repo_skill_trace_and_reconstruction_design_repo_1bae51",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_trace_and_reconstruction_design",
-      "target_node_id": "repo_ba41a2",
+      "target_node_id": "repo_1bae51",
       "rationale": "Repo evidence: agentic_core/L6_observability/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11082,10 +12157,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_shadow_learning_design_repo_210f34",
+      "edge_id": "edge_skill_repo_skill_shadow_learning_design_repo_c9931b",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_shadow_learning_design",
-      "target_node_id": "repo_210f34",
+      "target_node_id": "repo_c9931b",
       "rationale": "Repo evidence: apps_rg/runtime/shadow/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11172,10 +12247,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_completed_run_evaluation_repo_b4ff31",
+      "edge_id": "edge_skill_repo_skill_completed_run_evaluation_repo_c7c103",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_completed_run_evaluation",
-      "target_node_id": "repo_b4ff31",
+      "target_node_id": "repo_c7c103",
       "rationale": "Repo evidence: AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11262,10 +12337,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_future_run_calibration_repo_210f34",
+      "edge_id": "edge_skill_repo_skill_future_run_calibration_repo_c9931b",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_future_run_calibration",
-      "target_node_id": "repo_210f34",
+      "target_node_id": "repo_c9931b",
       "rationale": "Repo evidence: apps_rg/runtime/shadow/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11352,10 +12427,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_eval_regression_and_gauntlet_design_repo_8b5498",
+      "edge_id": "edge_skill_repo_skill_eval_regression_and_gauntlet_design_repo_db9731",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_eval_regression_and_gauntlet_design",
-      "target_node_id": "repo_8b5498",
+      "target_node_id": "repo_db9731",
       "rationale": "Repo evidence: tests/_apps_contract/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11442,10 +12517,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_learning_firewall_controls_repo_749564",
+      "edge_id": "edge_skill_repo_skill_learning_firewall_controls_repo_1fee50",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_learning_firewall_controls",
-      "target_node_id": "repo_749564",
+      "target_node_id": "repo_1fee50",
       "rationale": "Repo evidence: .cursor/rules/evaluation-promotion-gate.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11542,10 +12617,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_hitl_escalation_architecture_repo_c1ce2d",
+      "edge_id": "edge_skill_repo_skill_hitl_escalation_architecture_repo_02ffc6",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_hitl_escalation_architecture",
-      "target_node_id": "repo_c1ce2d",
+      "target_node_id": "repo_02ffc6",
       "rationale": "Repo evidence: .cursor/rules/003-cursor-author-gate-hitl.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11642,10 +12717,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_approval_gated_workflow_design_repo_a8c68d",
+      "edge_id": "edge_skill_repo_skill_approval_gated_workflow_design_repo_1ed6fe",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_approval_gated_workflow_design",
-      "target_node_id": "repo_a8c68d",
+      "target_node_id": "repo_1ed6fe",
       "rationale": "Repo evidence: .cursor/rules/wave-completion-discipline.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11742,10 +12817,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_human_review_freeze_and_resume_repo_dffbc1",
+      "edge_id": "edge_skill_repo_skill_human_review_freeze_and_resume_repo_fbea34",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_human_review_freeze_and_resume",
-      "target_node_id": "repo_dffbc1",
+      "target_node_id": "repo_fbea34",
       "rationale": "Repo evidence: apps_rg/fact_inventory/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11842,10 +12917,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_agent_to_human_handoff_design_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_agent_to_human_handoff_design_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_agent_to_human_handoff_design",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -11942,10 +13017,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_confidence_based_escalation_repo_67f9e6",
+      "edge_id": "edge_skill_repo_skill_confidence_based_escalation_repo_1a0cc8",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_confidence_based_escalation",
-      "target_node_id": "repo_67f9e6",
+      "target_node_id": "repo_1a0cc8",
       "rationale": "Repo evidence: apps_rg/fact_inventory/candidate_fact_ledger.py",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -12042,10 +13117,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_agentic_platform_productization_repo_c9f407",
+      "edge_id": "edge_skill_repo_skill_agentic_platform_productization_repo_f50b22",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_agentic_platform_productization",
-      "target_node_id": "repo_c9f407",
+      "target_node_id": "repo_f50b22",
       "rationale": "Repo evidence: apps_rg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -12142,10 +13217,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_reusable_ai_ip_design_repo_a7c43b",
+      "edge_id": "edge_skill_repo_skill_reusable_ai_ip_design_repo_dad95f",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_reusable_ai_ip_design",
-      "target_node_id": "repo_a7c43b",
+      "target_node_id": "repo_dad95f",
       "rationale": "Repo evidence: apps_rg/AGENTS.md",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -12242,10 +13317,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_app_specific_runtime_overlay_design_repo_c9f407",
+      "edge_id": "edge_skill_repo_skill_app_specific_runtime_overlay_design_repo_f50b22",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_app_specific_runtime_overlay_design",
-      "target_node_id": "repo_c9f407",
+      "target_node_id": "repo_f50b22",
       "rationale": "Repo evidence: apps_rg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -12342,10 +13417,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_enterprise_workflow_adoption_repo_0ee2a2",
+      "edge_id": "edge_skill_repo_skill_enterprise_workflow_adoption_repo_ceba63",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_enterprise_workflow_adoption",
-      "target_node_id": "repo_0ee2a2",
+      "target_node_id": "repo_ceba63",
       "rationale": "Repo evidence: apps_rg/runtime/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -12442,10 +13517,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_operating_model_for_agentic_ai_repo_c9f407",
+      "edge_id": "edge_skill_repo_skill_operating_model_for_agentic_ai_repo_f50b22",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_operating_model_for_agentic_ai",
-      "target_node_id": "repo_c9f407",
+      "target_node_id": "repo_f50b22",
       "rationale": "Repo evidence: apps_rg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -12542,10 +13617,10 @@
       "validation_status": "validated"
     },
     {
-      "edge_id": "edge_skill_repo_skill_ai_platform_commercialization_repo_c9f407",
+      "edge_id": "edge_skill_repo_skill_ai_platform_commercialization_repo_f50b22",
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_ai_platform_commercialization",
-      "target_node_id": "repo_c9f407",
+      "target_node_id": "repo_f50b22",
       "rationale": "Repo evidence: apps_rg/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
@@ -18150,7 +19225,8 @@
       "linked_fact_ids": [
         "fact_partnerships_gtm_001",
         "fact_partnerships_gtm_002",
-        "fact_partnerships_gtm_003"
+        "fact_partnerships_gtm_003",
+        "fact_partnerships_gtm_004"
       ],
       "allowed_phrases": [
         "global AI channel program",
@@ -18309,7 +19385,8 @@
       "linked_fact_ids": [
         "fact_engineering_platform_006",
         "fact_sales_accounts_001",
-        "fact_revenue_ops_003"
+        "fact_revenue_ops_003",
+        "fact_sales_accounts_002"
       ],
       "allowed_phrases": [
         "$22M IP-led revenue",
@@ -18351,6 +19428,60 @@
       "user_confirmed_pending_source": [
         "owning_sales_and_revenue_targets_as_primary_role"
       ]
+    },
+    {
+      "pillar_id": "pillar_revenue_operations",
+      "name": "Revenue Operations / Pipeline Governance",
+      "description": "Pipeline instrumentation, Salesforce analytics, forecasting rigor, and revenue process design across sales and finance.",
+      "subskills": [
+        "salesforce_pipeline_analytics",
+        "salesforce_forecast_pipeline",
+        "usage_based_subscription_forecasting",
+        "sales_forecasting_frameworks",
+        "multi_channel_gtm_alignment",
+        "cpq_automation"
+      ],
+      "linked_fact_ids": [
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_003"
+      ],
+      "allowed_phrases": [
+        "$10M new ARR",
+        "$10M net-new revenue",
+        "Salesforce analytics",
+        "forecast pipeline",
+        "usage-based forecasting"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "personally carried $100M quota every year"
+      ],
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.85,
+        "STRATEGIC_FINANCE": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      },
+      "archive_snippets": [
+        "Designed analytics in Salesforce to prioritize high-potential deals",
+        "forecast pipeline in Salesforce that drove $10M in net-new revenue",
+        "Implemented robust sales forecasting frameworks, harmonizing CRM data"
+      ],
+      "evidence_sources": [
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "user_confirmed_pending_source": []
     },
     {
       "pillar_id": "pillar_executive_leadership",
@@ -18875,7 +20006,10 @@
       "linked_fact_ids": [
         "fact_revenue_ops_003",
         "fact_revenue_ops_005",
-        "fact_consulting_002"
+        "fact_consulting_002",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_004"
       ],
       "allowed_phrases": [
         "ARR",
@@ -18926,7 +20060,6 @@
         "customer_success"
       ],
       "linked_fact_ids": [
-        "fact_customer_success_001",
         "fact_sales_accounts_003",
         "fact_exec_001"
       ],
@@ -20709,7 +21842,9 @@
     },
     {
       "skill_id": "skill_partner_partner_revenue_3m",
-      "fact_id_links": [],
+      "fact_id_links": [
+        "fact_partnerships_gtm_001"
+      ],
       "pillar": "pillar_partner_gtm_alliances",
       "subpillar": "partner_revenue_3m",
       "career_stage": "cross_career",
@@ -20720,7 +21855,7 @@
         "3 million dollars in partner-derived revenue"
       ],
       "user_confirmed": false,
-      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "support_level": "DERIVED_SUPPORTED",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0
       },
@@ -20732,7 +21867,7 @@
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "low",
+      "evidence_risk": "medium",
       "activation_status": "DRAFT",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
@@ -20752,6 +21887,778 @@
       "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim partner_revenue_3m beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_revops_salesforce_pipeline_analytics",
+      "fact_id_links": [
+        "fact_revenue_ops_001"
+      ],
+      "pillar": "pillar_revenue_operations",
+      "subpillar": "salesforce_pipeline_analytics",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Revenue_Operations_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 1.0,
+        "STRATEGIC_FINANCE": 1.0
+      },
+      "allowed_phrases": [
+        "$10M new ARR",
+        "Salesforce analytics",
+        "prioritize high-potential deals"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "unify_bullets"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_revenue_operations",
+      "domain": "Revenue Operations",
+      "capability": "salesforce_pipeline_analytics",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "salesforce_pipeline_analytics"
+      ],
+      "achievement_framing_guidance": "Frame salesforce_pipeline_analytics with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim salesforce_pipeline_analytics beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_revops_salesforce_forecast_pipeline",
+      "fact_id_links": [
+        "fact_revenue_ops_002"
+      ],
+      "pillar": "pillar_revenue_operations",
+      "subpillar": "salesforce_forecast_pipeline",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ],
+      "source_snippets": [
+        "maintaining a forecast pipeline in Salesforce that drove $10M in net-new revenue"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 1.0
+      },
+      "allowed_phrases": [
+        "$10M net-new revenue",
+        "Salesforce forecast pipeline"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_revenue_operations",
+      "domain": "Revenue Operations",
+      "capability": "salesforce_forecast_pipeline",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "salesforce_forecast_pipeline"
+      ],
+      "achievement_framing_guidance": "Frame salesforce_forecast_pipeline with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim salesforce_forecast_pipeline beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_revops_usage_based_subscription_forecasting",
+      "fact_id_links": [
+        "fact_revenue_ops_003"
+      ],
+      "pillar": "pillar_revenue_operations",
+      "subpillar": "usage_based_subscription_forecasting",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "source_snippets": [
+        "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "STRATEGIC_FINANCE": 1.0,
+        "PRODUCT_TECHNICAL_STRATEGY": 1.0
+      },
+      "allowed_phrases": [
+        "usage-based forecasting",
+        "$5M recurring revenue",
+        "subscription pricing"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_revenue_operations",
+      "domain": "Revenue Operations",
+      "capability": "usage_based_subscription_forecasting",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "usage_based_subscription_forecasting"
+      ],
+      "achievement_framing_guidance": "Frame usage_based_subscription_forecasting with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim usage_based_subscription_forecasting beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_revops_sales_forecasting_frameworks",
+      "fact_id_links": [],
+      "pillar": "pillar_revenue_operations",
+      "subpillar": "sales_forecasting_frameworks",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Revenue_Operations_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Implemented robust sales forecasting frameworks, harmonizing CRM data with executive insights to drive accurate revenue projections"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "STRATEGIC_FINANCE": 1.0
+      },
+      "allowed_phrases": [
+        "sales forecasting frameworks",
+        "CRM data",
+        "revenue projections"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "competencies"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_revenue_operations",
+      "domain": "Revenue Operations",
+      "capability": "sales_forecasting_frameworks",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "sales_forecasting_frameworks"
+      ],
+      "achievement_framing_guidance": "Frame sales_forecasting_frameworks with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim sales_forecasting_frameworks beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_revops_multi_channel_gtm_alignment",
+      "fact_id_links": [],
+      "pillar": "pillar_revenue_operations",
+      "subpillar": "multi_channel_gtm_alignment",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Revenue_Operations_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Architected multi-channel GTM strategies, aligning marketing, product, and sales to expand market share and increase ARR"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "PARTNERSHIPS_GTM": 1.0,
+        "PRODUCT_TECHNICAL_STRATEGY": 1.0
+      },
+      "allowed_phrases": [
+        "multi-channel GTM",
+        "aligning marketing, product, and sales"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_revenue_operations",
+      "domain": "Revenue Operations",
+      "capability": "multi_channel_gtm_alignment",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "multi_channel_gtm_alignment"
+      ],
+      "achievement_framing_guidance": "Frame multi_channel_gtm_alignment with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim multi_channel_gtm_alignment beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "fact_id_links": [
+        "fact_sales_accounts_002"
+      ],
+      "pillar": "pillar_revenue_commercialization",
+      "subpillar": "modernization_deals_15m",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt"
+      ],
+      "source_snippets": [
+        "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%."
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "SALES_STRATEGIC_ACCOUNTS": 1.0,
+        "QUANT_TRADING_HPC": 1.0,
+        "CONSULTING_DELIVERY_LEADERSHIP": 1.0
+      },
+      "allowed_phrases": [
+        ">$15M deals",
+        "40% scenario runtime reduction",
+        "modernization deals"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "ibm_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "modernization_deals_15m",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "modernization_deals_15m"
+      ],
+      "achievement_framing_guidance": "Frame modernization_deals_15m with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim modernization_deals_15m beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_sales_global_financial_institutions_leadership",
+      "fact_id_links": [
+        "fact_sales_accounts_003"
+      ],
+      "pillar": "pillar_customer_stakeholder",
+      "subpillar": "global_financial_institutions_sales_leadership",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Sales_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Oversaw strategic sales engagements for top-tier financial institutions across EMEA, APAC, and North America, guiding a 20-member distributed sales team"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "SALES_STRATEGIC_ACCOUNTS": 1.0,
+        "EXECUTIVE_LEADERSHIP": 1.0
+      },
+      "allowed_phrases": [
+        "20-member distributed sales team",
+        "EMEA, APAC, and North America"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "global_financial_institutions_sales_leadership",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "global_financial_institutions_sales_leadership"
+      ],
+      "achievement_framing_guidance": "Frame global_financial_institutions_sales_leadership with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim global_financial_institutions_sales_leadership beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "fact_id_links": [
+        "fact_partnerships_gtm_002"
+      ],
+      "pillar": "pillar_partner_gtm_alliances",
+      "subpillar": "ibm_aws_alliance_joint_revenue",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Partnerships_Alliances_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 1.0
+      },
+      "allowed_phrases": [
+        "IBM\u2013AWS alliance",
+        "20% joint revenue",
+        "AI-driven sales frameworks"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "ibm_aws_alliance_joint_revenue",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "ibm_aws_alliance_joint_revenue"
+      ],
+      "achievement_framing_guidance": "Frame ibm_aws_alliance_joint_revenue with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim ibm_aws_alliance_joint_revenue beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+      "fact_id_links": [
+        "fact_partnerships_gtm_004"
+      ],
+      "pillar": "pillar_partner_gtm_alliances",
+      "subpillar": "cloud_vendor_joint_gtm",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Sales_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PRODUCT_TECHNICAL_STRATEGY": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 1.0
+      },
+      "allowed_phrases": [
+        "cloud and AI vendors",
+        "joint go-to-market",
+        "solution roadmaps"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "cloud_vendor_joint_gtm",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "cloud_vendor_joint_gtm"
+      ],
+      "achievement_framing_guidance": "Frame cloud_vendor_joint_gtm with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim cloud_vendor_joint_gtm beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "fact_id_links": [
+        "fact_revenue_ops_004"
+      ],
+      "pillar": "pillar_strategic_finance_saas",
+      "subpillar": "finance_cost_optimization_dashboards",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "STRATEGIC_FINANCE": 1.0,
+        "REVENUE_OPERATIONS": 1.0,
+        "DATA_ANALYTICS_LEADERSHIP": 1.0
+      },
+      "allowed_phrases": [
+        "30% cost optimization",
+        "budget dashboards",
+        "resource reallocation"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "finance_cost_optimization_dashboards",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "finance_cost_optimization_dashboards"
+      ],
+      "achievement_framing_guidance": "Frame finance_cost_optimization_dashboards with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim finance_cost_optimization_dashboards beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "fact_id_links": [
+        "fact_revenue_ops_005"
+      ],
+      "pillar": "pillar_strategic_finance_saas",
+      "subpillar": "ma_synergy_due_diligence",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Strategic_Finance_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities"
+      ],
+      "user_confirmed": false,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "STRATEGIC_FINANCE": 1.0,
+        "EXECUTIVE_LEADERSHIP": 1.0
+      },
+      "allowed_phrases": [
+        "M&A due diligence",
+        "synergy models",
+        "integration costs"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "ma_synergy_due_diligence",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "ma_synergy_due_diligence"
+      ],
+      "achievement_framing_guidance": "Frame ma_synergy_due_diligence with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim ma_synergy_due_diligence beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "fact_id_links": [],
+      "pillar": "pillar_customer_stakeholder",
+      "subpillar": "net_revenue_retention_predictive_analytics",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Head_of_Customer_Success_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Enhanced Net Revenue Retention by 20%: Introduced predictive analytics for early risk detection and built strategic alliances with professional services and technology firms"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "CUSTOMER_SUCCESS": 1.0,
+        "DATA_ANALYTICS_LEADERSHIP": 1.0
+      },
+      "allowed_phrases": [
+        "Net Revenue Retention by 20%",
+        "predictive analytics",
+        "early risk detection"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "net_revenue_retention_predictive_analytics",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "net_revenue_retention_predictive_analytics"
+      ],
+      "achievement_framing_guidance": "Frame net_revenue_retention_predictive_analytics with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim net_revenue_retention_predictive_analytics beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_customer_satisfaction_nps_25pct",
+      "fact_id_links": [],
+      "pillar": "pillar_customer_stakeholder",
+      "subpillar": "customer_satisfaction_nps_program",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Head_of_Customer_Success_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "Increased Customer Satisfaction by 25%: Integrated anomaly detection with a structured NPS feedback process"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "CUSTOMER_SUCCESS": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 1.0
+      },
+      "allowed_phrases": [
+        "Customer Satisfaction by 25%",
+        "NPS feedback",
+        "anomaly detection"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "customer_satisfaction_nps_program",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "customer_satisfaction_nps_program"
+      ],
+      "achievement_framing_guidance": "Frame customer_satisfaction_nps_program with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim customer_satisfaction_nps_program beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "fact_id_links": [],
+      "pillar": "pillar_executive_leadership",
+      "subpillar": "board_level_stakeholder_alignment",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Sales_-_Amit_Ayer.txt"
+      ],
+      "source_snippets": [
+        "aligning C level stakeholders around data centric solutions"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "EXECUTIVE_LEADERSHIP": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 1.0
+      },
+      "allowed_phrases": [
+        "board level priorities",
+        "C level stakeholders",
+        "data centric solutions"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary",
+        "headline"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "board_level_stakeholder_alignment",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "board_level_stakeholder_alignment"
+      ],
+      "achievement_framing_guidance": "Frame board_level_stakeholder_alignment with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim board_level_stakeholder_alignment beyond repo evidence and linked facts; fail closed if proof missing."
+    },
+    {
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "fact_id_links": [],
+      "pillar": "pillar_revenue_operations",
+      "subpillar": "gtm_investment_pipeline_decisions",
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ],
+      "source_snippets": [
+        "maintaining a forecast pipeline in Salesforce that drove $10M in net-new revenue and informed go-to-market investment decisions"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "STRATEGIC_FINANCE": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 1.0
+      },
+      "allowed_phrases": [
+        "go-to-market investment decisions",
+        "$10M net-new revenue",
+        "Salesforce pipeline"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "executive_summary"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "DRAFT",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_commercial_expansion",
+      "domain": "Commercial Expansion",
+      "capability": "gtm_investment_pipeline_decisions",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "gtm_investment_pipeline_decisions"
+      ],
+      "achievement_framing_guidance": "Frame gtm_investment_pipeline_decisions with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim gtm_investment_pipeline_decisions beyond repo evidence and linked facts; fail closed if proof missing."
     },
     {
       "skill_id": "skill_governed_agentic_systems_architecture",
@@ -26405,7 +28312,7 @@
       "description": "Partner-derived revenue metric",
       "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
       "source_evidence": "3 million dollars in partner-derived revenue",
-      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "support_status": "DERIVED_SUPPORTED",
       "allowed_phrases": [
         "partner-derived revenue"
       ],
@@ -26415,9 +28322,372 @@
       "where_to_use": [
         "unify_bullets"
       ],
-      "risk_notes": "Confirm Unify engagement scope.",
-      "linked_fact_id": null,
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_001; $3M partner-derived revenue.",
+      "linked_fact_id": "fact_partnerships_gtm_001",
       "skill_id": "skill_partner_partner_revenue_3m"
+    }
+  ],
+  "revenue_operations_matrix": [
+    {
+      "skill": "salesforce_pipeline_analytics",
+      "description": "Salesforce analytics prioritizing high-potential deals",
+      "source_resume_file": "Revenue_Operations_-_Amit_Ayer.txt",
+      "source_evidence": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "$10M new ARR",
+        "Salesforce analytics",
+        "prioritize high-potential deals"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact; metrics bound to fact_revenue_ops_001.",
+      "linked_fact_id": "fact_revenue_ops_001",
+      "skill_id": "skill_revops_salesforce_pipeline_analytics"
+    },
+    {
+      "skill": "salesforce_forecast_pipeline",
+      "description": "Salesforce forecast pipeline for net-new revenue",
+      "source_resume_file": "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "source_evidence": "maintaining a forecast pipeline in Salesforce that drove $10M in net-new revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "$10M net-new revenue",
+        "Salesforce forecast pipeline"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact; metrics bound to fact_revenue_ops_002.",
+      "linked_fact_id": "fact_revenue_ops_002",
+      "skill_id": "skill_revops_salesforce_forecast_pipeline"
+    },
+    {
+      "skill": "usage_based_subscription_forecasting",
+      "description": "Usage-based forecasting for subscription pricing and renewals",
+      "source_resume_file": "Strategic Finance - Amit Ayer.txt",
+      "source_evidence": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "usage-based forecasting",
+        "$5M recurring revenue",
+        "subscription pricing"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact; metrics bound to fact_revenue_ops_003.",
+      "linked_fact_id": "fact_revenue_ops_003",
+      "skill_id": "skill_revops_usage_based_subscription_forecasting"
+    },
+    {
+      "skill": "sales_forecasting_frameworks",
+      "description": "CRM-harmonized sales forecasting frameworks",
+      "source_resume_file": "Revenue_Operations_-_Amit_Ayer.txt",
+      "source_evidence": "Implemented robust sales forecasting frameworks, harmonizing CRM data with executive insights to drive accurate revenue projections",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "sales forecasting frameworks",
+        "CRM data",
+        "revenue projections"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use": [
+        "competencies"
+      ],
+      "risk_notes": "Archive-backed; no standalone candidate fact id.",
+      "linked_fact_id": null,
+      "skill_id": "skill_revops_sales_forecasting_frameworks"
+    },
+    {
+      "skill": "multi_channel_gtm_alignment",
+      "description": "Multi-channel GTM aligning marketing, product, and sales",
+      "source_resume_file": "Revenue_Operations_-_Amit_Ayer.txt",
+      "source_evidence": "Architected multi-channel GTM strategies, aligning marketing, product, and sales to expand market share and increase ARR",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "multi-channel GTM",
+        "aligning marketing, product, and sales"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "Archive GTM alignment only; not full marketing-org leadership proof.",
+      "linked_fact_id": null,
+      "skill_id": "skill_revops_multi_channel_gtm_alignment"
+    }
+  ],
+  "commercial_expansion_matrix": [
+    {
+      "skill": "modernization_deals_15m",
+      "description": "Multi-year modernization deals with HPC ROI proof",
+      "source_resume_file": "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+      "source_evidence": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        ">$15M deals",
+        "40% scenario runtime reduction",
+        "modernization deals"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "QUANT_TRADING_HPC",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "ibm_bullets",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_sales_accounts_002.",
+      "linked_fact_id": "fact_sales_accounts_002",
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "target_pillar": "pillar_revenue_commercialization"
+    },
+    {
+      "skill": "global_financial_institutions_sales_leadership",
+      "description": "Global financial-institution sales team leadership",
+      "source_resume_file": "Sales_-_Amit_Ayer.txt",
+      "source_evidence": "Oversaw strategic sales engagements for top-tier financial institutions across EMEA, APAC, and North America, guiding a 20-member distributed sales team",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "20-member distributed sales team",
+        "EMEA, APAC, and North America"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_sales_accounts_003.",
+      "linked_fact_id": "fact_sales_accounts_003",
+      "skill_id": "skill_sales_global_financial_institutions_leadership",
+      "target_pillar": "pillar_customer_stakeholder"
+    },
+    {
+      "skill": "ibm_aws_alliance_joint_revenue",
+      "description": "IBM\u2013AWS alliance joint revenue growth frameworks",
+      "source_resume_file": "Partnerships_Alliances_-_Amit_Ayer.txt",
+      "source_evidence": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "IBM\u2013AWS alliance",
+        "20% joint revenue",
+        "AI-driven sales frameworks"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_002.",
+      "linked_fact_id": "fact_partnerships_gtm_002",
+      "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "target_pillar": "pillar_partner_gtm_alliances"
+    },
+    {
+      "skill": "cloud_vendor_joint_gtm",
+      "description": "Cloud and AI vendor joint GTM roadmaps",
+      "source_resume_file": "Sales_-_Amit_Ayer.txt",
+      "source_evidence": "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "cloud and AI vendors",
+        "joint go-to-market",
+        "solution roadmaps"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_004.",
+      "linked_fact_id": "fact_partnerships_gtm_004",
+      "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+      "target_pillar": "pillar_partner_gtm_alliances"
+    },
+    {
+      "skill": "finance_cost_optimization_dashboards",
+      "description": "Budget dashboards and resource reallocation for finance leaders",
+      "source_resume_file": "Strategic_Finance_-_Amit_Ayer.txt",
+      "source_evidence": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "30% cost optimization",
+        "budget dashboards",
+        "resource reallocation"
+      ],
+      "role_relevance": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_revenue_ops_004.",
+      "linked_fact_id": "fact_revenue_ops_004",
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "target_pillar": "pillar_strategic_finance_saas"
+    },
+    {
+      "skill": "ma_synergy_due_diligence",
+      "description": "M&A due diligence and synergy modeling",
+      "source_resume_file": "Strategic_Finance_-_Amit_Ayer.txt",
+      "source_evidence": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "M&A due diligence",
+        "synergy models",
+        "integration costs"
+      ],
+      "role_relevance": [
+        "STRATEGIC_FINANCE",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_revenue_ops_005.",
+      "linked_fact_id": "fact_revenue_ops_005",
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "target_pillar": "pillar_strategic_finance_saas"
+    },
+    {
+      "skill": "net_revenue_retention_predictive_analytics",
+      "description": "Predictive analytics for net revenue retention (archive variant)",
+      "source_resume_file": "Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "source_evidence": "Enhanced Net Revenue Retention by 20%: Introduced predictive analytics for early risk detection and built strategic alliances with professional services and technology firms",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Net Revenue Retention by 20%",
+        "predictive analytics",
+        "early risk detection"
+      ],
+      "role_relevance": [
+        "CUSTOMER_SUCCESS",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "Archive-only; no MEDIUM/HIGH candidate fact \u2014 not linked to fact_customer_success_001 (LOW).",
+      "linked_fact_id": null,
+      "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "target_pillar": "pillar_customer_stakeholder"
+    },
+    {
+      "skill": "customer_satisfaction_nps_program",
+      "description": "NPS and satisfaction program tied to anomaly detection",
+      "source_resume_file": "Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "source_evidence": "Increased Customer Satisfaction by 25%: Integrated anomaly detection with a structured NPS feedback process",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Customer Satisfaction by 25%",
+        "NPS feedback",
+        "anomaly detection"
+      ],
+      "role_relevance": [
+        "CUSTOMER_SUCCESS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "Archive-only; no authoritative candidate fact id.",
+      "linked_fact_id": null,
+      "skill_id": "skill_customer_satisfaction_nps_25pct",
+      "target_pillar": "pillar_customer_stakeholder"
+    },
+    {
+      "skill": "board_level_stakeholder_alignment",
+      "description": "Board-level stakeholder alignment on data-centric solutions",
+      "source_resume_file": "Sales_-_Amit_Ayer.txt",
+      "source_evidence": "aligning C level stakeholders around data centric solutions",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "board level priorities",
+        "C level stakeholders",
+        "data centric solutions"
+      ],
+      "role_relevance": [
+        "EXECUTIVE_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "Executive fluency signal only; not primary board/investor relations role.",
+      "linked_fact_id": null,
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "target_pillar": "pillar_executive_leadership"
+    },
+    {
+      "skill": "gtm_investment_pipeline_decisions",
+      "description": "GTM investment decisions informed by Salesforce pipeline",
+      "source_resume_file": "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "source_evidence": "maintaining a forecast pipeline in Salesforce that drove $10M in net-new revenue and informed go-to-market investment decisions",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "go-to-market investment decisions",
+        "$10M net-new revenue",
+        "Salesforce pipeline"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "Archive complements fact_revenue_ops_002; no duplicate fact link on this row.",
+      "linked_fact_id": null,
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "target_pillar": "pillar_revenue_operations"
     }
   ],
   "role_family_projection_profiles": {
@@ -26651,6 +28921,74 @@
           "weight": 0.85
         }
       ]
+    },
+    "CHIEF_REVENUE_OFFICER_COMPOSITE": {
+      "label": "Chief Revenue Officer (composite projection)",
+      "profile_kind": "composite_role_family_projection",
+      "taxonomy_ids": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "PARTNERSHIPS_GTM",
+        "CUSTOMER_SUCCESS",
+        "STRATEGIC_FINANCE",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.95,
+        "PARTNERSHIPS_GTM": 0.9,
+        "CUSTOMER_SUCCESS": 0.85,
+        "STRATEGIC_FINANCE": 0.8,
+        "EXECUTIVE_LEADERSHIP": 0.75,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.7
+      },
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_revenue_operations",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_revenue_commercialization",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_customer_stakeholder",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_strategic_finance_saas",
+          "weight": 0.75
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.7
+        }
+      ],
+      "deprioritize_pillars": [
+        "pillar_derivatives_structured",
+        "pillar_greeks_hedging",
+        "pillar_actuarial_foundation",
+        "pillar_embedded_options_insurance",
+        "pillar_trading_hpc",
+        "pillar_agentic_ai_platforms"
+      ],
+      "executive_summary_skill_budget": {
+        "pipeline_revops": 2,
+        "commercialization": 2,
+        "partnerships_gtm": 2,
+        "customer_lifecycle": 1,
+        "executive_operating_model": 1
+      },
+      "notes": "Composite projection only; not a canonical role_families taxonomy id."
     }
   },
   "validation_rules": {

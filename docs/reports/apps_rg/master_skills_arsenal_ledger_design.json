@@ -157,7 +157,8 @@
       "linked_fact_ids": [
         "fact_partnerships_gtm_001",
         "fact_partnerships_gtm_002",
-        "fact_partnerships_gtm_003"
+        "fact_partnerships_gtm_003",
+        "fact_partnerships_gtm_004"
       ],
       "allowed_phrases": [
         "global AI channel program",
@@ -318,7 +319,8 @@
       "linked_fact_ids": [
         "fact_engineering_platform_006",
         "fact_sales_accounts_001",
-        "fact_revenue_ops_003"
+        "fact_revenue_ops_003",
+        "fact_sales_accounts_002"
       ],
       "allowed_phrases": [
         "$22M IP-led revenue",
@@ -340,6 +342,60 @@
         "headline": true,
         "executive_summary": true,
         "competencies": false,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_revenue_operations",
+      "name": "Revenue Operations / Pipeline Governance",
+      "description": "Pipeline instrumentation, Salesforce analytics, forecasting rigor, and revenue process design across sales and finance.",
+      "subskills": [
+        "salesforce_pipeline_analytics",
+        "salesforce_forecast_pipeline",
+        "usage_based_subscription_forecasting",
+        "sales_forecasting_frameworks",
+        "multi_channel_gtm_alignment",
+        "cpq_automation"
+      ],
+      "evidence_sources": [
+        "Revenue_Operations_-_Amit_Ayer.txt",
+        "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "archive_snippets": [
+        "Designed analytics in Salesforce to prioritize high-potential deals",
+        "forecast pipeline in Salesforce that drove $10M in net-new revenue",
+        "Implemented robust sales forecasting frameworks, harmonizing CRM data"
+      ],
+      "user_confirmed_pending_source": [],
+      "linked_fact_ids": [
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_003"
+      ],
+      "allowed_phrases": [
+        "$10M new ARR",
+        "$10M net-new revenue",
+        "Salesforce analytics",
+        "forecast pipeline",
+        "usage-based forecasting"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "personally carried $100M quota every year"
+      ],
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.85,
+        "STRATEGIC_FINANCE": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
         "unify_bullets": true,
         "unify_narrative": true,
         "ibm_bullets": false,
@@ -880,7 +936,10 @@
       "linked_fact_ids": [
         "fact_revenue_ops_003",
         "fact_revenue_ops_005",
-        "fact_consulting_002"
+        "fact_consulting_002",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_004"
       ],
       "allowed_phrases": [
         "ARR",
@@ -932,7 +991,6 @@
       ],
       "user_confirmed_pending_source": [],
       "linked_fact_ids": [
-        "fact_customer_success_001",
         "fact_sales_accounts_003",
         "fact_exec_001"
       ],
@@ -1768,7 +1826,7 @@
       "description": "Partner-derived revenue metric",
       "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
       "source_evidence": "3 million dollars in partner-derived revenue",
-      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "support_status": "DERIVED_SUPPORTED",
       "allowed_phrases": [
         "partner-derived revenue"
       ],
@@ -1778,8 +1836,8 @@
       "where_to_use": [
         "unify_bullets"
       ],
-      "risk_notes": "Confirm Unify engagement scope.",
-      "linked_fact_id": null,
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_001; $3M partner-derived revenue.",
+      "linked_fact_id": "fact_partnerships_gtm_001",
       "skill_id": "skill_partner_partner_revenue_3m"
     }
   ],
@@ -2064,6 +2122,74 @@
           "weight": 0.85
         }
       ]
+    },
+    "CHIEF_REVENUE_OFFICER_COMPOSITE": {
+      "label": "Chief Revenue Officer (composite projection)",
+      "profile_kind": "composite_role_family_projection",
+      "taxonomy_ids": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "PARTNERSHIPS_GTM",
+        "CUSTOMER_SUCCESS",
+        "STRATEGIC_FINANCE",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "role_family_weights": {
+        "REVENUE_OPERATIONS": 1.0,
+        "SALES_STRATEGIC_ACCOUNTS": 0.95,
+        "PARTNERSHIPS_GTM": 0.9,
+        "CUSTOMER_SUCCESS": 0.85,
+        "STRATEGIC_FINANCE": 0.8,
+        "EXECUTIVE_LEADERSHIP": 0.75,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.7
+      },
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_revenue_operations",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_revenue_commercialization",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_customer_stakeholder",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_strategic_finance_saas",
+          "weight": 0.75
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.7
+        }
+      ],
+      "deprioritize_pillars": [
+        "pillar_derivatives_structured",
+        "pillar_greeks_hedging",
+        "pillar_actuarial_foundation",
+        "pillar_embedded_options_insurance",
+        "pillar_trading_hpc",
+        "pillar_agentic_ai_platforms"
+      ],
+      "executive_summary_skill_budget": {
+        "pipeline_revops": 2,
+        "commercialization": 2,
+        "partnerships_gtm": 2,
+        "customer_lifecycle": 1,
+        "executive_operating_model": 1
+      },
+      "notes": "Composite projection only; not a canonical role_families taxonomy id."
     }
   },
   "executive_summary_impact": {
@@ -2085,10 +2211,376 @@
   },
   "honest_caveat": "Embedded options, structured derivatives, insurance liabilities, delta/rho/convexity, and partner engineering are USER_CONFIRMED_PENDING_SOURCE\u2014no dedicated archive lines found. Archive 'embedded' elsewhere means DevSecOps/embedded analytics, not insurance embedded options. Revenue-target claims are context-specific (e.g., TraderSense 110%); verify employer scope before activation.",
   "stats": {
-    "pillar_count": 18,
+    "pillar_count": 19,
     "actuarial_matrix_rows": 22,
     "partner_gtm_matrix_rows": 16,
     "pending_source_rows": 9,
-    "linked_existing_facts": 42
-  }
+    "linked_existing_facts": 42,
+    "revenue_operations_matrix_rows": 5,
+    "role_family_projection_profile_count": 9,
+    "commercial_expansion_matrix_rows": 10
+  },
+  "revenue_operations_matrix": [
+    {
+      "skill": "salesforce_pipeline_analytics",
+      "description": "Salesforce analytics prioritizing high-potential deals",
+      "source_resume_file": "Revenue_Operations_-_Amit_Ayer.txt",
+      "source_evidence": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "$10M new ARR",
+        "Salesforce analytics",
+        "prioritize high-potential deals"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact; metrics bound to fact_revenue_ops_001.",
+      "linked_fact_id": "fact_revenue_ops_001",
+      "skill_id": "skill_revops_salesforce_pipeline_analytics"
+    },
+    {
+      "skill": "salesforce_forecast_pipeline",
+      "description": "Salesforce forecast pipeline for net-new revenue",
+      "source_resume_file": "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "source_evidence": "maintaining a forecast pipeline in Salesforce that drove $10M in net-new revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "$10M net-new revenue",
+        "Salesforce forecast pipeline"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact; metrics bound to fact_revenue_ops_002.",
+      "linked_fact_id": "fact_revenue_ops_002",
+      "skill_id": "skill_revops_salesforce_forecast_pipeline"
+    },
+    {
+      "skill": "usage_based_subscription_forecasting",
+      "description": "Usage-based forecasting for subscription pricing and renewals",
+      "source_resume_file": "Strategic Finance - Amit Ayer.txt",
+      "source_evidence": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "usage-based forecasting",
+        "$5M recurring revenue",
+        "subscription pricing"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact; metrics bound to fact_revenue_ops_003.",
+      "linked_fact_id": "fact_revenue_ops_003",
+      "skill_id": "skill_revops_usage_based_subscription_forecasting"
+    },
+    {
+      "skill": "sales_forecasting_frameworks",
+      "description": "CRM-harmonized sales forecasting frameworks",
+      "source_resume_file": "Revenue_Operations_-_Amit_Ayer.txt",
+      "source_evidence": "Implemented robust sales forecasting frameworks, harmonizing CRM data with executive insights to drive accurate revenue projections",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "sales forecasting frameworks",
+        "CRM data",
+        "revenue projections"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "where_to_use": [
+        "competencies"
+      ],
+      "risk_notes": "Archive-backed; no standalone candidate fact id.",
+      "linked_fact_id": null,
+      "skill_id": "skill_revops_sales_forecasting_frameworks"
+    },
+    {
+      "skill": "multi_channel_gtm_alignment",
+      "description": "Multi-channel GTM aligning marketing, product, and sales",
+      "source_resume_file": "Revenue_Operations_-_Amit_Ayer.txt",
+      "source_evidence": "Architected multi-channel GTM strategies, aligning marketing, product, and sales to expand market share and increase ARR",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "multi-channel GTM",
+        "aligning marketing, product, and sales"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "Archive GTM alignment only; not full marketing-org leadership proof.",
+      "linked_fact_id": null,
+      "skill_id": "skill_revops_multi_channel_gtm_alignment"
+    }
+  ],
+  "commercial_expansion_matrix": [
+    {
+      "skill": "modernization_deals_15m",
+      "description": "Multi-year modernization deals with HPC ROI proof",
+      "source_resume_file": "Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+      "source_evidence": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        ">$15M deals",
+        "40% scenario runtime reduction",
+        "modernization deals"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "QUANT_TRADING_HPC",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "ibm_bullets",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_sales_accounts_002.",
+      "linked_fact_id": "fact_sales_accounts_002",
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "target_pillar": "pillar_revenue_commercialization"
+    },
+    {
+      "skill": "global_financial_institutions_sales_leadership",
+      "description": "Global financial-institution sales team leadership",
+      "source_resume_file": "Sales_-_Amit_Ayer.txt",
+      "source_evidence": "Oversaw strategic sales engagements for top-tier financial institutions across EMEA, APAC, and North America, guiding a 20-member distributed sales team",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "20-member distributed sales team",
+        "EMEA, APAC, and North America"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_sales_accounts_003.",
+      "linked_fact_id": "fact_sales_accounts_003",
+      "skill_id": "skill_sales_global_financial_institutions_leadership",
+      "target_pillar": "pillar_customer_stakeholder"
+    },
+    {
+      "skill": "ibm_aws_alliance_joint_revenue",
+      "description": "IBM\u2013AWS alliance joint revenue growth frameworks",
+      "source_resume_file": "Partnerships_Alliances_-_Amit_Ayer.txt",
+      "source_evidence": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "IBM\u2013AWS alliance",
+        "20% joint revenue",
+        "AI-driven sales frameworks"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_002.",
+      "linked_fact_id": "fact_partnerships_gtm_002",
+      "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "target_pillar": "pillar_partner_gtm_alliances"
+    },
+    {
+      "skill": "cloud_vendor_joint_gtm",
+      "description": "Cloud and AI vendor joint GTM roadmaps",
+      "source_resume_file": "Sales_-_Amit_Ayer.txt",
+      "source_evidence": "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "cloud and AI vendors",
+        "joint go-to-market",
+        "solution roadmaps"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_004.",
+      "linked_fact_id": "fact_partnerships_gtm_004",
+      "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+      "target_pillar": "pillar_partner_gtm_alliances"
+    },
+    {
+      "skill": "finance_cost_optimization_dashboards",
+      "description": "Budget dashboards and resource reallocation for finance leaders",
+      "source_resume_file": "Strategic_Finance_-_Amit_Ayer.txt",
+      "source_evidence": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "30% cost optimization",
+        "budget dashboards",
+        "resource reallocation"
+      ],
+      "role_relevance": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_revenue_ops_004.",
+      "linked_fact_id": "fact_revenue_ops_004",
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "target_pillar": "pillar_strategic_finance_saas"
+    },
+    {
+      "skill": "ma_synergy_due_diligence",
+      "description": "M&A due diligence and synergy modeling",
+      "source_resume_file": "Strategic_Finance_-_Amit_Ayer.txt",
+      "source_evidence": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "M&A due diligence",
+        "synergy models",
+        "integration costs"
+      ],
+      "role_relevance": [
+        "STRATEGIC_FINANCE",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_revenue_ops_005.",
+      "linked_fact_id": "fact_revenue_ops_005",
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "target_pillar": "pillar_strategic_finance_saas"
+    },
+    {
+      "skill": "net_revenue_retention_predictive_analytics",
+      "description": "Predictive analytics for net revenue retention (archive variant)",
+      "source_resume_file": "Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "source_evidence": "Enhanced Net Revenue Retention by 20%: Introduced predictive analytics for early risk detection and built strategic alliances with professional services and technology firms",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Net Revenue Retention by 20%",
+        "predictive analytics",
+        "early risk detection"
+      ],
+      "role_relevance": [
+        "CUSTOMER_SUCCESS",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "Archive-only; no MEDIUM/HIGH candidate fact \u2014 not linked to fact_customer_success_001 (LOW).",
+      "linked_fact_id": null,
+      "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
+      "target_pillar": "pillar_customer_stakeholder"
+    },
+    {
+      "skill": "customer_satisfaction_nps_program",
+      "description": "NPS and satisfaction program tied to anomaly detection",
+      "source_resume_file": "Head_of_Customer_Success_-_Amit_Ayer.txt",
+      "source_evidence": "Increased Customer Satisfaction by 25%: Integrated anomaly detection with a structured NPS feedback process",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Customer Satisfaction by 25%",
+        "NPS feedback",
+        "anomaly detection"
+      ],
+      "role_relevance": [
+        "CUSTOMER_SUCCESS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "Archive-only; no authoritative candidate fact id.",
+      "linked_fact_id": null,
+      "skill_id": "skill_customer_satisfaction_nps_25pct",
+      "target_pillar": "pillar_customer_stakeholder"
+    },
+    {
+      "skill": "board_level_stakeholder_alignment",
+      "description": "Board-level stakeholder alignment on data-centric solutions",
+      "source_resume_file": "Sales_-_Amit_Ayer.txt",
+      "source_evidence": "aligning C level stakeholders around data centric solutions",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "board level priorities",
+        "C level stakeholders",
+        "data centric solutions"
+      ],
+      "role_relevance": [
+        "EXECUTIVE_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "Executive fluency signal only; not primary board/investor relations role.",
+      "linked_fact_id": null,
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "target_pillar": "pillar_executive_leadership"
+    },
+    {
+      "skill": "gtm_investment_pipeline_decisions",
+      "description": "GTM investment decisions informed by Salesforce pipeline",
+      "source_resume_file": "Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+      "source_evidence": "maintaining a forecast pipeline in Salesforce that drove $10M in net-new revenue and informed go-to-market investment decisions",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "go-to-market investment decisions",
+        "$10M net-new revenue",
+        "Salesforce pipeline"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "Archive complements fact_revenue_ops_002; no duplicate fact link on this row.",
+      "linked_fact_id": null,
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "target_pillar": "pillar_revenue_operations"
+    }
+  ]
 }
