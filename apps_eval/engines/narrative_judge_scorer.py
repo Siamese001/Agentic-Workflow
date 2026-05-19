@@ -23,16 +23,16 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 import yaml
 
-from apps_rg.integrations.anti_overfitting import (
+from apps_shared.adapters.rg_integrations_facade import (
     AntiOverfittingConfig,
     GateResult,
+    LengthBudget,
     gate_adjacent_repetition,
     gate_buzzword_soup,
     gate_filler_intensifiers,
     gate_mirror_density,
     gate_pipe_format,
 )
-from apps_rg.integrations.length_budget import LengthBudget
 
 _log = logging.getLogger(__name__)
 
@@ -173,8 +173,8 @@ class NarrativeJudgeScorer:
             return qwen_scores
 
         try:
-            from apps_rg.integrations.hops._llm_client import call_judge
-        except ImportError:
+            from apps_shared.adapters.rg_integrations_facade import call_judge
+        except (ImportError, AttributeError):
             return {}
 
         result = call_judge(prompt)

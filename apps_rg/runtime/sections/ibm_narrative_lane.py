@@ -1,22 +1,24 @@
 """Canonical IBM narrative lane — ``python -m apps_rg --section ibm_narrative``.
 
-``ibm_narrative_dispatch`` holds shared ``run_ibm_narrative_execution`` (compile / provider / gates / L6);
-its ``python -m`` entry is retired—use the selected-section CLI only.
+``ibm_narrative_lane_execution`` is execution SSOT; ``ibm_narrative_dispatch`` holds shared helpers and compat re-exports.
+Legacy ``python -m ...ibm_narrative_dispatch`` is retired—use ``python -m apps_rg --section ibm_narrative``.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from apps_rg.runtime.dispatch.ibm_narrative_dispatch import (
+from apps_rg.runtime.sections.ibm_narrative_lane_defaults import (
     BRIEFING_DEFAULT,
     JD_TEXT_DEFAULT,
+    NARRATIVE_TEMP_DEFAULT as IBM_NARRATIVE_TEMP_DEFAULT,
     PROMPT_ID,
     REPO_ROOT,
     TARGET_COMPANY_DEFAULT,
     TARGET_TITLE_DEFAULT,
-    NARRATIVE_TEMP_DEFAULT as IBM_NARRATIVE_TEMP_DEFAULT,
-    run_ibm_narrative_execution,
+)
+from apps_rg.runtime.sections.ibm_narrative_lane_execution import (
+    run_ibm_narrative_lane_execution as _execute_ibm_narrative_lane,
 )
 
 LANE_KEY = "ibm_narrative"
@@ -31,7 +33,7 @@ def run_ibm_narrative_lane_execution(
     artifact_dir_override: Path | None = None,
 ):
     """Invoke shared IBM narrative execution with canonical lane provenance in prompt_selection_trace."""
-    return run_ibm_narrative_execution(
+    return _execute_ibm_narrative_lane(
         args,
         artifact_dir_override=artifact_dir_override,
         trace_runtime_path="apps_rg.runtime.sections.ibm_narrative_lane",

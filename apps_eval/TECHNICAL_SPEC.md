@@ -46,7 +46,7 @@ Stateless class. `run_suite(suite_id, display_name, scenario_ids, timeout_sec) â
 - `agentic_core.L0_routing.enforcement.policy_hash_enforcer` (3 scenarios)
 - `agentic_core.L5_safety.static_checks.determinism_serialization_check` (3 scenarios)
 - `apps_exec.reasoning.ExecOrchestrator` (3 scenarios)
-- `apps_rg.reasoning.RgResumeOrchestrator` (3 scenarios)
+- `apps_shared.adapters.rg_orchestrator_facade.RgResumeOrchestrator` (3 scenarios; W11 Phase C facade route)
 - `agentic_core.interfaces.execution_contracts` (2 scenarios)
 
 All use `try/except ImportError` â†’ `ScenarioOutcome.SKIP` if module unavailable in eval env.

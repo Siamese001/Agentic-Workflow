@@ -1,0 +1,129 @@
+{
+  "phase": "D",
+  "plan_id": "apps_rg_legacy_dependency_burndown",
+  "plan_disk_ssot": ".cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md",
+  "executed_at": "2026-05-19",
+  "status": "PARTIAL",
+  "status_note": "Scoped lane/dispatch seam proof PASS; user-prescribed `pytest tests -k ...` exits 1 due to 52 unrelated collection errors under PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+  "scope": "Shrink competencies_dispatch / ibm_narrative_dispatch execution; lane_execution SSOT; dispatch helpers + lazy compat re-exports",
+  "dispatch_execution_map": {
+    "competencies": {
+      "before": {
+        "dispatch_module_lines": 2232,
+        "execution_in": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+        "entry_run_fn": "run_competencies_execution",
+        "canonical_cli": "python -m apps_rg --section competencies via competencies_lane"
+      },
+      "after": {
+        "dispatch_module_lines": 1574,
+        "execution_in": "apps_rg/runtime/sections/competencies_lane_execution.py",
+        "dispatch_retains": "compile/repair helpers, run_dispatch/build_parser (deprecated CLI), lazy __getattr__ re-export",
+        "compat_reexport": "apps_rg.runtime.dispatch.competencies_dispatch.run_competencies_execution"
+      }
+    },
+    "ibm_narrative": {
+      "before": {
+        "dispatch_module_lines": 1288,
+        "execution_in": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+        "entry_run_fn": "run_ibm_narrative_execution",
+        "canonical_cli": "python -m apps_rg --section ibm_narrative via ibm_narrative_lane"
+      },
+      "after": {
+        "dispatch_module_lines": 647,
+        "execution_in": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
+        "dispatch_retains": "parse/normalize/metric-trim helpers, lazy __getattr__ re-export, deprecated __main__",
+        "compat_reexport": "apps_rg.runtime.dispatch.ibm_narrative_dispatch.run_ibm_narrative_execution"
+      }
+    }
+  },
+  "migrated": [
+    {
+      "symbol": "run_competencies_lane_execution",
+      "from": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "to": "apps_rg/runtime/sections/competencies_lane_execution.py"
+    },
+    {
+      "symbol": "run_ibm_narrative_lane_execution",
+      "from": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "to": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py"
+    }
+  ],
+  "retained_compat": [
+    "apps_rg/runtime/dispatch/competencies_dispatch.py — helpers + run_dispatch + PEP562 lazy run_* re-export",
+    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py — helpers + PEP562 lazy run_* re-export",
+    "run_competencies_execution / run_ibm_narrative_execution compat aliases on lane_execution modules",
+    "tests importing repair helpers from dispatch (unchanged public helper surface)",
+    "headline_lane imports build_resume_support_blob/load_companion_context from competencies_dispatch"
+  ],
+  "blockers": [
+    {
+      "id": "helper_extraction_deferred",
+      "reason": "Moving ~1.4k lines of competencies repair helpers to a neutral module would touch headline_lane and multiple contract tests — out of Phase D narrow scope"
+    },
+    {
+      "id": "full_tree_pytest_collection",
+      "reason": "pytest tests -k ... with PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 reports 52 collection errors unrelated to dispatch split; scoped paths pass"
+    }
+  ],
+  "quarantine_readiness": {
+    "competencies_dispatch": "EXECUTION_REMOVED — helpers-only + lazy compat; __main__ deprecated CLI exit 2; DELETE_GATE not met (module + helper fan-in remain)",
+    "ibm_narrative_dispatch": "EXECUTION_REMOVED — helpers-only + lazy compat; __main__ deprecated CLI exit 2; DELETE_GATE not met",
+    "canonical_product_path": "apps_rg.runtime.sections.*_lane_execution via canonical_dispatch",
+    "archive_phase": "E (BLOCKED until fan-in zero)"
+  },
+  "behavior_change": false,
+  "runtime_change": false,
+  "next_action": "Phase E gated archive — only after dispatch helper fan-in burn-down (or helper module extraction)",
+  "orthogonal_to_other_sessions": {
+    "executive_summary_cursor_chat": {
+      "transcript_id": "17c779f9-1065-4362-9bdf-dae0471e23c9",
+      "focus": "executive_summary CLI mandatory inputs (fail-closed --target-company/--target-role/--jd/--manual-brief)",
+      "typical_files": [
+        "apps_rg/runtime/sections/executive_summary_lane.py",
+        "apps_rg/runtime/section_cli_defaults.py",
+        "apps_rg/runtime/orchestration/canonical_dispatch.py (_run_executive_summary_lane_from_cli)",
+        "tests/_apps_contract/test_exec_summary_cli.py",
+        "tests/unit/apps_rg/test_executive_summary_cli_mandatory_inputs.py"
+      ],
+      "overlap_with_phase_d": "none — Phase D did not edit any executive_summary module or mandatory-input policy"
+    }
+  },
+  "non_claims": [
+    "No live apps_rg proof run",
+    "No archive/delete of dispatch modules",
+    "No X2/X3 gate weakening",
+    "No executive_summary lane or CLI mandatory-input changes (separate session)",
+    "Full-repo pytest tests/ collection not clean under plugin autoload disable"
+  ],
+  "commands": [
+    {
+      "command": "python -m compileall agentic_core apps_rg apps_shared apps_eval -q",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract tests/unit/apps_rg/runtime/sections tests/unit/apps_rg -k \"competencies and (canonical or lane or x2 or x3)\" -p no:xdist -p pytest_timeout",
+      "result": "59 passed, 1 collection error (unrelated exec_summary_pa_w4c_guardrails)"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract tests/unit/apps_rg/runtime/sections -k \"ibm_narrative and (canonical or lane or x2 or x3)\" -p no:xdist -p pytest_timeout",
+      "result": "19 passed, 1 collection error (unrelated)"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_apps_rg_deprecated_path_quarantine.py tests/_apps_contract/test_apps_rg_canonical_runtime_hygiene.py -p no:xdist -p pytest_timeout",
+      "result": "28 passed"
+    }
+  ],
+  "files_changed": [
+    "apps_rg/runtime/dispatch/competencies_dispatch.py",
+    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+    "apps_rg/runtime/sections/competencies_lane_execution.py",
+    "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
+    "apps_rg/runtime/sections/competencies_lane.py",
+    "apps_rg/runtime/sections/ibm_narrative_lane.py",
+    "tests/unit/apps_rg/runtime/sections/test_lane_pa_helper_parity.py",
+    "tools/cursor/phase_d_split_dispatch_execution.py",
+    ".cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md",
+    "docs/reports/apps_rg/legacy_dependency_burndown_phase_d.md",
+    "docs/reports/apps_rg/legacy_dependency_burndown_phase_d.json"
+  ]
+}

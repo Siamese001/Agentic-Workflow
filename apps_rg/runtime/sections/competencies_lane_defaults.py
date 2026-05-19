@@ -1,0 +1,28 @@
+"""Module-level CLI defaults for the competencies lane (neutral SSOT)."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
+from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
+
+PROMPT_ID = "competencies_dispatch_v1"
+COMPETENCIES_TEMP_DEFAULT = 0.38
+TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
+TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
+JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
+BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
+COMPETENCIES_QWEN_MAX_TOKENS = 2800
+LANE_KEY = "competencies"
+
+
+def _find_repo_root() -> Path:
+    here = Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        if (parent / "apps_rg" / "resume" / "base").exists():
+            return parent
+    return Path.cwd()
+
+
+REPO_ROOT = _find_repo_root()

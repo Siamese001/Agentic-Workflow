@@ -1,0 +1,140 @@
+{
+  "phase": "D2",
+  "plan_id": "apps_rg_legacy_dependency_burndown",
+  "plan_disk_ssot": ".cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md",
+  "executed_at": "2026-05-19",
+  "status": "PARTIAL",
+  "status_note": "Helper extraction + dispatch re-export parity PASS; prescribed broad `pytest tests/_apps_contract -k competencies or ibm_narrative` exits 1 (44 failures — many unrelated name matches); 2 scoped contract tests fail on OFFLINE_CONTRACT_STUB X2/X3 (not object-identity regressions)",
+  "scope": "Reduce dispatch helper fan-in for competencies_dispatch / ibm_narrative_dispatch without archive/delete",
+  "helper_fanin_before": {
+    "apps_rg_production_imports": [
+      "headline_lane → competencies_dispatch (build_resume_support_blob, load_companion_context, load_base_resume)",
+      "competencies_lane → competencies_dispatch (lane CLI defaults)",
+      "ibm_narrative_lane → ibm_narrative_dispatch (lane CLI defaults + REPO_ROOT)",
+      "ibm_narrative_dispatch → competencies_dispatch (collect_employment_bullets)",
+      "proof_pool_resolver → competencies_dispatch (collect_employment_bullets lazy default)",
+      "competencies_x2_diagnostics → competencies_dispatch (term_phrase)",
+      "proof_pool_source_fact_validation → competencies_dispatch (write_json lazy)"
+    ],
+    "dispatch_module_lines": {
+      "competencies_dispatch": 1574,
+      "ibm_narrative_dispatch": 647
+    }
+  },
+  "helpers_extracted": [
+    {
+      "symbols": ["sha16", "write_json"],
+      "to": "apps_rg/runtime/sections/lane_artifact_io.py",
+      "fan_in_redirected": ["proof_pool_source_fact_validation"]
+    },
+    {
+      "symbols": ["COMPANION_LANES", "load_companion_context", "build_resume_support_blob", "build_c0_proof_support_blob"],
+      "to": "apps_rg/runtime/sections/companion_lane_context.py",
+      "fan_in_redirected": ["headline_lane (companion helpers only)"]
+    },
+    {
+      "symbols": ["term_phrase"],
+      "to": "apps_rg/runtime/sections/competencies_term_phrase.py",
+      "fan_in_redirected": ["competencies_x2_diagnostics"]
+    },
+    {
+      "symbols": [
+        "PROMPT_ID",
+        "COMPETENCIES_TEMP_DEFAULT",
+        "TARGET_*",
+        "JD_TEXT_DEFAULT",
+        "BRIEFING_DEFAULT",
+        "COMPETENCIES_QWEN_MAX_TOKENS",
+        "REPO_ROOT",
+        "LANE_KEY"
+      ],
+      "to": "apps_rg/runtime/sections/competencies_lane_defaults.py",
+      "fan_in_redirected": ["competencies_lane"]
+    },
+    {
+      "symbols": [
+        "PROMPT_ID",
+        "NARRATIVE_TEMP_DEFAULT",
+        "TARGET_*",
+        "JD_TEXT_DEFAULT",
+        "BRIEFING_DEFAULT",
+        "NARRATIVE_QWEN_MAX_TOKENS",
+        "REPO_ROOT",
+        "LANE_KEY"
+      ],
+      "to": "apps_rg/runtime/sections/ibm_narrative_lane_defaults.py",
+      "fan_in_redirected": ["ibm_narrative_lane"]
+    },
+    {
+      "symbols": [
+        "truncate_narrative_after_first_metric_hit",
+        "collapse_narrative_sentence_for_companion_metric_budget"
+      ],
+      "to": "apps_rg/runtime/sections/ibm_narrative_metric_trim.py",
+      "fan_in_redirected": []
+    },
+    {
+      "symbols": ["clarify_x3_for_competencies_live_provider_preflight"],
+      "to": "apps_rg/runtime/exit/competencies_x3.py",
+      "fan_in_redirected": []
+    },
+    {
+      "symbols": ["collect_employment_bullets"],
+      "to": "apps_rg/runtime/sections/resume_employment_bullets.py (pre-existing SSOT)",
+      "fan_in_redirected": ["proof_pool_resolver", "ibm_narrative_dispatch internal import"]
+    }
+  ],
+  "reexports_kept": [
+    "apps_rg.runtime.dispatch.competencies_dispatch — all extracted symbols remain importable with `is` identity to sections/exit SSOT",
+    "apps_rg.runtime.dispatch.ibm_narrative_dispatch — lane defaults, artifact I/O, metric trim, collect_employment_bullets re-exports"
+  ],
+  "helper_fanin_after": {
+    "apps_rg_production_imports_from_dispatch": [
+      "headline_lane → competencies_dispatch (load_base_resume only)",
+      "competencies_lane_execution / ibm_narrative_lane_execution — hydrate from dispatch (repair stack)",
+      "canonical_dispatch — string reference only",
+      "competencies_live_provider_gate — docstring reference"
+    ],
+    "dispatch_module_lines": {
+      "competencies_dispatch": 1476,
+      "ibm_narrative_dispatch": 551
+    },
+    "git_grep_dispatch_imports_apps_rg_tests_docs": 8
+  },
+  "blockers": [
+    {
+      "id": "competencies_repair_stack",
+      "reason": "~1.2k lines of repair/coerce/collapse helpers remain in competencies_dispatch; moving would touch headline_lane hydrate path and many contract tests — skipped per risky-move rule"
+    },
+    {
+      "id": "load_base_resume",
+      "reason": "Thin wrapper over load_lane_base_resume_json(REPO_ROOT); only headline_lane fan-in — low ROI vs cycle risk"
+    },
+    {
+      "id": "broad_pytest_k_filter",
+      "reason": "User-prescribed `-k competencies or ibm_narrative` matches 198 tests including unrelated PA/profile/CLI suites; 44 failures not isolated to D2 seam"
+    }
+  ],
+  "quarantine_readiness": {
+    "competencies_dispatch": "HELPERS_REDUCED — production fan-in lowered; contract tests still import repair helpers; DELETE_GATE not met",
+    "ibm_narrative_dispatch": "HELPERS_REDUCED — metric trim + defaults extracted; DELETE_GATE not met",
+    "archive_phase": "E (BLOCKED)"
+  },
+  "behavior_change": false,
+  "runtime_change": false,
+  "next_action": "Phase E gated archive only after repair-helper fan-in burn-down or explicit DELETE_GATE waiver; optional: move load_base_resume to resume_resolution neutral module",
+  "orthogonal_to_other_sessions": {
+    "executive_summary_cursor_chat": {
+      "transcript_id": "17c779f9-1065-4362-9bdf-dae0471e23c9",
+      "note": "Unrelated — exec-summary CLI mandatory inputs; no competencies/ibm dispatch helper extraction"
+    }
+  },
+  "commands": {
+    "compileall": {"exit_code": 0},
+    "git_grep_dispatch": {"exit_code": 0, "matches": 8},
+    "test_lane_pa_helper_parity": {"exit_code": 0, "passed": 13},
+    "quarantine_hygiene": {"exit_code": 0, "passed": 28},
+    "apps_contract_k_filter": {"exit_code": 1, "passed": 153, "failed": 44, "errors": 2},
+    "scoped_seam_subset": {"exit_code": 1, "passed": 68, "failed": 3, "note": "2 OFFLINE_CONTRACT_STUB X2/X3; 1 test updated to lane_execution SSOT (fixed)"}
+  }
+}

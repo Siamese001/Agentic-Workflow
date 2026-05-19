@@ -39,7 +39,7 @@ APP_DOMAIN_HARNESS_PARITY_FAIL_CLOSED=1 python ops_scripts/ci/check_app_domain_h
 |---------------------------|----------------------------------------|-----------|
 | `routing_enforcement`     | L0 routing enforcement                 | 3         |
 | `determinism_contracts`   | L5 static analysis                     | 3         |
-| `orchestration_hop`       | apps_rg orchestration                  | 3         |
+| `orchestration_hop`       | rg_orchestrator_facade (apps_rg eval)  | 3         |
 | `output_contracts`        | agentic_core execution contracts       | 2         |
 
 ## Scorecard Dimensions

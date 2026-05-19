@@ -1,9 +1,14 @@
 """Shared section proof-pool resolution for apps_rg canonical lanes.
 
+P2 all-section graph-skills authority (P2-W1A+): every canonical section resolves
+``augmented_skills_graph`` by default. ``broad_skills_ledger`` and base-resume fallback
+are not product proof authority (fail closed).
+
 Resolution order:
-1. SelectedRoleFactSet (SRFS) when path supplied
-2. Broad skills ledger (default SSOT) when loadable
-3. Base resume employment bullets (explicit fallback)
+1. SelectedRoleFactSet (SRFS) when path supplied (explicit override)
+2. Augmented skills graph (default for all SECTION_KEYS)
+3. Broad skills ledger — deprecated, unreachable from product path
+4. Base resume fallback — deprecated for graph sections
 """
 from __future__ import annotations
 
@@ -198,6 +203,7 @@ def _ledger_company_hint_slice(
 
 
 def _build_competencies_ledger_plan(high_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """DEPRECATED — not reachable from competencies product proof (P2-W1A: graph-only authority)."""
     high = [r for r in high_rows if str(r.get("confidence") or "").upper() == "HIGH"]
     high.sort(
         key=lambda r: (
@@ -245,11 +251,11 @@ def _allocate_from_ledger(
     taxonomy_path: Path,
 ) -> tuple[dict[str, Any], list[str], set[str]]:
     if section_id == "competencies":
-        rows = ledger.get("candidate_facts") or []
-        if not isinstance(rows, list):
-            raise ValueError("candidate_facts malformed")
-        plan = _build_competencies_ledger_plan([r for r in rows if isinstance(r, dict)])
-        return _sanitize_plan(plan), list(plan["_allowed_ordered"]), set(plan["_allowed_set"])
+        raise ValueError(
+            "competencies product proof authority is augmented_skills_graph only; "
+            "_build_competencies_ledger_plan / broad_skills_ledger_competencies is deprecated "
+            "and unreachable from resolve_section_proof_pool"
+        )
 
     jd_d = _sha256_hex(jd_text.strip())[:64]
     br_d = _sha256_hex(briefing_text.strip())[:64]
@@ -275,10 +281,6 @@ def _allocate_from_ledger(
         taxonomy_ref=str(taxonomy_path),
     )
     slice_rows = list(srfs.selected_facts_by_section.get(section_id) or [])
-    if section_id == "competencies" and not slice_rows:
-        rows = ledger.get("candidate_facts") or []
-        plan = _build_competencies_ledger_plan([r for r in rows if isinstance(r, dict)])
-        return _sanitize_plan(plan), list(plan["_allowed_ordered"]), set(plan["_allowed_set"])
     hint_map = {
         "ibm_bullets": ("ibm",),
         "ibm_narrative": ("ibm",),
@@ -391,7 +393,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
     override_used: bool,
     targeting: dict[str, bool],
 ) -> SectionProofPool:
-    """Executive summary product proof: augmented skills graph + C0.3 GraphRAG binding only."""
+    """Executive summary product proof: augmented skills graph + section graph binding shim only."""
     graph_auth = resolve_augmented_skills_graph_authority(repo_root=root)
     if str(graph_auth.get("skills_authority_status") or "") != "PASS":
         reason = graph_auth.get("skills_authority_block_reason") or "augmented_skills_graph_unavailable"
@@ -442,6 +444,28 @@ def _resolve_executive_summary_graph_only_proof_pool(
         selected_fact_ids=ordered,
     )
 
+    from apps_rg.fact_inventory.track_weighted_graph_expansion import (
+        build_track_weighted_expansion,
+        infer_projection_role_family_key,
+    )
+
+    role_family_key = infer_projection_role_family_key(
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        taxonomy=taxonomy,
+    )
+    track_expansion = build_track_weighted_expansion(
+        graph=graph,
+        role_family_key=role_family_key,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        seed_fact_ids=ordered,
+        enforce_hybrid_contract=False,
+        bind_c03=True,
+        repo_root=root,
+    )
+
     meta = graph_only_proof_pool_metadata(
         section_id="executive_summary",
         candidate_fact_pool_count=len(facts),
@@ -450,7 +474,33 @@ def _resolve_executive_summary_graph_only_proof_pool(
         legacy_ledger_ref=ledger_ref_str,
     )
     meta = {**meta, **graph_auth}
+    meta["broad_skills_ledger_default"] = False
+    meta["broad_skills_ledger_fallback"] = False
+    meta["broad_skills_ledger_compatibility_authority"] = False
+    meta["broad_skills_ledger_used_as_authority"] = False
+    meta["silent_fallback_possible"] = False
     meta["c03_graphrag_bound"] = c03
+    meta["c03_graph_hop_paths_count"] = c03.get("graph_hop_paths_count", len(c03.get("graph_expansion_refs") or []))
+    meta["non_graph_evidence_items_count"] = c03.get("non_graph_evidence_items_count", 0)
+    meta["c03_graph_bound_status"] = str(c03.get("c03_graphrag_bound_status") or "NOT_BOUND")
+    meta["track_weighted_graph_expansion"] = track_expansion
+    meta["track_weighted_expansion_receipt_ref"] = (
+        "docs/reports/apps_rg/career_track_p1_w4_track_weighted_expansion_receipt.json"
+    )
+    for _c03_key in (
+        "c03_graph_bound_status",
+        "c03_binding_surface",
+        "c03_graph_expansion_ref",
+        "c03_graph_hop_paths_count",
+        "c03_selected_tracks",
+        "c03_selected_fact_ids",
+        "c03_selected_skill_ids",
+        "non_graph_evidence_items_count",
+        "graph_expansion_mode",
+        "graph_hop_edge_types_used",
+    ):
+        if _c03_key in track_expansion:
+            meta[f"track_weighted_{_c03_key}"] = track_expansion[_c03_key]
     meta["final_evidence_contract_snapshot"] = c03.get("final_evidence_contract_snapshot")
     for _c03_key in (
         "c03_graphrag_bound_status",
@@ -502,6 +552,250 @@ def _resolve_executive_summary_graph_only_proof_pool(
     )
 
 
+def _resolve_generic_section_graph_skills_proof_pool(
+    *,
+    section_id: str,
+    root: Path,
+    target_company: str,
+    target_role: str,
+    jd_text: str,
+    briefing_text: str,
+    base_ref_str: str,
+    base_hash: str,
+    override_used: bool,
+    targeting: dict[str, bool],
+) -> SectionProofPool:
+    """Graph-skills product proof for headline / unify_* / ibm_* (P2 all-section)."""
+    from apps_rg.runtime.c03_graphrag_bound import build_section_c03_graphrag_bound
+    from apps_rg.runtime.section_graph_skills_proof_pool import (
+        allocate_section_facts_from_graph_substrate,
+    )
+
+    graph_auth = resolve_augmented_skills_graph_authority(repo_root=root)
+    if str(graph_auth.get("skills_authority_status") or "") != "PASS":
+        reason = graph_auth.get("skills_authority_block_reason") or "augmented_skills_graph_unavailable"
+        raise ValueError(f"{section_id} graph-skills proof pool BLOCKED: {reason}")
+
+    ledger_path = default_ledger_path(root)
+    ledger_ref_str = (
+        str(ledger_path.relative_to(root)) if ledger_path.is_relative_to(root) else str(ledger_path)
+    )
+    ledger = load_master_candidate_fact_ledger(path=ledger_path)
+    taxonomy = load_master_role_family_taxonomy(repo_root=root)
+    tax_path = default_taxonomy_path(root)
+    graph = load_augmented_skills_graph(repo_root=root)
+    graph_ref = str(graph_auth.get("graph_ref") or "")
+    graph_digest = str(graph_auth.get("graph_digest") or "")
+
+    plan, ordered, allowed = allocate_section_facts_from_graph_substrate(
+        ledger=ledger,
+        taxonomy=taxonomy,
+        section_id=section_id,
+        target_company=target_company,
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        ledger_path=ledger_path,
+        taxonomy_path=tax_path,
+    )
+    facts = list(plan.get("facts") or [])
+    bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
+
+    c03_doc = build_section_c03_graphrag_bound(
+        section_id=section_id,
+        graph=graph,
+        graph_ref=graph_ref,
+        graph_digest=graph_digest,
+        selected_fact_ids=ordered,
+    )
+    c03_status = str(c03_doc.get("c03_graphrag_bound_status") or "NOT_BOUND")
+    if int(c03_doc.get("non_graph_evidence_items_count") or 0) > 0:
+        c03_status = "NOT_BOUND"
+
+    meta = graph_only_proof_pool_metadata(
+        section_id=section_id,
+        candidate_fact_pool_count=len(facts),
+        allowed_fact_ids_count=len(allowed),
+        graph_ref=graph_ref,
+        legacy_ledger_ref=ledger_ref_str,
+    )
+    meta = {**meta, **graph_auth}
+    meta["graph_skills_proof_pool"] = True
+    meta["graph_skills_proof_pool_wave"] = "P2-ACCELERATED"
+    meta["broad_skills_ledger_default"] = False
+    meta["broad_skills_ledger_fallback"] = False
+    meta["broad_skills_ledger_compatibility_authority"] = False
+    meta["broad_skills_ledger_used_as_authority"] = False
+    meta["silent_fallback_possible"] = False
+    meta["fail_closed_if_graph_unavailable"] = True
+    meta["selection_method"] = plan.get("selection_method")
+    meta["c03_graph_bound_status"] = c03_status
+    meta["c03_graphrag_bound"] = c03_doc
+    meta["c03_graph_hop_paths_count"] = c03_doc.get("graph_hop_paths_count", 0)
+    meta["non_graph_evidence_items_count"] = c03_doc.get("non_graph_evidence_items_count", 0)
+    for key in (
+        "c03_graphrag_bound_status",
+        "graph_expansion_refs",
+        "graph_lineage_refs",
+        "evidence_items_count",
+        "support_status",
+    ):
+        if key in c03_doc:
+            meta[key] = c03_doc[key]
+    meta = _merge_dual_source_metadata(
+        meta,
+        repo_root=root,
+        claim_evidence=claim_evidence_fields(
+            source_type=CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
+            source_ref=graph_ref,
+            source_digest=graph_digest,
+            substrate_type=CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
+            substrate_ref=ledger_ref_str,
+        ),
+    )
+    ledger_digest = _sha256_hex(
+        json.dumps(ledger, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    )
+    digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+    return SectionProofPool(
+        section=section_id,
+        proof_source=PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        proof_pool_ref=graph_ref,
+        proof_pool_digest=digest,
+        selected_fact_plan=plan,
+        allowed_fact_ids_ordered=ordered,
+        allowed_fact_ids=allowed,
+        bullet_rows=bullet_rows,
+        proof_pool_metadata=meta,
+        fallback_used=False,
+        base_resume_fallback_used=False,
+        broad_skills_ledger_present=False,
+        srfs_present=False,
+        base_resume_json_ref=base_ref_str,
+        base_resume_json_hash=base_hash,
+        broad_skills_ledger_ref=ledger_ref_str,
+        broad_skills_ledger_digest=ledger_digest,
+        srfs_ref="",
+        base_resume_override_used=override_used,
+        targeting_inputs_used=targeting,
+    )
+
+
+def _resolve_competencies_graph_skills_proof_pool(
+    *,
+    root: Path,
+    target_company: str,
+    target_role: str,
+    jd_text: str,
+    briefing_text: str,
+    base_ref_str: str,
+    base_hash: str,
+    override_used: bool,
+    targeting: dict[str, bool],
+) -> SectionProofPool:
+    """Competencies product proof: augmented_skills_graph only (P2-W1A). No C0.3 BOUND until P2-W2."""
+    from apps_rg.fact_inventory.competencies_graph_skills_proof_pool import (
+        C03_STATUS_COMPETENCIES_GRAPH_PROOF,
+        build_competencies_graph_skills_proof_payload,
+    )
+
+    graph_auth = resolve_augmented_skills_graph_authority(repo_root=root)
+    if str(graph_auth.get("skills_authority_status") or "") != "PASS":
+        reason = graph_auth.get("skills_authority_block_reason") or "augmented_skills_graph_unavailable"
+        raise ValueError(f"competencies graph-skills proof pool BLOCKED: {reason}")
+
+    payload = build_competencies_graph_skills_proof_payload(
+        repo_root=root,
+        jd_text=jd_text,
+        target_role=target_role,
+        briefing_text=briefing_text,
+    )
+    plan = dict(payload["selected_fact_plan"])
+    facts = list(plan.get("facts") or [])
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
+
+    graph_ref = str(payload.get("graph_source") or graph_auth.get("graph_ref") or "")
+    graph_digest = str(graph_auth.get("graph_digest") or "")
+    ledger_path = default_ledger_path(root)
+    ledger_ref_str = (
+        str(ledger_path.relative_to(root)) if ledger_path.is_relative_to(root) else str(ledger_path)
+    )
+    ledger = load_master_candidate_fact_ledger(path=ledger_path)
+    ledger_digest = _sha256_hex(
+        json.dumps(ledger, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    )
+
+    meta = graph_only_proof_pool_metadata(
+        section_id="competencies",
+        candidate_fact_pool_count=len(facts),
+        allowed_fact_ids_count=len(allowed),
+        graph_ref=graph_ref,
+        legacy_ledger_ref=ledger_ref_str,
+    )
+    meta = {**meta, **graph_auth}
+    meta["graph_skills_proof_pool"] = True
+    meta["graph_skills_proof_pool_wave"] = "P2-W1A"
+    meta["competencies_product_authority"] = "augmented_skills_graph"
+    meta["broad_skills_ledger_default"] = False
+    meta["broad_skills_ledger_fallback"] = False
+    meta["broad_skills_ledger_compatibility_authority"] = False
+    meta["silent_fallback_possible"] = False
+    meta["selection_method"] = payload["selection_method"]
+    meta["selected_skill_rows"] = payload["selected_skill_rows"]
+    meta["selected_tracks"] = payload["selected_tracks"]
+    meta["selected_skill_count_by_track"] = payload["selected_skill_count_by_track"]
+    meta["selected_fact_count_by_track"] = payload["selected_fact_count_by_track"]
+    meta["broad_skills_ledger_used_as_authority"] = False
+    meta["legacy_broad_skills_ledger_path"] = payload.get("legacy_broad_skills_ledger_path")
+    te = payload.get("track_expansion") or {}
+    te_c03 = str(te.get("c03_graph_bound_status") or "")
+    if te_c03 == "BOUND" and int(te.get("c03_graph_hop_paths_count") or 0) > 0:
+        meta["c03_graph_bound_status"] = "BOUND"
+        meta["c03_graph_hop_paths_count"] = te.get("c03_graph_hop_paths_count", 0)
+        meta["non_graph_evidence_items_count"] = 0
+    else:
+        meta["c03_graph_bound_status"] = C03_STATUS_COMPETENCIES_GRAPH_PROOF
+    meta["c03_graphrag_bound_required"] = False
+    meta["track_weighted_graph_expansion_ref"] = payload.get("track_weighted_expansion_ref")
+    meta["track_weighted_tracks_with_facts"] = te.get("tracks_with_facts")
+    meta["graph_hop_paths_sample"] = payload.get("graph_hop_paths_sample")
+    meta = _merge_dual_source_metadata(
+        meta,
+        repo_root=root,
+        claim_evidence=claim_evidence_fields(
+            source_type=CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
+            source_ref=graph_ref,
+            source_digest=graph_digest,
+            substrate_type=CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
+            substrate_ref=ledger_ref_str,
+        ),
+    )
+    digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+    return SectionProofPool(
+        section="competencies",
+        proof_source=PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        proof_pool_ref=graph_ref,
+        proof_pool_digest=digest,
+        selected_fact_plan=plan,
+        allowed_fact_ids_ordered=ordered,
+        allowed_fact_ids=allowed,
+        bullet_rows=bullet_rows,
+        proof_pool_metadata=meta,
+        fallback_used=False,
+        base_resume_fallback_used=False,
+        broad_skills_ledger_present=False,
+        srfs_present=False,
+        base_resume_json_ref=base_ref_str,
+        base_resume_json_hash=base_hash,
+        broad_skills_ledger_ref=ledger_ref_str,
+        broad_skills_ledger_digest=ledger_digest,
+        srfs_ref="",
+        base_resume_override_used=override_used,
+        targeting_inputs_used=targeting,
+    )
+
+
 def resolve_section_proof_pool(
     *,
     section: str,
@@ -515,8 +809,24 @@ def resolve_section_proof_pool(
     briefing_text: str = "",
     repo_root: Path | None = None,
     collect_employment_bullets_fn=None,
+    front_spine: Any | None = None,
+    product_visible: bool | None = None,
+    fixture_dev_only_bypass: bool = False,
+    non_product_certified: bool = False,
+    graph_skills_proof_pool: bool | None = None,
+    legacy_broad_skills_ledger: bool = False,
 ) -> SectionProofPool:
     """Resolve claim-support proof pool for a canonical section lane."""
+    from apps_rg.runtime.section_front_spine_bridge import (
+        assert_proof_pool_front_spine_preconditions,
+    )
+
+    assert_proof_pool_front_spine_preconditions(
+        front_spine=front_spine,
+        product_visible=product_visible,
+        fixture_dev_only_bypass=fixture_dev_only_bypass,
+        non_product_certified=non_product_certified,
+    )
     if section not in SECTION_KEYS:
         raise ValueError(f"unknown section: {section!r}")
     root = repo_root or Path(__file__).resolve().parents[2]
@@ -548,10 +858,45 @@ def resolve_section_proof_pool(
     )
 
     srfs_path = str(selected_role_fact_set_path or "").strip()
+
+    if legacy_broad_skills_ledger:
+        raise ValueError(
+            f"{section} product proof authority is augmented_skills_graph only; "
+            "legacy_broad_skills_ledger is not permitted (P2 all-section)"
+        )
+
+    if section == "competencies":
+        if not srfs_path:
+            return _resolve_competencies_graph_skills_proof_pool(
+                root=root,
+                target_company=company_eff,
+                target_role=role_eff,
+                jd_text=jd_eff,
+                briefing_text=br_eff,
+                base_ref_str=base_ref_str,
+                base_hash=base_hash,
+                override_used=override_used,
+                targeting=targeting,
+            )
+
     if section == "executive_summary" and not srfs_path:
         return _resolve_executive_summary_graph_only_proof_pool(
             root=root,
             broad_skills_ledger_path=broad_skills_ledger_path,
+            target_company=company_eff,
+            target_role=role_eff,
+            jd_text=jd_eff,
+            briefing_text=br_eff,
+            base_ref_str=base_ref_str,
+            base_hash=base_hash,
+            override_used=override_used,
+            targeting=targeting,
+        )
+
+    if section not in ("competencies", "executive_summary") and not srfs_path:
+        return _resolve_generic_section_graph_skills_proof_pool(
+            section_id=section,
+            root=root,
             target_company=company_eff,
             target_role=role_eff,
             jd_text=jd_eff,
@@ -599,6 +944,12 @@ def resolve_section_proof_pool(
             srfs_ref=srfs_path,
             base_resume_override_used=override_used,
             targeting_inputs_used=targeting,
+        )
+
+    if section in SECTION_KEYS:
+        raise ValueError(
+            f"{section} product proof must resolve via augmented_skills_graph; "
+            "broad_skills_ledger and base_resume_fallback are not permitted (P2 all-section fail closed)"
         )
 
     ledger_path = _ledger_path_explicit(broad_skills_ledger_path, repo_root=root)
@@ -663,10 +1014,21 @@ def resolve_section_proof_pool(
             targeting_inputs_used=targeting,
         )
     except (OSError, ValueError, TypeError, json.JSONDecodeError, FileNotFoundError):
+        if section in SECTION_KEYS:
+            raise ValueError(
+                f"{section} product proof must resolve via augmented_skills_graph; "
+                "broad_skills_ledger load failure is not a permitted fallback (P2 fail closed)"
+            ) from None
         pass
 
+    if section in SECTION_KEYS:
+        raise ValueError(
+            f"{section} product proof must resolve via augmented_skills_graph; "
+            "base_resume_fallback is not permitted (P2 fail closed)"
+        )
+
     if collect_employment_bullets_fn is None:
-        from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+        from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
 
         collect_employment_bullets_fn = collect_employment_bullets
 

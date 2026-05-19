@@ -8,6 +8,9 @@ facade centralizes that cross-app coupling so the ADG records one
 
 Per plan ``apps-runtime-first-principles-e6ba58`` W3.1.
 
+W11-M3A: documents and lazy-exports canonical product surfaces alongside the
+legacy ``RgResumeOrchestrator`` eval symbol (legacy symbol retained for eval parity).
+
 Lazy-resolution semantics
 -------------------------
 PEP 562 ``__getattr__`` defers the underlying import until first access.
@@ -21,12 +24,22 @@ from __future__ import annotations
 
 from typing import Any
 
+# Canonical product path (W8 hygiene) — metadata for routing docs and new callers.
+CANONICAL_PRODUCT_MODULE = "apps_rg"
+CANONICAL_DISPATCH_MODULE = "apps_rg.runtime.orchestration.canonical_dispatch"
+CANONICAL_DISPATCH_SYMBOL = "run_canonical_apps_rg_from_cli_primitives"
+CANONICAL_SECTION_LANE_PACKAGE = "apps_rg.runtime.sections"
+
 # Cross-app coupling surface. Keep this list tight \u2014 every entry here is a
 # documented exception to the "apps_* should not depend on sibling apps" rule.
 _LAZY_SYMBOLS: dict[str, tuple[str, str]] = {
     "RgResumeOrchestrator": (
         "apps_rg.reasoning.RgResumeOrchestrator",
         "RgResumeOrchestrator",
+    ),
+    "run_canonical_apps_rg_from_cli_primitives": (
+        CANONICAL_DISPATCH_MODULE,
+        CANONICAL_DISPATCH_SYMBOL,
     ),
 }
 

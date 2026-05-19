@@ -33,19 +33,19 @@ try:
 except ImportError:
     pass
 
-from apps_rg.runtime.dispatch.competencies_dispatch import (
+from apps_rg.runtime.sections.lane_base_resume import load_base_resume
+from apps_rg.runtime.sections.companion_lane_context import (
     build_resume_support_blob,
-    collect_employment_bullets,
-    load_base_resume,
     load_companion_context,
 )
-from apps_rg.runtime.dispatch.headline_pa import compile_headline_prompt
+from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
+from apps_rg.runtime.sections.headline_pa import compile_headline_prompt
 from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     build_canonical_claim_ledger_v2_payload,
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
@@ -818,7 +818,7 @@ def run_headline_execution(
         load_section_proof_for_lane,
     )
 
-    pool, base, base_path, base_hash = load_section_proof_for_lane(
+    pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="headline",
         args=args,
         repo_root=REPO_ROOT,
@@ -862,6 +862,18 @@ def run_headline_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
+    from apps_rg.runtime.section_fec_bridge import (
+        merge_compiled_prompt_artifact_fec_fields,
+        wire_section_fec_bridge_for_lane,
+    )
+
+    wire_section_fec_bridge_for_lane(
+        artifact_dir=artifact_dir,
+        section_id="headline",
+        front_spine=front_spine,
+        pool=pool,
+        runtime_payload=runtime_payload,
+    )
 
     fact_lines = "\n".join(
         f"- {row['fact_id']}: {row['claim_text']}"
@@ -886,14 +898,17 @@ def run_headline_execution(
     )
     write_json(
         artifact_dir / "compiled_prompt_artifact.json",
-        {
-            "section_id": section_compiled.section_id,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
-            "dispatch_sha256_prompt16": prompt_hash,
-            "slot_count": section_compiled.artifact.slot_count,
-        },
+        merge_compiled_prompt_artifact_fec_fields(
+            {
+                "section_id": section_compiled.section_id,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+                "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+                "dispatch_sha256_prompt16": prompt_hash,
+                "slot_count": section_compiled.artifact.slot_count,
+            },
+            runtime_payload,
+        ),
     )
 
     provider_request_data = None
@@ -910,6 +925,23 @@ def run_headline_execution(
     headline_proof_retry_attempted = False
     headline_proof_shape_retry_reason = ""
     headline_repair_receipt: dict[str, Any] | None = None
+
+    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.section_l2_lane_integration import (
+        finalize_section_l2_after_output,
+        prepare_section_l2_before_provider,
+    )
+    from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
+        finalize_section_runtime_exhaust_before_l6,
+        gate_section_l6_shadow_after_exhaust,
+    )
+
+    prepare_section_l2_before_provider(
+        artifact_dir,
+        "headline",
+        runtime_payload,
+        provider_lane=str(args.provider),
+    )
 
     provider_req, provider_payload = build_qwen_request(
         messages=messages,
@@ -1296,6 +1328,11 @@ def run_headline_execution(
         section_input_usage_ledger=usage_doc,
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+    finalize_section_l2_after_output(artifact_dir, "headline", runtime_payload)
+    finalize_section_exit_after_l2(artifact_dir, "headline", runtime_payload)
+    finalize_section_runtime_exhaust_before_l6(
+        artifact_dir, "headline", runtime_payload, repo_root=REPO_ROOT
+    )
 
     bundle = headline_proof_bundle_labels(
         compute_lane_proof_bundle(
@@ -1364,6 +1401,7 @@ def run_headline_execution(
 
     l6_temp = float(args.temperature)
     l6_max = HEADLINE_QWEN_MAX_TOKENS
+    gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,

@@ -180,12 +180,12 @@ def test_http_models_preflight_monkeypatch(monkeypatch: pytest.MonkeyPatch) -> N
     assert isinstance(snap, dict)
 
 
-def test_competencies_dispatch_offline_branch_uses_effective_stub() -> None:
+def test_competencies_lane_execution_offline_branch_uses_effective_stub() -> None:
     """Regression: synthetic stub gate must use effective_offline (honors disable env)."""
     from pathlib import Path
 
-    import apps_rg.runtime.dispatch.competencies_dispatch as cd
+    import apps_rg.runtime.sections.competencies_lane_execution as cle
 
-    text = Path(cd.__file__).read_text(encoding="utf-8")
+    text = Path(cle.__file__).read_text(encoding="utf-8")
     assert "if effective_offline_contract_stub_enabled():" in text
     assert "\nif offline_contract_stub_enabled():" not in text

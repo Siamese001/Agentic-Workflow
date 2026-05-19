@@ -1,7 +1,9 @@
-"""Defaults for ``python -m apps_rg --section <lane>`` without mandatory JD/brief/target flags.
+"""Section CLI defaults and fail-closed input policy for ``python -m apps_rg --section <lane>``.
 
-Executive summary and other section lanes reuse SSOT inputs under ``apps_rg/config`` and the
-active base résumé pointer (see ``executive_summary_lane.load_base_resume``).
+``executive_summary`` requires explicit ``--target-company``, ``--target-role``, ``--jd``, and
+``--manual-brief`` on the CLI path (no résumé-derived company/title, no DEFAULT_SSOT JD/briefing).
+
+Other section lanes may still use SSOT defaults under ``apps_rg/config``.
 """
 
 from __future__ import annotations
@@ -132,8 +134,40 @@ def coalesce_lane_provider_resolution_source(
     return CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
 
+def collect_executive_summary_mandatory_missing(args: Any) -> list[str]:
+    """Return CLI flags still empty for an ``executive_summary`` lane run."""
+    missing: list[str] = []
+    if not str(getattr(args, "target_company", "") or "").strip():
+        missing.append("--target-company")
+    if not str(getattr(args, "target_role", "") or "").strip():
+        missing.append("--target-role")
+    if not str(getattr(args, "jd", "") or "").strip():
+        missing.append("--jd")
+    if not str(getattr(args, "manual_brief", "") or "").strip():
+        missing.append("--manual-brief")
+    return missing
+
+
+def validate_executive_summary_mandatory_inputs(args: Any) -> None:
+    """Fail closed when company, title, JD, or briefing were not supplied on the CLI."""
+    missing = collect_executive_summary_mandatory_missing(args)
+    if not missing:
+        return
+    raise SectionCliConfigError(
+        "executive_summary requires explicit targeting inputs: "
+        + ", ".join(missing)
+        + ". Pass --target-company, --target-role, --jd (file path or inline text), and "
+        "--manual-brief (file path, https URL, or inline text). Résumé-derived defaults and "
+        "DEFAULT_SSOT JD/briefing files are not applied on this path."
+    )
+
+
 def fill_executive_summary_cli_targets(args: Any) -> None:
-    """Set ``args.target_company`` / ``args.target_role`` from active base résumé when empty."""
+    """Deprecated: résumé-derived targeting is not used for ``executive_summary`` CLI runs.
+
+    Kept for callers that still import the symbol; use
+    :func:`validate_executive_summary_mandatory_inputs` instead.
+    """
     if str(getattr(args, "target_company", "") or "").strip() and str(
         getattr(args, "target_role", "") or ""
     ).strip():
@@ -192,10 +226,12 @@ __all__ = [
     "ProviderResolutionSource",
     "SectionCliConfigError",
     "coalesce_lane_provider_resolution_source",
+    "collect_executive_summary_mandatory_missing",
     "default_targeting_briefing_text",
     "fill_executive_summary_cli_targets",
     "resolve_allow_non_allow_exit_zero",
     "resolve_cli_lane_provider",
     "resolve_cli_lane_provider_with_source",
     "resolve_cli_x1d_judges",
+    "validate_executive_summary_mandatory_inputs",
 ]

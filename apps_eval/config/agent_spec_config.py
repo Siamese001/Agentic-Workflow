@@ -251,7 +251,7 @@ class EvalAgentSpecs(PromptReceptionSpec, BaseModel):
             "orchestration_hop": BenchmarkSuiteConfig(
                 suite_id="orchestration_hop",
                 display_name="Multi-Hop Orchestration",
-                target_module="apps_rg.reasoning.RgResumeOrchestrator",
+                target_module="apps_shared.adapters.rg_orchestrator_facade",
                 scenario_ids=["single_hop", "multi_hop_pass", "multi_hop_gate_fail"],
             ),
             "output_contracts": BenchmarkSuiteConfig(

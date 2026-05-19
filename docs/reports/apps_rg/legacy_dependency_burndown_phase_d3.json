@@ -1,0 +1,67 @@
+{
+  "phase": "D3",
+  "plan_id": "apps_rg_legacy_dependency_burndown",
+  "executed_at": "2026-05-19",
+  "status": "PARTIAL",
+  "stub_failures": {
+    "failing_tests": [
+      "tests/_apps_contract/test_competencies_canonical_lane_contract.py::test_canonical_lane_mock_judge_x3_review_code"
+    ],
+    "passing_tests": [
+      "tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py::test_mock_slice_still_passes_x2_source_mapping"
+    ],
+    "root_cause": "Chained regressions after P2-W1A augmented_skills_graph became default competencies proof pool: (1) build_competencies_graph_skills_proof_payload set c03_graph_bound_status=BOUND while validator rejects BOUND before P2-W2; (2) build_mock_output used legacy bul_unify_* ids for augmented_skills_graph pool; (3) repair pipeline + collapse_duplicate can leave a category with <2 structured terms (x2_competency_format_category_colon_terms FAIL) → product_quality BLOCK → X3_BLOCK instead of X3_REVIEW_MOCKED_PLUMBING_ONLY.",
+    "fix_or_blocker": "FIXED: c03 payload status, proof_pool_resolver te init, augmented_skills_graph stub branch, fact_id whitespace + numeric suffix repair, final expand pass. BLOCKER: canonical contract still intermittently leaves one category with a single term after repair (e.g. Sales) — needs repair-stack / graph-stub contract hardening (out of D3 move-repair scope)."
+  },
+  "load_base_resume": {
+    "fanin_before": [
+      "apps_rg/runtime/sections/headline_lane.py → competencies_dispatch.load_base_resume",
+      "apps_rg/runtime/dispatch/competencies_dispatch.py (definition)",
+      "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py (definition)",
+      "contract/unit tests importing from competencies_dispatch"
+    ],
+    "extracted": "apps_rg/runtime/sections/lane_base_resume.py",
+    "fanin_after": [
+      "headline_lane → lane_base_resume",
+      "competencies_dispatch / ibm_narrative_dispatch re-export via import",
+      "tests may still import load_base_resume from competencies_dispatch (compat)"
+    ],
+    "parity": "test_lane_pa_helper_parity asserts cd.load_base_resume is lbr.load_base_resume and ind.load_base_resume is lbr.load_base_resume"
+  },
+  "repair_helper_fanin": {
+    "helpers": [
+      "canonicalize_competency_terms_for_proof",
+      "repair_structured_competencies_source_facts",
+      "coerce_structured_competencies_resume_support",
+      "collapse_duplicate_competency_terms",
+      "expand_structured_competencies_min_two_terms",
+      "dedupe_structured_competency_terms",
+      "rebuild_claim_ledger_from_competencies",
+      "build_mock_output",
+      "_fix_fact_id_typos",
+      "term_phrase (re-export only)"
+    ],
+    "importers": [
+      "apps_rg/runtime/sections/competencies_lane_execution.py (hydrate all dispatch helpers)",
+      "tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py",
+      "tests/unit/apps_rg/test_competencies_x2_proof_quality.py",
+      "tests/_apps_contract/test_competencies_canonical_lane_contract.py (regression fixture)",
+      "tests/_apps_contract/test_apps_rg_live_qwen_x2_repairs.py (_fix_fact_id_typos)"
+    ],
+    "safe_to_move": [],
+    "blockers": [
+      "Entire repair stack (~1.2k LOC) is tightly coupled to lane_execution hydrate pattern and contract tests; moving requires new competencies_repair.py + hydrate table update + broad test import churn — deferred per risky-move rule"
+    ]
+  },
+  "quarantine_readiness": {
+    "competencies_dispatch": "load_base_resume extracted; repair stack remains; DELETE_GATE not met",
+    "ibm_narrative_dispatch": "load_base_resume re-export only; DELETE_GATE not met",
+    "archive_phase": "E BLOCKED"
+  },
+  "behavior_change": false,
+  "runtime_change": false,
+  "commands": {
+    "compileall": {"exit_code": 0},
+    "parity_quarantine_stub_bundle": {"exit_code": 1, "passed": 42, "failed": 1}
+  }
+}

@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
-from apps_rg.runtime.dispatch.competencies_dispatch import term_phrase
+from apps_rg.runtime.sections.competencies_term_phrase import term_phrase
 
 
 _FV_RE = re.compile(r"\b(fv_c0_smoke:[^\s|]+|fv_[a-z0-9_:]+|bul_[a-z0-9_]+)\b", re.I)

@@ -1,8 +1,8 @@
 """Professional Competencies section lane — **canonical** path: ``python -m apps_rg --section competencies``.
 
-Delegates to :func:`apps_rg.runtime.dispatch.competencies_dispatch.run_competencies_execution` with
-``trace_runtime_path`` set to this module. The dispatch package holds shared compile/runtime helpers;
-it is not an alternate CLI entrypoint (legacy ``-m ...competencies_dispatch`` is deprecated).
+Delegates to :func:`apps_rg.runtime.sections.competencies_lane_execution.run_competencies_lane_execution`.
+The dispatch package holds shared compile/runtime helpers and a compatibility
+``run_competencies_execution`` re-export; legacy ``-m ...competencies_dispatch`` is deprecated.
 """
 from __future__ import annotations
 
@@ -10,14 +10,16 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from apps_rg.runtime.dispatch.competencies_dispatch import (
+from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
     COMPETENCIES_TEMP_DEFAULT,
     JD_TEXT_DEFAULT,
     PROMPT_ID,
     TARGET_COMPANY_DEFAULT,
     TARGET_TITLE_DEFAULT,
-    run_competencies_execution,
+)
+from apps_rg.runtime.sections.competencies_lane_execution import (
+    run_competencies_lane_execution as _execute_competencies_lane,
 )
 
 LANE_KEY = "competencies"
@@ -50,7 +52,7 @@ def build_competencies_lane_args(
     selected_role_fact_set: str = "",
     base_resume_ref: str = "",
 ) -> SimpleNamespace:
-    """Namespace compatible with :func:`run_competencies_execution`."""
+    """Namespace compatible with competencies lane execution."""
     ns = SimpleNamespace(
         provider=str(provider).strip() or "qwen_vllm",
         temperature=float(temperature),
@@ -74,9 +76,7 @@ def run_competencies_lane_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """PA → provider → deterministic repairs → X2 → X1D → X3 → L6 under runtime_proofs layout."""
-    return run_competencies_execution(
+    return _execute_competencies_lane(
         args,
         artifact_dir_override=artifact_dir_override,
-        trace_runtime_path="apps_rg.runtime.sections.competencies_lane",
-        print_output=False,
     )

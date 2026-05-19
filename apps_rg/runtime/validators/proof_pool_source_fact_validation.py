@@ -206,7 +206,7 @@ def proof_pool_x2_gate_id(
 def write_x2_source_fact_pool_receipt(artifacts_dir: Any, receipt: dict[str, Any]) -> str:
     from pathlib import Path
 
-    from apps_rg.runtime.dispatch.competencies_dispatch import write_json
+    from apps_rg.runtime.sections.lane_artifact_io import write_json
 
     path = Path(artifacts_dir) / "x2_source_fact_pool_receipt.json"
     write_json(path, receipt)

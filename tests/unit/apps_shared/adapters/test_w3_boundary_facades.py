@@ -56,6 +56,16 @@ def test_rg_orchestrator_facade_exports_expected_symbol() -> None:
     assert hasattr(rg_orchestrator_facade, "RgResumeOrchestrator")
 
 
+def test_rg_orchestrator_facade_exports_canonical_dispatch_symbol() -> None:
+    """W11-M3A: facade documents canonical product dispatch alongside legacy Rg*."""
+    from apps_shared.adapters import rg_orchestrator_facade
+
+    assert rg_orchestrator_facade.CANONICAL_DISPATCH_MODULE.endswith("canonical_dispatch")
+    assert "run_canonical_apps_rg_from_cli_primitives" in rg_orchestrator_facade.__all__
+    fn = rg_orchestrator_facade.run_canonical_apps_rg_from_cli_primitives
+    assert callable(fn)
+
+
 def test_system_learning_facade_unknown_attr_raises_attribute_error() -> None:
     """W3.2/W3.3: facade must raise AttributeError (not ImportError) for unknown names."""
     from apps_shared.adapters import system_learning_facade
@@ -133,6 +143,14 @@ _DIRECT_APPS_RG_IMPORT = re.compile(
     r"^\s*(?:from\s+apps_rg(?:\.|\s+import)|import\s+apps_rg)",
     re.MULTILINE,
 )
+_APPS_RG_REASONING_MODULE_STRING = re.compile(r"apps_rg\.reasoning(?:\.|\b)")
+_APPS_RG_FACADE_MODULES = frozenset(
+    {
+        "apps_shared.adapters.rg_orchestrator_facade",
+        "apps_shared.adapters.rg_integrations_facade",
+        "apps_shared.integrations.adapters.rg_orchestrator_facade",
+    }
+)
 
 
 def _scan_tree_for_direct_imports(app_root: Path, pattern: re.Pattern[str]) -> list[tuple[Path, int, str]]:
@@ -163,13 +181,42 @@ def test_apps_eval_has_no_direct_system_learning_imports() -> None:
     )
 
 
+def test_rg_integrations_facade_exports_anti_overfitting_symbols() -> None:
+    """W11-M3B: integrations facade lazy-exports narrative judge primitives."""
+    from apps_shared.adapters import rg_integrations_facade
+
+    for name in ("AntiOverfittingConfig", "gate_buzzword_soup", "LengthBudget"):
+        assert name in rg_integrations_facade.__all__
+        assert hasattr(rg_integrations_facade, name)
+
+
 def test_apps_eval_has_no_direct_apps_rg_imports() -> None:
-    """W3.1: apps_eval/ must route apps_rg access through the facade."""
+    """W3.1: apps_eval/ must route apps_rg access through apps_shared facades."""
     hits = _scan_tree_for_direct_imports(REPO_ROOT / "apps_eval", _DIRECT_APPS_RG_IMPORT)
     assert not hits, (
-        f"Direct apps_rg imports in apps_eval (must use "
-        f"apps_shared.adapters.rg_orchestrator_facade):\n"
+        "Direct apps_rg imports in apps_eval (must use apps_shared.adapters "
+        "rg_orchestrator_facade or rg_integrations_facade):\n"
         + "\n".join(f"  {p}:{ln}  {snippet}" for p, ln, snippet in hits)
+    )
+
+
+def test_apps_eval_has_no_apps_rg_reasoning_module_strings() -> None:
+    """W11 Phase C: apps_eval must not embed legacy apps_rg.reasoning import paths."""
+    hits: list[tuple[Path, int, str]] = []
+    for py in (REPO_ROOT / "apps_eval").rglob("*.py"):
+        if "__pycache__" in py.parts:
+            continue
+        try:
+            text = py.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for m in _APPS_RG_REASONING_MODULE_STRING.finditer(text):
+            line_no = text[: m.start()].count("\n") + 1
+            hits.append((py.relative_to(REPO_ROOT), line_no, m.group(0)))
+    assert not hits, (
+        "Legacy apps_rg.reasoning module strings in apps_eval "
+        "(use apps_shared.adapters.rg_orchestrator_facade):\n"
+        + "\n".join(f"  {p}:{ln}  {snippet!r}" for p, ln, snippet in hits)
     )
 
 

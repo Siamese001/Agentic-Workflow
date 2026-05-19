@@ -9,7 +9,7 @@ Orchestrates the complete Evaluation Lab pipeline:
   5. Artifact emission (report, scorecard CSV, JSON manifest)
   6. Run summary
 
-Mirrors apps_rg RgResumeOrchestrator pattern.
+Mirrors apps_rg eval orchestration pattern (RgResumeOrchestrator via rg_orchestrator_facade).
 """
 # guardian: allow-silent-degradation -- Evaluation orchestration requires exception handling
 

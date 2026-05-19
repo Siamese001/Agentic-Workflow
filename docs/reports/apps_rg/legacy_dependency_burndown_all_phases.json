@@ -1,0 +1,72 @@
+{
+  "plan_id": "apps_rg_legacy_dependency_burndown",
+  "plan_disk_ssot": ".cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md",
+  "notion_plan_page_id": "36527693-f55c-8178-8c13-f1c889dccaf1",
+  "notion_plan_url": "https://www.notion.so/apps-rg-legacy-dependency-burndown-b7e4a2-36527693f55c81788c13f1c889dccaf1",
+  "last_synced": "2026-05-19",
+  "notion_synced_at": "2026-05-19T17:11:00Z",
+  "current_wave": "D3_PARTIAL",
+  "notion_backlog_pages": {
+    "A": "https://www.notion.so/Phase-A-competencies-contract-36527693f55c817aacfae9e9f66c58a3",
+    "B": "https://www.notion.so/Phase-B-PA-parity-36527693f55c815083f3c7fe1555bb05",
+    "C": "https://www.notion.so/Phase-C-Rg-facade-migration-36527693f55c81d2a839d52f7c934e03",
+    "D": "https://www.notion.so/Phase-D-dispatch-execution-quarantine-36527693f55c81f391f1fdb56b712d3c",
+    "D2": "https://www.notion.so/Phase-D2-dispatch-helper-fan-in-36527693f55c81dfa81de4781286db96",
+    "D3": "https://www.notion.so/Phase-D3-blockers-load_base_resume-36527693f55c816ca80df511b58a9cca",
+    "E": "https://www.notion.so/Phase-E-gated-archive-36527693f55c81008c03c336c78a6168"
+  },
+  "phases": [
+    {
+      "id": "A",
+      "title": "competencies contract",
+      "status": "DONE",
+      "evidence_md": "docs/reports/apps_rg/legacy_dependency_burndown_phase_a.md",
+      "evidence_json": null,
+      "note": "Phase A evidence in plan + w11_m4c; no separate phase_a receipt file"
+    },
+    {
+      "id": "B",
+      "title": "PA parity",
+      "status": "MOSTLY_DONE",
+      "evidence_md": null,
+      "evidence_json": null,
+      "note": "Verify lanes; no dedicated phase B receipt in this burndown series"
+    },
+    {
+      "id": "C",
+      "title": "Rg migration",
+      "status": "PASS",
+      "evidence_md": "docs/reports/apps_rg/legacy_dependency_burndown_phase_c.md",
+      "evidence_json": "docs/reports/apps_rg/legacy_dependency_burndown_phase_c.json"
+    },
+    {
+      "id": "D",
+      "title": "dispatch quarantine",
+      "status": "PARTIAL",
+      "evidence_md": "docs/reports/apps_rg/legacy_dependency_burndown_phase_d.md",
+      "evidence_json": "docs/reports/apps_rg/legacy_dependency_burndown_phase_d.json"
+    },
+    {
+      "id": "D2",
+      "title": "helper fan-in",
+      "status": "PARTIAL",
+      "evidence_md": "docs/reports/apps_rg/legacy_dependency_burndown_phase_d2.md",
+      "evidence_json": "docs/reports/apps_rg/legacy_dependency_burndown_phase_d2.json"
+    },
+    {
+      "id": "D3",
+      "title": "blockers + load_base_resume",
+      "status": "PARTIAL",
+      "evidence_md": "docs/reports/apps_rg/legacy_dependency_burndown_phase_d3.md",
+      "evidence_json": "docs/reports/apps_rg/legacy_dependency_burndown_phase_d3.json"
+    },
+    {
+      "id": "E",
+      "title": "gated archive",
+      "status": "BLOCKED",
+      "evidence_md": null,
+      "evidence_json": null,
+      "note": "DELETE_GATE not met; repair stack fan-in remains"
+    }
+  ]
+}

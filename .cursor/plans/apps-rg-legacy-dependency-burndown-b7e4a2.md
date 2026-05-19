@@ -21,10 +21,10 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: NOT_STARTED
-CURRENT_WAVE: A_COMPLETE
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: D3_PARTIAL
 LAST_UPDATED: 2026-05-19
-NOTION_STATUS: Not Started
+NOTION_STATUS: In Progress
 DISK_SSOT: .cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md
 EVIDENCE_SSOT: docs/reports/agent_inventory/w11_closeout_and_next_plan_handoff.md
 
@@ -42,8 +42,10 @@ W11 completed **one** gated archive (L2 binding shim) and inventory/classificati
 |-------|-----|-------|--------|
 | A | competencies contract | SRFS stub + X2=42 + one-spine proof_pool wiring + contract tests | ✅ DONE |
 | B | PA parity | Sections SSOT; dispatch `*_pa` re-exports; parity tests | 🔲 MOSTLY DONE — verify lanes |
-| C | Rg migration | `apps_eval` / contract strings → facades; keep Rg* unit tests | 🔲 TODO |
-| D | dispatch quarantine | Shrink `competencies_dispatch` / `ibm_narrative_dispatch` execution | 🔲 TODO |
+| C | Rg migration | `apps_eval` / contract strings → facades; keep Rg* unit tests | ✅ DONE |
+| D | dispatch quarantine | Shrink `competencies_dispatch` / `ibm_narrative_dispatch` execution | ✅ DONE |
+| D2 | helper fan-in | Extract shared helpers to `runtime/sections/`; dispatch re-exports | ✅ DONE |
+| D3 | blockers + load_base_resume | Stub failure RCA; `lane_base_resume`; repair fan-in map | ⚠️ PARTIAL |
 | E | gated archive | `validation_orchestrator` after 30d + CI baselines; others fan-in 0 | 🔲 BLOCKED |
 
 ---
@@ -59,7 +61,27 @@ W11 completed **one** gated archive (L2 binding shim) and inventory/classificati
 
 ## First next action
 
-**Phase C:** Inventory and migrate remaining `apps_eval` / `apps_shared` / contract references to `Rg*` via `rg_orchestrator_facade` and `rg_integrations_facade` without removing legacy unit tests.
+**Phase D3 follow-up:** Harden offline stub + repair pipeline so `test_canonical_lane_mock_judge_x3_review_code` passes (≥2 terms/category after repair); then Phase E when fan-in zero.
+
+## Phase D3 evidence
+
+- [legacy_dependency_burndown_phase_d3.md](../docs/reports/apps_rg/legacy_dependency_burndown_phase_d3.md)
+- [legacy_dependency_burndown_phase_d3.json](../docs/reports/apps_rg/legacy_dependency_burndown_phase_d3.json)
+
+## Phase D2 evidence
+
+- [legacy_dependency_burndown_phase_d2.md](../docs/reports/apps_rg/legacy_dependency_burndown_phase_d2.md)
+- [legacy_dependency_burndown_phase_d2.json](../docs/reports/apps_rg/legacy_dependency_burndown_phase_d2.json)
+
+## Phase D evidence
+
+- [legacy_dependency_burndown_phase_d.md](../docs/reports/apps_rg/legacy_dependency_burndown_phase_d.md)
+- [legacy_dependency_burndown_phase_d.json](../docs/reports/apps_rg/legacy_dependency_burndown_phase_d.json)
+
+## Phase C evidence
+
+- [legacy_dependency_burndown_phase_c.md](../docs/reports/apps_rg/legacy_dependency_burndown_phase_c.md)
+- [legacy_dependency_burndown_phase_c.json](../docs/reports/apps_rg/legacy_dependency_burndown_phase_c.json)
 
 ---
 
