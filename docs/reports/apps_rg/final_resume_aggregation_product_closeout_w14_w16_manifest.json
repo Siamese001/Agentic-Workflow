@@ -1,0 +1,56 @@
+{
+  "schema": "apps_rg.final_resume_aggregation_product_closeout_w14_w16_manifest.v1",
+  "status": "PARTIAL",
+  "evaluated_at_utc": "2026-05-19T09:10:10+00:00",
+  "orchestration_id": "670b60da21d700bd2bc2f18a734f5b1b",
+  "rollup_id": "generated_lane_rollup_coherent_20260519T091010Z",
+  "files_changed": [
+    "apps_rg/runtime/sections/ibm_bullets_lane.py"
+  ],
+  "commands_run": [
+    {"command": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"command": "python tools/apps_rg/audit_blocked_lanes.py --write", "exit_code": 0},
+    {"command": "python tools/apps_rg/build_lane_blocker_rca.py --lane ibm_bullets --run-id ibm_bullets_20260518_224815 --write", "exit_code": 0},
+    {"command": "python -m apps_rg --section ibm_bullets --provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude --allow-non-allow-exit-zero", "exit_code": 0, "run_id": "ibm_bullets_20260519_090504", "x3": "X3_BLOCK", "runtime_generation_status": "BLOCKED"},
+    {"command": "W15 judge replay on pin ibm_bullets_20260518_224815", "exit_code": 0, "x3": "X3_ALLOW"},
+    {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write --product-proof", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
+    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0, "final_x3_code": "X3_ALLOW"},
+    {"command": "pytest tests/unit/apps_rg -k aggregation or final_resume or package_x3 or review_lane or coherent_rollup or ibm_bullets", "exit_code": 0, "passed": 19},
+    {"command": "pytest tests/_apps_contract -k apps_rg and (aggregation or final_resume or package_x3 or review_lane or coherent_rollup or ibm_bullets)", "exit_code": 1, "passed": 28, "failed": 4, "note": "ibm_bullets provider-down / authority label contract flakes"},
+    {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}
+  ],
+  "ibm_bullets_rca": {
+    "pin_run_id": "ibm_bullets_20260518_224815",
+    "failed_regen_run_id": "ibm_bullets_20260518_233826",
+    "root_cause": "null allowed_fact_packet + circular claim ledger; regen used ledger pool without bul_ibm_*",
+    "artifact": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/ibm_bullets_blocker_rca_w14.json"
+  },
+  "ibm_bullets_repair": {
+    "code_changes": "canonical IBM employment binding; allowed_fact_packet; claim_ledger alignment",
+    "fresh_qwen_regen": "BLOCKED provider",
+    "judge_replay_x3": "X3_ALLOW on pin ibm_bullets_20260518_224815"
+  },
+  "judge_result_matrix_ibm_bullets_after_replay": {
+    "gemini_pro": {"status": "MODEL_BACKED_PASS", "score": 5.0},
+    "openai_chatgpt": {"status": "MODEL_BACKED_PASS", "score": 5.0},
+    "anthropic_claude": {"status": "MODEL_BACKED_PASS", "score": 4.6}
+  },
+  "review_lane_policy": {
+    "allow_lanes": 7,
+    "review_lanes": 0,
+    "product_allow_claimed": true
+  },
+  "warn_policy": {
+    "warn_gate_ids": ["x2_cross_section_exact_duplicate", "x2_cross_section_same_claim_different_wording"],
+    "cross_section_x2_product_pass": false,
+    "product_allow_blocked_by_cross_section": true
+  },
+  "package_x3": {
+    "final_x3_code": "X3_ALLOW",
+    "deterministic_blocked": false
+  },
+  "product_allow_claimed": false,
+  "product_allow_claimed_note": "false on final_resume_receipt due to cross-section WARN; review_lane_policy summary true but WARN policy blocks product receipt claim",
+  "agentic_core_diff_empty": true
+}

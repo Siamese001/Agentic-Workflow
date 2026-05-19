@@ -1,0 +1,8 @@
+{
+  "schema": "apps_rg.qwen_healthcheck_w17.v1",
+  "evaluated_at_utc": "2026-05-19T09:26:43.233589+00:00",
+  "endpoint": "http://localhost:8000/v1/models",
+  "available": false,
+  "exit_code": 7,
+  "blocked_w17_fresh_ibm_bullets": true
+}

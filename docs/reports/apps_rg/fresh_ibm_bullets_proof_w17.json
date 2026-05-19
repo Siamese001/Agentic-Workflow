@@ -1,0 +1,24 @@
+{
+  "schema": "apps_rg.fresh_ibm_bullets_proof_w17.v1",
+  "evaluated_at_utc": "2026-05-19T09:26:43.233589+00:00",
+  "fresh_run_blocked": true,
+  "accepted_pin_run_id": "ibm_bullets_20260518_224815",
+  "pin_x3_code": "X3_ALLOW",
+  "judge_matrix": [
+    {
+      "provider_key": "gemini_pro",
+      "score": 5.0,
+      "pass": true
+    },
+    {
+      "provider_key": "openai_chatgpt",
+      "score": 5.0,
+      "pass": true
+    },
+    {
+      "provider_key": "anthropic_claude",
+      "score": 4.2,
+      "pass": true
+    }
+  ]
+}

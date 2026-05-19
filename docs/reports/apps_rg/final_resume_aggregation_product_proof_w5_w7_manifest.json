@@ -1,0 +1,83 @@
+{
+  "schema": "apps_rg.final_resume_aggregation_product_proof_w5_w7_manifest.v1",
+  "status": "PARTIAL",
+  "evaluated_at_utc": "2026-05-18T23:28:00+00:00",
+  "orchestration_id": "61d12a35e26397f22b81e6682ca74393",
+  "rollup_id": "generated_lane_rollup_coherent_20260518T232648Z",
+  "files_changed": [
+    "apps_rg/runtime/aggregation/coherent_rollup_policy.py",
+    "apps_rg/runtime/aggregation/review_lane_policy.py",
+    "apps_rg/runtime/aggregation/warn_policy.py",
+    "apps_rg/runtime/aggregation/run_fingerprint.py",
+    "apps_rg/runtime/assembly/final_resume_assembler.py",
+    "apps_rg/runtime/package/resume_package_x3.py",
+    "tests/unit/apps_rg/test_aggregation_product_proof_w5_w7.py",
+    "docs/reports/apps_rg/final_resume_aggregation_product_proof_w5_w7.md",
+    "docs/reports/apps_rg/final_resume_aggregation_product_proof_w5_w7_manifest.json"
+  ],
+  "commands_run": [
+    {"command": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0},
+    {"command": "pytest tests/unit/apps_rg -k aggregation...", "exit_code": 0, "selected": 22, "passed": 22},
+    {"command": "pytest tests/_apps_contract -k apps_rg aggregation...", "exit_code": 0, "selected": 15, "passed": 15},
+    {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}
+  ],
+  "artifacts": {
+    "orchestration_fingerprint_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/orchestration_fingerprint.json",
+    "cross_section_x2_gate_outputs_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/cross_section_x2_gate_outputs.json",
+    "final_resume_receipt_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_receipt.json",
+    "coherent_rollup_policy_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/coherent_rollup_policy.json",
+    "review_lane_policy_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/review_lane_policy.json",
+    "resume_package_x3_disposition_json": "artifacts/apps_rg/runtime_proofs/resume_package/resume_package_x3_disposition.json",
+    "resume_package_receipt_json": "artifacts/apps_rg/runtime_proofs/resume_package/resume_package_receipt.json"
+  },
+  "coherent_rollup_matrix": {
+    "coherent_aggregation_pin": true,
+    "same_date_prefix_coherent": true,
+    "jd_digest_coherent": true,
+    "briefing_digest_coherent": true,
+    "proof_pool_policy_coherent": false,
+    "preflight_all_pass": true
+  },
+  "same_run_policy": {
+    "acceptable_for_structural_assembly": true,
+    "coherent_rollup_policy_reason": "all lane run_id date prefixes match",
+    "require_single_orchestration_pass": false
+  },
+  "review_lane_policy": {
+    "allow_lanes": ["unify_narrative", "competencies"],
+    "review_lanes": ["ibm_bullets"],
+    "mock_plumbing_lanes": ["headline", "executive_summary", "unify_bullets", "ibm_narrative"],
+    "blocked_lanes": [],
+    "product_review_required": true,
+    "product_allow_claimed": false
+  },
+  "warn_policy": {
+    "warn_gate_ids": [
+      "x2_cross_section_exact_duplicate",
+      "x2_cross_section_same_claim_different_wording",
+      "x2_cross_section_x3_review_present"
+    ],
+    "structural_cross_section_eligible": true,
+    "product_allow_blocked_by_cross_section": true
+  },
+  "package_x3": {
+    "final_x3_code": "X3_BLOCKED_DETERMINISTIC_GATES",
+    "deterministic_blocked": true,
+    "product_allow_claimed": false
+  },
+  "product_allow_claimed": false,
+  "structural_x2_all_pass": true,
+  "cross_section_x2_structural_pass": true,
+  "cross_section_x2_product_pass": false,
+  "aggregation_receipt_v2": "final_resume_assembly_receipt_v2",
+  "agentic_core_diff_empty": true,
+  "explicit_non_claims": [
+    "JD/briefing are targeting-only digests",
+    "Structural PASS does not imply product ALLOW",
+    "REVIEW and MOCK lanes are surfaced, not hidden",
+    "WARN is not treated as PASS for product"
+  ]
+}

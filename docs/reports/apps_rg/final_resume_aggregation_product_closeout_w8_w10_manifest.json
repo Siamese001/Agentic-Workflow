@@ -1,0 +1,85 @@
+{
+  "schema": "apps_rg.final_resume_aggregation_product_closeout_w8_w10_manifest.v1",
+  "status": "PARTIAL",
+  "evaluated_at_utc": "2026-05-18T23:35:00+00:00",
+  "orchestration_id": "34f1ca3c55479ff0194e2061ed9839b6",
+  "rollup_id": "generated_lane_rollup_coherent_20260518T233342Z",
+  "files_changed": [
+    "tools/apps_rg/audit_blocked_lanes.py",
+    "tools/apps_rg/build_coherent_aggregation_rollup.py",
+    "tools/apps_rg/emit_regenerated_lane_matrix.py",
+    "apps_rg/runtime/aggregation/coherent_rollup_policy.py",
+    "docs/reports/apps_rg/final_resume_aggregation_product_closeout_w8_w10.md",
+    "docs/reports/apps_rg/final_resume_aggregation_product_closeout_w8_w10_manifest.json"
+  ],
+  "commands_run": [
+    {"command": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"command": "python tools/apps_rg/audit_blocked_lanes.py --write", "exit_code": 0},
+    {"command": "python -m apps_rg --section headline --provider qwen_vllm ...", "exit_code": 0, "run_id": "headline_20260518_233123", "x3": "X3_BLOCK", "real_llm": true},
+    {"command": "python -m apps_rg --section ibm_bullets --provider qwen_vllm ...", "exit_code": 0, "run_id": "ibm_bullets_20260518_233233", "x3": "X3_BLOCK", "real_llm": true},
+    {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write --product-proof", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
+    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0, "final_x3_code": "X3_REVIEW_SECTION_JUDGE_STATUS"},
+    {"command": "pytest tests/unit/apps_rg -k aggregation|final_resume|package_x3|review_lane|coherent_rollup", "exit_code": 0, "passed": 18},
+    {"command": "pytest tests/_apps_contract -k apps_rg aggregation...", "exit_code": 0, "passed": 8},
+    {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}
+  ],
+  "artifacts": {
+    "blocked_lane_matrix_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/blocked_lane_matrix.json",
+    "regenerated_lane_matrix_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/regenerated_lane_matrix.json",
+    "coherent_rollup_policy_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/coherent_rollup_policy.json",
+    "review_lane_policy_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/review_lane_policy.json",
+    "cross_section_x2_gate_outputs_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/cross_section_x2_gate_outputs.json",
+    "final_resume_receipt_json": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/final_resume_receipt.json",
+    "resume_package_x3_disposition_json": "artifacts/apps_rg/runtime_proofs/resume_package/resume_package_x3_disposition.json",
+    "resume_package_receipt_json": "artifacts/apps_rg/runtime_proofs/resume_package/resume_package_receipt.json"
+  },
+  "blocked_lane_matrix_summary": {
+    "headline": ["judge_soft_fail", "x3_review_disposition"],
+    "executive_summary": ["product_allow_eligible"],
+    "unify_bullets": ["product_allow_eligible"],
+    "ibm_narrative": ["product_allow_eligible"],
+    "ibm_bullets": ["judge_soft_fail", "x3_review_disposition"]
+  },
+  "regenerated_lane_matrix_summary": {
+    "headline_20260518_233123": {"real_llm": true, "offline_stub": false, "x3": "X3_BLOCK", "rollup_selected": false},
+    "ibm_bullets_20260518_233233": {"real_llm": true, "offline_stub": false, "x3": "X3_BLOCK", "rollup_selected": false}
+  },
+  "real_llm_proof_per_rollup_lane": {
+    "headline": "REAL_LLM",
+    "executive_summary": "REAL_LLM",
+    "unify_bullets": "REAL_LLM",
+    "ibm_narrative": "REAL_LLM",
+    "ibm_bullets": "REAL_LLM",
+    "unify_narrative": "REAL_LLM",
+    "competencies": "REAL_LLM"
+  },
+  "mock_stub_rejection": "Rollup --product-proof rejects OFFLINE_CONTRACT_STUB and PLUMBING_ONLY/MOCK x3",
+  "proof_pool_policy": {
+    "proof_pool_policy_coherent": false,
+    "product_acceptable_proof_pool_policy_reason": "ibm_bullets base-resume ref vs master ledger (section scope split)"
+  },
+  "review_lane_policy": {
+    "allow_lanes": ["executive_summary", "unify_narrative", "unify_bullets", "ibm_narrative", "competencies"],
+    "review_lanes": ["headline", "ibm_bullets"],
+    "mock_plumbing_lanes": [],
+    "product_review_required": true,
+    "product_allow_claimed": false
+  },
+  "warn_policy": {
+    "warn_gate_ids": ["x2_cross_section_exact_duplicate", "x2_cross_section_same_claim_different_wording", "x2_cross_section_x3_review_present"],
+    "cross_section_x2_product_pass": false
+  },
+  "package_x3": {
+    "final_x3_code": "X3_REVIEW_SECTION_JUDGE_STATUS",
+    "deterministic_blocked": false,
+    "product_allow_claimed": false
+  },
+  "product_allow_claimed": false,
+  "agentic_core_diff_empty": true,
+  "explicit_non_claims": [
+    "Product ALLOW not claimed with REVIEW lanes or cross-section WARN",
+    "W9 regeneration runs are REAL_LLM but not rollup-selected due to X3_BLOCK",
+    "JD/briefing not proof"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "apps_rg.final_resume_aggregation_product_closeout_w17_w19_manifest.v1",
+  "status": "BLOCKED",
+  "status_note": "W17 qwen_vLLM unavailable; W18-W19 product_allow_claimed true on receipt and package with pinned ibm_bullets",
+  "evaluated_at_utc": "2026-05-19T09:23:40+00:00",
+  "files_changed": [
+    "apps_rg/runtime/aggregation/cross_section_x2.py",
+    "apps_rg/runtime/assembly/final_resume_assembler.py",
+    "tests/unit/apps_rg/test_aggregation_product_proof_w5_w7.py",
+    "tests/_apps_contract/test_apps_rg_cross_section_x2.py"
+  ],
+  "commands_run": [
+    {"command": "python -m compileall apps_rg -q", "exit_code": 0},
+    {"command": "curl -fsS http://localhost:8000/v1/models", "exit_code": 7, "available": false},
+    {"command": "python -m apps_rg --section ibm_bullets ...", "exit_code": 0, "run_id": "ibm_bullets_20260519_090504", "runtime_generation_status": "BLOCKED", "skipped_fresh_proof": true},
+    {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write --product-proof", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
+    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0, "final_x3_code": "X3_ALLOW"},
+    {"command": "pytest tests/unit/apps_rg -k aggregation|...", "exit_code": 0, "passed": 20},
+    {"command": "pytest tests/_apps_contract -k apps_rg and (aggregation|...)", "exit_code": 1, "passed": 30, "failed": 4, "note": "ibm_bullets provider-down CLI tests; cross_section receipt test updated"},
+    {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}
+  ],
+  "qwen_healthcheck": {
+    "available": false,
+    "exit_code": 7,
+    "artifact": "artifacts/apps_rg/runtime_proofs/final_resume_assembly/qwen_healthcheck_w17.json"
+  },
+  "fresh_ibm_bullets": {
+    "fresh_run_blocked": true,
+    "accepted_pin_run_id": "ibm_bullets_20260518_224815",
+    "pin_x3_code": "X3_ALLOW"
+  },
+  "cross_section_w18": {
+    "exact_duplicate_verdict": "PASS",
+    "same_claim_different_wording_verdict": "PASS",
+    "cross_section_x2_product_pass": true,
+    "product_warn_waiver_used": false
+  },
+  "package_x3": {
+    "final_x3_code": "X3_ALLOW",
+    "product_allow_claimed": true
+  },
+  "final_receipt": {
+    "product_allow_claimed": true,
+    "cross_section_x2_product_pass": true
+  },
+  "product_allow_claimed": true,
+  "product_allow_claimed_caveat": "true on receipt/package but W17 fresh qwen proof BLOCKED — not full PASS per wave-17 gate",
+  "agentic_core_diff_empty": true
+}
