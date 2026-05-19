@@ -26,13 +26,17 @@ Patch or verify exactly one runtime seam.
 ```text
 STATUS: PASS | PARTIAL | FAIL | BLOCKED
 FILES_CHANGED:
-- path
+- [basename](repo/relative/path)
 COMMANDS_RUN:
 - command -> result
 TESTS_GATES:
 - command -> result
 ARTIFACTS:
-- path or NONE
+- [basename](repo/relative/path) or NONE
+REPORTS_GENERATED: (when applicable)
+- [basename](repo/relative/path)
 NOTES:
 - caveat
 ```
+
+Use markdown hyperlinks for every path in receipt sections (chat + `*_receipt.md` + manifest `*_links` arrays).

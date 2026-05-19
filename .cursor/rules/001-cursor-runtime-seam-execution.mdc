@@ -42,13 +42,17 @@ Every repo-work response must include:
 ```text
 STATUS: PASS | PARTIAL | FAIL | BLOCKED
 FILES_CHANGED:
-- path
+- [basename](repo/relative/path)
 COMMANDS_RUN:
 - command -> result
 TESTS_GATES:
 - command -> result
 ARTIFACTS:
-- path or NONE
+- [basename](repo/relative/path) or NONE
+REPORTS_GENERATED: (when applicable)
+- [basename](repo/relative/path)
 NOTES:
 - one or two important caveats only
 ```
+
+**Receipt hyperlinks (required):** In chat responses and companion `*_receipt.md` / manifest JSON, every repo path in `FILES_CHANGED`, `ARTIFACTS`, and `REPORTS_GENERATED` MUST be a markdown link `[label](path)` using forward slashes (e.g. `[human_benchmark_plan.md](artifacts/apps_rg/plans/human_benchmark_plan.md)`). JSON manifests SHOULD also include parallel `*_links` objects via `ops_scripts/apps_rg/l6_benchmarks/receipt_links.py` (`path` + `markdown` fields).
