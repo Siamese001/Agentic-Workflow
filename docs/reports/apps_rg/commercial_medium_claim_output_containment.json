@@ -1,0 +1,922 @@
+{
+  "generated_at_utc": "2026-05-19T08:17:47Z",
+  "status": "PASS",
+  "fixture": {
+    "target_company": "Acme Revenue Corp",
+    "target_role": "Chief Revenue Officer revenue operations pipeline Salesforce forecasting strategic alliances customer success commercialization",
+    "jd_text": "RevOps pipeline analytics Salesforce forecast enterprise sales partnerships IBM AWS alliance customer success retention NRR stakeholder alignment subscription pricing M&A synergy",
+    "briefing_text": "CRO composite targeting fixture \u2014 JD/briefing labeling only; not proof."
+  },
+  "sections_tested": [
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative"
+  ],
+  "headline_executive_high_only_proof": {
+    "headline": [
+      {
+        "candidate_fact_id": "fact_engineering_platform_006",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_quant_hpc_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_quant_hpc_003",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_consulting_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_002",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      }
+    ],
+    "executive_summary": [
+      {
+        "candidate_fact_id": "fact_certs_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_004",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_001",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_exec_002",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_governance_003",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      },
+      {
+        "candidate_fact_id": "fact_quant_hpc_002",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
+      }
+    ]
+  },
+  "claim_eligible_medium_by_section": {
+    "unify_bullets": [
+      "fact_revenue_ops_003",
+      "fact_sales_accounts_001",
+      "fact_partnerships_gtm_001",
+      "fact_partnerships_gtm_003"
+    ],
+    "unify_narrative": [],
+    "ibm_bullets": [
+      "fact_revenue_ops_004",
+      "fact_revenue_ops_002",
+      "fact_revenue_ops_001",
+      "fact_partnerships_gtm_002",
+      "fact_revenue_ops_005",
+      "fact_sales_accounts_002"
+    ],
+    "ibm_narrative": [
+      "fact_sales_accounts_003"
+    ]
+  },
+  "fixture_claims_by_section": {
+    "unify_bullets": [
+      {
+        "section_id": "unify_bullets",
+        "candidate_fact_id": "fact_revenue_ops_003",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.",
+        "company_lane": "unify",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+        ]
+      },
+      {
+        "section_id": "unify_bullets",
+        "candidate_fact_id": "fact_sales_accounts_001",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
+        "company_lane": "unify",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+        ]
+      },
+      {
+        "section_id": "unify_bullets",
+        "candidate_fact_id": "fact_partnerships_gtm_001",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+        "company_lane": "unify",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+        ]
+      },
+      {
+        "section_id": "unify_bullets",
+        "candidate_fact_id": "fact_partnerships_gtm_003",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
+        "company_lane": "unify",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+        ]
+      },
+      {
+        "section_id": "unify_bullets",
+        "candidate_fact_id": "fact_engineering_platform_003",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative",
+        "claim_eligible_medium": false,
+        "claim_text": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
+        "company_lane": "unify",
+        "source_trace_archive_relpaths": []
+      },
+      {
+        "section_id": "unify_bullets",
+        "candidate_fact_id": "fact_engineering_platform_005",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_qualitative",
+        "claim_eligible_medium": false,
+        "claim_text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+        "company_lane": "unify",
+        "source_trace_archive_relpaths": []
+      }
+    ],
+    "unify_narrative": [],
+    "ibm_bullets": [
+      {
+        "section_id": "ibm_bullets",
+        "candidate_fact_id": "fact_revenue_ops_004",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+        ]
+      },
+      {
+        "section_id": "ibm_bullets",
+        "candidate_fact_id": "fact_revenue_ops_002",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Expanded client portfolios by 50% through targeted relationship-building and maintained a Salesforce forecast pipeline that drove $10M in net-new revenue.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+        ]
+      },
+      {
+        "section_id": "ibm_bullets",
+        "candidate_fact_id": "fact_revenue_ops_001",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+        ]
+      },
+      {
+        "section_id": "ibm_bullets",
+        "candidate_fact_id": "fact_partnerships_gtm_002",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+        ]
+      },
+      {
+        "section_id": "ibm_bullets",
+        "candidate_fact_id": "fact_revenue_ops_005",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+        ]
+      },
+      {
+        "section_id": "ibm_bullets",
+        "candidate_fact_id": "fact_sales_accounts_002",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt"
+        ]
+      }
+    ],
+    "ibm_narrative": [
+      {
+        "section_id": "ibm_narrative",
+        "candidate_fact_id": "fact_sales_accounts_003",
+        "confidence": "MEDIUM",
+        "verification_status": "eligible_medium_with_source_trace",
+        "claim_eligible_medium": true,
+        "claim_text": "Oversaw strategic sales engagements for top-tier financial institutions across EMEA, APAC, and North America, guiding a 20-member distributed sales team and securing multimillion-dollar transactions.",
+        "company_lane": "ibm_only",
+        "source_trace_archive_relpaths": [
+          "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+        ]
+      }
+    ]
+  },
+  "source_trace_matrix": [
+    {
+      "candidate_fact_id": "fact_revenue_ops_003",
+      "section_id": "unify_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+      ],
+      "archive_token_hit_ratio": 0.923,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_001",
+      "section_id": "unify_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_001",
+      "section_id": "unify_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_003",
+      "section_id": "unify_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_004",
+      "section_id": "ibm_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ],
+      "archive_token_hit_ratio": 0.938,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_002",
+      "section_id": "ibm_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ],
+      "archive_token_hit_ratio": 0.929,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_001",
+      "section_id": "ibm_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_002",
+      "section_id": "ibm_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_005",
+      "section_id": "ibm_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_002",
+      "section_id": "ibm_bullets",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_003",
+      "section_id": "ibm_narrative",
+      "trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+      ],
+      "archive_token_hit_ratio": 1.0,
+      "overclaim_verdict": "PASS"
+    }
+  ],
+  "overclaim_verdicts": [
+    {
+      "section_id": "unify_bullets",
+      "candidate_fact_id": "fact_revenue_ops_003",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 0.923,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.923,
+            "tokens_matched": 12,
+            "tokens_total": 13
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "section_id": "unify_bullets",
+      "candidate_fact_id": "fact_sales_accounts_001",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Strategic Account Executive.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 16,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.875,
+            "tokens_matched": 14,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.688,
+            "tokens_matched": 11,
+            "tokens_total": 16
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "section_id": "unify_bullets",
+      "candidate_fact_id": "fact_partnerships_gtm_001",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Partner Development Manager.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 23,
+            "tokens_total": 23
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+      ]
+    },
+    {
+      "section_id": "unify_bullets",
+      "candidate_fact_id": "fact_partnerships_gtm_003",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Partner Development Manager.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 16,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.812,
+            "tokens_matched": 13,
+            "tokens_total": 16
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "candidate_fact_id": "fact_revenue_ops_004",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 0.938,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 0.938,
+            "tokens_matched": 15,
+            "tokens_total": 16
+          },
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.75,
+            "tokens_matched": 12,
+            "tokens_total": 16
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "candidate_fact_id": "fact_revenue_ops_002",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 0.929,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.929,
+            "tokens_matched": 13,
+            "tokens_total": 14
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "candidate_fact_id": "fact_revenue_ops_001",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 14,
+            "tokens_total": 14
+          },
+          {
+            "source_resume_variant": "Amit Ayer Resume - VP Finance Sales & Marketing.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt",
+            "token_hit_ratio": 0.643,
+            "tokens_matched": 9,
+            "tokens_total": 14
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "candidate_fact_id": "fact_partnerships_gtm_002",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Partner Development Manager.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 18,
+            "tokens_total": 18
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "candidate_fact_id": "fact_revenue_ops_005",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Strategic Finance - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 12,
+            "tokens_total": 12
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "candidate_fact_id": "fact_sales_accounts_002",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Amit Ayer Resume - Strategic Account Executive.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 15,
+            "tokens_total": 15
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt"
+      ]
+    },
+    {
+      "section_id": "ibm_narrative",
+      "candidate_fact_id": "fact_sales_accounts_003",
+      "overclaim_verdict": "PASS",
+      "claim_text_stable_vs_ledger": true,
+      "archive_audit": {
+        "passed": true,
+        "reason": "ok",
+        "token_hit_ratio": 1.0,
+        "traces": [
+          {
+            "source_resume_variant": "Sales - Amit Ayer.txt",
+            "archive_relpath": "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "token_hit_ratio": 1.0,
+            "tokens_matched": 20,
+            "tokens_total": 20
+          }
+        ],
+        "missing_variants": []
+      },
+      "registry_trace_paths": [
+        "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+      ]
+    }
+  ],
+  "blocked_facts_proof": {
+    "blocked_ids": [
+      "fact_customer_success_001",
+      "fact_sales_accounts_004",
+      "fact_sales_accounts_005"
+    ],
+    "in_any_section_pool": [],
+    "srfs_blocked_rows": [
+      {
+        "candidate_fact_id": "fact_customer_success_001",
+        "confidence": "LOW",
+        "block_reason": "LOW_CONFIDENCE_BLOCK_FOR_EXTERNAL_SELECTION"
+      },
+      {
+        "candidate_fact_id": "fact_sales_accounts_004",
+        "confidence": "NEEDS_VERIFICATION",
+        "block_reason": "METRIC_OR_ASSERTION_NEEDS_SOURCE_VERIFICATION"
+      },
+      {
+        "candidate_fact_id": "fact_sales_accounts_005",
+        "confidence": "NEEDS_VERIFICATION",
+        "block_reason": "METRIC_OR_ASSERTION_NEEDS_SOURCE_VERIFICATION"
+      }
+    ]
+  },
+  "section_proof_pool_fixture_output": {
+    "unify_bullets": {
+      "proof_source": "broad_skills_ledger",
+      "fact_count": 6,
+      "fact_ids": [
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_005",
+        "bul_unify_006"
+      ],
+      "fixture_claim_texts": [
+        {
+          "fact_id": "bul_unify_001",
+          "claim_text": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+          ]
+        },
+        {
+          "fact_id": "bul_unify_002",
+          "claim_text": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+          ]
+        },
+        {
+          "fact_id": "bul_unify_003",
+          "claim_text": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-deri",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+          ]
+        },
+        {
+          "fact_id": "bul_unify_004",
+          "claim_text": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
+          ]
+        },
+        {
+          "fact_id": "bul_unify_005",
+          "claim_text": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_006",
+          "claim_text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        }
+      ]
+    },
+    "unify_narrative": {
+      "proof_source": "broad_skills_ledger",
+      "fact_count": 6,
+      "fact_ids": [
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_005",
+        "bul_unify_006"
+      ],
+      "fixture_claim_texts": [
+        {
+          "fact_id": "bul_unify_001",
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation contro",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_002",
+          "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_003",
+          "claim_text": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_004",
+          "claim_text": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_005",
+          "claim_text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_006",
+          "claim_text": "Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue, expanding gross margins by 20%, and scaling the ML engineering organization from 8 to 28 specialists.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        }
+      ]
+    },
+    "ibm_bullets": {
+      "proof_source": "broad_skills_ledger",
+      "fact_count": 6,
+      "fact_ids": [
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_001",
+        "fact_partnerships_gtm_002",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_002"
+      ],
+      "fixture_claim_texts": [
+        {
+          "fact_id": "fact_revenue_ops_004",
+          "claim_text": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+          ]
+        },
+        {
+          "fact_id": "fact_revenue_ops_002",
+          "claim_text": "Expanded client portfolios by 50% through targeted relationship-building and maintained a Salesforce forecast pipeline that drove $10M in net-new revenue.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+          ]
+        },
+        {
+          "fact_id": "fact_revenue_ops_001",
+          "claim_text": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt",
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
+          ]
+        },
+        {
+          "fact_id": "fact_partnerships_gtm_002",
+          "claim_text": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
+          ]
+        },
+        {
+          "fact_id": "fact_revenue_ops_005",
+          "claim_text": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
+          ]
+        },
+        {
+          "fact_id": "fact_sales_accounts_002",
+          "claim_text": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+          "confidence": "MEDIUM",
+          "source_trace_archive_relpaths": [
+            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt"
+          ]
+        }
+      ]
+    },
+    "ibm_narrative": {
+      "proof_source": "broad_skills_ledger",
+      "fact_count": 3,
+      "fact_ids": [
+        "fact_consulting_001",
+        "fact_governance_003",
+        "fact_quant_hpc_001"
+      ],
+      "fixture_claim_texts": [
+        {
+          "fact_id": "fact_consulting_001",
+          "claim_text": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "fact_governance_003",
+          "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "fact_quant_hpc_001",
+          "claim_text": "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        }
+      ]
+    }
+  },
+  "violations": [],
+  "x2_x3_status": {
+    "ran": false,
+    "note": "Offline SRFS + proof-pool fixture only; no live provider X2/X3"
+  },
+  "scope_control": {
+    "agentic_core_touched": false,
+    "section_prompts_touched": false,
+    "skills_graph_mutated": false,
+    "facts_promoted_this_wave": false
+  },
+  "explicit_non_claims": [
+    "No live Qwen/provider run",
+    "No X2/X3 gate execution in this harness",
+    "JD/briefing labeling-only for CRO fixture"
+  ]
+}
