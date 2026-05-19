@@ -310,14 +310,16 @@ class EnterpriseLicOrchestrator:
             return self._template_message(sender, recipient, job, route), False, "no_api_key"
 
         prompt = self._build_prompt(sender, recipient, job, route)
-        from agentic_core.config.google_ai_env_reads import (  # noqa: PLC0415
-            google_ai_flash_model_env,
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+            GEMINI_FLASH_MODEL_ID,
         )
 
-        model_name = google_ai_flash_model_env(legacy_default="gemini-2.0-flash").split()[0]
-        # Known-good default if .env model is a preview slug not yet GA
-        if "preview" in model_name or model_name == "gemini-2.0-flash-exp":
-            model_name = "gemini-2.0-flash"
+        from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+        model_name = (google_ai_flash_model_id()[0] or GEMINI_FLASH_MODEL_ID).split()[0]
+        # Retire deprecated slugs that return 404 for new API keys
+        if model_name in ("gemini-2.0-flash", "gemini-2.0-flash-exp"):
+            model_name = GEMINI_FLASH_MODEL_ID or "gemini-3-flash-preview"
 
         import json as _json
         import urllib.error
@@ -384,19 +386,25 @@ class EnterpriseLicOrchestrator:
             "FOLLOW_UP": "Under 800 characters, reference prior context, re-anchor the ask.",
             "INMAIL": "Under 1900 characters, rich context, strong hook, clear CTA.",
         }
+        recipient_first = (recipient.get("name") or "there").split()[0]
+        company_context = job.get("company_context", "")
         return (
             "You are drafting a high-signal LinkedIn outreach message.\n"
-            f"Route: {route}. Constraints: {route_constraints.get(route, 'Be concise.')}\n\n"
+            f"Route: {route}. Constraints: {route_constraints.get(route, 'Be concise.')}\n"
+            f"STRICT: Stay within the character limit for this route. Count characters.\n\n"
             f"SENDER:\n  name: {sender.get('name')}\n  title: {sender.get('title')}\n"
             f"  company: {sender.get('company')}\n  background: {sender.get('background', '')}\n\n"
-            f"RECIPIENT:\n  name: {recipient.get('name')}\n  title: {recipient.get('title')}\n"
-            f"  company: {recipient.get('company')}\n  background: {recipient.get('background', '')}\n\n"
-            f"TARGET ROLE:\n  title: {job.get('title')}\n  company: {job.get('company')}\n"
-            f"  summary: {job.get('summary', '')}\n\n"
+            f"RECIPIENT (address as {recipient_first}):\n  name: {recipient.get('name')}\n"
+            f"  title: {recipient.get('title')}\n  company: {recipient.get('company')}\n"
+            f"  background: {recipient.get('background', '')}\n\n"
+            f"TARGET ROLE (sender's interest):\n  title: {job.get('title')}\n"
+            f"  company: {job.get('company')}\n  summary: {job.get('summary', '')}\n"
+            f"  strategic context: {company_context}\n\n"
             "Rules:\n"
-            "- Lead with one specific, non-generic hook tied to the recipient's actual work.\n"
-            "- Tie the sender's strongest, most relevant credential to the target role.\n"
-            "- End with ONE clear, low-friction ask (not 'any chance we could connect').\n"
+            f"- Open with 'Hi {recipient_first},' and speak directly to the recipient.\n"
+            "- Lead with one specific hook tied to the recipient's agentic/compounding-capabilities work.\n"
+            "- Tie sender credentials to translating enterprise agentic primitives into frontline enablement.\n"
+            "- End with ONE clear, low-friction ask (brief chat or perspective—not vague connect requests).\n"
             "- No emojis. No cliches ('hope this finds you well', 'game-changer').\n"
             "- No fabrication: use only facts given above.\n"
             "Return only the message body. No subject line, no preamble."
@@ -410,23 +418,28 @@ class EnterpriseLicOrchestrator:
         route: str,
     ) -> str:
         r_name = (recipient.get("name") or "there").split()[0]
-        s_name = sender.get("name") or "—"
         job_title = job.get("title") or "the role"
-        job_co = job.get("company") or recipient.get("company") or ""
-        hook = (
-            f"Your founding-recruiter work scaling {job_co} 0→100+ across AI/ML and GTM"
-            if "recruiter" in (recipient.get("title") or "").lower()
-            else f"Your work at {job_co}"
-        )
-        body = (
-            f"Hi {r_name}, {hook} is exactly the context I am looking for. "
-            f"I am {s_name} — {sender.get('title')}, with hands-on experience building "
-            f"layered agentic AI systems (routing, orchestration, guardrails, observability) "
-            f"and a bias for repeatable, product-integrated delivery. "
-            f"Open to a 15-minute call this week about {job_title}?"
-        )
+        title_l = (recipient.get("title") or "").lower()
+        if "recruiter" in title_l or "talent" in title_l:
+            hook = "your scaling work across AI/ML hiring"
+        elif any(tok in title_l for tok in ("agentic", "data scientist", "chief", "strategy")):
+            hook = "your compounding-capabilities view on agentic systems"
+        else:
+            hook = f"your work on enterprise AI at {recipient.get('company') or 'Truist'}"
         if route == "CONNECTION_REQ":
+            body = (
+                f"Hi {r_name}, {hook} resonates. I build governed agentic AI "
+                f"(routing, guardrails, observability) and am exploring {job_title}. "
+                f"Open to 15 min on how enablement leaders ship reusable primitives?"
+            )
             return body[:300]
+        body = (
+            f"Hi {r_name}, {hook} aligns with how I think about enablement. "
+            f"I build production agentic systems with strict governance and observability. "
+            f"I am pursuing {job_title} and would value your perspective on translating "
+            f"enterprise agentic primitives into Care Center delivery. "
+            f"Would you be open to a brief chat this week?"
+        )
         return body
 
     @staticmethod

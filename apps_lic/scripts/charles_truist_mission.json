@@ -1,0 +1,30 @@
+{
+  "sender_profile": {
+    "name": "Amit Ayer",
+    "title": "AI/ML Engineering Leader",
+    "company": "Independent",
+    "background": "Builder of agentic AI systems with layered architecture (L0 routing through L6 observability), AST dependency graphs, and multi-MCP orchestration. Deep hands-on experience with production LLM pipelines, guardrails, evaluation frameworks, and governance at scale."
+  },
+  "recipient_profile": {
+    "name": "Charles Morris",
+    "title": "SVP, Agentic Enterprise Strategy",
+    "company": "Truist",
+    "linkedin_url": "https://www.linkedin.com/in/enterprisedatascience/",
+    "connection_status": "not_connected",
+    "prior_message_count": 0,
+    "background": "Leads Agentic Enterprise Strategy at Truist (Feb 2026–present), building operating models and platforms for AI-native work, digital teammates, and agentic systems. Previously Chief Data Scientist for Financial Services at Microsoft (2022–2026): GenAI copilots, MLOps, intelligent applications for banking/capital markets/insurance. Earlier Head of Enterprise Data Science FS at Microsoft; Azure Cloud Solution Architect; Lead Data Scientist at Putnam Investments. Public thought leadership on compounding capabilities (rejecting isolated use-case backlogs), RAG, and accountable agentic systems in financial services. BA Economics, Boston University."
+  },
+  "job_description": {
+    "title": "Head of AI Enablement, Truist Care Centers",
+    "company": "Truist Financial Corporation",
+    "location": "Charlotte, NC area",
+    "summary": "Bridge role between Truist's centralized AI operating model (The Forge) and Care Center frontline operations (AWS Connect, Kimberly Dorsett). Own translation of enterprise agentic roadmap into measurable Care Center adoption, reusable primitives, and governed human-in-the-loop systems.",
+    "company_context": "Briefing context: Truist CAIO Pascal Belaud drives The Forge (production-first, Azure-centric governance). Charles Morris owns the Agentic Enterprise strategy—compounding capabilities, digital teammates with accountable human bosses, reusable blocks vs point solutions. Care Centers need AWS-native agent-assist, call summarization, and Client Pulse-style context engines without shadow IT. Ideal outreach angle: Amit builds governed agentic systems (routing, guardrails, observability) and wants Charles's view on how enablement leaders should deliver primitives that compound for Morris's roadmap while satisfying Forge compliance.",
+    "responsibilities": [
+      "Translate enterprise agentic strategy into Care Center-ready capabilities",
+      "Deliver reusable primitives (intent, unified customer memory) not one-off pilots",
+      "Navigate Azure Forge standards vs AWS Connect operational reality",
+      "Drive frontline adoption with bounded agents and audit trails"
+    ]
+  }
+}
