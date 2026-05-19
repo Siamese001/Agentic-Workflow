@@ -1,6 +1,12 @@
 """Competencies canonical lane contract — ``apps_rg.runtime.sections.competencies_lane`` only.
 
 Uses offline Qwen contract stub (no live provider). Not a smoke bundle gate.
+
+Depends on ``tests/_apps_contract/conftest.py`` autouse fixtures:
+``APPS_RG_QWEN_OFFLINE_CONTRACT_STUB`` (via ``competencies_offline_env``) and
+non-product ``fixture_dev_bypass`` for proof-pool preconditions when one-spine
+kill switch is on. Lane execution supplies ``SectionFrontSpineBridge`` via
+``load_section_proof_for_lane`` when product-visible.
 """
 
 from __future__ import annotations
@@ -142,7 +148,9 @@ def test_canonical_lane_x2_gate_cardinality(competencies_lane_args) -> None:
     ctx = lane.run_competencies_lane_execution(competencies_lane_args)
     art = Path(ctx["artifact_dir"])
     x2 = json.loads((art / "x2_gate_outputs.json").read_text(encoding="utf-8"))
-    assert x2.get("total_x2_gates") == 41
+    # 41 core competencies gates + section_input_usage_x2 bundle (append_section_input_usage_x2_gates).
+    assert x2.get("total_x2_gates") == 42
+    assert "x2_no_keyword_stuffing" not in (x2.get("failed_gates") or [])
 
 
 def test_canonical_lane_mock_judge_x3_review_code(competencies_lane_args) -> None:

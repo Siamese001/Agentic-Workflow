@@ -57,6 +57,13 @@ def test_competencies_lane_docs_use_double_dash_section_flag() -> None:
 
 def test_competencies_primary_surface_is_sections_lane_not_dispatch_cli() -> None:
     lane = REPO_ROOT / "apps_rg" / "runtime" / "sections" / "competencies_lane.py"
-    text = lane.read_text(encoding="utf-8")
-    assert "run_competencies_execution" in text
-    assert 'trace_runtime_path="apps_rg.runtime.sections.competencies_lane"' in text
+    lane_exec = REPO_ROOT / "apps_rg" / "runtime" / "sections" / "competencies_lane_execution.py"
+    lane_text = lane.read_text(encoding="utf-8")
+    exec_text = lane_exec.read_text(encoding="utf-8")
+    assert "competencies_lane_execution" in lane_text
+    assert "run_competencies_lane_execution" in lane_text
+    lane_code = lane_text.replace("``run_competencies_execution``", "")
+    assert "run_competencies_execution(" not in lane_code
+    assert "trace_runtime_path" in exec_text
+    assert "apps_rg.runtime.sections.competencies_lane" in exec_text
+    assert "run_competencies_execution" in exec_text

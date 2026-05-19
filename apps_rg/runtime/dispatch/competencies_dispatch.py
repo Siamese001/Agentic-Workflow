@@ -45,7 +45,8 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
 from apps_rg.runtime.exit.competencies_x3 import X3Disposition, aggregate_x3
 from apps_rg.runtime.judges.competencies_x1d import run_competencies_judges
 from apps_rg.runtime.providers.competencies_live_provider_gate import (
@@ -203,36 +204,6 @@ def write_json(path: Path, data: Any) -> None:
 
 def load_base_resume() -> tuple[dict[str, Any], Path, str]:
     return load_lane_base_resume_json(repo_root=REPO_ROOT)
-
-
-def collect_employment_bullets(base_resume: dict[str, Any]) -> tuple[list[dict[str, Any]], set[str], list[str]]:
-    facts_obj = base_resume.get("facts", base_resume)
-    rows: list[dict[str, Any]] = []
-    allowed: set[str] = set()
-    bullet_lowers: list[str] = []
-    for emp in facts_obj.get("employment", []):
-        for bullet in emp.get("bullets", []):
-            bid = bullet.get("bullet_id")
-            if not bid:
-                continue
-            allowed.add(bid)
-            txt = bullet.get("text", "")
-            bullet_lowers.append(txt.lower())
-            rows.append(
-                {
-                    "fact_id": bid,
-                    "claim_text": txt,
-                    "source_employment": emp.get("employer"),
-                    "has_metric": bool(bullet.get("has_metric")),
-                    "metric_raw": bullet.get("metric_raw", "") if bullet.get("has_metric") else "",
-                    "domain": bullet.get("domain", ""),
-                    "technologies": bullet.get("technologies", []),
-                }
-            )
-            if bullet.get("metric_raw"):
-                allowed.add(f"{bid}_metric_{sha16(str(bullet['metric_raw']))[:8]}")
-    rows.sort(key=lambda r: r["fact_id"])
-    return rows, allowed, bullet_lowers
 
 
 def build_selected_fact_plan(facts: list[dict[str, Any]], required_ids: list[str]) -> dict[str, Any]:
@@ -1247,6 +1218,20 @@ def retry_qwen_for_parse(
     return new_raw, new_parsed, new_err
 
 
+# Offline SRFS stub: three distinct short phrases per category; no token may repeat >5× globally
+# (x2_no_keyword_stuffing) after deterministic repair — avoids ``governed capability cluster`` templates.
+_SRFS_STUB_TERM_TRIPLES: tuple[tuple[str, str, str], ...] = (
+    ("observability posture", "trace sampling", "metric cadence"),
+    ("routing policy", "mesh coordination", "budget caps"),
+    ("retrieval discipline", "index hygiene", "rank tuning"),
+    ("lifecycle standardization", "release cadence", "defect triage"),
+    ("platform tiers", "data planes", "gateway hardening"),
+    ("security baselines", "access reviews", "vault rotation"),
+    ("cost governance", "capacity planning", "quota envelopes"),
+    ("team leadership", "stakeholder alignment", "roadmap framing"),
+)
+
+
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     def _term_obj(phrase: str, fid: str) -> dict[str, Any]:
         return {"text": phrase, "source_fact_id": fid, "source_fact_ids": [fid]}
@@ -1263,13 +1248,14 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         competencies_srfs: list[dict[str, Any]] = []
         for i in range(8):
             fid = allowed[i % len(allowed)]
+            p0, p1, p2 = _SRFS_STUB_TERM_TRIPLES[i % len(_SRFS_STUB_TERM_TRIPLES)]
             competencies_srfs.append(
                 {
                     "category_label": f"SRFS Competency Area {i + 1}",
                     "terms": [
-                        _term_obj(f"governed capability cluster {i}a", fid),
-                        _term_obj(f"governed capability cluster {i}b", fid),
-                        _term_obj(f"governed capability cluster {i}c", fid),
+                        _term_obj(p0, fid),
+                        _term_obj(p1, fid),
+                        _term_obj(p2, fid),
                     ],
                     "source_fact_ids": [fid],
                 }
@@ -1525,7 +1511,7 @@ def run_competencies_execution(
 ) -> dict[str, Any]:
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
 
-    pool, base, base_path, base_hash = load_section_proof_for_lane(
+    pool, base, base_path, base_hash, _front_spine = load_section_proof_for_lane(
         section_id="competencies",
         args=args,
         repo_root=REPO_ROOT,

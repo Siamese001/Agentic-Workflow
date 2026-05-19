@@ -21,10 +21,11 @@ Rationalize agentic_core L2 validators/executors/healers and apps_rg section run
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: CLOSED_W11_PARTIAL
+PLAN_STATUS: COMPLETED
 CURRENT_WAVE: W11_CLOSED
 LAST_COMPLETED_WAVE: W11_CLOSEOUT
 LAST_UPDATED: 2026-05-19
+NOTION_STATUS: Completed
 
 ---
 

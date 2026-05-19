@@ -6,6 +6,10 @@ from typing import Any, Callable
 
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool, resolve_section_proof_pool
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.section_front_spine_bridge import (
+    SectionFrontSpineBridge,
+    build_section_front_spine_from_args,
+)
 
 
 def load_section_proof_for_lane(
@@ -14,8 +18,18 @@ def load_section_proof_for_lane(
     args: Any,
     repo_root: Path,
     collect_employment_bullets_fn: Callable[..., Any] | None = None,
-) -> tuple[SectionProofPool, dict[str, Any], Path, str]:
-    """Return (proof_pool, base_resume_dict, base_path, base_hash) for a lane run."""
+    artifact_dir: Path | None = None,
+) -> tuple[SectionProofPool, dict[str, Any], Path, str, SectionFrontSpineBridge]:
+    """Return (proof_pool, base_resume_dict, base_path, base_hash, front_spine) for a lane run."""
+    front_spine = build_section_front_spine_from_args(
+        section_id=section_id,
+        args=args,
+        repo_root=repo_root,
+    )
+    if artifact_dir is not None:
+        from apps_rg.runtime.section_front_spine_bridge import emit_section_front_spine_receipts
+
+        emit_section_front_spine_receipts(artifact_dir, front_spine)
     base_ref = str(getattr(args, "base_resume_ref", "") or "").strip() or None
     pool = resolve_section_proof_pool(
         section=section_id,
@@ -29,12 +43,14 @@ def load_section_proof_for_lane(
         briefing_text=str(getattr(args, "briefing", "") or ""),
         repo_root=repo_root,
         collect_employment_bullets_fn=collect_employment_bullets_fn,
+        front_spine=front_spine,
+        product_visible=True,
     )
     base_dict, base_path, base_hash = load_lane_base_resume_json(
         source_resume_ref=base_ref,
         repo_root=repo_root,
     )
-    return pool, base_dict, base_path, base_hash
+    return pool, base_dict, base_path, base_hash, front_spine
 
 
 def apply_proof_pool_to_usage_ledger(doc: dict[str, Any], pool: SectionProofPool) -> dict[str, Any]:

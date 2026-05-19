@@ -24,6 +24,9 @@ FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: NOT_STARTED
 CURRENT_WAVE: A_COMPLETE
 LAST_UPDATED: 2026-05-19
+NOTION_STATUS: Not Started
+DISK_SSOT: .cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md
+EVIDENCE_SSOT: docs/reports/agent_inventory/w11_closeout_and_next_plan_handoff.md
 
 ---
 
