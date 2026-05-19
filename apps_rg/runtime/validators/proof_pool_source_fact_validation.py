@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 
 from apps_rg.runtime.proof_pool_resolver import (
+    PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
     PROOF_SOURCE_BASE_RESUME_FALLBACK,
     PROOF_SOURCE_BROAD_SKILLS_LEDGER,
     PROOF_SOURCE_SRFS,
@@ -17,6 +18,7 @@ from apps_rg.runtime.sections.selected_role_fact_set import is_srfs_disallowed_p
 VALID_PROOF_SOURCES = frozenset(
     {
         PROOF_SOURCE_SRFS,
+        PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
         PROOF_SOURCE_BROAD_SKILLS_LEDGER,
         PROOF_SOURCE_BASE_RESUME_FALLBACK,
     }
@@ -27,6 +29,8 @@ def proof_source_from_metadata(metadata: dict[str, Any] | None) -> str:
     pt = str((metadata or {}).get("proof_pool_type") or "")
     if pt == "selected_role_fact_set":
         return PROOF_SOURCE_SRFS
+    if pt in ("augmented_skills_graph", "augmented_skills_graph_c03_graphrag"):
+        return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
     if pt == "broad_skills_ledger":
         return PROOF_SOURCE_BROAD_SKILLS_LEDGER
     if pt == "base_resume_fallback":

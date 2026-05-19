@@ -570,6 +570,25 @@ def build_executive_summary_assembly_input(
     )
 
 
+def format_graph_only_quality_guardrails_block() -> str:
+    """Append-only guardrails for C0.3 graph-only lanes (not SRFS five-sentence arc)."""
+    return (
+        "<graph_only_generation_quality>\n"
+        "GRAPH-ONLY PROOF RULES (mandatory):\n"
+        "- Use ONLY metrics present in ALLOWED_SOURCE_FACT_IDS / fact lines (metric_raw). "
+        "Never invent gross margin, revenue, or % values.\n"
+        "- Do NOT fuse platform-design facts with Basel/CCAR reporting-error metrics using "
+        "'leading to' or 'resulting in' unless a single fact states that causality.\n"
+        "- Graph proximity is not causality; relationship edges do not prove outcomes.\n"
+        "- Team-scale facts may state headcount spans only; do not claim reliability/auditability "
+        "improvements unless the cited fact says so.\n"
+        "- Prefer 2–3 dense executive sentences; do NOT append a bare credential inventory sentence.\n"
+        "- One claim_ledger row per sentence; each row cites only fact_ids that directly support that sentence.\n"
+        "- Omit credentials unless woven into narrative with a supported fact_id.\n"
+        "</graph_only_generation_quality>"
+    )
+
+
 def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id: str) -> SectionCompiledPrompt:
     assembly = build_executive_summary_assembly_input(
         runtime_payload,
@@ -585,6 +604,9 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
     if pool_type == "selected_role_fact_set":
         proof_pool_mode = "srfs"
         srfs_mode = True
+    elif pool_type in ("augmented_skills_graph", "augmented_skills_graph_c03_graphrag"):
+        proof_pool_mode = "augmented_skills_graph"
+        srfs_mode = False
     elif pool_type == "broad_skills_ledger":
         proof_pool_mode = "broad_skills_ledger"
         srfs_mode = False
@@ -613,6 +635,20 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
             apps_rg_prompt_template_ref=compiled.apps_rg_prompt_template_ref,
             artifact=replace(art, messages=msgs),
         )
+    elif proof_pool_mode == "augmented_skills_graph":
+        graph_guard = format_graph_only_quality_guardrails_block()
+        art = compiled.artifact
+        msgs = [dict(m) for m in art.messages]
+        if msgs:
+            last = msgs[-1]
+            content = str(last.get("content") or "").rstrip()
+            last["content"] = f"{content}\n\n{graph_guard}".rstrip() + "\n"
+            msgs[-1] = last
+        compiled = SectionCompiledPrompt(
+            section_id=compiled.section_id,
+            apps_rg_prompt_template_ref=compiled.apps_rg_prompt_template_ref,
+            artifact=replace(art, messages=msgs),
+        )
     return compiled
 
 
@@ -628,5 +664,6 @@ __all__ = [
     "format_srfs_forbidden_phrase_guardrails_block",
     "format_srfs_role_adaptive_appendix",
     "format_srfs_style_only_quality_oneshot_block",
+    "format_graph_only_quality_guardrails_block",
     "load_executive_summary_template_slots",
 ]

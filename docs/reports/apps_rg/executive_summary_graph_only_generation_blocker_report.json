@@ -1,0 +1,100 @@
+{
+  "schema_version": "executive_summary_graph_only_blocker_report_v1",
+  "generated_at_utc": "2026-05-19T10:30:00+00:00",
+  "previous_status": "FAIL",
+  "latest_run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_101306",
+  "exact_blocker_root_cause": "local_qwen_vllm_container_stopped_http_v1_models_preflight_failed",
+  "primary_failing_check": "runtime_generation_real_llm",
+  "decisive_chain": [
+    {
+      "step": 1,
+      "component": "Docker container local-qwen-vllm",
+      "field": "Status",
+      "expected": "running",
+      "actual": "Exited (137) 2 hours ago",
+      "source": "docker ps -a --filter name=local-qwen-vllm"
+    },
+    {
+      "step": 2,
+      "component": "HTTP preflight",
+      "field": "GET http://localhost:8000/v1/models",
+      "expected": "HTTP 200 with model list",
+      "actual": "connection refused (target machine actively refused)",
+      "source_file": "apps_rg/runtime/providers/section_qwen_slice.py",
+      "function": "call_qwen_vllm",
+      "lines": "113-135"
+    },
+    {
+      "step": 3,
+      "component": "provider_response.json",
+      "field": "runtime_generation_status",
+      "expected": "REAL_LLM",
+      "actual": "BLOCKED",
+      "source_artifact": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_101306/provider_response.json"
+    },
+    {
+      "step": 4,
+      "component": "provider_response.json",
+      "field": "exact_provider_error",
+      "expected": "empty or success",
+      "actual": "BLOCKED_LIVE_PROVIDER: PROVIDER_UNAVAILABLE — HTTP /v1/models preflight failed for 'http://localhost:8000/v1' (http_v1_models_probe_failure). No chat/completions POST attempted.",
+      "source_artifact": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_101306/provider_response.json"
+    }
+  ],
+  "cascade_failures_not_root_cause": [
+    {
+      "gate_or_check": "x2_schema_valid",
+      "reason": "empty raw_model_output because provider never called",
+      "source_artifact": "x2_gate_outputs.json"
+    },
+    {
+      "gate_or_check": "x2_claim_ledger_present",
+      "reason": "no parsed JSON / empty claim_ledger",
+      "source_artifact": "x2_gate_outputs.json"
+    },
+    {
+      "gate_or_check": "x3_disposition",
+      "field": "x3_code",
+      "expected": "X3_ALLOW for product proof",
+      "actual": "X3_BLOCK",
+      "decisive_reason": "X2 deterministic gate failure",
+      "source_artifact": "x3_disposition.json"
+    }
+  ],
+  "graph_only_authority_at_failure": {
+    "graph_only_authority_status": "PASS",
+    "c03_graphrag_bound_status": "BOUND",
+    "proof_pool_type": "augmented_skills_graph",
+    "source_authority": "augmented_skills_graph",
+    "note": "Authority wiring was correct; failure was infrastructure-only"
+  },
+  "provider_resolution_source_analysis": {
+    "observed": "DEV_DEFAULT_QWEN_VLLM",
+    "acceptable_for_real_proof": true,
+    "rationale": "CLI omitted --provider; apps_rg/runtime/section_cli_defaults.py resolves default qwen_vllm lane (not mock). DEV_DEFAULT_MOCK alias maps to same string but is not used when qwen_vllm is selected.",
+    "not_acceptable": "DEV_DEFAULT_MOCK when provider is mock/stub; APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"
+  },
+  "docker_restart_at_failure": {
+    "APPS_RG_QWEN_VLLM_DOCKER_RESTART": "unset",
+    "restart_outcome": "restart_disabled",
+    "note": "CLI did not attempt docker restart because env opt-in was false"
+  },
+  "recommended_remediation": [
+    "docker start local-qwen-vllm",
+    "Poll until curl http://localhost:8000/v1/models returns 200",
+    "Optional: APPS_RG_QWEN_VLLM_DOCKER_RESTART=1 for if_unhealthy auto-restart on future runs",
+    "Re-run: python -m apps_rg --section executive_summary --allow-non-allow-exit-zero"
+  ],
+  "wave4_remediation_applied": {
+    "action": "docker_start_local_qwen_vllm",
+    "container": "local-qwen-vllm",
+    "code_change_required": false,
+    "source_file_fixed": "N/A (infrastructure: Docker container was stopped)",
+    "dev_default_qwen_vllm_accepted": true
+  },
+  "source_files_not_requiring_code_change_for_authority": [
+    "apps_rg/runtime/proof_pool_resolver.py",
+    "apps_rg/runtime/c03_graphrag_bound.py",
+    "apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py"
+  ]
+}

@@ -53,12 +53,29 @@ def apply_proof_pool_to_usage_ledger(doc: dict[str, Any], pool: SectionProofPool
     out["input_refs"] = refs
     riu = dict(out.get("required_input_usage") or {})
     base_row = dict(riu.get("base_resume") or {})
-    base_row["authority"] = (ext.get("input_authority") or {}).get(
-        "base_resume",
-        base_row.get("authority"),
-    )
+    base_auth = (ext.get("input_authority") or {}).get("base_resume")
+    if base_auth:
+        base_row["authority"] = base_auth
+        base_row["used"] = base_auth not in (
+            "DEPRECATED_NON_AUTHORITY",
+            "CLAIM_EVIDENCE_FALLBACK",
+        )
     riu["base_resume"] = base_row
-    if pool.broad_skills_ledger_present:
+    if pool.proof_source == "augmented_skills_graph":
+        riu["augmented_skills_graph"] = {
+            "required": True,
+            "used": True,
+            "authority": "CLAIM_EVIDENCE_AND_SKILLS_AUTHORITY",
+            "ref": (pool.proof_pool_metadata or {}).get("graph_ref"),
+        }
+        if pool.broad_skills_ledger_ref:
+            riu["legacy_skills_ledger"] = {
+                "required": False,
+                "used": False,
+                "authority": "DEPRECATED_REFERENCE_ONLY",
+                "ref": pool.broad_skills_ledger_ref,
+            }
+    elif pool.broad_skills_ledger_present:
         riu["broad_skills_ledger"] = {
             "required": False,
             "used": True,

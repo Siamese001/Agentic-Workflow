@@ -17,40 +17,68 @@ _FORBIDDEN_PROOF_MODEL_RE = re.compile(
     re.IGNORECASE,
 )
 
+# OpenAI ids that reject v1/chat/completions (completions-only product SKUs).
+_OPENAI_NON_CHAT_COMPLETIONS_MODELS = frozenset({"gpt-5.5-pro"})
+
+
+def openai_chat_completions_eligible(model_id: str) -> bool:
+    """False when the model id is known to fail chat/completions (judge transport)."""
+    return str(model_id or "").strip().lower() not in _OPENAI_NON_CHAT_COMPLETIONS_MODELS
+
 _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
     "gemini_pro": {
-        "env_primary": ("APPS_RG_GOOGLE_JUDGE_MODEL", "APPS_RG_GEMINI_JUDGE_MODEL"),
-        "env_tier": ("GOOGLE_AI_PRO_MODEL",),
+        "env_primary": (
+            "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
+            "APPS_RG_GOOGLE_JUDGE_MODEL",
+            "APPS_RG_GEMINI_JUDGE_MODEL",
+        ),
+        "env_tier": (),
         "profile_defaults": ("gemini-3.1-pro-preview", "gemini-2.5-pro"),
     },
     "openai_chatgpt": {
-        "env_primary": ("APPS_RG_OPENAI_JUDGE_MODEL",),
-        "env_tier": ("OPENAI_MODEL",),
-        "profile_defaults": ("gpt-5.5-pro", "gpt-5.5", "gpt-5.4"),
+        "env_primary": (
+            "APPS_RG_OPENAI_JUDGE_MODEL_ENHANCED",
+            "APPS_RG_OPENAI_JUDGE_MODEL",
+        ),
+        "env_tier": (),
+        "profile_defaults": ("gpt-5.5", "gpt-5.4"),
         "reasoning_effort_env": "APPS_RG_OPENAI_JUDGE_REASONING_EFFORT",
         "default_reasoning_effort": "high",
     },
     "anthropic_claude": {
-        "env_primary": ("APPS_RG_ANTHROPIC_JUDGE_MODEL",),
-        "env_tier": ("ANTHROPIC_MODEL",),
+        "env_primary": (
+            "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED",
+            "APPS_RG_ANTHROPIC_JUDGE_MODEL",
+        ),
+        "env_tier": (),
         "profile_defaults": ("claude-opus-4-6", "claude-opus-4-5", "claude-sonnet-4-6"),
     },
 }
 
 _STANDARD_PROFILE: dict[str, dict[str, Any]] = {
     "gemini_pro": {
-        "env_primary": ("APPS_RG_GOOGLE_JUDGE_MODEL", "APPS_RG_GEMINI_JUDGE_MODEL"),
+        "env_primary": (
+            "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD",
+            "APPS_RG_GOOGLE_JUDGE_MODEL",
+            "APPS_RG_GEMINI_JUDGE_MODEL",
+        ),
         "env_tier": ("GOOGLE_AI_PRO_MODEL",),
         "profile_defaults": ("gemini-2.5-pro", "gemini-3.1-pro-preview"),
     },
     "openai_chatgpt": {
-        "env_primary": ("APPS_RG_OPENAI_JUDGE_MODEL",),
-        "env_tier": ("OPENAI_MODEL",),
+        "env_primary": (
+            "APPS_RG_OPENAI_JUDGE_MODEL_STANDARD",
+            "APPS_RG_OPENAI_JUDGE_MODEL",
+        ),
+        "env_tier": (),
         "profile_defaults": ("gpt-5.5", "gpt-5.4"),
     },
     "anthropic_claude": {
-        "env_primary": ("APPS_RG_ANTHROPIC_JUDGE_MODEL",),
-        "env_tier": ("ANTHROPIC_MODEL",),
+        "env_primary": (
+            "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD",
+            "APPS_RG_ANTHROPIC_JUDGE_MODEL",
+        ),
+        "env_tier": (),
         "profile_defaults": ("claude-sonnet-4-6", "claude-sonnet-4-5"),
     },
 }
@@ -132,10 +160,10 @@ def resolve_section_proof_judge_model(
         raw = str(env.get(name) or "").strip()
         if raw:
             candidates.append((raw, name))
-    if provider_key == "gemini_pro":
+    if provider_key == "gemini_pro" and tier != JudgeTier.ENHANCED_REASONING:
         pro_id, pro_src = google_ai_pro_model_id(env)
         if pro_id and not any(c[0] == pro_id for c in candidates):
-            candidates.append((pro_id, pro_src or "GOOGLE_AI_PRO_MODEL"))
+            candidates.append((pro_id, pro_src or "profile_default"))
     for default in profile.get("profile_defaults") or ():
         candidates.append((str(default), "profile_default"))
 
@@ -149,6 +177,8 @@ def resolve_section_proof_judge_model(
 
     for model_id, source in candidates:
         forbidden = is_forbidden_proof_judge_model(model_id)
+        if provider_key == "openai_chatgpt" and not openai_chat_completions_eligible(model_id):
+            continue
         mt = _model_tier_label(tier, model_id)
         if forbidden:
             continue
@@ -187,5 +217,6 @@ def resolve_section_proof_judge_model(
 __all__ = [
     "SectionJudgeModelResolution",
     "is_forbidden_proof_judge_model",
+    "openai_chat_completions_eligible",
     "resolve_section_proof_judge_model",
 ]

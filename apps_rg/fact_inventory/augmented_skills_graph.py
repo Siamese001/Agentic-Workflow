@@ -22,6 +22,7 @@ SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH = "augmented_skills_graph"
 SKILLS_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH = "augmented_skills_graph"
 SKILLS_AUTHORITY_SOURCE_TYPE = "augmented_skills_graph"
 CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER = "candidate_fact_ledger"
+CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH = "augmented_skills_graph"
 CLAIM_EVIDENCE_SOURCE_TYPE_SRFS = "selected_role_fact_set"
 CLAIM_EVIDENCE_SOURCE_TYPE_BASE_RESUME = "base_resume_fallback"
 LEGACY_SKILLS_LEDGER_ROLE = "deprecated_reference"
@@ -261,6 +262,7 @@ def assert_skills_not_broad_ledger_authority(metadata: dict[str, Any] | None) ->
 
 
 __all__ = [
+    "CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH",
     "CLAIM_EVIDENCE_SOURCE_TYPE_BASE_RESUME",
     "CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER",
     "CLAIM_EVIDENCE_SOURCE_TYPE_SRFS",

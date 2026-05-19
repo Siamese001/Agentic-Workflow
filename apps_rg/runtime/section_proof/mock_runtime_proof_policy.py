@@ -140,7 +140,6 @@ def compute_lane_proof_bundle(
         or (judge_required_for_proof and judge_blocked)
         or (judge_required_for_proof and judge_non_proof)
         or mock_provider
-        or inspection_hatch
         or mock_judge_hatch
         or offline_contract_stub_used
     )

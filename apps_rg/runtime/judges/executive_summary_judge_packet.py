@@ -14,10 +14,14 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_srfs_jd_or_briefing_standalone_proof_id_zero,
     check_srfs_sentence_count_4_5,
     check_srfs_sentence_responsibility_shape,
+    srfs_x2_mode_active,
 )
 
 JUDGE_PACKET_VERSION = "executive_summary_judge_packet_v1"
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/executive_summary_judge_packet.py#SRFS_GRADE_ONLY_RUBRIC"
+GRAPH_ONLY_JUDGE_RUBRIC_REF = (
+    "apps_rg/runtime/judges/executive_summary_judge_packet.py#GRAPH_ONLY_GRADE_ONLY_RUBRIC"
+)
 
 GRADE_ONLY_INSTRUCTION = """
 You are grading a generated executive summary candidate produced by a separate generator.
@@ -51,6 +55,24 @@ Decisive failure triggers:
 - obvious rewrite recommendation that invents new claims
 """.strip()
 
+GRAPH_ONLY_GRADE_ONLY_RUBRIC = """
+Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS lane):
+1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids only.
+2. executive_signal: SVP-level platform/governance/commercialization synthesis, not bullet stacks.
+3. resume_voice: credible executive prose; no recruiter filler or meta narration.
+4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
+5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
+6. synthesis_quality: **2–3 dense executive sentences** (same band as non-SRFS X2); integrated narrative flow;
+   penalize orphan source_fact_ids not in allowed_fact_packet and bare credential inventory.
+7. deterministic_alignment: respect deterministic_gate_summary — penalize failed density, orphans, or scope violations.
+
+Decisive failure triggers:
+- unsupported business metric or credential
+- JD or briefing used as proof
+- first-person narrative
+- obvious rewrite recommendation that invents new claims
+""".strip()
+
 REQUIRED_JUDGE_OUTPUT_SCHEMA = """
 Return ONLY one compact JSON object:
 {"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,
@@ -59,6 +81,35 @@ Return ONLY one compact JSON object:
  "fail_reasons":[],"unsupported_claims":[],"quality_flags":[]}
 score_scale must be 0_to_5 or 0_to_1 with in-range score/threshold.
 """.strip()
+
+
+def enrich_allowed_fact_packet_for_judges(
+    plan_facts: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+) -> list[dict[str, Any]]:
+    """Include metric-derivative rows so X1D judges see the same allowlist as X2."""
+    from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+
+    by_id: dict[str, dict[str, Any]] = {
+        str(f.get("fact_id")): dict(f) for f in plan_facts if str(f.get("fact_id") or "").strip()
+    }
+    out: list[dict[str, Any]] = [dict(f) for f in plan_facts]
+    for fid in sorted(allowed_fact_ids):
+        if fid in by_id:
+            continue
+        base = fid.split("_metric_")[0]
+        parent = by_id.get(base)
+        if not parent:
+            continue
+        mr = str(parent.get("metric_raw") or "").strip()
+        if not mr or metric_derivative_fact_id(base, mr) != fid:
+            continue
+        derivative = dict(parent)
+        derivative["fact_id"] = fid
+        derivative["has_metric"] = True
+        out.append(derivative)
+        by_id[fid] = derivative
+    return out
 
 
 def _collect_source_fact_ids(claim_ledger: list[dict[str, Any]]) -> list[str]:
@@ -168,6 +219,13 @@ def build_executive_summary_judge_packet(
         allowed_fact_ids=allowed_fact_ids,
         srfs_integration=srfs_integration,
     )
+    srfs_active = srfs_x2_mode_active(srfs_integration)
+    rubric = SRFS_GRADE_ONLY_RUBRIC if srfs_active else GRAPH_ONLY_GRADE_ONLY_RUBRIC
+    rubric_ref = JUDGE_RUBRIC_REF if srfs_active else GRAPH_ONLY_JUDGE_RUBRIC_REF
+    judge_allowed_packet = enrich_allowed_fact_packet_for_judges(
+        list(allowed_fact_packet),
+        allowed_fact_ids,
+    )
     return {
         "judge_packet_version": JUDGE_PACKET_VERSION,
         "section": "executive_summary",
@@ -177,7 +235,7 @@ def build_executive_summary_judge_packet(
             "claim_ledger": claim_ledger,
             "source_fact_ids": _collect_source_fact_ids(claim_ledger),
         },
-        "allowed_fact_packet": allowed_fact_packet,
+        "allowed_fact_packet": judge_allowed_packet,
         "allowed_fact_ids": sorted(allowed_fact_ids),
         "target_title": target_title,
         "target_company": target_company,
@@ -193,8 +251,9 @@ def build_executive_summary_judge_packet(
             "judges_must_not_generate_replacement_summary": True,
         },
         "deterministic_gate_summary": gate_summary,
-        "rubric_ref": JUDGE_RUBRIC_REF,
-        "rubric": SRFS_GRADE_ONLY_RUBRIC,
+        "rubric_ref": rubric_ref,
+        "rubric": rubric,
+        "judge_rubric_mode": "srfs" if srfs_active else "graph_only_c03",
         "grading_instruction": GRADE_ONLY_INSTRUCTION,
         "required_output_schema": REQUIRED_JUDGE_OUTPUT_SCHEMA,
     }

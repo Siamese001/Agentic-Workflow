@@ -255,6 +255,8 @@ def check_l2_resume_voice(resume_display_text: str) -> tuple[bool, str | None]:
 def check_executive_summary_narrative_shape(
     resume_display_text: str,
     claim_ledger: list[dict[str, Any]] | None = None,
+    *,
+    graph_only_fact_tight_synthesis: bool = False,
 ) -> tuple[bool, str | None]:
     """Dispatch-level narrative quality checks (not X2 gates): stacking and enumeration risk."""
     from apps_rg.runtime.validators.executive_summary_x2 import ACTION_VERB_OPENERS, split_sentences
@@ -269,13 +271,28 @@ def check_executive_summary_narrative_shape(
             return False, "Long capability enumeration list in a single sentence"
 
     claims = claim_ledger or []
-    if len(sentences) >= 3 and claims and len(sentences) == len(claims):
+    if (
+        not graph_only_fact_tight_synthesis
+        and len(sentences) >= 3
+        and claims
+        and len(sentences) == len(claims)
+    ):
+        from difflib import SequenceMatcher
+
         action_starts = 0
-        for sentence in sentences:
+        near_verbatim_rows = 0
+        for sentence, row in zip(sentences, claims):
             first = sentence.split()[0].lower().strip(",.;:") if sentence.split() else ""
             if first in action_openers:
                 action_starts += 1
-        if action_starts >= len(sentences) - 1:
+            claim_text = str(row.get("claim_text") or "").strip()
+            if claim_text:
+                ratio = SequenceMatcher(
+                    None, claim_text.lower(), str(sentence).strip().lower()
+                ).ratio()
+                if ratio >= 0.72:
+                    near_verbatim_rows += 1
+        if near_verbatim_rows >= len(sentences) - 1 and action_starts >= len(sentences) - 1:
             return False, "One displayed sentence per claim-ledger row (sentence-stacked proof)"
 
     return True, None
@@ -686,6 +703,8 @@ def infer_product_quality(
     x2_gates: list[dict[str, Any]],
     resume_display_text: str,
     claim_ledger: list[dict[str, Any]] | None = None,
+    *,
+    graph_only_fact_tight_synthesis: bool = False,
 ) -> tuple[str, str]:
     """Infer product quality with honest PARTIAL classification for stacked/bullet-like output."""
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
@@ -701,7 +720,9 @@ def infer_product_quality(
         return "PARTIAL", f"Resume voice below executive summary standard: {voice_reason}"
 
     narrative_ok, narrative_reason = check_executive_summary_narrative_shape(
-        resume_display_text, claim_ledger
+        resume_display_text,
+        claim_ledger,
+        graph_only_fact_tight_synthesis=graph_only_fact_tight_synthesis,
     )
     if not narrative_ok:
         return "PARTIAL", f"Narrative shape below executive summary standard: {narrative_reason}"
@@ -1012,6 +1033,9 @@ def run_executive_summary_execution(
     if briefing_trunc_meta is not None:
         runtime_payload["briefing_truncation"] = briefing_trunc_meta
     runtime_payload["proof_pool_metadata"] = proof_pool_metadata
+    if pool.proof_source == "augmented_skills_graph":
+        runtime_payload["graph_only_claim_authority"] = True
+        runtime_payload["base_resume_claim_authority"] = False
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
         artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -1029,6 +1053,13 @@ def run_executive_summary_execution(
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
+    pp_c03 = proof_pool_metadata or {}
+    c03_doc = pp_c03.get("c03_graphrag_bound")
+    if isinstance(c03_doc, dict):
+        write_json(artifact_dir / "c03_graphrag_bound.json", c03_doc)
+    fec_snap = pp_c03.get("final_evidence_contract_snapshot")
+    if isinstance(fec_snap, dict):
+        write_json(artifact_dir / "final_evidence_contract_snapshot.json", fec_snap)
     if srfs_integration is not None:
         write_json(artifact_dir / "selected_role_fact_set_ref.json", srfs_integration)
     (artifact_dir / "compiled_prompt.txt").write_text(
@@ -1048,6 +1079,8 @@ def run_executive_summary_execution(
             "proof_pool_ref": pool.proof_pool_ref,
             "proof_pool_digest": pool.proof_pool_digest,
             "base_resume_fallback_used": pool.base_resume_fallback_used,
+            "graph_only_claim_authority": pool.proof_source == "augmented_skills_graph",
+            "c03_graphrag_bound_status": (proof_pool_metadata or {}).get("c03_graphrag_bound_status"),
             "allowed_source_fact_ids_count": len(allowed_fact_ids),
         },
     )
@@ -1109,6 +1142,20 @@ def run_executive_summary_execution(
                 srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
             )
             prune_exec_summary_claim_ledger_orphans(parsed, allowed_fact_ids)
+            if pool.proof_source == "augmented_skills_graph":
+                from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
+                    apply_graph_only_generation_quality_repair,
+                    parsed_to_raw_model_output_json as _graph_quality_to_raw,
+                )
+
+                _plan_facts = list(selected_fact_plan.get("facts") or [])
+                parsed, graph_quality_meta = apply_graph_only_generation_quality_repair(
+                    parsed,
+                    allowed_fact_ids=allowed_fact_ids,
+                    plan_facts=_plan_facts,
+                )
+                write_json(artifact_dir / "graph_only_generation_quality_repair.json", graph_quality_meta)
+                raw_output = _graph_quality_to_raw(parsed)
             if isinstance(_srfs_i, dict):
                 from apps_rg.runtime.sections.exec_summary_srfs_density_repair import (
                     apply_srfs_density_micro_expansion,
@@ -1374,8 +1421,22 @@ def run_executive_summary_execution(
         },
     )
 
+    _graph_only_repaired = False
+    _repair_meta_path = artifact_dir / "graph_only_generation_quality_repair.json"
+    if _repair_meta_path.is_file():
+        try:
+            _graph_only_repaired = bool(
+                json.loads(_repair_meta_path.read_text(encoding="utf-8")).get("repaired")
+            )
+        except (json.JSONDecodeError, OSError):
+            _graph_only_repaired = False
+
     product_quality_status, product_quality_reason = infer_product_quality(
-        runtime_generation_status, x2, resume_display_text, claim_ledger
+        runtime_generation_status,
+        x2,
+        resume_display_text,
+        claim_ledger,
+        graph_only_fact_tight_synthesis=_graph_only_repaired,
     )
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason

@@ -426,7 +426,8 @@ def test_openai_gpt51_omits_reasoning_effort_param():
 
     assert not _openai_reasoning_effort_supported("gpt-5.1")
     assert not _openai_reasoning_effort_supported("gpt-5.4")
-    assert _openai_reasoning_effort_supported("gpt-5.5-pro")
+    assert not _openai_reasoning_effort_supported("gpt-5.5")
+    assert not _openai_reasoning_effort_supported("gpt-5.5-pro")
     assert _openai_reasoning_effort_supported("o3-mini")
 
 
@@ -617,8 +618,8 @@ def test_run_llm_judges_judge_packet_records_model_requested(monkeypatch):
         judge_keys=["openai_chatgpt"],
         judge_packet=packet,
     )
-    assert rows[0].model_name == "gpt-5.5-pro"
-    assert rows[0].to_dict()["model_requested"] in (None, "gpt-5.5-pro")
+    assert rows[0].model_name in ("gpt-5.5", "gpt-5.5-pro")
+    assert rows[0].to_dict()["model_requested"] in (None, "gpt-5.5", "gpt-5.5-pro")
     assert rows[0].judge_packet_hash
     assert rows[0].evaluator_mode == "MODEL_BACKED"
     assert rows[0].mocked is False

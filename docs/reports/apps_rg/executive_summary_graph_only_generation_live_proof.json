@@ -1,0 +1,147 @@
+{
+  "status": "PASS",
+  "previous_status": "PARTIAL",
+  "latest_run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_122505",
+  "reference_run_dir_before": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_110715",
+  "provider_name": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+  "provider_resolution_source": "DEV_DEFAULT_QWEN_VLLM",
+  "runtime_generation_status": "REAL_LLM",
+  "product_quality_status": "PASS",
+  "proof_eligible": true,
+  "manifest_proof_eligible": true,
+  "x2_status": "PASS",
+  "x3_disposition": "X3_ALLOW",
+  "x1d_judge_roster": ["gemini_pro", "openai_chatgpt", "anthropic_claude"],
+  "x1d_provider_blockers": [],
+  "x1d_decisive_failures": [],
+  "x1d_scores_by_judge": {
+    "gemini_pro": 5.0,
+    "openai_chatgpt": 4.3,
+    "anthropic_claude": 4.2
+  },
+  "x1d_quality_soft_fails": [],
+  "unsupported_claims_before": [
+    "20% expansion in gross margins",
+    "platform leading to 40% regulatory reporting error reduction",
+    "team scaling improving reliability and auditability",
+    "bare AWS credential inventory sentence"
+  ],
+  "unsupported_claims_after": [],
+  "causal_conflation_before": [
+    "merged fact_engineering_platform_001 with fact_governance_003 via leading to"
+  ],
+  "causal_conflation_after": [],
+  "credential_inventory_status": "OMITTED",
+  "graph_only_authority_status": "PASS",
+  "c03_graphrag_bound_status": "BOUND",
+  "graph_expansion_refs_count": 39,
+  "graph_lineage_refs_count": 11,
+  "evidence_items_count": 8,
+  "non_graph_evidence_items_count": 0,
+  "base_resume_authority_status": "DEPRECATED_NON_AUTHORITY",
+  "old_skills_ledger_authority_status": "NOT_USED_AS_AUTHORITY",
+  "base_resume_reference_count": 1,
+  "old_skills_ledger_reference_count": 2,
+  "smoke_dispatch_reference_count": 0,
+  "mock_provider_flags": [],
+  "graph_only_generation_quality_repair": {
+    "repaired": true,
+    "had_unsupported_gross_margin": true,
+    "had_bare_credential_inventory": true,
+    "had_causal_claim_merge_in_ledger": true
+  },
+  "checks": [
+    {
+      "check_id": "x1d_no_provider_blockers",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "check_id": "runtime_generation_real_llm",
+      "passed": true,
+      "detail": "runtime_generation_status='REAL_LLM'"
+    },
+    {
+      "check_id": "no_mock_provider",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check_id": "no_smoke_or_deprecated_dispatch",
+      "passed": true,
+      "detail": "hits=0"
+    },
+    {
+      "check_id": "graph_only_source_authority",
+      "passed": true,
+      "detail": "source_authority='augmented_skills_graph' proof_pool_type='augmented_skills_graph'"
+    },
+    {
+      "check_id": "c03_graph_expansion_allowed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check_id": "c03_graph_expansion_refs_nonempty",
+      "passed": true,
+      "detail": "count=39"
+    },
+    {
+      "check_id": "c03_graph_lineage_refs_present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check_id": "c03_bound_status",
+      "passed": true,
+      "detail": "BOUND"
+    },
+    {
+      "check_id": "fec_support_status_product_safe",
+      "passed": true,
+      "detail": "support_status='SUPPORTED'"
+    },
+    {
+      "check_id": "evidence_items_graph_backed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check_id": "no_base_resume_claim_authority",
+      "passed": true,
+      "detail": "base_resume authority='DEPRECATED_NON_AUTHORITY'"
+    },
+    {
+      "check_id": "no_base_resume_packet_in_prompt_artifacts",
+      "passed": true,
+      "detail": "marker_hits=1"
+    },
+    {
+      "check_id": "no_old_skills_ledger_authority",
+      "passed": true,
+      "detail": "broad_skills_ledger_used=False"
+    },
+    {
+      "check_id": "pa_c0_graph_pool_named",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check_id": "claim_evidence_augmented_graph",
+      "passed": true,
+      "detail": "claim_evidence_source_type='augmented_skills_graph'"
+    },
+    {
+      "check_id": "x2_all_gates_pass",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "blockers": [],
+  "explicit_non_claims": [
+    "NOT_RELEASE_SIGNOFF",
+    "INSPECTION_EXIT_OVERRIDE_USED for --allow-non-allow-exit-zero",
+    "base_resume_reference_count=1 is deprecation marker in artifacts, not claim authority",
+    "old_skills_ledger_reference_count=2 is lineage metadata, not proof authority"
+  ]
+}

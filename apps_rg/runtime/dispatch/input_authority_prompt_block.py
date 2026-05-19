@@ -20,6 +20,11 @@ def format_input_authority_block(
         substrate = (
             "- CLAIM SUPPORT POOL (SRFS): SelectedRoleFactSet section slice — sole substrate for factual claims"
         )
+    elif proof_pool_mode == "augmented_skills_graph":
+        substrate = (
+            "- CLAIM SUPPORT POOL (AUGMENTED SKILLS GRAPH): C0.3 GraphRAG-bound graph nodes/edges — "
+            "sole substrate for factual claims; candidate_fact_ledger rows are lineage substrate only"
+        )
     elif proof_pool_mode == "broad_skills_ledger":
         substrate = (
             "- CLAIM SUPPORT POOL (CANDIDATE FACT LEDGER): governed candidate_fact_id rows — "
@@ -124,6 +129,8 @@ def proof_pool_mode_from_metadata(metadata: dict[str, Any] | None) -> str:
     pt = str((metadata or {}).get("proof_pool_type") or "")
     if pt == "selected_role_fact_set":
         return "srfs"
+    if pt in ("augmented_skills_graph", "augmented_skills_graph_c03_graphrag"):
+        return "augmented_skills_graph"
     if pt == "broad_skills_ledger":
         return "broad_skills_ledger"
     return "base_resume_fallback"

@@ -603,10 +603,15 @@ def test_gemini_judge_model_env_precedence(monkeypatch):
 def test_gemini_model_falls_back_to_google_ai_pro_model_env(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
-    monkeypatch.delenv("APPS_RG_GOOGLE_JUDGE_MODEL", raising=False)
-    monkeypatch.delenv("APPS_RG_GEMINI_JUDGE_MODEL", raising=False)
+    for key in (
+        "APPS_RG_GOOGLE_JUDGE_MODEL",
+        "APPS_RG_GEMINI_JUDGE_MODEL",
+        "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD",
+        "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
+    ):
+        monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("GOOGLE_AI_PRO_MODEL", "gemini-2.5-pro")
-    model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
+    model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"], section_id="headline")
     assert model == "gemini-2.5-pro"
     assert source == "GOOGLE_AI_PRO_MODEL"
 
@@ -623,14 +628,19 @@ def test_gemini_model_falls_back_to_legacy_gemini_pro_model_env(monkeypatch):
     assert source == "GEMINI_PRO_MODEL"
 
 
-def test_anthropic_model_falls_back_to_anthropic_model_env(monkeypatch):
+def test_anthropic_model_ignores_general_model_env_for_enhanced_judge(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_anthropic_model
 
-    monkeypatch.delenv("APPS_RG_ANTHROPIC_JUDGE_MODEL", raising=False)
+    for key in (
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL",
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED",
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD",
+    ):
+        monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-4.5")
     model, source = _resolve_anthropic_model(PROVIDERS["anthropic_claude"])
-    assert model == "claude-sonnet-4.5"
-    assert source == "ANTHROPIC_MODEL"
+    assert model == "claude-opus-4-6"
+    assert source == "profile_default"
 
 
 def test_gemini_max_tokens_finish_blocked():

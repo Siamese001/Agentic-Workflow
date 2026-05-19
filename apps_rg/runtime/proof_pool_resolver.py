@@ -28,10 +28,12 @@ from apps_rg.fact_inventory.selected_role_fact_set import (
 )
 from apps_rg.runtime.resume_resolution import ResumeResolutionError, load_lane_base_resume_json
 from apps_rg.fact_inventory.augmented_skills_graph import (
+    CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
     CLAIM_EVIDENCE_SOURCE_TYPE_BASE_RESUME,
     CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
     CLAIM_EVIDENCE_SOURCE_TYPE_SRFS,
     claim_evidence_fields,
+    load_augmented_skills_graph,
     merge_dual_source_proof_pool_metadata,
     resolve_augmented_skills_graph_authority,
 )
@@ -39,6 +41,7 @@ from apps_rg.runtime.sections.selected_role_fact_set import (
     base_proof_pool_metadata,
     broad_skills_ledger_proof_pool_metadata,
     build_allowed_fact_ids_for_plan_facts,
+    graph_only_proof_pool_metadata,
     plan_fact_to_employment_bullet_row,
     resolve_srfs_section_proof_bundle,
     slice_row_to_plan_fact,
@@ -60,6 +63,7 @@ def _merge_dual_source_metadata(
     )
 
 PROOF_SOURCE_SRFS = "srfs"
+PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH = "augmented_skills_graph"
 PROOF_SOURCE_BROAD_SKILLS_LEDGER = "broad_skills_ledger"
 PROOF_SOURCE_BASE_RESUME_FALLBACK = "base_resume_fallback"
 
@@ -374,6 +378,130 @@ def _collect_base_resume_bullets(
     ]
 
 
+def _resolve_executive_summary_graph_only_proof_pool(
+    *,
+    root: Path,
+    broad_skills_ledger_path: str | None,
+    target_company: str,
+    target_role: str,
+    jd_text: str,
+    briefing_text: str,
+    base_ref_str: str,
+    base_hash: str,
+    override_used: bool,
+    targeting: dict[str, bool],
+) -> SectionProofPool:
+    """Executive summary product proof: augmented skills graph + C0.3 GraphRAG binding only."""
+    graph_auth = resolve_augmented_skills_graph_authority(repo_root=root)
+    if str(graph_auth.get("skills_authority_status") or "") != "PASS":
+        reason = graph_auth.get("skills_authority_block_reason") or "augmented_skills_graph_unavailable"
+        raise ValueError(f"executive_summary graph-only authority BLOCKED: {reason}")
+
+    ledger_path = _ledger_path_explicit(broad_skills_ledger_path, repo_root=root)
+    ledger_ref_str = (
+        str(ledger_path.relative_to(root)) if ledger_path.is_relative_to(root) else str(ledger_path)
+    )
+    ledger = load_master_candidate_fact_ledger(path=ledger_path)
+    taxonomy = load_master_role_family_taxonomy(repo_root=root)
+    tax_path = default_taxonomy_path(root)
+    graph = load_augmented_skills_graph(repo_root=root)
+    graph_ref = str(graph_auth.get("graph_ref") or "")
+    graph_digest = str(graph_auth.get("graph_digest") or "")
+
+    srfs = select_candidate_facts_for_role(
+        target_company=target_company,
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        ledger=ledger,
+        taxonomy=taxonomy,
+        source_ledger_path=str(ledger_path),
+        taxonomy_ref=str(tax_path),
+    )
+    exec_slices = list(srfs.selected_facts_by_section.get("executive_summary") or [])
+    if not exec_slices:
+        raise ValueError("executive_summary graph-only: arsenal allocation produced empty slice")
+
+    facts = [_slice_to_plan_fact(sl, section_id="executive_summary") for sl in exec_slices]
+    plan = {
+        "section_id": "executive_summary",
+        "selection_method": "augmented_skills_graph_c03_graphrag",
+        "facts": facts,
+        "required_fact_ids": [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")],
+    }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    plan = _sanitize_plan(plan)
+    bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
+
+    from apps_rg.runtime.c03_graphrag_bound import build_executive_summary_c03_graphrag_bound
+
+    c03 = build_executive_summary_c03_graphrag_bound(
+        graph=graph,
+        graph_ref=graph_ref,
+        graph_digest=graph_digest,
+        selected_fact_ids=ordered,
+    )
+
+    meta = graph_only_proof_pool_metadata(
+        section_id="executive_summary",
+        candidate_fact_pool_count=len(facts),
+        allowed_fact_ids_count=len(allowed),
+        graph_ref=graph_ref,
+        legacy_ledger_ref=ledger_ref_str,
+    )
+    meta = {**meta, **graph_auth}
+    meta["c03_graphrag_bound"] = c03
+    meta["final_evidence_contract_snapshot"] = c03.get("final_evidence_contract_snapshot")
+    for _c03_key in (
+        "c03_graphrag_bound_status",
+        "graph_expansion_allowed",
+        "graph_expansion_refs",
+        "graph_lineage_refs",
+        "graph_sig",
+        "support_status",
+        "support_target_met",
+        "evidence_items_count",
+    ):
+        if _c03_key in c03:
+            meta[_c03_key] = c03[_c03_key]
+    meta = _merge_dual_source_metadata(
+        meta,
+        repo_root=root,
+        claim_evidence=claim_evidence_fields(
+            source_type=CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
+            source_ref=graph_ref,
+            source_digest=graph_digest,
+            substrate_type=CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
+            substrate_ref=ledger_ref_str,
+        ),
+    )
+    digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+    return SectionProofPool(
+        section="executive_summary",
+        proof_source=PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        proof_pool_ref=graph_ref,
+        proof_pool_digest=digest,
+        selected_fact_plan=plan,
+        allowed_fact_ids_ordered=ordered,
+        allowed_fact_ids=allowed,
+        bullet_rows=bullet_rows,
+        proof_pool_metadata=meta,
+        fallback_used=False,
+        base_resume_fallback_used=False,
+        broad_skills_ledger_present=False,
+        srfs_present=False,
+        base_resume_json_ref=base_ref_str,
+        base_resume_json_hash=base_hash,
+        broad_skills_ledger_ref=ledger_ref_str,
+        broad_skills_ledger_digest=_sha256_hex(
+            json.dumps(ledger, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        ),
+        srfs_ref="",
+        base_resume_override_used=override_used,
+        targeting_inputs_used=targeting,
+    )
+
+
 def resolve_section_proof_pool(
     *,
     section: str,
@@ -420,6 +548,20 @@ def resolve_section_proof_pool(
     )
 
     srfs_path = str(selected_role_fact_set_path or "").strip()
+    if section == "executive_summary" and not srfs_path:
+        return _resolve_executive_summary_graph_only_proof_pool(
+            root=root,
+            broad_skills_ledger_path=broad_skills_ledger_path,
+            target_company=company_eff,
+            target_role=role_eff,
+            jd_text=jd_eff,
+            briefing_text=br_eff,
+            base_ref_str=base_ref_str,
+            base_hash=base_hash,
+            override_used=override_used,
+            targeting=targeting,
+        )
+
     if srfs_path:
         plan, ordered, allowed, meta = resolve_srfs_section_proof_bundle(srfs_path, section)
         facts = list(plan.get("facts") or [])
@@ -581,6 +723,8 @@ def proof_pool_usage_ledger_extension(pool: SectionProofPool) -> dict[str, Any]:
     claim_support: list[str] = []
     if pool.proof_source == PROOF_SOURCE_SRFS:
         claim_support = ["srfs"]
+    elif pool.proof_source == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH:
+        claim_support = ["augmented_skills_graph"]
     elif pool.proof_source == PROOF_SOURCE_BROAD_SKILLS_LEDGER:
         claim_support = ["broad_skills_ledger"]
     else:
@@ -593,7 +737,12 @@ def proof_pool_usage_ledger_extension(pool: SectionProofPool) -> dict[str, Any]:
         "briefing_research": "CONTEXT_INPUT",
         "selected_fact_plan": "CLAIM_EVIDENCE_AFTER_SELECTION",
     }
-    if pool.proof_source == PROOF_SOURCE_BROAD_SKILLS_LEDGER:
+    if pool.proof_source == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH:
+        input_authority_patch["augmented_skills_graph"] = "CLAIM_EVIDENCE_AND_SKILLS_AUTHORITY"
+        input_authority_patch["base_resume"] = "DEPRECATED_NON_AUTHORITY"
+        if pool.broad_skills_ledger_ref:
+            input_authority_patch["broad_skills_ledger"] = "DEPRECATED_REFERENCE_ONLY"
+    elif pool.proof_source == PROOF_SOURCE_BROAD_SKILLS_LEDGER:
         input_authority_patch["broad_skills_ledger"] = "CLAIM_EVIDENCE"
         input_authority_patch["base_resume"] = "BASE_RESUME_SOURCE"
     elif pool.proof_source == PROOF_SOURCE_SRFS:
@@ -692,6 +841,7 @@ def proof_pool_usage_ledger_extension(pool: SectionProofPool) -> dict[str, Any]:
 
 
 __all__ = [
+    "PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH",
     "PROOF_SOURCE_BASE_RESUME_FALLBACK",
     "PROOF_SOURCE_BROAD_SKILLS_LEDGER",
     "PROOF_SOURCE_SRFS",

@@ -1,0 +1,99 @@
+{
+  "status": "REMEDIATED_PROVIDER",
+  "latest_run_dir_after_remediation": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_110715",
+  "x1d_provider_blockers_after_remediation": [],
+  "remaining_blockers": [
+    "product_quality_status=PARTIAL",
+    "x1d_decisive_failures_all_judges",
+    "proof_eligible=false"
+  ],
+  "previous_graph_only_status": "PASS",
+  "reference_run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_103930",
+  "x3_disposition": "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",
+  "proof_eligible": false,
+  "x1d_quorum_status": "BLOCKED_PROVIDER_PLUS_SOFT_FAIL",
+  "x1d_judge_roster": [
+    {
+      "provider_key": "gemini_pro",
+      "provider_name": "Gemini Pro",
+      "configured_model": "gemini-3.1-pro-preview",
+      "model_source": "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
+      "credential_env": "GOOGLE_API_KEY",
+      "evaluator_mode": "MODEL_BACKED",
+      "provider_status": "MODEL_BACKED_FAIL",
+      "provider_blocked": false,
+      "pass": false,
+      "score": 2.0,
+      "threshold": 4.0,
+      "normalized_score": 0.4,
+      "normalized_threshold": 0.8,
+      "failure_class": "QUALITY_SOFT_FAIL",
+      "failure_reason": "Judge applied SRFS five-sentence arc rubric; candidate has 3 sentences (graph-only non-SRFS lane expects 2-3 per X2)."
+    },
+    {
+      "provider_key": "openai_chatgpt",
+      "provider_name": "OpenAI ChatGPT",
+      "configured_model": "gpt-5.5-pro",
+      "model_source": "APPS_RG_OPENAI_JUDGE_MODEL_ENHANCED",
+      "credential_env": "OPENAI_API_KEY",
+      "evaluator_mode": "BLOCKED_PROVIDER_UNAVAILABLE",
+      "provider_status": "BLOCKED_PROVIDER_UNAVAILABLE",
+      "provider_blocked": true,
+      "pass": false,
+      "failure_class": "PROVIDER_CONFIG",
+      "failure_reason": "OpenAI 404: model is not a chat model for v1/chat/completions (gpt-5.5-pro is completions-only)."
+    },
+    {
+      "provider_key": "anthropic_claude",
+      "provider_name": "Anthropic Claude",
+      "configured_model": "claude-opus-4-6",
+      "model_source": "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED",
+      "credential_env": "ANTHROPIC_API_KEY",
+      "evaluator_mode": "MODEL_BACKED",
+      "provider_status": "MODEL_BACKED_FAIL",
+      "provider_blocked": false,
+      "pass": false,
+      "score": 2.4,
+      "threshold": 4.0,
+      "normalized_score": 0.48,
+      "normalized_threshold": 0.8,
+      "failure_class": "QUALITY_SOFT_FAIL",
+      "failure_reason": "Same SRFS five-sentence rubric mismatch plus factual/orphan findings on claim ledger."
+    }
+  ],
+  "x1d_provider_blockers": [
+    {
+      "provider_key": "openai_chatgpt",
+      "exact_provider_error": "OpenAI API error 404: not a chat model for v1/chat/completions",
+      "scope": "OPENAI_ONLY"
+    }
+  ],
+  "x1d_quality_failures": [
+    {
+      "provider_key": "gemini_pro",
+      "kind": "QUALITY_THRESHOLD",
+      "not_provider_availability": true
+    },
+    {
+      "provider_key": "anthropic_claude",
+      "kind": "QUALITY_THRESHOLD",
+      "not_provider_availability": true
+    }
+  ],
+  "manifest_proof_eligible_blockers": [
+    "openai_chatgpt BLOCKED_PROVIDER_UNAVAILABLE (quorum-level X3 gate)",
+    "compute_lane_proof_bundle treats --allow-non-allow-exit-zero as plumbing_only (proof_eligible forced false even when product gates pass)"
+  ],
+  "remediation_wave_7": [
+    "Set APPS_RG_OPENAI_JUDGE_MODEL_ENHANCED=gpt-5.5 (chat-completions capable)",
+    "Skip gpt-5.5-pro in section_judge_profile when resolving OpenAI chat judges",
+    "Use graph-only GRADE_ONLY rubric (2-3 sentences) when SRFS mode inactive",
+    "Do not count inspection CLI hatch as plumbing for proof_eligible when REAL_LLM + X3_ALLOW"
+  ],
+  "source_files": [
+    "apps_rg/runtime/judges/section_judge_profile.py",
+    "apps_rg/runtime/judges/executive_summary_judge_packet.py",
+    "apps_rg/runtime/section_proof/mock_runtime_proof_policy.py",
+    ".env"
+  ]
+}

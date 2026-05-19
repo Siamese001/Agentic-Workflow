@@ -364,6 +364,38 @@ def srfs_proof_pool_metadata(
     }
 
 
+def graph_only_proof_pool_metadata(
+    *,
+    section_id: str,
+    candidate_fact_pool_count: int,
+    allowed_fact_ids_count: int,
+    graph_ref: str,
+    legacy_ledger_ref: str = "",
+) -> dict[str, Any]:
+    n = int(allowed_fact_ids_count)
+    return {
+        "proof_pool_type": "augmented_skills_graph",
+        "selected_role_fact_set_used": False,
+        "broad_skills_ledger_used": False,
+        "base_resume_claim_authority": False,
+        "graph_only_claim_authority": True,
+        "broad_skills_ledger_ref": legacy_ledger_ref or None,
+        "candidate_fact_ledger_ref": legacy_ledger_ref or None,
+        "legacy_skills_ledger_ref": legacy_ledger_ref or None,
+        "legacy_skills_ledger_role": "deprecated_reference",
+        "broad_skills_ledger_claim_evidence_only": False,
+        "broad_skills_ledger_skills_authority": False,
+        "srfs_section_id": section_id,
+        "candidate_fact_pool_count": int(candidate_fact_pool_count),
+        "allowed_fact_ids_count": n,
+        "srfs_allowed_fact_ids_count": n,
+        "fallback_used": False,
+        "fallback_reason": "",
+        "full_resume_srfs_supported": False,
+        "c03_graphrag_bound_required": True,
+    }
+
+
 def broad_skills_ledger_proof_pool_metadata(
     *,
     section_id: str,
@@ -683,6 +715,7 @@ __all__ = [
     "plan_fact_to_employment_bullet_row",
     "base_proof_pool_metadata",
     "broad_skills_ledger_proof_pool_metadata",
+    "graph_only_proof_pool_metadata",
     "compute_claim_ledger_union_matches_required_fact_ids",
     "merge_normalized_srfs_reporting_into_dict",
     "normalized_srfs_section_reporting_fields",

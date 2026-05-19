@@ -430,7 +430,7 @@ def _build_raw_request(args: Any) -> dict[str, Any]:
 
 
 def _semantic_cache_r1b_enabled() -> bool:
-    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "").strip().lower() in (
+    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1").strip().lower() in (
         "1",
         "true",
         "yes",

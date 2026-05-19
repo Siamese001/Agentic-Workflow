@@ -7,6 +7,7 @@ import pytest
 from apps_rg.runtime.judges.grade_only_judge_packet import build_grade_only_judge_packet
 from apps_rg.runtime.judges.section_judge_profile import (
     is_forbidden_proof_judge_model,
+    openai_chat_completions_eligible,
     resolve_section_proof_judge_model,
 )
 from apps_rg.runtime.section_judge_policy import (
@@ -41,6 +42,40 @@ def test_section_judge_policy_matrix() -> None:
     assert matrix["final_aggregate_resume"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value
 
 
+def test_allow_non_allow_exit_zero_does_not_force_plumbing_when_product_passes() -> None:
+    args = type(
+        "Args",
+        (),
+        {
+            "mock_judges": False,
+            "provider": "qwen_vllm",
+            "allow_non_allow_exit_zero": True,
+            "allow_test_mock_judges": False,
+            "allow_test_mock_provider": False,
+        },
+    )()
+    judge = {
+        "evaluator_mode": "MODEL_BACKED",
+        "provider_status": "MODEL_BACKED_PASS",
+        "pass": True,
+        "decisive_failure": False,
+        "normalized_score": 0.9,
+        "normalized_threshold": 0.8,
+        "provider_key": "openai_chatgpt",
+        "proof_eligible_judge": True,
+    }
+    bundle = compute_lane_proof_bundle(
+        args,
+        section_id="executive_summary",
+        runtime_generation_status="REAL_LLM",
+        x1d_judges=[judge, judge, judge],
+        x2_gates=[{"gate_id": "x2_ok", "pass": True}],
+        x3=_FakeX3(),
+    )
+    assert bundle["proof_eligible"] is True
+    assert bundle["allow_non_allow_exit_zero_cli"] is True
+
+
 def test_competencies_proof_bundle_does_not_require_judges() -> None:
     args = type("Args", (), {"mock_judges": False, "provider": "qwen_vllm"})()
     bundle = compute_lane_proof_bundle(
@@ -65,6 +100,51 @@ def test_forbidden_models_fail_proof_resolution() -> None:
         {"APPS_RG_GOOGLE_JUDGE_MODEL": "gemini-2.0-flash"},
     )
     assert r.blocked or r.model_actual != "gemini-2.0-flash"
+
+
+def test_anthropic_judge_tier_specific_env() -> None:
+    env = {
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED": "claude-opus-4-6",
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD": "claude-sonnet-4-6",
+        "ANTHROPIC_MODEL": "claude-haiku-4-5",
+    }
+    enhanced = resolve_section_proof_judge_model("executive_summary", "anthropic_claude", env)
+    assert enhanced.model_actual == "claude-opus-4-6"
+    standard = resolve_section_proof_judge_model("headline", "anthropic_claude", env)
+    assert standard.model_actual == "claude-sonnet-4-6"
+
+
+def test_openai_judge_tier_specific_env() -> None:
+    assert openai_chat_completions_eligible("gpt-5.5") is True
+    assert openai_chat_completions_eligible("gpt-5.5-pro") is False
+    env = {
+        "APPS_RG_OPENAI_JUDGE_MODEL_ENHANCED": "gpt-5.5-pro",
+        "APPS_RG_OPENAI_JUDGE_MODEL_STANDARD": "gpt-5.5",
+        "OPENAI_MODEL": "gpt-5.1",
+    }
+    enhanced = resolve_section_proof_judge_model("executive_summary", "openai_chatgpt", env)
+    assert enhanced.model_actual == "gpt-5.5"
+    assert enhanced.model_source == "profile_default"
+    assert enhanced.reasoning_effort == "high"
+    standard = resolve_section_proof_judge_model("headline", "openai_chatgpt", env)
+    assert standard.model_actual == "gpt-5.5"
+    assert standard.reasoning_effort is None
+
+
+def test_google_judge_tier_specific_env() -> None:
+    env = {
+        "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED": "gemini-3.1-pro-preview",
+        "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD": "gemini-2.5-pro",
+        "GOOGLE_AI_PRO_MODEL": "gemini-2.5-flash",
+    }
+    enhanced = resolve_section_proof_judge_model("executive_summary", "gemini_pro", env)
+    assert enhanced.model_actual == "gemini-3.1-pro-preview"
+    assert enhanced.model_source == "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED"
+    standard = resolve_section_proof_judge_model("headline", "gemini_pro", env)
+    assert standard.model_actual == "gemini-2.5-pro"
+    assert standard.model_source == "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD"
+    bullet = resolve_section_proof_judge_model("ibm_bullets", "gemini_pro", env)
+    assert bullet.model_actual == "gemini-2.5-pro"
 
 
 def test_grade_only_judge_packet_shape() -> None:

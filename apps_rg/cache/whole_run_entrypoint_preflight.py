@@ -25,7 +25,7 @@ ENTRYPOINT_ENVELOPE_DISPATCH = "apps_rg.runtime.dispatch.apps_rg_dispatch.apps_r
 
 
 def _semantic_cache_r1b_enabled() -> bool:
-    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "").strip().lower() in (
+    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1").strip().lower() in (
         "1",
         "true",
         "yes",

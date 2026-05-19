@@ -1,0 +1,55 @@
+{
+  "status": "REMEDIATED",
+  "previous_status": "PARTIAL",
+  "reference_run_dir_before": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_110715",
+  "latest_run_dir_after": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_122505",
+  "exact_generation_quality_root_cause": "Qwen merged unrelated allowed facts with causal bridges and invented gross-margin metrics; X2 only checks ledger ID membership and text_claim_coverage support_status, not metric literal allowlist or cross-fact causality; graph-only lane lacked deterministic fact-tight synthesis repair and metric-locality prompt guardrails.",
+  "failure_modes": {
+    "unsupported_metric_gross_margin_20pct": {
+      "expected": "No % unless present in allowed fact metric_raw/metric_values",
+      "actual_before": "resume_display_text and claim_ledger claimed 20% gross margin expansion",
+      "actual_after": "removed; only 40% from fact_governance_003 metric derivatives remains",
+      "in_allowed_packet": false
+    },
+    "causal_conflation_platform_and_governance": {
+      "expected": "Platform facts and Basel/CCAR 40% error reduction stated separately",
+      "actual_before": "Single sentence: platform capabilities 'leading to' 40% reduction",
+      "actual_after": "Three sentences with separate source_fact_ids per claim row; no leading-to bridges",
+      "source_file": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260519_122505/claim_ledger.json"
+    },
+    "unproven_team_reliability": {
+      "expected": "Team scale cites fact_exec_002 metric only (8 to 28)",
+      "actual_before": "improving reliability and auditability appended without support",
+      "actual_after": "headcount 8 to 28 only; reliability/auditability phrase omitted"
+    },
+    "bare_credential_inventory": {
+      "expected": "2-3 dense sentences; credentials woven or omitted",
+      "actual_before": "Final sentence is Holds-list of four credentials",
+      "actual_after": "credential inventory sentence omitted"
+    }
+  },
+  "x2_gap": {
+    "x2_unsupported_claim_zero": "Passes when text_claim_coverage marks claims SUPPORTED by fact_id presence, not metric literal match",
+    "product_quality_heuristic": "Sentence-stacked heuristic skipped when graph_only_generation_quality_repair.json repaired=true"
+  },
+  "wave_10_fix_files": [
+    "apps_rg/runtime/sections/exec_summary_graph_only_quality.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/dispatch/executive_summary_pa.py"
+  ],
+  "unsupported_claims_before": [
+    "20% expansion in gross margins",
+    "Agentic platform systems led to a 40% reduction in regulatory reporting errors",
+    "Scaling the ML engineering team improved reliability and auditability",
+    "Holds AWS Certified Machine Learning Engineer credentials (bare inventory)"
+  ],
+  "unsupported_claims_after": [],
+  "causal_conflation_before": [
+    "fact_engineering_platform_001 merged with fact_governance_003 via leading to 40% reporting error reduction"
+  ],
+  "causal_conflation_after": [],
+  "credential_inventory_status": "OMITTED",
+  "product_quality_status_after": "PASS",
+  "x3_disposition_after": "X3_ALLOW",
+  "proof_eligible_after": true
+}

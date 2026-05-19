@@ -286,30 +286,31 @@ def _compute_normalized(
     raise ValueError(f"invalid score_scale: {score_scale}")
 
 
-def _resolve_gemini_model(meta: dict[str, Any]) -> tuple[str, str]:
-    """Resolve Google AI judge model; APPS_RG_GOOGLE_JUDGE_* overrides tier env."""
-    from agentic_core.config.google_ai_env import google_ai_pro_model_id
+def _resolve_gemini_model(
+    meta: dict[str, Any],
+    *,
+    section_id: str = "executive_summary",
+) -> tuple[str, str]:
+    """Resolve Google AI judge model via section_judge_profile tier matrix."""
+    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 
-    google_j = os.environ.get("APPS_RG_GOOGLE_JUDGE_MODEL", "").strip()
-    if google_j:
-        return google_j, "APPS_RG_GOOGLE_JUDGE_MODEL"
-    legacy_j = os.environ.get("APPS_RG_GEMINI_JUDGE_MODEL", "").strip()
-    if legacy_j:
-        return legacy_j, "APPS_RG_GEMINI_JUDGE_MODEL"
-    tier_pro, tier_src = google_ai_pro_model_id()
-    if tier_pro:
-        return tier_pro, tier_src or "GOOGLE_AI_PRO_MODEL"
+    resolution = resolve_section_proof_judge_model(section_id, "gemini_pro")
+    if resolution.model_actual and not resolution.blocked:
+        return resolution.model_actual, resolution.model_source
     return str(meta.get("default_model", "gemini-2.0-flash")), "default"
 
 
-def _resolve_anthropic_model(meta: dict[str, Any]) -> tuple[str, str]:
-    """Resolve Anthropic judge model from env without silent API substitution."""
-    judge_model = os.environ.get("APPS_RG_ANTHROPIC_JUDGE_MODEL", "").strip()
-    if judge_model:
-        return judge_model, "APPS_RG_ANTHROPIC_JUDGE_MODEL"
-    general = os.environ.get("ANTHROPIC_MODEL", "").strip()
-    if general:
-        return general, "ANTHROPIC_MODEL"
+def _resolve_anthropic_model(
+    meta: dict[str, Any],
+    *,
+    section_id: str = "executive_summary",
+) -> tuple[str, str]:
+    """Resolve Anthropic judge model via section_judge_profile tier matrix."""
+    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
+
+    resolution = resolve_section_proof_judge_model(section_id, "anthropic_claude")
+    if resolution.model_actual and not resolution.blocked:
+        return resolution.model_actual, resolution.model_source
     default = str(meta.get("default_model", "claude-3-5-sonnet-20241022"))
     return default, "default"
 
@@ -737,7 +738,8 @@ def _make_model_backed_output(
 def _openai_reasoning_effort_supported(model: str) -> bool:
     """True only for OpenAI model families that accept reasoning.effort in chat completions."""
     mid = str(model or "").strip().lower()
-    return mid.startswith("gpt-5.5") or mid.startswith("o3") or mid.startswith("o4")
+    # gpt-5.5 / gpt-5.5-pro chat endpoints reject the reasoning parameter (400 unknown_parameter).
+    return mid.startswith("o3") or mid.startswith("o4")
 
 
 def _call_openai(
@@ -766,9 +768,8 @@ def _call_openai(
             },
             {"role": "user", "content": prompt},
         ],
-        "temperature": 0.1,
     }
-    # gpt-5.x models use max_completion_tokens; reasoning.effort only on supported endpoints
+    # gpt-5.x: max_completion_tokens only; temperature/reasoning rejected on current chat SKUs.
     if model.startswith("gpt-5"):
         payload["max_completion_tokens"] = 900
         effort = (reasoning_effort or "").strip()
@@ -776,6 +777,7 @@ def _call_openai(
             payload["reasoning"] = {"effort": effort}
     else:
         payload["max_tokens"] = 900
+        payload["temperature"] = 0.1
         payload["response_format"] = {"type": "json_object"}
     
     # Write request artifact
