@@ -140,9 +140,10 @@ def run_final_resume_x2_gates(
             gen_ok = False
             gen_reason = f"missing lane {lane}"
             break
-        if row.get("accepted_real_evidence_resolution") != "latest_successful_real_run.json":
+        accepted = str(row.get("accepted_real_evidence_resolution") or "")
+        if accepted not in ("latest_successful_real_run.json", "coherent_aggregation_pin"):
             gen_ok = False
-            gen_reason = f"{lane} not latest_successful_real_run.json"
+            gen_reason = f"{lane} resolution not accepted: {accepted}"
             break
         rd = row.get("latest_successful_real_artifact_path") or row.get("rollup_source_run_dir")
         if str(rd or "").strip() == "":
@@ -294,6 +295,23 @@ def run_final_resume_x2_gates(
                 hash_match_ok = False
                 hm = f"invariant_hash mismatch for {ik}"
                 break
+
+    digest_ok = True
+    digest_reason = "ok"
+    for sec in sections:
+        if not isinstance(sec, dict):
+            continue
+        sh = str(sec.get("section_hash") or "")
+        sd = str(sec.get("section_digest") or "")
+        if not sd:
+            digest_ok = False
+            digest_reason = f"missing section_digest for {sec.get('section_id')}"
+            break
+        if sh == sd and sec.get("section_kind") == "generated_lane":
+            digest_reason = f"section_hash equals section_digest for {sec.get('section_id')} (must differ)"
+            digest_ok = False
+            break
+    _add(gates, "x2_section_digest_present", digest_ok, digest_reason)
 
     _add(gates, "x2_section_hashes_present", hash_match_ok, hm)
 

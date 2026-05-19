@@ -1,6 +1,7 @@
 """Run-scoped runtime proof directories (Option B: real/<run_id>/, mock/<run_id>/).
 
 Lane root: artifacts/apps_rg/runtime_proofs/<lane>/
+Contract harness (pytest offline stubs): artifacts/apps_rg/runtime_proofs/contract_harness/<run_key>/...
 Pointers: latest_real_run.json (latest real-bucket attempt), latest_successful_real_run.json
 (accepted REAL_LLM qwen_vllm evidence for rollup), latest_mock_run.json.
 Each pointer and per-run ``run_manifest.json`` include ``artifact_links`` (repo-relative paths)
@@ -27,6 +28,19 @@ LATEST_PLUMBING_RUN_FILENAME = "latest_plumbing_run.json"
 # When set (absolute or repo-relative), lane prepare/finalize and optional dependency
 # resolution use ``<root>/<lane>/{mock|real}/<run_id>/`` instead of runtime_proofs.
 MODULAR_R4_SECTIONS_ROOT_ENV = "APPS_RG_MODULAR_R4_SECTIONS_ROOT"
+CONTRACT_HARNESS_DIR = "contract_harness"
+CONTRACT_HARNESS_PREFIXES: tuple[str, ...] = (
+    "_w3_contract_",
+    "_w4_contract_",
+    "_w6_srfs_",
+    "_w6_nosrfs_",
+    "_w7_exec_",
+    "_w7_nosrfs_",
+    "_w7_cli_smoke_",
+    "_exec_l2_pool_",
+    "_exec_x2_pool_",
+    "_contract_test_",
+)
 
 
 def modular_sections_root_from_env(repo: Path) -> Path | None:
@@ -95,6 +109,22 @@ def find_repo_root(start: Path | None = None) -> Path:
 
 def lane_root(repo: Path, lane: str) -> Path:
     return repo / "artifacts" / "apps_rg" / "runtime_proofs" / lane
+
+
+def contract_harness_root(repo: Path) -> Path:
+    """Pytest/contract offline scratch — not product lane rollup inputs."""
+    return repo / "artifacts" / "apps_rg" / "runtime_proofs" / CONTRACT_HARNESS_DIR
+
+
+def is_contract_harness_run_key(name: str) -> bool:
+    return any(str(name).startswith(p) for p in CONTRACT_HARNESS_PREFIXES)
+
+
+def contract_harness_run_dir(repo: Path, run_key: str, *parts: str) -> Path:
+    path = contract_harness_root(repo) / run_key
+    for part in parts:
+        path = path / part
+    return path
 
 
 def proof_bucket_for_provider(provider: str) -> Bucket:

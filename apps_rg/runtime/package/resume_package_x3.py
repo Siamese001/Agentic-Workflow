@@ -151,6 +151,16 @@ def _merge_l6_package_checks(per_lane: Mapping[str, Mapping[str, Any]]) -> tuple
     return agg, fatal_bundle
 
 
+def _load_optional_json(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else None
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
 def evaluate_resume_package(
     *,
     paths: ResumePackageProofPaths,
@@ -162,6 +172,9 @@ def evaluate_resume_package(
     docx_manifest_x2: Mapping[str, Any],
     docx_render_manifest: Mapping[str, Any],
     docx_render_x2: Mapping[str, Any],
+    assembly_receipt: Mapping[str, Any] | None = None,
+    review_lane_policy: Mapping[str, Any] | None = None,
+    cross_section_x2: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     rr = paths.repo_root
     block_notes: list[str] = []
@@ -414,6 +427,16 @@ def evaluate_resume_package(
 
     all_sections_x3_allow = len(GENERATED_LANES) == len(rollup_x3_allow)
 
+    rlp_summary_early: dict[str, Any] = {}
+    if isinstance(review_lane_policy, Mapping):
+        raw_sum = review_lane_policy.get("summary")
+        if isinstance(raw_sum, Mapping):
+            rlp_summary_early = dict(raw_sum)
+    asm_early = assembly_receipt if isinstance(assembly_receipt, Mapping) else {}
+    product_review_required = bool(
+        asm_early.get("product_review_required") or rlp_summary_early.get("product_review_required")
+    )
+
     agg_l6_checks, fatal_l6 = _merge_l6_package_checks(per_lane_l6_audit)
     l6_handoff_blocked = fatal_l6
 
@@ -421,10 +444,12 @@ def evaluate_resume_package(
         final_code = X3_BLOCKED_DETERMINISTIC
     elif l6_handoff_blocked:
         final_code = X3_BLOCK_L6_HANDOFF_INCOMPLETE
-    elif all_sections_x3_allow:
+    elif all_sections_x3_allow and not product_review_required:
         final_code = X3_ALLOW_CODE
     else:
         final_code = X3_REVIEW_SECTION
+    if product_review_required and all_sections_x3_allow:
+        block_notes.append("product_review_required:review_or_mock_lanes_present")
 
     disposition = {
         "disposition_family": "resume_package_x3",
@@ -542,6 +567,41 @@ def evaluate_resume_package(
         "rollup_id_source"
     )
 
+    asm = asm_early
+    rlp = review_lane_policy if isinstance(review_lane_policy, Mapping) else {}
+    warn_blob: dict[str, Any] = {}
+    if isinstance(cross_section_x2, Mapping):
+        raw_warn = cross_section_x2.get("warn_policy")
+        if isinstance(raw_warn, Mapping):
+            warn_blob = dict(raw_warn)
+
+    assembly_product_allow = bool(asm.get("product_allow_claimed"))
+    cross_product_pass = bool(asm.get("cross_section_x2_product_pass"))
+    structural_x2_pass = bool(asm.get("structural_x2_all_pass") and ok_fr)
+    cross_structural_pass = bool(asm.get("cross_section_x2_structural_only") or asm.get("cross_section_x2_all_pass"))
+
+    package_product_allow_claimed = (
+        assembly_product_allow
+        and structural_x2_pass
+        and cross_product_pass
+        and not deterministic_blocked
+        and final_code == X3_ALLOW_CODE
+    )
+
+    disposition["aggregation_product_proof"] = {
+        "assembly_receipt_v2_present": bool(asm),
+        "structural_x2_all_pass": structural_x2_pass,
+        "cross_section_x2_structural_pass": cross_structural_pass,
+        "cross_section_x2_product_pass": cross_product_pass,
+        "aggregation_receipt_v2_complete": bool(asm.get("receipt_id") == "final_resume_assembly_receipt_v2"),
+        "product_review_required": product_review_required,
+        "product_allow_claimed": package_product_allow_claimed,
+        "review_lane_policy_summary": rlp_summary_early,
+        "warn_policy": warn_blob,
+        "explicit_non_claims": list(asm.get("explicit_non_claims") or []) + list(rlp.get("explicit_non_claims") or []),
+    }
+    disposition["block_notes_sorted_unique"] = sorted(set(block_notes))
+
     return disposition
 
 
@@ -585,6 +645,11 @@ def emit_resume_package_artifacts(
     drm = load_json(p.docx_render_manifest_json)
     dr_x2 = load_json(p.docx_render_x2_json)
 
+    assembly_dir = p.final_resume_json.parent
+    assembly_receipt = _load_optional_json(assembly_dir / "final_resume_receipt.json")
+    review_lane_policy = _load_optional_json(assembly_dir / "review_lane_policy.json")
+    cross_section_x2 = _load_optional_json(assembly_dir / "cross_section_x2_gate_outputs.json")
+
     out_doc = drm.get("output_docx") if isinstance(drm, Mapping) else None
     if not isinstance(out_doc, str):
         out_doc = f"{RUNTIME_PROOFS}/docx/amit_ayer_resume_v1.docx"
@@ -606,6 +671,9 @@ def emit_resume_package_artifacts(
         docx_manifest_x2=dm_x2,
         docx_render_manifest=drm,
         docx_render_x2=dr_x2,
+        assembly_receipt=assembly_receipt,
+        review_lane_policy=review_lane_policy,
+        cross_section_x2=cross_section_x2,
     )
 
     p.output_dir.mkdir(parents=True, exist_ok=True)
@@ -631,6 +699,11 @@ def emit_resume_package_artifacts(
     }
     rr_note = disposition.get("section_level_x3") or {}
     receipt["lanes_all_x3_allow"] = bool(rr_note.get("all_generated_lane_x3_allow"))
+    agg_proof = disposition.get("aggregation_product_proof") or {}
+    receipt["product_allow_claimed"] = bool(agg_proof.get("product_allow_claimed"))
+    receipt["product_review_required"] = bool(agg_proof.get("product_review_required"))
+    receipt["review_lane_policy_json"] = _repo_rel(rr, assembly_dir / "review_lane_policy.json")
+    receipt["coherent_rollup_policy_json"] = _repo_rel(rr, assembly_dir / "coherent_rollup_policy.json")
     rc_path.write_text(json.dumps(receipt, indent=2, sort_keys=False) + "\n", encoding="utf-8")
 
     return {
