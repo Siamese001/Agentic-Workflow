@@ -30,7 +30,7 @@
       "disabled": false
     },
     "filesystem": {
-      "_comment": "Filesystem MCP scope is locked to repo root only. Keep writes inside approved project territories and do not reference editor-specific legacy paths.",
+      "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or editor legacy plan paths (.windsurf\\plans\\, .cursor\\plans\\) in args.",
       "_startup": "Launcher: node .cursor/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime, proxies stdio explicitly, waits for readiness on stderr, and enforces a startup watchdog.",
       "_shadow_disable": "2026-05-02 Author-Gate F4 verdict (plan token-burn-followup-f8c2d1, ADR-095): shadow-disabled for 30 days. Schema cost 3,056 tokens / 14 tools \u2014 full native substitutes available (read_file, write_to_file, edit, list_dir, find_by_name). Re-enable: set disabled=false. Retire after 30 days if turn_budget.jsonl shows 0 mcp4_* tool calls.",
       "command": "node",

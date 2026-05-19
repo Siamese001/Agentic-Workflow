@@ -1,0 +1,26 @@
+{
+  "wave": "H1",
+  "title": "MCP Scope 0 documentation alignment",
+  "status": "PASS",
+  "generated_at": "2026-05-19",
+  "depends_on": "docs/reports/cursor/mcp_scope0_h0_receipt.md",
+  "commands": [
+    {"command": "python .cursor/scripts/sync_mcp_config.py", "exit_code": 0},
+    {"command": "python ops_scripts/ci/check_mcp_config_sovereignty.py", "exit_code": 0},
+    {"command": "python ops_scripts/ci/check_agents_md_sync.py", "exit_code": 0},
+    {"command": "python ops_scripts/ci/check_mcp_sync_integrity.py", "exit_code": 0}
+  ],
+  "files_changed": [
+    {"path": ".cursor/mcp.json", "markdown": "[mcp.json](../../.cursor/mcp.json)"},
+    {"path": "config/notion_databases.yaml", "markdown": "[notion_databases.yaml](../../config/notion_databases.yaml)"},
+    {"path": "AGENTS.md", "markdown": "[AGENTS.md](../../AGENTS.md)"},
+    {"path": "docs/guides/filesystem_mcp_operations.md", "markdown": "[filesystem_mcp_operations.md](../../docs/guides/filesystem_mcp_operations.md)"},
+    {"path": "docs/guides/MCP_Config_Version_Policy.md", "markdown": "[MCP_Config_Version_Policy.md](../../docs/guides/MCP_Config_Version_Policy.md)"}
+  ],
+  "artifacts": [
+    {"path": "docs/reports/cursor/mcp_scope0_h1_receipt.md", "markdown": "[mcp_scope0_h1_receipt.md](mcp_scope0_h1_receipt.md)"}
+  ],
+  "notion_backlog_page_id": "36527693-f55c-81e8-8df0-de0b4c17eb11",
+  "notion_backlog_url": "https://www.notion.so/P2-MCP-H1-Scope-0-doc-SSOT-alignment-36527693f55c81e88df0de0b4c17eb11",
+  "closeout_receipt": "docs/reports/cursor/mcp_scope0_closeout_receipt.md"
+}

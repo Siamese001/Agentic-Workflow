@@ -361,6 +361,18 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T11: MCP Config Sovereignty (Constitutional Rule #0) ------------------------
+      # Filesystem MCP args locked to repo root; no out-of-repo path fragments.
+      # Bypass: MCP_CONFIG_SOVEREIGNTY_BYPASS=1
+      - id: mcp-config-sovereignty
+        name: "T11: MCP Config Sovereignty (Rule #0)"
+        entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
+        language: system
+        pass_filenames: false
+        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json)$
+        always_run: false
+        require_serial: true
+
       # -- T6d3: AGENTS.md Autogen Block Integrity -------------------------------------
       # Validates every <!-- MARKER:START/END --> autogen block in AGENTS.md is
       # byte-identical to the SSOT generator output. Currently covers:

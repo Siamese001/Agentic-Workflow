@@ -148,6 +148,16 @@ def validate_mcp_health():
     print("✅ MCP editor parity validated")
 
     returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_mcp_config_sovereignty.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ MCP config sovereignty (Rule #0) check failed")
+        print(stdout or stderr)
+        return False
+    print("✅ MCP config sovereignty (Rule #0) validated")
+
+    returncode, stdout, stderr = run_cmd(
         [sys.executable, str(_script("ops_scripts/ci/check_cursor_config_schema.py"))],
         cwd=ROOT,
     )
@@ -169,6 +179,16 @@ def validate_mcp_health():
         print(stdout or stderr)
         return False
     print("✅ Skill frontmatter validated (Anthropic spec)")
+
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_skill_description_quality.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Skill description quality check failed (W4 progressive disclosure)")
+        print(stdout or stderr)
+        return False
+    print("✅ Skill description quality validated (W4)")
 
     return True
 
@@ -1126,6 +1146,12 @@ def main():
         (
             "MCP-PARITY Cursor vs Windsurf MCP editor parity",
             "ops_scripts/ci/check_mcp_editor_parity.py",
+        ),
+        # MCP-SCOPE0 — filesystem MCP locked to repo root (Constitutional Rule #0).
+        # Bypass: MCP_CONFIG_SOVEREIGNTY_BYPASS=1
+        (
+            "MCP-SCOPE0 filesystem scope sovereignty (Rule #0)",
+            "ops_scripts/ci/check_mcp_config_sovereignty.py",
         ),
         # DEFER — Deferred scope marker compliance (CI mode).
         # Scans all .cursor/plans/*.md for prose indicating deferred work

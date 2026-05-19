@@ -1,0 +1,50 @@
+{
+  "program": "mcp_scope0_windsurf_import_revalidation",
+  "status": "PASS",
+  "generated_at": "2026-05-19",
+  "waves": {
+    "H0": {
+      "status": "PASS",
+      "receipt": "docs/reports/cursor/mcp_scope0_h0_receipt.md",
+      "notion_page_id": "36527693-f55c-81b5-9103-ca869fe780fd",
+      "notion_url": "https://www.notion.so/P2-MCP-H0-Scope-0-CI-gate-Rule-0-36527693f55c81b59103ca869fe780fd"
+    },
+    "H1": {
+      "status": "PASS",
+      "receipt": "docs/reports/cursor/mcp_scope0_h1_receipt.md",
+      "notion_page_id": "36527693-f55c-81e8-8df0-de0b4c17eb11",
+      "notion_url": "https://www.notion.so/P2-MCP-H1-Scope-0-doc-SSOT-alignment-36527693f55c81e88df0de0b4c17eb11"
+    },
+    "H2": {"status": "deferred", "note": "version pin parity"},
+    "H3": {"status": "deferred", "note": "operator smoke with filesystem enabled"}
+  },
+  "verification": [
+    {"command": "python ops_scripts/ci/check_mcp_config_sovereignty.py", "exit_code": 0},
+    {"command": "pytest tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py -q", "exit_code": 0, "tests_passed": 8},
+    {"command": "python ops_scripts/ci/check_mcp_sync_integrity.py", "exit_code": 0},
+    {"command": "python ops_scripts/ci/check_agents_md_sync.py", "exit_code": 0},
+    {"command": "python ops_scripts/ci/check_mcp_editor_parity.py", "exit_code": 0}
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/ci/mcp_config_sovereignty.json",
+      "markdown": "[mcp_config_sovereignty.json](../../artifacts/ci/mcp_config_sovereignty.json)"
+    },
+    {
+      "path": "docs/reports/cursor/mcp_scope0_closeout_receipt.md",
+      "markdown": "[mcp_scope0_closeout_receipt.md](mcp_scope0_closeout_receipt.md)"
+    },
+    {
+      "path": "docs/reports/cursor/mcp_scope0_h0_receipt.md",
+      "markdown": "[mcp_scope0_h0_receipt.md](mcp_scope0_h0_receipt.md)"
+    },
+    {
+      "path": "docs/reports/cursor/mcp_scope0_h1_receipt.md",
+      "markdown": "[mcp_scope0_h1_receipt.md](mcp_scope0_h1_receipt.md)"
+    }
+  ],
+  "config_ssot": {
+    "cursor": ".cursor/mcp.json",
+    "windsurf_mirror": ".windsurf/mcp_config.json"
+  }
+}

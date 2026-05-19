@@ -2,28 +2,13 @@
 
 ## Plan First. Execute Second.
 
-## AGENTS.md Scope
+Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS.md` files or `.cursor/rules/` / skills.
 
-- Root-level `AGENTS.md` is always on for the whole workspace.
-- Subdirectory `AGENTS.md` files are supported for directory-scoped guidance.
-- Keep root guidance global, and push specialized instructions down into subdirectories when scope is narrower.
+**T2/T3** (2+ files, cross-layer, architecture, multi-file debug): first output = plan; invoke `structured-reasoning` skill → `SR_INTAKE` … `SR_VERIFY`. See `.cursor/rules/sequential-thinking-enforcement.mdc`.
 
-**For complex tasks (T2/T3), the first output MUST be a plan — never edits.**
+**T0/T1**: single file ≤20 lines or questions — answer/edit directly.
 
-A task is T2/T3 if it involves:
-- 2 or more files
-- Cross-layer changes (e.g. L0→L3)
-- Architecture decisions
-- Multi-file debugging
-- New features or refactoring affecting more than one module
-
-**For T2/T3 tasks**, invoke the `structured-reasoning` skill. Emit `SR_INTAKE` → `SR_PLAN` → gather evidence → `SR_APPROVAL: APPROVED` → `SR_EXECUTE` → `SR_VERIFY`. See `.cursor/rules/sequential-thinking-enforcement.mdc` for the full packet shape.
-
-**T0/T1 tasks** (single file, ≤20 lines, questions) are exempt — answer or edit directly.
-
-## Layer Separation
-
-Keep Reasoning / Routing / Execution / Verification separate. No edits before `SR_APPROVAL`.
+**Layer separation:** Reasoning / Routing / Execution / Verification — no edits before `SR_APPROVAL`.
 
 ## MCP Quick Reference
 
@@ -34,7 +19,7 @@ Keep Reasoning / Routing / Execution / Verification separate. No edits before `S
 | Server ID | Use For | Example Tools | Notes | Skill |
 |---|---|---|---|---|
 | `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. | [`gitkraken`](.cursor/skills/gitkraken/SKILL.md) |
-| `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Primary authority for structural dependencies AND refactoring analysis. Constitutional §22: mv_* materialized views, v_p0_*/v_p1_*/v_p2_*/v_p3_* P-views, and semantic edges (flows_to, reads_from, writes_to, emits_side_effect, controls_flow, resolves_callsite) MUST drive T2/T3 refactoring plans. | [`adg-sqlite`](.cursor/skills/adg-sqlite/SKILL.md) |
+| `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Structural deps + T2/T3 plans; §22 graph layer (mv_*, P-views, semantic edges). | [`adg-sqlite`](.cursor/skills/adg-sqlite/SKILL.md) |
 | `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. | [`deepwiki`](.cursor/skills/deepwiki/SKILL.md) |
 | `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. | [`filesystem-mcp`](.cursor/skills/filesystem-mcp/SKILL.md) |
 | `memory` | Persistent cross-session knowledge graph | `mem_recall_session_start, create_entities, add_observations, search_nodes` | Read at session start; write back major decisions. | [`memory-mcp`](.cursor/skills/memory-mcp/SKILL.md) |
@@ -43,12 +28,13 @@ Keep Reasoning / Routing / Execution / Verification separate. No edits before `S
 | `task_manager` | Task decomposition and task state tracking | `create_task, decompose_task, update_task, task_info` | Use when the user explicitly wants tracked multi-step work. | [`task-manager-mcp`](.cursor/skills/task-manager-mcp/SKILL.md) |
 | `redis` | Redis cache health, keys, TTL, namespace stats | `redis_health, redis_keys, redis_hgetall, redis_namespace_stats` | Use for hot-cache inspection and invalidation. | [`redis-cache`](.cursor/skills/redis-cache/SKILL.md) |
 | `pytest_mcp` | Test discovery, runs, and coverage | `discover_tests, run_tests, get_test_details, analyze_test_coverage` | Prefer over plain pytest CLI when possible. | [`pytest-mcp`](.cursor/skills/pytest-mcp/SKILL.md) |
-| `playwright` | Browser automation, accessibility snapshots, end-to-end UI verification | `browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot` | Official Microsoft @playwright/mcp thin npx wrapper. Use for live UI/E2E checks, not for static HTML fetching (use direct httpx in code or read_url_content for one-off fetches). Output lands in repo-root .playwright-mcp/ (gitignored). Always close tabs after use. | [`playwright`](.cursor/skills/playwright/SKILL.md) |
-| `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Use for **Plans DB** and **Backlog Items** only. Anti-Pattern Burndown Notion DB is **archived** (see `.cursor/rules/notion-archived-databases.mdc`) — burndown SSOT is under `artifacts/adg/`. MCP Registry, ADR Registry, Constitutional Rules Registry, SC/AP Violation Backlog, and Author-Gate Decision Ledger are **archived** — filesystem SSOT only. Auth: canonical ``NOTION_TOKEN``; ``NOTION_API_KEY`` is accepted as a legacy alias (see `tools/notion/notion_bearer_token.py`). | [`notion`](.cursor/skills/notion/SKILL.md) |
-| `tavily` | AI-optimized web search, extraction, crawling, and site mapping | `tavily-search, tavily-extract, tavily-crawl, tavily-map` | Sole authority for web search. Use for upstream-issue research (Anthropic MCP race, chromadb bugs), ADR background, and domain research not answerable by deepwiki (GitHub-only) or one-off URL fetch via read_url_content. Requires TAVILY_API_KEY OS env var. | [`tavily-research`](.cursor/skills/tavily-research/SKILL.md) |
-| `context7` | Up-to-date, versioned official documentation for external libraries | `resolve-library-id, get-library-docs` | Use for external-package docs (chromadb, FastMCP, sentence-transformers, playwright, pytorch). Distinct from deepwiki (GitHub repo wiki/Q&A) and adg_sqlite (this repo's own code). No API key required; CONTEXT7_API_KEY optional for higher limits. | [`context7`](.cursor/skills/context7/SKILL.md) |
+| `playwright` | Browser automation, accessibility snapshots, end-to-end UI verification | `browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot` | Live UI/E2E; output in .playwright-mcp/ (gitignored). Close tabs after use. | [`playwright`](.cursor/skills/playwright/SKILL.md) |
+| `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Plans + Backlog only; five DBs archived → filesystem SSOT (see notion-archived-databases.mdc). | [`notion`](.cursor/skills/notion/SKILL.md) |
+| `tavily` | AI-optimized web search, extraction, crawling, and site mapping | `tavily-search, tavily-extract, tavily-crawl, tavily-map` | Web search authority; requires TAVILY_API_KEY. | [`tavily-research`](.cursor/skills/tavily-research/SKILL.md) |
+| `context7` | Up-to-date, versioned official documentation for external libraries | `resolve-library-id, get-library-docs` | External package docs; not this repo. CONTEXT7_API_KEY optional. | [`context7`](.cursor/skills/context7/SKILL.md) |
 
 <!-- MCP-QUICK-REFERENCE:END -->
+
 ## Notion Workspace Map
 
 <!-- NOTION-MAP:START -->
@@ -57,260 +43,54 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
 | Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
 |----------|-----------------------|----------------------|--------------|----------------------------|
-| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Cursor: `post_cursor_agent_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
-| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.cursor/plans/<slug>-<6hex>.md`. Create Plans row with **Status="Not Started"** (enforced), Exists On Disk=true, Plan File Path set (`tools.notion.plan_creation_helper.create_plan_in_notion`). |
-| SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
-| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.cursor/rules/*.mdc`. No Notion write. |
-| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.cursor/mcp.json` (Cursor) and optional `.windsurf/mcp_config.json` mirror. No Notion write. |
-| Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (Notion DB 404 / integration retired) | Filesystem SSOT: `artifacts/adg/` ratchet and burndown automation. No Notion write. |
+| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
+| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.windsurf/plans/<slug>-<6hex>.md`. Create Plans row with Status=Active, Exists On Disk=true, Plan File Path set. |
+| SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.windsurf/rules/*.md`. No Notion write. |
+| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.cursor/mcp.json` (Cursor) + `.windsurf/mcp_config.json` (mirror). No Notion write. |
+| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
 **Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed.
 **Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. Using data_source_id for writes returns 404.
 
 <!-- NOTION-MAP:END -->
 
-### Filesystem-SSOT Canonical Sources (No Notion Mirror)
+Procedural routing, auto-events, archived DB policy: [agents-tier1-companion.md](.cursor/skills/mcp-integration/agents-tier1-companion.md) · skill [`notion`](.cursor/skills/notion/SKILL.md) · `.cursor/rules/notion-archived-databases.mdc`.
 
-| Content | Canonical Path | Notion Mirror? | Notes |
-|---------|----------------|----------------|-------|
-| Rules | `.cursor/rules/*.md` | **NO** — archived 2026-05-02 | 47 rules, filesystem-SSOT only. Use `rg` to search. |
-| ADRs | `docs/architecture/adr/*.md` | **NO** — since 2026-05-02 | Filename + metadata in frontmatter. Use `rg` to search. |
-| Plans | `.cursor/plans/<slug>-<6hex>.md` | Row in Plans DB only | Full content on disk; Notion holds status/summary row. |
-| Calibration Reports | `docs/reports/calibration/<YYYY-Www>.md` | **NO** — by design | Weekly reports filesystem-only per operator decision 2026-04-24. |
+## Memory
 
-> ⛔ **Do NOT attempt to sync rules or ADRs to Notion.** The Constitutional Rules Registry and ADR Registry databases were archived on 2026-05-02 as part of Notion consolidation. Filesystem is the sole SSOT.
+First tool call each session: `mem_recall_session_start` (§17). Writeback major decisions via Memory MCP. Detail: `.cursor/rules/memory-management.mdc`, skill `memory-mcp`.
 
-### Plans + Backlog Status Taxonomy (extracted 2026-05-02)
+## Constitutional floor
 
-The 5-status taxonomy (🟢Live · 🟡Draft · 🔵Completed · 🟣Retired · ⚪Archived), Plans-DB invariants (Live ⇒ Exists On Disk=true · 14-day edit recency · descope path), Backlog-DB shared-taxonomy deltas, migration history, and the **Backlog Snapshot read-path** (page `34b27693-f55c-81b4-93ba-efec5755a20e`, regenerator `python tools/notion/snapshot_renderer.py --regenerate`) all live in conditional rule `@.cursor/rules/notion-plans-taxonomy.md`. Auto-loads when working with Notion Plans / Backlog Items / status / taxonomy queries.
-
-### Auto-Routing Rules (proactive — do NOT wait for a prompt)
-
-Cursor Agent MUST route these events to Notion without being asked. Filesystem remains SSOT for the full artifact; Notion holds the searchable row.
-
-| Event in Cursor Agent | Filesystem Artifact | Notion Write (parallel) |
-|---|---|---|
-| Create `.cursor/plans/<slug>-<6hex>.md` (new plan) | Plan markdown | `API-post-page` into Plans DB with **Status="Not Started"** (enforced). **Use canonical helper**: `from tools.notion.plan_creation_helper import create_plan_in_notion` — helper enforces correct status, validates slug format, populates all required fields. Retrospective plans only: `force_status="Completed"`. See `.cursor/rules/plan-location.md` § "Notion Status Discipline". |
-| Create `docs/architecture/adr/ADR-NNN-*.md` | ADR markdown | **No Notion write** — on-disk ADR file IS the SSOT since commit `b11200e833` (2026-05-02 consolidation). Filename + metadata live in the markdown frontmatter. Use `rg` over `docs/architecture/adr/` for search. |
-| Modify `.cursor/mcp.json` (add/remove/reconfigure server) | JSON edit | **No Notion write** — MCP Registry archived 2026-05-02. Document in commit message. Run `python .cursor/scripts/sync_mcp_config.py` after edits. Optional Windsurf mirror sync: `.cursor/scripts/post_write_mcp_config_sync.py`. Filesystem SSOT only. |
-| Change gate behavior in `.cursor/scripts/pre_mcp_gate.py` | Python edit | **No Notion write** — MCP Registry archived 2026-05-02. Document in commit message. Filesystem SSOT only. |
-| Resolve a scored `ask_user_question` (Author-Gate decision) | `.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite` | **No Notion write** — Author-Gate Decision Ledger archived 2026-05-02. SQLite ledger + `DECISION_CAPTURED:` marker is the SSOT (constitutional §30). |
-| Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | **No Notion write** — SC/AP Violation Backlog archived 2026-05-02. Violations recorded in ADG SQLite snapshot only. |
-| Write RCA in `docs/reports/plans/*.md` | Markdown | Link from relevant registry row (no new database — RCA detail lives on disk) |
-| `generate_mutation_rejection_report.py` finds a newly-accepted mutation (Constitutional §32) | `artifacts/certification/fortknox_mutation_rejection_report.json` | **No Notion write** — SC/AP Violation Backlog archived 2026-05-02. Regression logged in `artifacts/certification/fortknox_mutation_rejection_report.json` only. |
-| Trust level changes in Fort Knox bundle (e.g. `DEVELOPMENT_PROOF` → `INTEGRITY_PROOF`) | `artifacts/certification/final_requirement_signoff_report.json` | **No Notion write** — trust-level transitions are recorded in the certification bundle's `trust_level` field (verifiable via `scripts/verify_final_requirement_signoff_bundle.py`). If human-readable narrative is needed, author an ADR markdown file at `docs/architecture/adr/` (on-disk SSOT). |
-| Positive-control set grows (new `RTC-REQ-*` joins SIGNED_OFF via compiler run) | `certification/evidence_assertions.jsonl` (new rows) + compiler output | `API-patch-page` Wave/Phase Convergence row for that req with Status → Done and evidence pointers |
-| **Wave start** (beginning of each wave ≥W1 in a multi-wave plan) | n/a | ⛔ **MANDATORY**: emit `WAVE_START: plan=<slug-6hex> wave=<N>` as a bare line in the response AND call `python tools/windsurf/wave_execution_state.py start --plan <slug-6hex>` (W1 only) or `wave-progress --plan <slug-6hex> --wave N` (subsequent waves). The `post_cursor_agent_wave_lifecycle_capture.py` hook is purely reactive — omitting the marker leaves the plan `.md` table stale and silences `post_cursor_agent_wave_completion_audit.py`. RCA: `rca-wave-marker-emission-gap-c7d3f1` (2026-05-11). |
-| **Wave complete** (end of each wave in a multi-wave plan) | Plan `.md` wave table updated by hook | ⛔ **MANDATORY**: emit `WAVE_COMPLETE: plan=<slug-6hex> wave=<N> note="<one-liner>"` as a bare line in the response. The `post_cursor_agent_wave_lifecycle_capture.py` hook flips `🔲 TODO` → `✅ DONE` in the Wave Structure table and appends to Notion Summary. Advisory audit fires if ≥3 file writes occur without a marker (`show_output=true`). CI gate WAVE-MARKER (`check_wave_marker_emission.py`) detects stale mixed-state tables. Bypass: `WAVE_LIFECYCLE_CAPTURE_BYPASS=1`. |
-
-> ⛔ **Archived Notion databases (2026-05-02 consolidation):** MCP Registry, Constitutional Rules Registry, SC/AP Violation Backlog, ADR Registry, and Author-Gate Decision Ledger are all archived. All formerly targeted writes to these databases are now filesystem-only. Do NOT attempt to write to these databases. See `.cursor/rules/notion-archived-databases.md`.
-
-**Non-goals**: do NOT duplicate narrative content in Notion. Store the row; link the file.
-
-### Sync Enforcement
-
-Two existing gates validate AGENTS.md ↔ MCP config consistency. Both are wired into pre-commit (`.pre-commit-config.yaml`) and invoked by `run_contract_gates.py`:
-
-| Gate | Scope |
-|---|---|
-| `ops_scripts/ci/check_mcp_sync_integrity.py` | **Strict**: `.cursor/mcp.json` + AGENTS Quick Reference vs `.cursor/scripts/sync_mcp_config.py`. |
-| `ops_scripts/ci/check_agents_mcp_coverage.py` | **Coverage**: every `mcpServers` key in `.cursor/mcp.json` documented in AGENTS.md. |
-| `ops_scripts/ci/check_mcp_editor_parity.py` | **Parity**: Cursor SSOT vs `.windsurf/mcp_config.json` mirror (canonical server set). |
-| `python .cursor/scripts/sync_mcp_config.py --check` | **Cursor SSOT**: validates `.cursor/mcp.json` structure and server count. |
-
-Run manually:
-```bash
-python .cursor/scripts/sync_mcp_config.py --check
-python ops_scripts/ci/check_mcp_sync_integrity.py
-python ops_scripts/ci/check_agents_mcp_coverage.py
-python ops_scripts/ci/check_mcp_editor_parity.py
-```
-
-Auto-regeneration (when drift is detected):
-```bash
-python .cursor/scripts/sync_mcp_config.py   # refreshes AGENTS.md + ~/.cursor/cursor/mcp.json
-```
-
-## Memory Lifecycle
-
-Detailed read/write/maintain triggers and entity-type conventions live in `.cursor/rules/agents-memory-lifecycle.md` (model_decision). Key session-start requirement: **first tool call of every session is `mem_recall_session_start`** (constitutional §17).
-
-## Constitutional Constraints (always-on)
-
-- No PowerShell — use `subprocess.run(argv, shell=False)` or `run_command`
+- No PowerShell — `subprocess.run(argv, shell=False, timeout=30)`
 - No `pytest.mark.skip` without `strict=True`
-- No `except Exception` without guardian exemption
+- No bare `except Exception` without guardian
 - No edits during planning phase
-- ADG graph is the primary analysis primitive — not grep
+- ADG before grep for structure (§28); grep for literals/TODOs only
+- Full rules: `.cursor/rules/` · expanded lists: [agents-tier1-companion.md](.cursor/skills/mcp-integration/agents-tier1-companion.md)
 
-Full rules: `.cursor/rules/` and `.cursor/RULES_INDEX.md`
+## Cursor config & plans
 
-## Cursor Configuration Docs
+Lookup: `.cursor/rules/cursor-config-lookup.mdc` · docs mirror `docs/cursor/`. Plans SSOT: `.cursor/plans/<name>-<6hex>.md` only.
 
-See `.cursor/rules/cursor-config-lookup.mdc` for the full local-first lookup order. Local docs mirror: `docs/cursor/`. Plans SSOT: `.cursor/plans/<name>-<6hex>.md` — never `C:\Users\*\` or `docs/reports/plans/`.
+## Pytest
 
-## Test Environment — `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`
+`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` — load plugins via `-p` in `pytest.ini` `addopts`. See companion for duplicate-registration caveat.
 
-The dev environment sets `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` globally as a security-conscious hardening measure (prevents pytest from auto-loading plugins via `setuptools` entry points). With autoload disabled, pytest plugins must be loaded **explicitly** via the `-p` flag in `pytest.ini` `addopts`, otherwise pytest reports plugin-supplied flags as "unrecognized arguments" even when the plugins ARE installed in `site-packages`.
+## Core vs apps (summary)
 
-The fix lives in `pytest.ini`:
+Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. Detail: [agents-tier1-companion.md](.cursor/skills/mcp-integration/agents-tier1-companion.md) · `agentic_core/AGENTS.md` · `.cursor/rules/agentic-core-static.mdc`.
 
-```
-addopts = -p xdist -n 24 --dist=worksteal --timeout=180 ...
-```
+## Rules & skills SSOT (Cursor)
 
-**If you add a new pytest plugin** (e.g. `pytest-mock`, `pytest-cov`), prepend `-p <import-name>` to `addopts` BEFORE any flag the plugin supplies. Caveat: if the plugin is already loaded transitively (e.g. via a `conftest.py` `pytest_plugins = [...]` entry, like `pytest-timeout` is here), do NOT add an explicit `-p` for it — pytest will refuse to register the same module under two different names. Failure precedent: 2026-04-30 — `pytest-xdist 3.8.0` and `pytest-timeout 2.4.0` were installed but pytest 9.0.3 refused to recognize `-n` / `--dist` / `--timeout` until `-p xdist` was added explicitly. Adding `-p pytest_timeout` triggered a duplicate-registration error because pytest-timeout was already being loaded by a conftest.
+Procedural MCP / Notion / ledgers: [`mcp-integration`](.cursor/skills/mcp-integration/SKILL.md) · [agents-tier1-companion.md](.cursor/skills/mcp-integration/agents-tier1-companion.md). Plan lifecycle: [`plan-governance`](.cursor/skills/plan-governance/SKILL.md).
 
-## Intelligence Ledger Family (ADR-050)
+| Layer | Path | Notes |
+|-------|------|-------|
+| Always-on rules (Option A) | `.cursor/rules/000–003*.mdc` | Four `alwaysApply: true` |
+| On-demand rules | `.cursor/rules/*.mdc` | `alwaysApply: false` + globs |
+| Skills | `.cursor/skills/*/SKILL.md` | Progressive disclosure |
+| Windsurf mirror | `.windsurf/rules/*.md` | **Read-only legacy**; edit `.mdc` only |
 
-Ten per-decision-class SQLite ledgers under `artifacts/ledgers/` capture prediction vs outcome for every high-leverage decision Cursor Agent makes. Use `LedgerConsulter("<name>").lookup(...)` to pull precedent **before** acting.
-
-| Ledger | Writer Hook | Consulting Skill | Captures |
-|---|---|---|---|
-| `tool_routing` | `post_cursor_agent_adg_audit.py` | `ledger-consulter-tool-routing` | grep-for-deps audits, retrieval-tool choice |
-| `refactor_outcome` | `post_commit_outcome_binder.py` | `ledger-consulter-refactor-outcome` | commit-bound refactor-class decisions |
-| `prompt_classifier` | `pre_prompt_classifier.py` (predict) + `ops_scripts/calibration/prompt_classifier_binder.py` (bind) | `ledger-consulter-prompt-classifier` | T0/T1/T2/T3 tier predictions with actual files_edited/lines/layers |
-| `mcp_invocation` | `post_mcp_audit.py` | `ledger-consulter-mcp-invocation` | per-MCP latency, server, tool |
-| `hotspot_defect` | `ops_scripts/calibration/hotspot_defect_join.py` | `ledger-consulter-hotspot-defect` | predicted rank vs 30d churn |
-| `deferred_scope_calibration` | `ops_scripts/calibration/deferred_scope_poller.py` | `ledger-consulter-deferred-scope-calibration` | P-band vs days-to-done |
-| `guardian_exemption` | `post_write_audit.py` | `ledger-consulter-guardian-exemption` | new `# guardian: allow-*` comments |
-| `progress_eta` | `tools/progress_display.py` | `ledger-consulter-progress-eta` | ProgressReporter predicted vs actual |
-| `memory_recall` | `post_cursor_agent_writeback_audit.py` | `ledger-consulter-memory-recall` | writeback-signal corroboration rate |
-| `test_selection` | `post_run_audit.py` (predict) + `ops_scripts/calibration/test_selection_binder.py` (bind) | `ledger-consulter-test-selection` | pytest triage selection with pass/fail outcome from `.pytest_cache/v/cache/lastfailed` |
-
-**Invariants**: writer contract via `tools/ledgers/hook_helpers.emit_ledger_event` only; fail-soft; idempotent on `event_id`; additive schema only. See `.cursor/rules/intelligence-ledger-family.md` and ADR-050 for full rationale.
-
-**Weekly report**: `python ops_scripts/calibration/ledger_weekly_report.py` → `docs/reports/calibration/<YYYY-Www>.md`.
-
-**CI gate**: `python ops_scripts/ci/check_ledger_writer_contract.py` validates schema, writer-hook existence, consulting-skill existence.
-
-**Calibration surface**: on-disk only. Weekly reports at `docs/reports/calibration/<YYYY-Www>.md` are the SSOT; no mirror database exists in Notion by design (operator decision 2026-04-24). Revisit after 30 days of accumulated signal if cross-session visibility becomes necessary.
-
-## Apps Test Surface Taxonomy
-
-> ⛔ All `apps_<x>` test files MUST live in one of the 3 canonical surfaces. `apps_<x>/tests/` directories are **FORBIDDEN**. See `.cursor/rules/apps-test-surface-taxonomy.md` and ADR-082.
-
-| Surface | Canonical Path | Content |
-|---|---|---|
-| Unit | `tests/unit/<app>/` | Isolated unit tests; mirrors `apps_<app>/` structure |
-| Integration | `tests/<app>/` | Integration/E2E tests requiring real dependencies |
-| Contract | `tests/_apps_contract/test_<app>_*.py` | Cross-app contract and governance tests |
-
-**Enforcement**: CI gate `TSP1` — `ops_scripts/ci/check_apps_test_surface_parity.py` (advisory; fail-closed via `APPS_TEST_SURFACE_FAIL_CLOSED=1`; bypass via `APPS_TEST_SURFACE_BYPASS=1`).
-
-**Rule**: `.cursor/rules/apps-test-surface-taxonomy.md` — load when editing `apps_*/` trees or relocating test files.
-
----
-
-## App-Agnostic Core Governance
-
-> **Core Architecture Law**: `agentic_core` is the common governed runtime spine. `apps_*` customize behavior through U0 runtime_customization_package and app-owned profile refs. `agentic_core` enforces contracts generically.
-
-### Fundamental Principle
-
-- **Apps customize inputs. Core enforces contracts.**
-- App-specific behavior in shared `agentic_core` is **leakage** unless explicitly documented as a temporary thin adapter with a migration receipt.
-
-### Ownership Model
-
-| Component | Owned By | Responsibility |
-|-----------|----------|----------------|
-| Base contracts, spine execution, U0 handoff mechanics | `agentic_core` | Generic runtime infrastructure |
-| Route policy interpreter, profile resolver, GateMesh | `agentic_core` | Generic enforcement engines |
-| Exit enforcer, UWG write law, L6 consumer | `agentic_core` | Generic boundary enforcement |
-| Proof and receipt validators | `agentic_core` | Generic audit infrastructure |
-| Ingress contract, JSON schema, field map | `apps_*` | App-specific data contracts |
-| runtime_customization_package | `apps_*` | App behavior customization |
-| Route/retrieval/prompt/cache profiles | `apps_*` | App-specific policy profiles |
-| Exit/judge/eval/threshold profiles | `apps_*` | App-specific evaluation policy |
-| Tests and receipts | `apps_*` | App-specific verification |
-
-### Allowed Core Changes
-
-`agentic_core` may change **only** for generic runtime infrastructure that applies across all `apps_*`:
-- Generic contract-chain propagation
-- Generic profile resolver
-- Generic route policy interpreter
-- Generic GateMesh enforcement
-- Generic Exit profile enforcer
-- Generic UWG enforcement
-- Generic L6 completed-run profile consumer
-- Generic proof and receipt infrastructure
-- Generic anti-bypass checks
-
-### Forbidden Core Changes
-
-The following are **leakage** and require migration to app-owned profiles:
-- `apps_lic`-specific route logic
-- `apps_rg`-specific route logic
-- `apps_qna`-specific route logic
-- App-specific cache policy
-- App-specific Exit gate IDs
-- App-specific judge/eval thresholds
-- App-specific forbidden send policy
-- App-specific consent/compliance policy
-- App-specific L6 promotion logic
-- Hardcoded `app_id` branches in shared runtime
-- Hardcoded `apps_*` route names inside common core
-- Hardcoded app profile paths inside common core
-
-### Architecture Model
-
-**Correct**:
-```
-apps_*
-  -> U0 runtime_customization_package
-  -> agentic_core generic profile resolver
-  -> generic L0 policy interpreter
-  -> generic L3/L2/Exit/UWG/L6 enforcement
-```
-
-**Not Allowed**:
-```
-apps_*
-  -> special app-specific code inside every agentic_core layer
-```
-
-### Migration Policy for Existing Bindings
-
-Existing app-specific core bindings (e.g., `apps_lic_l0_binding.py`) are classified as:
-
-| Classification | Treatment |
-|----------------|-----------|
-| `TEMPORARY_THIN_ADAPTER` | Tolerated with explicit migration receipt; target: GENERIC_READY |
-| `CORE_APP_SPECIFIC_LEAKAGE` | Must migrate to app profiles + generic engines |
-| `GENERIC_READY` | Already follows governance model |
-| `MIGRATION_REQUIRED` | Scheduled for W5 binding migration |
-
-### Enforcement Layers
-
-Five-layer governance stack enforces this architecture:
-
-1. **AGENTS.md** — Architecture law and ownership rules
-2. **Cursor Rules** — Static analysis and editing-time guidance
-3. **Skills** — Canonical procedures for audit/customization/migration
-4. **Workflows** — Executable governance procedures
-5. **Hooks/CI** — Automated enforcement and verification
-
-### Scoped AGENTS.md
-
-- `agentic_core/AGENTS.md` — Core boundary rules (allowed/forbidden)
-- `apps_lic/AGENTS.md` — App customization rules
-- `apps_rg/AGENTS.md` — App customization rules
-- `apps_qna/AGENTS.md` — App customization rules
-- `apps_research/AGENTS.md` — App customization rules
-
-### Receipts Required
-
-Every boundary-sensitive change to `agentic_core` requires a migration receipt at:
-`artifacts/governance/migration_receipts/<timestamp>_<change_id>.json`
-
-Receipt must include: changed files, classification, tests, known gaps, migration path.
-
-### Related Rules
-
-- `.cursor/rules/agentic-core-static.md` — Always-on core behavior guidance
-- `.cursor/rules/agentic-core-glob-lock.md` — Core editing restrictions
-- `.cursor/rules/apps-customization.md` — App customization guidance
-- `.cursor/rules/boundary-audit-required.md` — Boundary audit triggers
-- `.cursor/rules/apps-folder-taxonomy.md` — App folder structure (ADR-082)
+Governance inventory: `docs/reports/cursor/governance_tier_inventory.json`.

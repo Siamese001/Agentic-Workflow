@@ -1,23 +1,23 @@
 # MCP Config Version Check Policy
 
 **Status**: ACTIVE  
-**Phase**: Wave 2 Phase 2.5  
-**Enforcement**: CI gate + post_write_code hook (Wave 1 Phase 1.5)  
-**SSOT**: `global_rules.md` §MCP Authority: One SSOT Per Capability
+**Phase**: Wave 2 Phase 2.5 + H1 (2026-05-19)  
+**Enforcement**: CI gates + pre-commit (T6e2, T11) + editor sync hooks  
+**SSOT**: `.cursor/mcp.json` (Cursor project) · `.windsurf/mcp_config.json` (Windsurf mirror)
 
 ---
 
 ## Policy Statement
 
-Every change to MCP server configuration MUST be validated against a schema before
-the configuration is deployed to Windsurf. Unvalidated config changes can silently
-break all MCP tool calls for the session.
+Every change to MCP server configuration MUST be validated before the configuration is loaded by an editor. Unvalidated config changes can silently break all MCP tool calls for the session.
+
+**Cursor-first workflow:** edit `.cursor/mcp.json`, run sync, commit. Keep `.windsurf/mcp_config.json` aligned for Windsurf contributors (parity gate enforces canonical fleet).
 
 ---
 
 ## Required Fields
 
-Each entry in `.windsurf/mcp_config.json` under `mcpServers` MUST include:
+Each entry under `mcpServers` in **both** editor configs MUST include:
 
 ```json
 {
@@ -32,109 +32,103 @@ Each entry in `.windsurf/mcp_config.json` under `mcpServers` MUST include:
 ```
 
 Required fields:
+
 - `command` OR `url` — at least one must be present
-- `args` — argument list (may be empty array)
-- `disabled` — explicit boolean (default `false`)
+- `args` — argument list (may be empty array for remote-only servers)
+- `disabled` — explicit boolean when present (default effective: enabled)
+
+Filesystem server (Rule #0): `args` must be exactly `[<editor-launcher>, "${env:AGENTIC_REPO_ROOT}"]`.
 
 ---
 
 ## Validation Rules
 
-| Check | Severity | Action |
-|-------|----------|--------|
-| Neither `command` nor `url` present | CRITICAL | Block deploy |
-| API key as literal string (not `${env:VAR}`) | CRITICAL | Block deploy |
-| Invalid JSON syntax | CRITICAL | Block deploy |
-| `mcpServers` key missing | CRITICAL | Block deploy |
-| Server count decreased by >2 | WARNING | Log, require confirmation |
+| Check | Severity | Gate |
+|-------|----------|------|
+| Neither `command` nor `url` present | CRITICAL | `check_mcp_config_schema.py` |
+| API key as literal string (not `${env:VAR}`) | CRITICAL | schema + review |
+| Invalid JSON syntax | CRITICAL | `json.tool` / schema |
+| `mcpServers` key missing | CRITICAL | schema |
+| Filesystem scope regression (Rule #0) | CRITICAL | **`check_mcp_config_sovereignty.py` (T11)** |
+| Editor fleet drift | CRITICAL | `check_mcp_editor_parity.py` |
+| AGENTS.md MCP table drift | CRITICAL | `check_mcp_sync_integrity.py` |
+| Server count decreased by >2 | WARNING | manual review |
 
 ---
 
 ## Enforcement Points
 
-### Layer 1 — Zero-drift on-machine (preferred)
+### Layer 1 — Cursor project SSOT (primary)
 
-**Symlink** `~/.codeium/windsurf/mcp_config.json` → `.windsurf/mcp_config.json`. When set up, the repo SSOT and the Windsurf-read path are the same file on disk — edit once, no sync step required, drift structurally impossible.
+| Path | Role |
+|------|------|
+| `.cursor/mcp.json` | **Edit here** for Cursor Agent |
+| `python .cursor/scripts/sync_mcp_config.py` | Refreshes AGENTS.md autogen blocks + global `~/.cursor/cursor/mcp.json` |
+| `ops_scripts/ci/check_mcp_config_sovereignty.py` | Rule #0 scope (both editor configs) |
 
-One-time contributor setup (Windows — requires Developer Mode or admin):
+### Layer 2 — Windsurf mirror + global sync
 
-```
-pwsh -File tools/setup/setup_symlinks.ps1
-```
+**Symlink (preferred):** `~/.codeium/windsurf/mcp_config.json` → `.windsurf/mcp_config.json`
 
-POSIX (macOS / Linux / WSL):
+**Fallback:** `post_write_mcp_config_sync.py` copies repo → global on save.
 
-```
-bash tools/setup/setup_symlinks.sh
-```
+POSIX / Windows setup: `tools/setup/setup_symlinks.sh` · `tools/setup/setup_symlinks.ps1`
 
-When the symlink is in place, `.windsurf/scripts/post_write_mcp_config_sync.py` detects same-inode and prints "No-op: repo SSOT and global config are the same file (symlink in place)." The hook stays installed as a safety net for contributors who skip the symlink step.
-
-### Layer 2 — Copy-based sync (fallback)
-
-Contributors who cannot create symlinks rely on the post-write hook to copy `.windsurf/mcp_config.json` → `~/.codeium/windsurf/mcp_config.json` on every save. This is fully backward compatible but NOT zero-drift: the two files can diverge between save and sync.
-
-### Layer 3 — PR-blocking CI gates (guaranteed)
-
-Runs on every pull request regardless of whether a contributor symlinked or not. Located in `.github/workflows/config-sync-gates.yml`:
+### Layer 3 — PR-blocking CI gates
 
 | Gate | Source | Detects |
 |------|--------|---------|
-| **T6b** `check_mcp_sync_integrity.py` | `mcp_config.json` ↔ AGENTS.md MCP Quick Reference section | Content drift |
-| **T6c** `check_agents_mcp_coverage.py` | `mcpServers` keys vs AGENTS.md rows | Missing rows |
-| **T6d** `check_agents_md_sync.py` | AGENTS.md autogen markers (MCP-QUICK-REFERENCE, NOTION-MAP) vs generator output | Block-level drift |
-| **T6e** `check_exclusion_sync.py` | `config/excluded_paths.yaml` ↔ `.pre-commit-config.yaml` + `.gitignore` | Exclusion drift |
-| **T6**  `_validate_pytest_config.py --strict` | `pytest.ini` ↔ `pyproject.toml` | Pytest config split |
+| **T6b** | `check_mcp_sync_integrity.py` | `.cursor/mcp.json` ↔ AGENTS.md MCP Quick Reference |
+| **T6c** | `check_agents_mcp_coverage.py` | Server keys vs AGENTS rows |
+| **T6d** | `check_agents_md_sync.py` | Autogen block drift |
+| **T6e2** | `check_mcp_config_schema.py --profile all` | Schema / §27 keys |
+| **T6e2c** | `check_mcp_editor_parity.py` | Cursor vs Windsurf fleet |
+| **T11** | **`check_mcp_config_sovereignty.py`** | **Rule #0 filesystem scope** |
+| **T6e** | `check_exclusion_sync.py` | Exclusion drift |
+| **T6** | `_validate_pytest_config.py --strict` | Pytest config split |
 
-### Layer 4 — Legacy linting (complementary)
+Contract runner: `python ops_scripts/ci/run_contract_gates.py` (includes MCP-SCOPE0).
 
-- `post_write_audit.py` — lints writes, logs to `artifacts/windsurf/mcp_lint_audit.jsonl`
-- `validate_mcp_config.py` — schema check (if present)
-- `check_mcp_config_sovereignty.py` — scope check (if present)
+### Layer 4 — Complementary linting
+
+- `post_write_audit.py` — Windsurf MCP lint log (`artifacts/windsurf/mcp_lint_audit.jsonl`)
+- `validate_mcp_config.py` — optional schema helper (if present)
 
 ---
 
-## Change Procedure
-
-With the symlink (recommended):
+## Change Procedure (Cursor-first)
 
 ```
-1. Edit .windsurf/mcp_config.json
-2. python .windsurf/scripts/sync_mcp_config.py   # regenerates AGENTS.md autogen blocks
-3. Commit both files
-4. Restart Windsurf
+1. Edit .cursor/mcp.json
+2. Align .windsurf/mcp_config.json (editor-specific deltas only: GitKraken host, Playwright id, launcher path)
+3. python .cursor/scripts/sync_mcp_config.py
+4. python ops_scripts/ci/check_mcp_config_sovereignty.py
+5. python ops_scripts/ci/check_mcp_editor_parity.py
+6. Commit .cursor/mcp.json, .windsurf/mcp_config.json, AGENTS.md (if autogen changed)
+7. Restart Cursor (and Windsurf if mirror edited)
 ```
 
-Without the symlink (fallback):
-
-```
-1. Edit .windsurf/mcp_config.json
-2. Save — post_write_mcp_config_sync.py copies to ~/.codeium/windsurf/ + refreshes AGENTS.md
-3. Commit
-4. Restart Windsurf
-```
+Windsurf-only contributors may edit `.windsurf/mcp_config.json` first, then port the same server entries to `.cursor/mcp.json` before merge.
 
 ---
 
 ## Rollback Procedure
 
-If a bad MCP config is deployed:
-
 ```
-1. git log .windsurf/mcp_config.json   -- find last good commit
-2. git checkout <good-sha> -- .windsurf/mcp_config.json
-3. python .windsurf/scripts/sync_mcp_config.py   -- regenerates AGENTS.md + syncs global (no-op if symlinked)
-4. Restart Windsurf
+1. git log .cursor/mcp.json .windsurf/mcp_config.json
+2. git checkout <good-sha> -- .cursor/mcp.json .windsurf/mcp_config.json
+3. python .cursor/scripts/sync_mcp_config.py
+4. python ops_scripts/ci/check_mcp_config_sovereignty.py
+5. Restart editors
 ```
 
-The `post_write_audit.py` hook maintains `artifacts/windsurf/mcp_lint_audit.jsonl`
-with timestamped records of every config write — use this to trace when drift occurred.
+Audit trail: `artifacts/windsurf/mcp_lint_audit.jsonl` (Windsurf writes).
 
 ---
 
 ## References
 
-- MCP Registry: `docs/guides/MCP_Registry.md`
-- SSOT rule: `.windsurf/rules/mcp-config-ssot.md`
-- Audit log: `artifacts/windsurf/mcp_lint_audit.jsonl`
+- Filesystem operator guide: `docs/guides/filesystem_mcp_operations.md`
+- MCP config SSOT rule: `.cursor/rules/mcp-config-ssot.mdc`
+- H0 receipt: `docs/reports/cursor/mcp_scope0_h0_receipt.md`
 - Archive (YAML infra — do not restore): `tools/archive/mcp_yaml_infra_w5.2/`

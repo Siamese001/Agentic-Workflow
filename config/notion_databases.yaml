@@ -68,7 +68,7 @@ databases:
     archived: true
     archived_date: "2026-05-02"
     read_trigger: "\u274c **ARCHIVED 2026-05-02**"
-    write_trigger: "Filesystem SSOT: `.windsurf/mcp_config.json`. No Notion write."
+    write_trigger: "Filesystem SSOT: `.cursor/mcp.json` (Cursor) + `.windsurf/mcp_config.json` (mirror). No Notion write."
 
   # ADR Registry RETIRED 2026-05-02 — consolidated in commit b11200e833
   # "chore(notion): consolidate 4 mirror DBs; migrate value-add to SSOT".

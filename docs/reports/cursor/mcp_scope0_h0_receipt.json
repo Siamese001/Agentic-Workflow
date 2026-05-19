@@ -1,0 +1,56 @@
+{
+  "wave": "H0",
+  "title": "MCP Scope 0 CI gate restoration",
+  "status": "PASS",
+  "generated_at": "2026-05-19",
+  "gate_script": "ops_scripts/ci/check_mcp_config_sovereignty.py",
+  "profiles": ["cursor", "windsurf"],
+  "config_paths": {
+    "cursor": ".cursor/mcp.json",
+    "windsurf": ".windsurf/mcp_config.json"
+  },
+  "commands": [
+    {
+      "command": "python ops_scripts/ci/check_mcp_config_sovereignty.py",
+      "exit_code": 0
+    },
+    {
+      "command": "pytest tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py -q",
+      "exit_code": 0,
+      "tests_passed": 8
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/ci/mcp_config_sovereignty.json",
+      "markdown": "[mcp_config_sovereignty.json](../../artifacts/ci/mcp_config_sovereignty.json)"
+    },
+    {
+      "path": "docs/reports/cursor/mcp_scope0_h0_receipt.md",
+      "markdown": "[mcp_scope0_h0_receipt.md](mcp_scope0_h0_receipt.md)"
+    }
+  ],
+  "files_changed": [
+    {
+      "path": "ops_scripts/ci/check_mcp_config_sovereignty.py",
+      "markdown": "[check_mcp_config_sovereignty.py](../../ops_scripts/ci/check_mcp_config_sovereignty.py)"
+    },
+    {
+      "path": "tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py",
+      "markdown": "[test_check_mcp_config_sovereignty.py](../../tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py)"
+    },
+    {
+      "path": "ops_scripts/ci/run_contract_gates.py",
+      "markdown": "[run_contract_gates.py](../../ops_scripts/ci/run_contract_gates.py)"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "markdown": "[.pre-commit-config.yaml](../../.pre-commit-config.yaml)"
+    }
+  ],
+  "bypass_env": "MCP_CONFIG_SOVEREIGNTY_BYPASS=1",
+  "pre_commit_hook_id": "mcp-config-sovereignty",
+  "notion_backlog_page_id": "36527693-f55c-81b5-9103-ca869fe780fd",
+  "notion_backlog_url": "https://www.notion.so/P2-MCP-H0-Scope-0-CI-gate-Rule-0-36527693f55c81b59103ca869fe780fd",
+  "closeout_receipt": "docs/reports/cursor/mcp_scope0_closeout_receipt.md"
+}
