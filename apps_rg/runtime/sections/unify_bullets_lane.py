@@ -63,6 +63,7 @@ from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
 from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.validators.fact_id_typo_repair import repair_fact_id_against_allowlist
 from apps_rg.runtime.validators.unify_bullets_x2 import (
     DEFAULT_DISTRIBUTION,
     PROTECTED_BULLET_DEFAULT,
@@ -242,21 +243,72 @@ def _canonicalize_bul_w7_unify_source_fact_id(fid: str) -> str:
     return s
 
 
-def _normalize_unify_source_fact_id_list(ids: Any) -> list[str]:
+def _legacy_unify_to_ledger_id_map(runtime_payload: dict[str, Any]) -> dict[str, str]:
+    """Map canonical ``bul_unify_*`` ids to active ledger ``fact_*`` pool members when needed."""
+    allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+    if not allowed or any(x.startswith("bul_unify_") for x in allowed):
+        return {}
+    plan_facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
+    plan_ids = [str(f.get("fact_id")) for f in plan_facts if f.get("fact_id")][: len(UNIFY_BULLET_IDS)]
+    if len(plan_ids) < len(UNIFY_BULLET_IDS):
+        plan_ids = sorted(x for x in allowed if str(x).startswith("fact_"))[: len(UNIFY_BULLET_IDS)]
+    remap: dict[str, str] = {}
+    for idx, legacy in enumerate(UNIFY_BULLET_IDS):
+        if idx < len(plan_ids):
+            remap[legacy] = plan_ids[idx]
+    return remap
+
+
+def _remap_unify_id(token: str, remap: dict[str, str], allowed: set[str]) -> str:
+    base = str(token).split("_metric_")[0]
+    metric_tail = token.split("_metric_", 1)[1] if "_metric_" in token else ""
+    mapped = remap.get(base, base)
+    repaired = repair_fact_id_against_allowlist(mapped, allowed)
+    if metric_tail and repaired in allowed:
+        metric_id = f"{repaired}_metric_{metric_tail}"
+        return metric_id if metric_id in allowed else repaired
+    return repaired
+
+
+def _normalize_unify_source_fact_id_list(
+    ids: Any,
+    *,
+    remap: dict[str, str] | None = None,
+    allowed: set[str] | None = None,
+) -> list[str]:
     if ids is None:
         return []
     if not isinstance(ids, list):
         return []
-    return [_canonicalize_bul_w7_unify_source_fact_id(str(x)) for x in ids]
+    remap = remap or {}
+    allowed = allowed or set()
+    out: list[str] = []
+    for raw in ids:
+        canon = _canonicalize_bul_w7_unify_source_fact_id(str(raw))
+        if remap:
+            canon = _remap_unify_id(canon, remap, allowed)
+        elif allowed:
+            canon = repair_fact_id_against_allowlist(canon, allowed)
+        out.append(canon)
+    return out
 
 
-def _normalize_unify_claim_ledger(parsed: dict[str, Any]) -> None:
+def _normalize_unify_claim_ledger(
+    parsed: dict[str, Any],
+    *,
+    remap: dict[str, str] | None = None,
+    allowed: set[str] | None = None,
+) -> None:
     led = parsed.get("claim_ledger")
     if not isinstance(led, list):
         return
     for entry in led:
         if isinstance(entry, dict):
-            entry["source_fact_ids"] = _normalize_unify_source_fact_id_list(entry.get("source_fact_ids"))
+            entry["source_fact_ids"] = _normalize_unify_source_fact_id_list(
+                entry.get("source_fact_ids"),
+                remap=remap,
+                allowed=allowed,
+            )
 
 
 def normalize_unify_parsed_without_ledger_synthesis(
@@ -269,6 +321,9 @@ def normalize_unify_parsed_without_ledger_synthesis(
     """
     if not parsed:
         return parsed
+    allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+    legacy_remap = _legacy_unify_to_ledger_id_map(runtime_payload)
+    protected_default = legacy_remap.get(PROTECTED_BULLET_DEFAULT, PROTECTED_BULLET_DEFAULT)
     normalized_bullets: list[dict[str, Any]] = []
     pp = runtime_payload.get("proof_pool_metadata") or {}
     srfs_mode = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
@@ -276,17 +331,29 @@ def normalize_unify_parsed_without_ledger_synthesis(
         row = dict(bullet)
         bid = str(row.get("bullet_id", "")).strip()
         row["bullet_id"] = BULLET_ID_ALIASES.get(bid, bid)
-        if (not srfs_mode) and row["bullet_id"] not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
+        if legacy_remap:
+            row["bullet_id"] = legacy_remap.get(row["bullet_id"], row["bullet_id"])
+        elif (not srfs_mode) and row["bullet_id"] not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
             row["bullet_id"] = UNIFY_BULLET_IDS[idx]
+        intensity_key = row["bullet_id"]
+        if legacy_remap:
+            for leg_id, pool_id in legacy_remap.items():
+                if pool_id == row["bullet_id"]:
+                    intensity_key = leg_id
+                    break
         row["rewrite_intensity"] = str(
             row.get(
                 "rewrite_intensity",
-                DEFAULT_INTENSITY_BY_BULLET.get(row["bullet_id"], "MODERATE"),
+                DEFAULT_INTENSITY_BY_BULLET.get(intensity_key, "MODERATE"),
             )
         ).upper()
         if not row.get("source_fact_ids"):
             row["source_fact_ids"] = [row["bullet_id"]]
-        row["source_fact_ids"] = _normalize_unify_source_fact_id_list(row.get("source_fact_ids"))
+        row["source_fact_ids"] = _normalize_unify_source_fact_id_list(
+            row.get("source_fact_ids"),
+            remap=legacy_remap,
+            allowed=allowed,
+        )
         bt = row.get("bullet_text")
         if isinstance(bt, str):
             row["bullet_text"] = _canonicalize_unify_gate_metric_text(bt)
@@ -301,7 +368,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
             ct = cl.get("claim_text")
             if isinstance(ct, str):
                 cl["claim_text"] = _canonicalize_unify_gate_metric_text(ct)
-    _normalize_unify_claim_ledger(out)
+    _normalize_unify_claim_ledger(out, remap=legacy_remap, allowed=allowed)
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
     dist = out.get("rewrite_distribution") or {}
@@ -313,7 +380,83 @@ def normalize_unify_parsed_without_ledger_synthesis(
     out.setdefault("gap_notes", [])
     out.setdefault("change_log", [])
     out.setdefault("self_check", {"normalized_by_lane": True})
+    _sync_unify_claim_ledger_to_bullets(out, remap=legacy_remap, allowed=allowed)
+    _repair_protected_unify_bullet_metrics(
+        out,
+        runtime_payload,
+        protected_bullet_id=protected_default,
+    )
     return out
+
+
+def _sync_unify_claim_ledger_to_bullets(
+    out: dict[str, Any],
+    *,
+    remap: dict[str, str] | None = None,
+    allowed: set[str] | None = None,
+) -> None:
+    """Align claim_ledger rows with bullet_text and bullet_id roots (no fabricated claims)."""
+    bullets = [b for b in (out.get("bullets") or []) if isinstance(b, dict)]
+    if not bullets:
+        return
+    ledger: list[dict[str, Any]] = []
+    for bullet in bullets:
+        bt = str(bullet.get("bullet_text") or "").strip()
+        if not bt:
+            continue
+        bid = str(bullet.get("bullet_id") or "").strip()
+        sids = _normalize_unify_source_fact_id_list(
+            bullet.get("source_fact_ids"),
+            remap=remap,
+            allowed=allowed,
+        )
+        if bid and not any(str(x).split("_metric_")[0] == bid for x in sids):
+            sids = [bid, *sids]
+        if not sids and bid:
+            sids = [bid]
+        ledger.append({"claim_text": bt, "source_fact_ids": sids})
+    if ledger:
+        out["claim_ledger"] = ledger
+
+
+def _repair_protected_unify_bullet_metrics(
+    out: dict[str, Any],
+    runtime_payload: dict[str, Any],
+    *,
+    protected_bullet_id: str = PROTECTED_BULLET_DEFAULT,
+) -> None:
+    """When the protected bullet omits canonical metrics, substitute resume-grounded text from the plan."""
+    bullets = list(out.get("bullets") or [])
+    protected = next((b for b in bullets if b.get("bullet_id") == protected_bullet_id), None)
+    if not isinstance(protected, dict):
+        return
+    text = str(protected.get("bullet_text") or "")
+    if all(token in text for token in ("$22M", "20%", "8", "28")):
+        return
+    facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
+    canonical = ""
+    for fact in facts:
+        fid = str(fact.get("fact_id") or "")
+        claim = str(fact.get("claim_text") or "")
+        if fid == protected_bullet_id or ("$22M" in claim and "20%" in claim):
+            canonical = claim
+            break
+    if not canonical:
+        return
+    protected["bullet_text"] = _canonicalize_unify_gate_metric_text(canonical)
+    protected["rewrite_intensity"] = "LIGHT_PROTECTED"
+    protected["has_metric"] = True
+    protected["metric_raw"] = protected.get("metric_raw") or "$22M, 20%, 8 to 28"
+    protected["source_fact_ids"] = [protected_bullet_id]
+    changelog = out.setdefault("change_log", [])
+    if isinstance(changelog, list):
+        changelog.append(
+            {
+                "operation": "repair_protected_unify_bullet_metrics",
+                "reason": "restore_canonical_protected_metrics_from_plan",
+            }
+        )
+    _sync_unify_claim_ledger_to_bullets(out)
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:

@@ -26,6 +26,15 @@ def competencies_vllm_preflight_timeout_s() -> float:
         return 5.0
 
 
+def competencies_vllm_chat_timeout_s() -> int:
+    """Chat/completions timeout for competencies lane (transport only; not an X2 gate)."""
+    raw = os.environ.get("APPS_RG_COMPETENCIES_QWEN_CHAT_TIMEOUT_SECONDS", "120")
+    try:
+        return int(max(60, min(float(raw), 300.0)))
+    except ValueError:
+        return 120
+
+
 def competencies_vllm_preflight_disabled() -> bool:
     return os.environ.get("APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE", "").strip().lower() in (
         "1",

@@ -1,0 +1,47 @@
+# Professional summary section prompt profile ΓÇö W3
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+# GOVERNANCE: Declarative data only. No prompt compiler logic here.
+prompt_id: "sp::apps_rg::professional_summary::v1"
+node_id: professional_summary
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+
+slot_requirements:
+  required: [S0, I0, C0, U0, D0, Y0, R0]
+  optional: [E0]
+
+template_ref: "apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml"
+template_mode_map:
+  strategic_tailor: "apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml"
+  tailor_existing: "apps_rg/prompt_assembly/templates/tailor_existing_v1.yaml"
+  generate_scratch: "apps_rg/prompt_assembly/templates/generate_scratch_v1.yaml"
+  enhance_current: "apps_rg/prompt_assembly/templates/enhance_current_v1.yaml"
+
+input_refs:
+  - "candidate_profile.summary_evidence"
+  - "candidate_profile.experiences[*].title"
+  - "candidate_profile.experiences[*].employer"
+  - "candidate_profile.skills"
+  - "target_role_spec.title"
+  - "target_role_spec.seniority_level"
+  - "target_role_spec.jd_requirements"
+  - "voice_profile_or_default"
+  - "length_preference"
+
+output_schema_ref: "aos::apps_rg::resume_generation::v1#professional_summary"
+
+required_evidence_refs:
+  - "candidate_profile.summary_evidence (years of experience, scope, key metrics)"
+  - "candidate_profile.experiences[0] (most recent role ΓÇö required for seniority signal)"
+
+prompt_boundary_rules:
+  - "every metric in summary MUST reference a profile evidence_id"
+  - "no fabricated years of experience (must derive from candidate_profile date ranges)"
+  - "seniority signals MUST match target_role_spec.seniority_level and candidate_profile evidence"
+  - "executive_positioning hints are optional slot E0 only ΓÇö never mandatory"
+  - "no third_party_resume_text_paste in slot C0"
+  - "summary length MUST respect length_preference"
+
+examples_ref: null

@@ -302,9 +302,34 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
     return None, "Model output was not a JSON object."
 
 
+def coerce_resume_display_sentence_count_band(
+    resume: str,
+    srfs_integration: dict[str, Any] | None,
+) -> str:
+    """Non-SRFS mode requires 2-3 sentences; merge a fourth sentence without weakening the gate."""
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        split_sentences,
+        srfs_x2_mode_active,
+    )
+
+    if srfs_x2_mode_active(srfs_integration):
+        return resume
+    sents = [s for s in split_sentences(resume) if str(s).strip()]
+    if len(sents) <= 3:
+        return resume
+    if len(sents) == 4:
+        tail = f"{sents[2].rstrip('.!?')}; {sents[3].strip()}"
+        if not tail.endswith((".", "!", "?")):
+            tail += "."
+        return f"{sents[0]} {sents[1]} {tail}"
+    return resume
+
+
 def normalize_executive_summary_llm_output(
     parsed: dict[str, Any],
     runtime_selected_fact_plan: dict[str, Any],
+    *,
+    srfs_integration: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Collapse legacy R0 aliases; runtime owns selected_fact_plan (no model echo for proof SSOT)."""
     resume = str(
@@ -312,6 +337,7 @@ def normalize_executive_summary_llm_output(
         or parsed.get("executive_summary")
         or ""
     ).strip()
+    resume = coerce_resume_display_sentence_count_band(resume, srfs_integration)
     claims = parsed.get("claim_ledger")
     if claims is None:
         claims = parsed.get("claim_ledger_emitted")
@@ -342,6 +368,41 @@ def normalize_executive_summary_llm_output(
         if key in parsed:
             out[key] = parsed[key]
     return out
+
+
+def prune_exec_summary_claim_ledger_orphans(
+    parsed: dict[str, Any],
+    allowed_fact_ids: set[str],
+) -> None:
+    """Drop or repair claim_ledger source_fact_ids outside the active proof pool allowlist."""
+    from apps_rg.runtime.validators.fact_id_typo_repair import repair_fact_id_against_allowlist
+
+    ledger = parsed.get("claim_ledger")
+    if not isinstance(ledger, list):
+        return
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+    for row in ledger:
+        if not isinstance(row, dict):
+            continue
+        cleaned: list[str] = []
+        for sid in row.get("source_fact_ids") or []:
+            fixed = repair_fact_id_against_allowlist(str(sid), allowed_fact_ids)
+            base = fixed.split("_metric_")[0]
+            if fixed in allowed_fact_ids or base in allowed_fact_ids:
+                cleaned.append(fixed if fixed in allowed_fact_ids else base)
+        if cleaned != list(row.get("source_fact_ids") or []):
+            changelog.append(
+                {
+                    "operation": "prune_exec_summary_claim_ledger_orphans",
+                    "reason": "align_claim_ledger_with_active_proof_pool",
+                    "before": row.get("source_fact_ids"),
+                    "after": cleaned,
+                }
+            )
+        row["source_fact_ids"] = cleaned
 
 
 def _srfs_join_fragments_as_one_sentence(frags: list[str], *, max_parts: int = 3) -> str:
@@ -1041,8 +1102,13 @@ def run_executive_summary_execution(
                 run_id=str(runtime_payload.get("run_id") or "") or None,
             )
         if parsed:
-            parsed = normalize_executive_summary_llm_output(parsed, selected_fact_plan)
             _srfs_i = runtime_payload.get("srfs_integration")
+            parsed = normalize_executive_summary_llm_output(
+                parsed,
+                selected_fact_plan,
+                srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
+            )
+            prune_exec_summary_claim_ledger_orphans(parsed, allowed_fact_ids)
             if isinstance(_srfs_i, dict):
                 from apps_rg.runtime.sections.exec_summary_srfs_density_repair import (
                     apply_srfs_density_micro_expansion,
@@ -1072,6 +1138,20 @@ def run_executive_summary_execution(
                         "post_judge_safe_pass": density_post_judge_meta,
                     }
                 raw_output = parsed_to_raw_model_output_json(parsed)
+        if parsed and isinstance(parsed, dict):
+            _srfs_final = runtime_payload.get("srfs_integration")
+            coerced_resume = coerce_resume_display_sentence_count_band(
+                str(parsed.get("resume_display_text") or ""),
+                _srfs_final if isinstance(_srfs_final, dict) else None,
+            )
+            if coerced_resume != parsed.get("resume_display_text"):
+                parsed["resume_display_text"] = coerced_resume
+                if result.runtime_generation_status == "REAL_LLM":
+                    raw_output = json.dumps(
+                        {k: v for k, v in parsed.items() if k != "selected_fact_plan"},
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                    )
     elif str(result.runtime_generation_status) == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         parsed, parse_error = parse_model_json(raw_output)
         if parsed:

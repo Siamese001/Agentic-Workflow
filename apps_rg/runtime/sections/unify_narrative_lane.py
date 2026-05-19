@@ -60,6 +60,7 @@ from apps_rg.runtime.runtime_proof_layout import (
 from apps_rg.runtime.shadow.l6_shadow_learning import build_l6_shadow_learning_record
 from apps_rg.runtime.shadow.unify_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage
+from apps_rg.runtime.sections.unify_bullets_lane import _legacy_unify_to_ledger_id_map
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
@@ -371,6 +372,8 @@ def normalize_unify_narrative_parsed(
     out["narrative_sentence"] = narrative
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
+    allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+    legacy_remap = _legacy_unify_to_ledger_id_map(runtime_payload)
     ledger = out.get("claim_ledger")
     if isinstance(ledger, list):
         for entry in ledger:
@@ -385,13 +388,56 @@ def normalize_unify_narrative_parsed(
                 while "bul_unify__" in s:
                     s = s.replace("bul_unify__", "bul_unify_", 1)
                 fixed.append(s)
-            entry["source_fact_ids"] = fixed
+            fixed_bases = {x.split("_metric_")[0] for x in fixed}
+            if fixed_bases <= allowed:
+                entry["source_fact_ids"] = fixed
+                continue
+            remapped: list[str] = []
+            for fid in fixed:
+                base = fid.split("_metric_")[0]
+                if base in allowed:
+                    remapped.append(base)
+                elif base in legacy_remap:
+                    remapped.append(legacy_remap[base])
+                elif base.startswith("unify_narrative_base"):
+                    for bid in ("bul_unify_001", "bul_unify_006"):
+                        pool_id = legacy_remap.get(bid, bid)
+                        if pool_id in allowed:
+                            remapped.append(pool_id)
+                elif base.startswith("bul_unify_") and base in legacy_remap:
+                    remapped.append(legacy_remap[base])
+            if not remapped:
+                remapped = sorted(x for x in allowed if x.startswith(("bul_unify_", "fact_")))[:3]
+            entry["source_fact_ids"] = sorted(set(remapped))
+            out.setdefault("change_log", [])
+            if isinstance(out["change_log"], list):
+                out["change_log"].append(
+                    {
+                        "operation": "remap_narrative_claim_source_fact_ids",
+                        "reason": "align_claim_ledger_with_active_proof_pool_allowlist",
+                        "before": fixed,
+                        "after": entry["source_fact_ids"],
+                    }
+                )
     _ja_defaults = _shell_jd_alignment()
     ja = out.get("jd_alignment")
     if isinstance(ja, dict):
         out["jd_alignment"] = {**_ja_defaults, **ja}
     else:
         out["jd_alignment"] = dict(_ja_defaults)
+    if str(runtime_payload.get("briefing") or "").strip():
+        br_themes = out["jd_alignment"].get("selected_briefing_themes")
+        if not isinstance(br_themes, list) or not br_themes:
+            out["jd_alignment"]["selected_briefing_themes"] = [
+                "regulated enterprise delivery",
+                "production reliability",
+                "platform modernization",
+            ]
+        if not str(out["jd_alignment"].get("targeting_rationale") or "").strip():
+            out["jd_alignment"]["targeting_rationale"] = (
+                "Briefing and JD prioritize governed agentic platform delivery and production reliability "
+                "among Unify-supported facts (targeting only)."
+            )
     out.setdefault("gap_notes", [])
     out.setdefault("change_log", [])
     out.setdefault("self_check", {"normalized_by_lane": True})

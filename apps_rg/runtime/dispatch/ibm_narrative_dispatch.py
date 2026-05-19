@@ -88,6 +88,7 @@ from apps_rg.runtime.runtime_proof_layout import (
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.sections.ibm_canonical_hydration import remap_ibm_narrative_claim_ledger_to_fact_pool
 from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
 
 PROMPT_ID = "ibm_position_narrative_dispatch_v1"
@@ -282,6 +283,10 @@ def normalize_parsed_output(
         return parsed
     out = dict(parsed)
     narrative = str(out.get("narrative_sentence", "")).strip()
+    while narrative.count(",") >= 5:
+        narrative = re.sub(r",\s+and\s+", " and ", narrative, count=1)
+        if narrative.count(",") >= 5:
+            narrative = re.sub(r",\s+", " ", narrative, count=1)
     if narrative and not narrative.endswith((".", "!", "?")):
         narrative += "."
     out["narrative_sentence"] = narrative
@@ -309,6 +314,26 @@ def normalize_parsed_output(
                 "source_fact_ids": list(IBM_BULLET_IDS),
             }
         ]
+    allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+    ibm_ids = [bid for bid in IBM_BULLET_IDS if bid in allowed] or sorted(
+        x for x in allowed if str(x).startswith("bul_ibm_")
+    )[:6]
+    ledger = out.get("claim_ledger")
+    if isinstance(ledger, list) and narrative and ibm_ids:
+        parts = re.split(r",\s+(?=establishing\b)", narrative, maxsplit=1, flags=re.I)
+        if len(parts) == 2:
+            lead = parts[0].strip().rstrip(".")
+            tail = parts[1].strip().rstrip(".")
+            out["claim_ledger"] = [
+                {
+                    "claim_text": lead,
+                    "source_fact_ids": ibm_ids[:3],
+                },
+                {
+                    "claim_text": tail,
+                    "source_fact_ids": ibm_ids[2:5] or ibm_ids[:2],
+                },
+            ]
     if not isinstance(out.get("jd_alignment"), dict):
         out["jd_alignment"] = {"targeting_only": True, "jd_used_as_proof": False}
     out.setdefault("gap_notes", [])
@@ -400,7 +425,12 @@ def collapse_narrative_sentence_for_companion_metric_budget(narrative: str, comp
     return s
 
 
-def reconcile_narrative_claim_ledger(narrative: str, ledger: list[Any]) -> list[dict[str, Any]]:
+def reconcile_narrative_claim_ledger(
+    narrative: str,
+    ledger: list[Any],
+    *,
+    allowed_fact_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
     """Subset ledger to claims still verbatim in narrative; fallback when trimming removed clause-level claims."""
     nlow = narrative.lower()
     kept: list[dict[str, Any]] = []
@@ -412,10 +442,20 @@ def reconcile_narrative_claim_ledger(narrative: str, ledger: list[Any]) -> list[
             kept.append(dict(e))
     if kept:
         return kept
-    return [{"claim_text": narrative.strip().rstrip(".!?"), "source_fact_ids": ["bul_ibm_001"]}]
+    fallback_ids = ["bul_ibm_001"]
+    if allowed_fact_ids:
+        facts = sorted(x for x in allowed_fact_ids if str(x).startswith("fact_"))
+        if facts:
+            fallback_ids = facts[:3]
+    return [{"claim_text": narrative.strip().rstrip(".!?"), "source_fact_ids": fallback_ids}]
 
 
-def apply_companion_metric_budget_trim(parsed: dict[str, Any] | None, companion_text: str) -> None:
+def apply_companion_metric_budget_trim(
+    parsed: dict[str, Any] | None,
+    companion_text: str,
+    *,
+    runtime_payload: dict[str, Any] | None = None,
+) -> None:
     """In-place deterministic trim against companion bullets before X2 (does not loosen gates)."""
     if not parsed:
         return
@@ -427,7 +467,12 @@ def apply_companion_metric_budget_trim(parsed: dict[str, Any] | None, companion_
         parsed["change_log"] = clog
     parsed["narrative_sentence"] = collapsed
     led = list(parsed.get("claim_ledger") or []) if isinstance(parsed.get("claim_ledger"), list) else []
-    parsed["claim_ledger"] = reconcile_narrative_claim_ledger(collapsed, led)
+    allowed = (
+        {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+        if isinstance(runtime_payload, dict)
+        else None
+    )
+    parsed["claim_ledger"] = reconcile_narrative_claim_ledger(collapsed, led, allowed_fact_ids=allowed)
 
 
 def retry_qwen_for_parse(
@@ -757,8 +802,11 @@ def run_ibm_narrative_execution(
                     companion_text,
                     runtime_payload,
                 )
-                apply_companion_metric_budget_trim(parsed, companion_text)
+                apply_companion_metric_budget_trim(
+                    parsed, companion_text, runtime_payload=runtime_payload
+                )
                 parsed = normalize_parsed_output(parsed, runtime_payload)
+                remap_ibm_narrative_claim_ledger_to_fact_pool(parsed, runtime_payload)
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"
@@ -784,8 +832,11 @@ def run_ibm_narrative_execution(
                     companion_text,
                     runtime_payload,
                 )
-                apply_companion_metric_budget_trim(parsed, companion_text)
+                apply_companion_metric_budget_trim(
+                    parsed, companion_text, runtime_payload=runtime_payload
+                )
                 parsed = normalize_parsed_output(parsed, runtime_payload)
+                remap_ibm_narrative_claim_ledger_to_fact_pool(parsed, runtime_payload)
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"

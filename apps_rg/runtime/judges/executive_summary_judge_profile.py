@@ -13,7 +13,7 @@ from apps_rg.runtime.judges.section_judge_profile import (
 EXECUTIVE_SUMMARY_ENHANCED_MODEL_PROFILE = {
     "gemini_pro": {
         "env_primary": ("APPS_RG_GOOGLE_JUDGE_MODEL", "APPS_RG_GEMINI_JUDGE_MODEL"),
-        "env_tier": ("GOOGLE_AI_PRO_MODEL", "GEMINI_PRO_MODEL"),
+        "env_tier": ("GOOGLE_AI_PRO_MODEL",),
         "profile_defaults": ("gemini-3.1-pro-preview", "gemini-2.5-pro"),
     },
     "openai_chatgpt": {

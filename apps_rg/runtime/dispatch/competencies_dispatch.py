@@ -52,6 +52,7 @@ from apps_rg.runtime.providers.competencies_live_provider_gate import (
     REASON_PROVIDER_UNAVAILABLE,
     STATUS_BLOCKED_LIVE_PROVIDER,
     competencies_vllm_preflight_disabled,
+    competencies_vllm_chat_timeout_s,
     competencies_vllm_preflight_timeout_s,
     live_provider_gate_audit_payload_failure,
 )
@@ -95,7 +96,7 @@ TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
-COMPETENCIES_QWEN_MAX_TOKENS = 4096
+COMPETENCIES_QWEN_MAX_TOKENS = 2800
 
 COMPANION_LANES: tuple[tuple[str, str], ...] = (
     ("executive_summary", "executive_summary"),
@@ -132,7 +133,11 @@ def term_phrase(raw: Any) -> str:
     return str(raw).strip()
 
 
-def canonicalize_competency_terms_for_proof(parsed: dict[str, Any]) -> None:
+def canonicalize_competency_terms_for_proof(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str] | None = None,
+) -> None:
     """Persist canonical structured term rows: ``text``, ``source_fact_id``, ``source_fact_ids``."""
     comps = parsed.get("competencies")
     if not isinstance(comps, list):
@@ -141,7 +146,9 @@ def canonicalize_competency_terms_for_proof(parsed: dict[str, Any]) -> None:
         if not isinstance(cat, dict):
             continue
         ids_norm = [
-            _fix_fact_id_typos(str(x)).split("_metric_")[0] for x in (cat.get("source_fact_ids") or []) if x
+            _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
+            for x in (cat.get("source_fact_ids") or [])
+            if x
         ]
         terms_raw = cat.get("terms") if isinstance(cat.get("terms"), list) else []
         new_terms: list[dict[str, Any]] = []
@@ -150,7 +157,7 @@ def canonicalize_competency_terms_for_proof(parsed: dict[str, Any]) -> None:
                 txt = term_phrase(t)
                 sid_raw = t.get("source_fact_id")
                 sid = (
-                    _fix_fact_id_typos(str(sid_raw)).split("_metric_")[0]
+                    _fix_fact_id_typos(str(sid_raw), allowed_fact_ids).split("_metric_")[0]
                     if sid_raw is not None and str(sid_raw).strip()
                     else ""
                 )
@@ -158,7 +165,12 @@ def canonicalize_competency_terms_for_proof(parsed: dict[str, Any]) -> None:
                     sid = ids_norm[0]
                 sup = t.get("source_fact_ids")
                 if isinstance(sup, list) and sup:
-                    sf_ids = sorted({_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in sup})
+                    sf_ids = sorted(
+                        {
+                            _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
+                            for x in sup
+                        }
+                    )
                 else:
                     sf_ids = list(ids_norm)
                 if sid and sid not in sf_ids:
@@ -338,17 +350,39 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
         if isinstance(parsed, dict):
             return parsed, ""
     except json.JSONDecodeError as exc:
+        salvaged, salvage_err = salvage_truncated_competencies_json(text)
+        if salvaged is not None:
+            return salvaged, ""
         return None, f"JSON parse failed: {exc}"
     return None, "Model output was not a JSON object."
 
 
-def _fix_fact_id_typos(fid: str) -> str:
-    s = str(fid)
-    while "bul_ibm__" in s:
-        s = s.replace("bul_ibm__", "bul_ibm_", 1)
-    if re.match(r"^bul_ib_\d{3}$", s):
-        s = "bul_ibm_" + s[7:]
-    return s
+def salvage_truncated_competencies_json(text: str) -> tuple[dict[str, Any] | None, str]:
+    """Recover competencies[] when vLLM hits max_tokens mid claim_ledger (finish_reason=length)."""
+    marker = '"claim_ledger"'
+    if marker not in text or '"competencies"' not in text:
+        return None, "no salvage anchor"
+    head = text[: text.index(marker)].rstrip().rstrip(",")
+    tail_stub = (
+        ', "claim_ledger": [], "jd_alignment": {"targeting_only": true, "jd_used_as_proof": false, '
+        '"briefing_used_as_proof": false, "companion_context_used_as_proof": false}, '
+        '"excluded_jd_skills": [], "removed_or_rewritten_terms": [], "gap_notes": [], '
+        '"change_log": [{"operation": "salvage_truncated_competencies_json", "reason": "length"}], '
+        '"self_check": {}}'
+    )
+    try:
+        parsed = json.loads(head + tail_stub)
+    except json.JSONDecodeError as exc:
+        return None, str(exc)
+    if not isinstance(parsed, dict) or not isinstance(parsed.get("competencies"), list):
+        return None, "salvaged object missing competencies"
+    return parsed, ""
+
+
+def _fix_fact_id_typos(fid: str, allowed_fact_ids: set[str] | None = None) -> str:
+    from apps_rg.runtime.validators.fact_id_typo_repair import repair_fact_id_against_allowlist
+
+    return repair_fact_id_against_allowlist(fid, allowed_fact_ids)
 
 
 def _novel_term_vs_seen(candidate: str, seen_lower: set[str]) -> bool:
@@ -446,7 +480,7 @@ def repair_structured_competencies_source_facts(
         if not _terms_list_has_dict(terms_raw):
             continue
 
-        raw_ids = [_fix_fact_id_typos(str(x)) for x in (cat.get("source_fact_ids") or [])]
+        raw_ids = [_fix_fact_id_typos(str(x), allowed_fact_ids) for x in (cat.get("source_fact_ids") or [])]
         validated = sorted(
             {base for x in raw_ids if (base := x.split("_metric_")[0]) in allowed_fact_ids}
         )
@@ -463,7 +497,7 @@ def repair_structured_competencies_source_facts(
             sr = raw_t.get("source_fact_id")
             current_base = ""
             if sr is not None and str(sr).strip():
-                current_base = _fix_fact_id_typos(str(sr)).split("_metric_")[0]
+                current_base = _fix_fact_id_typos(str(sr), allowed_fact_ids).split("_metric_")[0]
 
             picked = ""
             if current_base in allowed_fact_ids and term_primary_support_overlap(
@@ -522,6 +556,8 @@ def coerce_structured_competencies_resume_support(
     bullet_rows: list[dict[str, Any]],
     resume_support_blob_lower: str,
     bullet_texts_lower: list[str],
+    *,
+    allowed_fact_ids: set[str] | None = None,
 ) -> None:
     """Rewrite unsupported structured competency phrases using bullet-derived fragments already in blob.
 
@@ -556,7 +592,9 @@ def coerce_structured_competencies_resume_support(
                 continue
             sr = raw_t.get("source_fact_id")
             fid_base = (
-                _fix_fact_id_typos(str(sr)).split("_metric_")[0] if sr is not None and str(sr).strip() else ""
+                _fix_fact_id_typos(str(sr), allowed_fact_ids).split("_metric_")[0]
+                if sr is not None and str(sr).strip()
+                else ""
             )
             if not fid_base:
                 changelog.append(
@@ -625,6 +663,95 @@ def coerce_structured_competencies_resume_support(
             else:
                 new_terms.append(raw_t)
         cat["terms"] = new_terms
+
+
+_KEYWORD_STUFFING_STOPWORDS = frozenset(
+    {
+        "and",
+        "or",
+        "the",
+        "a",
+        "an",
+        "of",
+        "for",
+        "to",
+        "in",
+        "on",
+        "with",
+        "via",
+        "per",
+        "by",
+    }
+)
+
+
+def _competency_term_content_words(phrase: str) -> list[str]:
+    return [
+        w
+        for w in re.findall(r"[a-z]{3,}", phrase.lower())
+        if w not in _KEYWORD_STUFFING_STOPWORDS
+    ]
+
+
+def reduce_competency_keyword_stuffing(parsed: dict[str, Any]) -> None:
+    """Drop structured terms until x2_no_keyword_stuffing (<=5 repeats per non-stopword)."""
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        return
+
+    def _global_word_freq() -> dict[str, int]:
+        freq: dict[str, int] = {}
+        for cat in comps:
+            if not isinstance(cat, dict):
+                continue
+            terms_raw = cat.get("terms")
+            if not isinstance(terms_raw, list):
+                continue
+            for raw_t in terms_raw:
+                phrase = term_phrase(raw_t) if isinstance(raw_t, dict) else str(raw_t or "")
+                for w in _competency_term_content_words(phrase):
+                    freq[w] = freq.get(w, 0) + 1
+        return freq
+
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+
+    while True:
+        freq = _global_word_freq()
+        if not freq or max(freq.values()) <= 5:
+            break
+        worst = max(freq, key=lambda w: freq[w])
+        removed = False
+        for cat in comps:
+            if not isinstance(cat, dict):
+                continue
+            terms_raw = cat.get("terms")
+            if not isinstance(terms_raw, list):
+                continue
+            kept: list[Any] = []
+            for raw_t in terms_raw:
+                phrase = term_phrase(raw_t) if isinstance(raw_t, dict) else str(raw_t or "")
+                words = _competency_term_content_words(phrase)
+                if not removed and worst in words and len(terms_raw) > 2:
+                    changelog.append(
+                        {
+                            "operation": "drop_keyword_stuffing_term",
+                            "reason": "x2_no_keyword_stuffing",
+                            "category_label": cat.get("category_label"),
+                            "phrase": phrase,
+                            "overloaded_token": worst,
+                        }
+                    )
+                    removed = True
+                    continue
+                kept.append(raw_t)
+            if removed:
+                cat["terms"] = kept
+                break
+        if not removed:
+            break
 
 
 def dedupe_structured_competency_terms(parsed: dict[str, Any]) -> None:
@@ -1486,6 +1613,7 @@ def run_competencies_execution(
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
         max_tokens=COMPETENCIES_QWEN_MAX_TOKENS,
+        timeout_seconds=competencies_vllm_chat_timeout_s(),
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
@@ -1565,6 +1693,17 @@ def run_competencies_execution(
             )
         if parsed is not None:
             parsed = normalize_parsed_output(parsed, runtime_payload, allowed_fact_ids)
+            comps = parsed.get("competencies") or []
+            if isinstance(comps, list) and len(comps) >= 8 and not parsed.get("claim_ledger"):
+                rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
+                clog = list(parsed.get("change_log") or [])
+                clog.append(
+                    {
+                        "operation": "rebuild_claim_ledger_after_length_truncation",
+                        "reason": "deterministic",
+                    }
+                )
+                parsed["change_log"] = clog
             raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
             bad_term = find_bullet_restatement_term(parsed.get("competencies") or [], bullet_lowers)
             if bad_term:
@@ -1592,21 +1731,35 @@ def run_competencies_execution(
         repair_structured_competencies_source_facts(
             parsed,
             allowed_fact_ids=allowed_fact_ids,
-            resume_support_blob_lower=resume_blob,
+            resume_support_blob_lower=c0_proof_blob,
         )
         coerce_structured_competencies_resume_support(
-            parsed, bullet_rows, resume_blob, bullet_lowers
+            parsed,
+            bullet_rows,
+            c0_proof_blob,
+            bullet_lowers,
+            allowed_fact_ids=allowed_fact_ids,
         )
         dedupe_structured_competency_terms(parsed)
+        reduce_competency_keyword_stuffing(parsed)
         expand_structured_competencies_min_two_terms(
             parsed,
             bullet_rows=bullet_rows,
             allowed_fact_ids=allowed_fact_ids,
-            resume_support_blob_lower=resume_blob,
+            resume_support_blob_lower=c0_proof_blob,
             bullet_texts_lower=bullet_lowers,
         )
         dedupe_structured_competency_terms(parsed)
-        canonicalize_competency_terms_for_proof(parsed)
+        reduce_competency_keyword_stuffing(parsed)
+        canonicalize_competency_terms_for_proof(parsed, allowed_fact_ids=allowed_fact_ids)
+        coerce_structured_competencies_resume_support(
+            parsed,
+            bullet_rows,
+            c0_proof_blob,
+            bullet_lowers,
+            allowed_fact_ids=allowed_fact_ids,
+        )
+        dedupe_structured_competency_terms(parsed)
         rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         prune_claim_ledger_bullet_paste(parsed)
         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))

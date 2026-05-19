@@ -108,11 +108,28 @@ def validate_active_proof_pool_source_fact_ids(
     elif not checked:
         decisive = "no_source_fact_ids_collected"
 
+    meta = proof_pool_metadata or {}
+    skills_status = str(meta.get("skills_authority_status") or meta.get("skills_source_authority_status") or "")
+    skills_src = str(meta.get("skills_authority_source_type") or meta.get("skills_source_type") or "")
+    claim_src = str(meta.get("claim_evidence_source_type") or "")
+    broad_skills_skills_auth = meta.get("legacy_broad_skills_ledger_skills_authority")
+    if broad_skills_skills_auth is True or meta.get("broad_skills_ledger_skills_authority") is True:
+        skills_status = "FAIL"
+    if skills_src == "broad_skills_ledger":
+        skills_status = "FAIL"
+
     receipt: dict[str, Any] = {
         "section": section,
         "proof_source": proof_source,
         "proof_pool_ref": pool_ref,
         "proof_pool_digest": pool_digest,
+        "claim_evidence_source_type": claim_src or None,
+        "claim_evidence_source_ref": meta.get("claim_evidence_source_ref"),
+        "skills_authority_source_type": skills_src or None,
+        "skills_authority_status": skills_status or "UNKNOWN",
+        "skills_authority_graph_ref": meta.get("skills_authority_graph_ref") or meta.get("graph_ref"),
+        "legacy_broad_skills_ledger_skills_authority": bool(broad_skills_skills_auth),
+        "broad_skills_ledger_claim_evidence_only": meta.get("broad_skills_ledger_claim_evidence_only"),
         "allowed_source_fact_ids_count": len(allowed_fact_ids),
         "source_fact_ids_checked": checked,
         "unsupported_source_fact_ids": sorted(set(unsupported)),
@@ -122,6 +139,12 @@ def validate_active_proof_pool_source_fact_ids(
         "decisive_reason": decisive,
         "validator_name": validator_name,
     }
+    if skills_status in ("BLOCKED", "UNKNOWN", "FAIL", ""):
+        receipt["skills_authority_x2_boundary"] = "NOT_PASS"
+    elif skills_status == "PASS":
+        receipt["skills_authority_x2_boundary"] = "PASS"
+    else:
+        receipt["skills_authority_x2_boundary"] = "UNKNOWN"
     return ok, receipt, decisive
 
 

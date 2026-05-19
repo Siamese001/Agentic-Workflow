@@ -1,0 +1,39 @@
+# Certifications block section prompt profile ΓÇö W3 (optional node)
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+# GOVERNANCE: Declarative data only. No prompt compiler logic here.
+prompt_id: "sp::apps_rg::certifications_block::v1"
+node_id: certifications_block
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+optional: true
+
+slot_requirements:
+  required: [S0, I0, C0, R0]
+  optional: []
+
+template_ref: null
+template_inline_note: >
+  Certifications block is assembled deterministically from candidate_profile.certifications.
+  Rendered only when candidate_profile.certifications is non-empty.
+  No LLM generation ΓÇö entries are copied verbatim.
+
+input_refs:
+  - "candidate_profile.certifications[*].name"
+  - "candidate_profile.certifications[*].issuer"
+  - "candidate_profile.certifications[*].issued_date"
+  - "candidate_profile.certifications[*].expiry_date"
+
+output_schema_ref: "aos::apps_rg::resume_generation::v1#certifications_block"
+
+required_evidence_refs:
+  - "candidate_profile.certifications (all entries must trace here)"
+
+prompt_boundary_rules:
+  - "certification name MUST equal candidate_profile.certifications[].name exactly"
+  - "issuer MUST equal candidate_profile.certifications[].issuer exactly"
+  - "no fabricated or inferred certifications"
+  - "expired certifications may be omitted only if output_schema permits omission"
+
+examples_ref: null

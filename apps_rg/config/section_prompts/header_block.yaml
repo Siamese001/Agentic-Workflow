@@ -1,0 +1,38 @@
+# Header block section prompt profile ΓÇö W3
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+# GOVERNANCE: Declarative data only. No prompt compiler logic here.
+prompt_id: "sp::apps_rg::header_block::v1"
+node_id: header_block
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+
+slot_requirements:
+  required: [S0, I0, C0, U0, D0, R0]
+  optional: []
+
+template_ref: null
+template_inline_note: >
+  Header block is assembled deterministically from candidate_profile fields.
+  No LLM generation required ΓÇö name, email, phone, location extracted directly.
+  If a template is ever used, it must reference prompt_bom.yaml slot definitions.
+
+input_refs:
+  - "candidate_profile.name"
+  - "candidate_profile.contact.email"
+  - "candidate_profile.contact.phone"
+  - "candidate_profile.location"
+
+output_schema_ref: "aos::apps_rg::resume_generation::v1#header_block"
+
+required_evidence_refs:
+  - "candidate_profile.contact (exact field match required ΓÇö no inference)"
+
+prompt_boundary_rules:
+  - "header fields MUST be copied verbatim from candidate_profile ΓÇö no rewriting"
+  - "email and phone MUST pass RFC-5322 and E.164 validation respectively"
+  - "location MUST equal candidate_profile.location exactly or be omitted"
+  - "no fabricated or inferred contact information"
+
+examples_ref: null

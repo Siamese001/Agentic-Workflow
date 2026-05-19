@@ -7,6 +7,8 @@ import re
 from dataclasses import dataclass
 from typing import Any, Mapping
 
+from agentic_core.config.google_ai_env import google_ai_pro_model_id
+
 from apps_rg.runtime.section_judge_policy import JudgeTier, get_section_judge_policy, normalize_section_id
 
 _FORBIDDEN_PROOF_MODEL_RE = re.compile(
@@ -18,7 +20,7 @@ _FORBIDDEN_PROOF_MODEL_RE = re.compile(
 _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
     "gemini_pro": {
         "env_primary": ("APPS_RG_GOOGLE_JUDGE_MODEL", "APPS_RG_GEMINI_JUDGE_MODEL"),
-        "env_tier": ("GOOGLE_AI_PRO_MODEL", "GEMINI_PRO_MODEL"),
+        "env_tier": ("GOOGLE_AI_PRO_MODEL",),
         "profile_defaults": ("gemini-3.1-pro-preview", "gemini-2.5-pro"),
     },
     "openai_chatgpt": {
@@ -38,7 +40,7 @@ _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
 _STANDARD_PROFILE: dict[str, dict[str, Any]] = {
     "gemini_pro": {
         "env_primary": ("APPS_RG_GOOGLE_JUDGE_MODEL", "APPS_RG_GEMINI_JUDGE_MODEL"),
-        "env_tier": ("GOOGLE_AI_PRO_MODEL", "GEMINI_PRO_MODEL"),
+        "env_tier": ("GOOGLE_AI_PRO_MODEL",),
         "profile_defaults": ("gemini-2.5-pro", "gemini-3.1-pro-preview"),
     },
     "openai_chatgpt": {
@@ -130,6 +132,10 @@ def resolve_section_proof_judge_model(
         raw = str(env.get(name) or "").strip()
         if raw:
             candidates.append((raw, name))
+    if provider_key == "gemini_pro":
+        pro_id, pro_src = google_ai_pro_model_id(env)
+        if pro_id and not any(c[0] == pro_id for c in candidates):
+            candidates.append((pro_id, pro_src or "GOOGLE_AI_PRO_MODEL"))
     for default in profile.get("profile_defaults") or ():
         candidates.append((str(default), "profile_default"))
 

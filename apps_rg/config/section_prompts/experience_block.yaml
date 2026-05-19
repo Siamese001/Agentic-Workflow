@@ -1,0 +1,53 @@
+# Experience block section prompt profile ΓÇö W3
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+# GOVERNANCE: Declarative data only. No prompt compiler logic here.
+prompt_id: "sp::apps_rg::experience_block::v1"
+node_id: experience_block
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+
+slot_requirements:
+  required: [S0, I0, C0, U0, D0, Y0, R0]
+  optional: [E0]
+
+template_ref: "apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml"
+template_mode_map:
+  strategic_tailor: "apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml"
+  tailor_existing: "apps_rg/prompt_assembly/templates/tailor_existing_v1.yaml"
+  generate_scratch: "apps_rg/prompt_assembly/templates/generate_scratch_v1.yaml"
+  enhance_current: "apps_rg/prompt_assembly/templates/enhance_current_v1.yaml"
+
+input_refs:
+  - "candidate_profile.experiences[*]"
+  - "candidate_profile.experiences[*].achievements"
+  - "candidate_profile.evidence_ids"
+  - "target_role_spec.title"
+  - "target_role_spec.jd_requirements"
+  - "ats_keywords"
+  - "voice_profile_or_default"
+  - "length_preference"
+
+output_schema_ref: "aos::apps_rg::resume_generation::v1#experience_block"
+
+required_evidence_refs:
+  - "candidate_profile.experiences[*].evidence_ids (every achievement MUST have evidence_id)"
+  - "candidate_profile.experiences[*].employer (exact match required)"
+  - "candidate_profile.experiences[*].title (exact match or normalized title progression)"
+  - "candidate_profile.experiences[*].dates (ISO-8601 YYYY-MM start and end or present)"
+
+prompt_boundary_rules:
+  - "every achievement bullet MUST cite an evidence_id from candidate_profile"
+  - "employer MUST equal candidate_profile.experiences[].employer exactly (no paraphrasing)"
+  - "title MUST equal candidate_profile.experiences[].title exactly OR be a documented title progression"
+  - "date range MUST use candidate_profile dates ΓÇö no rounding, no inference"
+  - "metrics MUST be supported by a profile evidence_id (no invented numbers)"
+  - "no achievements from other candidates' profiles"
+  - "bullet length MUST respect length_preference and concision threshold"
+
+repair_template_refs:
+  - "apps_rg/prompt_assembly/templates/unsupported_claim_omission_v1.yaml"
+  - "apps_rg/prompt_assembly/templates/bullet_diversity_repair_v1.yaml"
+
+examples_ref: null

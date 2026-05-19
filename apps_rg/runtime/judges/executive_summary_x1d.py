@@ -177,8 +177,8 @@ PROVIDERS = {
         "env_fallbacks": ("GEMINI_API_KEY",),
         "model_env": "APPS_RG_GOOGLE_JUDGE_MODEL",
         "model_env_aliases": ("APPS_RG_GEMINI_JUDGE_MODEL",),
-        "fallback_env": "GOOGLE_AI_MODEL",
-        "fallback_env_aliases": ("GEMINI_MODEL",),
+        "fallback_env": "GOOGLE_AI_PRO_MODEL",
+        "fallback_env_aliases": ("GEMINI_PRO_MODEL", "GOOGLE_AI_MODEL", "GEMINI_MODEL"),
         "default_model": "gemini-2.0-flash",
     },
     "openai_chatgpt": {
@@ -288,23 +288,17 @@ def _compute_normalized(
 
 def _resolve_gemini_model(meta: dict[str, Any]) -> tuple[str, str]:
     """Resolve Google AI judge model; APPS_RG_GOOGLE_JUDGE_* overrides tier env."""
+    from agentic_core.config.google_ai_env import google_ai_pro_model_id
+
     google_j = os.environ.get("APPS_RG_GOOGLE_JUDGE_MODEL", "").strip()
     if google_j:
         return google_j, "APPS_RG_GOOGLE_JUDGE_MODEL"
     legacy_j = os.environ.get("APPS_RG_GEMINI_JUDGE_MODEL", "").strip()
     if legacy_j:
         return legacy_j, "APPS_RG_GEMINI_JUDGE_MODEL"
-    tier_flash = (
-        os.environ.get("GOOGLE_AI_MODEL", "").strip()
-        or os.environ.get("GEMINI_MODEL", "").strip()
-    )
-    if tier_flash:
-        src = (
-            "GOOGLE_AI_MODEL"
-            if os.environ.get("GOOGLE_AI_MODEL", "").strip()
-            else "GEMINI_MODEL"
-        )
-        return tier_flash, src
+    tier_pro, tier_src = google_ai_pro_model_id()
+    if tier_pro:
+        return tier_pro, tier_src or "GOOGLE_AI_PRO_MODEL"
     return str(meta.get("default_model", "gemini-2.0-flash")), "default"
 
 

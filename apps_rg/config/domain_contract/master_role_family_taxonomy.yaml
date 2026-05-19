@@ -14,6 +14,10 @@ notes:
   - >-
     Candidate ledger lives under artifacts/apps_rg/fact_inventory/ — facts are provisional
     until promoted through human confirmation and deterministic gates.
+  - >-
+    CRO-targeting uses composite projection profile CHIEF_REVENUE_OFFICER_COMPOSITE
+    (apps_rg/config/domain_contract/composite_projection_profiles.yaml and arsenal ledger
+    role_family_projection_profiles). There is intentionally no standalone CRO role family id.
 
 role_families:
   - id: ENGINEERING_PLATFORM
