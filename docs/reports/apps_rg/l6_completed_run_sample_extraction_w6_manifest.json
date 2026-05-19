@@ -1,0 +1,178 @@
+{
+  "manifest_kind": "l6_completed_run_sample_extraction_w6",
+  "manifest_version": "1.0.0",
+  "status": "PARTIAL",
+  "status_note": "7 samples extracted and validated; reviewer export empty (all pii_status=pending_review)",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "datasets_collected": true,
+  "public_datasets_ingested": false,
+  "human_labels_collected": false,
+  "judges_promoted": false,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "drift_holdout_populated": false,
+  "reviewer_packet_exported": true,
+  "reviewer_packet_empty": true,
+  "reviewer_empty_reason": "all_samples_pending_review_excluded",
+  "examples_only": false,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "samples_collected_count": 7,
+  "samples_skipped_count": 0,
+  "reviewer_export_count": 0,
+  "pii_cleared_count": 0,
+  "pii_pending_review_count": 7,
+  "drift_holdout_count": 0,
+  "candidate_quality_status_counts": {
+    "x2_fail_x3_block": 6,
+    "x2_pass_x3_review": 1
+  },
+  "x2_x3_status_counts": {
+    "X3_BLOCK": 6,
+    "X3_REVIEW_JUDGE_SOFT_FAIL": 1
+  },
+  "files_changed": [
+    "artifacts/apps_rg/plans/human_benchmark_schema.json",
+    "ops_scripts/apps_rg/l6_benchmarks/extract_completed_run_samples.py",
+    "ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py",
+    "ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py",
+    "ops_scripts/apps_rg/l6_benchmarks/_common.py",
+    "artifacts/apps_rg/benchmarks/collected/README.md",
+    "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6.md",
+    "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_manifest.json",
+    "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_receipt.md",
+    "artifacts/apps_rg/benchmarks/collected/positioning/validation/57d73ed9-d04e-52d9-93ae-af5be040aa6a.json",
+    "artifacts/apps_rg/benchmarks/collected/executive_summary/validation/355d2699-1ea4-5193-a02c-96c729546f70.json",
+    "artifacts/apps_rg/benchmarks/collected/competencies/calibration/b0758fd8-68e8-5eb3-91dc-cf42e0fe75c9.json",
+    "artifacts/apps_rg/benchmarks/collected/bullet/calibration/728760ec-d70b-5053-b213-f85870787185.json",
+    "artifacts/apps_rg/benchmarks/collected/narrative/validation/efe4f2f7-6518-57b1-8343-d080a7428855.json",
+    "artifacts/apps_rg/benchmarks/collected/bullet/validation/5602848a-7f65-59a0-9327-59dcf4605f2b.json",
+    "artifacts/apps_rg/benchmarks/collected/narrative/calibration/1eec1d3c-3f03-53a5-9add-38e8356cf318.json"
+  ],
+  "reports_generated": [
+    "artifacts/apps_rg/benchmarks/collected/_manifests/collected_samples_manifest_w6.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/split_assignments_w6.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w6.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/drift_holdout_manifest_w6.json",
+    "artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w6.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "note": "empty"
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/plans/human_benchmark_schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/extract_completed_run_samples.py ...",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/assign_benchmark_splits.py ...",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py --profile collected ...",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py ...",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "extraction": "PASS",
+    "schema_validation": "PASS",
+    "split_assignment": "PASS",
+    "reviewer_packet_export": "EMPTY",
+    "manifest_json_parse": "PASS"
+  },
+  "explicit_non_claims": [
+    "no public datasets ingested",
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "X3_BLOCK and X3_REVIEW samples are not certification proof_eligible"
+  ],
+  "open_gaps": [
+    "PII review not completed",
+    "reviewer scoring not collected",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "drift holdout not human-locked"
+  ],
+  "next_recommended_wave": "W7 \u2014 PII clearance pass, reviewer packet export with cleared samples, human scoring ingest",
+  "receipt_markdown": "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_receipt.md",
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/plans/human_benchmark_schema.json",
+      "markdown": "[human_benchmark_schema.json](artifacts/apps_rg/plans/human_benchmark_schema.json)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/extract_completed_run_samples.py",
+      "markdown": "[extract_completed_run_samples.py](ops_scripts/apps_rg/l6_benchmarks/extract_completed_run_samples.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py",
+      "markdown": "[validate_benchmark_samples.py](ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py",
+      "markdown": "[export_reviewer_packets.py](ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/_common.py",
+      "markdown": "[_common.py](ops_scripts/apps_rg/l6_benchmarks/_common.py)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/README.md",
+      "markdown": "[README.md](artifacts/apps_rg/benchmarks/collected/README.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6.md",
+      "markdown": "[l6_completed_run_sample_extraction_w6.md](docs/reports/apps_rg/l6_completed_run_sample_extraction_w6.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_manifest.json",
+      "markdown": "[l6_completed_run_sample_extraction_w6_manifest.json](docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_manifest.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_receipt.md",
+      "markdown": "[l6_completed_run_sample_extraction_w6_receipt.md](docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_receipt.md)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/collected_samples_manifest_w6.json",
+      "markdown": "[collected_samples_manifest_w6.json](artifacts/apps_rg/benchmarks/collected/_manifests/collected_samples_manifest_w6.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/split_assignments_w6.json",
+      "markdown": "[split_assignments_w6.json](artifacts/apps_rg/benchmarks/collected/_manifests/split_assignments_w6.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w6.json",
+      "markdown": "[validation_report_w6.json](artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w6.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/drift_holdout_manifest_w6.json",
+      "markdown": "[drift_holdout_manifest_w6.json](artifacts/apps_rg/benchmarks/collected/_manifests/drift_holdout_manifest_w6.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w6.json",
+      "markdown": "[reviewer_packet_w6.json](artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w6.json)"
+    }
+  ],
+  "receipt_markdown_link": {
+    "path": "docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_receipt.md",
+    "markdown": "[l6_completed_run_sample_extraction_w6_receipt.md](docs/reports/apps_rg/l6_completed_run_sample_extraction_w6_receipt.md)"
+  }
+}

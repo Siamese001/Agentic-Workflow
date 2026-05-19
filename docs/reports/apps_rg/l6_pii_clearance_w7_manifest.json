@@ -1,0 +1,138 @@
+{
+  "manifest_kind": "l6_pii_clearance_w7",
+  "manifest_version": "1.0.0",
+  "status": "PARTIAL",
+  "status_note": "PII scan and apply pipeline OK; placeholder decisions all pending_review; reviewer export empty",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "human_labels_collected": false,
+  "judges_promoted": false,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "samples_reviewed": 7,
+  "pii_cleared": 0,
+  "pii_pending_review": 7,
+  "pii_rejected": 0,
+  "reviewer_export_count": 0,
+  "reviewer_packet_empty": true,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "files_changed": [
+    "ops_scripts/apps_rg/l6_benchmarks/review_pii_clearance.py",
+    "ops_scripts/apps_rg/l6_benchmarks/_common.py",
+    "docs/reports/apps_rg/l6_pii_clearance_w7.md",
+    "docs/reports/apps_rg/l6_pii_clearance_w7_manifest.json",
+    "docs/reports/apps_rg/l6_pii_clearance_w7_receipt.md"
+  ],
+  "reports_generated": [
+    "artifacts/apps_rg/benchmarks/collected/_manifests/pii_review_report_w7.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_decisions.placeholder.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_application_w7.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w7.json",
+    "artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w7.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/plans/human_benchmark_schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python review_pii_clearance.py (scan)",
+      "exit_code": 0
+    },
+    {
+      "command": "python review_pii_clearance.py (--apply placeholder)",
+      "exit_code": 0
+    },
+    {
+      "command": "python validate_benchmark_samples.py --profile collected",
+      "exit_code": 0
+    },
+    {
+      "command": "python export_reviewer_packets.py -> reviewer_packet_w7.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "pii_scan": "PASS",
+    "clearance_application": "NOOP",
+    "schema_validation": "PASS",
+    "reviewer_packet_export": "EMPTY",
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "no source runtime proofs modified",
+    "no fabricated PII clearance"
+  ],
+  "open_gaps": [
+    "manual PII clearance decisions not completed",
+    "reviewer scoring not collected",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "drift holdout not human-locked"
+  ],
+  "next_recommended_wave": "W8 \u2014 operator sets decision=cleared in decisions file for eligible samples, re-apply, re-export reviewer packets",
+  "eligible_for_clearance_count": 7,
+  "receipt_markdown": "docs/reports/apps_rg/l6_pii_clearance_w7_receipt.md",
+  "files_changed_links": [
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/review_pii_clearance.py",
+      "markdown": "[review_pii_clearance.py](ops_scripts/apps_rg/l6_benchmarks/review_pii_clearance.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/_common.py",
+      "markdown": "[_common.py](ops_scripts/apps_rg/l6_benchmarks/_common.py)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_pii_clearance_w7.md",
+      "markdown": "[l6_pii_clearance_w7.md](docs/reports/apps_rg/l6_pii_clearance_w7.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_pii_clearance_w7_manifest.json",
+      "markdown": "[l6_pii_clearance_w7_manifest.json](docs/reports/apps_rg/l6_pii_clearance_w7_manifest.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_pii_clearance_w7_receipt.md",
+      "markdown": "[l6_pii_clearance_w7_receipt.md](docs/reports/apps_rg/l6_pii_clearance_w7_receipt.md)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/pii_review_report_w7.json",
+      "markdown": "[pii_review_report_w7.json](artifacts/apps_rg/benchmarks/collected/_manifests/pii_review_report_w7.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_decisions.placeholder.json",
+      "markdown": "[pii_clearance_decisions.placeholder.json](artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_decisions.placeholder.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_application_w7.json",
+      "markdown": "[pii_clearance_application_w7.json](artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_application_w7.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w7.json",
+      "markdown": "[validation_report_w7.json](artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w7.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w7.json",
+      "markdown": "[reviewer_packet_w7.json](artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w7.json)"
+    }
+  ],
+  "receipt_markdown_link": {
+    "path": "docs/reports/apps_rg/l6_pii_clearance_w7_receipt.md",
+    "markdown": "[l6_pii_clearance_w7_receipt.md](docs/reports/apps_rg/l6_pii_clearance_w7_receipt.md)"
+  }
+}

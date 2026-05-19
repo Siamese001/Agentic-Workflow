@@ -1,0 +1,88 @@
+{
+  "manifest_kind": "l6_public_bootstrap_source_audit_w9b",
+  "manifest_version": "1.0.0",
+  "status": "PARTIAL",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "public_datasets_ingested": false,
+  "human_labels_collected": false,
+  "weak_labels_registered": true,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "judges_promoted": false,
+  "approved_source_count": 0,
+  "pending_source_count": 4,
+  "blocked_source_count": 1,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "upstream_manifest_ref": "docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a_manifest.json",
+  "files_changed": [
+    "artifacts/apps_rg/benchmarks/public_bootstrap/source_eligibility_audit_w9b.json",
+    "artifacts/apps_rg/benchmarks/public_bootstrap/import_allowlist_w9b.json",
+    "docs/reports/apps_rg/l6_public_bootstrap_source_audit_w9b.md",
+    "docs/reports/apps_rg/l6_public_bootstrap_source_audit_w9b_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/benchmarks/public_bootstrap/source_registry.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/benchmarks/public_bootstrap/source_eligibility_audit_w9b.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/benchmarks/public_bootstrap/import_allowlist_w9b.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "registry_parse": "PASS",
+    "audit_parse": "PASS",
+    "allowlist_parse": "PASS",
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no public datasets ingested",
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "public_bootstrap is not calibration proof",
+    "empty allowlist does not block future approved import"
+  ],
+  "open_gaps": [
+    "public import tooling not implemented",
+    "PII review for public rows not completed",
+    "apps_rg human scoring still missing",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "no registry source has operator_approval_ref yet"
+  ],
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/public_bootstrap/source_eligibility_audit_w9b.json",
+      "markdown": "[source_eligibility_audit_w9b.json](artifacts/apps_rg/benchmarks/public_bootstrap/source_eligibility_audit_w9b.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/public_bootstrap/import_allowlist_w9b.json",
+      "markdown": "[import_allowlist_w9b.json](artifacts/apps_rg/benchmarks/public_bootstrap/import_allowlist_w9b.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_public_bootstrap_source_audit_w9b.md",
+      "markdown": "[l6_public_bootstrap_source_audit_w9b.md](docs/reports/apps_rg/l6_public_bootstrap_source_audit_w9b.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_public_bootstrap_source_audit_w9b_manifest.json",
+      "markdown": "[l6_public_bootstrap_source_audit_w9b_manifest.json](docs/reports/apps_rg/l6_public_bootstrap_source_audit_w9b_manifest.json)"
+    }
+  ]
+}

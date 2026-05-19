@@ -1,0 +1,172 @@
+{
+  "manifest_kind": "l6_benchmark_collection_dry_run_w5",
+  "manifest_version": "1.0.0",
+  "status": "DESIGN_ONLY",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "judges_promoted": false,
+  "datasets_collected": false,
+  "human_labels_collected": false,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "examples_only": true,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "files_changed": [
+    "ops_scripts/apps_rg/l6_benchmarks/_common.py",
+    "ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py",
+    "ops_scripts/apps_rg/l6_benchmarks/assign_benchmark_splits.py",
+    "ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py",
+    "ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_scores.py",
+    "artifacts/apps_rg/benchmarks/dry_run/reviewer_scores.placeholder.json",
+    "artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json",
+    "artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json",
+    "artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json",
+    "artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json",
+    "docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_manifest.json",
+    "ops_scripts/apps_rg/l6_benchmarks/receipt_links.py",
+    "docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_receipt.md"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "note": "empty diff"
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/plans/human_benchmark_schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py --schema artifacts/apps_rg/plans/human_benchmark_schema.json --samples-glob artifacts/apps_rg/benchmarks/examples/*.example.json --out artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/assign_benchmark_splits.py --samples-glob artifacts/apps_rg/benchmarks/examples/*.example.json --out artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json --seed 42",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py --samples-glob artifacts/apps_rg/benchmarks/examples/*.example.json --assignments artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json --out artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_scores.py --scores artifacts/apps_rg/benchmarks/dry_run/reviewer_scores.placeholder.json --packet artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json --out artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_manifest.json",
+      "exit_code": 0
+    }
+  ],
+  "reports_generated": [
+    "artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json",
+    "artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json",
+    "artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json",
+    "artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json"
+  ],
+  "validation": {
+    "sample_validation": "PASS",
+    "split_assignment": "PASS",
+    "reviewer_packet_export": "PASS",
+    "reviewer_score_validation": "PASS",
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no real samples collected",
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "examples_only synthetic dry-run"
+  ],
+  "open_gaps": [
+    "real benchmark collection not executed",
+    "reviewer scoring not collected",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "drift holdout not populated with real samples"
+  ],
+  "next_recommended_wave": "W6 \u2014 extract completed-run samples into benchmarks/<section_group>/<split>/, seal drift_holdout manifest, run calibration report job after real dual-human labels",
+  "files_changed_links": [
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/_common.py",
+      "markdown": "[_common.py](ops_scripts/apps_rg/l6_benchmarks/_common.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py",
+      "markdown": "[validate_benchmark_samples.py](ops_scripts/apps_rg/l6_benchmarks/validate_benchmark_samples.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/assign_benchmark_splits.py",
+      "markdown": "[assign_benchmark_splits.py](ops_scripts/apps_rg/l6_benchmarks/assign_benchmark_splits.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py",
+      "markdown": "[export_reviewer_packets.py](ops_scripts/apps_rg/l6_benchmarks/export_reviewer_packets.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_scores.py",
+      "markdown": "[validate_reviewer_scores.py](ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_scores.py)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/reviewer_scores.placeholder.json",
+      "markdown": "[reviewer_scores.placeholder.json](artifacts/apps_rg/benchmarks/dry_run/reviewer_scores.placeholder.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json",
+      "markdown": "[validation_report.example.json](artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json",
+      "markdown": "[split_assignments.example.json](artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json",
+      "markdown": "[reviewer_packet.example.json](artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json",
+      "markdown": "[reviewer_score_validation.example.json](artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_manifest.json",
+      "markdown": "[l6_benchmark_collection_dry_run_w5_manifest.json](docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_manifest.json)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/receipt_links.py",
+      "markdown": "[receipt_links.py](ops_scripts/apps_rg/l6_benchmarks/receipt_links.py)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_receipt.md",
+      "markdown": "[l6_benchmark_collection_dry_run_w5_receipt.md](docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_receipt.md)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json",
+      "markdown": "[validation_report.example.json](artifacts/apps_rg/benchmarks/dry_run/validation_report.example.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json",
+      "markdown": "[split_assignments.example.json](artifacts/apps_rg/benchmarks/dry_run/split_assignments.example.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json",
+      "markdown": "[reviewer_packet.example.json](artifacts/apps_rg/benchmarks/dry_run/reviewer_packet.example.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json",
+      "markdown": "[reviewer_score_validation.example.json](artifacts/apps_rg/benchmarks/dry_run/reviewer_score_validation.example.json)"
+    }
+  ],
+  "receipt_markdown": "docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_receipt.md",
+  "receipt_markdown_link": {
+    "path": "docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_receipt.md",
+    "markdown": "[l6_benchmark_collection_dry_run_w5_receipt.md](docs/reports/apps_rg/l6_benchmark_collection_dry_run_w5_receipt.md)"
+  }
+}

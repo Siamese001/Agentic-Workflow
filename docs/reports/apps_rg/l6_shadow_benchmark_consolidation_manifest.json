@@ -1,0 +1,144 @@
+{
+  "manifest_kind": "l6_shadow_benchmark_consolidation",
+  "manifest_version": "1.0.0",
+  "status": "DESIGN_ONLY",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "judges_promoted": false,
+  "datasets_collected": false,
+  "human_labels_collected": false,
+  "calibration_complete": false,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "files_changed": [
+    "artifacts/apps_rg/plans/human_benchmark_plan.md",
+    "artifacts/apps_rg/plans/human_benchmark_schema.json",
+    "artifacts/apps_rg/plans/public_dataset_sourcing_notes.md",
+    "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_plan.md",
+    "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_manifest.json",
+    "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_receipt.md"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "note": "empty diff"
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/plans/human_benchmark_schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool docs/reports/apps_rg/l6_shadow_benchmark_consolidation_manifest.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "human_benchmark_schema_json_parse": "PASS",
+    "consolidation_manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false,
+    "benchmark_docs_tests_run": "skipped_no_matching_tests"
+  },
+  "explicit_non_claims": [
+    "no human labels collected",
+    "no datasets ingested",
+    "no judge promoted",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "public_bootstrap is not final calibration proof",
+    "uncalibrated judges remain advisory only"
+  ],
+  "section_group_summary": {
+    "P0_standalone": [
+      "headline",
+      "executive_summary",
+      "competencies"
+    ],
+    "P0_pooled": {
+      "pooled_bullets": [
+        "unify_bullets",
+        "ibm_bullets"
+      ],
+      "pooled_narratives": [
+        "unify_narrative",
+        "ibm_narrative"
+      ]
+    },
+    "P1_conditional": [
+      "final_aggregate_resume",
+      "insurtech_narrative",
+      "insurtech_bullets",
+      "ey_narrative",
+      "ey_bullets"
+    ],
+    "NO_L6_deterministic": [
+      "header",
+      "contact_info",
+      "company_names",
+      "titles",
+      "dates",
+      "education",
+      "certifications",
+      "early_career"
+    ]
+  },
+  "consolidation_decisions": {
+    "ibm_bullets": "pooled_bullets first; no separate first-pass IBM-only calibration",
+    "ibm_narrative": "pooled_narratives first; no separate first-pass IBM-only calibration",
+    "ibm_only_split": "only if slice metrics prove material underperformance vs pool baseline",
+    "deterministic_sections": "no human L6 calibration",
+    "preserved_fields_per_sample": [
+      "section_id",
+      "role_anchor",
+      "job_family",
+      "jd_ref",
+      "briefing_ref",
+      "selected_role_fact_set_ref"
+    ]
+  },
+  "open_gaps": [
+    "reviewer workflow not implemented",
+    "benchmark collection not implemented",
+    "human scoring not collected",
+    "judge calibration report not computed",
+    "final aggregation evaluator not implemented unless already present",
+    "drift holdout split strategy undefined"
+  ],
+  "upstream_plan_ref": ".cursor/plans/p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md",
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/plans/human_benchmark_plan.md",
+      "markdown": "[human_benchmark_plan.md](artifacts/apps_rg/plans/human_benchmark_plan.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/plans/human_benchmark_schema.json",
+      "markdown": "[human_benchmark_schema.json](artifacts/apps_rg/plans/human_benchmark_schema.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/plans/public_dataset_sourcing_notes.md",
+      "markdown": "[public_dataset_sourcing_notes.md](artifacts/apps_rg/plans/public_dataset_sourcing_notes.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_plan.md",
+      "markdown": "[l6_shadow_benchmark_consolidation_plan.md](docs/reports/apps_rg/l6_shadow_benchmark_consolidation_plan.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_manifest.json",
+      "markdown": "[l6_shadow_benchmark_consolidation_manifest.json](docs/reports/apps_rg/l6_shadow_benchmark_consolidation_manifest.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_receipt.md",
+      "markdown": "[l6_shadow_benchmark_consolidation_receipt.md](docs/reports/apps_rg/l6_shadow_benchmark_consolidation_receipt.md)"
+    }
+  ],
+  "upstream_plan_ref_link": {
+    "path": "cursor/plans/p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md",
+    "markdown": "[p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md](cursor/plans/p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md)"
+  },
+  "receipt_markdown": "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_receipt.md",
+  "receipt_markdown_link": {
+    "path": "docs/reports/apps_rg/l6_shadow_benchmark_consolidation_receipt.md",
+    "markdown": "[l6_shadow_benchmark_consolidation_receipt.md](docs/reports/apps_rg/l6_shadow_benchmark_consolidation_receipt.md)"
+  }
+}

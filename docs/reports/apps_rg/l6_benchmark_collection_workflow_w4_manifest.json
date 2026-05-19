@@ -1,0 +1,90 @@
+{
+  "manifest_kind": "l6_benchmark_collection_workflow_w4",
+  "manifest_version": "1.0.0",
+  "status": "DESIGN_ONLY",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "judges_promoted": false,
+  "datasets_collected": false,
+  "human_labels_collected": false,
+  "calibration_computed": false,
+  "examples_are_synthetic": true,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "files_changed": [
+    "artifacts/apps_rg/benchmarks/collection_workflow.md",
+    "artifacts/apps_rg/benchmarks/reviewer_scoring_guide.md",
+    "artifacts/apps_rg/benchmarks/holdout_split_strategy.md",
+    "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4.md",
+    "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_manifest.json",
+    "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_receipt.md"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0,
+      "note": "empty diff"
+    },
+    {
+      "command": "python -m json.tool docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_manifest.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no real samples collected",
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "no public datasets ingested"
+  ],
+  "open_gaps": [
+    "benchmark collection not executed",
+    "reviewer scoring not collected",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "drift holdout not populated",
+    "collection pipeline not implemented",
+    "reviewer packet exporter not implemented",
+    "split assigner not implemented"
+  ],
+  "next_recommended_wave": "W5 \u2014 collection tooling, PII gate, stratified split assigner, reviewer packet export, score ingest dry-run (still no promotion without human labels + rho/kappa)",
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/collection_workflow.md",
+      "markdown": "[collection_workflow.md](artifacts/apps_rg/benchmarks/collection_workflow.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_scoring_guide.md",
+      "markdown": "[reviewer_scoring_guide.md](artifacts/apps_rg/benchmarks/reviewer_scoring_guide.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/holdout_split_strategy.md",
+      "markdown": "[holdout_split_strategy.md](artifacts/apps_rg/benchmarks/holdout_split_strategy.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4.md",
+      "markdown": "[l6_benchmark_collection_workflow_w4.md](docs/reports/apps_rg/l6_benchmark_collection_workflow_w4.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_manifest.json",
+      "markdown": "[l6_benchmark_collection_workflow_w4_manifest.json](docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_manifest.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_receipt.md",
+      "markdown": "[l6_benchmark_collection_workflow_w4_receipt.md](docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_receipt.md)"
+    }
+  ],
+  "receipt_markdown": "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_receipt.md",
+  "receipt_markdown_link": {
+    "path": "docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_receipt.md",
+    "markdown": "[l6_benchmark_collection_workflow_w4_receipt.md](docs/reports/apps_rg/l6_benchmark_collection_workflow_w4_receipt.md)"
+  }
+}

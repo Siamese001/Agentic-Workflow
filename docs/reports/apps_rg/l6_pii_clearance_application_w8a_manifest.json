@@ -1,0 +1,119 @@
+{
+  "manifest_kind": "l6_pii_clearance_application_w8a",
+  "manifest_version": "1.0.0",
+  "status": "PASS",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "human_labels_collected": false,
+  "judges_promoted": false,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "decisions_total": 7,
+  "pii_cleared": 7,
+  "pii_pending_review": 0,
+  "pii_rejected": 0,
+  "reviewer_export_count": 7,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "files_changed": [
+    "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_decisions_w8a.json",
+    "ops_scripts/apps_rg/l6_benchmarks/review_pii_clearance.py",
+    "docs/reports/apps_rg/l6_pii_clearance_application_w8a.md",
+    "docs/reports/apps_rg/l6_pii_clearance_application_w8a_manifest.json",
+    "docs/reports/apps_rg/l6_pii_clearance_application_w8a_receipt.md"
+  ],
+  "reports_generated": [
+    "artifacts/apps_rg/benchmarks/collected/_manifests/pii_review_report_w8a.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_application_w8a.json",
+    "artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w8a.json",
+    "artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w8a.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0
+    },
+    {
+      "command": "python review_pii_clearance.py --apply --decisions pii_clearance_decisions_w8a.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python validate_benchmark_samples.py --profile collected",
+      "exit_code": 0
+    },
+    {
+      "command": "python export_reviewer_packets.py -> reviewer_packet_w8a.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "clearance_application": "PASS",
+    "schema_validation": "PASS",
+    "reviewer_packet_export": "PASS",
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no human quality labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "no source runtime proofs modified",
+    "clearance is PII-only not certification proof_eligible"
+  ],
+  "open_gaps": [
+    "reviewer scoring not collected",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "drift holdout not human-locked"
+  ],
+  "receipt_markdown": "docs/reports/apps_rg/l6_pii_clearance_application_w8a_receipt.md",
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_decisions_w8a.json",
+      "markdown": "[pii_clearance_decisions_w8a.json](artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_decisions_w8a.json)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/review_pii_clearance.py",
+      "markdown": "[review_pii_clearance.py](ops_scripts/apps_rg/l6_benchmarks/review_pii_clearance.py)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_pii_clearance_application_w8a.md",
+      "markdown": "[l6_pii_clearance_application_w8a.md](docs/reports/apps_rg/l6_pii_clearance_application_w8a.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_pii_clearance_application_w8a_manifest.json",
+      "markdown": "[l6_pii_clearance_application_w8a_manifest.json](docs/reports/apps_rg/l6_pii_clearance_application_w8a_manifest.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_pii_clearance_application_w8a_receipt.md",
+      "markdown": "[l6_pii_clearance_application_w8a_receipt.md](docs/reports/apps_rg/l6_pii_clearance_application_w8a_receipt.md)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/pii_review_report_w8a.json",
+      "markdown": "[pii_review_report_w8a.json](artifacts/apps_rg/benchmarks/collected/_manifests/pii_review_report_w8a.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_application_w8a.json",
+      "markdown": "[pii_clearance_application_w8a.json](artifacts/apps_rg/benchmarks/collected/_manifests/pii_clearance_application_w8a.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w8a.json",
+      "markdown": "[validation_report_w8a.json](artifacts/apps_rg/benchmarks/collected/_manifests/validation_report_w8a.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w8a.json",
+      "markdown": "[reviewer_packet_w8a.json](artifacts/apps_rg/benchmarks/reviewer_exports/reviewer_packet_w8a.json)"
+    }
+  ],
+  "receipt_markdown_link": {
+    "path": "docs/reports/apps_rg/l6_pii_clearance_application_w8a_receipt.md",
+    "markdown": "[l6_pii_clearance_application_w8a_receipt.md](docs/reports/apps_rg/l6_pii_clearance_application_w8a_receipt.md)"
+  }
+}

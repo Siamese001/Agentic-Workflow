@@ -1,0 +1,106 @@
+{
+  "manifest_kind": "l6_reviewer_score_ingest_w8b",
+  "manifest_version": "1.0.0",
+  "status": "PASS",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "reviewer_packet_count": 7,
+  "template_sample_count": 7,
+  "score_rows": 7,
+  "non_null_scores": 0,
+  "human_labels_collected": false,
+  "score_template_created": true,
+  "placeholder_scores_only": true,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "judges_promoted": false,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "upstream_manifest_ref": "docs/reports/apps_rg/l6_pii_clearance_application_w8a_manifest.json",
+  "files_changed": [
+    "ops_scripts/apps_rg/l6_benchmarks/create_reviewer_score_template.py",
+    "ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_score_ingest.py",
+    "artifacts/apps_rg/benchmarks/reviewer_scores/reviewer_score_template_w8b.json",
+    "artifacts/apps_rg/benchmarks/reviewer_scores/reviewer_scores.placeholder_w8b.json",
+    "docs/reports/apps_rg/l6_reviewer_score_ingest_w8b.md",
+    "docs/reports/apps_rg/l6_reviewer_score_ingest_w8b_manifest.json"
+  ],
+  "reports_generated": [
+    "artifacts/apps_rg/benchmarks/reviewer_scores/_manifests/reviewer_score_validation_w8b.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_packet_w8a.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python create_reviewer_score_template.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python validate_reviewer_score_ingest.py --placeholder-mode",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "template_creation": "PASS",
+    "placeholder_score_validation": "PASS",
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no real human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "no source runtime proofs modified",
+    "null placeholder scores are not human labels"
+  ],
+  "open_gaps": [
+    "real reviewer scoring not collected",
+    "dual-review agreement not computed",
+    "calibration report not computed",
+    "judge calibration_status not promoted",
+    "drift holdout not human-locked"
+  ],
+  "files_changed_links": [
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/create_reviewer_score_template.py",
+      "markdown": "[create_reviewer_score_template.py](ops_scripts/apps_rg/l6_benchmarks/create_reviewer_score_template.py)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_score_ingest.py",
+      "markdown": "[validate_reviewer_score_ingest.py](ops_scripts/apps_rg/l6_benchmarks/validate_reviewer_score_ingest.py)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_scores/reviewer_score_template_w8b.json",
+      "markdown": "[reviewer_score_template_w8b.json](artifacts/apps_rg/benchmarks/reviewer_scores/reviewer_score_template_w8b.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_scores/reviewer_scores.placeholder_w8b.json",
+      "markdown": "[reviewer_scores.placeholder_w8b.json](artifacts/apps_rg/benchmarks/reviewer_scores/reviewer_scores.placeholder_w8b.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_reviewer_score_ingest_w8b.md",
+      "markdown": "[l6_reviewer_score_ingest_w8b.md](docs/reports/apps_rg/l6_reviewer_score_ingest_w8b.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_reviewer_score_ingest_w8b_manifest.json",
+      "markdown": "[l6_reviewer_score_ingest_w8b_manifest.json](docs/reports/apps_rg/l6_reviewer_score_ingest_w8b_manifest.json)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_scores/_manifests/reviewer_score_validation_w8b.json",
+      "markdown": "[reviewer_score_validation_w8b.json](artifacts/apps_rg/benchmarks/reviewer_scores/_manifests/reviewer_score_validation_w8b.json)"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "manifest_kind": "l6_public_bootstrap_sourcing_w9a",
+  "manifest_version": "1.0.0",
+  "status": "PASS",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "public_datasets_ingested": false,
+  "human_labels_collected": false,
+  "weak_labels_registered": true,
+  "source_registry_count": 5,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "judges_promoted": false,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "upstream_manifest_ref": "docs/reports/apps_rg/l6_reviewer_score_ingest_w8b_manifest.json",
+  "files_changed": [
+    "artifacts/apps_rg/benchmarks/public_bootstrap/README.md",
+    "artifacts/apps_rg/benchmarks/public_bootstrap/source_registry.json",
+    "artifacts/apps_rg/benchmarks/public_bootstrap/weak_label_contract.md",
+    "artifacts/apps_rg/benchmarks/public_bootstrap/public_bootstrap_sample_schema_notes.md",
+    "docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a.md",
+    "docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool artifacts/apps_rg/benchmarks/public_bootstrap/source_registry.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a_manifest.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "source_registry_parse": "PASS",
+    "manifest_json_parse": "PASS",
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no public datasets ingested",
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed for promotion",
+    "no Cohen kappa computed for promotion",
+    "no runtime behavior changed",
+    "public_bootstrap is not calibration proof",
+    "LLM-scored and category labels are weak labels only"
+  ],
+  "open_gaps": [
+    "source license review not completed unless marked approved",
+    "public import tooling not implemented",
+    "PII review for public sources not completed",
+    "apps_rg human scoring still missing",
+    "calibration report not computed",
+    "judge calibration_status not promoted"
+  ],
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/public_bootstrap/README.md",
+      "markdown": "[README.md](artifacts/apps_rg/benchmarks/public_bootstrap/README.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/public_bootstrap/source_registry.json",
+      "markdown": "[source_registry.json](artifacts/apps_rg/benchmarks/public_bootstrap/source_registry.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/public_bootstrap/weak_label_contract.md",
+      "markdown": "[weak_label_contract.md](artifacts/apps_rg/benchmarks/public_bootstrap/weak_label_contract.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/public_bootstrap/public_bootstrap_sample_schema_notes.md",
+      "markdown": "[public_bootstrap_sample_schema_notes.md](artifacts/apps_rg/benchmarks/public_bootstrap/public_bootstrap_sample_schema_notes.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a.md",
+      "markdown": "[l6_public_bootstrap_sourcing_w9a.md](docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a_manifest.json",
+      "markdown": "[l6_public_bootstrap_sourcing_w9a_manifest.json](docs/reports/apps_rg/l6_public_bootstrap_sourcing_w9a_manifest.json)"
+    }
+  ]
+}

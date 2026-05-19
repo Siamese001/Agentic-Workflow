@@ -1,0 +1,131 @@
+{
+  "manifest_kind": "l6_reviewer_handoff_w10",
+  "manifest_version": "1.0.0",
+  "status": "PASS",
+  "proof_eligible": false,
+  "runtime_changed": false,
+  "agentic_core_changed": false,
+  "reviewer_packets_created": true,
+  "score_sheets_created": true,
+  "human_labels_collected": false,
+  "calibration_computed": false,
+  "spearman_computed": false,
+  "cohen_kappa_computed": false,
+  "judges_promoted": false,
+  "packet_sample_count": 7,
+  "score_sheet_count": 2,
+  "non_null_scores": 0,
+  "generated_at": "2026-05-18T00:00:00Z",
+  "upstream_manifest_refs": [
+    "docs/reports/apps_rg/l6_reviewer_score_ingest_w8b_manifest.json",
+    "docs/reports/apps_rg/l6_pii_clearance_application_w8a_manifest.json"
+  ],
+  "handoff_dir": "artifacts/apps_rg/benchmarks/reviewer_handoff",
+  "files_changed": [
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/README.md",
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_instructions_w10.md",
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_1_packet_w10.json",
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_2_packet_w10.json",
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_1_score_sheet_w10.json",
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_2_score_sheet_w10.json",
+    "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_handoff_manifest_w10.json",
+    "docs/reports/apps_rg/l6_reviewer_handoff_w10.md",
+    "docs/reports/apps_rg/l6_reviewer_handoff_w10_manifest.json"
+  ],
+  "commands_run": [
+    {
+      "command": "git diff -- agentic_core",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_packet_w8a.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_score_template_w8b.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_1_packet_w10.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_2_packet_w10.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_1_score_sheet_w10.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_2_score_sheet_w10.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m json.tool reviewer_handoff_manifest_w10.json",
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "reviewer_packets_parse": "PASS",
+    "score_sheets_parse": "PASS",
+    "manifest_json_parse": "PASS",
+    "non_null_scores": 0,
+    "agentic_core_diff_empty": true,
+    "runtime_source_changed_by_this_effort": false
+  },
+  "explicit_non_claims": [
+    "no human labels collected",
+    "no judge promoted",
+    "no Spearman rho computed",
+    "no Cohen kappa computed",
+    "no runtime behavior changed",
+    "no calibration complete",
+    "public_bootstrap not used as calibration proof"
+  ],
+  "open_gaps": [
+    "reviewer scoring not collected",
+    "score ingest not run on real labels",
+    "dual-review agreement not computed",
+    "calibration report not computed",
+    "judge calibration_status not promoted"
+  ],
+  "files_changed_links": [
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/README.md",
+      "markdown": "[README.md](artifacts/apps_rg/benchmarks/reviewer_handoff/README.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_instructions_w10.md",
+      "markdown": "[reviewer_instructions_w10.md](artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_instructions_w10.md)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_1_packet_w10.json",
+      "markdown": "[reviewer_1_packet_w10.json](artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_1_packet_w10.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_2_packet_w10.json",
+      "markdown": "[reviewer_2_packet_w10.json](artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_2_packet_w10.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_1_score_sheet_w10.json",
+      "markdown": "[reviewer_1_score_sheet_w10.json](artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_1_score_sheet_w10.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_2_score_sheet_w10.json",
+      "markdown": "[reviewer_2_score_sheet_w10.json](artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_2_score_sheet_w10.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_handoff_manifest_w10.json",
+      "markdown": "[reviewer_handoff_manifest_w10.json](artifacts/apps_rg/benchmarks/reviewer_handoff/reviewer_handoff_manifest_w10.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_reviewer_handoff_w10.md",
+      "markdown": "[l6_reviewer_handoff_w10.md](docs/reports/apps_rg/l6_reviewer_handoff_w10.md)"
+    },
+    {
+      "path": "docs/reports/apps_rg/l6_reviewer_handoff_w10_manifest.json",
+      "markdown": "[l6_reviewer_handoff_w10_manifest.json](docs/reports/apps_rg/l6_reviewer_handoff_w10_manifest.json)"
+    }
+  ]
+}
