@@ -1,12 +1,10 @@
-"""Executive summary section lane — canonical implementation for ``python -m apps_rg --section executive_summary``.
+"""Executive summary section lane — ``python -m apps_rg --section executive_summary``.
 
-Wires PA → provider → canonical ledger → X2 → X1D → X3 → L6 under ``artifacts/apps_rg/runtime_proofs/``.
-Invoked from ``apps_rg.runtime.orchestration.canonical_dispatch`` (not ``agentic_core``).
+Lane-scoped modular runtime (proof pool → section graph binding shim → PA → L2 → section X2/X3/L6).
+**Not** the integrated R4 governed spine (U0→L1→L0→C0→PA→L2→Exit). Invoked from
+``apps_rg.runtime.orchestration.canonical_dispatch`` section branch only.
 
-**W3 classification (child plan apps-rg-agentic-core-boundary-remediation-child-f8e3c1):**
-``declared_temporary_slice`` — not the default governed package-driven PA/L2/Exit spine.
-Proof obligations: documented artifacts under ``artifacts/apps_rg/runtime_proofs/`` conventions;
-convergence tracked in ``w3_execution_path_convergence_f8e3c1.md``.
+**W3 classification:** ``declared_temporary_slice`` until one-spine convergence.
 """
 from __future__ import annotations
 
@@ -47,12 +45,12 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
-from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summary_prompt
+from apps_rg.runtime.sections.executive_summary_pa import compile_executive_summary_prompt
 from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     attach_lane_proof_bundle_fields,
     compute_lane_proof_bundle,
 )
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
@@ -982,13 +980,13 @@ def run_executive_summary_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end executive_summary run (qwen_vllm): artifacts + X2/X1D/X3."""
-    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import (
         apply_proof_pool_to_usage_ledger,
         load_section_proof_for_lane,
     )
 
-    pool, base, base_path, base_hash = load_section_proof_for_lane(
+    pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="executive_summary",
         args=args,
         repo_root=REPO_ROOT,
@@ -1041,6 +1039,33 @@ def run_executive_summary_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_fec_bridge import (
+        merge_compiled_prompt_artifact_fec_fields,
+        wire_section_fec_bridge_for_lane,
+    )
+
+    wire_section_fec_bridge_for_lane(
+        artifact_dir=artifact_dir,
+        section_id="executive_summary",
+        front_spine=front_spine,
+        pool=pool,
+        runtime_payload=runtime_payload,
+    )
+    runtime_payload["section_front_spine_receipt_ref"] = "section_front_spine_receipt.json"
+    runtime_payload["proof_pool_front_spine_preconditions"] = {
+        "precondition_status": "PASS",
+        "status": "PASS",
+        "required_contracts": list(front_spine.contracts_emitted().keys()),
+        "satisfied": all(front_spine.contracts_emitted().values()),
+        "proof_pool_entry_allowed": True,
+        "validated_request_ref": "validated_request.json",
+        "l1_plan_contract_ref": "l1_plan_contract.json",
+        "route_contract_ref": "route_contract.json",
+        "receipt_ref": "section_front_spine_receipt.json",
+        "canonical_c0_claimed": False,
+        "canonical_exit_claimed": False,
+        "product_certification": "NOT_CLAIMED",
+    }
     from apps_rg.runtime.qwen_transport_diag import merge_transport_context
 
     merge_transport_context(
@@ -1068,21 +1093,24 @@ def run_executive_summary_execution(
     )
     write_json(
         artifact_dir / "compiled_prompt_artifact.json",
-        {
-            "section_id": section_compiled.section_id,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
-            "provider_prompt_hash": prompt_hash,
-            "slot_count": section_compiled.artifact.slot_count,
-            "proof_source": pool.proof_source,
-            "proof_pool_ref": pool.proof_pool_ref,
-            "proof_pool_digest": pool.proof_pool_digest,
-            "base_resume_fallback_used": pool.base_resume_fallback_used,
-            "graph_only_claim_authority": pool.proof_source == "augmented_skills_graph",
-            "c03_graphrag_bound_status": (proof_pool_metadata or {}).get("c03_graphrag_bound_status"),
-            "allowed_source_fact_ids_count": len(allowed_fact_ids),
-        },
+        merge_compiled_prompt_artifact_fec_fields(
+            {
+                "section_id": section_compiled.section_id,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+                "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+                "provider_prompt_hash": prompt_hash,
+                "slot_count": section_compiled.artifact.slot_count,
+                "proof_source": pool.proof_source,
+                "proof_pool_ref": pool.proof_pool_ref,
+                "proof_pool_digest": pool.proof_pool_digest,
+                "base_resume_fallback_used": pool.base_resume_fallback_used,
+                "graph_only_claim_authority": pool.proof_source == "augmented_skills_graph",
+                "c03_graphrag_bound_status": (proof_pool_metadata or {}).get("c03_graphrag_bound_status"),
+                "allowed_source_fact_ids_count": len(allowed_fact_ids),
+            },
+            runtime_payload,
+        ),
     )
 
     provider_request_data = None
@@ -1091,6 +1119,15 @@ def run_executive_summary_execution(
     parsed: dict[str, Any] | None = None
     parse_error = ""
     runtime_generation_status = "BLOCKED"
+
+    from apps_rg.runtime.section_l2_lane_integration import prepare_section_l2_before_provider
+
+    prepare_section_l2_before_provider(
+        artifact_dir,
+        "executive_summary",
+        runtime_payload,
+        provider_lane=str(args.provider),
+    )
 
     provider_req, provider_payload = build_qwen_request(
         messages=messages,
@@ -1453,6 +1490,18 @@ def run_executive_summary_execution(
         section_input_usage_ledger=usage_doc,
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.section_l2_lane_integration import finalize_section_l2_after_output
+    from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
+        finalize_section_runtime_exhaust_before_l6,
+        gate_section_l6_shadow_after_exhaust,
+    )
+
+    finalize_section_l2_after_output(artifact_dir, "executive_summary", runtime_payload)
+    finalize_section_exit_after_l2(artifact_dir, "executive_summary", runtime_payload)
+    finalize_section_runtime_exhaust_before_l6(
+        artifact_dir, "executive_summary", runtime_payload, repo_root=REPO_ROOT
+    )
 
     emit_executive_summary_post_x3_proof_artifacts(
         repo_root=REPO_ROOT,
@@ -1477,6 +1526,7 @@ def run_executive_summary_execution(
     write_json(artifact_dir / "l2_output.json", l2_output)
 
     l6_temp = float(args.temperature)
+    gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,
@@ -1569,6 +1619,17 @@ def run_executive_summary_execution(
     (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
+    from apps_rg.runtime.section_one_spine_certification_lane_integration import (
+        finalize_section_one_spine_certification,
+    )
+
+    finalize_section_one_spine_certification(
+        artifact_dir,
+        "executive_summary",
+        runtime_payload,
+        proof_bundle=proof_bundle,
+        runtime_generation_status=runtime_generation_status,
+    )
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,

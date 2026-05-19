@@ -12,6 +12,28 @@ from typing import Any
 
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 
+_GRAPH_SKILLS_EVIDENCE = "augmented_skills_graph"
+
+
+def _parsed_ledger_lacks_bul_ibm_roots(parsed: dict[str, Any]) -> bool:
+    """True when bullets or claim_ledger cite only graph fact_* ids (X2 requires bul_ibm_*)."""
+    bullets = parsed.get("bullets") or []
+    if len(bullets) < len(IBM_BULLET_IDS):
+        return True
+    for bullet in bullets:
+        if not isinstance(bullet, dict):
+            return True
+        src = bullet.get("source_fact_ids") or []
+        if not any(str(s).startswith("bul_ibm_") for s in src):
+            return True
+    for row in parsed.get("claim_ledger") or []:
+        if not isinstance(row, dict):
+            continue
+        src = row.get("source_fact_ids") or []
+        if not any(str(s).startswith("bul_ibm_") for s in src):
+            return True
+    return False
+
 _TAXONOMY_PREFIX = re.compile(r"^[A-Z][A-Za-z /,&-]{3,60}:\s+")
 
 
@@ -49,19 +71,26 @@ def should_hydrate_ibm_bullets_from_canonical(
     runtime_payload: dict[str, Any],
     parsed: dict[str, Any] | None = None,
 ) -> bool:
+    if parsed is not None:
+        if ibm_bullet_texts_missing_core_metrics(parsed):
+            return True
+        if _parsed_ledger_lacks_bul_ibm_roots(parsed):
+            return True
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    if pp.get("claim_evidence_source_type") != "candidate_fact_ledger":
-        return False
+    source_type = str(pp.get("claim_evidence_source_type") or "")
     facts = (runtime_payload.get("selected_fact_plan") or {}).get("facts") or []
-    if len(facts) < len(IBM_BULLET_IDS):
-        return True
     bul_in_plan = sum(
         1 for f in facts if str(f.get("fact_id") or "").startswith("bul_ibm_")
     )
-    if bul_in_plan < len(IBM_BULLET_IDS):
-        return True
-    if parsed is not None and ibm_bullet_texts_missing_core_metrics(parsed):
-        return True
+    if source_type == "candidate_fact_ledger":
+        if len(facts) < len(IBM_BULLET_IDS):
+            return True
+        if bul_in_plan < len(IBM_BULLET_IDS):
+            return True
+        return False
+    if source_type == _GRAPH_SKILLS_EVIDENCE:
+        if bul_in_plan < len(IBM_BULLET_IDS):
+            return True
     return False
 
 
@@ -90,10 +119,6 @@ def hydrate_parsed_ibm_bullets_from_canonical_resume(
         text = strip_ibm_bullet_taxonomy_prefix(str(canon.get("claim_text") or ""))
         metric_raw = str(canon.get("metric_raw") or "")
         src: list[str] = [bid]
-        if idx < len(pool_fact_ids):
-            pf = pool_fact_ids[idx]
-            if pf in allowed_out and pf not in src:
-                src.insert(0, pf)
         if metric_raw:
             mid = f"{bid}_metric_{sha16(metric_raw)[:8]}"
             if mid in allowed_out:
@@ -139,12 +164,72 @@ def fact_ids_for_ibm_narrative_ledger(runtime_payload: dict[str, Any]) -> list[s
     return sorted(x for x in allowed if x.startswith("bul_ibm_"))[:6]
 
 
+def align_ibm_narrative_claim_ledger_to_bul_ibm(
+    parsed: dict[str, Any],
+    *,
+    narrative_sentence: str,
+    allowed_fact_ids: set[str] | frozenset[str],
+    runtime_payload: dict[str, Any] | None = None,
+) -> None:
+    """Bind narrative claim_ledger to bul_ibm_* (required by X2; graph pool may emit fact_* only)."""
+    from apps_rg.runtime.validators.ibm_narrative_x2 import ibm_narrative_material_fact_ids_for_sentence
+
+    themes = ibm_narrative_material_fact_ids_for_sentence(narrative_sentence)
+    bul_ids = sorted(t for t in themes if str(t).startswith("bul_ibm_"))
+    if not bul_ids:
+        bul_ids = sorted(str(x) for x in allowed_fact_ids if str(x).startswith("bul_ibm_"))[:3]
+    if not bul_ids:
+        bul_ids = ["bul_ibm_001"]
+
+    narrative = str(parsed.get("narrative_sentence") or narrative_sentence or "").strip()
+    led = list(parsed.get("claim_ledger") or [])
+    new_led: list[dict[str, Any]] = []
+    for row in led:
+        if not isinstance(row, dict):
+            continue
+        ct = str(row.get("claim_text") or "").strip()
+        if not ct:
+            continue
+        src = row.get("source_fact_ids") or []
+        if any(str(s).startswith("bul_ibm_") for s in src):
+            new_led.append(row)
+        else:
+            new_led.append({**row, "source_fact_ids": list(bul_ids)})
+    if not new_led and narrative:
+        new_led = [
+            {
+                "claim_text": narrative.rstrip(".!?"),
+                "source_fact_ids": list(bul_ids),
+            }
+        ]
+    parsed["claim_ledger"] = new_led
+    allowed_out = set(str(x) for x in allowed_fact_ids) | set(bul_ids)
+    if runtime_payload is not None:
+        runtime_payload["allowed_fact_ids"] = sorted(allowed_out)
+    clog = list(parsed.get("change_log") or []) if isinstance(parsed.get("change_log"), list) else []
+    clog.append(
+        {
+            "operation": "align_ibm_narrative_claim_ledger_to_bul_ibm",
+            "reason": "graph_skills_authority_bul_ibm_x2_binding",
+        }
+    )
+    parsed["change_log"] = clog
+
+
 def remap_ibm_narrative_claim_ledger_to_fact_pool(
     parsed: dict[str, Any],
     runtime_payload: dict[str, Any],
 ) -> None:
     """Map narrative claim_ledger off bul_ibm_* placeholders onto allowed fact_* pool ids."""
     pp = runtime_payload.get("proof_pool_metadata") or {}
+    if pp.get("claim_evidence_source_type") == _GRAPH_SKILLS_EVIDENCE:
+        align_ibm_narrative_claim_ledger_to_bul_ibm(
+            parsed,
+            narrative_sentence=str(parsed.get("narrative_sentence") or ""),
+            allowed_fact_ids={str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])},
+            runtime_payload=runtime_payload,
+        )
+        return
     if pp.get("claim_evidence_source_type") != "candidate_fact_ledger":
         return
     fact_ids = fact_ids_for_ibm_narrative_ledger(runtime_payload)

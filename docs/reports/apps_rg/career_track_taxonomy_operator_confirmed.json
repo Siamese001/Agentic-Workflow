@@ -1,0 +1,59 @@
+{
+  "schema": "career_track_taxonomy_operator_confirmed_v1",
+  "confirmed_at": "2026-05-19",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "tracks": [
+    {
+      "track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "node_id": "track_actuarial_risk_derivatives",
+      "label": "Actuarial / risk management / derivatives",
+      "start_year": 2002,
+      "end_year": 2010,
+      "end_year_present": false,
+      "epochs": [
+        "epoch_actuarial_financial_engineering",
+        "epoch_enterprise_risk_governance"
+      ],
+      "pillars_exclude": ["pillar_trading_hpc"]
+    },
+    {
+      "track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "node_id": "track_data_tech_cloud_ml",
+      "label": "Data / technology / Cloud / ML (career change)",
+      "start_year": 2010,
+      "end_year": 2022,
+      "end_year_present": false,
+      "epochs": [
+        "epoch_cloud_data_platform_engineering",
+        "epoch_ai_platform_commercialization",
+        "epoch_partner_gtm_revenue_leadership"
+      ],
+      "pillars_include_confirmed": [
+        "pillar_trading_hpc",
+        "pillar_partner_gtm_alliances",
+        "pillar_cosell_partner_engineering",
+        "pillar_presales_solutioning"
+      ]
+    },
+    {
+      "track_id": "TRACK_GENAI_AGENTIC",
+      "node_id": "track_genai_agentic",
+      "label": "GenAI / Agentic (specialization)",
+      "start_year": 2022,
+      "end_year": null,
+      "end_year_present": true,
+      "epochs": ["epoch_agentic_ai_runtime_architecture"],
+      "pillars_include": ["pillar_agentic_ai_platforms"]
+    }
+  ],
+  "career_sequence": [
+    "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+    "TRACK_DATA_TECH_CLOUD_ML",
+    "TRACK_GENAI_AGENTIC"
+  ],
+  "operator_decisions": {
+    "trading_hpc_track": "TRACK_DATA_TECH_CLOUD_ML",
+    "partner_gtm_track": "TRACK_DATA_TECH_CLOUD_ML",
+    "fourth_gtm_track": false
+  }
+}

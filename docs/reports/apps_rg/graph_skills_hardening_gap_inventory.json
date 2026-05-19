@@ -1,0 +1,277 @@
+{
+  "schema": "graph_skills_hardening_gap_inventory_v1",
+  "generated_at": "2026-05-19T16:00:00Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W0",
+  "inventory_only": true,
+  "live_competencies_runtime_modified": false,
+  "live_competencies_x3_allow_claimed": false,
+  "competencies_graph_proof_pool_implemented": true,
+  "broad_skills_ledger_accepted_future_authority": false,
+  "p2_w1a_supersession": {
+    "gap_id": "GAP-P2-1-proof-pool-authority",
+    "gap_closed": true,
+    "closed_by_wave": "P2-W1A",
+    "receipt_ref": "docs/reports/apps_rg/competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt.json",
+    "note": "P2-W0 snapshot superseded: competencies default authority is augmented_skills_graph; ledger path deprecated."
+  },
+  "broad_skills_ledger_current_state": {
+    "is_current_proof_pool_authority": false,
+    "accepted_future_product_authority": false,
+    "selection_method": "broad_skills_ledger_competencies",
+    "resolver_function": "apps_rg/runtime/proof_pool_resolver.py::_build_competencies_ledger_plan",
+    "note": "DEPRECATED — unreachable from competencies product proof after P2-W1A.",
+    "superseded_by_p2_w1a": true
+  },
+  "part1_proof_refs": {
+    "p1_w4_closeout_receipt_ref": "docs/reports/apps_rg/career_track_p1_w4_closeout_receipt.json",
+    "p1_w5_projection_receipt_ref": "docs/reports/apps_rg/career_track_p1_w5_track_balanced_sections_receipt.json",
+    "p1_w4_c03_graph_bound_status": "BOUND",
+    "p1_w5_live_competencies_runtime_modified": false
+  },
+  "current_competencies_state": {
+    "canonical_cli": "python -m apps_rg --section competencies",
+    "lane_entry": "apps_rg/runtime/sections/competencies_lane.py::run_competencies_lane_execution",
+    "execution_ssot": "apps_rg/runtime/sections/competencies_lane_execution.py::run_competencies_lane_execution",
+    "proof_pool_construction": {
+      "primary": "apps_rg/runtime/proof_pool_lane_integration.py::load_section_proof_for_lane",
+      "resolver": "apps_rg/runtime/proof_pool_resolver.py::resolve_section_proof_pool",
+      "competencies_branch": "apps_rg/runtime/proof_pool_resolver.py::_build_competencies_ledger_plan",
+      "proof_pool_type_current": "augmented_skills_graph_track_weighted_competencies",
+      "proof_source_current": "augmented_skills_graph",
+      "p2_w1a_default_authority": true
+    },
+    "prompt_assembly": {
+      "pa_ssot": "apps_rg/runtime/sections/competencies_pa.py::compile_competencies_prompt",
+      "compat_reexport": "apps_rg/runtime/dispatch/competencies_pa.py",
+      "template": "apps_rg/prompt_assembly/templates/competency_selector_v2.pa_slots.yaml",
+      "skill_projection_optional": "apps_rg/fact_inventory/augmented_skills_graph.py::build_verified_skill_inventory_projection (prompt block only when graph metadata present; facts still ledger-sliced)"
+    },
+    "c0_graph_handoff": {
+      "fec_bridge": "apps_rg/runtime/sections/competencies_lane_execution.py::wire_section_fec_bridge_for_lane",
+      "c0_proof_blob": "build_c0_proof_support_blob(bullet_rows) from ledger bullets",
+      "c03_graphrag_bound_status": "NOT_BOUND",
+      "c03_artifact": "missing (no competencies c03_graphrag_bound.json product proof)"
+    },
+    "post_parse_repair": {
+      "present": true,
+      "module": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "functions": [
+        "repair_structured_competencies_source_facts",
+        "coerce_structured_competencies_resume_support",
+        "dedupe_structured_competency_terms",
+        "reduce_competency_keyword_stuffing",
+        "expand_structured_competencies_min_two_terms"
+      ],
+      "graph_only_quality_module": "MISSING (target: competencies_graph_only_quality.py P2-W6)"
+    },
+    "x2_validators": {
+      "module": "apps_rg/runtime/validators/competencies_x2.py::run_competencies_x2_gates",
+      "proof_pool_source_fact_gate": true,
+      "graph_skill_locality_metric_gates": false,
+      "anti_causal_across_skill_rows": false
+    },
+    "x1d_judges": {
+      "module": "apps_rg/runtime/judges/competencies_x1d.py",
+      "rubric": "COMPETENCIES_RUBRIC (competencies_x1d_v1)",
+      "graph_only_grade_only_rubric": false,
+      "allowed_skill_rows_packet": false
+    },
+    "x3_exit": "apps_rg/runtime/exit/competencies_x3.py (reuses executive_summary_x3 policy)",
+    "runtime_artifacts_dir": "artifacts/apps_rg/runtime_proofs/competencies/<provider>/<run_id>/",
+    "known_artifacts": [
+      "runtime_payload.json",
+      "compiled_prompt.txt",
+      "competencies_section_output.json",
+      "section_metric_receipt.json",
+      "x2_gate_results.json",
+      "x1d_judge_results.json",
+      "l6_shadow_eval_package.json"
+    ],
+    "live_proof_receipt": "MISSING (target: docs/reports/apps_rg/competencies_graph_skills_live_proof.json P2-W9)"
+  },
+  "executive_summary_pattern_reference": {
+    "canonical_cli": "python -m apps_rg --section executive_summary",
+    "lane_execution": "apps_rg/runtime/sections/executive_summary_lane_execution.py",
+    "proof_pool": {
+      "resolver": "apps_rg/runtime/proof_pool_resolver.py::_resolve_executive_summary_graph_only_proof_pool",
+      "proof_pool_type": "augmented_skills_graph",
+      "track_weighted_expansion": "apps_rg/fact_inventory/track_weighted_graph_expansion.py"
+    },
+    "c03_binding": {
+      "module": "apps_rg/runtime/c03_graphrag_bound.py::build_executive_summary_c03_graphrag_bound",
+      "status_reference": "BOUND",
+      "receipt": "docs/reports/apps_rg/executive_summary_graph_only_generation_live_proof.json"
+    },
+    "prompt_guardrails": "apps_rg/runtime/sections/executive_summary_pa.py::format_graph_only_quality_guardrails_block",
+    "post_parse_repair": "apps_rg/runtime/sections/exec_summary_graph_only_quality.py::apply_graph_only_generation_quality_repair",
+    "validator": "apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py",
+    "x1d_rubric": "apps_rg/runtime/judges/executive_summary_judge_packet.py::GRAPH_ONLY_GRADE_ONLY_RUBRIC",
+    "live_proof_command": "python apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py --latest --write-report",
+    "contract_test": "tests/_apps_contract/test_exec_summary_graph_only_generation_live_proof.py"
+  },
+  "gap_matrix": [
+    {
+      "capability": "proof_pool_authority",
+      "executive_summary": "augmented_skills_graph + track-weighted expansion",
+      "competencies_current": "broad_skills_ledger_competencies HIGH-row slice",
+      "status": "CLOSED_P2_W1A",
+      "p2_wave": "P2-W1A"
+    },
+    {
+      "capability": "c03_graph_binding",
+      "executive_summary": "c03_graphrag_bound.json BOUND; non_graph_evidence_items_count=0",
+      "competencies_current": "NOT_BOUND; FEC bridge without graph-only C0.3 product proof",
+      "status": "GAP",
+      "p2_wave": "P2-W2"
+    },
+    {
+      "capability": "shared_validator_infrastructure",
+      "executive_summary": "validate_exec_summary_graph_only_generation.py",
+      "competencies_current": "no graph-skills live validator",
+      "status": "GAP",
+      "p2_wave": "P2-W3"
+    },
+    {
+      "capability": "x2_metric_skill_locality_gates",
+      "executive_summary": "repair + allowed_percent_tokens + graph locality in validator",
+      "competencies_current": "source_fact_id membership gate; no metric literal allowlist",
+      "status": "GAP",
+      "p2_wave": "P2-W4"
+    },
+    {
+      "capability": "prompt_authority_guardrails",
+      "executive_summary": "format_graph_only_quality_guardrails_block in PA",
+      "competencies_current": "optional VERIFIED_SKILL_INVENTORY_PROJECTION; ledger fact_lines primary",
+      "status": "PARTIAL",
+      "p2_wave": "P2-W5"
+    },
+    {
+      "capability": "post_parse_graph_only_repair",
+      "executive_summary": "exec_summary_graph_only_quality.py + graph_only_generation_quality_repair.json",
+      "competencies_current": "dispatch deterministic repairs (not graph-only)",
+      "status": "GAP",
+      "p2_wave": "P2-W6"
+    },
+    {
+      "capability": "x1d_graph_only_rubric",
+      "executive_summary": "GRAPH_ONLY_GRADE_ONLY_RUBRIC + allowed rows packet",
+      "competencies_current": "COMPETENCIES_RUBRIC advisory taxonomy",
+      "status": "GAP",
+      "p2_wave": "P2-W7"
+    },
+    {
+      "capability": "live_validator_and_contract_tests",
+      "executive_summary": "validate_exec_summary_graph_only_generation + contract PASS",
+      "competencies_current": "competencies_post_hardening_contract_proof_manifest (SRFS-era); no graph-skills live proof",
+      "status": "GAP",
+      "p2_wave": "P2-W8"
+    },
+    {
+      "capability": "live_canonical_proof",
+      "executive_summary": "X3_ALLOW + proof_eligible + REAL_LLM documented",
+      "competencies_current": "live Qwen runs exist; graph-only X3_ALLOW not proven",
+      "status": "GAP",
+      "p2_wave": "P2-W9"
+    }
+  ],
+  "p2_wave_targets": {
+    "P2-W1": {
+      "target_files": [
+        "apps_rg/runtime/proof_pool_resolver.py",
+        "apps_rg/runtime/proof_pool_lane_integration.py"
+      ],
+      "intended_behavior": "resolve_competencies_graph_skills_proof_pool() using augmented_skills_graph + P1 track-weighted expansion; proof_pool_type=augmented_skills_graph; assert_skills_not_broad_ledger_authority()",
+      "acceptance_test": "tests/unit/apps_rg/runtime/test_competencies_graph_proof_pool_p2_w1.py (new)",
+      "required_receipt_or_artifact": "docs/reports/apps_rg/competencies_p2_w1_graph_proof_pool_receipt.json",
+      "non_claims": ["No live competencies X3_ALLOW", "broad_skills_ledger not removed yet — deprecated reference only"]
+    },
+    "P2-W2": {
+      "target_files": [
+        "apps_rg/runtime/c03_graphrag_bound.py",
+        "apps_rg/runtime/sections/competencies_lane_execution.py"
+      ],
+      "intended_behavior": "Emit competencies c03_graphrag_bound.json with skill_row anchors; c03_graphrag_bound_status=BOUND; non_graph_evidence_items_count=0",
+      "acceptance_test": "tests/unit/apps_rg/runtime/test_competencies_c03_binding_p2_w2.py (new)",
+      "required_receipt_or_artifact": "artifacts/apps_rg/runtime_proofs/competencies/real/<run_id>/c03_graphrag_bound.json",
+      "non_claims": ["Not full spine FinalEvidenceContract traverse", "Not Part 2 live proof PASS"]
+    },
+    "P2-W3": {
+      "target_files": [
+        "apps_rg/runtime/validators/graph_skills_proof_common.py",
+        "apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py",
+        "apps_rg/runtime/validators/validate_competencies_graph_skills_generation.py"
+      ],
+      "intended_behavior": "Extract shared graph-skills proof checks; exec + competencies validators call common module",
+      "acceptance_test": "tests/unit/apps_rg/runtime/validators/test_graph_skills_proof_common_p2_w3.py (new)",
+      "required_receipt_or_artifact": "docs/reports/apps_rg/graph_skills_proof_common_extraction_receipt.json",
+      "non_claims": ["No weakening of exec-summary PASS criteria"]
+    },
+    "P2-W4": {
+      "target_files": [
+        "apps_rg/runtime/validators/competencies_x2.py"
+      ],
+      "intended_behavior": "Metric literal allowlist from graph facts; skill_id granularity; anti-causal across competency rows",
+      "acceptance_test": "tests/unit/apps_rg/runtime/validators/test_competencies_x2_graph_gates_p2_w4.py (new); synthetic bad fixtures FAIL",
+      "required_receipt_or_artifact": "docs/reports/apps_rg/competencies_p2_w4_x2_gate_receipt.json",
+      "non_claims": ["X1D advisory pass does not substitute for X2 FAIL"]
+    },
+    "P2-W5": {
+      "target_files": [
+        "apps_rg/runtime/sections/competencies_pa.py",
+        "apps_rg/fact_inventory/augmented_skills_graph.py"
+      ],
+      "intended_behavior": "Graph authority guardrails in compiled prompt; P1-W5 track-grouped skill inventory projection in PA block",
+      "acceptance_test": "tests/unit/apps_rg/runtime/sections/test_competencies_pa_graph_guardrails_p2_w5.py (new)",
+      "required_receipt_or_artifact": "artifacts/.../compiled_prompt.txt contains graph authority markers",
+      "non_claims": ["JD/briefing remain non-proof", "broad_skills_ledger not skills authority"]
+    },
+    "P2-W6": {
+      "target_files": [
+        "apps_rg/runtime/sections/competencies_graph_only_quality.py",
+        "apps_rg/runtime/sections/competencies_lane_execution.py"
+      ],
+      "intended_behavior": "apply_competencies_graph_only_quality_repair(); emit graph_only_generation_quality_repair.json per run",
+      "acceptance_test": "tests/unit/apps_rg/runtime/sections/test_competencies_graph_only_quality_p2_w6.py (new)",
+      "required_receipt_or_artifact": "artifacts/.../graph_only_generation_quality_repair.json",
+      "non_claims": ["No invented skills or metrics", "Repair does not weaken X2"]
+    },
+    "P2-W7": {
+      "target_files": [
+        "apps_rg/runtime/judges/competencies_x1d.py",
+        "apps_rg/runtime/judges/competencies_judge_packet.py"
+      ],
+      "intended_behavior": "GRAPH_ONLY_GRADE_ONLY rubric; allowed_skill_rows packet bound to graph projection",
+      "acceptance_test": "tests/unit/apps_rg/runtime/judges/test_competencies_x1d_graph_packet_p2_w7.py (new)",
+      "required_receipt_or_artifact": "artifacts/.../x1d_judge_packet.json",
+      "non_claims": ["Judges remain advisory; X2/X3 authoritative for proof eligibility"]
+    },
+    "P2-W8": {
+      "target_files": [
+        "apps_rg/runtime/validators/validate_competencies_graph_skills_generation.py",
+        "tests/_apps_contract/test_competencies_graph_skills_live_proof.py"
+      ],
+      "intended_behavior": "Fail-closed validator for latest competencies run; contract test gates inventory criteria",
+      "acceptance_test": "python -m pytest tests/_apps_contract/test_competencies_graph_skills_live_proof.py -q",
+      "required_receipt_or_artifact": "docs/reports/apps_rg/competencies_graph_skills_live_proof.json (created on PASS only)",
+      "non_claims": ["Mock provider runs do not satisfy live proof", "No X3_ALLOW until P2-W9"]
+    },
+    "P2-W9": {
+      "target_files": [
+        "apps_rg/__main__.py",
+        "apps_rg/runtime/sections/competencies_lane_execution.py"
+      ],
+      "intended_behavior": "Canonical live proof: REAL_LLM, X2 PASS, X3_ALLOW, proof_eligible, C0.3 BOUND, all X1D MODEL_BACKED pass",
+      "acceptance_test": "python -m apps_rg --section competencies --allow-non-allow-exit-zero; validate_competencies_graph_skills_generation.py --latest",
+      "required_receipt_or_artifact": "docs/reports/apps_rg/competencies_graph_skills_live_proof.json status PASS",
+      "non_claims": ["IBM/unify/headline migration out of scope (P2-W10 optional audit only)"]
+    }
+  },
+  "non_claims": [
+    "P2-W1 graph proof pool not implemented in this wave",
+    "No live competencies runtime proof PASS",
+    "No competencies X3_ALLOW",
+    "agentic_core untouched",
+    "Part 1 P1-W4/P1-W5 receipts preserved"
+  ]
+}

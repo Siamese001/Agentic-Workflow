@@ -1,0 +1,8 @@
+{
+  "schema": "p1_w4_hybrid_jd_fixture_v1",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "target_role": "SVP Engineering, Agentic AI Platforms",
+  "jd_text": "SVP Engineering — Agentic AI platform leader for regulated financial services. Must show governed agentic runtime, GraphRAG, multi-agent orchestration, and policy gates. Also value actuarial rigor, derivatives risk, and Basel/CCAR lineage plus AWS cloud data platform and partner GTM co-sell experience.",
+  "expected_min_tracks_with_facts": 2,
+  "expected_role_family_key": "SVP_ENGINEERING_AI_PLATFORM"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "section_x2_graph_locality_p2_w4_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W4",
+  "x2_modules_by_section": {
+    "headline": "apps_rg/runtime/validators/headline_x2.py",
+    "executive_summary": "apps_rg/runtime/validators/executive_summary_x2.py",
+    "unify_bullets": "apps_rg/runtime/validators/unify_bullets_x2.py",
+    "unify_narrative": "apps_rg/runtime/validators/unify_narrative_x2.py",
+    "ibm_bullets": "apps_rg/runtime/validators/ibm_bullets_x2.py",
+    "ibm_narrative": "apps_rg/runtime/validators/ibm_narrative_x2.py",
+    "competencies": "apps_rg/runtime/validators/competencies_x2.py"
+  },
+  "validates_skill_ids": true,
+  "validates_fact_ids": true,
+  "validates_graph_hop_paths": true,
+  "bad_fixtures_fail": true
+}

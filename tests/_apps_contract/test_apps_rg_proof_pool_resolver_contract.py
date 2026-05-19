@@ -10,8 +10,7 @@ import pytest
 
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
 from apps_rg.runtime.proof_pool_resolver import (
-    PROOF_SOURCE_BASE_RESUME_FALLBACK,
-    PROOF_SOURCE_BROAD_SKILLS_LEDGER,
+    PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
     PROOF_SOURCE_SRFS,
     resolve_section_proof_pool,
 )
@@ -27,8 +26,6 @@ SECTION_IDS = (
     "ibm_narrative",
     "competencies",
 )
-
-
 def _high_row(candidate_fact_id: str, *, claim_text: str = "Fixture claim.") -> dict:
     return {
         "candidate_fact_id": candidate_fact_id,
@@ -55,7 +52,7 @@ def _srfs_doc(sections: dict[str, list[dict]]) -> dict:
 
 
 @pytest.mark.parametrize("section_id", SECTION_IDS)
-def test_default_resolves_broad_skills_ledger_when_srfs_absent(section_id: str) -> None:
+def test_default_resolves_augmented_skills_graph_when_srfs_absent(section_id: str) -> None:
     if not LEDGER_PATH.is_file():
         pytest.skip(f"ledger missing: {LEDGER_PATH}")
     pool = resolve_section_proof_pool(
@@ -66,12 +63,15 @@ def test_default_resolves_broad_skills_ledger_when_srfs_absent(section_id: str) 
         target_title="VP Engineering",
         jd_text="Lead platform engineering.",
         briefing_text="Emphasize scale and delivery.",
+        product_visible=False,
     )
-    assert pool.proof_source == PROOF_SOURCE_BROAD_SKILLS_LEDGER
-    assert pool.broad_skills_ledger_present is True
+    assert pool.proof_source == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
+    assert pool.broad_skills_ledger_present is False
     assert pool.srfs_present is False
     assert pool.base_resume_fallback_used is False
     assert pool.proof_pool_digest
+    meta = pool.proof_pool_metadata or {}
+    assert meta.get("broad_skills_ledger_used_as_authority") is False
     assert pool.targeting_inputs_used.get("jd_title_company") is True
     assert pool.targeting_inputs_used.get("briefing") is True
 
@@ -102,17 +102,13 @@ def test_srfs_wins_over_broad_skills_ledger(section_id: str, tmp_path: Path) -> 
     assert pool.base_resume_fallback_used is False
 
 
-def test_base_resume_fallback_explicit_when_ledger_missing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RG_BROAD_SKILLS_LEDGER_PATH", str(tmp_path / "missing_ledger.json"))
-    pool = resolve_section_proof_pool(
-        section="headline",
-        selected_role_fact_set_path=None,
-        repo_root=REPO,
+def test_headline_fail_closed_when_graph_blocked(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "apps_rg.runtime.proof_pool_resolver.resolve_augmented_skills_graph_authority",
+        lambda **_: {"skills_authority_status": "BLOCKED", "skills_authority_block_reason": "test"},
     )
-    assert pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK
-    assert pool.base_resume_fallback_used is True
-    assert pool.fallback_used is True
-    assert pool.proof_pool_metadata.get("proof_pool_type") == "base_resume_fallback"
+    with pytest.raises(ValueError, match="graph-skills proof pool BLOCKED"):
+        resolve_section_proof_pool(section="headline", repo_root=REPO, product_visible=False)
 
 
 def test_non_proof_inputs_recorded_in_usage_extension() -> None:
@@ -132,15 +128,15 @@ def test_non_proof_inputs_recorded_in_usage_extension() -> None:
     assert ext["non_proof_inputs"] == ["jd_title_company", "briefing"]
     assert "jd_title_company" not in ext["claim_support_inputs"]
     assert "briefing" not in ext["claim_support_inputs"]
-    assert ext["claim_support_inputs"] == ["broad_skills_ledger"]
+    assert "augmented_skills_graph" in ext["claim_support_inputs"]
 
 
-def test_competencies_ledger_slice_not_employment_bullets_only() -> None:
+def test_competencies_default_graph_skills_not_broad_ledger() -> None:
     if not LEDGER_PATH.is_file():
         pytest.skip(f"ledger missing: {LEDGER_PATH}")
     pool = resolve_section_proof_pool(section="competencies", repo_root=REPO)
-    assert pool.proof_source == PROOF_SOURCE_BROAD_SKILLS_LEDGER
-    assert pool.selected_fact_plan.get("selection_method", "").startswith("broad_skills")
+    assert pool.proof_source == "augmented_skills_graph"
+    assert pool.selected_fact_plan.get("selection_method", "").startswith("augmented_skills_graph")
     assert pool.selected_fact_plan.get("facts")
 
 
@@ -197,7 +193,7 @@ def test_load_section_proof_for_lane_forwards_args_base_resume_ref(tmp_path: Pat
         jd_text="",
         briefing="",
     )
-    pool, _base, _path, _hash = load_section_proof_for_lane(
+    pool, _base, _path, _hash, _front_spine = load_section_proof_for_lane(
         section_id="headline",
         args=args,
         repo_root=REPO,

@@ -57,7 +57,8 @@ def test_w4a_graph_top_level_and_layers(ledger: dict) -> None:
     for key in W4A_TOP_LEVEL:
         assert key in ledger
     assert ledger["metadata"]["w4a_hardened"] is True
-    assert len(ledger["graph_layers"]) == 12
+    assert len(ledger["graph_layers"]) == 13
+    assert any(layer.get("layer_id") == "career_track" for layer in ledger["graph_layers"])
     assert ledger["graph_metadata"]["primary_taxonomy"] == "capability_domain"
     assert ledger["graph_metadata"]["source_coded_taxonomy_forbidden_as_primary"] is True
 

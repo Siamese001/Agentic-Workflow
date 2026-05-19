@@ -1,0 +1,51 @@
+{
+  "schema": "all_sections_c03_graph_binding_p2_w2_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W2",
+  "sections": {
+    "headline": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 20,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "executive_summary": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 40,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "unify_bullets": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "unify_narrative": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "ibm_bullets": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 6,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "ibm_narrative": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 16,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "competencies": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 21,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    }
+  },
+  "broad_skills_ledger_used_as_authority_any_section": false
+}

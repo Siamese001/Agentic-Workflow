@@ -155,7 +155,7 @@ def run_competencies_judges(
             continue
 
         if key == "gemini_pro":
-            model, model_source = _resolve_gemini_model(meta)
+            model, model_source = _resolve_gemini_model(meta, section_id="competencies")
         elif key == "anthropic_claude":
             model, model_source = _resolve_anthropic_model(meta)
         else:

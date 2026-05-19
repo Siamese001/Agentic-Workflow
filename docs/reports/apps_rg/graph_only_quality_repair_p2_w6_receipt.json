@@ -1,0 +1,10 @@
+{
+  "schema": "graph_only_quality_repair_p2_w6_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W6",
+  "repair_cannot_invent_support": true,
+  "repair_cannot_change_authority": true,
+  "repair_cannot_fallback_to_ledger": true,
+  "executive_summary_repair_module": "apps_rg/runtime/sections/executive_summary_pa.py::format_graph_only_quality_guardrails_block"
+}

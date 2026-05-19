@@ -1,0 +1,45 @@
+{
+  "schema": "competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt_v1",
+  "generated_at": "2026-05-19T18:16:28Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W1A",
+  "default_proof_pool_type": "augmented_skills_graph",
+  "competencies_product_authority": "augmented_skills_graph",
+  "broad_skills_ledger_default": false,
+  "broad_skills_ledger_fallback": false,
+  "broad_skills_ledger_compatibility_authority": false,
+  "broad_skills_ledger_used_as_authority": false,
+  "silent_fallback_possible": false,
+  "fail_closed_if_graph_unavailable": true,
+  "deprecated_ledger_code_paths_remaining": [
+    "apps_rg/runtime/proof_pool_resolver.py::_build_competencies_ledger_plan",
+    "apps_rg/runtime/proof_pool_resolver.py::_allocate_from_ledger (section_id=competencies)",
+    "selection_method=broad_skills_ledger_competencies"
+  ],
+  "deprecated_ledger_code_reachable_from_product_path": false,
+  "proof_pool_type": "augmented_skills_graph",
+  "graph_source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+  "selected_tracks": [
+    "track_actuarial_risk_derivatives",
+    "track_data_tech_cloud_ml",
+    "track_genai_agentic"
+  ],
+  "selected_skill_count_by_track": {
+    "track_actuarial_risk_derivatives": 3,
+    "track_data_tech_cloud_ml": 5,
+    "track_genai_agentic": 12
+  },
+  "selected_fact_count_by_track": {
+    "track_actuarial_risk_derivatives": 3,
+    "track_data_tech_cloud_ml": 5,
+    "track_genai_agentic": 7
+  },
+  "every_skill_has_fact_id_links": true,
+  "every_skill_has_graph_support": true,
+  "c03_graph_bound_status": "BOUND",
+  "c03_graph_hop_paths_count": 21,
+  "non_graph_evidence_items_count": 0,
+  "p2_w1_proof_pool_receipt_ref": "docs/reports/apps_rg/competencies_graph_proof_pool_p2_w1_receipt.json",
+  "p1_w4_closeout_receipt_ref": "docs/reports/apps_rg/career_track_p1_w4_closeout_receipt.json",
+  "p1_w5_projection_receipt_ref": "docs/reports/apps_rg/career_track_p1_w5_track_balanced_sections_receipt.json"
+}

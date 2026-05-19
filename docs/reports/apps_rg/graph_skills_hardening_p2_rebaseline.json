@@ -1,0 +1,26 @@
+{
+  "schema": "graph_skills_hardening_p2_rebaseline_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "sprint": "P2-ACCELERATED-CLOSEOUT",
+  "p2_w0_completed": true,
+  "p2_w1_completed": true,
+  "p2_w1a_completed": true,
+  "p2_w1_opt_in_superseded": true,
+  "competencies_only_scope_superseded": true,
+  "sections_in_scope": [
+    "headline",
+    "executive_summary",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "default_skills_authority": "augmented_skills_graph",
+  "broad_skills_ledger_product_authority_prohibited": true,
+  "global_c03_bound_claimed": false,
+  "live_x3_allow_claimed": false,
+  "inventory_ref": "docs/reports/apps_rg/graph_skills_hardening_gap_inventory.json",
+  "p2_w1a_competencies_receipt_ref": "docs/reports/apps_rg/competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt.json"
+}

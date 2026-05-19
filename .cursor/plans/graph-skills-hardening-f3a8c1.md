@@ -28,11 +28,13 @@ Two-part plan on **`augmented_skills_graph`** (`master_skills_arsenal_ledger.jso
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_PART: PART_1
-CURRENT_WAVE: P1-W1
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: COMPLETED
+CURRENT_PART: PART_2
+CURRENT_WAVE: P2-W10
+LAST_COMPLETED_WAVE: P2-W9-UNIFY-BULLETS-FINAL-CLOSEOUT
 LAST_UPDATED: 2026-05-19
+COMPLETED_AT: 2026-05-19
+CLOSEOUT_RECEIPT: docs/reports/apps_rg/graph_skills_hardening_p2_accelerated_closeout.json
 
 **Execution order:** Complete **Part 1** (graph asset + traversal policy), then **Part 2** (competencies runtime proof). Part 2 can prototype against the existing graph before P1-W5, but production proof should run after P1-W2 minimum (`career_track` nodes materialized).
 
@@ -83,11 +85,11 @@ LAST_UPDATED: 2026-05-19
 | Wave | Focus | Status | Success criteria |
 |------|-------|--------|------------------|
 | **P1-W0** | Taxonomy SSOT on disk (operator-confirmed) | ✅ DONE | [career_track_taxonomy_operator_confirmed.md](docs/reports/apps_rg/career_track_taxonomy_operator_confirmed.md) |
-| **P1-W1** | Materialize `career_track` nodes + remap edges | 🔲 TODO | 3 nodes with years; receipt JSON |
-| **P1-W2** | Employment spine (`employment_in_career_track`) | 🔲 TODO | base résumé stints → tracks |
-| **P1-W3** | Per-track skill activation (DRAFT→ACTIVE + `fact_id_links`) | 🔲 TODO | ~15 ACTIVE skills per track |
-| **P1-W4** | Track-weighted proof pool + C0.3 multi-hop | 🔲 TODO | hybrid JD gets facts from ≥2 tracks |
-| **P1-W5** | Track-balanced exec summary + competencies grouping | 🔲 TODO | ≤1 sentence/track; competencies by track |
+| **P1-W1** | Materialize `career_track` nodes + remap edges | ✅ DONE | [career_track_materialization_receipt.json](docs/reports/apps_rg/career_track_materialization_receipt.json) |
+| **P1-W2** | Employment spine (`employment_in_career_track`) | ✅ DONE | [career_track_p1_w2_employment_receipt.json](docs/reports/apps_rg/career_track_p1_w2_employment_receipt.json) |
+| **P1-W3** | Per-track skill activation (DRAFT→ACTIVE + `fact_id_links`) | ✅ DONE | [career_track_p1_w3_activation_receipt.json](docs/reports/apps_rg/career_track_p1_w3_activation_receipt.json) |
+| **P1-W4** | Track-weighted proof pool + C0.3 binding | ✅ DONE | [career_track_p1_w4_closeout_receipt.json](docs/reports/apps_rg/career_track_p1_w4_closeout_receipt.json) |
+| **P1-W5** | Track-balanced exec summary + competencies grouping | ✅ DONE | [career_track_p1_w5_track_balanced_sections_receipt.json](docs/reports/apps_rg/career_track_p1_w5_track_balanced_sections_receipt.json) |
 
 ### P1-W0 — Taxonomy SSOT ✅ DONE
 
@@ -97,7 +99,7 @@ LAST_UPDATED: 2026-05-19
 
 ### P1-W1 — Materialize career tracks in graph
 
-WAVE_ID: P1-W1 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P1-W1 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
 **Scope:**
 - Add `career_track` nodes: `track_actuarial_risk_derivatives` (2002–2010), `track_data_tech_cloud_ml` (2010–2022), `track_genai_agentic` (2022–present)
@@ -111,7 +113,7 @@ WAVE_ID: P1-W1 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
 
 ### P1-W2 — Employment spine
 
-WAVE_ID: P1-W2 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P1-W2 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
 **Scope:** `employment` nodes from [amit_ayer_base_resume_v1.json](apps_rg/resume/base/amit_ayer_base_resume_v1.json); `employment_in_career_track`; `employment_hosts_fact`
 
@@ -121,7 +123,7 @@ WAVE_ID: P1-W2 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
 
 ### P1-W3 — Activation burndown per track
 
-WAVE_ID: P1-W3 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P1-W3 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
 **Scope:** Resolve 47 skill rows with empty `fact_id_links`; attach pending sources from design doc per track; `ACTIVE` only with facts + confirmation
 
@@ -129,9 +131,9 @@ WAVE_ID: P1-W3 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
 
 ---
 
-### P1-W4 — Track-weighted graph expansion
+### P1-W4 — Track-weighted graph expansion (+ P1-W4-CLOSEOUT C0.3 binding)
 
-WAVE_ID: P1-W4 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P1-W4 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES · CLOSEOUT: P1-W4-CLOSEOUT DONE
 
 **Scope:** JD + role_family → track weights; proof pool union SRFS ∪ weighted track facts/skills; C0.3 multi-hop along `career_track_contains_pillar` → `skill_supported_by_fact`
 
@@ -141,9 +143,13 @@ WAVE_ID: P1-W4 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
 
 ### P1-W5 — Track-balanced section modes
 
-WAVE_ID: P1-W5 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P1-W5 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
 **Scope:** Exec summary optional one sentence per track; competencies grouped by `career_track_id`; no cross-track causal prose
+
+**Receipts:** [career_track_p1_w5_track_balanced_sections_receipt.json](docs/reports/apps_rg/career_track_p1_w5_track_balanced_sections_receipt.json) · [career_track_p1_w5_track_balanced_sections.md](docs/reports/apps_rg/career_track_p1_w5_track_balanced_sections.md)
+
+**Module:** `apps_rg/fact_inventory/track_balanced_section_projection.py`
 
 ---
 
@@ -152,10 +158,10 @@ WAVE_ID: P1-W5 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
 | DoD | Evidence | Status |
 |-----|----------|--------|
 | P1-DoD-1 | Taxonomy SSOT published | ✅ DONE |
-| P1-DoD-2 | `career_track` nodes in `master_skills_arsenal_ledger.json` | TODO |
-| P1-DoD-3 | Employment spine edges present | TODO |
-| P1-DoD-4 | ≥30 ACTIVE skills with `fact_id_links` across 3 tracks | TODO |
-| P1-DoD-5 | Track-weighted expansion fixture test passes | TODO |
+| P1-DoD-2 | `career_track` nodes in `master_skills_arsenal_ledger.json` | ✅ DONE |
+| P1-DoD-3 | Employment spine edges present | ✅ DONE |
+| P1-DoD-4 | ≥30 ACTIVE skills with `fact_id_links` across 3 tracks | ✅ DONE (84 activated) |
+| P1-DoD-5 | Track-weighted expansion fixture test passes | ✅ DONE |
 
 ---
 
@@ -179,17 +185,17 @@ Gap detail: [graph_skills_hardening_gap_inventory.md](docs/reports/apps_rg/graph
 
 | Wave | Focus | Status | Success criteria |
 |------|-------|--------|------------------|
-| **P2-W0** | Gap inventory (competencies vs exec_summary) | 🔲 TODO | gap matrix complete |
-| **P2-W1** | Graph-only proof pool for competencies | 🔲 TODO | `proof_source=augmented_skills_graph` |
-| **P2-W2** | C0.3 GraphRAG binding (competencies) | 🔲 TODO | `c03_graphrag_bound_status=BOUND` |
-| **P2-W3** | Shared validator + `graph_skills_proof_common.py` | 🔲 TODO | DRY with exec validator |
-| **P2-W4** | Competencies X2 metric/skill gates | 🔲 TODO | synthetic bad fixtures fail |
-| **P2-W5** | PA guardrails + skill inventory projection | 🔲 TODO | graph authority in compiled prompt |
-| **P2-W6** | `competencies_graph_only_quality.py` repair | 🔲 TODO | repair artifact per run |
-| **P2-W7** | X1D GRADE_ONLY + allowed_skill_rows | 🔲 TODO | all judges MODEL_BACKED pass |
-| **P2-W8** | Validator + contract tests | 🔲 TODO | `test_competencies_graph_skills_live_proof.py` |
-| **P2-W9** | Live canonical proof PASS | 🔲 TODO | X3_ALLOW, proof_eligible |
-| **P2-W10** | Optional cross-lane audit (IBM/unify/headline) | 🔲 TODO | read-only report only |
+| **P2-W0** | Gap inventory (competencies vs exec_summary) | ✅ DONE | [gap_inventory.json](docs/reports/apps_rg/graph_skills_hardening_gap_inventory.json) |
+| **P2-W1** | Graph-only proof pool for competencies | ✅ DONE | [competencies_graph_proof_pool_p2_w1_receipt.json](docs/reports/apps_rg/competencies_graph_proof_pool_p2_w1_receipt.json) |
+| **P2-W2** | C0.3 GraphRAG binding (all sections) | ✅ DONE | [all_sections_c03_graph_binding_p2_w2_receipt.json](docs/reports/apps_rg/all_sections_c03_graph_binding_p2_w2_receipt.json) |
+| **P2-W3** | Shared validator + `graph_skills_proof_common.py` | ✅ DONE | [shared_graph_proof_infrastructure_p2_w3_receipt.json](docs/reports/apps_rg/shared_graph_proof_infrastructure_p2_w3_receipt.json) |
+| **P2-W4** | Section X2 graph locality gates | ✅ DONE | [section_x2_graph_locality_p2_w4_receipt.json](docs/reports/apps_rg/section_x2_graph_locality_p2_w4_receipt.json) |
+| **P2-W5** | PA graph authority guardrails | ✅ DONE | [section_pa_graph_authority_p2_w5_receipt.json](docs/reports/apps_rg/section_pa_graph_authority_p2_w5_receipt.json) |
+| **P2-W6** | Graph-only quality repair | ✅ DONE | [graph_only_quality_repair_p2_w6_receipt.json](docs/reports/apps_rg/graph_only_quality_repair_p2_w6_receipt.json) |
+| **P2-W7** | X1D graph-only judge packets | ✅ DONE | [x1d_graph_only_judge_packets_p2_w7_receipt.json](docs/reports/apps_rg/x1d_graph_only_judge_packets_p2_w7_receipt.json) |
+| **P2-W8** | Validators + contract tests | ✅ DONE | [all_sections_graph_skills_validators_p2_w8_receipt.json](docs/reports/apps_rg/all_sections_graph_skills_validators_p2_w8_receipt.json) |
+| **P2-W9** | Live canonical proof (7/7 sections) | ✅ DONE | [canonical_live_section_proofs_p2_w9_receipt.json](docs/reports/apps_rg/canonical_live_section_proofs_p2_w9_receipt.json) |
+| **P2-W10** | Cross-lane graph authority audit | ✅ DONE | [cross_section_graph_authority_audit_p2_w10_receipt.json](docs/reports/apps_rg/cross_section_graph_authority_audit_p2_w10_receipt.json) |
 
 ### Lessons from executive_summary (apply in Part 2)
 
@@ -204,96 +210,103 @@ Gap detail: [graph_skills_hardening_gap_inventory.md](docs/reports/apps_rg/graph
 
 ### P2-W0 — Gap inventory
 
-WAVE_ID: P2-W0 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W0 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-**Deliverable:** Update [graph_skills_hardening_gap_inventory.md](docs/reports/apps_rg/graph_skills_hardening_gap_inventory.md) with file-level targets for each P2 wave.
+**Deliverable:** [graph_skills_hardening_gap_inventory.md](docs/reports/apps_rg/graph_skills_hardening_gap_inventory.md) · [graph_skills_hardening_gap_inventory.json](docs/reports/apps_rg/graph_skills_hardening_gap_inventory.json) · validator `validate_p2_w0_graph_skills_gap_inventory.py`
 
 ---
 
 ### P2-W1 — Graph-only proof pool (competencies)
 
-WAVE_ID: P2-W1 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W1 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-**Scope:** `resolve_competencies_graph_skills_proof_pool()` in [proof_pool_resolver.py](apps_rg/runtime/proof_pool_resolver.py); stop `_build_competencies_ledger_plan` for product proof; wire [proof_pool_lane_integration.py](apps_rg/runtime/proof_pool_lane_integration.py)
+**Scope:** `_resolve_competencies_graph_skills_proof_pool()` in [proof_pool_resolver.py](apps_rg/runtime/proof_pool_resolver.py); [competencies_graph_skills_proof_pool.py](apps_rg/fact_inventory/competencies_graph_skills_proof_pool.py)
 
 **Acceptance:** `proof_pool_metadata.proof_pool_type=augmented_skills_graph`; `assert_skills_not_broad_ledger_authority()` passes
 
 ---
 
-### P2-W2 — C0.3 GraphRAG for competencies
+### P2-W1A — Default graph authority (remove ledger product path)
 
-WAVE_ID: P2-W2 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W1A · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-**Scope:** Competencies `c03_graphrag_bound.json`; skill_row anchors; `non_graph_evidence_items_count=0`
+**Scope:** Default `resolve_section_proof_pool(section=competencies)` → `augmented_skills_graph` only; `_build_competencies_ledger_plan` unreachable; fail closed (no silent fallback)
+
+**Receipt:** [competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt.json](docs/reports/apps_rg/competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt.json)
+
+---
+
+### P2-W2 — C0.3 GraphRAG (all sections)
+
+WAVE_ID: P2-W2 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
+
+**Receipt:** [all_sections_c03_graph_binding_p2_w2_receipt.json](docs/reports/apps_rg/all_sections_c03_graph_binding_p2_w2_receipt.json)
 
 ---
 
 ### P2-W3 — Shared graph proof infrastructure
 
-WAVE_ID: P2-W3 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W3 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-**Scope:** [graph_skills_proof_common.py](apps_rg/runtime/validators/graph_skills_proof_common.py); wrappers for exec + competencies validators
-
----
-
-### P2-W4 — Competencies X2 hardening
-
-WAVE_ID: P2-W4 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
-
-**Scope:** Metric literal allowlist; `skill_id` granularity; anti-causal across skill rows ([competencies_x2.py](apps_rg/runtime/validators/competencies_x2.py))
+**Receipt:** [shared_graph_proof_infrastructure_p2_w3_receipt.json](docs/reports/apps_rg/shared_graph_proof_infrastructure_p2_w3_receipt.json)
 
 ---
 
-### P2-W5 — Prompt guardrails
+### P2-W4 — Section X2 graph locality
 
-WAVE_ID: P2-W5 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W4 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-**Scope:** Guardrails in [competencies_pa.py](apps_rg/runtime/dispatch/competencies_pa.py); `build_verified_skill_inventory_projection()` in prompt
-
----
-
-### P2-W6 — Generation quality repair
-
-WAVE_ID: P2-W6 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
-
-**Scope:** New [competencies_graph_only_quality.py](apps_rg/runtime/sections/competencies_graph_only_quality.py); `graph_only_generation_quality_repair.json` artifact
+**Receipt:** [section_x2_graph_locality_p2_w4_receipt.json](docs/reports/apps_rg/section_x2_graph_locality_p2_w4_receipt.json)
 
 ---
 
-### P2-W7 — X1D judge packet
+### P2-W5 — PA graph authority
 
-WAVE_ID: P2-W7 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W5 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-**Scope:** GRADE_ONLY rubric; allowed_skill_rows packet; [competencies_x1d.py](apps_rg/runtime/judges/competencies_x1d.py) provider hygiene
-
----
-
-### P2-W8 — Validator + contract tests
-
-WAVE_ID: P2-W8 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
-
-**Scope:** `validate_competencies_graph_skills_generation.py`; [competencies_graph_skills_live_proof.json](docs/reports/apps_rg/competencies_graph_skills_live_proof.json) (create on PASS)
+**Receipt:** [section_pa_graph_authority_p2_w5_receipt.json](docs/reports/apps_rg/section_pa_graph_authority_p2_w5_receipt.json)
 
 ---
 
-### P2-W9 — Live canonical proof
+### P2-W6 — Graph-only quality repair
 
-WAVE_ID: P2-W9 · WAVE_STATUS: TODO · WAVE_COMPLETE: NO
+WAVE_ID: P2-W6 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
 
-```bash
-docker start local-qwen-vllm || true
-python -m apps_rg --section competencies --allow-non-allow-exit-zero
-python apps_rg/runtime/validators/validate_competencies_graph_skills_generation.py --latest --write-report
-python -m pytest tests/_apps_contract/test_competencies_graph_skills_live_proof.py -q --tb=short -p no:xdist -o addopts=
-```
-
-**PASS:** REAL_LLM · X2 PASS · X3_ALLOW · proof_eligible · graph-only PASS · C0.3 BOUND · all X1D MODEL_BACKED pass
+**Receipt:** [graph_only_quality_repair_p2_w6_receipt.json](docs/reports/apps_rg/graph_only_quality_repair_p2_w6_receipt.json)
 
 ---
 
-### P2-W10 — Cross-lane audit (optional)
+### P2-W7 — X1D graph-only judge packets
 
-WAVE_ID: P2-W10 · AUTHORIZATION_STATUS: NOT_REQUIRED · read-only
+WAVE_ID: P2-W7 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
+
+**Receipt:** [x1d_graph_only_judge_packets_p2_w7_receipt.json](docs/reports/apps_rg/x1d_graph_only_judge_packets_p2_w7_receipt.json)
+
+---
+
+### P2-W8 — Validators + contract tests
+
+WAVE_ID: P2-W8 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
+
+**Receipt:** [all_sections_graph_skills_validators_p2_w8_receipt.json](docs/reports/apps_rg/all_sections_graph_skills_validators_p2_w8_receipt.json)
+
+---
+
+### P2-W9 — Live canonical proof (7/7 sections)
+
+WAVE_ID: P2-W9 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
+
+**Receipt:** [canonical_live_section_proofs_p2_w9_receipt.json](docs/reports/apps_rg/canonical_live_section_proofs_p2_w9_receipt.json) · RCA: [p2_w9_unify_bullets_final_rca_receipt.json](docs/reports/apps_rg/p2_w9_unify_bullets_final_rca_receipt.json)
+
+**PASS:** All seven sections REAL_LLM · X2 PASS · X3_ALLOW · proof_eligible · C0.3 BOUND · no `broad_skills_ledger` authority
+
+---
+
+### P2-W10 — Cross-lane graph authority audit
+
+WAVE_ID: P2-W10 · WAVE_STATUS: DONE · WAVE_COMPLETE: YES
+
+**Receipt:** [cross_section_graph_authority_audit_p2_w10_receipt.json](docs/reports/apps_rg/cross_section_graph_authority_audit_p2_w10_receipt.json)
 
 ---
 
@@ -301,11 +314,11 @@ WAVE_ID: P2-W10 · AUTHORIZATION_STATUS: NOT_REQUIRED · read-only
 
 | DoD | Evidence | Status |
 |-----|----------|--------|
-| P2-DoD-1 | Gap inventory for competencies | TODO |
-| P2-DoD-2 | `validate_competencies_graph_skills_generation.py --latest` → PASS | TODO |
-| P2-DoD-3 | `python -m apps_rg --section competencies` → X3_ALLOW | TODO |
-| P2-DoD-4 | Contract tests green; exec_summary regression tests still pass | TODO |
-| P2-DoD-5 | No `agentic_core` edits in Part 2 scope | TODO |
+| P2-DoD-1 | Gap inventory for competencies | ✅ DONE |
+| P2-DoD-2 | Accelerated closeout validators → PASS | ✅ DONE |
+| P2-DoD-3 | All seven sections live → X3_ALLOW | ✅ DONE |
+| P2-DoD-4 | Contract tests green (`test_p2_graph_skills_accelerated_closeout.py` 12/12) | ✅ DONE |
+| P2-DoD-5 | No `agentic_core` edits in Part 2 scope | ✅ DONE |
 
 ---
 
@@ -344,8 +357,8 @@ WAVE_ID: P2-W10 · AUTHORIZATION_STATUS: NOT_REQUIRED · read-only
 
 ## Notion Summary
 
-**Part 1:** Multi-career graph — 3 tracks (2002–2010 actuarial/risk/deriv · 2010–2022 data/cloud/ML incl trading/HPC + partner GTM · 2022–present GenAI/Agentic). Materialize nodes/edges, employment spine, activation, track-weighted expansion.
+**Part 1 (DONE):** Multi-career graph — 3 tracks materialized; employment spine; 84 skills activated; track-weighted expansion + P1-W5 track-balanced sections.
 
-**Part 2:** Competencies missing graph-skills — graph-only proof pool, C0.3, X2/repair/judges/validator, live PASS like executive_summary.
+**Part 2 (DONE):** All seven product sections on `augmented_skills_graph` with C0.3 BOUND, graph-only repair/X2/X1D, validators, and live matrix PASS (2026-05-19). Closeout: [graph_skills_hardening_p2_accelerated_closeout.json](docs/reports/apps_rg/graph_skills_hardening_p2_accelerated_closeout.json).
 
-**Status:** Not Started · **Order:** Part 1 then Part 2 · **Slug:** `graph-skills-hardening-f3a8c1`
+**Status:** Completed · **Slug:** `graph-skills-hardening-f3a8c1` · **Plan file:** `.cursor/plans/graph-skills-hardening-f3a8c1.md`

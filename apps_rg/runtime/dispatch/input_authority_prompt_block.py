@@ -21,10 +21,9 @@ def format_input_authority_block(
             "- CLAIM SUPPORT POOL (SRFS): SelectedRoleFactSet section slice — sole substrate for factual claims"
         )
     elif proof_pool_mode == "augmented_skills_graph":
-        substrate = (
-            "- CLAIM SUPPORT POOL (AUGMENTED SKILLS GRAPH): C0.3 GraphRAG-bound graph nodes/edges — "
-            "sole substrate for factual claims; candidate_fact_ledger rows are lineage substrate only"
-        )
+        from apps_rg.runtime.section_spine_terminology import INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE
+
+        substrate = INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE
     elif proof_pool_mode == "broad_skills_ledger":
         substrate = (
             "- CLAIM SUPPORT POOL (CANDIDATE FACT LEDGER): governed candidate_fact_id rows — "
@@ -111,9 +110,11 @@ def finalize_section_compiled_with_proof_pool(
     *,
     runtime_payload: dict[str, Any],
 ) -> SectionCompiledPrompt:
-    """Append INPUT_AUTHORITY using runtime proof_pool_metadata when present."""
+    """Append INPUT_AUTHORITY using FEC bridge PA authority (not raw proof_pool_metadata)."""
+    from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
+
     ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
-    pp_meta = runtime_payload.get("proof_pool_metadata") or {}
+    pp_meta, _fec = resolve_pa_proof_authority_for_compile(runtime_payload)
     mode = proof_pool_mode_from_metadata(pp_meta if isinstance(pp_meta, dict) else None)
     skills_meta = pp_meta if isinstance(pp_meta, dict) else None
     return augment_section_compiled_with_input_authority(

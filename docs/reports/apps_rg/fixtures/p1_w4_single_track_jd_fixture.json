@@ -1,0 +1,12 @@
+{
+  "schema": "p1_w4_single_track_jd_fixture_v1",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "target_role": "Quantitative Trading Specialist",
+  "jd_text": "Quantitative trading and derivatives pricing specialist — deep actuarial foundation, Greeks hedging, exotic options, and capital modeling only. No agentic AI or partner GTM scope.",
+  "weight_override": {
+    "track_actuarial_risk_derivatives": 1.0,
+    "track_data_tech_cloud_ml": 0.0,
+    "track_genai_agentic": 0.0
+  },
+  "expected_contract": "hybrid_fails_when_min_tracks_2"
+}

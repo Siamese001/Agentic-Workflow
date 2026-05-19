@@ -1,0 +1,16 @@
+{
+  "schema": "shared_graph_proof_infrastructure_p2_w3_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W3",
+  "module": "apps_rg/runtime/validators/graph_skills_proof_common.py",
+  "negative_controls": {
+    "missing_graph_hops_fail_closed": true,
+    "missing_fact_links_fail_closed": true,
+    "unsupported_skills_fail_closed": true,
+    "ledger_authority_rejected": true,
+    "non_graph_evidence_rejected": true,
+    "false_c03_bound_rejected": true
+  },
+  "fail_closed_validated": true
+}

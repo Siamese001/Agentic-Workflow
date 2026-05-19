@@ -35,7 +35,7 @@ try:
 except ImportError:
     pass
 
-from apps_rg.runtime.dispatch.ibm_bullets_pa import compile_ibm_bullets_prompt
+from apps_rg.runtime.sections.ibm_bullets_pa import compile_ibm_bullets_prompt
 from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     build_canonical_claim_ledger_v2_payload,
     classify_ledger_parse_state,
@@ -494,7 +494,7 @@ def align_ibm_claim_ledger_from_canonical_facts(
             mid = f"{bid}_metric_{sha16(metric_raw)[:8]}"
             if mid in allowed and mid not in src:
                 src.append(mid)
-        src = [s for s in src if s in allowed or s.startswith("bul_ibm_")]
+        src = [s for s in src if str(s).startswith("bul_ibm_")]
         if bid not in src:
             src.insert(0, bid)
         ledger.append({"claim_text": text, "source_fact_ids": src})
@@ -544,12 +544,12 @@ def run_ibm_bullets_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end ibm_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
-    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
     from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
 
     srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
-    pool, base, base_path, base_hash = load_section_proof_for_lane(
+    pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="ibm_bullets",
         args=args,
         repo_root=REPO_ROOT,
@@ -618,6 +618,18 @@ def run_ibm_bullets_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
+    from apps_rg.runtime.section_fec_bridge import (
+        merge_compiled_prompt_artifact_fec_fields,
+        wire_section_fec_bridge_for_lane,
+    )
+
+    wire_section_fec_bridge_for_lane(
+        artifact_dir=artifact_dir,
+        section_id="ibm_bullets",
+        front_spine=front_spine,
+        pool=pool,
+        runtime_payload=runtime_payload,
+    )
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_ibm_bullets_prompt(runtime_payload, run_id=runtime_payload["run_id"])
     messages = section_compiled.artifact.messages
@@ -630,15 +642,18 @@ def run_ibm_bullets_execution(
     )
     write_json(
         artifact_dir / "compiled_prompt_artifact.json",
-        {
-            "section_id": section_compiled.section_id,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
-            "dispatch_sha256_prompt16": prompt_hash,
-            "slot_count": section_compiled.artifact.slot_count,
-            "allowed_fact_ids": list(runtime_payload.get("allowed_fact_ids") or []),
-        },
+        merge_compiled_prompt_artifact_fec_fields(
+            {
+                "section_id": section_compiled.section_id,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+                "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+                "dispatch_sha256_prompt16": prompt_hash,
+                "slot_count": section_compiled.artifact.slot_count,
+                "allowed_fact_ids": list(runtime_payload.get("allowed_fact_ids") or []),
+            },
+            runtime_payload,
+        ),
     )
 
     provider_request_data = None
@@ -647,6 +662,23 @@ def run_ibm_bullets_execution(
     parsed: dict[str, Any] | None = None
     parse_error = ""
     runtime_generation_status = "BLOCKED"
+
+    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.section_l2_lane_integration import (
+        finalize_section_l2_after_output,
+        prepare_section_l2_before_provider,
+    )
+    from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
+        finalize_section_runtime_exhaust_before_l6,
+        gate_section_l6_shadow_after_exhaust,
+    )
+
+    prepare_section_l2_before_provider(
+        artifact_dir,
+        "ibm_bullets",
+        runtime_payload,
+        provider_lane=str(args.provider),
+    )
 
     provider_req, provider_payload = build_qwen_request(
         messages=messages,
@@ -680,7 +712,7 @@ def run_ibm_bullets_execution(
             )
         if parsed is not None:
             parsed = normalize_parsed_output(parsed, runtime_payload)
-            if bind_canonical and should_hydrate_ibm_bullets_from_canonical(runtime_payload, parsed):
+            if should_hydrate_ibm_bullets_from_canonical(runtime_payload, parsed):
                 allowed_fact_ids = hydrate_parsed_ibm_bullets_from_canonical_resume(
                     parsed,
                     runtime_payload=runtime_payload,
@@ -689,6 +721,13 @@ def run_ibm_bullets_execution(
                     default_intensity_by_bullet=DEFAULT_INTENSITY_BY_BULLET,
                 )
             elif bind_canonical and parsed is not None:
+                align_ibm_claim_ledger_from_canonical_facts(
+                    parsed,
+                    canon_facts=canon_facts,
+                    canon_allowed=canon_allowed,
+                    allowed_fact_ids=allowed_fact_ids,
+                )
+            elif parsed is not None:
                 align_ibm_claim_ledger_from_canonical_facts(
                     parsed,
                     canon_facts=canon_facts,
@@ -879,6 +918,11 @@ def run_ibm_bullets_execution(
         section_input_usage_ledger=usage_doc,
     )
     write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+    finalize_section_l2_after_output(artifact_dir, "ibm_bullets", runtime_payload)
+    finalize_section_exit_after_l2(artifact_dir, "ibm_bullets", runtime_payload)
+    finalize_section_runtime_exhaust_before_l6(
+        artifact_dir, "ibm_bullets", runtime_payload, repo_root=REPO_ROOT
+    )
 
     bundle = compute_lane_proof_bundle(
         args,
@@ -900,6 +944,7 @@ def run_ibm_bullets_execution(
 
     l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
     l6_max = IBM_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6_base = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,
@@ -995,6 +1040,17 @@ def run_ibm_bullets_execution(
     (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
+    from apps_rg.runtime.section_one_spine_certification_lane_integration import (
+        finalize_section_one_spine_certification,
+    )
+
+    finalize_section_one_spine_certification(
+        artifact_dir,
+        "ibm_bullets",
+        runtime_payload,
+        proof_bundle=bundle,
+        runtime_generation_status=runtime_generation_status,
+    )
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,

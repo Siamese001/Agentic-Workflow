@@ -1,0 +1,246 @@
+{
+  "schema": "career_track_materialization_receipt_v1",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "waves": [
+    "P1-W1",
+    "P1-W2",
+    "P1-W3"
+  ],
+  "generated_at": "2026-05-19T15:23:32Z",
+  "p1_w1": {
+    "career_track_count": 3,
+    "epoch_primary_coverage": {
+      "epoch_actuarial_financial_engineering": "track_actuarial_risk_derivatives",
+      "epoch_enterprise_risk_governance": "track_actuarial_risk_derivatives",
+      "epoch_cloud_data_platform_engineering": "track_data_tech_cloud_ml",
+      "epoch_ai_platform_commercialization": "track_data_tech_cloud_ml",
+      "epoch_partner_gtm_revenue_leadership": "track_data_tech_cloud_ml",
+      "epoch_agentic_ai_runtime_architecture": "track_genai_agentic"
+    },
+    "pillar_trading_hpc_track": "track_data_tech_cloud_ml",
+    "sequence_edges": 2
+  },
+  "p1_w2": {
+    "employment_node_count": 5,
+    "employment_primary_track_coverage": {
+      "exp_unify_001": "track_genai_agentic",
+      "exp_ibm_001": "track_data_tech_cloud_ml",
+      "exp_insurtech_001": "track_data_tech_cloud_ml",
+      "exp_ey_001": "track_data_tech_cloud_ml",
+      "exp_early_career_001": "track_actuarial_risk_derivatives"
+    },
+    "employment_hosts_fact_edges": 7,
+    "employment_hosts_fact_sample": [
+      {
+        "employment": "exp_early_career_001",
+        "fact_id": "fact_certs_001",
+        "edge_id": "edge_employment_hosts_fact_exp_early_career_001_fact_certs_001"
+      },
+      {
+        "employment": "exp_unify_001",
+        "fact_id": "fact_engineering_platform_001",
+        "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_001"
+      },
+      {
+        "employment": "exp_unify_001",
+        "fact_id": "fact_engineering_platform_002",
+        "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_002"
+      },
+      {
+        "employment": "exp_unify_001",
+        "fact_id": "fact_engineering_platform_003",
+        "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_003"
+      },
+      {
+        "employment": "exp_unify_001",
+        "fact_id": "fact_engineering_platform_004",
+        "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_004"
+      },
+      {
+        "employment": "exp_ibm_001",
+        "fact_id": "fact_governance_003",
+        "edge_id": "edge_employment_hosts_fact_exp_ibm_001_fact_governance_003"
+      },
+      {
+        "employment": "exp_early_career_001",
+        "fact_id": "fact_quant_hpc_003",
+        "edge_id": "edge_employment_hosts_fact_exp_early_career_001_fact_quant_hpc_003"
+      }
+    ],
+    "boundary_cases": [
+      {
+        "type": "stint_end_at_track2_track3_boundary",
+        "end": "2022-10",
+        "employment_fact_id": "exp_ibm_001"
+      },
+      {
+        "type": "stint_start_before_track2_official_year",
+        "start": "2009-10",
+        "track2_start_year": 2010,
+        "employment_fact_id": "exp_ey_001"
+      },
+      {
+        "type": "stint_end_at_track1_track2_boundary",
+        "end": "2009-09",
+        "employment_fact_id": "exp_early_career_001"
+      }
+    ]
+  },
+  "p1_w3": {
+    "empty_fact_id_links_before": 47,
+    "empty_fact_id_links_after": 47,
+    "activated_count": 84,
+    "active_skills_by_track": {
+      "track_actuarial_risk_derivatives": 7,
+      "track_data_tech_cloud_ml": 15,
+      "track_genai_agentic": 62
+    },
+    "unsupported_rows_remaining_draft": 47,
+    "confidence_upgrades": [],
+    "activated_sample": [
+      {
+        "skill_id": "skill_derivatives_derivatives_pricing",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_greeks_hedging_multi_greek_hedging",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_capital_capital_modeling",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_actuarial_fsa_fellowship",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_risk_enterprise_risk_controls",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "bundle_supported"
+      },
+      {
+        "skill_id": "skill_risk_model_risk",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_capital_regulatory_capital",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_partner_co_selling",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_partner_solution_architecture",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_partner_customer_deal_support",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_partner_sales_revenue_targets",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_partner_partner_led_ai_solutions",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "direct_archive_confirmed"
+      },
+      {
+        "skill_id": "skill_partner_partner_revenue_3m",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "derived_supported_with_facts"
+      },
+      {
+        "skill_id": "skill_revops_salesforce_pipeline_analytics",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "derived_supported_with_facts"
+      },
+      {
+        "skill_id": "skill_revops_salesforce_forecast_pipeline",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "derived_supported_with_facts"
+      }
+    ],
+    "draft_empty_links_sample": [
+      {
+        "skill_id": "skill_derivatives_exotic_options",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_greeks_gamma",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_greeks_vega",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_greeks_theta",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_risk_greek_stress_testing",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_capital_pricing_actuarial",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_actuarial_actuarial_software",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_risk_market_risk",
+        "track": "track_actuarial_risk_derivatives",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_partner_aws_ecosystem",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "skill_id": "skill_partner_cloud_partner_ecosystem",
+        "track": "track_data_tech_cloud_ml",
+        "reason": "empty_fact_id_links"
+      }
+    ]
+  },
+  "verify": {
+    "career_track_count": 3,
+    "epoch_primary_track_coverage": {
+      "epoch_actuarial_financial_engineering": "track_actuarial_risk_derivatives",
+      "epoch_enterprise_risk_governance": "track_actuarial_risk_derivatives",
+      "epoch_cloud_data_platform_engineering": "track_data_tech_cloud_ml",
+      "epoch_ai_platform_commercialization": "track_data_tech_cloud_ml",
+      "epoch_partner_gtm_revenue_leadership": "track_data_tech_cloud_ml",
+      "epoch_agentic_ai_runtime_architecture": "track_genai_agentic"
+    },
+    "pillar_trading_hpc_track": "track_data_tech_cloud_ml",
+    "non_causal_sequence_only": true,
+    "violations": [],
+    "trading_hpc_ok": true,
+    "active_without_facts": []
+  }
+}

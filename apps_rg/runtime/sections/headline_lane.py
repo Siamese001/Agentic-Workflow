@@ -1510,6 +1510,17 @@ def run_headline_execution(
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
     bundle_proof_strict = bool(bundle.get("proof_eligible")) and proof_bucket_for_provider(args.provider) == "real"
+    from apps_rg.runtime.section_one_spine_certification_lane_integration import (
+        finalize_section_one_spine_certification,
+    )
+
+    finalize_section_one_spine_certification(
+        artifact_dir,
+        "headline",
+        runtime_payload,
+        proof_bundle=bundle,
+        runtime_generation_status=runtime_generation_status,
+    )
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,

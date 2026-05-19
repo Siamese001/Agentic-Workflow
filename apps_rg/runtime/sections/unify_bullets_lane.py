@@ -40,14 +40,14 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     attach_lane_proof_bundle_fields,
     compute_lane_proof_bundle,
     infer_product_quality_blocked_or_mock,
 )
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
-from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prompt
+from apps_rg.runtime.sections.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
 from apps_rg.runtime.qwen_offline_contract_stub import (
@@ -647,11 +647,11 @@ def run_unify_bullets_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end unify_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
-    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
     from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
 
-    pool, base, base_path, base_hash = load_section_proof_for_lane(
+    pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="unify_bullets",
         args=args,
         repo_root=REPO_ROOT,
@@ -693,6 +693,18 @@ def run_unify_bullets_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
+    from apps_rg.runtime.section_fec_bridge import (
+        merge_compiled_prompt_artifact_fec_fields,
+        wire_section_fec_bridge_for_lane,
+    )
+
+    wire_section_fec_bridge_for_lane(
+        artifact_dir=artifact_dir,
+        section_id="unify_bullets",
+        front_spine=front_spine,
+        pool=pool,
+        runtime_payload=runtime_payload,
+    )
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_unify_bullets_prompt(runtime_payload, run_id=runtime_payload["run_id"])
@@ -706,14 +718,17 @@ def run_unify_bullets_execution(
     )
     write_json(
         artifact_dir / "compiled_prompt_artifact.json",
-        {
-            "section_id": section_compiled.section_id,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
-            "provider_prompt_hash": prompt_hash,
-            "slot_count": section_compiled.artifact.slot_count,
-        },
+        merge_compiled_prompt_artifact_fec_fields(
+            {
+                "section_id": section_compiled.section_id,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+                "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+                "provider_prompt_hash": prompt_hash,
+                "slot_count": section_compiled.artifact.slot_count,
+            },
+            runtime_payload,
+        ),
     )
 
     provider_request_data: dict[str, Any] | None = None
@@ -722,6 +737,23 @@ def run_unify_bullets_execution(
     parsed: dict[str, Any] | None = None
     parse_error = ""
     runtime_generation_status = "BLOCKED"
+
+    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.section_l2_lane_integration import (
+        finalize_section_l2_after_output,
+        prepare_section_l2_before_provider,
+    )
+    from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
+        finalize_section_runtime_exhaust_before_l6,
+        gate_section_l6_shadow_after_exhaust,
+    )
+
+    prepare_section_l2_before_provider(
+        artifact_dir,
+        "unify_bullets",
+        runtime_payload,
+        provider_lane=str(args.provider),
+    )
 
     provider_req, provider_payload = build_qwen_request(
         messages=messages,
@@ -757,6 +789,23 @@ def run_unify_bullets_execution(
                 messages, provider_payload, raw_output, parse_error
             )
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
+        if parsed is not None:
+            _, canon_facts, canon_allowed = extract_unify_employment(base)
+            from apps_rg.runtime.sections.unify_canonical_hydration import (
+                hydrate_parsed_unify_bullets_from_canonical_resume,
+                should_hydrate_unify_bullets_from_canonical,
+            )
+
+            if should_hydrate_unify_bullets_from_canonical(runtime_payload, parsed):
+                allowed_fact_ids = hydrate_parsed_unify_bullets_from_canonical_resume(
+                    parsed,
+                    runtime_payload=runtime_payload,
+                    canon_facts=canon_facts,
+                    canon_allowed=canon_allowed,
+                    default_intensity_by_bullet=DEFAULT_INTENSITY_BY_BULLET,
+                )
+            else:
+                _repair_protected_unify_bullet_metrics(out=parsed, runtime_payload=runtime_payload)
     elif result.runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         parsed_in, parse_error = parse_model_json(raw_output)
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
@@ -987,9 +1036,15 @@ def run_unify_bullets_execution(
     x3_record["proof_eligible"] = proof_bundle["proof_eligible"]
     x3_record["judge_proof_eligible"] = proof_bundle["judge_proof_eligible"]
     write_json(artifact_dir / "x3_disposition.json", x3_record)
+    finalize_section_l2_after_output(artifact_dir, "unify_bullets", runtime_payload)
+    finalize_section_exit_after_l2(artifact_dir, "unify_bullets", runtime_payload)
+    finalize_section_runtime_exhaust_before_l6(
+        artifact_dir, "unify_bullets", runtime_payload, repo_root=REPO_ROOT
+    )
 
     l6_temp = float(args.temperature)
     l6_max = UNIFY_QWEN_MAX_TOKENS
+    gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6_base = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,
@@ -1093,6 +1148,17 @@ def run_unify_bullets_execution(
 
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
+    from apps_rg.runtime.section_one_spine_certification_lane_integration import (
+        finalize_section_one_spine_certification,
+    )
+
+    finalize_section_one_spine_certification(
+        artifact_dir,
+        "unify_bullets",
+        runtime_payload,
+        proof_bundle=proof_bundle,
+        runtime_generation_status=runtime_generation_status,
+    )
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,

@@ -61,7 +61,7 @@ def run_ibm_narrative_lane_execution(
         ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
         selected_fact_plan = build_selected_fact_plan(ibm_facts)
     else:
-        ibm_header, _, _ = extract_ibm_employment(base)
+        ibm_header, ibm_facts_canon, canon_allowed = extract_ibm_employment(base)
         ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
         ibm_facts.sort(
             key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
@@ -70,7 +70,7 @@ def run_ibm_narrative_lane_execution(
             selected_fact_plan = build_selected_fact_plan_ibm_narrative_srfs(ibm_facts)
         else:
             selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
-        allowed_fact_ids = pool.allowed_fact_ids
+        allowed_fact_ids = set(pool.allowed_fact_ids) | set(canon_allowed)
     proof_pool_metadata = pool.proof_pool_metadata
     companion_text = load_companion_ibm_bullets_text()
     ibm_bullets_l2 = resolve_effective_lane_l2_path(REPO_ROOT, "ibm_bullets")
@@ -669,6 +669,17 @@ def run_ibm_narrative_lane_execution(
         print(output_text)
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
+    from apps_rg.runtime.section_one_spine_certification_lane_integration import (
+        finalize_section_one_spine_certification,
+    )
+
+    finalize_section_one_spine_certification(
+        artifact_dir,
+        "ibm_narrative",
+        runtime_payload,
+        proof_bundle=bundle,
+        runtime_generation_status=runtime_generation_status,
+    )
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,

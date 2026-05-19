@@ -1,0 +1,800 @@
+{
+  "schema": "career_track_p1_w5_track_balanced_sections_receipt_v1",
+  "generated_at": "2026-05-19T18:16:18Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P1-W5",
+  "selected_tracks": [
+    "track_actuarial_risk_derivatives",
+    "track_data_tech_cloud_ml",
+    "track_genai_agentic"
+  ],
+  "executive_summary_projection_by_track": {
+    "track_actuarial_risk_derivatives": {
+      "career_track": "track_actuarial_risk_derivatives",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "track_label": "Actuarial / risk / derivatives (2002-2010)",
+      "track_available": true,
+      "sentence": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+      "source_fact_ids": [
+        "fact_certs_001"
+      ],
+      "source_skill_id": "skill_actuarial_fsa_fellowship",
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_actuarial_foundation",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_actuarial_foundation",
+          "to": "skill_actuarial_fsa_fellowship",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_actuarial_fsa_fellowship",
+          "to": "fact_certs_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    "track_data_tech_cloud_ml": {
+      "career_track": "track_data_tech_cloud_ml",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "track_label": "Data / tech / Cloud / ML (2010-2022)",
+      "track_available": true,
+      "sentence": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
+      "source_fact_ids": [
+        "fact_partnerships_gtm_003"
+      ],
+      "source_skill_id": "skill_partner_co_selling",
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_cosell_partner_engineering",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_cosell_partner_engineering",
+          "to": "skill_partner_co_selling",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_partner_co_selling",
+          "to": "fact_partnerships_gtm_003",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    "track_genai_agentic": {
+      "career_track": "track_genai_agentic",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "track_label": "GenAI / Agentic (2022-present)",
+      "track_available": true,
+      "sentence": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+      "source_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "source_skill_id": "skill_agentic_control_plane_design",
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_agentic_ai_platforms",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_agentic_ai_platforms",
+          "to": "skill_agentic_control_plane_design",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_agentic_control_plane_design",
+          "to": "fact_engineering_platform_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    }
+  },
+  "sentence_count_by_track": {
+    "track_actuarial_risk_derivatives": 1,
+    "track_data_tech_cloud_ml": 1,
+    "track_genai_agentic": 1
+  },
+  "same_track_fact_support_only": true,
+  "competencies_grouped_by_track": {
+    "track_actuarial_risk_derivatives": {
+      "career_track": "track_actuarial_risk_derivatives",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "skills": [
+        {
+          "skill_id": "skill_actuarial_fsa_fellowship",
+          "label": "FSA",
+          "fact_id_links": [
+            "fact_certs_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_actuarial_risk_derivatives",
+              "to": "pillar_actuarial_foundation",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_actuarial_foundation",
+              "to": "skill_actuarial_fsa_fellowship",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_actuarial_fsa_fellowship",
+              "to": "fact_certs_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_actuarial_risk_derivatives",
+          "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES"
+        },
+        {
+          "skill_id": "skill_capital_capital_modeling",
+          "label": "capital modeling",
+          "fact_id_links": [
+            "fact_quant_hpc_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_actuarial_risk_derivatives",
+              "to": "pillar_capital_modeling",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_capital_modeling",
+              "to": "skill_capital_capital_modeling",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_capital_capital_modeling",
+              "to": "fact_quant_hpc_003",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_actuarial_risk_derivatives",
+          "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES"
+        },
+        {
+          "skill_id": "skill_capital_regulatory_capital",
+          "label": "regulatory capital",
+          "fact_id_links": [
+            "fact_governance_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_actuarial_risk_derivatives",
+              "to": "pillar_capital_modeling",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_capital_modeling",
+              "to": "skill_capital_regulatory_capital",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_capital_regulatory_capital",
+              "to": "fact_governance_003",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_actuarial_risk_derivatives",
+          "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES"
+        }
+      ]
+    },
+    "track_data_tech_cloud_ml": {
+      "career_track": "track_data_tech_cloud_ml",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "skills": [
+        {
+          "skill_id": "skill_finance_cost_optimization_dashboards",
+          "label": "30% cost optimization",
+          "fact_id_links": [
+            "fact_revenue_ops_004"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_strategic_finance_saas",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_strategic_finance_saas",
+              "to": "skill_finance_cost_optimization_dashboards",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_finance_cost_optimization_dashboards",
+              "to": "fact_revenue_ops_004",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
+          "skill_id": "skill_finance_ma_synergy_due_diligence",
+          "label": "M&A due diligence",
+          "fact_id_links": [
+            "fact_revenue_ops_005"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_strategic_finance_saas",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_strategic_finance_saas",
+              "to": "skill_finance_ma_synergy_due_diligence",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_finance_ma_synergy_due_diligence",
+              "to": "fact_revenue_ops_005",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
+          "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+          "label": "cloud and AI vendors",
+          "fact_id_links": [
+            "fact_partnerships_gtm_004"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_partner_gtm_alliances",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_partner_gtm_alliances",
+              "to": "skill_partner_cloud_vendor_joint_gtm",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_partner_cloud_vendor_joint_gtm",
+              "to": "fact_partnerships_gtm_004",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
+          "skill_id": "skill_partner_co_selling",
+          "label": "co-selling",
+          "fact_id_links": [
+            "fact_partnerships_gtm_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_cosell_partner_engineering",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_cosell_partner_engineering",
+              "to": "skill_partner_co_selling",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_partner_co_selling",
+              "to": "fact_partnerships_gtm_003",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
+          "skill_id": "skill_partner_customer_deal_support",
+          "label": "Annual Contract Value",
+          "fact_id_links": [
+            "fact_sales_accounts_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_customer_stakeholder",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_customer_stakeholder",
+              "to": "skill_partner_customer_deal_support",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_partner_customer_deal_support",
+              "to": "fact_sales_accounts_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        }
+      ]
+    },
+    "track_genai_agentic": {
+      "career_track": "track_genai_agentic",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "skills": [
+        {
+          "skill_id": "skill_agent_to_human_handoff_design",
+          "label": "agent to human handoff design",
+          "fact_id_links": [
+            "fact_governance_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_regulatory_governance",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_regulatory_governance",
+              "to": "skill_agent_to_human_handoff_design",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_agent_to_human_handoff_design",
+              "to": "fact_governance_003",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_agentic_control_plane_design",
+          "label": "agentic control plane design",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_agentic_ai_platforms",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_agentic_ai_platforms",
+              "to": "skill_agentic_control_plane_design",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_agentic_control_plane_design",
+              "to": "fact_engineering_platform_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_agentic_platform_productization",
+          "label": "agentic platform productization",
+          "fact_id_links": [
+            "fact_engineering_platform_004"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_revenue_commercialization",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_revenue_commercialization",
+              "to": "skill_agentic_platform_productization",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_agentic_platform_productization",
+              "to": "fact_engineering_platform_004",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_ai_governance_certification",
+          "label": "ai governance certification",
+          "fact_id_links": [
+            "fact_governance_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_regulatory_governance",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_regulatory_governance",
+              "to": "skill_ai_governance_certification",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_ai_governance_certification",
+              "to": "fact_governance_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_ai_platform_commercialization",
+          "label": "ai platform commercialization",
+          "fact_id_links": [
+            "fact_exec_002"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_revenue_commercialization",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_revenue_commercialization",
+              "to": "skill_ai_platform_commercialization",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_ai_platform_commercialization",
+              "to": "fact_exec_002",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_ai_platform_commercialization",
+          "label": "ai platform commercialization",
+          "fact_id_links": [
+            "fact_exec_002"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_revenue_commercialization",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_revenue_commercialization",
+              "to": "skill_ai_platform_commercialization",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_ai_platform_commercialization",
+              "to": "fact_engineering_platform_004",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_app_overlay_runtime_binding",
+          "label": "app overlay runtime binding",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_agentic_ai_platforms",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_agentic_ai_platforms",
+              "to": "skill_app_overlay_runtime_binding",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_app_overlay_runtime_binding",
+              "to": "fact_engineering_platform_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_app_specific_runtime_overlay_design",
+          "label": "app specific runtime overlay design",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_revenue_commercialization",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_revenue_commercialization",
+              "to": "skill_app_specific_runtime_overlay_design",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_app_specific_runtime_overlay_design",
+              "to": "fact_engineering_platform_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_approval_gated_workflow_design",
+          "label": "approval gated workflow design",
+          "fact_id_links": [
+            "fact_governance_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_regulatory_governance",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_regulatory_governance",
+              "to": "skill_approval_gated_workflow_design",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_approval_gated_workflow_design",
+              "to": "fact_governance_003",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_audit_grade_observability",
+          "label": "audit grade observability",
+          "fact_id_links": [
+            "fact_engineering_platform_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_regulatory_governance",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_regulatory_governance",
+              "to": "skill_audit_grade_observability",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_audit_grade_observability",
+              "to": "fact_engineering_platform_003",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_authority_and_registry_binding",
+          "label": "authority and registry binding",
+          "fact_id_links": [
+            "fact_governance_002"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_regulatory_governance",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_regulatory_governance",
+              "to": "skill_authority_and_registry_binding",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_authority_and_registry_binding",
+              "to": "fact_governance_002",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_authority_ordered_prompt_packaging",
+          "label": "authority ordered prompt packaging",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_agentic_ai_platforms",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_agentic_ai_platforms",
+              "to": "skill_authority_ordered_prompt_packaging",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_authority_ordered_prompt_packaging",
+              "to": "fact_engineering_platform_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_bounded_agent_execution",
+          "label": "bounded agent execution",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_agentic_ai_platforms",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_agentic_ai_platforms",
+              "to": "skill_bounded_agent_execution",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_bounded_agent_execution",
+              "to": "fact_engineering_platform_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        }
+      ]
+    }
+  },
+  "skill_count_by_track": {
+    "track_actuarial_risk_derivatives": 3,
+    "track_data_tech_cloud_ml": 5,
+    "track_genai_agentic": 13
+  },
+  "every_skill_has_fact_id_links": true,
+  "every_skill_has_graph_hop_path": true,
+  "cross_track_causal_prose_detected": false,
+  "broad_skills_ledger_used_as_authority": false,
+  "live_competencies_runtime_modified": false,
+  "p1_w4_c03_graph_bound_status": "BOUND",
+  "p1_w4_closeout_receipt_ref": "docs/reports/apps_rg/career_track_p1_w4_closeout_receipt.json",
+  "p1_w4_non_graph_evidence_items_count": 0,
+  "p1_w4_graph_hop_paths_count": 21,
+  "agentic_core_isolation": {
+    "git_diff_name_only_agentic_core": [
+      "agentic_core/L0_routing/logs/guardian_report.json",
+      "agentic_core/L0_routing/reasoning/execution_orchestrator.py",
+      "agentic_core/L0_routing/reasoning/route_gates.py",
+      "agentic_core/L2_execution/apps_rg_l2_binding.py",
+      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
+      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
+    ],
+    "git_status_short_agentic_core": [
+      "M agentic_core/L0_routing/logs/guardian_report.json",
+      "M agentic_core/L0_routing/reasoning/execution_orchestrator.py",
+      "M agentic_core/L0_routing/reasoning/route_gates.py",
+      "D agentic_core/L2_execution/apps_rg_l2_binding.py",
+      "M agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
+      "M agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
+    ],
+    "dirty_files": [
+      "agentic_core/L0_routing/logs/guardian_report.json",
+      "agentic_core/L0_routing/reasoning/execution_orchestrator.py",
+      "agentic_core/L0_routing/reasoning/route_gates.py",
+      "agentic_core/L2_execution/apps_rg_l2_binding.py",
+      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
+      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
+    ],
+    "touched_by_this_wave": false,
+    "p1_w4_changed_file_prefixes": [
+      "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
+      "apps_rg/fact_inventory/validate_p1_w4_track_weighted_closeout.py",
+      "apps_rg/runtime/proof_pool_resolver.py",
+      "tests/unit/apps_rg/fact_inventory/test_track_weighted_graph_expansion_p1_w4.py",
+      "tests/_apps_contract/test_career_track_p1_w4_weighted_expansion_contract.py",
+      "docs/reports/apps_rg/career_track_p1_w4",
+      "docs/reports/apps_rg/fixtures/p1_w4",
+      ".cursor/plans/graph-skills-hardening-f3a8c1.md"
+    ],
+    "workspace_guard_clean": false,
+    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
+    "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope.",
+    "p1_w5_changed_file_prefixes": [
+      "apps_rg/fact_inventory/track_balanced_section_projection.py",
+      "tests/unit/apps_rg/fact_inventory/test_track_balanced_section_projection_p1_w5.py",
+      "docs/reports/apps_rg/career_track_p1_w5"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "all_sections_graph_skills_validators_p2_w8_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W8",
+  "test_module": "tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py",
+  "contract_tests": "tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py",
+  "fail_on_ledger_authority": true,
+  "fail_on_ledger_fallback": true,
+  "fail_on_missing_graph_support": true,
+  "fail_on_false_c03_bound": true
+}

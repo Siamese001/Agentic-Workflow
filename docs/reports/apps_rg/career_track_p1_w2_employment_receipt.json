@@ -1,0 +1,69 @@
+{
+  "schema": "career_track_p1_w2_employment_receipt_v1",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "generated_at": "2026-05-19T15:23:32Z",
+  "employment_node_count": 5,
+  "employment_primary_track_coverage": {
+    "exp_unify_001": "track_genai_agentic",
+    "exp_ibm_001": "track_data_tech_cloud_ml",
+    "exp_insurtech_001": "track_data_tech_cloud_ml",
+    "exp_ey_001": "track_data_tech_cloud_ml",
+    "exp_early_career_001": "track_actuarial_risk_derivatives"
+  },
+  "employment_hosts_fact_edges": 7,
+  "employment_hosts_fact_sample": [
+    {
+      "employment": "exp_early_career_001",
+      "fact_id": "fact_certs_001",
+      "edge_id": "edge_employment_hosts_fact_exp_early_career_001_fact_certs_001"
+    },
+    {
+      "employment": "exp_unify_001",
+      "fact_id": "fact_engineering_platform_001",
+      "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_001"
+    },
+    {
+      "employment": "exp_unify_001",
+      "fact_id": "fact_engineering_platform_002",
+      "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_002"
+    },
+    {
+      "employment": "exp_unify_001",
+      "fact_id": "fact_engineering_platform_003",
+      "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_003"
+    },
+    {
+      "employment": "exp_unify_001",
+      "fact_id": "fact_engineering_platform_004",
+      "edge_id": "edge_employment_hosts_fact_exp_unify_001_fact_engineering_platform_004"
+    },
+    {
+      "employment": "exp_ibm_001",
+      "fact_id": "fact_governance_003",
+      "edge_id": "edge_employment_hosts_fact_exp_ibm_001_fact_governance_003"
+    },
+    {
+      "employment": "exp_early_career_001",
+      "fact_id": "fact_quant_hpc_003",
+      "edge_id": "edge_employment_hosts_fact_exp_early_career_001_fact_quant_hpc_003"
+    }
+  ],
+  "boundary_cases": [
+    {
+      "type": "stint_end_at_track2_track3_boundary",
+      "end": "2022-10",
+      "employment_fact_id": "exp_ibm_001"
+    },
+    {
+      "type": "stint_start_before_track2_official_year",
+      "start": "2009-10",
+      "track2_start_year": 2010,
+      "employment_fact_id": "exp_ey_001"
+    },
+    {
+      "type": "stint_end_at_track1_track2_boundary",
+      "end": "2009-09",
+      "employment_fact_id": "exp_early_career_001"
+    }
+  ]
+}

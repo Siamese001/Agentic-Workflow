@@ -1,4 +1,6 @@
-"""Live proof validator: executive_summary uses augmented skills graph + C0.3 GraphRAG only.
+"""Live proof validator: executive_summary uses augmented skills graph + section graph binding shim only.
+
+Does **not** assert full canonical C0.3 graph traverse or spine FinalEvidenceContract.
 
 Usage:
     python apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py --latest

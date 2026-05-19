@@ -41,10 +41,14 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
-from apps_rg.runtime.section_proof.mock_runtime_proof_policy import infer_product_quality_blocked_or_mock
+from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
+    attach_lane_proof_bundle_fields,
+    compute_lane_proof_bundle,
+    infer_product_quality_blocked_or_mock,
+)
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
-from apps_rg.runtime.dispatch.unify_narrative_pa import compile_unify_narrative_prompt
+from apps_rg.runtime.sections.unify_narrative_pa import compile_unify_narrative_prompt
 from apps_rg.runtime.exit.unify_narrative_x3 import aggregate_x3
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.judges.unify_narrative_x1d import run_unify_narrative_judges
@@ -232,9 +236,61 @@ def build_selected_fact_plan_srfs(facts: list[dict[str, Any]]) -> dict[str, Any]
     }
 
 
+def _companion_unify_bullets_accepted(run_dir: Path) -> bool:
+    l2_path = run_dir / "l2_output.json"
+    x3_path = run_dir / "x3_disposition.json"
+    if not l2_path.is_file():
+        return False
+    try:
+        data = json.loads(l2_path.read_text(encoding="utf-8"))
+        product_quality_status = str(data.get("product_quality_status") or "")
+        bullet_ids = [str(b.get("bullet_id")) for b in (data.get("bullets") or []) if isinstance(b, dict)]
+    except (json.JSONDecodeError, OSError):
+        return False
+    x3_code = "UNKNOWN"
+    if x3_path.is_file():
+        try:
+            x3 = json.loads(x3_path.read_text(encoding="utf-8"))
+            x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
+        except (json.JSONDecodeError, OSError):
+            return False
+    return (
+        product_quality_status == "PASS"
+        and x3_code == "X3_ALLOW"
+        and bullet_ids == list(UNIFY_BULLET_IDS)
+    )
+
+
 def load_companion_unify_bullets_context() -> dict[str, Any]:
     """Resolve finalized Unify bullets before narrative generation (same rules as legacy dispatch)."""
+    from apps_rg.runtime.runtime_proof_layout import (
+        LATEST_SUCCESSFUL_REAL_FILENAME,
+        lane_root,
+        _read_json_dict,
+    )
+
     path = resolve_effective_lane_l2_path(REPO_ROOT, "unify_bullets")
+    if path is None or not _companion_unify_bullets_accepted(path.parent):
+        real_lane = lane_root(REPO_ROOT, "unify_bullets") / "real"
+        if real_lane.is_dir():
+            for run_dir in sorted(
+                real_lane.glob("unify_bullets_*"),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True,
+            ):
+                if _companion_unify_bullets_accepted(run_dir):
+                    path = run_dir / "l2_output.json"
+                    break
+        if (path is None or not path.is_file()) and (
+            succ_ptr := lane_root(REPO_ROOT, "unify_bullets") / LATEST_SUCCESSFUL_REAL_FILENAME
+        ):
+            succ = _read_json_dict(succ_ptr) or {}
+            rel = succ.get("l2_output_repo_relative") or succ.get("run_dir")
+            if isinstance(rel, str) and rel.strip():
+                alt = (REPO_ROOT / rel).resolve()
+                alt_l2 = alt / "l2_output.json" if alt.is_dir() else alt
+                if alt_l2.is_file() and _companion_unify_bullets_accepted(alt_l2.parent):
+                    path = alt_l2
     base: dict[str, Any] = {
         "status": "MISSING",
         "reason": "unify_bullets_l2_output_not_found",
@@ -578,12 +634,12 @@ def run_unify_narrative_execution(
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
     """Single end-to-end unify_narrative run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
-    from apps_rg.runtime.dispatch.competencies_dispatch import collect_employment_bullets
+    from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
     from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
     from apps_rg.runtime.sections import selected_role_fact_set as _srfs
 
-    pool, base, base_path, base_hash = load_section_proof_for_lane(
+    pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="unify_narrative",
         args=args,
         repo_root=REPO_ROOT,
@@ -652,6 +708,19 @@ def run_unify_narrative_execution(
     write_json(artifact_dir / "companion_unify_bullets_context.json", companion_context)
     (artifact_dir / "companion_unify_bullets_context.txt").write_text((companion_text or "(none)") + "\n", encoding="utf-8")
 
+    from apps_rg.runtime.section_fec_bridge import (
+        merge_compiled_prompt_artifact_fec_fields,
+        wire_section_fec_bridge_for_lane,
+    )
+
+    wire_section_fec_bridge_for_lane(
+        artifact_dir=artifact_dir,
+        section_id="unify_narrative",
+        front_spine=front_spine,
+        pool=pool,
+        runtime_payload=runtime_payload,
+    )
+
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_unify_narrative_prompt(
         runtime_payload,
@@ -669,14 +738,17 @@ def run_unify_narrative_execution(
     )
     write_json(
         artifact_dir / "compiled_prompt_artifact.json",
-        {
-            "section_id": section_compiled.section_id,
-            "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
-            "compiler_template_id": section_compiled.artifact.template_id,
-            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
-            "provider_prompt_hash": prompt_hash,
-            "slot_count": section_compiled.artifact.slot_count,
-        },
+        merge_compiled_prompt_artifact_fec_fields(
+            {
+                "section_id": section_compiled.section_id,
+                "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "compiler_template_id": section_compiled.artifact.template_id,
+                "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+                "provider_prompt_hash": prompt_hash,
+                "slot_count": section_compiled.artifact.slot_count,
+            },
+            runtime_payload,
+        ),
     )
 
     provider_request_data: dict[str, Any] | None = None
@@ -685,6 +757,23 @@ def run_unify_narrative_execution(
     parsed: dict[str, Any] | None = None
     parse_error = ""
     runtime_generation_status = "BLOCKED"
+
+    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.section_l2_lane_integration import (
+        finalize_section_l2_after_output,
+        prepare_section_l2_before_provider,
+    )
+    from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
+        finalize_section_runtime_exhaust_before_l6,
+        gate_section_l6_shadow_after_exhaust,
+    )
+
+    prepare_section_l2_before_provider(
+        artifact_dir,
+        "unify_narrative",
+        runtime_payload,
+        provider_lane=str(args.provider),
+    )
 
     provider_req, provider_payload = build_qwen_request(
         messages=messages,
@@ -927,7 +1016,6 @@ def run_unify_narrative_execution(
     )
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
-    write_json(artifact_dir / "l2_output.json", l2_output)
 
     x3 = aggregate_x3(
         resume_display_text=narrative or raw_output,
@@ -939,10 +1027,34 @@ def run_unify_narrative_execution(
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
     )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+    proof_bundle = compute_lane_proof_bundle(
+        args,
+        section_id="unify_narrative",
+        runtime_generation_status=runtime_generation_status,
+        x1d_judges=x1d,
+        x2_gates=x2,
+        x3=x3,
+        offline_contract_stub_used=effective_offline_contract_stub_enabled(),
+    )
+    attach_lane_proof_bundle_fields(
+        l2_output,
+        runtime_generation_status=runtime_generation_status,
+        bundle=proof_bundle,
+    )
+    write_json(artifact_dir / "l2_output.json", l2_output)
+    x3_record = dict(x3.to_dict())
+    x3_record["proof_eligible"] = proof_bundle["proof_eligible"]
+    x3_record["judge_proof_eligible"] = proof_bundle["judge_proof_eligible"]
+    write_json(artifact_dir / "x3_disposition.json", x3_record)
+    finalize_section_l2_after_output(artifact_dir, "unify_narrative", runtime_payload)
+    finalize_section_exit_after_l2(artifact_dir, "unify_narrative", runtime_payload)
+    finalize_section_runtime_exhaust_before_l6(
+        artifact_dir, "unify_narrative", runtime_payload, repo_root=REPO_ROOT
+    )
 
     l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT
     l6_max = NARRATIVE_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
         repo_root=REPO_ROOT,
@@ -1001,6 +1113,8 @@ def run_unify_narrative_execution(
         "product_quality_status": product_quality_status,
         "x2_failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
         "x3_code": x3.x3_code,
+        "proof_eligible": proof_bundle["proof_eligible"],
+        "judge_proof_eligible": proof_bundle["judge_proof_eligible"],
     }
     merge_normalized_srfs_reporting_into_dict(
         _smr_un,
@@ -1029,7 +1143,7 @@ def run_unify_narrative_execution(
     output_lines.extend(["", "X2_DETERMINISTIC_GATE_OUTPUTS:"])
     for gate in x2:
         output_lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
-    output_lines.extend(["", "X3_DISPOSITION:", json.dumps(x3.to_dict(), indent=2), "", "L6_SHADOW_EVAL_PACKAGE:"])
+    output_lines.extend(["", "X3_DISPOSITION:", json.dumps(x3_record, indent=2), "", "L6_SHADOW_EVAL_PACKAGE:"])
     output_lines.append(str(artifact_dir / "l6_shadow_eval_package.json"))
     output_lines.append(str(artifact_dir / "l6_shadow_learning.json"))
     output_lines.append("offline_only=true")
@@ -1038,6 +1152,17 @@ def run_unify_narrative_execution(
 
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
+    from apps_rg.runtime.section_one_spine_certification_lane_integration import (
+        finalize_section_one_spine_certification,
+    )
+
+    finalize_section_one_spine_certification(
+        artifact_dir,
+        "unify_narrative",
+        runtime_payload,
+        proof_bundle=proof_bundle,
+        runtime_generation_status=runtime_generation_status,
+    )
     finalize_runtime_proof_run(
         REPO_ROOT,
         LANE_KEY,
@@ -1049,6 +1174,14 @@ def run_unify_narrative_execution(
         provider_requested=prq,
         provider_attempted=pratt,
         command=" ".join(sys.argv),
+        proof_eligible=proof_bundle["proof_eligible"],
+        judge_proof_eligible=proof_bundle["judge_proof_eligible"],
+        proof_scope=proof_bundle["proof_scope"],
+        proof_status=proof_bundle["proof_status"],
+        runtime_certification=proof_bundle["runtime_certification"],
+        x1d_runtime_status=proof_bundle["x1d_runtime_status"],
+        provider_proof_eligible=proof_bundle["provider_proof_eligible"],
+        test_only_mock_judges=proof_bundle["test_only_mock_judges"],
     )
     return {
         "artifact_dir": artifact_dir,

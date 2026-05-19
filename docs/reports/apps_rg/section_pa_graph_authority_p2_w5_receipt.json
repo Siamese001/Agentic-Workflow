@@ -1,0 +1,13 @@
+{
+  "schema": "section_pa_graph_authority_p2_w5_v1",
+  "generated_at": "2026-05-19T18:16:27Z",
+  "plan_id": "graph-skills-hardening-f3a8c1",
+  "wave": "P2-W5",
+  "pa_modules_documented": {
+    "executive_summary": "apps_rg/runtime/sections/executive_summary_pa.py",
+    "competencies": "apps_rg/runtime/sections/competencies_pa.py"
+  },
+  "graph_authority_visible_in_compiled_prompt": true,
+  "broad_skills_ledger_absent_from_skills_authority_slots": true,
+  "jd_briefing_targeting_only": true
+}
