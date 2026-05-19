@@ -1,0 +1,108 @@
+{
+  "report_id": "live_qwen_x2_failure_inventory",
+  "generated_at": "2026-05-18",
+  "wave": 1,
+  "source_proof": "docs/reports/apps_rg/apps_rg_live_section_proof_results.json",
+  "failure_classes": {
+    "deterministic_x2_format": "shape/count/length gates",
+    "deterministic_x2_support": "source_fact_id allow-list / coverage / scope",
+    "prompt_instruction": "model ignored PA contract",
+    "judge_only": "X1D soft/hard fail with X2 PASS",
+    "dependency": "upstream section not ACCEPTED_FINALIZED"
+  },
+  "gates": [
+    {
+      "section": "headline",
+      "failed_gate": "x2_headline_word_count_10_to_13",
+      "failure_class": "deterministic_x2_format",
+      "output_defect": "headline_line had 9 words (needed 10-13)",
+      "observed_output": "SVP Engineering | Governed Agentic Platforms | Production Reliability | Enterprise Scale",
+      "likely_cause": "model verbosity",
+      "safest_fix_location": "headline_lane deterministic_headline_word_count_expand + existing LLM retry",
+      "runtime_code_change": true,
+      "prompt_change": false
+    },
+    {
+      "section": "unify_narrative",
+      "failed_gate": "x2_unify_narrative_exactly_one_sentence",
+      "failure_class": "dependency",
+      "output_defect": "narrative_sentence empty",
+      "likely_cause": "companion_unify_bullets_status not ACCEPTED_FINALIZED; model returned dependency_not_finalized",
+      "safest_fix_location": "unify_bullets lane first; proof_pool_resolver min-fact fallback to base resume",
+      "runtime_code_change": true,
+      "prompt_change": true
+    },
+    {
+      "section": "unify_narrative",
+      "failed_gate": "x2_unify_narrative_source_supported",
+      "failure_class": "deterministic_x2_support",
+      "output_defect": "empty claim_ledger",
+      "likely_cause": "dependency gate",
+      "safest_fix_location": "unify_bullets pass then narrative re-run",
+      "runtime_code_change": false,
+      "prompt_change": false
+    },
+    {
+      "section": "competencies",
+      "failed_gate": "x2_structured_term_primary_facts",
+      "failure_class": "deterministic_x2_support",
+      "output_defect": "source_fact_id typo fact_g_overnance_003",
+      "likely_cause": "model typo",
+      "safest_fix_location": "fact_id_typo_repair + repair_structured_competencies_source_facts",
+      "runtime_code_change": true,
+      "prompt_change": true
+    },
+    {
+      "section": "unify_bullets",
+      "failed_gate": "x2_unify_protected_bullet_preserved_or_justified",
+      "failure_class": "deterministic_x2_format",
+      "output_defect": "bul_unify_006 missing $22M/20%/8/28",
+      "likely_cause": "ledger hint returned only 2 facts; model invented wrong metrics",
+      "safest_fix_location": "proof_pool_resolver min-6 fallback; unify_bullets_lane protected repair",
+      "runtime_code_change": true,
+      "prompt_change": true
+    },
+    {
+      "section": "unify_bullets",
+      "failed_gate": "x2_claim_ledger_coverage_100",
+      "failure_class": "deterministic_x2_support",
+      "output_defect": "bullet_id bul_unify_* vs ledger roots fact_engineering_*",
+      "likely_cause": "insufficient ledger slice + ID mismatch",
+      "safest_fix_location": "proof_pool_resolver + claim_ledger sync",
+      "runtime_code_change": true,
+      "prompt_change": true
+    },
+    {
+      "section": "ibm_bullets",
+      "failed_gate": "x2_ibm_metrics_preserved",
+      "failure_class": "deterministic_x2_format",
+      "output_defect": "IBM canonical metrics missing in combined bullets",
+      "likely_cause": "same ledger-slice / prompt gap as unify",
+      "safest_fix_location": "wave 3 ibm_bullets_lane + proof pool",
+      "runtime_code_change": true,
+      "prompt_change": true
+    },
+    {
+      "section": "ibm_narrative",
+      "failed_gate": "x2_ibm_narrative_ibm_only_fact_scope",
+      "failure_class": "deterministic_x2_support",
+      "output_defect": "non-IBM source_fact_ids or empty narrative",
+      "likely_cause": "ledger slice + dependency",
+      "safest_fix_location": "wave 3",
+      "runtime_code_change": true,
+      "prompt_change": true
+    },
+    {
+      "section": "executive_summary",
+      "failed_gate": "none",
+      "failure_class": "judge_only",
+      "output_defect": "X3_REVIEW_JUDGE_SOFT_FAIL",
+      "likely_cause": "X1D thresholds",
+      "safest_fix_location": "prompt shaping only if safe; else open gap",
+      "runtime_code_change": false,
+      "prompt_change": "optional_wave3"
+    }
+  ],
+  "wave2_fixes_planned": ["headline", "competencies", "unify_narrative_via_unify_bullets"],
+  "wave3_fixes_planned": ["unify_bullets", "ibm_bullets", "ibm_narrative", "executive_summary_judges"]
+}

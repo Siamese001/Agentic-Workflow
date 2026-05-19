@@ -1,0 +1,53 @@
+{
+  "wave": 2,
+  "status": "PARTIAL",
+  "generated_at_utc": "2026-05-18T23:12:00Z",
+  "scope": ["headline", "unify_narrative", "competencies"],
+  "before": {
+    "headline": {"x2_pass": false, "failed_gates": ["x2_headline_word_count_10_to_13"]},
+    "unify_narrative": {"x2_pass": false, "failed_gates": ["x2_unify_narrative_exactly_one_sentence", "x2_unify_narrative_source_supported", "x2_unify_narrative_unify_only_fact_scope"]},
+    "competencies": {"x2_pass": false, "failed_gates": ["x2_structured_term_primary_facts", "x2_competency_terms_canonical_structured", "x2_competency_term_primary_fact_present"]}
+  },
+  "after_real_llm": {
+    "headline": {
+      "run_id": "headline_20260518_225908",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260518_225908",
+      "x2_pass": true,
+      "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL",
+      "product_quality_status": "PASS",
+      "proof_source": "broad_skills_ledger"
+    },
+    "competencies": {
+      "run_id": "competencies_20260518_225908",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_225908",
+      "x2_pass": true,
+      "x3_code": "X3_ALLOW",
+      "product_quality_status": "PASS",
+      "proof_eligible": true,
+      "proof_source": "broad_skills_ledger"
+    },
+    "unify_narrative": {
+      "run_id": "unify_narrative_20260518_231059",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260518_231059",
+      "x2_pass": true,
+      "x3_code": "X3_ALLOW",
+      "product_quality_status": "PASS",
+      "proof_source": "broad_skills_ledger",
+      "note": "Unblocked after unify_bullets X2 PASS + ledger bul_unify_* pool stamp"
+    }
+  },
+  "patches": [
+    "apps_rg/runtime/validators/fact_id_typo_repair.py",
+    "apps_rg/runtime/sections/headline_lane.py",
+    "apps_rg/runtime/dispatch/competencies_dispatch.py",
+    "apps_rg/runtime/dispatch/competencies_pa.py",
+    "apps_rg/runtime/sections/unify_narrative_lane.py",
+    "apps_rg/runtime/proof_pool_resolver.py",
+    "tests/_apps_contract/test_apps_rg_live_qwen_x2_repairs.py"
+  ],
+  "tests": {
+    "compileall": "pass",
+    "pytest_contract_headline_unify_competencies": "3 passed (test_apps_rg_live_qwen_x2_repairs.py)",
+    "pytest_augmented_skills_trio": "51 passed"
+  }
+}

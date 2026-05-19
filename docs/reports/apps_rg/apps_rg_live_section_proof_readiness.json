@@ -1,0 +1,115 @@
+{
+  "report_id": "apps_rg_live_section_proof_readiness",
+  "generated_at": "2026-05-18",
+  "wave": 1,
+  "vllm_preflight": {
+    "base_url": "http://localhost:8000/v1",
+    "probe_ok": true,
+    "note": "http://127.0.0.1:8000 without /v1 fails; canonical DEFAULT_QWEN_BASE_URL includes /v1"
+  },
+  "ssot_inputs": {
+    "augmented_skills_graph": {
+      "path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "present": true
+    },
+    "candidate_fact_ledger": {
+      "path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "present": true
+    },
+    "base_resume": {
+      "path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "present": true
+    },
+    "default_briefing": {
+      "path": "apps_rg/config/default_targeting_briefing.txt",
+      "present": true
+    }
+  },
+  "provider_modes": {
+    "mock": {
+      "proof_eligibility": "MOCK_ONLY",
+      "runtime_generation_status": "mock provider / plumbing",
+      "never_product_proof": true
+    },
+    "qwen_vllm": {
+      "proof_eligibility": "LIVE_READY when vLLM healthy and APPS_RG_QWEN_OFFLINE_CONTRACT_STUB unset",
+      "runtime_generation_status_expected": "REAL_LLM",
+      "semi_live_stub": "OFFLINE_CONTRACT_STUB when APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1"
+    }
+  },
+  "sections": [
+    {
+      "section": "headline",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section headline --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/headline/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_source_fact_pool_receipt.json", "x2_gate_outputs.json", "x3_disposition.json", "real_l2_generation_result.json"],
+      "known_blockers": []
+    },
+    {
+      "section": "executive_summary",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section executive_summary --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_source_fact_pool_receipt.json", "x2_gate_outputs.json", "x3_disposition.json"],
+      "known_blockers": []
+    },
+    {
+      "section": "competencies",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section competencies --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_gate_outputs.json", "x3_disposition.json"],
+      "known_blockers": ["vLLM preflight may BLOCK if endpoint down"]
+    },
+    {
+      "section": "unify_bullets",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section unify_bullets --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_gate_outputs.json", "x3_disposition.json"],
+      "known_blockers": []
+    },
+    {
+      "section": "unify_narrative",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section unify_narrative --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_gate_outputs.json", "x3_disposition.json"],
+      "known_blockers": []
+    },
+    {
+      "section": "ibm_bullets",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section ibm_bullets --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_gate_outputs.json", "x3_disposition.json"],
+      "known_blockers": []
+    },
+    {
+      "section": "ibm_narrative",
+      "proof_eligibility": "LIVE_READY",
+      "provider_mode": "qwen_vllm",
+      "command": "python -m apps_rg --section ibm_narrative --provider qwen_vllm --allow-non-allow-exit-zero",
+      "expected_artifact_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/<run_id>/",
+      "expected_receipts": ["section_input_usage_ledger.json", "x2_gate_outputs.json", "x3_disposition.json"],
+      "known_blockers": []
+    }
+  ],
+  "mock_reference": {
+    "proof_eligibility": "MOCK_ONLY",
+    "command_suffix": "--provider mock --mock-judges --allow-test-mock-judges",
+    "note": "Prior augmented-skills receipt refresh used mock; not counted as product proof"
+  },
+  "contract_tests_wave1": {
+    "test_apps_rg_augmented_skills_graph_source_authority": "31 passed",
+    "test_apps_rg_augmented_skills_graph_dual_source_all_sections": "10 passed",
+    "test_apps_rg_augmented_skills_graph_all_sections_runtime_receipts": "7 passed"
+  }
+}

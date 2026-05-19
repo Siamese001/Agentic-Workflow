@@ -1,0 +1,117 @@
+{
+  "wave": 1,
+  "status": "RCA_COMPLETE",
+  "generated_at_utc": "2026-05-19T00:00:00Z",
+  "agentic_core_diff_status": "clean",
+  "sections": {
+    "competencies": {
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260518_233832",
+      "root_cause": "provider_timeout_prompt_bloat",
+      "timeout_seconds_observed": 60,
+      "max_tokens_observed": 4096,
+      "compiled_prompt_bytes": 30763,
+      "retry_attempts": 3,
+      "provider_error": "Qwen/vLLM call failed: TimeoutError: timed out",
+      "failure_class": [
+        "chat_completion_timeout",
+        "oversized_max_tokens_budget",
+        "verified_skill_inventory_projection_truncated_at_12k_chars"
+      ],
+      "skills_authority": {
+        "skills_authority_source_type": "augmented_skills_graph",
+        "skills_authority_status": "PASS"
+      },
+      "planned_fix": [
+        "Reduce COMPETENCIES_QWEN_MAX_TOKENS to 1600",
+        "Cap skill projection inject to 4500 chars",
+        "Raise competencies chat timeout to 120s via APPS_RG_COMPETENCIES_QWEN_CHAT_TIMEOUT_SECONDS"
+      ]
+    },
+    "ibm_bullets": {
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260518_234400",
+      "root_cause": "thin_candidate_fact_ledger_slice_vs_canonical_ibm_metrics",
+      "failed_x2_gates": [
+        "x2_ibm_metrics_preserved",
+        "x2_claim_ledger_coverage_100"
+      ],
+      "details": {
+        "pool_fact_count": 3,
+        "allowed_fact_ids": [
+          "fact_consulting_001",
+          "fact_governance_003",
+          "fact_governance_003_metric_e5abeb74",
+          "fact_quant_hpc_001",
+          "fact_quant_hpc_001_metric_219867bb"
+        ],
+        "output_bullet_ids": "bul_ibm_001..005",
+        "missing_core_metrics": [
+          "$15M",
+          "99.9%",
+          "30%",
+          "25%",
+          "50%"
+        ],
+        "coverage_mismatch": "ledger roots are fact_* but structural coverage keys bul_ibm_* from source_fact_ids"
+      },
+      "skills_authority": {
+        "skills_authority_source_type": "augmented_skills_graph",
+        "skills_authority_status": "PASS"
+      },
+      "planned_fix": [
+        "Deterministic hydrate_parsed_ibm_bullets_from_canonical_resume when ledger slice < 5 IBM rows",
+        "Union canonical bul_ibm_* into allowed_fact_ids for X2 pool membership"
+      ]
+    },
+    "ibm_narrative": {
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260518_234511",
+      "root_cause": "claim_ledger_used_bul_ibm_placeholder_ids_not_in_fact_pool",
+      "failed_x2_gates": [
+        "x2_ibm_narrative_source_supported",
+        "x2_claim_ledger_source_fact_ids_allow_list",
+        "x2_ibm_narrative_ibm_only_fact_scope",
+        "x2_ibm_narrative_claim_theme_coverage",
+        "x2_ibm_narrative_active_proof_pool_source_fact_ids",
+        "x2_selected_fact_ids_only",
+        "x2_section_claims_supported_by_base_resume",
+        "x2_input_usage_accounting_consistent"
+      ],
+      "details": {
+        "ledger_source_fact_ids_observed": [
+          "bul_ibm_001"
+        ],
+        "allowed_fact_ids": [
+          "fact_consulting_001",
+          "fact_governance_003",
+          "fact_governance_003_metric_e5abeb74",
+          "fact_quant_hpc_001",
+          "fact_quant_hpc_001_metric_219867bb"
+        ]
+      },
+      "skills_authority": {
+        "skills_authority_source_type": "augmented_skills_graph",
+        "skills_authority_status": "PASS"
+      },
+      "planned_fix": [
+        "remap_ibm_narrative_claim_ledger_to_fact_pool after normalize",
+        "reconcile_narrative_claim_ledger fallback uses fact_* when ledger mode"
+      ]
+    },
+    "executive_summary": {
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_233710",
+      "root_cause": "judge_rubric_srfs_five_sentence_vs_x2_two_sentence_mode",
+      "x2_status": "PASS",
+      "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL",
+      "soft_failed_judges": [
+        "gemini_pro",
+        "openai_chatgpt",
+        "anthropic_claude"
+      ],
+      "judge_findings_summary": "Output is two sentences; rubric expects five-sentence SRFS arc and credibility sentence.",
+      "skills_authority": {
+        "skills_authority_source_type": "augmented_skills_graph",
+        "skills_authority_status": "PASS"
+      },
+      "planned_fix": "Record open judge gap — expanding to five sentences would violate non-SRFS x2_resume_display_sentence_count_2_3 gate"
+    }
+  }
+}
