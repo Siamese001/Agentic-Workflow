@@ -91,6 +91,8 @@ _emit_links_execution_to_snapshot("p4", "FissionManagerAgent", "exec_snapshot_li
 import json
 import logging
 import os
+
+from agentic_core.config.google_ai_env import google_ai_pro_model_id
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -226,7 +228,7 @@ class FissionManagerAgent(SovereignBaseAgent):
             response = await self.llm_generate(
                 prompt,
                 provider="google",
-                model=os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
+                model=google_ai_pro_model_id()[0],
                 generation_config={"response_mime_type": "application/json", "temperature": 0.2},
             )
             new_files = self._parse_fission_response(response["content"], file_path)

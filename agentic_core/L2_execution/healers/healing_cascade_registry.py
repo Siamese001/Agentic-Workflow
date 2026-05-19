@@ -85,13 +85,12 @@ HEALING_EVIDENCE_ROOT: Final[str] = "artifacts/healing"
 # Healing-surface env-var override (isolated from judge panel)
 # ---------------------------------------------------------------------------
 
+HEALING_GOOGLE_AI_PRO_ENV_OVERRIDE: Final[str] = "HEALING_GOOGLE_AI_PRO_MODEL"
 HEALING_GEMINI_PRO_ENV_OVERRIDE: Final[str] = "HEALING_GEMINI_MODEL"
-"""Healing-only override for the Gemini Pro tier's model id.
+"""Healing-only override for the Google AI pro tier's model id.
 
-Judge panel MUST NOT consult this env var (see
-``tools/certification/safety/rtc_req_056_panel.py::GEMINI_JUROR`` which
-uses ``GEMINI_MODEL``). Two env vars keep the surfaces independently
-pinnable at runtime.
+Judge panel MUST NOT consult this env var. Canonical: ``HEALING_GOOGLE_AI_PRO_MODEL``;
+legacy alias: ``HEALING_GEMINI_MODEL``.
 """
 
 
@@ -99,17 +98,14 @@ def resolve_healing_gemini_pro_model_id() -> str:
     """Resolve the gemini_pro healing tier's model_id.
 
     Precedence:
-      1. ``HEALING_GEMINI_MODEL`` env var (healing-only override)
-      2. ``GEMINI_PRO_MODEL_ID`` registry default
-
-    The judge panel never reads ``HEALING_GEMINI_MODEL``; and the healing
-    cascade never reads the judge panel's ``GEMINI_MODEL`` env var. This
-    asymmetric pinning is intentional.
+      1. ``HEALING_GOOGLE_AI_PRO_MODEL`` (canonical healing override)
+      2. ``HEALING_GEMINI_MODEL`` (deprecated alias)
+      3. ``GEMINI_PRO_MODEL_ID`` registry default (from ``GOOGLE_AI_PRO_MODEL``)
     """
-    override = os.environ.get(HEALING_GEMINI_PRO_ENV_OVERRIDE)
-    if override and override.strip():
-        return override.strip()
-    return GEMINI_PRO_MODEL_ID
+    from agentic_core.config.google_ai_env import healing_google_ai_pro_model_id
+
+    model_id, _ = healing_google_ai_pro_model_id(registry_default=GEMINI_PRO_MODEL_ID)
+    return model_id
 
 
 # ---------------------------------------------------------------------------

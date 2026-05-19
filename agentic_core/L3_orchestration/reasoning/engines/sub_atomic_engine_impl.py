@@ -89,6 +89,8 @@ _emit_links_execution_to_snapshot("p4", "sub_atomic_engine_impl", "exec_snapshot
 import logging
 import os
 
+from agentic_core.config.google_ai_env import google_ai_pro_model_id
+
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 from agentic_core.mixins.instructional_injection_mixin import get_instructional_injection_mixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -253,7 +255,7 @@ class SubAtomicEngineImpl:
             response = await self.llm_gateway.generate(
                 prompt=full_prompt,
                 provider="google",
-                model=os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
+                model=google_ai_pro_model_id()[0],
                 generation_config=gen_config,
             )
             return response["content"]

@@ -95,6 +95,12 @@ _emit_links_execution_to_snapshot("p4", "StructuredEngineAgent", "exec_snapshot_
 "\nStructuredEngineAgent - Intent to Plan Converter\n\n[PHASE 8 REFACTOR] Uses SovereignLLMGateway.\n"
 import logging
 import os
+
+from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+
+def _google_flash_model_id() -> str:
+    return google_ai_flash_model_id()[0]
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -229,10 +235,10 @@ class StructuredEngineAgent(SovereignBaseAgent):
             await self.llm_generate(
                 prompt,
                 provider="google",
-                model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
+                model=_google_flash_model_id(),
             )
             return AgentPlan(
-                reasoning=f"Planned via {os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview')}",
+                reasoning=f"Planned via {_google_flash_model_id()}",
                 tool_calls=[{"name": "example_tool", "args": {}}],
             )
         except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow

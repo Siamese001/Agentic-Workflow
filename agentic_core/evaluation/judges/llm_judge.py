@@ -474,7 +474,9 @@ class GeminiJudge:
 
     def __init__(self, gemini_client: Any = None, model: str | None = None) -> None:
         self._client = gemini_client
-        env_model = os.getenv("GEMINI_MODEL")
+        from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+        env_model, _ = google_ai_flash_model_id()
         self._model = model or env_model or self.DEFAULT_MODEL
         self._configured = False
 

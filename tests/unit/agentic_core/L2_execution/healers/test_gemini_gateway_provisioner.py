@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from agentic_core.L2_execution.healers.gemini_gateway_provisioner import (
     ENV_GEMINI_API_KEY_LEGACY,
     ENV_GOOGLE_API_KEY,
-    ENV_GEMINI_FLASH_OVERRIDE,
+    ENV_GOOGLE_AI_FLASH_OVERRIDE,
     GeminiGatewayConfig,
     MinimalGeminiGateway,
     provision_router,
@@ -33,7 +33,7 @@ class GeminiConfigFromEnvTest(unittest.TestCase):
         keys = (
             ENV_GOOGLE_API_KEY,
             ENV_GEMINI_API_KEY_LEGACY,
-            ENV_GEMINI_FLASH_OVERRIDE,
+            ENV_GOOGLE_AI_FLASH_OVERRIDE,
         )
         self._saved = {k: os.environ.get(k) for k in keys}
         for k in keys:
@@ -65,7 +65,7 @@ class GeminiConfigFromEnvTest(unittest.TestCase):
 
     def test_env_override_for_flash_model(self) -> None:
         os.environ[ENV_GOOGLE_API_KEY] = "k"
-        os.environ[ENV_GEMINI_FLASH_OVERRIDE] = "gemini-flash-test"
+        os.environ[ENV_GOOGLE_AI_FLASH_OVERRIDE] = "gemini-flash-test"
         cfg = GeminiGatewayConfig.from_env()
         self.assertEqual(cfg.flash_model, "gemini-flash-test")
 

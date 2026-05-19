@@ -323,6 +323,12 @@ class BudgetManager:
         return f"${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
 
 
+def _default_google_flash_model_id() -> str:
+    from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+    return google_ai_flash_model_id()[0]
+
+
 @dataclass
 class ValidationContext:
     """Shared memory and infrastructure state for all agents."""
@@ -340,7 +346,9 @@ class ValidationContext:
     skip_files: set[str] = field(default_factory=set)
     flapping_files: list[str] = field(default_factory=list)
     successful_traces: list[str] = field(default_factory=list)
-    model_id: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"))
+    model_id: str = field(
+        default_factory=lambda: _default_google_flash_model_id()
+    )
     _client: Any = field(default=None, init=False)
     intelligence_enabled: bool = field(default=False, init=False)
     file_backups: dict[str, str] = field(default_factory=dict)

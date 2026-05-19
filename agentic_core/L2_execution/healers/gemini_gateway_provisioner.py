@@ -35,6 +35,19 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.config.google_ai_env import (
+    GOOGLE_AI_MAX_OUTPUT_TOKENS,
+    GOOGLE_AI_MODEL,
+    GOOGLE_AI_PRO_MODEL,
+    GOOGLE_API_KEY,
+    GEMINI_API_KEY_LEGACY,
+    GEMINI_MAX_OUTPUT_TOKENS_LEGACY,
+    GEMINI_MODEL_LEGACY,
+    GEMINI_PRO_MODEL_LEGACY,
+    google_ai_flash_model_id,
+    google_ai_pro_model_id,
+    google_api_key,
+)
 from agentic_core.L2_execution.healers.healing_cascade_registry import (
     GEMINI_FLASH_MODEL_ID,
     GEMINI_PRO_MODEL_ID,
@@ -42,13 +55,18 @@ from agentic_core.L2_execution.healers.healing_cascade_registry import (
 
 _LOGGER = logging.getLogger(__name__)
 
-# Env vars consumed at provision time. Names match existing apps_*/config
-# conventions where they exist.
-ENV_GEMINI_API_KEY: str = "GEMINI_API_KEY"
-ENV_GEMINI_FLASH_OVERRIDE: str = "GEMINI_FLASH_MODEL"
-ENV_GEMINI_PRO_OVERRIDE: str = "GEMINI_PRO_MODEL"
+# Canonical Google AI env names (legacy GEMINI_* aliases resolved in google_ai_env).
+ENV_GOOGLE_API_KEY: str = GOOGLE_API_KEY
+ENV_GEMINI_API_KEY_LEGACY: str = GEMINI_API_KEY_LEGACY
+ENV_GOOGLE_AI_FLASH_OVERRIDE: str = GOOGLE_AI_MODEL
+ENV_GOOGLE_AI_PRO_OVERRIDE: str = GOOGLE_AI_PRO_MODEL
 ENV_GEMINI_TIMEOUT: str = "GEMINI_TIMEOUT_SECONDS"
-ENV_GEMINI_MAX_TOKENS: str = "GEMINI_MAX_OUTPUT_TOKENS"
+ENV_GOOGLE_AI_MAX_TOKENS: str = GOOGLE_AI_MAX_OUTPUT_TOKENS
+# Deprecated aliases for tests / external docs that still import old constant names.
+ENV_GEMINI_API_KEY: str = GEMINI_API_KEY_LEGACY
+ENV_GEMINI_FLASH_OVERRIDE: str = ENV_GOOGLE_AI_FLASH_OVERRIDE
+ENV_GEMINI_PRO_OVERRIDE: str = ENV_GOOGLE_AI_PRO_OVERRIDE
+ENV_GEMINI_MAX_TOKENS: str = GEMINI_MAX_OUTPUT_TOKENS_LEGACY
 
 
 @dataclass(frozen=True)
@@ -67,13 +85,13 @@ class GeminiGatewayConfig:
 
     @staticmethod
     def from_env() -> GeminiGatewayConfig | None:
-        """Return a config when ``GEMINI_API_KEY`` is set, else ``None``.
+        """Return a config when ``GOOGLE_API_KEY`` is set, else ``None``.
 
         Returning ``None`` is a positive signal: it tells the caller that
         no provisioning should happen, and the router should stay in
-        dry-plan mode (e.g. CI where no real Gemini key is available).
+        dry-plan mode (e.g. CI where no real Google AI key is available).
         """
-        key = (os.getenv(ENV_GEMINI_API_KEY) or "").strip()
+        key, _ = google_api_key()
         if not key:
             return None
         try:
@@ -81,13 +99,23 @@ class GeminiGatewayConfig:
         except ValueError:
             timeout = 60
         try:
-            max_tokens = int(os.getenv(ENV_GEMINI_MAX_TOKENS, "4096"))
+            max_tokens = int(
+                os.getenv(ENV_GOOGLE_AI_MAX_TOKENS)
+                or os.getenv(ENV_GEMINI_MAX_TOKENS)
+                or "4096"
+            )
         except ValueError:
             max_tokens = 4096
+        flash_model, _ = google_ai_flash_model_id()
+        if not flash_model:
+            flash_model = GEMINI_FLASH_MODEL_ID
+        pro_model, _ = google_ai_pro_model_id()
+        if not pro_model:
+            pro_model = GEMINI_PRO_MODEL_ID
         return GeminiGatewayConfig(
             api_key=key,
-            flash_model=os.getenv(ENV_GEMINI_FLASH_OVERRIDE, GEMINI_FLASH_MODEL_ID),
-            pro_model=os.getenv(ENV_GEMINI_PRO_OVERRIDE, GEMINI_PRO_MODEL_ID),
+            flash_model=flash_model,
+            pro_model=pro_model,
             timeout_seconds=timeout,
             max_output_tokens=max_tokens,
         )

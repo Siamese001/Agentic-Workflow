@@ -13,6 +13,7 @@ import os
 from dataclasses import field
 from typing import Any
 
+from agentic_core.config.google_ai_env import google_ai_flash_model_id
 from agentic_core.config.injection_layer_config import (
     INSTRUCTIONAL_PATTERNS,
     InjectionLayer,
@@ -272,7 +273,7 @@ class InstructionalInjectionMixin:
         tool_output: str = "",
         source: str = "",
         priority_order: str = "RAG > QA > Draft",
-        model: str = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
+        model: str = google_ai_flash_model_id()[0],
     ) -> str:
         """Inject tooling layer patterns (16-20)."""
         # §P1 — Canonical injection scan on tool_output before injection (fail-closed)

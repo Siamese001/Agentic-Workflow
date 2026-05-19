@@ -56,11 +56,13 @@ class GeminiResponse:
 
 
 def _get_api_key() -> str:
-    """Get Gemini API key from environment."""
-    api_key = os.environ.get("GEMINI_API_KEY")
+    """Get Google AI API key from environment (``GOOGLE_API_KEY`` canonical)."""
+    from agentic_core.config.google_ai_env import GOOGLE_API_KEY, google_api_key
+
+    api_key, _ = google_api_key()
     if not api_key:
         raise GeminiAPIKeyMissing(
-            "GEMINI_API_KEY environment variable not set. "
+            f"{GOOGLE_API_KEY} environment variable not set. "
             "Set it to your Google AI Studio API key."
         )
     return api_key
@@ -188,7 +190,10 @@ class GeminiProvider:
     ]
     
     def __init__(self, api_key: Optional[str] = None):
-        self._api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        from agentic_core.config.google_ai_env import google_api_key
+
+        resolved_key, _ = google_api_key()
+        self._api_key = api_key or resolved_key
     
     def is_available(self) -> bool:
         """Check if Gemini provider is available (API key set)."""
@@ -261,5 +266,8 @@ def create_gemini_provider(config: Optional[Dict] = None) -> GeminiProvider:
     This is the entry point used by SovereignLLMGateway.
     """
     config = config or {}
-    api_key = config.get("api_key") or os.environ.get("GEMINI_API_KEY")
+    from agentic_core.config.google_ai_env import google_api_key
+
+    resolved_key, _ = google_api_key()
+    api_key = config.get("api_key") or resolved_key
     return GeminiProvider(api_key=api_key)

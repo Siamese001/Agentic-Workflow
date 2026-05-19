@@ -28,6 +28,11 @@ from __future__ import annotations
 import os
 from typing import Final
 
+from agentic_core.config.google_ai_env import (
+    google_ai_flash_model_id,
+    google_ai_pro_model_id,
+)
+
 
 # ============================================================================
 # TIER: DETERMINISTIC (no model — rule-based agent healing)
@@ -78,27 +83,21 @@ lets ops bump this when GPU memory is freed up without redeploying code.
 # TIER: GEMINI_FLASH (cheap cloud, fast)
 # ============================================================================
 
-GEMINI_FLASH_MODEL_ID: Final[str] = os.getenv(
-    "GEMINI_MODEL",
-    "gemini-3-flash-preview",
-)
-"""Identifier for the cheaper, faster Gemini model (default tier for routine cloud calls)."""
+GEMINI_FLASH_MODEL_ID: Final[str] = google_ai_flash_model_id()[0]
+"""Identifier for the cheaper, faster Google AI model (``GOOGLE_AI_MODEL`` env; flash tier)."""
 
 
 # ============================================================================
 # TIER: GEMINI_PRO (expensive cloud, higher reasoning)
 # ============================================================================
 
-GEMINI_PRO_MODEL_ID: Final[str] = os.getenv(
-    "GEMINI_PRO_MODEL",
-    "gemini-3.1-pro-preview",
-)
-"""Identifier for the higher-reasoning Gemini model (escalation tier for structural / novel failures).
+GEMINI_PRO_MODEL_ID: Final[str] = google_ai_pro_model_id()[0]
+"""Identifier for the higher-reasoning Google AI model (``GOOGLE_AI_PRO_MODEL`` env; pro tier).
 
 Default refreshed 2026-05-01 per operator directive. Previous default
 ``gemini-2.5-pro`` was stale relative to the current Google fleet. W2b
 certification consensus jury uses this pin as its Google juror. Override
-via ``GEMINI_PRO_MODEL`` env var for deployment-specific pinning.
+via ``GOOGLE_AI_PRO_MODEL`` env var for deployment-specific pinning.
 """
 
 

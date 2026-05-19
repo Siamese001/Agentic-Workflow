@@ -190,7 +190,7 @@ class SovereignConfigManager:
     DEFAULT_CACHE_TTL: int = 86400  # 24 Hours
 
     # Model Defaults (Phase 4) — sourced from L0 model_registry SSOT.
-    # Env vars (OPENAI_MODEL / ANTHROPIC_MODEL / GEMINI_MODEL / GEMINI_PRO_MODEL /
+    # Env vars (OPENAI_MODEL / ANTHROPIC_MODEL / GOOGLE_AI_MODEL / GOOGLE_AI_PRO_MODEL /
     # EMBEDDING_MODEL) still override at runtime via get_str().
     DEFAULT_OPENAI_MODEL: str = _MR.OPENAI_MODEL_ID
     DEFAULT_ANTHROPIC_MODEL: str = _MR.ANTHROPIC_MODEL_ID
@@ -282,11 +282,32 @@ class SovereignConfigManager:
 
     @property
     def google_model(self) -> str:
-        return self.get_str("GEMINI_MODEL", self.DEFAULT_GOOGLE_MODEL)
+        from agentic_core.config.google_ai_env import (
+            GEMINI_MODEL_LEGACY,
+            GOOGLE_AI_MODEL,
+            google_ai_flash_model_id,
+        )
+
+        explicit, _ = google_ai_flash_model_id()
+        if explicit and explicit != self.DEFAULT_GOOGLE_MODEL:
+            return explicit
+        return self.get_str(GOOGLE_AI_MODEL, self.get_str(GEMINI_MODEL_LEGACY, self.DEFAULT_GOOGLE_MODEL))
 
     @property
     def google_pro_model(self) -> str:
-        return self.get_str("GEMINI_PRO_MODEL", self.DEFAULT_GOOGLE_PRO_MODEL)
+        from agentic_core.config.google_ai_env import (
+            GEMINI_PRO_MODEL_LEGACY,
+            GOOGLE_AI_PRO_MODEL,
+            google_ai_pro_model_id,
+        )
+
+        explicit, _ = google_ai_pro_model_id()
+        if explicit and explicit != self.DEFAULT_GOOGLE_PRO_MODEL:
+            return explicit
+        return self.get_str(
+            GOOGLE_AI_PRO_MODEL,
+            self.get_str(GEMINI_PRO_MODEL_LEGACY, self.DEFAULT_GOOGLE_PRO_MODEL),
+        )
 
     # Redis MCP Configuration
     @property

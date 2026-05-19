@@ -64,7 +64,7 @@ class GeminiJudgeProvider:
     ``GOOGLE_API_KEY``. Bypasses SovereignLLMGateway (which requires
     agent_id and async routing not needed for judge evaluation).
 
-    Supports model override via ``GEMINI_MODEL`` env var.
+    Supports model override via ``GOOGLE_AI_MODEL`` env var (legacy: ``GEMINI_MODEL``).
     Temperature is forced to 0.0 for maximum determinism.
     """
 
@@ -72,7 +72,9 @@ class GeminiJudgeProvider:
 
     def __init__(self, gemini_client: Any = None, model: str | None = None) -> None:
         self._client = gemini_client
-        env_model = os.getenv("GEMINI_MODEL")
+        from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+        env_model, _ = google_ai_flash_model_id()
         self._model = model or env_model or self.DEFAULT_MODEL
         self._configured = False
 
@@ -297,7 +299,10 @@ def create_default_registry(*, prefer_local: bool = True) -> JudgeProviderRegist
 
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         try:
-            default_model = os.getenv("GEMINI_MODEL", GeminiJudgeProvider.DEFAULT_MODEL)
+            from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+            flash_model, _ = google_ai_flash_model_id()
+            default_model = flash_model or GeminiJudgeProvider.DEFAULT_MODEL
             gemini_model = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(
                 default_model
             )

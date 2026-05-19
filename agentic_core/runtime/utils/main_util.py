@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 
+from agentic_core.config.google_ai_env import google_ai_pro_model_id
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -177,7 +178,7 @@ async def main() -> Any:
         "budget_limit": 25.0,
         "allowed_tools": ["read_file", "search_web", "run_python"],
         "mission_scope": "system_refactoring",
-        "model_name": os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
+        "model_name": google_ai_pro_model_id()[0],
     }
     bootstrapper: Any = runtime_bootstrapper(config)
     try:

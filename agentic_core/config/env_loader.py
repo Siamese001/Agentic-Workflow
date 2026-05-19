@@ -59,14 +59,36 @@ class SovereignEnv:
 
         load_dotenv(dotenv_path=env_path, override=False)
 
-        # Accept GOOGLE_API_KEY as an alias for GEMINI_API_KEY. The Google
-        # Generative AI SDK accepts both; canonical docs use GOOGLE_API_KEY,
-        # internal code uses GEMINI_API_KEY. If only GOOGLE_API_KEY is set,
-        # mirror it so downstream code keeps reading GEMINI_API_KEY.
-        if not os.getenv("GEMINI_API_KEY") and os.getenv("GOOGLE_API_KEY"):
-            os.environ["GEMINI_API_KEY"] = os.environ["GOOGLE_API_KEY"]
-        self.GEMINI_API_KEY = self._require("GEMINI_API_KEY")
-        self.GEMINI_MODEL = self._require("GEMINI_MODEL")
+        from agentic_core.config.google_ai_env import (
+            GEMINI_API_KEY_LEGACY,
+            GEMINI_MODEL_LEGACY,
+            GOOGLE_AI_MODEL,
+            GOOGLE_API_KEY,
+            google_ai_flash_model_id,
+            google_api_key,
+        )
+
+        api_key, api_key_src = google_api_key()
+        if not api_key:
+            raise ValueError(
+                f"[L6 CRITICAL] {GOOGLE_API_KEY} required "
+                f"(deprecated alias: {GEMINI_API_KEY_LEGACY})"
+            )
+        if api_key_src == GEMINI_API_KEY_LEGACY and not os.getenv(GOOGLE_API_KEY):
+            os.environ[GOOGLE_API_KEY] = api_key
+        self.GOOGLE_API_KEY = api_key
+        self.GEMINI_API_KEY = api_key  # backward-compat attribute for legacy callers
+
+        flash_model, flash_src = google_ai_flash_model_id()
+        if not flash_model:
+            raise ValueError(
+                f"[L6 CRITICAL] {GOOGLE_AI_MODEL} required "
+                f"(deprecated alias: {GEMINI_MODEL_LEGACY})"
+            )
+        if flash_src == GEMINI_MODEL_LEGACY and not os.getenv(GOOGLE_AI_MODEL):
+            os.environ[GOOGLE_AI_MODEL] = flash_model
+        self.GOOGLE_AI_MODEL = flash_model
+        self.GEMINI_MODEL = flash_model  # backward-compat attribute
         inactive_keys = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_API_KEY"]
         self._inactive_keys = [key for key in inactive_keys if os.getenv(key)]
         self.REDIS_URL = self._require("REDIS_URL")

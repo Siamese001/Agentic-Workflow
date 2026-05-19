@@ -8,7 +8,7 @@ API key resolution (in order):
     (deprecated alias).
 
 Model default: ``gemini-2.0-flash`` — fast and cost-effective for judge calls.
-Override with ``GEMINI_MODEL`` env var or the ``model=`` constructor arg.
+Override with ``GOOGLE_AI_MODEL`` env var (legacy: ``GEMINI_MODEL``) or ``model=`` arg.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ class GoogleJudge(BaseHttpJudge):
     """Judge backed by Google Gemini generateContent API.
 
     Defaults:
-        model:   ``gemini-2.0-flash`` (overridable via ``GEMINI_MODEL`` env var)
+        model:   ``gemini-2.0-flash`` (overridable via ``GOOGLE_AI_MODEL`` env var)
         timeout: 30 s
         max_tokens: 512
 
@@ -51,11 +51,10 @@ class GoogleJudge(BaseHttpJudge):
         timeout: float = 30.0,
         max_tokens: int = 512,
     ) -> None:
-        resolved_model = (
-            model
-            or os.environ.get("GEMINI_MODEL")
-            or _DEFAULT_MODEL
-        )
+        from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+        env_model, _ = google_ai_flash_model_id()
+        resolved_model = model or env_model or _DEFAULT_MODEL
         super().__init__(model=resolved_model, timeout=timeout)
         self._api_key = api_key
         self._max_tokens = int(max_tokens)

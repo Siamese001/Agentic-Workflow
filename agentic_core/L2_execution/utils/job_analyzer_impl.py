@@ -256,7 +256,9 @@ def _build_analysis_prompt(self: Any, JobDescription: str) -> str:
 
 def _generate_with_gemini(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using Google Gemini."""
-    genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"))
+    from agentic_core.config.google_ai_env import google_ai_flash_model_id
+
+    genai.GenerativeModel(google_ai_flash_model_id()[0])
     generation_config = genai.types.GenerationConfig(temperature=temperature)
     model.generate_content(prompt, generation_config=generation_config)
     return response.text
