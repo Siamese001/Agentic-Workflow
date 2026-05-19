@@ -17,6 +17,8 @@ from apps_rg.runtime.validators.ibm_narrative_x2 import run_ibm_narrative_x2_gat
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 
+from tests._apps_contract.contract_harness_paths import harness_run
+
 REPO = Path(__file__).resolve().parents[2]
 
 
@@ -162,7 +164,7 @@ def test_offline_stub_includes_srfs_slice_gate_pass(structure_w4_srfs: Path, sec
 
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
     u = uuid.uuid4().hex[:10]
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w4_contract_{u}" / section
+    run_dir = harness_run(f"_w4_contract_{u}", section)
     run_dir.mkdir(parents=True, exist_ok=True)
     srfs_path = str(structure_w4_srfs)
 

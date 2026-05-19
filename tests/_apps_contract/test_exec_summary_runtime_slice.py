@@ -600,16 +600,27 @@ def test_gemini_judge_model_env_precedence(monkeypatch):
     assert source == "APPS_RG_GEMINI_JUDGE_MODEL"
 
 
-def test_gemini_model_falls_back_to_gemini_model_env(monkeypatch):
+def test_gemini_model_falls_back_to_google_ai_pro_model_env(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
     monkeypatch.delenv("APPS_RG_GOOGLE_JUDGE_MODEL", raising=False)
     monkeypatch.delenv("APPS_RG_GEMINI_JUDGE_MODEL", raising=False)
-    monkeypatch.delenv("GOOGLE_AI_MODEL", raising=False)
-    monkeypatch.setenv("GEMINI_MODEL", "gemini-3-flash-preview")
+    monkeypatch.setenv("GOOGLE_AI_PRO_MODEL", "gemini-2.5-pro")
     model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
-    assert model == "gemini-3-flash-preview"
-    assert source == "GEMINI_MODEL"
+    assert model == "gemini-2.5-pro"
+    assert source == "GOOGLE_AI_PRO_MODEL"
+
+
+def test_gemini_model_falls_back_to_legacy_gemini_pro_model_env(monkeypatch):
+    from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
+
+    monkeypatch.delenv("APPS_RG_GOOGLE_JUDGE_MODEL", raising=False)
+    monkeypatch.delenv("APPS_RG_GEMINI_JUDGE_MODEL", raising=False)
+    monkeypatch.delenv("GOOGLE_AI_PRO_MODEL", raising=False)
+    monkeypatch.setenv("GEMINI_PRO_MODEL", "gemini-3.1-pro-preview")
+    model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
+    assert model == "gemini-3.1-pro-preview"
+    assert source == "GEMINI_PRO_MODEL"
 
 
 def test_anthropic_model_falls_back_to_anthropic_model_env(monkeypatch):

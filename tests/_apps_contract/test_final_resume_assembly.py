@@ -19,6 +19,11 @@ _EXPECTED_ARTIFACT_FILENAMES = frozenset(
         "final_resume_manifest.json",
         "final_resume_x2_gate_outputs.json",
         "final_resume_receipt.json",
+        "orchestration_fingerprint.json",
+        "cross_section_x2_gate_outputs.json",
+        "kept_removed_claims.json",
+        "overlap_decisions.json",
+        "aggregation_preflight.json",
     },
 )
 
@@ -58,7 +63,7 @@ def test_final_resume_artifacts_exist(assembled: dict[str, object], paths: Final
 
 def test_only_expected_artifacts_written(paths: FinalResumePaths) -> None:
     names = sorted(p.name for p in paths.output_dir.iterdir() if p.is_file())
-    assert names == sorted(_EXPECTED_ARTIFACT_FILENAMES)
+    assert names == sorted(_EXPECTED_ARTIFACT_FILENAMES), f"unexpected files: {set(names) ^ _EXPECTED_ARTIFACT_FILENAMES}"
 
 
 def test_gates_pass(assembled: dict[str, object]) -> None:
@@ -136,11 +141,12 @@ def test_hashes_and_aggregate_hash(paths: FinalResumePaths) -> None:
 
 
 def test_output_dir_has_no_provider_qwen_judge_docx_files(paths: FinalResumePaths) -> None:
+    allowed = {x.lower() for x in _EXPECTED_ARTIFACT_FILENAMES}
     for f in paths.output_dir.iterdir():
         if not f.is_file():
             continue
         n = f.name.lower()
-        assert n in {x.lower() for x in _EXPECTED_ARTIFACT_FILENAMES}
+        assert n in allowed
         assert not n.startswith("provider_")
         assert "qwen" not in n
         assert "x1d" not in n

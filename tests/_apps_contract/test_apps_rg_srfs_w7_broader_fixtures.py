@@ -16,6 +16,8 @@ from pathlib import Path
 import pytest
 
 from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
+from tests._apps_contract.contract_harness_paths import harness_run
+
 from apps_rg.runtime.sections.selected_role_fact_set import (
     get_section_fact_slice,
     load_selected_role_fact_set,
@@ -336,7 +338,7 @@ def test_w7_representative_offline_runs_section_metric_receipt(
     """Nested realistic fixture + offline stub → full lane run + W6 receipt shape."""
     _stub_env(monkeypatch)
     u = uuid.uuid4().hex[:12]
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w7_exec_{u}" / section
+    run_dir = harness_run(f"_w7_exec_{u}", section)
     run_dir.mkdir(parents=True, exist_ok=True)
     srfs = str(w7_realistic_nested_path)
 
@@ -405,7 +407,7 @@ def test_w7_representative_offline_runs_section_metric_receipt(
 
 def test_w7_no_srfs_fallback_receipt_headline(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _stub_env(monkeypatch)
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w7_nosrfs_{uuid.uuid4().hex[:12]}" / "headline"
+    run_dir = harness_run(f"_w7_nosrfs_{uuid.uuid4().hex[:12]}", "headline")
     run_dir.mkdir(parents=True, exist_ok=True)
     from apps_rg.runtime.sections.headline_lane import build_headline_lane_args, run_headline_execution
 
@@ -434,7 +436,7 @@ def test_w7_cli_headline_smoke_offline_stub(
     """Lightweight ``python -m apps_rg`` section path (deterministic with offline contract stub)."""
     _stub_env(monkeypatch)
     u = uuid.uuid4().hex[:10]
-    art = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w7_cli_smoke_{u}" / "headline_cli"
+    art = harness_run(f"_w7_cli_smoke_{u}", "headline_cli")
     art.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
     env["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = "1"

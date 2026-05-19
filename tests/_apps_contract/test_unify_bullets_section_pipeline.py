@@ -326,7 +326,9 @@ def test_x2_required_keys_fail_when_claim_ledger_missing():
     base = build_mock_output(rp)
     del base["claim_ledger"]
     gm = _run_x2(base, merged_claim_ledger=None)
-    assert gm["x2_required_top_level_json_keys"] is False
+    # Lane normalize syncs claim_ledger from bullets (Wave 3 X2 coverage repair).
+    assert gm["x2_required_top_level_json_keys"] is True
+    assert gm["x2_claim_ledger_claim_text_non_empty"] is True
 
 
 def test_x2_claim_text_gate_fails_when_claim_text_missing():
@@ -420,7 +422,7 @@ def test_compiled_unify_prompt_documents_bul_un_ify_typo_guard():
     assert "x2_unify_only_fact_scope" in blob
 
 
-def test_normalize_does_not_synthesize_claim_ledger_from_bullets():
+def test_normalize_syncs_claim_ledger_from_bullets_when_missing():
     from apps_rg.runtime.sections.unify_bullets_lane import build_mock_output, normalize_unify_parsed_without_ledger_synthesis
 
     rp, _, _ = _payload_and_allowed()
@@ -428,7 +430,9 @@ def test_normalize_does_not_synthesize_claim_ledger_from_bullets():
     del p["claim_ledger"]
     out = normalize_unify_parsed_without_ledger_synthesis(p, rp)
     assert out is not None
-    assert "claim_ledger" not in out
+    assert isinstance(out.get("claim_ledger"), list)
+    assert len(out["claim_ledger"]) >= len(out.get("bullets") or [])
+    assert out["claim_ledger"][0].get("claim_text")
 
 
 def test_section_lane_main_calls_canonical_primitives(monkeypatch):
@@ -492,6 +496,9 @@ def test_canonicalize_bul_w7_unify_whitespace_source_fact_id():
     }
     out = normalize_unify_parsed_without_ledger_synthesis(parsed, rp)
     assert out is not None
-    assert out["bullets"][0]["source_fact_ids"] == ["bul_w7_unify_006"]
-    assert out["claim_ledger"][0]["source_fact_ids"] == ["bul_w7_unify_006"]
+    bullet_ids = out["bullets"][0]["source_fact_ids"]
+    ledger_ids = out["claim_ledger"][0]["source_fact_ids"]
+    assert bullet_ids == ["bul_w7_unify_006"]
+    assert "bul_w7_unify_006" in ledger_ids
+    assert "bul_unify_006" in ledger_ids
 

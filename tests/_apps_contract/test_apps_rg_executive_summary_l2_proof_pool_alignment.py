@@ -20,6 +20,8 @@ from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
     validate_active_proof_pool_source_fact_ids,
 )
 
+from tests._apps_contract.contract_harness_paths import harness_run
+
 REPO = Path(__file__).resolve().parents[2]
 LEDGER_PATH = default_ledger_path(REPO)
 
@@ -76,7 +78,8 @@ def test_executive_summary_l2_resolver_uses_broad_skills_ledger_without_srfs() -
     }
     compiled = compile_executive_summary_prompt(payload, run_id="exec_pool_unit")
     content = compiled.artifact.messages[-1]["content"]
-    assert "CLAIM SUPPORT POOL (BROAD SKILLS LEDGER)" in content
+    assert "CLAIM SUPPORT POOL (CANDIDATE FACT LEDGER)" in content
+    assert "AUGMENTED SKILLS GRAPH" in content
     assert fid in content
     assert "TARGETING_INPUT" in content
 
@@ -170,7 +173,7 @@ def test_mock_executive_summary_lane_digest_and_receipt_match_usage_ledger(
     from apps_rg.runtime.sections.executive_summary_lane import run_executive_summary_execution
     from tests._apps_contract.test_exec_summary_section_pipeline import _tag_exec_summary_provider_resolution
 
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_exec_l2_pool_{uuid.uuid4().hex[:10]}"
+    run_dir = harness_run(f"_exec_l2_pool_{uuid.uuid4().hex[:10]}")
     run_dir.mkdir(parents=True, exist_ok=True)
     args = build_parser().parse_args(
         ["--provider", "mock", "--mock-judges", "--allow-non-allow-exit-zero"]
@@ -192,7 +195,8 @@ def test_mock_executive_summary_lane_digest_and_receipt_match_usage_ledger(
     assert "CLAIM SUPPORT POOL" in compiled
     pp_type = str((runtime.get("proof_pool_metadata") or {}).get("proof_pool_type") or "")
     if pp_type == "broad_skills_ledger":
-        assert "BROAD SKILLS LEDGER" in compiled
+        assert "CANDIDATE FACT LEDGER" in compiled
+        assert "AUGMENTED SKILLS GRAPH" in compiled
     elif pp_type == "selected_role_fact_set":
         assert "(SRFS)" in compiled
     else:

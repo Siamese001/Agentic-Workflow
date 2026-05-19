@@ -12,6 +12,8 @@ import pytest
 from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
 from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
 
+from tests._apps_contract.contract_harness_paths import harness_run
+
 REPO = Path(__file__).resolve().parents[2]
 
 
@@ -75,7 +77,7 @@ def test_proof_pool_metadata_for_section_offline_stub(
 ) -> None:
     _stub_env(monkeypatch)
     u = uuid.uuid4().hex[:12]
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w3_contract_{u}" / section
+    run_dir = harness_run(f"_w3_contract_{u}", section)
     run_dir.mkdir(parents=True, exist_ok=True)
     srfs = str(srfs_all_sections)
 
@@ -234,7 +236,7 @@ def test_headline_fails_closed_when_slice_missing(monkeypatch: pytest.MonkeyPatc
         briefing="B",
         selected_role_fact_set=str(p),
     )
-    run_under = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w3_contract_{uuid.uuid4().hex[:12]}" / "headline_fail"
+    run_under = harness_run(f"_w3_contract_{uuid.uuid4().hex[:12]}", "headline_fail")
     run_under.mkdir(parents=True, exist_ok=True)
     with pytest.raises(ValueError, match="headline"):
         run_headline_execution(args, artifact_dir_override=run_under, print_output=False)
@@ -261,7 +263,7 @@ def test_legacy_base_pool_metadata_when_no_srfs_headline(monkeypatch: pytest.Mon
     from apps_rg.runtime.sections.headline_lane import build_headline_lane_args, run_headline_execution
 
     u = uuid.uuid4().hex[:12]
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w3_contract_{u}" / "headline_legacy"
+    run_dir = harness_run(f"_w3_contract_{u}", "headline_legacy")
     run_dir.mkdir(parents=True, exist_ok=True)
     args = build_headline_lane_args(
         provider="qwen_vllm",

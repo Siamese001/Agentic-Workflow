@@ -34,11 +34,11 @@ def test_arsenal_ledger_loads_and_top_level_keys(ledger: dict) -> None:
         assert key in ledger
     assert ledger["metadata"]["schema_version"] == "master_skills_arsenal_graph_v1"
     assert ledger["metadata"].get("w4a_hardened") is True
-    assert len(ledger["pillars"]) == 18
-    assert len(ledger["skill_rows"]) >= 110
+    assert len(ledger["pillars"]) == 19
+    assert len(ledger["skill_rows"]) >= 121
     assert len(ledger["actuarial_career_matrix"]) == 22
     assert len(ledger["partner_gtm_matrix"]) == 16
-    assert len(ledger["role_family_projection_profiles"]) == 8
+    assert len(ledger["role_family_projection_profiles"]) == 9
     assert len(ledger["agentic_runtime_matrix"]) >= 65
     assert len(arsenal_skill_ids(ledger)) == len(ledger["skill_rows"])
 

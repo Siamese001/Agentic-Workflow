@@ -18,6 +18,8 @@ from apps_rg.runtime.sections.selected_role_fact_set import (
     srfs_proof_pool_metadata,
 )
 from apps_rg.runtime.validators.competencies_x2 import run_competencies_x2_gates
+
+from tests._apps_contract.contract_harness_paths import harness_run
 from apps_rg.runtime.validators.unify_bullets_x2 import run_unify_bullets_x2_gates
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 
@@ -100,7 +102,7 @@ def test_section_metric_receipt_w6_srfs_mode_all_fields(
 ) -> None:
     _stub_env(monkeypatch)
     u = uuid.uuid4().hex[:12]
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w6_srfs_{u}" / section
+    run_dir = harness_run(f"_w6_srfs_{u}", section)
     run_dir.mkdir(parents=True, exist_ok=True)
     srfs = str(srfs_all_sections)
 
@@ -243,7 +245,7 @@ def test_section_metric_receipt_w6_no_srfs_base_pool(
 ) -> None:
     _stub_env(monkeypatch)
     u = uuid.uuid4().hex[:12]
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_w6_nosrfs_{u}" / section
+    run_dir = harness_run(f"_w6_nosrfs_{u}", section)
     run_dir.mkdir(parents=True, exist_ok=True)
 
     if section == "headline":

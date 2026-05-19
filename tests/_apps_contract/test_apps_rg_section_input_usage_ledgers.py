@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 
+from tests._apps_contract.contract_harness_paths import harness_run
+
 REPO = Path(__file__).resolve().parents[2]
 
 _STRIP: frozenset[str] = frozenset(
@@ -172,7 +174,7 @@ def test_append_input_usage_x2_missing_ledger_fails() -> None:
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
     gates: list[X2GateResult] = []
-    ad = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / "_contract_test_nonexistent_run"
+    ad = harness_run("_contract_test_nonexistent_run")
     append_section_input_usage_x2_gates(
         gates,
         artifacts_dir=ad,

@@ -18,6 +18,8 @@ from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
     validate_active_proof_pool_source_fact_ids,
 )
 
+from tests._apps_contract.contract_harness_paths import harness_run
+
 REPO = Path(__file__).resolve().parents[2]
 LEDGER_PATH = default_ledger_path(REPO)
 
@@ -284,7 +286,7 @@ def test_mock_executive_summary_lane_x2_receipt_matches_usage_ledger(
 
     import uuid
 
-    run_dir = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"_exec_x2_pool_{uuid.uuid4().hex[:10]}"
+    run_dir = harness_run(f"_exec_x2_pool_{uuid.uuid4().hex[:10]}")
     run_dir.mkdir(parents=True, exist_ok=True)
     args = build_parser().parse_args(
         ["--provider", "mock", "--mock-judges", "--allow-non-allow-exit-zero"]
