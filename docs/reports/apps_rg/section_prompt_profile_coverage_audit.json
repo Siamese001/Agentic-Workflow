@@ -1,0 +1,346 @@
+{
+  "generated_at_utc": "2026-05-18T23:27:37Z",
+  "scope": "section_prompt_profile_coverage",
+  "matrix": [
+    {
+      "profile_name": "header_block",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/header_block.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "professional_summary",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/professional_summary.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "experience_block",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/experience_block.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "skills_block",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/skills_block.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "education_block",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/education_block.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "certifications_block",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/certifications_block.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "selected_projects_block",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/selected_projects_block.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "final_render",
+      "profile_kind": "managed_workflow_bom_node",
+      "expected_path": "apps_rg/config/section_prompts/final_render.yaml",
+      "referenced_by": [
+        "agentic_core.prompt_governance.ManagedWorkflowPAResolver",
+        "tests/_apps_contract/test_apps_rg_prompt_assembly_profile.py",
+        "tests/_apps_contract/test_apps_rg_domain_config_profiles.py",
+        "tests/_apps_contract/test_apps_rg_workflow_manifest_profile.py",
+        "agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "headline",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/headline.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "executive_summary",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/executive_summary.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "competencies",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/competencies.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "unify_bullets",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/unify_bullets.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "unify_narrative",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/unify_narrative.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "ibm_bullets",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/ibm_bullets.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "ibm_narrative",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/ibm_narrative.contract.yaml",
+      "template_path": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "PASS"
+    },
+    {
+      "profile_name": "education",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/education.contract.yaml",
+      "template_path": null,
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "UNKNOWN"
+    },
+    {
+      "profile_name": "certifications",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/certifications.contract.yaml",
+      "template_path": null,
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "UNKNOWN"
+    },
+    {
+      "profile_name": "early_career",
+      "profile_kind": "canonical_section_lane",
+      "expected_path": "apps_rg/prompt_assembly/section_prompt_contracts/early_career.contract.yaml",
+      "template_path": null,
+      "referenced_by": [
+        "apps_rg.runtime.bindings.section_prompt_adapter",
+        "apps_rg.runtime.sections.*_lane",
+        "apps_rg.runtime.dispatch.*_pa",
+        "tests/_apps_contract/test_apps_rg_section_prompt_adapter.py",
+        "tests/_apps_contract/test_apps_rg_srfs_w5_prompt_hierarchy.py"
+      ],
+      "active_runtime_path": true,
+      "file_exists": true,
+      "valid_yaml_shape": true,
+      "output_schema_ref_present": true,
+      "bom_slots_valid": true,
+      "verdict": "UNKNOWN"
+    }
+  ],
+  "summary": {
+    "managed_workflow_nodes": 8,
+    "canonical_lane_sections": 10,
+    "pass": 15,
+    "missing_active": 0
+  }
+}

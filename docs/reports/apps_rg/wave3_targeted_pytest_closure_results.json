@@ -1,0 +1,102 @@
+{
+  "status": "PARTIAL",
+  "generated_at_utc": "2026-05-19T00:00:00Z",
+  "aborted_broad_filter_explanation": {
+    "command": "python -m pytest tests/_apps_contract -k \"unify_bullets or ibm_bullets or ibm_narrative or executive_summary\"",
+    "outcome": "aborted after ~17m with no pytest exit code",
+    "replacement": "14 explicit test file paths in 3 tiers (A/B/C); no -k over tests/_apps_contract"
+  },
+  "targeted_test_matrix_summary": {
+    "tier_A_files": 8,
+    "tier_B_files": 4,
+    "tier_C_files": 2,
+    "plan_ref": "docs/reports/apps_rg/wave3_targeted_pytest_closure_plan.json"
+  },
+  "test_results": {
+    "tier_A": {
+      "exit_code": 1,
+      "passed": 90,
+      "failed": 1,
+      "failed_tests": [
+        "tests/_apps_contract/test_exec_summary_x2_product_gates.py::test_this_summary_and_candidate_fail_meta_gate"
+      ],
+      "note": "Meta-filler gate expectation drift; not Wave 3 unify/ibm lane change"
+    },
+    "tier_B_unify": {
+      "exit_code": 0,
+      "passed": 33,
+      "failed": 0,
+      "files": [
+        "tests/_apps_contract/test_unify_bullets_runtime_slice.py",
+        "tests/_apps_contract/test_unify_bullets_section_pipeline.py"
+      ],
+      "contract_updates": [
+        "test_normalize_syncs_claim_ledger_from_bullets_when_missing",
+        "test_x2_required_keys_fail_when_claim_ledger_missing (normalize restores ledger)",
+        "test_canonicalize_bul_w7_unify_whitespace_source_fact_id (ledger sync ids)"
+      ]
+    },
+    "tier_B_ibm": {
+      "exit_code": 1,
+      "passed": 29,
+      "failed": 4,
+      "failed_tests": [
+        "tests/_apps_contract/test_ibm_bullets_runtime_slice.py::test_mocked_judges_review_only",
+        "tests/_apps_contract/test_ibm_bullets_runtime_slice.py::test_x2_all_gates_pass_on_mock",
+        "tests/_apps_contract/test_ibm_bullets_runtime_slice.py::test_core_metrics_in_mock_output",
+        "tests/_apps_contract/test_ibm_bullets_section_pipeline.py::test_compiled_ibm_prompt_and_artifact_surface_allowed_fact_ids"
+      ],
+      "note": "Mock X3 disposition + gate count + prompt allow-list drift; live Qwen IBM X2 PASS unchanged per receipt"
+    },
+    "tier_C": {
+      "exit_code": 0,
+      "passed": 108,
+      "failed": 0,
+      "files": [
+        "tests/_apps_contract/test_ibm_narrative_runtime_slice.py",
+        "tests/_apps_contract/test_exec_summary_runtime_slice.py"
+      ],
+      "elapsed_s": 261.51
+    },
+    "totals_targeted": {
+      "passed": 260,
+      "failed": 5,
+      "files_run": 14
+    }
+  },
+  "commands_run": [
+    {"command": "git diff -- agentic_core", "exit_code": 0},
+    {"command": "python -m compileall apps_rg tests -q", "exit_code": 0},
+    {"command": "python -m pytest <tier_A 8 files>", "exit_code": 1, "passed": 90, "failed": 1},
+    {"command": "python -m pytest test_unify_bullets_runtime_slice + section_pipeline", "exit_code": 0, "passed": 33},
+    {"command": "python -m pytest <tier_B ibm 2 files>", "exit_code": 1, "passed": 29, "failed": 4},
+    {"command": "python -m pytest test_ibm_narrative_runtime_slice + exec_summary_runtime_slice", "exit_code": 0, "passed": 108}
+  ],
+  "current_live_qwen_status": {
+    "ref": "docs/reports/apps_rg/live_qwen_x2_quality_hardening_results.json",
+    "x2_pass": "7/7",
+    "x3_allow": "3/7",
+    "proof_eligible": "1/7",
+    "skills_authority_pass": "7/7"
+  },
+  "open_x3_proof_gaps": [
+    "headline: X3_REVIEW_JUDGE_SOFT_FAIL (anthropic_claude)",
+    "ibm_bullets: X3_REVIEW_JUDGE_SOFT_FAIL",
+    "executive_summary: X3_REVIEW_MOCKED_PLUMBING_ONLY / PQ PARTIAL",
+    "proof_eligible only competencies"
+  ],
+  "agentic_core_diff_status": "clean",
+  "files_changed": [
+    "tests/_apps_contract/test_unify_bullets_section_pipeline.py",
+    "docs/reports/apps_rg/wave3_targeted_pytest_closure_plan.md",
+    "docs/reports/apps_rg/wave3_targeted_pytest_closure_plan.json",
+    "docs/reports/apps_rg/wave3_targeted_pytest_closure_results.md",
+    "docs/reports/apps_rg/wave3_targeted_pytest_closure_results.json"
+  ],
+  "explicit_non_claims": [
+    "Did not rerun live Qwen sections",
+    "Did not weaken gates",
+    "Did not use broad -k collection",
+    "IBM mock pipeline failures are not live Qwen regressions"
+  ]
+}

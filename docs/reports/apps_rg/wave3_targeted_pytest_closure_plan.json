@@ -1,0 +1,127 @@
+{
+  "wave": 1,
+  "status": "PLAN",
+  "generated_at_utc": "2026-05-19T00:00:00Z",
+  "receipt_confirmed": {
+    "x2_pass": "7/7",
+    "x3_allow": "3/7",
+    "proof_eligible": "1/7",
+    "skills_authority_pass": "7/7",
+    "open_gaps": "judge soft-fail, proof_eligible, executive_summary X3 plumbing — not X2"
+  },
+  "aborted_broad_filter": {
+    "command": "python -m pytest tests/_apps_contract -k \"unify_bullets or ibm_bullets or ibm_narrative or executive_summary\"",
+    "reason_aborted": "Full tests/_apps_contract collection + keyword filter exceeded ~17m; no exit code",
+    "replacement_strategy": "Explicit file-path pytest invocations only"
+  },
+  "targeted_test_matrix": [
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_apps_rg_augmented_skills_graph_source_authority.py",
+      "reason": "Augmented skills graph skills authority; no broad_skills_ledger as SSOT",
+      "expected_coverage": "skills_authority_source_type, PASS boundary",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_apps_rg_augmented_skills_graph_dual_source_all_sections.py",
+      "reason": "Dual-source per section; unify_bullets candidate ledger (not base-only fallback)",
+      "expected_coverage": "test_unify_bullets_resolves_candidate_ledger_not_base_fallback_only",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_apps_rg_augmented_skills_graph_all_sections_runtime_receipts.py",
+      "reason": "Runtime receipt fields for all seven sections",
+      "expected_coverage": "section_input_usage_ledger, authority receipts",
+      "runtime_risk": "low-medium"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_apps_rg_live_qwen_x2_repairs.py",
+      "reason": "Wave 2/3 deterministic repair helpers (headline expand, fact_id typo)",
+      "expected_coverage": "headline word count, competencies typo repair",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_apps_rg_proof_pool_resolver_contract.py",
+      "reason": "Shared proof pool resolver; unify ledger company-hint + bul_unify stamp",
+      "expected_coverage": "resolve_section_proof_pool all sections",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_unify_bullets_text_claim_coverage.py",
+      "reason": "Unify claim_ledger / text_claim_coverage integrity (lane sync)",
+      "expected_coverage": "build_unify_bullets_text_claim_coverage, integrity gate",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_exec_summary_x2_product_gates.py",
+      "reason": "Executive summary deterministic X2 helpers (orphan prune path)",
+      "expected_coverage": "colon/meta/coverage unit gates",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "A",
+      "file": "tests/_apps_contract/test_apps_rg_executive_summary_l2_proof_pool_alignment.py",
+      "reason": "Executive summary proof pool / L2 alignment",
+      "expected_coverage": "exec summary pool wiring",
+      "runtime_risk": "low"
+    },
+    {
+      "tier": "B",
+      "file": "tests/_apps_contract/test_unify_bullets_runtime_slice.py",
+      "reason": "Unify bullets lane subprocess (mock + offline stub)",
+      "expected_coverage": "X2 gate bundle, artifacts, input usage ledger",
+      "runtime_risk": "medium"
+    },
+    {
+      "tier": "B",
+      "file": "tests/_apps_contract/test_unify_bullets_section_pipeline.py",
+      "reason": "Unify bullets end-to-end mock pipeline via apps_rg CLI",
+      "expected_coverage": "canonical dispatch, x2_gate_outputs.json",
+      "runtime_risk": "medium-high"
+    },
+    {
+      "tier": "B",
+      "file": "tests/_apps_contract/test_ibm_bullets_runtime_slice.py",
+      "reason": "IBM bullets lane mock slice + X2 all gates",
+      "expected_coverage": "metrics preserved, mock provider proofs",
+      "runtime_risk": "medium"
+    },
+    {
+      "tier": "B",
+      "file": "tests/_apps_contract/test_ibm_bullets_section_pipeline.py",
+      "reason": "IBM bullets section pipeline contract",
+      "expected_coverage": "pipeline artifacts, gate ids",
+      "runtime_risk": "medium"
+    },
+    {
+      "tier": "C",
+      "file": "tests/_apps_contract/test_ibm_narrative_runtime_slice.py",
+      "reason": "IBM narrative lane slice (uses qwen_vllm + mock judges)",
+      "expected_coverage": "claim_ledger, narrative X2 on stub/live path",
+      "runtime_risk": "high (provider dependency)"
+    },
+    {
+      "tier": "C",
+      "file": "tests/_apps_contract/test_exec_summary_runtime_slice.py",
+      "reason": "Executive summary runtime slice (mostly mock; subset qwen probes)",
+      "expected_coverage": "judge artifacts, provider_request; optional qwen block tests",
+      "runtime_risk": "medium-high"
+    }
+  ],
+  "wave2_run_order": [
+    "tier_A_batch",
+    "tier_B_batch",
+    "tier_C_batch"
+  ],
+  "explicit_non_claims": [
+    "No broad -k collection",
+    "No new live Qwen hardening runs",
+    "No gate weakening"
+  ]
+}

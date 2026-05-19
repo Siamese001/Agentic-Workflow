@@ -1,0 +1,90 @@
+{
+  "generated_at_utc": "2026-05-18T23:30:00Z",
+  "status": "PARTIAL",
+  "scope": "section_prompt_profile_coverage",
+  "wave2_fixes": {
+    "restored_from_commit": "0b49b51f53",
+    "files": [
+      "apps_rg/config/section_prompts/header_block.yaml",
+      "apps_rg/config/section_prompts/professional_summary.yaml",
+      "apps_rg/config/section_prompts/experience_block.yaml",
+      "apps_rg/config/section_prompts/education_block.yaml",
+      "apps_rg/config/section_prompts/certifications_block.yaml",
+      "apps_rg/config/section_prompts/selected_projects_block.yaml",
+      "apps_rg/config/section_prompts/final_render.yaml"
+    ],
+    "unchanged": ["apps_rg/config/section_prompts/skills_block.yaml"]
+  },
+  "verification": {
+    "managed_workflow_pa_resolver": "all 8 nodes resolve with output_schema_ref and valid BOM slots",
+    "section_prompt_filter": "80 passed, 11 failed, 1 skipped",
+    "domain_config_section_prompt_tests": "25 passed",
+    "skills_arsenal_srfs_role_family": "197 passed, 1 skipped",
+    "fact_inventory_unit": "60 passed",
+    "augmented_skills_graph_scoped": "60 passed",
+    "agentic_core_diff": "empty"
+  },
+  "active_missing_profile_fixes": [
+    {
+      "profile": "header_block",
+      "action": "restored",
+      "source": "0b49b51f53"
+    },
+    {
+      "profile": "professional_summary",
+      "action": "restored",
+      "source": "0b49b51f53"
+    },
+    {
+      "profile": "experience_block",
+      "action": "restored",
+      "source": "0b49b51f53"
+    },
+    {
+      "profile": "education_block",
+      "action": "restored",
+      "source": "0b49b51f53"
+    },
+    {
+      "profile": "certifications_block",
+      "action": "restored",
+      "source": "0b49b51f53"
+    },
+    {
+      "profile": "selected_projects_block",
+      "action": "restored",
+      "source": "0b49b51f53"
+    },
+    {
+      "profile": "final_render",
+      "action": "restored",
+      "source": "0b49b51f53"
+    }
+  ],
+  "inert_or_deprecated_profiles": [],
+  "open_gaps": [
+    {
+      "id": "pa_tiered_treatment_profile",
+      "description": "resume_pa_prompt_profile.v1.json missing; SectionPromptArtifact lacks prompt_directive",
+      "tests": "tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py (11 failures)",
+      "in_scope": false,
+      "blocks_qwen_x2": "section lanes yes via contracts; tiered PA artifact tests no"
+    },
+    {
+      "id": "workflow_manifest_production",
+      "description": "workflow_manifest.resume_generation.v1.yaml not at apps_rg/config root (minimal fixture only)",
+      "in_scope": false
+    }
+  ],
+  "readiness_for_qwen_x2_hardening": {
+    "canonical_section_lanes": "ready — contracts, templates, section_prompt_adapter wired",
+    "managed_workflow_section_prompts": "ready — 8/8 YAML on disk, PA resolves",
+    "live_llm_proof": "not run (out of scope)"
+  },
+  "explicit_non_claims": [
+    "No live Qwen provider run",
+    "No product/X2 quality signoff",
+    "No agentic_core edits",
+    "No SRFS/X2/X3 gate changes"
+  ]
+}
