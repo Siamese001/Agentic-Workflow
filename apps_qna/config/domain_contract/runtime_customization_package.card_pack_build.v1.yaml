@@ -1,0 +1,49 @@
+# Runtime customization package — apps_qna / card_pack_build (live interview + product build)
+#
+# Consumed by agentic_core U0 (u0_resolve_runtime_package) via runtime_package_registry.yaml.
+# Stage execution remains app-owned bindings in apps_qna/runtime/bindings/ (AppRuntimeProfile).
+
+package_id: apps_qna_runtime_package_card_pack_build_v1
+package_version: "1.0.0"
+app_id: apps_qna
+task_class: card_pack_build
+schema_version: "1.0"
+
+profile_refs:
+  route_profile: apps_qna/config/domain_contract/route_profiles.yaml
+  orchestration_profile: apps_qna/config/domain_contract/orchestration_profiles.yaml
+  prompt_profile: apps_qna/config/domain_contract/prompt_profiles.yaml
+  retrieval_profile: apps_qna/config/domain_contract/retrieval_profiles.yaml
+  threshold_profile: apps_qna/config/domain_contract/threshold_profiles.yaml
+  eval_rubric: apps_qna/config/domain_contract/eval_rubrics.yaml
+  cache_profile: apps_qna/config/domain_contract/cache_profiles.yaml
+  input_contract: apps_qna/config/domain_contract/input_contract.yaml
+  capability_profile: apps_qna/config/domain_contract/capability_profiles.yaml
+  cert_route_registry: apps_qna/config/cert_route_registry.yaml
+
+# App-owned spine binding surface (documented for U0 audit; wired in profile_builder)
+extra:
+  stage_bindings:
+    u0: apps_qna.runtime.bindings.u0_binding:qna_u0
+    l1: apps_qna.runtime.bindings.l1_binding:qna_l1
+    l0: apps_qna.runtime.bindings.l0_binding:qna_l0
+    c0: apps_qna.runtime.bindings.c0_binding:qna_c0
+    pa: apps_qna.runtime.bindings.pa_binding:qna_pa
+    l2: apps_qna.runtime.bindings.l2_binding:qna_l2
+    exit: apps_qna.runtime.bindings.exit_binding:qna_exit
+  profile_builder: apps_qna.runtime.profile_builder:build_app_runtime_contract
+  ingress_runner: agentic_core.runtime.entry.app_ingress_runner:AppIngressRunner
+
+package_digest: ""
+
+policy:
+  default_posture: read_only
+  write_policy: uwg_only_after_exit
+  execution_form: SINGLE_STEP
+  managed_workflow_allowed: false
+
+registry:
+  registry_source: apps_qna/config/domain_contract/runtime_package_registry.yaml
+  auto_injection_eligible: true
+  auto_injection_allowed_for:
+    - direct_apps_qna

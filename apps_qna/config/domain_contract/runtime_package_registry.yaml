@@ -1,0 +1,24 @@
+# Runtime package registry — apps_qna (app-owned SSOT for core U0 auto-injection)
+#
+# Loaded by agentic_core.runtime.entry.u0_runtime_package_binding.RuntimePackageRegistry
+
+app_id: apps_qna
+schema_version: "1.0"
+
+default_packages:
+  card_pack_build:
+    package_ref: apps_qna/config/domain_contract/runtime_customization_package.card_pack_build.v1.yaml
+    schema_ref: ""
+    auto_injection_allowed_for:
+      - direct_apps_qna
+    auto_injection_blocked_for:
+      - delegated_any_without_context
+
+resolution_rules:
+  direct_call_default: card_pack_build
+  delegated_call_requires_explicit: true
+
+registry_metadata:
+  maintainer: apps_qna
+  last_updated: "2026-05-20"
+  version: "1.0.0"

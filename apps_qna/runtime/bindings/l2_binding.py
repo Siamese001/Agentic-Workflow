@@ -8,10 +8,8 @@ orchestrates the three apps_qna L2 sub-stages:
     E2: validate_build_inputs
     E3: execute_build  (the card pack build)
 
-The prior shadow spine (live_interview_runtime._run_pipeline) invoked these
-same three sub-stages in sequence. After W1, this binding is the ONLY place
-that calls E1/E2/E3 on the spine path. live_interview_runtime._run_pipeline
-must not be called from __main__ as a current-run authority.
+On the canonical spine path, AppIngressRunner calls this binding after qna_pa;
+it is the only current-run authority for E1/E2/E3 (no parallel orchestrator).
 
 Consumes: QnaPromptArtifact from qna_pa
 Emits:    SealedQnaArtifact — wrapper around CardPackManifestExtended that

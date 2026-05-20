@@ -55,7 +55,7 @@ def intake_interview_request(
         trace_root=request_id,
         ingress_time_unix=time.time(),
         received_at_iso=received_at,
-        source_channel="apps_qna.live_interview_runtime",
+        source_channel="apps_qna.app_ingress_runner",
         source_class=SourceClass.BATCH,
         tenant_bind=None,
         workspace_bind=None,

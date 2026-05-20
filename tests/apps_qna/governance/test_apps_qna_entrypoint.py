@@ -12,8 +12,12 @@ from pathlib import Path
 import pytest
 
 
+def _main_py_path() -> Path:
+    return Path(__file__).resolve().parents[3] / "apps_qna" / "__main__.py"
+
+
 def _read_main_py() -> str:
-    return (Path(__file__).parent.parent.parent / "__main__.py").read_text(encoding="utf-8")
+    return _main_py_path().read_text(encoding="utf-8")
 
 
 def _parse_main_py() -> ast.Module:
@@ -74,10 +78,33 @@ class TestGroundingDiscipline:
         plan = plan_live_interview(request_id="r1", has_briefing=False)
         assert plan.grounding_required is True
 
-    def test_direct_path_uses_no_l3(self) -> None:
-        from apps_qna.live_interview_runtime import _run_pipeline
-        result = _run_pipeline(interview_slug="test", dry_run=True)
-        assert result["exit_disposition"].value == "ALLOW_FINISH"
+    def test_direct_path_uses_app_ingress_profile_not_shadow_spine(self) -> None:
+        """Spine profile has no L3 stage; live path uses AppIngressRunner bindings only."""
+        import dataclasses
+        import inspect
+
+        import apps_qna.__main__ as main_mod
+        from agentic_core.runtime.entry.app_ingress_runner import AppRuntimeProfile
+        from apps_qna.runtime.bindings.l0_binding import qna_l0
+        from apps_qna.runtime.bindings.l1_binding import qna_l1
+        from apps_qna.runtime.bindings.u0_binding import qna_u0
+        from apps_qna.runtime.profile_builder import build_app_runtime_contract, parse_payload
+
+        profile = build_app_runtime_contract()
+        field_names = {f.name for f in dataclasses.fields(AppRuntimeProfile)}
+        assert "l3" not in field_names
+
+        src = inspect.getsource(main_mod._run_live_interview)
+        assert "AppIngressRunner" in src
+        assert "from apps_qna.live_interview_runtime import" not in src
+
+        envelope = parse_payload({"interview_slug": "test-slug"})
+        assert envelope is not None
+        validated = qna_u0(envelope)
+        assert validated.source_channel == "apps_qna.app_ingress_runner"
+        route = qna_l0(qna_l1(validated))
+        assert route.route_id != ""
+        assert route.model_generation_required is True
 
     def test_route_resolution_failure_fails_closed_through_exit(self) -> None:
         from apps_qna.l0_router import select_route

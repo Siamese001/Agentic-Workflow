@@ -2,9 +2,8 @@
 
 Four modes:
 
-- **Live interview runtime** (``--interview <slug>``): routes through
+- **Live interview** (``--interview <slug>``): routes through
   AppIngressRunner(profile=...).run(payload) — the one-spine authority.
-  live_interview_runtime is no longer a current-run authority on this path.
 
 - **Product build mode** (``build`` subcommand or default): routes through
   AppIngressRunner(profile=...).run(payload) — the one-spine authority.
@@ -50,8 +49,7 @@ def _run_live_interview(argv: list[str]) -> int:
     """Run live interview mode through AppIngressRunner — one-spine authority.
 
     Parses --interview <slug> from argv, builds a payload dict, and calls
-    AppIngressRunner(profile=profile).run(payload). live_interview_runtime
-    is no longer the current-run authority on this path.
+    AppIngressRunner(profile=profile).run(payload) sequences runtime/bindings.
 
     Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
     """

@@ -28,7 +28,7 @@ class TestW0ThinSlice:
     def test_u0_emits_validated_request(self) -> None:
         vr = intake_interview_request(interview_slug="test-int-01")
         assert vr.request_id
-        assert vr.source_channel == "apps_qna.live_interview_runtime"
+        assert vr.source_channel == "apps_qna.app_ingress_runner"
         assert vr.permitted_next_layer == "L1"
 
     def test_l1_emits_plan_contract(self) -> None:
