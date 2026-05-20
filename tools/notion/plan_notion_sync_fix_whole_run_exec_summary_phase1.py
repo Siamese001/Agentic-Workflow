@@ -22,11 +22,11 @@ SUMMARY = (
 )
 
 AI_SUMMARY = """- PLAN_STATUS: COMPLETED (2026-05-20)
-- ROOT_CAUSE: dispatch ok + missing_pointer under modular_r4/sections/executive_summary (cli_c61c8be7fc9c)
-- WAVES W1-W5: investigate, forensics, fix+W8C tests, runtime proof matrix, closeout
-- SCOPE: executive_summary whole-run only; no C0.3 schema change; no shadow runner restore
+- MATERIALIZATION: PASS — cli_22cf55c9fd58 exec_summary_20260520_201036 under modular_r4/sections
+- ROOT_CAUSE: dispatch ok + missing_pointer; inline briefing vs file-ref; sections root not re-asserted
+- WAVES: W8C fix+tests; chat W8A/W8B/W8C manifest on disk
 - RECEIPT: docs/reports/apps_rg/fix_whole_run_executive_summary_phase1_no_run_dir_closeout_receipt.md
-- NON-CLAIM: product/Fort Knox/L7 PASS without integrated_product_proof_gate PASS"""
+- NON-CLAIM: product/aggregation preflight PASS; Fort Knox/L7 without integrated_product_proof_gate PASS"""
 
 
 def _query_page_id() -> str | None:
@@ -73,7 +73,10 @@ def _patch_completed(page_id: str) -> bool:
         return False
     payload = {
         "properties": {
-            "Status": {"status": {"name": "Completed"}},
+            "Status": {"select": {"name": "Completed"}},
+            "AI Summary ": {
+                "rich_text": [{"text": {"content": AI_SUMMARY[:1990]}}],
+            },
             "Exists On Disk": {"checkbox": True},
             "Plan File Path": {
                 "rich_text": [{"text": {"content": PLAN_PATH}}],

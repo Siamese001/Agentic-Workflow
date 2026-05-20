@@ -1,0 +1,40 @@
+{
+  "schema_version": "apps_rg.chat_session_waves_closeout.v1",
+  "generated_at_utc": "2026-05-20T20:30:00Z",
+  "session_scope": "apps_rg W8 packaging + executive_summary whole-run materialization",
+  "waves": [
+    {
+      "wave_id": "W8A",
+      "title": "Integrated R4 live product proof inspection",
+      "status": "PASS",
+      "receipt": "docs/reports/apps_rg/integrated_r4_live_product_proof_attempt_receipt.md",
+      "notes": "Inspection only; product BLOCKED truthfully"
+    },
+    {
+      "wave_id": "W8B",
+      "title": "Integrated lane evidence packaging + RUN_LINKS modular tree discovery",
+      "status": "PASS",
+      "receipt": "docs/reports/apps_rg/w8b_integrated_lane_evidence_runtime_validation_closeout_receipt.md",
+      "proof_run": "artifacts/apps_rg/runs/cli_93046aa0c06e"
+    },
+    {
+      "wave_id": "W8C",
+      "plan_id": "fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2",
+      "title": "Whole-run executive_summary Phase1 materialization",
+      "status": "PASS",
+      "receipt": "docs/reports/apps_rg/fix_whole_run_executive_summary_phase1_no_run_dir_closeout_receipt.md",
+      "proof_run": "artifacts/apps_rg/runs/cli_22cf55c9fd58"
+    }
+  ],
+  "prior_waves_closed_in_session_context": [
+    "W6B",
+    "W6C",
+    "W6D",
+    "W7A"
+  ],
+  "explicit_non_claims": [
+    "integrated_product_proof_gate PASS",
+    "product ALLOW",
+    "Fort Knox / L7 / 99 proof"
+  ]
+}

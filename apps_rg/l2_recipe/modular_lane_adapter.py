@@ -55,6 +55,35 @@ def _recipe_jd_data(context: dict[str, Any]) -> str | None:
     return d or None
 
 
+def phase1_manual_brief_for_dispatch(targeting: ModularLaneTargeting | None) -> str:
+    """Briefing argument for in-process Phase-1 lane dispatch.
+
+    Prefer the resolved filesystem path (same as ``python -m apps_rg --manual-brief <path>``)
+    so executive_summary dispatch matches section-mode CLI wiring. Fall back to inline text
+    when no on-disk ref exists.
+    """
+    if targeting is None:
+        return ""
+    ref = str(targeting.briefing_ref_used or "").strip()
+    if ref and ref not in {"inline:text"}:
+        path = Path(ref)
+        if path.is_file():
+            return str(path)
+    return str(targeting.briefing_text or "").strip()
+
+
+def phase1_jd_dispatch_refs(targeting: ModularLaneTargeting | None) -> tuple[str, str]:
+    """Return ``(job_description_ref, job_description_text)`` for Phase-1 lane dispatch."""
+    if targeting is None:
+        return "", ""
+    ref = str(targeting.jd_ref_used or "").strip()
+    if ref and not ref.startswith("inline:"):
+        path = Path(ref)
+        if path.is_file():
+            return str(path), ""
+    return "", str(targeting.jd_text or "").strip()
+
+
 def modular_lane_targeting_from_recipe_context(context: dict[str, Any]) -> ModularLaneTargeting:
     """Derive CLI targeting flags from ``resolve_l2_recipe`` context (``jd_data``, ``briefing_artifact_ref``, etc.)."""
     tc = str(context.get("target_company") or "").strip()
@@ -276,6 +305,8 @@ __all__ = [
     "build_section_provider_call_record",
     "lane_argv_for_provider",
     "modular_lane_targeting_from_recipe_context",
+    "phase1_jd_dispatch_refs",
+    "phase1_manual_brief_for_dispatch",
     "resolve_latest_lane_run_dir",
     "run_dispatch_main",
 ]

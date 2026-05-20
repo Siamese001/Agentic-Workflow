@@ -15,7 +15,11 @@ from apps_rg.l2_recipe.modular_resume_generation import (
     ModularResumeProfile,
     run_modular_resume_generation,
 )
-from apps_rg.l2_recipe.modular_lane_adapter import ModularLaneTargeting
+from apps_rg.l2_recipe.modular_lane_adapter import (
+    ModularLaneTargeting,
+    phase1_jd_dispatch_refs,
+    phase1_manual_brief_for_dispatch,
+)
 from apps_rg.runtime.briefing_resolution import BriefingResolutionError, resolve_briefing_for_lanes
 from apps_rg.runtime.integrated_lane_evidence_packaging import (
     INTEGRATED_LANE_PRE_RUN_FAILURE_ARTIFACT,
@@ -34,6 +38,32 @@ def test_generated_lanes_registry_includes_executive_summary() -> None:
     assert "executive_summary" in GENERATED_LANES
     assert "executive_summary" in ROLLUP_GENERATED_LANES
     assert GENERATED_LANES.index("executive_summary") == 1
+
+
+def test_phase1_manual_brief_for_dispatch_prefers_filesystem_ref() -> None:
+    repo = find_repo_root()
+    brief_path = (
+        repo / "apps_rg" / "config" / "targeting" / "brown_brown_svp_it_strategy_innovation_briefing_exec.txt"
+    )
+    targeting = ModularLaneTargeting(
+        target_company="Brown & Brown",
+        target_title="SVP IT Strategy",
+        briefing_text="inline / text / with slashes",
+        briefing_ref_used=str(brief_path.resolve()),
+    )
+    assert phase1_manual_brief_for_dispatch(targeting) == str(brief_path.resolve())
+    jd_ref, jd_txt = phase1_jd_dispatch_refs(
+        ModularLaneTargeting(
+            jd_text="Role body",
+            jd_ref_used=str(
+                (
+                    repo / "apps_rg" / "config" / "targeting" / "brown_brown_svp_it_strategy_innovation_jd.txt"
+                ).resolve()
+            ),
+        )
+    )
+    assert jd_ref.endswith("brown_brown_svp_it_strategy_innovation_jd.txt")
+    assert jd_txt == ""
 
 
 def test_read_optional_brief_preserves_inline_text_with_slashes() -> None:

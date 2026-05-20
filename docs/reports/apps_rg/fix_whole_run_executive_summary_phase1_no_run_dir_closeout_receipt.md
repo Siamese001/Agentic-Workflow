@@ -1,4 +1,4 @@
-# Fix whole-run executive_summary PHASE1_NO_RUN_DIR — closeout receipt
+# fix-whole-run-executive-summary-phase1-no-run-dir — closeout receipt
 
 **PLAN_ID:** `fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2`  
 **Plan file:** [.cursor/plans/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md](../../.cursor/plans/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md)  
@@ -6,82 +6,67 @@
 
 ---
 
-## STATUS
+## STATUS: PASS
 
-**PARTIAL** — Planning waves W1–W5 closed on disk and Notion; runtime product proof remains BLOCKED until a post-fix canonical whole-run achieves `outcome_authorized=true` and integrated validator PASS.
+Materialization seam PASS. Whole-run still exits 1 on aggregation preflight / product gate (out of scope).
 
----
+## SCOPE_MATCH
+
+| In scope | Out of scope |
+|----------|--------------|
+| Whole-run `executive_summary` run_dir under `modular_r4/sections/executive_summary/real/` | Judge / semantic cache / L7 / 99 |
+| Briefing file-ref dispatch (not inline-only) | Product proof PASS |
+| Pre-run failure surfacing when pointer missing | Shadow runner restore |
+| Native C0.3 unchanged | Aggregation preflight fix |
 
 ## ROOT_CAUSE
 
-**Classification:** run_dir discovery mismatch + dispatch/pointer divergence (not native C0.3 schema defect).
+- Dispatch reported `ok|missing_pointer` while section-mode wrote under `runtime_proofs` or wrong tree.
+- Whole-run Phase-1 passed inline briefing text; section mode used file paths.
+- `APPS_RG_MODULAR_R4_SECTIONS_ROOT` not re-asserted per integrated lane.
 
-**Evidence (failed run `cli_c61c8be7fc9c`):**
+## FIX (code)
 
-- `phase1_lane_inventory.json`: `"executive_summary": "ok|missing_pointer:…"` — in-process dispatch reported success, but no resolvable pointer under `modular_r4/sections/executive_summary/`.
-- `modular_r4/sections/executive_summary/` — **absent** (no `real/<run_id>/`, no `latest_real_run.json`).
-- `modular_r4/sections/competencies/real/competencies_20260520_193745/native_c03_final_evidence.json` — competencies lane materialized correctly in same whole-run.
-- `generate_resume_step_receipt.json`: `fatal_lane_recipe_policy:executive_summary:PHASE1_NO_RUN_DIR`.
-- `integrated_lane_evidence_status.json`: executive_summary in `missing_lanes` with `PHASE1_NO_RUN_DIR`.
-
-**Mechanism:** Phase1 calls `run_canonical_apps_rg_from_cli_primitives` with inline `job_description_text` and `manual_brief` while `MODULAR_R4_SECTIONS_ROOT` points at `cli_*/modular_r4/sections`. Executive_summary must call `finalize_runtime_proof_run` so `latest_*_run.json` lands under that sections root. When briefing/JD threading or early-return paths skip finalize, dispatch can still surface as `ok` while rollup resolution fails → `PHASE1_NO_RUN_DIR`.
-
-**Section-mode contrast:** CLI passes `--jd` and `--manual-brief` as **file paths**; whole-run Phase1 passes **inline text** (Brown & Brown briefing contains `/` segments). `_read_optional_brief` must treat non-file strings as inline text (not path resolution failures).
-
----
-
-## FIX_SUMMARY
-
-| Seam | Change |
+| File | Change |
 |------|--------|
-| Briefing threading | Preserve inline briefing through `_read_optional_brief` / executive_summary dispatch (slashes in text) |
-| Pre-run surfacing | `emit_integrated_lane_pre_run_failure` writes under `sections/executive_summary/` when pointer missing |
-| Tests | `tests/unit/apps_rg/test_integrated_executive_summary_materialization_w8c.py` — Phase1 modular root, inline brief, pre-run blocker refs |
-| Native C0.3 | No schema change; existing `apps_rg/runtime/native_c03_skills_graph.py` + proof pool enrich |
+| [modular_lane_adapter.py](../../apps_rg/l2_recipe/modular_lane_adapter.py) | `phase1_manual_brief_for_dispatch()`, `phase1_jd_dispatch_refs()` |
+| [modular_resume_generation.py](../../apps_rg/l2_recipe/modular_resume_generation.py) | File-ref dispatch; sections root re-assert; pre-run failure emit |
+| [canonical_dispatch.py](../../apps_rg/runtime/orchestration/canonical_dispatch.py) | `_resolve_lane_manual_brief()` for executive_summary |
+| [test_integrated_executive_summary_materialization_w8c.py](../../tests/unit/apps_rg/test_integrated_executive_summary_materialization_w8c.py) | W8C unit coverage |
 
----
+## PROOF_RUN
 
-## FAILED_RUN_INSPECTION
+**cli_22cf55c9fd58** — canonical `python -m apps_rg` (Brown & Brown)
 
-| Artifact | Finding |
-|----------|---------|
-| [r4_run_manifest.json](../../artifacts/apps_rg/runs/cli_c61c8be7fc9c/r4_run_manifest.json) | `L2_EXECUTION_ERROR` / `PHASE1_NO_RUN_DIR` |
-| [phase1_lane_inventory.json](../../artifacts/apps_rg/runs/cli_c61c8be7fc9c/modular_r4/phase1_lane_inventory.json) | exec `ok\|missing_pointer` |
-| [integrated_lane_evidence_status.json](../../artifacts/apps_rg/runs/cli_c61c8be7fc9c/integrated_lane_evidence_status.json) | exec missing; 6 lanes finalized |
-| [section_provider_calls.json](../../artifacts/apps_rg/runs/cli_c61c8be7fc9c/modular_r4/section_provider_calls.json) | exec `provider_call_attempted: false`, `PHASE1_NO_RUN_DIR` |
+| Check | Result |
+|-------|--------|
+| Exec summary dir | [modular_r4/sections/executive_summary/real/exec_summary_20260520_201036/](artifacts/apps_rg/runs/cli_22cf55c9fd58/modular_r4/sections/executive_summary/real/exec_summary_20260520_201036/) |
+| `run_manifest.json` | Present; command = whole-run `__main__.py` (no `--section`) |
+| `evidence_package_index.json` | Present |
+| `section_l7_binding_manifest.json` | Present |
+| `RUN_LINKS` executive_summary | `status=EXECUTED`, `lane_x3=X3_BLOCK` (not `PHASE1_NO_RUN_DIR`) |
+| Whole-run exit | 1 — `AggregationPreflightError` / blocked X3 on executive_summary |
+| `integrated_product_proof_gate` | FAIL (expected; not product authorized) |
 
----
+## COMMANDS_RUN
 
-## SECTION_MODE_COMPARISON
+| Command | Result |
+|---------|--------|
+| `pytest tests/unit/apps_rg/test_integrated_executive_summary_materialization_w8c.py` + related gates | PASS |
+| `python -m apps_rg` whole-run | Materialization PASS; exit 1 aggregation |
 
-| Dimension | Section mode | Whole-run Phase1 |
-|-----------|--------------|------------------|
-| Entry | `python -m apps_rg --section executive_summary` | `run_modular_resume_generation` → `run_canonical_apps_rg_from_cli_primitives` |
-| JD / brief | File paths on CLI | Inline `jd_text` / `briefing_text` from `ModularLaneTargeting` |
-| Run dir root | `artifacts/apps_rg/runtime_proofs/executive_summary/` | `cli_*/modular_r4/sections/executive_summary/` via `MODULAR_R4_SECTIONS_ROOT` |
-| Envelope | Section proof | `APPS_RG_WHOLE_RUN_ENVELOPE=1`, `APPS_RG_CORRELATED_CLI_RUN` |
+## ARTIFACTS
 
----
+- [RUN_LINKS.json](artifacts/apps_rg/runs/cli_22cf55c9fd58/RUN_LINKS.json)
+- [run_manifest.json](artifacts/apps_rg/runs/cli_22cf55c9fd58/modular_r4/sections/executive_summary/real/exec_summary_20260520_201036/run_manifest.json)
+- [apps_rg_chat_session_w8_waves_closeout_manifest.json](apps_rg_chat_session_w8_waves_closeout_manifest.json)
 
 ## EXPLICIT_NON_CLAIMS
 
-- No section-only proof upgraded to product / Fort Knox / L7 certification
-- No deleted shadow runner restored
-- No product proof gate PASS unless integrated validator reports PASS with authorized outcome
-- No C0.3 expansion beyond executive_summary + competencies first wave
+- Product / Fort Knox / L7 PASS
+- Whole-run `outcome_authorized=true`
+- Executive summary X3 quality PASS
 
----
+## NEXT_BLOCKER (optional product seam)
 
-## NEXT_BLOCKER
-
-Re-run canonical whole-run after merge; confirm `integrated_product_proof_gate` only PASS when `outcome_authorized=true` and all seven generated lanes materialize under `modular_r4/sections/`.
-
----
-
-## FILES_CHANGED (plan + receipt wave)
-
-- [fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md](../../.cursor/plans/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md)
-- [fix_whole_run_executive_summary_phase1_no_run_dir_closeout_receipt.md](fix_whole_run_executive_summary_phase1_no_run_dir_closeout_receipt.md)
-- [plan_notion_sync_fix_whole_run_exec_summary_phase1.py](../../tools/notion/plan_notion_sync_fix_whole_run_exec_summary_phase1.py)
-
-Implementation files in working tree: see git commit message for full apps_rg / native C0.3 / spine convergence set.
+Fix integrated aggregation preflight blocking on `executive_summary` X3_BLOCK so whole-run can reach authorized outcome — content/X2/X3, not materialization.

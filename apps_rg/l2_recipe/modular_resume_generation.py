@@ -19,6 +19,8 @@ from apps_rg.l2_recipe.modular_lane_adapter import (
     ModularLaneTargeting,
     build_modular_lane_argv,
     build_section_provider_call_record,
+    phase1_jd_dispatch_refs,
+    phase1_manual_brief_for_dispatch,
     resolve_latest_lane_run_dir,
 )
 from apps_rg.l2_recipe.modular_lane_recipe_policy import summarize_modular_lane_recipe_policy
@@ -62,7 +64,8 @@ LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
 
 PHASE0_PATH_INVENTORY_NOTES: dict[str, Any] = {
     "subprocess_cwd": (
-        "modular Phase1 invokes python -m apps_rg --section per lane; offline batch is tests.helpers.offline_lane_orchestration only; "
+        "modular Phase1 invokes in-process run_canonical_apps_rg_from_cli_primitives per lane "
+        "(same surface as python -m apps_rg --section); offline batch is tests.helpers.offline_lane_orchestration only; "
         "lane order matches GENERATED_LANES."
     ),
     "runtime_proofs_strings": [
@@ -430,8 +433,8 @@ def run_modular_resume_generation(
         lane_mock_j_for_phase1 = False
         tc = str(lane_targeting.target_company or "") if lane_targeting is not None else ""
         tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
-        jd_txt = str(lane_targeting.jd_text or "") if lane_targeting is not None else ""
-        br_txt = str(lane_targeting.briefing_text or "") if lane_targeting is not None else ""
+        jd_ref, jd_txt = phase1_jd_dispatch_refs(lane_targeting)
+        br_dispatch = phase1_manual_brief_for_dispatch(lane_targeting)
         x1d_eff = resolve_cli_x1d_judges(None)
         prev_whole_run_env = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE")
         prev_corr_env = os.environ.get("APPS_RG_CORRELATED_CLI_RUN")
@@ -443,14 +446,15 @@ def run_modular_resume_generation(
             )
 
             for lane in GENERATED_LANES:
+                os.environ[MODULAR_R4_SECTIONS_ROOT_ENV] = str(sections_root.resolve())
                 try:
                     result = run_canonical_apps_rg_from_cli_primitives(
                         target_company=tc,
                         target_role=tr,
                         jd="",
-                        job_description_ref="",
+                        job_description_ref=jd_ref,
                         job_description_text=jd_txt,
-                        manual_brief=br_txt,
+                        manual_brief=br_dispatch,
                         resume_path="",
                         source_resume_text="",
                         generation_mode="strategic_tailor",

@@ -279,7 +279,7 @@ def _run_executive_summary_lane_from_cli(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
+    briefing = _resolve_lane_manual_brief(manual_brief)
     if not str(briefing).strip():
         return {
             "exit_status": "error",
@@ -857,6 +857,23 @@ def _read_optional_brief(path_or_url: str) -> str:
         except (HTTPError, URLError, OSError, ValueError):
             return ""
     return _read_optional_file(s)
+
+
+def _resolve_lane_manual_brief(manual_brief: str) -> str:
+    """Resolve briefing for section lanes (path, URI, inline, or lane resolver fallback)."""
+    briefing = _read_optional_brief(manual_brief)
+    if str(briefing).strip():
+        return briefing
+    ref = str(manual_brief or "").strip()
+    if not ref:
+        return ""
+    from apps_rg.runtime.briefing_resolution import BriefingResolutionError, resolve_briefing_for_lanes
+
+    try:
+        resolved = resolve_briefing_for_lanes(briefing_artifact_ref=ref, require_run_specific=True)
+    except BriefingResolutionError:
+        return ""
+    return str(resolved.text or "").strip()
 
 
 def _read_optional_file(path_str: str) -> str:
