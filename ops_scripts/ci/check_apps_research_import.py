@@ -34,7 +34,7 @@ _BINDING_MODULES: list[str] = [
     "agentic_core.prompt_governance.apps_research_pa_binding",
     "agentic_core.L2_execution.apps_research_l2_binding",
     "agentic_core.runtime.exit.apps_research_exit_binding",
-    "agentic_core.runtime.entry.apps_research_dispatch",
+    "apps_research.runtime.profile_builder",
 ]
 
 

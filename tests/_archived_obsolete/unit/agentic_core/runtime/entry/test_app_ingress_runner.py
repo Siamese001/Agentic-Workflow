@@ -31,10 +31,6 @@ from apps_lic.integrations.lic_ingress_runner import (
     LIC_REQUIRED_FIELDS,
     make_lic_ingress_runner,
 )
-from apps_research.integrations.research_ingress_runner import (
-    RESEARCH_REQUIRED_FIELDS,
-    make_research_ingress_runner,
-)
 from apps_rfp.integrations.rfp_ingress_runner import (
     RFP_REQUIRED_FIELDS,
     make_rfp_ingress_runner,
@@ -52,7 +48,6 @@ APP_CASES: list[tuple[str, FactoryFn, tuple[str, ...]]] = [
     ("eval", make_eval_ingress_runner, EVAL_REQUIRED_FIELDS),
     ("exec", make_exec_ingress_runner, EXEC_REQUIRED_FIELDS),
     ("lic", make_lic_ingress_runner, LIC_REQUIRED_FIELDS),
-    ("research", make_research_ingress_runner, RESEARCH_REQUIRED_FIELDS),
     ("rfp", make_rfp_ingress_runner, RFP_REQUIRED_FIELDS),
     ("uw", make_uw_ingress_runner, UW_REQUIRED_FIELDS),
 ]

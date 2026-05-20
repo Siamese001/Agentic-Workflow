@@ -6,6 +6,8 @@ Core binding imports live here (``*_adapter.py`` exempt from authority MV).
 
 from __future__ import annotations
 
+import json
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Mapping
 from uuid import uuid4
@@ -21,6 +23,13 @@ from agentic_core.runtime.entry.u0_apps_research_binding import (
 from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
 from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
 from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+from agentic_core.runtime.contracts.compiled_prompt_artifact import (
+    CompiledPromptArtifact,
+)
+from agentic_core.runtime.contracts.sealed_l2_artifact import (
+    SealedL2Artifact as ContractSealedL2Artifact,
+)
+from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 from agentic_core.runtime.exit.apps_research_exit_binding import (
     exit_finalize_apps_research,
 )
@@ -28,6 +37,7 @@ from agentic_core.prompt_governance.apps_research_pa_binding import (
     pa_assemble_apps_research,
 )
 from agentic_core.L2_execution.apps_research_l2_binding import (
+    APPS_RESEARCH_L2_CERT_REF,
     l2_execute_apps_research,
 )
 
@@ -64,7 +74,9 @@ def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
             target_company=target_company or topic,
             target_role=payload.get("target_role") or None,
             target_level=payload.get("target_level") or None,
-            briefing_artifact_ref=payload.get("briefing_artifact_ref") or payload.get("manual_brief_path") or None,
+            manual_brief_path=payload.get("manual_brief_path")
+            or payload.get("briefing_artifact_ref")
+            or None,
             user_constraints=user_constraints,
             output_preferences=payload.get("output_preferences") or {},
             idempotency_key=payload.get("idempotency_key"),
@@ -82,6 +94,65 @@ def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
     )
 
 
+@dataclass(frozen=True)
+class _IngressExitResult:
+    disposition: X3Disposition
+
+
+def _map_l2_sealed_to_contract(sealed: Any) -> ContractSealedL2Artifact:
+    """Adapt package-driven L2 SealedL2Artifact to AG9 contract SealedL2Artifact."""
+    output_content = getattr(sealed, "output_content", None)
+    if output_content:
+        generated_content = json.dumps(output_content)
+    else:
+        generated_content = getattr(sealed, "generated_content", "") or "{}"
+
+    execution_status = getattr(sealed, "execution_status", "failed")
+    if execution_status == "SUCCESS":
+        execution_status = "completed_stub_fallback"
+
+    return ContractSealedL2Artifact(
+        request_id=sealed.request_id,
+        run_id=sealed.run_id,
+        app_id=getattr(sealed, "app_id", "apps_research"),
+        trace_id=sealed.trace_id,
+        execution_status=execution_status,
+        generated_content=generated_content,
+        tenant_id=getattr(sealed, "tenant_id", ""),
+        compilation_hash=getattr(sealed, "seal_hash", "")
+        or getattr(sealed, "compilation_hash", ""),
+        prompt_artifact_digest=getattr(sealed, "prompt_hash", ""),
+        proposed_state_diff=dict(getattr(sealed, "proposed_state_diff", None) or {}),
+        l5_certification_ref=getattr(sealed, "l5_certification_ref", None)
+        or APPS_RESEARCH_L2_CERT_REF,
+    )
+
+
+def exit_finalize_apps_research_ingress(
+    sealed: Any,
+    *,
+    target_company: str | None = None,
+    target_role: str | None = None,
+    output_directory: str | None = None,
+    writeback_policy: Any = None,
+) -> _IngressExitResult:
+    """AppIngressRunner exit hook — maps runner kwargs to AG9 exit binding."""
+    _ = (target_company, target_role, output_directory, writeback_policy)
+    contract_sealed = _map_l2_sealed_to_contract(sealed)
+    prompt = CompiledPromptArtifact(
+        request_id=contract_sealed.request_id,
+        run_id=contract_sealed.run_id,
+        app_id=contract_sealed.app_id,
+        trace_id=contract_sealed.trace_id,
+        compilation_hash=contract_sealed.prompt_artifact_digest,
+        evidence_digest=getattr(sealed, "evidence_digest", ""),
+        tenant_id=contract_sealed.tenant_id,
+        l5_certification_ref="pa-package-driven-v1",
+    )
+    disposition = exit_finalize_apps_research(contract_sealed, prompt)
+    return _IngressExitResult(disposition=disposition)
+
+
 def build_app_runtime_contract() -> AppRuntimeProfile:
     """Construct and return the canonical AppRuntimeProfile for apps_research."""
     return AppRuntimeProfile(
@@ -94,7 +165,7 @@ def build_app_runtime_contract() -> AppRuntimeProfile:
         c0=c0_retrieve_apps_research,
         pa=pa_assemble_apps_research,
         l2=l2_execute_apps_research,
-        exit=exit_finalize_apps_research,
+        exit=exit_finalize_apps_research_ingress,
         profile_version="1",
     )
 

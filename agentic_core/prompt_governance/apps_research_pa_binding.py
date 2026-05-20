@@ -50,7 +50,12 @@ def pa_assemble_apps_research(
             or ""
         )
 
-    prompt_profile_ref = "apps_research/config/domain_contract/prompt_profile.company_brief.v1.yaml"
+    from pathlib import Path
+
+    _repo_root = Path(__file__).resolve().parents[2]
+    prompt_profile_ref = str(
+        _repo_root / "apps_research/config/domain_contract/prompt_profile.company_brief.v1.yaml"
+    )
 
     artifact, _boundary_receipt, _security_receipt = pa_assemble_prompt_package_driven(
         l1_plan=l1_plan,
@@ -62,4 +67,7 @@ def pa_assemble_apps_research(
     return artifact
 
 
-__all__ = ["pa_assemble_apps_research"]
+# Legacy test import name (AG9 spine contract tests).
+pa_compose_apps_research = pa_assemble_apps_research
+
+__all__ = ["pa_assemble_apps_research", "pa_compose_apps_research"]

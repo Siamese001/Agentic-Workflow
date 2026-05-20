@@ -1,0 +1,27 @@
+schema_version: "1.0"
+registry_id: apps_research_prompts_registry_v1
+owner: apps_research.prompts
+templates:
+  system_base_v1:
+    path: apps_research/prompts/templates/system_base_v1.jinja
+  safety_fences_v1:
+    path: apps_research/prompts/templates/safety_fences_v1.jinja
+  task_instructions_v1:
+    path: apps_research/prompts/templates/task_instructions_v1.jinja
+  few_shot_examples_v1:
+    path: apps_research/prompts/templates/few_shot_examples_v1.jinja
+  provider_controls_v1:
+    path: apps_research/prompts/templates/provider_controls_v1.jinja
+  repair_hints_v1:
+    path: apps_research/prompts/templates/repair_hints_v1.jinja
+  company_brief_synthesis_v1:
+    path: apps_research/prompts/templates/company_brief_synthesis_v1.jinja
+  degraded_support_caveat_v1:
+    path: apps_research/prompts/templates/degraded_support_caveat_v1.jinja
+  brief_citation_repair_v1:
+    path: apps_research/prompts/templates/brief_citation_repair_v1.jinja
+  downstream_research_substrate_v1:
+    path: apps_research/prompts/templates/downstream_research_substrate_v1.jinja
+resolution_rules:
+  by_support_status: {}
+  by_downstream_consumer: {}

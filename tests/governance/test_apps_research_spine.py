@@ -4,7 +4,7 @@ Static-analysis tests verifying that apps_research is wired correctly onto the
 canonical R3_grounded_read spine:
 
 1. spine_manifest.yaml declares R3_grounded_read.
-2. __main__.py routes through GovernedResearchRun / GovernedAppRunner / governed_run.
+2. __main__.py routes through U0-bound AppRuntimeProfile / AppIngressRunner (governed_run envelope optional).
 3. No L0 subprocess to sibling apps.
 4. spine_handoff.py exists and delegates to GovernedResearchRun.
 5. governed_research_run.py inherits from GovernedAppRunner.
@@ -49,19 +49,19 @@ def test_apps_research_manifest_claims_r3_grounded_read() -> None:
 
 
 @pytest.mark.governance
-def test_apps_research_main_routes_through_governed_substrate() -> None:
-    """__main__.py must call GovernedResearchRun, GovernedAppRunner, or governed_run."""
+def test_apps_research_main_routes_through_profile_spine() -> None:
+    """__main__.py must route default product CLI through U0-bound AppRuntimeProfile."""
     assert MAIN_PY.exists(), f"__main__.py missing: {MAIN_PY}"
     src = _src(MAIN_PY)
-    governed_markers = [
-        "GovernedResearchRun",
-        "GovernedAppRunner",
-        "governed_run",
-        "spine_handoff",
+    profile_markers = [
+        "build_app_runtime_contract",
+        "AppIngressRunner",
+        "_run_profile_spine",
     ]
-    assert any(m in src for m in governed_markers), (
-        "apps_research/__main__.py must route through the governed substrate. "
-        f"None of {governed_markers} found."
+    missing = [m for m in profile_markers if m not in src]
+    assert not missing, (
+        "apps_research/__main__.py must route through the canonical profile spine. "
+        f"Missing: {missing}"
     )
 
 

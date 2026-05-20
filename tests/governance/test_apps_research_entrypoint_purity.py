@@ -290,7 +290,102 @@ def test_apps_research_main_contains_no_l2_callable_construction() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 9. No inline research closure
+# 9. Default --topic path must not use legacy capability registry / GovernedResearchRun
+# ---------------------------------------------------------------------------
+
+_LEGACY_DEFAULT_PATH_FORBIDDEN = (
+    "research_capability_registry",
+    "resolve_company_brief_capability",
+    "GovernedResearchRun",
+    "_run_canonical",
+)
+
+
+@pytest.mark.governance
+def test_apps_research_main_default_path_no_legacy_capability_registry() -> None:
+    """Default product CLI must not import or call the legacy registry bypass path.
+
+    Phase 3 may still keep research_capability_registry.py and GovernedResearchRun
+    on disk for substrate/handoff — they must not be wired from __main__.py.
+    """
+    src = _src()
+    tree = _tree()
+
+    for mod, name, lineno in _all_imports(tree):
+        full = f"{mod}.{name}" if mod else name
+        if "research_capability_registry" in full:
+            pytest.fail(
+                f"apps_research/__main__.py imports capability registry at line {lineno}: "
+                f"{full}"
+            )
+        if mod == "apps_research.integrations.governed_research_run" or name == "GovernedResearchRun":
+            pytest.fail(
+                f"apps_research/__main__.py imports GovernedResearchRun at line {lineno}."
+            )
+
+    for pattern in _LEGACY_DEFAULT_PATH_FORBIDDEN:
+        if pattern in src and pattern == "GovernedResearchRun":
+            # Allow docstring/comment mention only when not an import or call
+            if "import GovernedResearchRun" in src or "GovernedResearchRun(" in src:
+                pytest.fail(
+                    "apps_research/__main__.py must not import or instantiate "
+                    "GovernedResearchRun on the default path."
+                )
+            continue
+        if pattern in src:
+            if pattern == "GovernedResearchRun":
+                continue
+            pytest.fail(
+                f"apps_research/__main__.py references forbidden legacy path '{pattern}'."
+            )
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            func = node.func
+            call_name = ""
+            if isinstance(func, ast.Name):
+                call_name = func.id
+            elif isinstance(func, ast.Attribute):
+                call_name = func.attr
+            if call_name in (
+                "resolve_company_brief_capability",
+                "_run_canonical",
+            ):
+                pytest.fail(
+                    f"apps_research/__main__.py calls {call_name} at line {node.lineno}."
+                )
+
+
+@pytest.mark.governance
+def test_apps_research_main_default_path_uses_profile_spine_call_chain() -> None:
+    """main() must delegate product runs to _run_profile_spine (same as --spine alias)."""
+    tree = _tree()
+    has_run_profile_spine = False
+    main_calls_product = False
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if node.name == "_run_profile_spine":
+                has_run_profile_spine = True
+            if node.name == "_run_product_research":
+                for child in ast.walk(node):
+                    if isinstance(child, ast.Call):
+                        func = child.func
+                        if isinstance(func, ast.Name) and func.id == "_run_profile_spine":
+                            main_calls_product = True
+        if isinstance(node, ast.FunctionDef) and node.name == "main":
+            for child in ast.walk(node):
+                if isinstance(child, ast.Call):
+                    func = child.func
+                    if isinstance(func, ast.Name) and func.id == "_run_product_research":
+                        main_calls_product = True
+    assert has_run_profile_spine, "_run_profile_spine missing from __main__.py"
+    assert main_calls_product, (
+        "main() must call _run_product_research which calls _run_profile_spine"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 10. No inline research closure
 # ---------------------------------------------------------------------------
 
 @pytest.mark.governance

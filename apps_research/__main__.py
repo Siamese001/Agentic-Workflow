@@ -78,8 +78,94 @@ def _build_emission_config():
     )
 
 
+def _parse_product_argv(argv: list[str]):
+    """Parse default and --spine CLI flags into a single namespace."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="python -m apps_research",
+        description="apps_research via agentic_core spine (U0-bound AppRuntimeProfile)",
+    )
+    parser.add_argument(
+        "--topic",
+        default=None,
+        help="Research topic (mapped to target_company when --target-company omitted)",
+    )
+    parser.add_argument("--target-company", default=None, help="Target company name")
+    parser.add_argument("--target-role", default=None)
+    parser.add_argument("--mode", default="brief", help="Run mode (brief/deep)")
+    parser.add_argument("--depth", default="standard", help="Depth profile")
+    parser.add_argument("--manual-brief-path", default=None)
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Force stub fallback — no LLM call",
+    )
+    return parser.parse_args(argv)
+
+
+def _payload_from_args(args) -> dict:
+    """Build ingress payload dict for AppIngressRunner.parse."""
+    topic = (args.topic or args.target_company or "").strip()
+    if not topic:
+        return {}
+    user_constraints: dict = {"topic": topic, "depth": args.depth, "mode": args.mode}
+    return {
+        "target_company": (args.target_company or topic).strip(),
+        "topic": topic,
+        "target_role": args.target_role,
+        "depth": args.depth,
+        "user_constraints": user_constraints,
+        "briefing_artifact_ref": args.manual_brief_path,
+        "manual_brief_path": args.manual_brief_path,
+    }
+
+
+def _run_profile_spine(argv: list[str]) -> int:
+    """Run apps_research via U0-bound AppRuntimeProfile (Bundle C canonical path).
+
+    Sequences profile.u0 → l1 → l0 → c0 → pa → l2 → exit through agentic_core
+    bindings. No dispatch callable and no GovernedResearchRun U0 bypass.
+    """
+    import os
+
+    args = _parse_product_argv(argv)
+
+    if args.dry_run:
+        os.environ["APPS_RESEARCH_L2_FORCE_STUB"] = "1"
+        _log.info("[apps_research] DRY RUN — L2 stub fallback enabled")
+        sys.stdout.write("DRY RUN\n")
+
+    payload = _payload_from_args(args)
+    if not payload:
+        _log.error(
+            "[apps_research] Missing ingress target: provide --topic or --target-company"
+        )
+        return 1
+
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
+    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired  # noqa: PLC0415
+    from apps_research.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
+
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
+    result = runner.run(payload)
+
+    if isinstance(result, ClarificationRequired):
+        _log.error("[apps_research] ClarificationRequired: %s", result.reason)
+        return 1
+
+    _log.info(
+        "[apps_research] exit_status=%s outcome_authorized=%s artifact=%s",
+        getattr(result, "exit_status", "unknown"),
+        getattr(result, "outcome_authorized", False),
+        getattr(result, "output_artifact_path", None),
+    )
+    return 0 if getattr(result, "exit_status", "") == "success" else 1
+
+
 def _run_product_research(argv: list[str]) -> int:
-    """Run the real apps_research pipeline inside governed_run spine envelope."""
+    """Run product CLI inside governed_run spine envelope (receipt emission)."""
     from apps_shared.spine_emission import governed_run
 
     cfg = _build_emission_config()
@@ -90,12 +176,12 @@ def _run_product_research(argv: list[str]) -> int:
         with gr.span("prompt_assembly"):
             gr.mark_stage("prompt_assembly", "ok")
         with gr.span("L2_execute"):
-            _exit_code = _run_canonical(argv)
+            _exit_code = _run_profile_spine(argv)
             if _exit_code == 0:
                 gr.mark_stage("L2_execute", "ok")
             else:
                 gr.mark_stage("L2_execute", "fail")
-    return 0
+    return _exit_code
 
 
 def _run_live_cert(argv: list[str]) -> int:
@@ -235,77 +321,13 @@ def _maybe_run_exit_hook(fec: dict | None) -> None:
                      type(exc).__name__, exc)
 
 
-def _run_spine_dispatch(argv: list[str]) -> int:
-    """Run apps_research via the AppRuntimeProfile spine path (Bundle C).
-
-    Parses --target-company, --target-role, --depth from argv.
-    Supports --dry-run (sets APPS_RESEARCH_L2_FORCE_STUB=1).
-    No dispatch callable — AppIngressRunner owns stage sequencing.
-    """
-    import argparse
-    import os
-
-    parser = argparse.ArgumentParser(
-        prog="python -m apps_research --spine",
-        description="apps_research via agentic_core spine (profile path)",
-    )
-    parser.add_argument("--target-company", default=None)
-    parser.add_argument("--target-role", default=None)
-    parser.add_argument("--depth", default="standard")
-    parser.add_argument("--manual-brief-path", default=None)
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Force stub fallback — no LLM call")
-    args, _ = parser.parse_known_args(argv)
-
-    if args.dry_run:
-        os.environ["APPS_RESEARCH_L2_FORCE_STUB"] = "1"
-        _log.info("[apps_research] DRY RUN — L2 stub fallback enabled")
-        sys.stdout.write("DRY RUN\n")
-
-    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
-    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired  # noqa: PLC0415
-    from apps_research.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
-
-    payload: dict = {
-        "target_company": args.target_company,
-        "target_role": args.target_role,
-        "depth": args.depth,
-        "briefing_artifact_ref": args.manual_brief_path,
-        "manual_brief_path": args.manual_brief_path,
-    }
-
-    profile = build_app_runtime_contract()
-    runner = AppIngressRunner(profile=profile)
-    result = runner.run(payload)
-
-    if isinstance(result, ClarificationRequired):
-        _log.error("[apps_research spine] ClarificationRequired: %s", result.reason)
-        return 1
-
-    _log.info(
-        "[apps_research spine] exit_status=%s outcome_authorized=%s artifact=%s",
-        getattr(result, "exit_status", "unknown"),
-        getattr(result, "outcome_authorized", False),
-        getattr(result, "output_artifact_path", None),
-    )
-    return 0 if getattr(result, "exit_status", "") == "success" else 1
-
-
 def main() -> int:
-    # Spine dispatch path (AG-9) — --spine flag routes through agentic_core pipeline
     argv = list(sys.argv[1:])
+    # --spine is an alias for the canonical profile path (same as default).
     if "--spine" in argv:
         argv.remove("--spine")
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-            handlers=[logging.StreamHandler(sys.stdout)],
-        )
-        return _run_spine_dispatch(argv)
-    # Live certification path — emits real spine receipts and exits 0.
     if _is_live_cert_mode():
         return _run_live_cert(list(sys.argv[1:]))
-    # apps_e2e auditability harness short-circuit.
     from apps_shared._apps_e2e_dry_run import maybe_short_circuit
     maybe_short_circuit("apps_research")
     logging.basicConfig(
@@ -314,62 +336,7 @@ def main() -> int:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
     _adg_bootstrap()
-    return _run_product_research(list(sys.argv[1:]))
-
-
-def _run_canonical(argv: list[str]) -> int:
-    """Canonical agentic_core runner path — capability resolution + governed run.
-
-    Resolves apps_research.company_brief_v1 via the capability registry and
-    delegates execution to the registered handler. On capability unavailable,
-    fails closed through Exit v6 (CAPABILITY_UNAVAILABLE) — no generic brief.
-    """
-    from apps_research.integrations.research_capability_registry import (  # noqa: PLC0415
-        CAPABILITY_ID,
-        CapabilityUnavailableError,
-        resolve_company_brief_capability,
-    )
-
-    try:
-        handler = resolve_company_brief_capability(CAPABILITY_ID)
-    except CapabilityUnavailableError as exc:
-        _log.error(
-            "[apps_research] Capability unavailable — failing closed. "
-            "Reason: %s. No generic brief fallback.",
-            exc,
-        )
-        _emit_capability_unavailable_exit()
-        return 1
-
-    try:
-        result = handler(argv)
-        return int(result) if result is not None else 0
-    except Exception as exc:  # guardian: allow-broad-exception -- capability handler raises heterogeneous errors (IOError, ValueError, RuntimeError); all surfaced via Exit v6 fail-close
-        _log.error("[apps_research] Capability handler raised %s: %s", type(exc).__name__, exc)
-        _emit_capability_unavailable_exit()
-        return 1
-
-
-def _emit_capability_unavailable_exit() -> None:
-    """Emit an R5-terminal Exit v6 packet for CAPABILITY_UNAVAILABLE.
-
-    Fail-soft: any error during emission is logged and suppressed so the
-    calling main() can still return a non-zero exit code.
-    """
-    try:
-        from apps_shared.cert import maybe_invoke_exit_eval  # noqa: PLC0415
-        receipts = {
-            "output": {},
-            "route_contract": {"route_id": "apps_research.company_brief_v1"},
-            "evidence_bundle": {},
-            "final_evidence_contract": {},
-            "state_diff": {},
-            "compiled_prompt_artifact": {},
-            "exit_reason": "CAPABILITY_UNAVAILABLE",
-        }
-        maybe_invoke_exit_eval(receipts, {"invoke_exit_eval": True})
-    except Exception as exc:  # guardian: allow-broad-exception -- Exit emission on error path must never re-raise; this is a best-effort audit trail
-        _log.warning("[apps_research] Exit v6 emission failed: %s: %s", type(exc).__name__, exc)
+    return _run_product_research(argv)
 
 
 if __name__ == "__main__":

@@ -218,7 +218,8 @@ def _freeze_execution_context(
         trace_id=_rc.trace_id if _rc else compiled_prompt.trace_id,
         route_contract_hash=_compute_hash(str(_rc)) if _rc else '',
         evidence_digest=_fe.final_evidence_digest if _fe else compiled_prompt.evidence_digest,
-        prompt_hash=compiled_prompt.prompt_hash,
+        prompt_hash=getattr(compiled_prompt, "prompt_hash", None)
+        or compiled_prompt.compilation_hash,
         l2_execution_profile_ref=l2_profile_ref,
         provider_profile_ref=provider_profile_ref,
         repair_profile_ref=repair_profile_ref,
@@ -555,7 +556,8 @@ def l2_execute_package_driven(
     seal_content = json.dumps({
         "request_id": _req_id,
         "output_hash": _compute_hash(json.dumps(final_output)) if final_output else "",
-        "prompt_hash": compiled_prompt.prompt_hash,
+        "prompt_hash": getattr(compiled_prompt, "prompt_hash", None)
+        or compiled_prompt.compilation_hash,
         "attempts": len(attempt_receipts),
     })
     seal_hash = _compute_hash(seal_content)

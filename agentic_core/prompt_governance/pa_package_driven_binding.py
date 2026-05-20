@@ -7,6 +7,7 @@ No app-specific prompt logic in core.
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -33,7 +34,9 @@ class SlotContent:
     content: str
     content_hash: str
     source_ref: str
-    template_ref: str
+    template_ref: str = ""
+    authority_level: str = ""
+    data_boundary_label: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -126,19 +129,22 @@ class SlotLineageMap:
 
 
 def _load_yaml(path: str) -> Optional[Dict[str, Any]]:
-    """Load YAML file."""
-    if not yaml:
-        return None
-    
-    repo_root = Path(__file__).parent.parent.parent.parent
-    file_path = repo_root / path
-    
+    """Load YAML or JSON config from repo-relative or absolute path."""
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    file_path = Path(path)
+    if not file_path.is_absolute():
+        file_path = repo_root / path
+
     if not file_path.exists():
         return None
-    
+
     try:
-        with open(file_path, "r") as f:
-            return yaml.safe_load(f)
+        with open(file_path, "r", encoding="utf-8") as f:
+            if file_path.suffix.lower() == ".json":
+                return json.load(f)
+            if yaml:
+                return yaml.safe_load(f)
+            return None
     except Exception:
         return None
 
@@ -148,14 +154,16 @@ def _load_template(template_path: str) -> Optional[Template]:
     if not Template:
         return None
     
-    repo_root = Path(__file__).parent.parent.parent.parent
-    file_path = repo_root / template_path
-    
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    file_path = Path(template_path)
+    if not file_path.is_absolute():
+        file_path = repo_root / template_path
+
     if not file_path.exists():
         return None
-    
+
     try:
-        with open(file_path, "r") as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             return Template(f.read())
     except Exception:
         return None
@@ -219,8 +227,8 @@ def _assemble_slot_s0(
         content=content,
         content_hash=_compute_hash(content),
         source_ref=template_path,
+        template_ref=template_ref,
         authority_level="highest",
-        data_boundary_label=None,
     )
 
 
@@ -243,8 +251,8 @@ def _assemble_slot_d0(
         content=content,
         content_hash=_compute_hash(content),
         source_ref=template_path,
+        template_ref=template_ref,
         authority_level="highest",
-        data_boundary_label=None,
     )
 
 
@@ -261,10 +269,10 @@ def _assemble_slot_i0(
     if not template:
         raise TemplateNotFoundError(f"I0 template not found: {template_ref}")
     
-    # Render with L1 plan context
+    task_spec = getattr(l1_plan, "task_spec", None) or {}
     content = template.render(
-        task_class=l1_plan.task_class,
-        app_hints=l1_plan.app_hints if hasattr(l1_plan, 'app_hints') else {},
+        task_class=task_spec.get("generation_mode", "company_brief"),
+        app_hints=getattr(l1_plan, "app_hints", None) or {},
     )
     
     return SlotContent(
@@ -272,8 +280,8 @@ def _assemble_slot_i0(
         content=content,
         content_hash=_compute_hash(content),
         source_ref=template_path,
+        template_ref=template_ref,
         authority_level="high",
-        data_boundary_label=None,
     )
 
 
@@ -291,25 +299,27 @@ def _assemble_slot_c0(
     evidence_context = {
         "evidence_items": [
             {
-                "id": item.evidence_id,
-                "source": item.source_ref,
-                "content": item.content_snippet,
-                "freshness": item.freshness_status,
-                "confidence": item.confidence_score,
+                "id": getattr(item, "evidence_id", "") or "",
+                "source": getattr(item, "source_ref", None)
+                or getattr(item, "source", ""),
+                "content": getattr(item, "content_snippet", None)
+                or getattr(item, "content", ""),
+                "freshness": getattr(item, "freshness_status", ""),
+                "confidence": getattr(item, "confidence_score", 0.0),
             }
             for item in final_evidence.evidence_items
         ],
         "source_register": [
             {
-                "id": src.source_id,
-                "url": src.source_url,
-                "type": src.source_type,
-                "tier": src.tier_classification,
+                "id": getattr(src, "source_id", ""),
+                "url": getattr(src, "source_url", ""),
+                "type": getattr(src, "source_type", ""),
+                "tier": getattr(src, "tier_classification", ""),
             }
-            for src in final_evidence.source_register
+            for src in (getattr(final_evidence, "source_register", None) or [])
         ],
-        "support_status": final_evidence.support_status,
-        "support_score": final_evidence.support_score,
+        "support_status": getattr(final_evidence, "support_status", ""),
+        "support_score": getattr(final_evidence, "support_score", 0.0),
         "data_boundary": "EVIDENCE_DATA_ONLY",
     }
     
@@ -322,6 +332,7 @@ def _assemble_slot_c0(
         content=content,
         content_hash=_compute_hash(content),
         source_ref="final_evidence_contract",
+        template_ref="c0_verified_evidence",
         authority_level="medium",
         data_boundary_label="EVIDENCE_DATA_ONLY",
     )
@@ -347,8 +358,8 @@ def _assemble_slot_m0(
         content=content,
         content_hash=_compute_hash(content),
         source_ref=template_path if template else "default",
+        template_ref=template_ref,
         authority_level="high",
-        data_boundary_label=None,
     )
 
 
@@ -376,8 +387,8 @@ def _assemble_slot_u0(
         content=neutralized,
         content_hash=_compute_hash(neutralized),
         source_ref="user_request",
+        template_ref="user_request",
         authority_level="low",
-        data_boundary_label=None,
     )
 
 
@@ -398,8 +409,8 @@ def _assemble_slot_r0(
         content=content,
         content_hash=_compute_hash(content),
         source_ref=slot_config.get("schema_ref", ""),
+        template_ref=slot_config.get("schema_ref", "output_schema"),
         authority_level="high",
-        data_boundary_label=None,
     )
 
 
@@ -519,7 +530,12 @@ def pa_assemble_prompt_package_driven(
     # Build replay manifest (local dataclass)
     replay_manifest = ReplayManifest(
         template_refs=[slot.source_ref for slot in slots.values()],
-        evidence_digest=final_evidence.final_evidence_digest if final_evidence else "",
+        evidence_digest=(
+            getattr(final_evidence, "final_evidence_digest", None)
+            or getattr(final_evidence, "compilation_hash", "")
+            if final_evidence
+            else ""
+        ),
         output_schema_ref=schema_ref or "",
         slot_ids_used=list(slots.keys()),
     )
@@ -527,11 +543,11 @@ def pa_assemble_prompt_package_driven(
     # Build compiled prompt artifact — map to actual CompiledPromptArtifact fields
     _empty_slot = SlotContent("", "", "", "", "")
     system_preamble = "\n\n".join(filter(None, [
-        slots.get("S0_system", _empty_slot).content,
-        slots.get("D0_fences", _empty_slot).content,
-        slots.get("I0_instructions", _empty_slot).content,
+        slots.get("S0", _empty_slot).content,
+        slots.get("D0", _empty_slot).content,
+        slots.get("I0", _empty_slot).content,
     ]))
-    user_instruction = slots.get("U0_neutralized_user_task", _empty_slot).content
+    user_instruction = slots.get("U0", _empty_slot).content
     artifact = CompiledPromptArtifact(
         request_id=l1_plan.request_id,
         run_id=l1_plan.run_id,
@@ -541,7 +557,12 @@ def pa_assemble_prompt_package_driven(
         system_preamble=system_preamble,
         user_instruction=user_instruction,
         compilation_hash=prompt_hash,
-        evidence_digest=final_evidence.final_evidence_digest if final_evidence else "",
+        evidence_digest=(
+            getattr(final_evidence, "final_evidence_digest", None)
+            or getattr(final_evidence, "compilation_hash", "")
+            if final_evidence
+            else ""
+        ),
         component_hash_map=component_hash_map,
         slot_lineage_map=slot_lineage,
         schema_version="AG9.PA.CPA.1",
