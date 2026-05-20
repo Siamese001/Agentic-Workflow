@@ -1,0 +1,43 @@
+{
+  "session_id": "apps_research-u0-spine-20260520",
+  "commit": "59385f10de",
+  "branch": "main",
+  "remote_sync": "origin/main",
+  "overall_status": "PASS",
+  "waves": [
+    {
+      "wave_id": "W-AR-U0-1",
+      "title": "apps_research U0/spine convergence implementation",
+      "status": "Completed",
+      "proof": "PARTIAL then PASS after PA/L2 fixes",
+      "receipt": "docs/reports/apps_research/apps_research_u0_spine_convergence_closeout_receipt.md"
+    },
+    {
+      "wave_id": "W-AR-U0-2",
+      "title": "Critical review + scope hygiene",
+      "status": "Completed",
+      "proof": "PARTIAL (tree drift) -> hygiene PASS",
+      "receipt": "docs/reports/apps_research/apps_research_u0_spine_scope_hygiene_closeout_receipt.md"
+    },
+    {
+      "wave_id": "W-AR-U0-3",
+      "title": "Commit-ready verification",
+      "status": "Completed",
+      "proof": "PASS staged index 23 paths",
+      "receipt": "docs/reports/apps_research/apps_research_u0_spine_commit_ready_receipt.md"
+    },
+    {
+      "wave_id": "W-AR-U0-4",
+      "title": "Git commit + sync",
+      "status": "Completed",
+      "proof": "59385f10de pushed main",
+      "receipt": "docs/reports/apps_research/chat_session_waves_closeout_20260520.md"
+    }
+  ],
+  "receipt_links": {
+    "convergence": "docs/reports/apps_research/apps_research_u0_spine_convergence_closeout_receipt.md",
+    "scope_hygiene": "docs/reports/apps_research/apps_research_u0_spine_scope_hygiene_closeout_receipt.md",
+    "commit_ready": "docs/reports/apps_research/apps_research_u0_spine_commit_ready_receipt.md",
+    "session_closeout": "docs/reports/apps_research/chat_session_waves_closeout_20260520.md"
+  }
+}
