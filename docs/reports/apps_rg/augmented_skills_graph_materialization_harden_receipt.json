@@ -1,0 +1,1716 @@
+{
+  "STATUS": "PASS",
+  "SCOPE_MATCH": true,
+  "PLAN_DEFECT_FIXED": "confidence_grade_separate_from_support_level",
+  "ARCHIVE_PROMOTION_GUARDRAILS": "human_confirmed_archive_promotion_required_for_override",
+  "OPERATOR_ARCHIVE_PROMOTION_WAVE": true,
+  "DIRTY_WORKSPACE_IGNORED_BY_USER": "yes",
+  "SCOPE": "augmented_skills_graph_materialization_harden_only",
+  "PROMOTED_SKILLS": [
+    {
+      "skill_id": "skill_governed_agentic_systems_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_runtime_gate_mesh_design",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_context_engineering",
+      "fact_id_links": [
+        "fact_engineering_platform_003"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_prompt_assembly_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_003"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_dense_sparse_exact_retrieval_design",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_graph_aware_relationship_grounding",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_audit_grade_observability",
+      "fact_id_links": [
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_reusable_agentic_platform_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_006"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "fact_id_links": [
+        "fact_engineering_platform_006"
+      ],
+      "confidence_grade": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "edges_rewired": 0
+    }
+  ],
+  "REJECTED_SKILLS_WITH_REASON": [],
+  "HUMAN_CONFIRMATION_RECORDS": [
+    {
+      "skill_id": "skill_governed_agentic_systems_architecture",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_runtime_gate_mesh_design",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_context_engineering",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_prompt_assembly_architecture",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_dense_sparse_exact_retrieval_design",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_graph_aware_relationship_grounding",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_audit_grade_observability",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_reusable_agentic_platform_architecture",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "human_confirmed_by": "Amit Ayer",
+      "human_confirmed_at": "2026-05-20T15:57:29Z",
+      "source_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "override_reason": "archive_snippet_verified_by_operator"
+    }
+  ],
+  "TRACK_GENAI_AGENTIC_HIGH_SKILLS_AFTER": [
+    "skill_agentic_platform_productization",
+    "skill_audit_grade_observability",
+    "skill_context_engineering",
+    "skill_dense_sparse_exact_retrieval_design",
+    "skill_governed_agentic_systems_architecture",
+    "skill_graph_aware_relationship_grounding",
+    "skill_prompt_assembly_architecture",
+    "skill_reusable_agentic_platform_architecture",
+    "skill_runtime_gate_mesh_design"
+  ],
+  "CANDIDATE_FACT_PROMOTION_AUDIT": [
+    {
+      "candidate_fact_id": "fact_engineering_platform_001",
+      "candidate_confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt",
+        "CTO Resume - Amit Ayer.txt"
+      ],
+      "capability_tags": [
+        "agentic_ai_platform",
+        "deterministic_routing",
+        "multi_agent_orchestration",
+        "graphrag",
+        "policy_gating"
+      ],
+      "eligible_linked_skills": [
+        "skill_agentic_control_plane_design",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_authority_ordered_prompt_packaging",
+        "skill_bounded_agent_execution",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_deterministic_route_selection",
+        "skill_governed_agentic_systems_architecture",
+        "skill_graph_aware_relationship_grounding",
+        "skill_layered_runtime_spine_design",
+        "skill_managed_workflow_orchestration",
+        "skill_replayable_runtime_design",
+        "skill_reusable_ai_ip_design",
+        "skill_route_contract_design",
+        "skill_route_replay_and_idempotency_design",
+        "skill_runtime_gate_mesh_design",
+        "skill_sandboxed_execution_design",
+        "skill_side_effect_bounded_action_design",
+        "skill_sr_cloud_data_platform_engineering"
+      ],
+      "promotion_decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "PROMOTE_NOW": false,
+      "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": true
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_002",
+      "candidate_confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief Technology Officer - Amit Ayer.txt",
+        "CTO Resume - Amit Ayer.txt"
+      ],
+      "capability_tags": [
+        "dependency_graph",
+        "legacy_modernization",
+        "refactor_risk"
+      ],
+      "eligible_linked_skills": [
+        "skill_dependency_and_join_control",
+        "skill_sr_microservices_integration_platform"
+      ],
+      "promotion_decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "PROMOTE_NOW": false,
+      "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": true
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_003",
+      "candidate_confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "capability_tags": [
+        "retrieval_quality",
+        "context_assembly",
+        "eval_gates",
+        "telemetry",
+        "rollback",
+        "ai_cicd"
+      ],
+      "eligible_linked_skills": [
+        "skill_audit_grade_observability",
+        "skill_bounded_fanout_and_retry_design",
+        "skill_cache_fallback_grounded_action_routing",
+        "skill_context_engineering",
+        "skill_multi_step_quality_loop_design",
+        "skill_output_quality_and_schema_gates",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_prompt_assembly_architecture",
+        "skill_retry_and_thrash_guard_design",
+        "skill_runtime_resilience_controls",
+        "skill_schema_bound_generation"
+      ],
+      "promotion_decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "PROMOTE_NOW": false,
+      "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": true
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_004",
+      "candidate_confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "capability_tags": [
+        "ai_lifecycle",
+        "production_adoption",
+        "auditability"
+      ],
+      "eligible_linked_skills": [
+        "skill_ai_platform_commercialization",
+        "skill_audit_grade_observability",
+        "skill_runtime_proof_bundle_design"
+      ],
+      "promotion_decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "PROMOTE_NOW": false,
+      "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": true
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_005",
+      "candidate_confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Head of Data & Analytics - Amit Ayer.txt",
+        "Chief Technology Officer - Amit Ayer.txt"
+      ],
+      "capability_tags": [
+        "cloud_native",
+        "aws",
+        "databricks",
+        "microservices",
+        "vector_services",
+        "api_gateway",
+        "identity"
+      ],
+      "eligible_linked_skills": [],
+      "promotion_decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "PROMOTE_NOW": false,
+      "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": true
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_006",
+      "candidate_confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "capability_tags": [
+        "commercialization",
+        "platform_services",
+        "reusable_primitives",
+        "engineering_leadership"
+      ],
+      "eligible_linked_skills": [
+        "skill_agentic_platform_productization",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_reusable_agentic_platform_architecture"
+      ],
+      "promotion_decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "PROMOTE_NOW": false,
+      "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": true
+    }
+  ],
+  "CONFIDENCE_OVERRIDE_GUARDRAIL": {
+    "violations_count": 0,
+    "violations_sample": [],
+    "candidate_facts_do_not_auto_promote": true,
+    "rule": "explicit confidence_grade above derived requires human_confirmed_archive_promotion metadata"
+  },
+  "PROMOTION_DECISIONS_BY_SKILL": [
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_006"
+      ],
+      "primary_fact_id": "fact_engineering_platform_006",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_ai_governance_certification",
+      "decision": "KEEP_MEDIUM_NEEDS_ARCHIVE_LINK",
+      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade_effective": "MEDIUM",
+      "activation_status": "ACTIVE",
+      "support_level": "DERIVED_SUPPORTED",
+      "fact_id_links": [
+        "fact_governance_001"
+      ],
+      "primary_fact_id": null,
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_audit_grade_observability",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004"
+      ],
+      "primary_fact_id": "fact_engineering_platform_003",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_context_engineering",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_003"
+      ],
+      "primary_fact_id": "fact_engineering_platform_003",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_dense_sparse_exact_retrieval_design",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "primary_fact_id": "fact_engineering_platform_001",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_evidence_contract_design",
+      "decision": "KEEP_MEDIUM_NEEDS_ARCHIVE_LINK",
+      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade_effective": "MEDIUM",
+      "activation_status": "ACTIVE",
+      "support_level": "DERIVED_SUPPORTED",
+      "fact_id_links": [
+        "fact_governance_001"
+      ],
+      "primary_fact_id": null,
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_governed_agentic_systems_architecture",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "primary_fact_id": "fact_engineering_platform_001",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_graph_aware_relationship_grounding",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "primary_fact_id": "fact_engineering_platform_001",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_prompt_assembly_architecture",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_003"
+      ],
+      "primary_fact_id": "fact_engineering_platform_003",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_reusable_agentic_platform_architecture",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_006"
+      ],
+      "primary_fact_id": "fact_engineering_platform_006",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_runtime_gate_mesh_design",
+      "decision": "PROMOTE_NOW_HUMAN_CONFIRMED",
+      "confidence_grade_derived": "HIGH",
+      "confidence_grade_effective": "HIGH",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "primary_fact_id": "fact_engineering_platform_001",
+      "override_blocked_reason": ""
+    },
+    {
+      "skill_id": "skill_runtime_proof_bundle_design",
+      "decision": "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
+      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade_effective": "MEDIUM",
+      "activation_status": "ACTIVE",
+      "support_level": "DERIVED_SUPPORTED",
+      "fact_id_links": [
+        "fact_engineering_platform_004"
+      ],
+      "primary_fact_id": null,
+      "override_blocked_reason": ""
+    }
+  ],
+  "SEMANTIC_REWIRE_SUMMARY": {
+    "skill_rows": 0,
+    "graph_nodes": 0,
+    "agentic_runtime_matrix": 0,
+    "edges_rewired": 0
+  },
+  "HIGH_SKILLS_BY_TRACK_BEFORE": {
+    "track_actuarial_risk_derivatives": 4,
+    "track_data_tech_cloud_ml": 14,
+    "track_genai_agentic": 9
+  },
+  "HIGH_SKILLS_BY_TRACK_AFTER": {
+    "track_actuarial_risk_derivatives": 4,
+    "track_data_tech_cloud_ml": 14,
+    "track_genai_agentic": 9
+  },
+  "HIGH_SKILL_COUNT_BEFORE": 27,
+  "HIGH_SKILL_COUNT_AFTER": 27,
+  "EXECUTIVE_SUMMARY_ALLOWED_BEFORE": 27,
+  "EXECUTIVE_SUMMARY_ALLOWED_AFTER": 27,
+  "FILES_CHANGED": [
+    "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",
+    "apps_rg/fact_inventory/harden_augmented_skills_graph_ssot.py",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
+  ],
+  "PATCH_STATS": {
+    "semantic_rewire_runtime_gate_mesh": {
+      "skill_rows": 0,
+      "graph_nodes": 0,
+      "agentic_runtime_matrix": 0,
+      "edges_rewired": 0
+    },
+    "operator_archive_promotions": {
+      "promoted": [
+        {
+          "skill_id": "skill_governed_agentic_systems_architecture",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_runtime_gate_mesh_design",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_context_engineering",
+          "fact_id_links": [
+            "fact_engineering_platform_003"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_prompt_assembly_architecture",
+          "fact_id_links": [
+            "fact_engineering_platform_003"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_dense_sparse_exact_retrieval_design",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_graph_aware_relationship_grounding",
+          "fact_id_links": [
+            "fact_engineering_platform_001"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_audit_grade_observability",
+          "fact_id_links": [
+            "fact_engineering_platform_003",
+            "fact_engineering_platform_004"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_reusable_agentic_platform_architecture",
+          "fact_id_links": [
+            "fact_engineering_platform_006"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        },
+        {
+          "skill_id": "skill_agentic_platform_productization",
+          "fact_id_links": [
+            "fact_engineering_platform_006"
+          ],
+          "confidence_grade": "HIGH",
+          "activation_status": "ACTIVE_CONFIRMED",
+          "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+          "edges_rewired": 0
+        }
+      ],
+      "rejected": [],
+      "human_confirmation_records": [
+        {
+          "skill_id": "skill_governed_agentic_systems_architecture",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_001"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_runtime_gate_mesh_design",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_001"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_context_engineering",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_003"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_prompt_assembly_architecture",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_003"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_dense_sparse_exact_retrieval_design",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_001"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_graph_aware_relationship_grounding",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_001"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_audit_grade_observability",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_003",
+            "fact_engineering_platform_004"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_reusable_agentic_platform_architecture",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_006"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        },
+        {
+          "skill_id": "skill_agentic_platform_productization",
+          "human_confirmed_by": "Amit Ayer",
+          "human_confirmed_at": "2026-05-20T15:57:29Z",
+          "source_fact_ids": [
+            "fact_engineering_platform_006"
+          ],
+          "override_reason": "archive_snippet_verified_by_operator"
+        }
+      ]
+    },
+    "confidence_grade_counts": {
+      "HIGH": 27,
+      "LOW": 28,
+      "BLOCKED": 29,
+      "MEDIUM": 78
+    },
+    "policy_nodes_added": 0,
+    "policy_edge_sources_redirected": 0,
+    "dropped_duplicate_edge_id": 0,
+    "dropped_duplicate_triple": 0,
+    "anthropic_profile_patched": false,
+    "airline_anchor_patched": true,
+    "customer_stakeholder_skills_patched": 5
+  },
+  "COUNTS_BEFORE": {
+    "nodes": 236,
+    "edges": 1400,
+    "pillars": 29,
+    "skills": 162,
+    "active_skills": 106,
+    "draft_skills": 56,
+    "phase_bridges": 11,
+    "confidence_grade": {
+      "HIGH": 27,
+      "LOW": 28,
+      "BLOCKED": 29,
+      "MEDIUM": 78
+    }
+  },
+  "COUNTS_AFTER_JSON": {
+    "nodes": 236,
+    "edges": 1400,
+    "pillars": 29,
+    "skills": 162,
+    "active_skills": 106,
+    "draft_skills": 56,
+    "phase_bridges": 11,
+    "confidence_grade": {
+      "HIGH": 27,
+      "LOW": 28,
+      "BLOCKED": 29,
+      "MEDIUM": 78
+    }
+  },
+  "COUNTS_AFTER_SQLITE": {
+    "nodes": 498,
+    "edges": 1400,
+    "pillars": 53,
+    "skills": 162,
+    "active_skills": 106,
+    "draft_skills": 56,
+    "phase_bridges": 11
+  },
+  "SUPPORT_LEVEL_CONFIDENCE_MAPPING": {
+    "support_level": "provenance/source class only (DERIVED_SUPPORTED, DIRECT_FROM_RESUME_ARCHIVE, ...)",
+    "confidence_grade": "HIGH | MEDIUM | LOW | BLOCKED on skill_rows and graph_nodes.confidence",
+    "derive_fn": "apps_rg.fact_inventory.augmented_skills_graph_sqlite.derive_confidence_grade",
+    "sqlite_column": "graph_nodes.confidence stores confidence_grade only",
+    "executive_summary_gate": "confidence_grade=HIGH + ACTIVE/ACTIVE_CONFIRMED + fact_id_links"
+  },
+  "EXECUTIVE_SUMMARY_ELIGIBILITY_SAMPLE": [
+    {
+      "node_id": "skill_actuarial_fsa_fellowship",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_agentic_platform_productization",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_audit_grade_observability",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 2
+    },
+    {
+      "node_id": "skill_capital_capital_modeling",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_capital_regulatory_capital",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_context_engineering",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_dense_sparse_exact_retrieval_design",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_derivatives_derivatives_pricing",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_governed_agentic_systems_architecture",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_graph_aware_relationship_grounding",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_greeks_hedging_multi_greek_hedging",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_p2_tech_aws_modernization_patterns",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_partner_co_selling",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_partner_customer_deal_support",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_partner_partner_led_ai_solutions",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_partner_sales_revenue_targets",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_partner_solution_architecture",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_prompt_assembly_architecture",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_reusable_agentic_platform_architecture",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_risk_model_risk",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_runtime_gate_mesh_design",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_sr_insurtech_cto_it_enablement",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_sr_insurtech_legacy_cloud_modernization",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_sr_insurtech_regulated_insurer_controls",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    },
+    {
+      "node_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+      "confidence_grade": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_eligible": 1,
+      "fact_link_count": 1
+    }
+  ],
+  "SQL_VALIDATION_QUERIES_AND_RESULTS": {
+    "status": "PASS",
+    "issues": [],
+    "sqlite_db_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+    "graph_version": "master_skills_arsenal_graph_v1",
+    "graph_hash": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+    "node_count": 498,
+    "edge_count": 1400,
+    "expected_node_count_json": 236,
+    "expected_edge_count_json": 1400,
+    "expected_edge_count_metadata": 1400,
+    "skill_fact_link_count": 109,
+    "section_eligibility_count": 458,
+    "role_family_projection_count": 9,
+    "broad_skills_ledger_status": "non_authority",
+    "dup_triple_count": 0,
+    "orphan_edge_count": 0,
+    "confidence_override_guardrail": {
+      "violations_count": 0,
+      "violations_sample": [],
+      "candidate_facts_do_not_auto_promote": true,
+      "rule": "explicit confidence_grade above derived requires human_confirmed_archive_promotion metadata"
+    },
+    "forbidden_high_skill_promotions": [],
+    "high_skills_without_fact_links": [],
+    "counts": {
+      "nodes": 498,
+      "edges": 1400,
+      "pillars": 53,
+      "skills": 162,
+      "active_skills": 106,
+      "draft_skills": 56,
+      "phase_bridges": 11
+    },
+    "counts_json": {
+      "nodes": 236,
+      "edges": 1400,
+      "pillars": 29,
+      "skills": 162,
+      "active_skills": 106,
+      "draft_skills": 56,
+      "phase_bridges": 11,
+      "confidence_grade": {
+        "HIGH": 27,
+        "LOW": 28,
+        "BLOCKED": 29,
+        "MEDIUM": 78
+      }
+    },
+    "p0_fixed": [
+      "orphan_policy_targets_materialized",
+      "canonical_node_type_inference",
+      "bogus_policy_strings_not_skill_nodes",
+      "executive_summary_high_confidence_gate"
+    ],
+    "p1_fixed": [
+      "dedupe_edge_id_and_triple",
+      "external_eligible_requires_active_and_fact_link",
+      "fact_ref_node_typing_exp_bul_cert",
+      "anthropic_role_family_pillar_profile",
+      "customer_stakeholder_cs_primary_guardrails",
+      "airline_anchor_internal_only"
+    ],
+    "next_blocker": "none",
+    "sql_validation_queries_run": [
+      "orphan_edges_zero",
+      "duplicate_edge_id_zero",
+      "duplicate_edge_triple_zero",
+      "node_type_not_equal_node_id",
+      "no_bogus_policy_skill_nodes",
+      "no_draft_external_eligible",
+      "active_external_has_skill_fact_link",
+      "executive_summary_high_confidence_grade_only",
+      "executive_summary_medium_low_blocked",
+      "no_broad_skills_ledger_authority",
+      "no_forbidden_high_skill_promotions",
+      "no_high_without_fact_links",
+      "confidence_override_guardrail_enforced"
+    ],
+    "skill_support_level_dist": [
+      [
+        "DERIVED_SUPPORTED",
+        78
+      ],
+      [
+        "DIRECT_FROM_RESUME_ARCHIVE",
+        55
+      ],
+      [
+        "REPO_EVIDENCE_PORTFOLIO",
+        16
+      ],
+      [
+        "USER_CONFIRMED_PENDING_SOURCE",
+        9
+      ],
+      [
+        "INTERNAL_ONLY",
+        3
+      ],
+      [
+        "BUNDLE_SUPPORTED",
+        1
+      ]
+    ],
+    "skill_confidence_grade_dist": [
+      [
+        "MEDIUM",
+        78
+      ],
+      [
+        "BLOCKED",
+        29
+      ],
+      [
+        "LOW",
+        28
+      ],
+      [
+        "HIGH",
+        27
+      ]
+    ],
+    "executive_summary_allowed_count": 27,
+    "executive_summary_allowed_sample": [
+      {
+        "node_id": "skill_actuarial_fsa_fellowship",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_agentic_platform_productization",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_audit_grade_observability",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 2
+      },
+      {
+        "node_id": "skill_capital_capital_modeling",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_capital_regulatory_capital",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_context_engineering",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_dense_sparse_exact_retrieval_design",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_derivatives_derivatives_pricing",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_governed_agentic_systems_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_graph_aware_relationship_grounding",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_greeks_hedging_multi_greek_hedging",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_p2_tech_aws_modernization_patterns",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_co_selling",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_customer_deal_support",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_partner_led_ai_solutions",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_sales_revenue_targets",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_solution_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_prompt_assembly_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_reusable_agentic_platform_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_risk_model_risk",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_runtime_gate_mesh_design",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_insurtech_cto_it_enablement",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_insurtech_legacy_cloud_modernization",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_insurtech_regulated_insurer_controls",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      }
+    ],
+    "high_skill_count": 27
+  },
+  "MATERIALIZATION": {
+    "sqlite_db_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+    "graph_version": "master_skills_arsenal_graph_v1",
+    "graph_hash": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+    "materialized_at": "2026-05-20T15:57:29Z",
+    "materialized_from": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+    "node_count_json": 236,
+    "edge_count_json": 1400,
+    "node_count_sqlite": 498,
+    "edge_count_sqlite": 1400,
+    "skill_fact_link_count": 109,
+    "section_eligibility_count": 458,
+    "role_family_projection_count": 9,
+    "tables_created": [
+      "graph_nodes",
+      "graph_edges",
+      "skill_fact_links",
+      "section_eligibility",
+      "role_family_projection",
+      "graph_metadata"
+    ]
+  },
+  "SQL_VALIDATION": {
+    "status": "PASS",
+    "issues": [],
+    "sqlite_db_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+    "graph_version": "master_skills_arsenal_graph_v1",
+    "graph_hash": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+    "node_count": 498,
+    "edge_count": 1400,
+    "expected_node_count_json": 236,
+    "expected_edge_count_json": 1400,
+    "expected_edge_count_metadata": 1400,
+    "skill_fact_link_count": 109,
+    "section_eligibility_count": 458,
+    "role_family_projection_count": 9,
+    "broad_skills_ledger_status": "non_authority",
+    "dup_triple_count": 0,
+    "orphan_edge_count": 0,
+    "confidence_override_guardrail": {
+      "violations_count": 0,
+      "violations_sample": [],
+      "candidate_facts_do_not_auto_promote": true,
+      "rule": "explicit confidence_grade above derived requires human_confirmed_archive_promotion metadata"
+    },
+    "forbidden_high_skill_promotions": [],
+    "high_skills_without_fact_links": [],
+    "counts": {
+      "nodes": 498,
+      "edges": 1400,
+      "pillars": 53,
+      "skills": 162,
+      "active_skills": 106,
+      "draft_skills": 56,
+      "phase_bridges": 11
+    },
+    "counts_json": {
+      "nodes": 236,
+      "edges": 1400,
+      "pillars": 29,
+      "skills": 162,
+      "active_skills": 106,
+      "draft_skills": 56,
+      "phase_bridges": 11,
+      "confidence_grade": {
+        "HIGH": 27,
+        "LOW": 28,
+        "BLOCKED": 29,
+        "MEDIUM": 78
+      }
+    },
+    "p0_fixed": [
+      "orphan_policy_targets_materialized",
+      "canonical_node_type_inference",
+      "bogus_policy_strings_not_skill_nodes",
+      "executive_summary_high_confidence_gate"
+    ],
+    "p1_fixed": [
+      "dedupe_edge_id_and_triple",
+      "external_eligible_requires_active_and_fact_link",
+      "fact_ref_node_typing_exp_bul_cert",
+      "anthropic_role_family_pillar_profile",
+      "customer_stakeholder_cs_primary_guardrails",
+      "airline_anchor_internal_only"
+    ],
+    "next_blocker": "none",
+    "sql_validation_queries_run": [
+      "orphan_edges_zero",
+      "duplicate_edge_id_zero",
+      "duplicate_edge_triple_zero",
+      "node_type_not_equal_node_id",
+      "no_bogus_policy_skill_nodes",
+      "no_draft_external_eligible",
+      "active_external_has_skill_fact_link",
+      "executive_summary_high_confidence_grade_only",
+      "executive_summary_medium_low_blocked",
+      "no_broad_skills_ledger_authority",
+      "no_forbidden_high_skill_promotions",
+      "no_high_without_fact_links",
+      "confidence_override_guardrail_enforced"
+    ],
+    "skill_support_level_dist": [
+      [
+        "DERIVED_SUPPORTED",
+        78
+      ],
+      [
+        "DIRECT_FROM_RESUME_ARCHIVE",
+        55
+      ],
+      [
+        "REPO_EVIDENCE_PORTFOLIO",
+        16
+      ],
+      [
+        "USER_CONFIRMED_PENDING_SOURCE",
+        9
+      ],
+      [
+        "INTERNAL_ONLY",
+        3
+      ],
+      [
+        "BUNDLE_SUPPORTED",
+        1
+      ]
+    ],
+    "skill_confidence_grade_dist": [
+      [
+        "MEDIUM",
+        78
+      ],
+      [
+        "BLOCKED",
+        29
+      ],
+      [
+        "LOW",
+        28
+      ],
+      [
+        "HIGH",
+        27
+      ]
+    ],
+    "executive_summary_allowed_count": 27,
+    "executive_summary_allowed_sample": [
+      {
+        "node_id": "skill_actuarial_fsa_fellowship",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_agentic_platform_productization",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_audit_grade_observability",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 2
+      },
+      {
+        "node_id": "skill_capital_capital_modeling",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_capital_regulatory_capital",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_context_engineering",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_dense_sparse_exact_retrieval_design",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_derivatives_derivatives_pricing",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_governed_agentic_systems_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_graph_aware_relationship_grounding",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_greeks_hedging_multi_greek_hedging",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_p2_tech_aws_modernization_patterns",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_co_selling",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_customer_deal_support",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_partner_led_ai_solutions",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_sales_revenue_targets",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_partner_solution_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_prompt_assembly_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_reusable_agentic_platform_architecture",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_risk_model_risk",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_runtime_gate_mesh_design",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_insurtech_cto_it_enablement",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_insurtech_legacy_cloud_modernization",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_insurtech_regulated_insurer_controls",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      },
+      {
+        "node_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "activation_status": "ACTIVE_CONFIRMED",
+        "external_eligible": 1,
+        "fact_link_count": 1
+      }
+    ],
+    "high_skill_count": 27
+  },
+  "P0_FINDINGS_FIXED": [
+    "orphan_policy_targets_materialized",
+    "canonical_node_type_inference",
+    "bogus_policy_strings_not_skill_nodes",
+    "executive_summary_high_confidence_gate",
+    "confidence_grade_separate_from_support_level"
+  ],
+  "P1_FINDINGS_FIXED": [
+    "dedupe_edge_id_and_triple",
+    "external_eligible_requires_active_and_fact_link",
+    "fact_ref_node_typing_exp_bul_cert",
+    "anthropic_role_family_pillar_profile",
+    "customer_stakeholder_cs_primary_guardrails",
+    "airline_anchor_internal_only"
+  ],
+  "PROTECTED_PATHS_UNTOUCHED": [
+    "apps_rg/runtime/",
+    "agentic_core/",
+    "prompts/",
+    "selected_role_fact_set",
+    "section generation lanes"
+  ],
+  "EXPLICIT_NON_CLAIMS": [
+    "Graph SQLite is routing/context only; not claim proof.",
+    "Candidate facts allowed_after_human_confirm do not auto-promote skills to HIGH without human_confirmed_archive_promotion.",
+    "Operator wave confirmed only fact_engineering_platform_001, 003, 004, 006; 002 and 005 not promoted.",
+    "Skills outside OPERATOR_ARCHIVE_PROMOTION_BY_SKILL remain unchanged (e.g. skill_runtime_proof_bundle_design on 004).",
+    "Marketplace listing ownership claims remain blocked for ANTHROPIC_PARTNERSHIPS_APPLIED_AI.",
+    "skill_p2_anchor_major_airline_devops_aws remains internal-only without archive proof.",
+    "broad_skills_ledger non-authority unchanged.",
+    "skill_runtime_gate_mesh_design primary proof is fact_engineering_platform_001 (not fact_governance_003)."
+  ],
+  "NEXT_BLOCKER": "none"
+}
