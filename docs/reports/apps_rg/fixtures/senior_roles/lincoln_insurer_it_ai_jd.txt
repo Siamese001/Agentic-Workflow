@@ -1,0 +1,9 @@
+SVP IT Strategy & AI Enablement — insurer.
+
+Required emphasis:
+- Enterprise IT strategy, portfolio governance, and AI enablement
+- Cloud/data platform modernization for regulated insurer environments
+- Reference architecture and delivery governance across business units
+- FSA/actuarial credibility without burying credentials in early-career only
+
+De-emphasize: generic agentic executive with no IT-strategy pillar signal.

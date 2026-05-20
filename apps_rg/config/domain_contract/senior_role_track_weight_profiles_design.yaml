@@ -1,13 +1,12 @@
-# Design-only track-weight profiles for senior-role traversal (W0.5b).
-# NOT loaded at runtime — ROLE_FAMILY_TRACK_WEIGHTS and TAXONOMY_TO_PROJECTION_ROLE
-# remain in apps_rg/fact_inventory/track_weighted_graph_expansion.py until a follow-on code wave.
-# Fixture offline runs may pass weight_override per docs/reports/apps_rg/fixtures/senior_roles/ (W13).
+# Track-weight profiles for senior-role traversal (W0.5b design SSOT; W14b wired in Python).
+# Runtime authority: apps_rg/fact_inventory/track_weighted_graph_expansion.py
+# (ROLE_FAMILY_TRACK_WEIGHTS + TAXONOMY_TO_PROJECTION_ROLE + infer_projection_role_family_key).
 
 schema_version: "1"
-status: design_only_not_loaded_at_runtime
+status: wired_in_track_weighted_graph_expansion_py
 plan_id: phase2-gtm-presales-remaining-f7a2c9
 audit_id: senior_role_graph_gap_analysis_20260520
-blocked_reason: BLOCKED_BY_CODE_CHANGE_REQUIRED
+wired_at_wave: W14b
 
 description: >-
   Normalized career_track weights (must sum to 1.0 after normalize). Keys are graph
@@ -107,3 +106,14 @@ projection_profiles:
       track_data_tech_cloud_ml: 0.70
       track_genai_agentic: 0.25
     rationale: Existing Python profile — preserved for GTM/partner baseline.
+
+  - projection_profile_key: CONSULTING_DELIVERY_LEADERSHIP
+    taxonomy_ids:
+      - CONSULTING_DELIVERY_LEADERSHIP
+    weights:
+      track_actuarial_risk_derivatives: 0.15
+      track_data_tech_cloud_ml: 0.50
+      track_genai_agentic: 0.35
+    rationale: >-
+      AI/data platform professional services fixture (W13 #7); post-sales implementation
+      and value realization — not GTM-only or CS-only.

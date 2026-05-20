@@ -1,0 +1,8 @@
+MD Head of AI, Platform & Data Services — banking.
+
+Required emphasis:
+- Responsible AI, model risk, and auditability for regulated banking platforms
+- Basel/CCAR-aligned governance and data lineage for AI systems
+- Platform and data services leadership with traceable HIGH governance facts
+
+De-emphasize: payments, liquidity, trade, fraud product ownership without facts.

@@ -1,0 +1,74 @@
+{
+  "wave": "W13",
+  "status": "PASS",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "completed_at": "2026-05-20",
+  "proof_classification": "fixture_manifest_only_not_runtime_release_proof",
+  "archetype_fixture_count": 7,
+  "regression_example_count": 7,
+  "BLOCKED_BY_GRAPH_GAP": false,
+  "blocked_reason": null,
+  "ARCHETYPE_FIXTURES_CREATED": [
+    "aig_carrier_agentic",
+    "lincoln_insurer_it_ai",
+    "citi_banking_platform_ai",
+    "brown_brokerage_it",
+    "anthropic_partner_applied_ai",
+    "gtm_presales_baseline",
+    "ai_data_platform_professional_services"
+  ],
+  "REGRESSION_EXAMPLES_MAPPED": [
+    "AIG-style insurance carrier agentic transformation",
+    "Lincoln-style insurer IT strategy / AI enablement",
+    "Citi-style banking platform responsible AI",
+    "Brown & Brown-style insurance brokerage IT innovation",
+    "Anthropic-style partner applied AI architecture",
+    "GTM/pre-sales technical accelerators baseline",
+    "EDB-style VP Global Professional Services (AI/data platform services)"
+  ],
+  "FORBIDDEN_CLAIMS_BLOCKED_BY_ARCHETYPE": {
+    "ai_data_platform_professional_services": [
+      "full_services_pnl_ownership",
+      "utilization_optimization_ownership",
+      "margin_ownership_as_services_executive",
+      "customer_success_function_ownership",
+      "product_roadmap_ownership",
+      "product_feedback_loops_external",
+      "formal_vp_global_professional_services_title_ownership"
+    ],
+    "all_archetypes": [
+      "JD_or_briefing_as_proof",
+      "MEDIUM_without_human_confirmation_in_executive_summary",
+      "LOW_INTERNAL_ONLY_DRAFT_external_promotion"
+    ]
+  },
+  "new_archetype_summary": {
+    "slug": "ai_data_platform_professional_services",
+    "graph_nodes_added": 0,
+    "rationale": "Existing pillars and P2/W12/Unify-linked skills sufficient for offline traversal manifest; no pillar_ai_data_platform_professional_services required for W13 fixture-only scope."
+  },
+  "artifacts": {
+    "manifest": "docs/reports/apps_rg/fixtures/senior_roles/senior_role_fixture_manifest.json",
+    "fixture_root": "docs/reports/apps_rg/fixtures/senior_roles",
+    "gtm_baseline_jd": "artifacts/apps_rg/fixtures/gtm_presales_targeting/exec_summary_gtm_presales_jd.txt",
+    "new_fixture_7_jd": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_jd.txt",
+    "new_fixture_7_brief": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_brief.txt",
+    "new_fixture_7_regression_notes": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_regression_notes.txt"
+  },
+  "commands_run": [
+    {
+      "command": "python (inline) write 13 fixture text files under docs/reports/apps_rg/fixtures/senior_roles/",
+      "result": "exit 0"
+    }
+  ],
+  "tests_gates": {
+    "runtime_proof": "skipped_by_scope",
+    "offline_manifest_validation": "manual_schema_review_pass"
+  },
+  "notes": [
+    "Fixture 4 brokerage pillar remains deferred; manifest uses interoperability + GTM pillars.",
+    "Fixture 7 uses CONSULTING_DELIVERY_LEADERSHIP taxonomy (existing) — no new taxonomy ID.",
+    "W14 offline traversal command not run in this wave per user guardrails."
+  ]
+}

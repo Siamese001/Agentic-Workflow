@@ -1,0 +1,9 @@
+Manager, Applied AI Architecture & Partnerships.
+
+Required emphasis:
+- Applied AI solution architecture with hyperscaler and ISV partner motions
+- Joint AI solution development and industry reference architectures
+- Co-sell and alliance strategy where evidence-backed (AWS/Databricks-class)
+- Technical presales accelerators and customer adoption derisking
+
+De-emphasize: Snowflake/GCP exclusivity; marketplace listing; partner engineering external.

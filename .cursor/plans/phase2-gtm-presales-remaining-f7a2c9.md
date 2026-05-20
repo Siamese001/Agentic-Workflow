@@ -14,17 +14,44 @@ dod_exempt: false
 
 FORMAT_VERSION: simplified-plan-format-v1  
 PLAN_STATUS: ACTIVE  
-CURRENT_WAVE: W0.5  
+GRAPH_SCOPE_STATUS: GRAPH_SCOPE_COMPLETE  
+CURRENT_WAVE: post-graph (W1 or W4-runtime)  
+LAST_COMPLETED_GRAPH_WAVE: W4/W14  
 LAST_UPDATED: 2026-05-20  
 SENIOR_ROLE_GAP_AUDIT_SSOT: `senior_role_graph_gap_analysis_20260520` — [senior_role_graph_gap_analysis.md](docs/reports/apps_rg/senior_role_graph_gap_analysis.md) · [senior_role_graph_gap_analysis.json](docs/reports/apps_rg/senior_role_graph_gap_analysis.json)  
+GRAPH_SCOPE_CLOSEOUT: [phase2_graph_scope_closeout_receipt.json](docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.json) · [phase2_graph_scope_closeout_receipt.md](docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.md)  
 PRIOR_CLOSEOUT: [skills_graph_phase2_gtm_presales_closeout.json](docs/reports/apps_rg/skills_graph_phase2_gtm_presales_closeout.json)  
 PRIOR_RUNTIME_PROOF: [exec_summary_20260520_094345](artifacts/apps_rg/runtime_proofs/executive_summary/mock/exec_summary_20260520_094345)
 
 ---
 
-## STATUS (planning wave)
+## STATUS
 
-**PARTIAL** — Graph augmentation and consumption are proven; claim materialization, HITL confirmation, evidence uplift for blocked nodes, multi-lane runtime proof, X2 substrate remediation, and release-eligible certification remain.
+**GRAPH_SCOPE_COMPLETE** — Senior-role skills graph phase is **closed** for this plan. Graph taxonomy, pillars/skills/bridge edges, seven archetype fixtures, offline traversal (W14/W14b), and multilane section projection (49/49) are complete. **No** graph, prompt, runtime, or SRFS policy change is required before HITL or minimum runtime proof.
+
+**Plan remainder (non-graph):** W1 HITL, W2a/2b evidence decisions, W3 X2 diagnosis, W4 **runtime** proof, W5 ADR, W6 conditional DRAFT activation, W7 certification.
+
+---
+
+## GRAPH WAVES COMPLETED (2026-05-20)
+
+| Wave | Status | Receipt |
+|------|--------|---------|
+| W0 | COMPLETE | GTM closeout + inventory lock |
+| W0.5 | COMPLETE | [phase2_senior_role_implementation_backlog.json](docs/reports/apps_rg/phase2_senior_role_implementation_backlog.json) |
+| W0.5b | COMPLETE | [phase2_w05b_taxonomy_track_weight_receipt.json](docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.json) |
+| W8–W11-graph | COMPLETE | [phase2_w8_w11_senior_role_graph_receipt.json](docs/reports/apps_rg/phase2_w8_w11_senior_role_graph_receipt.json) |
+| W12-graph | COMPLETE | [phase2_w12_partner_hyperscaler_graph_receipt.json](docs/reports/apps_rg/phase2_w12_partner_hyperscaler_graph_receipt.json) |
+| W13 | COMPLETE | [phase2_w13_archetype_fixtures_receipt.json](docs/reports/apps_rg/phase2_w13_archetype_fixtures_receipt.json) |
+| W14 | COMPLETE | [phase2_w14_offline_traversal_receipt.json](docs/reports/apps_rg/phase2_w14_offline_traversal_receipt.json) |
+| W14b | COMPLETE | [phase2_w14b_taxonomy_track_weight_wiring_receipt.json](docs/reports/apps_rg/phase2_w14b_taxonomy_track_weight_wiring_receipt.json) |
+| W4/W14 (projection) | COMPLETE | [phase2_w4_w14_multilane_section_projection_receipt.json](docs/reports/apps_rg/phase2_w4_w14_multilane_section_projection_receipt.json) |
+
+**Graph inventory (final):** 29 pillars · 162 skills · 1,406 edges · 16 phase-bridge edges · 7 archetype fixtures.
+
+**Scope boundary:** Do not add pillars, skills, edges, archetypes, or fixtures unless a new role exposes a documented P0 traversal failure.
+
+**Known deferred:** `pillar_insurance_brokerage_distribution` — no source evidence; do not fabricate.
 
 ## PLAN_ID
 
@@ -38,17 +65,16 @@ Close the remaining Phase 2 GTM/pre-sales work with **zero loss of evidence disc
 
 | Area | State |
 |------|--------|
-| Graph SSOT | 21 pillars, 148 skills; P2 pillars `pillar_gtm_presales_motion`, `pillar_technical_presales_accelerators` on `TRACK_DATA_TECH_CLOUD_ML` |
+| **GRAPH_SCOPE_STATUS** | **GRAPH_SCOPE_COMPLETE** — see [phase2_graph_scope_closeout_receipt.json](docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.json) |
+| Graph SSOT | **29 pillars, 162 skills**; P2 + senior-role pillars; GTM baseline preserved |
 | Authority | `augmented_skills_graph` (`master_skills_arsenal_ledger.json`); `broad_skills_ledger` deprecated/reference-only |
-| Track expansion | C03 binding works; GTM JD offline projection selects **10** ACTIVE P2 skills (vs 3 under default engineering-heavy profile) |
-| Exec_summary (GTM JD) | SRFS slice admits **one** P2-linked HIGH fact (`fact_engineering_platform_006` → `skill_p2_tech_reusable_accelerators`); **no** core GTM MEDIUM facts in `ALLOWED_SOURCE_FACT_IDS` |
-| MEDIUM GTM facts | Registry-backed `claim_eligible_medium` for bullet/narrative lanes only ([commercial_claim_eligibility.yaml](apps_rg/config/fact_inventory/commercial_claim_eligibility.yaml)); exec_summary = confirmation queue or HIGH-only |
-| Blocked nodes | `skill_p2_anchor_major_airline_devops_aws`, `skill_p2_tech_estimation_sizing_directional` = INTERNAL_ONLY / DO_NOT_PROMOTE |
-| DRAFT P2 skills | e.g. commercial_validation_pilots, presales_delivery_handoff, demoable_accelerator — track expansion blocked until ACTIVE + facts |
-| X3 (GTM exec run) | `X3_BLOCK` — `x2_srfs_claim_business_metrics_substrate` (ledger attributed **gross margin** to `fact_exec_002` without substrate support) |
-| Proof class | Mock/non-certifying (`proof_eligible=false`); not a graph-load failure |
-| Senior-role audit (2026-05-20) | **18 gaps** (6 P0, 8 P1, 3 P2, 1 P3); **0** phase-bridge edges actuarial/insurance/reg → agentic/GTM/partner; **0** pillar-to-pillar edges; GTM baseline **proven**; AIG/Lincoln/Citi/Brown & Brown/Anthropic **partial** — see [senior_role_graph_gap_analysis.json](docs/reports/apps_rg/senior_role_graph_gap_analysis.json) |
-| Graph inventory (audit SSOT) | 21 pillars · 148 skills · 1,281 edges · 94 ACTIVE/ACTIVE_CONFIRMED · 54 DRAFT |
+| Senior fixtures | **7** archetypes; manifest [senior_role_fixture_manifest.json](docs/reports/apps_rg/fixtures/senior_roles/senior_role_fixture_manifest.json) |
+| Offline traversal | W14/W14b **PASS** (7/7); no `weight_override` required (W14b) |
+| Section projection | W4/W14 **49/49** PASS (offline SRFS + graph; not runtime) |
+| Exec_summary policy | **Unchanged** — HIGH-only; MEDIUM blocked from exec_summary by design |
+| Blocked nodes | Airline anchor, estimation/sizing INTERNAL_ONLY; brokerage pillar **deferred** (no evidence) |
+| Non-graph open | W1 HITL, W4 runtime, W2a/2b, W3 X2, W5 ADR, W6, W7 |
+| Proof class (graph) | Offline receipts only; runtime X3_ALLOW not claimed |
 
 ## NON_NEGOTIABLE_GUARDRAILS
 
@@ -394,6 +420,26 @@ Manifest: `senior_role_fixture_manifest.json`
 | **Priority sections** | unify_bullets, unify_narrative, competencies |
 | **Pass** | Reproduce closeout: ≥1 registry MEDIUM GTM fact in bullets/narratives; P2 in C03 metadata; exec HIGH-only |
 | **Fail** | Regression vs [skills_graph_phase2_gtm_presales_closeout.json](docs/reports/apps_rg/skills_graph_phase2_gtm_presales_closeout.json); MEDIUM in exec without HITL |
+
+##### Fixture 7 — AI/data platform professional services (generalized)
+
+| Field | Value |
+|-------|--------|
+| **Target role** | VP Global Professional Services — AI and enterprise data platform (generalized) |
+| **Target role families** | `CONSULTING_DELIVERY_LEADERSHIP`, `EXECUTIVE_LEADERSHIP`, `DATA_ANALYTICS_LEADERSHIP`, `ENGINEERING_PLATFORM`, `PARTNERSHIPS_GTM` (JD targeting only) |
+| **JD / brief / notes** | `ai_data_platform_professional_services_jd.txt`, `ai_data_platform_professional_services_brief.txt`, `ai_data_platform_professional_services_regression_notes.txt` |
+| **Regression example** | EDB-style VP Global Professional Services — **not** a company-specific hiring target |
+| **Expected pillars** | `pillar_agentic_ai_platforms`, `pillar_cloud_data_aws`, `pillar_executive_leadership`, `pillar_enterprise_portfolio_governance`, `pillar_revenue_commercialization`, `pillar_revenue_operations`, `pillar_gtm_presales_motion`, `pillar_technical_presales_accelerators`, `pillar_hyperscaler_marketplace_partner_gtm`, `pillar_applied_ai_partner_architecture` |
+| **Expected bridge edges** | `partner_ecosystem_to_ai_adoption`, `hyperscaler_to_applied_ai_architecture`, `domain_expertise_to_section_eligibility` |
+| **Expected skills** | P2 handoff + tech accelerators; W12 joint solution + reference architecture; `skill_ai_platform_commercialization`; `skill_sr_insurtech_cto_it_enablement`; revops forecasting; commercial stakeholder alignment |
+| **Excluded skills** | `skill_partner_product_feedback_loops`, `skill_partner_partner_engineering`, `skill_customer_nrr_predictive_analytics_20pct`, `skill_customer_satisfaction_nps_25pct` |
+| **Forbidden claims** | VP Global PS title ownership; **services P&L**; utilization/margin ownership; **customer success** ownership; **product roadmap** / **product feedback loops** external; marketplace co-sell without evidence |
+| **Distinction** | Not pure GTM/pre-sales; not pure CS — post-sales implementation, value realization, services-led growth |
+| **Graph gap** | None for W13 — no new pillar/skill unless W14 traversal fails manifest-only run |
+| **Priority sections** | unify_bullets, unify_narrative, competencies, executive_summary |
+| **Manifest** | [senior_role_fixture_manifest.json](docs/reports/apps_rg/fixtures/senior_roles/senior_role_fixture_manifest.json) · receipt [phase2_w13_archetype_fixtures_receipt.md](docs/reports/apps_rg/phase2_w13_archetype_fixtures_receipt.md) |
+
+**W13 counts:** 7 archetype fixtures · 7 regression examples (see receipt).
 
 ---
 
@@ -814,3 +860,22 @@ Phase 2 GTM/pre-sales graph work is **complete** when all are true:
 ---
 
 *Wave 0.5 added 2026-05-20 from [senior_role_graph_gap_analysis](docs/reports/apps_rg/senior_role_graph_gap_analysis.md). Waves 0–7 preserved. Graph/runtime/prompt/validator edits deferred to post–W0.5 gated sequence.*
+
+---
+
+## GRAPH SCOPE CLOSEOUT RECEIPT (2026-05-20)
+
+| Field | Value |
+|-------|--------|
+| **STATUS** | GRAPH_SCOPE_COMPLETE |
+| **PLAN_ID** | `phase2-gtm-presales-remaining-f7a2c9` |
+| **GRAPH_SCOPE_STATUS** | GRAPH_SCOPE_COMPLETE |
+| **FILES_CHANGED** | [phase2-gtm-presales-remaining-f7a2c9.md](phase2-gtm-presales-remaining-f7a2c9.md), [phase2_graph_scope_closeout_receipt.json](docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.json), [phase2_graph_scope_closeout_receipt.md](docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.md) |
+| **ARTIFACTS_WRITTEN** | Graph scope closeout JSON/MD; plan updated; Notion Plans row synced |
+| **SECTION_PROJECTION** | 49/49 PASS |
+| **W14B_TRAVERSAL** | 7/7 without weight_override |
+| **KNOWN_DEFERRED** | `pillar_insurance_brokerage_distribution` (no evidence — do not fabricate) |
+| **NEXT_RECOMMENDED_WAVE** | W1 human-confirmation packet or `python -m apps_rg --section <lane>` minimum runtime |
+| **PROOF_CLASSIFICATION** | graph_scope_closeout_offline_receipts_not_runtime_release_proof |
+
+**EXPLICIT_NON_CLAIMS:** Graph closeout does not authorize new external claims, brokerage pillar fabrication, airline/~$100M/estimation sizing promotion, or runtime X3_ALLOW.

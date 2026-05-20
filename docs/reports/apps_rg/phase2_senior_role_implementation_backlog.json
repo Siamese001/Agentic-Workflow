@@ -5,6 +5,8 @@
   "audit_ssot": "senior_role_graph_gap_analysis_20260520",
   "generated_at_utc": "2026-05-20T10:43:36Z",
   "status": "PASS",
+  "graph_scope_status": "GRAPH_SCOPE_COMPLETE",
+  "graph_scope_closeout_ref": "docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.json",
   "proof_classification": "plan-update-only",
   "authority": "augmented_skills_graph",
   "deprecated_authority_excluded": "broad_skills_ledger",
@@ -446,6 +448,13 @@
       "slug": "gtm_presales_baseline",
       "label": "GTM/pre-sales baseline",
       "role_family": "PARTNERSHIPS_GTM"
+    },
+    {
+      "slug": "ai_data_platform_professional_services",
+      "label": "AI/data platform professional services leadership",
+      "role_family": "CONSULTING_DELIVERY_LEADERSHIP",
+      "regression_example": "EDB-style VP Global Professional Services (AI/data platform)",
+      "w13_status": "fixture_manifest_created"
     }
   ],
   "implementation_sequence": [
@@ -472,7 +481,11 @@
     {
       "step": 5,
       "wave": "W13",
-      "action": "Senior-role fixtures published + offline traversal receipts"
+      "action": "Senior-role fixtures published + offline traversal receipts",
+      "w14_status": "PASS",
+      "w14_receipt": "docs/reports/apps_rg/phase2_w14_offline_traversal_receipt.json",
+      "w14b_status": "PASS",
+      "w14b_receipt": "docs/reports/apps_rg/phase2_w14b_taxonomy_track_weight_wiring_receipt.json"
     },
     {
       "step": 6,

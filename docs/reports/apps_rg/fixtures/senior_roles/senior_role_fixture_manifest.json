@@ -1,0 +1,415 @@
+{
+  "schema_version": "1",
+  "wave": "W13",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "fixture_root": "docs/reports/apps_rg/fixtures/senior_roles",
+  "proof_classification": "fixture_manifest_only_not_runtime_release_proof",
+  "archetype_fixture_count": 7,
+  "regression_example_count": 7,
+  "graph_gap_status": "NO_BLOCKING_GAP_FOR_FIXTURE_7_EXISTING_PILLARS_SKILLS_SUFFICIENT",
+  "ARCHETYPE_FIXTURES_CREATED": [
+    "aig_carrier_agentic",
+    "lincoln_insurer_it_ai",
+    "citi_banking_platform_ai",
+    "brown_brokerage_it",
+    "anthropic_partner_applied_ai",
+    "gtm_presales_baseline",
+    "ai_data_platform_professional_services"
+  ],
+  "REGRESSION_EXAMPLES_MAPPED": [
+    {
+      "ordinal": 1,
+      "archetype_slug": "aig_carrier_agentic",
+      "regression_label": "AIG-style insurance carrier agentic transformation",
+      "company_specific_target": false
+    },
+    {
+      "ordinal": 2,
+      "archetype_slug": "lincoln_insurer_it_ai",
+      "regression_label": "Lincoln-style insurer IT strategy / AI enablement",
+      "company_specific_target": false
+    },
+    {
+      "ordinal": 3,
+      "archetype_slug": "citi_banking_platform_ai",
+      "regression_label": "Citi-style banking platform responsible AI",
+      "company_specific_target": false
+    },
+    {
+      "ordinal": 4,
+      "archetype_slug": "brown_brokerage_it",
+      "regression_label": "Brown & Brown-style insurance brokerage IT innovation",
+      "company_specific_target": false
+    },
+    {
+      "ordinal": 5,
+      "archetype_slug": "anthropic_partner_applied_ai",
+      "regression_label": "Anthropic-style partner applied AI architecture",
+      "company_specific_target": false
+    },
+    {
+      "ordinal": 6,
+      "archetype_slug": "gtm_presales_baseline",
+      "regression_label": "GTM/pre-sales technical accelerators baseline",
+      "company_specific_target": false
+    },
+    {
+      "ordinal": 7,
+      "archetype_slug": "ai_data_platform_professional_services",
+      "regression_label": "EDB-style VP Global Professional Services (AI/data platform services)",
+      "company_specific_target": false,
+      "regression_notes_path": "ai_data_platform_professional_services_regression_notes.txt"
+    }
+  ],
+  "FORBIDDEN_CLAIMS_BLOCKED_BY_ARCHETYPE": {
+    "global": [
+      "JD_or_briefing_as_proof",
+      "auto_promote_MEDIUM_without_human_confirmation",
+      "LOW_INTERNAL_ONLY_DRAFT_in_external_claims",
+      "broad_skills_ledger_as_authority"
+    ],
+    "ai_data_platform_professional_services": [
+      "formal_vp_global_professional_services_title_ownership_without_employment_fact",
+      "full_services_pnl_ownership",
+      "utilization_optimization_ownership",
+      "margin_ownership_as_services_leader",
+      "customer_success_function_ownership",
+      "product_roadmap_ownership",
+      "product_feedback_loops_external_unless_source_or_human_confirmed",
+      "marketplace_listing_co_sell_without_evidence",
+      "partner_engineering_external_unless_HITL",
+      "pre_sales_solutioning_relabeled_as_post_sales_services_pnl"
+    ]
+  },
+  "archetypes": [
+    {
+      "slug": "aig_carrier_agentic",
+      "label": "AIG-style insurance agentic transformation",
+      "jd_path": "docs/reports/apps_rg/fixtures/senior_roles/aig_carrier_agentic_jd.txt",
+      "brief_path": "docs/reports/apps_rg/fixtures/senior_roles/aig_carrier_agentic_brief.txt",
+      "expected_role_family_ids": ["INSURANCE_CARRIER_TRANSFORMATION"],
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.35,
+        "track_data_tech_cloud_ml": 0.25,
+        "track_genai_agentic": 0.4
+      },
+      "expected_pillar_ids": [
+        "pillar_insurance_carrier_transformation",
+        "pillar_agentic_ai_platforms",
+        "pillar_regulatory_governance",
+        "pillar_actuarial_foundation"
+      ],
+      "expected_skill_ids": [
+        "skill_sr_insurtech_legacy_cloud_modernization",
+        "skill_sr_insurtech_regulated_insurer_controls",
+        "skill_governed_agentic_systems_architecture"
+      ],
+      "expected_bridge_edge_ids": [
+        "actuarial_to_agentic_transformation",
+        "actuarial_to_insurer_ai_strategy",
+        "insurance_to_underwriting_claims_ops",
+        "domain_expertise_to_section_eligibility"
+      ],
+      "excluded_skill_ids": ["skill_p2_gtm_discovery_qualification"],
+      "forbidden_claims": [
+        "underwriting_claims_policy_admin_ownership",
+        "ops_transformation_without_facts"
+      ],
+      "priority_sections_w14": ["competencies", "unify_narrative", "executive_summary"]
+    },
+    {
+      "slug": "lincoln_insurer_it_ai",
+      "label": "Lincoln-style insurer IT strategy / AI enablement",
+      "jd_path": "docs/reports/apps_rg/fixtures/senior_roles/lincoln_insurer_it_ai_jd.txt",
+      "brief_path": "docs/reports/apps_rg/fixtures/senior_roles/lincoln_insurer_it_ai_brief.txt",
+      "expected_role_family_ids": ["INSURER_IT_AI_ENABLEMENT"],
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.2,
+        "track_data_tech_cloud_ml": 0.45,
+        "track_genai_agentic": 0.35
+      },
+      "expected_pillar_ids": [
+        "pillar_insurer_it_strategy_ai_enablement",
+        "pillar_enterprise_portfolio_governance",
+        "pillar_cloud_data_aws",
+        "pillar_actuarial_foundation"
+      ],
+      "expected_skill_ids": [
+        "skill_sr_insurtech_cto_it_enablement",
+        "skill_sr_enterprise_portfolio_data_governance",
+        "skill_sr_cloud_data_platform_engineering"
+      ],
+      "expected_bridge_edge_ids": [
+        "insurtech_to_insurer_it_strategy",
+        "actuarial_to_insurer_ai_strategy",
+        "domain_expertise_to_section_eligibility"
+      ],
+      "excluded_skill_ids": [],
+      "forbidden_claims": ["full_svp_it_strategy_app_dev_coe_ownership_without_facts"],
+      "priority_sections_w14": ["executive_summary", "competencies", "ibm_narrative"]
+    },
+    {
+      "slug": "citi_banking_platform_ai",
+      "label": "Citi-style banking AI platform / responsible AI",
+      "jd_path": "docs/reports/apps_rg/fixtures/senior_roles/citi_banking_platform_ai_jd.txt",
+      "brief_path": "docs/reports/apps_rg/fixtures/senior_roles/citi_banking_platform_ai_brief.txt",
+      "expected_role_family_ids": ["BANKING_PLATFORM_AI", "REGULATED_AI_GOVERNANCE"],
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.35,
+        "track_data_tech_cloud_ml": 0.3,
+        "track_genai_agentic": 0.35
+      },
+      "expected_pillar_ids": [
+        "pillar_banking_platform_responsible_ai",
+        "pillar_regulatory_governance",
+        "pillar_agentic_ai_platforms"
+      ],
+      "expected_skill_ids": [
+        "skill_sr_banking_ai_governance_controls",
+        "skill_sr_basel_ccar_lineage_regulatory",
+        "skill_governed_agentic_systems_architecture"
+      ],
+      "expected_bridge_edge_ids": [
+        "basel_ccar_to_ai_auditability",
+        "regulatory_governance_to_responsible_ai",
+        "data_lineage_to_ai_traceability"
+      ],
+      "excluded_skill_ids": [],
+      "forbidden_claims": [
+        "payments_liquidity_trade_investor_issuer_services_product_ownership",
+        "fraud_product_ownership"
+      ],
+      "priority_sections_w14": ["executive_summary", "competencies", "unify_bullets"]
+    },
+    {
+      "slug": "brown_brokerage_it",
+      "label": "Brown & Brown-style insurance brokerage IT strategy",
+      "jd_path": "docs/reports/apps_rg/fixtures/senior_roles/brown_brokerage_it_jd.txt",
+      "brief_path": "docs/reports/apps_rg/fixtures/senior_roles/brown_brokerage_it_brief.txt",
+      "expected_role_family_ids": ["INSURANCE_BROKERAGE_IT_INNOVATION"],
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.1,
+        "track_data_tech_cloud_ml": 0.5,
+        "track_genai_agentic": 0.4
+      },
+      "expected_pillar_ids": [
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_gtm_presales_motion",
+        "pillar_cloud_data_aws"
+      ],
+      "graph_gap_notes": "pillar_insurance_brokerage_distribution deferred — use interoperability + GTM pillars only",
+      "expected_skill_ids": [
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "expected_bridge_edge_ids": ["domain_expertise_to_section_eligibility"],
+      "excluded_skill_ids": ["skill_sr_insurance_systems_resilience_internal"],
+      "forbidden_claims": [
+        "brokerage_platform_ownership",
+        "carrier_underwriting_claims_narrative"
+      ],
+      "priority_sections_w14": ["competencies", "unify_bullets"]
+    },
+    {
+      "slug": "anthropic_partner_applied_ai",
+      "label": "Anthropic-style partner applied AI architecture",
+      "jd_path": "docs/reports/apps_rg/fixtures/senior_roles/anthropic_partner_applied_ai_jd.txt",
+      "brief_path": "docs/reports/apps_rg/fixtures/senior_roles/anthropic_partner_applied_ai_brief.txt",
+      "expected_role_family_ids": [
+        "PARTNER_APPLIED_AI_ARCHITECTURE",
+        "HYPERSCALER_MARKETPLACE_GTM"
+      ],
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.05,
+        "track_data_tech_cloud_ml": 0.55,
+        "track_genai_agentic": 0.4
+      },
+      "expected_pillar_ids": [
+        "pillar_applied_ai_partner_architecture",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_partner_gtm_alliances",
+        "pillar_presales_solutioning"
+      ],
+      "expected_skill_ids": [
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+        "skill_sr_w12_joint_ai_solution_development",
+        "skill_sr_w12_industry_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "expected_bridge_edge_ids": [
+        "hyperscaler_to_applied_ai_architecture",
+        "marketplace_to_partner_gtm",
+        "partner_engineering_to_reference_architecture",
+        "partner_ecosystem_to_ai_adoption"
+      ],
+      "excluded_skill_ids": [
+        "skill_partner_partner_engineering",
+        "skill_partner_product_feedback_loops"
+      ],
+      "forbidden_claims": [
+        "snowflake_gcp_azure_marketplace_exclusivity",
+        "partner_sales_quota_ownership",
+        "marketplace_co_sell_without_evidence"
+      ],
+      "priority_sections_w14": ["competencies", "ibm_bullets", "unify_narrative"]
+    },
+    {
+      "slug": "gtm_presales_baseline",
+      "label": "GTM/pre-sales baseline",
+      "jd_path": "artifacts/apps_rg/fixtures/gtm_presales_targeting/exec_summary_gtm_presales_jd.txt",
+      "brief_path": "artifacts/apps_rg/fixtures/gtm_presales_targeting/exec_summary_gtm_presales_brief.txt",
+      "expected_role_family_ids": ["PARTNERSHIPS_GTM"],
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.05,
+        "track_data_tech_cloud_ml": 0.7,
+        "track_genai_agentic": 0.25
+      },
+      "expected_pillar_ids": [
+        "pillar_gtm_presales_motion",
+        "pillar_technical_presales_accelerators"
+      ],
+      "expected_skill_ids": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "expected_bridge_edge_ids": [],
+      "excluded_skill_ids": ["skill_p2_tech_estimation_sizing_directional"],
+      "forbidden_claims": [
+        "airline_anchor_external",
+        "estimation_sizing_100m_internal_only"
+      ],
+      "priority_sections_w14": ["unify_bullets", "unify_narrative", "competencies"],
+      "closeout_reference": "docs/reports/apps_rg/skills_graph_phase2_gtm_presales_closeout.json"
+    },
+    {
+      "slug": "ai_data_platform_professional_services",
+      "label": "AI/data platform professional services leadership",
+      "jd_path": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_jd.txt",
+      "brief_path": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_brief.txt",
+      "regression_notes_path": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_regression_notes.txt",
+      "expected_role_family_ids": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "PARTNERSHIPS_GTM"
+      ],
+      "archetype_distinction": {
+        "is_pure_gtm_presales": false,
+        "is_pure_customer_success": false,
+        "primary_motion": "post_sales_implementation_services_value_realization_and_services_led_growth"
+      },
+      "weight_override": {
+        "track_actuarial_risk_derivatives": 0.15,
+        "track_data_tech_cloud_ml": 0.5,
+        "track_genai_agentic": 0.35
+      },
+      "expected_pillar_ids": [
+        "pillar_agentic_ai_platforms",
+        "pillar_cloud_data_aws",
+        "pillar_executive_leadership",
+        "pillar_enterprise_portfolio_governance",
+        "pillar_revenue_commercialization",
+        "pillar_revenue_operations",
+        "pillar_gtm_presales_motion",
+        "pillar_technical_presales_accelerators",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_applied_ai_partner_architecture"
+      ],
+      "proposed_pillars_not_added": [
+        "pillar_ai_data_platform_professional_services"
+      ],
+      "proposed_skill_families_not_added": [
+        "skill_family_services_delivery_value_realization",
+        "skill_family_services_pnl_operating_model",
+        "skill_family_customer_expansion_services_led_growth"
+      ],
+      "expected_skill_ids": [
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_sr_w12_joint_ai_solution_development",
+        "skill_sr_w12_industry_reference_architecture",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_revops_usage_based_subscription_forecasting",
+        "skill_ai_platform_commercialization",
+        "skill_sr_insurtech_cto_it_enablement"
+      ],
+      "conditional_skill_ids": [
+        {
+          "skill_id": "skill_partner_pnl_oversight",
+          "allowed_phrasing": "partial P&L oversight or alliance economics only",
+          "forbidden_phrasing": "VP Professional Services P&L owner; utilization/margin owner"
+        }
+      ],
+      "expected_bridge_edge_ids": [
+        "partner_ecosystem_to_ai_adoption",
+        "hyperscaler_to_applied_ai_architecture",
+        "domain_expertise_to_section_eligibility"
+      ],
+      "excluded_skill_ids": [
+        "skill_partner_product_feedback_loops",
+        "skill_partner_partner_engineering",
+        "skill_customer_nrr_predictive_analytics_20pct",
+        "skill_customer_satisfaction_nps_25pct"
+      ],
+      "excluded_fact_patterns": [
+        "customer_success_function_ownership_without_base_resume_fact",
+        "product_roadmap_feedback_without_USER_CONFIRMED_source"
+      ],
+      "evidence_backed_traversal_notes": [
+        "Unify consulting delivery, Solution Accelerator commercialization, go-live scale (base resume HIGH paths)",
+        "Presales-to-delivery handoff via P2 GTM skills (not post-sales P&L ownership)",
+        "Partial alliance P&L language only via skill_partner_pnl_oversight with phrase guards",
+        "Partner services strategy via W12 hyperscaler/applied-AI pillars where co-sell evidence exists",
+        "Use services/value-realization language instead of customer-success ownership unless human-confirmed"
+      ],
+      "forbidden_claims": [
+        "formal_vp_global_professional_services_title_ownership",
+        "full_services_pnl_ownership",
+        "utilization_optimization_ownership",
+        "margin_ownership_as_services_executive",
+        "customer_success_function_ownership",
+        "product_roadmap_ownership",
+        "product_feedback_loops_external",
+        "marketplace_listing_co_sell_without_evidence"
+      ],
+      "distinction_manifest": {
+        "pre_sales_solutioning": "skill_p2_gtm_* discovery through handoff — pursuit phase only",
+        "post_sales_implementation": "Unify accelerator delivery, reusable IP, client go-lives — evidence-backed only",
+        "customer_success": "excluded unless human confirmation; prefer retention/expansion via services delivery language",
+        "professional_services_pnl": "forbidden as ownership claim; partial alliance P&L only with guards",
+        "partner_services_delivery": "W12 partner pillars + joint solution development — not partner engineering external",
+        "product_feedback_loops": "skill_partner_product_feedback_loops DO_NOT_PROMOTE"
+      },
+      "priority_sections_w14": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "executive_summary"
+      ],
+      "w14_pass_criteria": [
+        "Traversal surfaces cloud/data platform delivery, implementation accelerators, delivery handoff, and executive customer engagement where HIGH or HITL-confirmed",
+        "No external claim of VP Global PS title, services P&L, utilization/margin ownership, CS ownership, or product roadmap ownership",
+        "Distinguishes pre-sales handoff from post-sales implementation in section lanes"
+      ],
+      "w14_fail_criteria": [
+        "GTM-only traversal with no delivery/commercialization path",
+        "Customer success or NRR skills promoted without confirmation",
+        "Product feedback or partner engineering skills in external-eligible set"
+      ]
+    }
+  ]
+}

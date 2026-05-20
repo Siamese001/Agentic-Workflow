@@ -1,0 +1,23 @@
+Regression example — EDB-style VP Global Professional Services (AI/data platform)
+
+Purpose: Validate traversal for senior post-sales services leadership without treating EDB as a company-specific hiring target.
+
+JD signals exercised:
+- Global PS scope for AI/data platform implementations
+- Implementation delivery, onboarding, value realization
+- Services P&L / utilization / margin language in JD (must NOT become external claims without facts)
+- Partner services strategy and product feedback loops in JD (blocked unless source-backed)
+
+Expected graph behavior:
+- Ranks agentic platform, cloud/data, executive leadership, revenue commercialization/operations
+- Includes presales-to-delivery handoff as boundary skill, not as proof of PS P&L ownership
+- May include partial alliance P&L phrasing only via skill_partner_pnl_oversight guards
+- Excludes skill_partner_product_feedback_loops and customer NRR/NPS skills from external set
+
+Evidence anchors (resume SSOT — not JD):
+- exp_unify_* consulting delivery, accelerator IP, margin/revenue bullets (metric-bearing)
+- Partnerships archive partial P&L language — MEDIUM/HITL only
+- Head_of_Customer_Success archive variant — directional/internal; do not claim CS ownership
+
+Pass: delivery + value realization + handoff visible; forbidden PS/CS/product claims absent.
+Fail: false VP PS title, services P&L, utilization owner, CS owner, or product roadmap owner in external output.

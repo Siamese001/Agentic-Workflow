@@ -1,0 +1,260 @@
+{
+  "schema": "skills_graph_phase2_airline_anchor_evidence_uplift_v1",
+  "generated_at_utc": "2026-05-19T23:51:33Z",
+  "status": "PASS",
+  "scope": "phase2_airline_anchor_evidence_uplift_readonly",
+  "closeout_ssot": "docs/reports/apps_rg/skills_graph_phase2_gtm_presales_closeout.json",
+  "target_skill_id": "skill_p2_anchor_major_airline_devops_aws",
+  "skill_row_closeout_ssot": {
+    "skill_id": "skill_p2_anchor_major_airline_devops_aws",
+    "pillar": "pillar_technical_presales_accelerators",
+    "confidence": "LOW",
+    "linked_fact_id": null,
+    "source_resume_file": null,
+    "support_status": "INTERNAL_ONLY"
+  },
+  "skill_row_after_audit": {
+    "skill_id": "skill_p2_anchor_major_airline_devops_aws",
+    "support_level": "INTERNAL_ONLY",
+    "visibility_rule": "never_external",
+    "fact_id_links": [],
+    "source_snippets": [],
+    "external_claim_policy": "pending_source_internal_only"
+  },
+  "inference_only": true,
+  "promotion_decision": "DO_NOT_PROMOTE",
+  "proof_classification": "NO_PROMOTION_INSUFFICIENT_EVIDENCE",
+  "repo_scan": {
+    "search_paths": [
+      "apps_rg/resume",
+      "artifacts/apps_rg/fact_inventory",
+      "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "docs/reports/apps_rg/master_skills_arsenal_ledger_design.json",
+      "docs/reports/apps_rg/exec_summary_fact_ledger_expansion_audit.json"
+    ],
+    "file_results": [
+      {
+        "path": "apps_rg\\resume",
+        "exists": false,
+        "airline_hits": [],
+        "tcv_100m_hits": [],
+        "quota_100m_hits": []
+      },
+      {
+        "path": "artifacts\\apps_rg\\fact_inventory",
+        "exists": false,
+        "airline_hits": [],
+        "tcv_100m_hits": [],
+        "quota_100m_hits": []
+      },
+      {
+        "path": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+        "exists": true,
+        "airline_hit_count": 7,
+        "airline_hits": [
+          "L22056:\"major airline client\",",
+          "L22123:\"major airline\",",
+          "L22124:\"DevOps pipeline for major airline\"",
+          "L32023:\"risk_notes\": \"Financial-institution accounts only in archive; not airline-specific.\",",
+          "L32047:\"risk_notes\": \"NOT airline/$100M; scoped to IBM base-resume portfolio claim only.\",",
+          "L32073:\"description\": \"Major-airline DevOps/AWS modernization engagement (directional anchor)\",",
+          "L32083:\"risk_notes\": \"INFERENCE_ONLY_PENDING_OPERATOR_SOURCE: operator requested major-airline ~$100M DevOps/AWS engagement anchor; no matching text in repo resume archive or candidate ledger.\","
+        ],
+        "tcv_100m_hit_count": 4,
+        "tcv_100m_hits": [
+          "L22055:\"owned $100M engagement\",",
+          "L22122:\"$100M engagement owner\",",
+          "L32047:\"risk_notes\": \"NOT airline/$100M; scoped to IBM base-resume portfolio claim only.\",",
+          "L32083:\"risk_notes\": \"INFERENCE_ONLY_PENDING_OPERATOR_SOURCE: operator requested major-airline ~$100M DevOps/AWS engagement anchor; no matching text in repo resume archive or candidate ledger.\","
+        ],
+        "quota_100m_hit_count": 3,
+        "quota_100m_hits": [
+          "L21262:\"carried $100M presales quota\"",
+          "L21376:\"personally carried $100M quota every year\"",
+          "L22054:\"carried $100M presales quota\","
+        ]
+      },
+      {
+        "path": "docs\\reports\\apps_rg\\master_skills_arsenal_ledger_design.json",
+        "exists": true,
+        "airline_hit_count": 7,
+        "airline_hits": [
+          "L1073:\"major airline client\",",
+          "L1139:\"major airline\",",
+          "L1140:\"DevOps pipeline for major airline\"",
+          "L3065:\"risk_notes\": \"Financial-institution accounts only in archive; not airline-specific.\",",
+          "L3089:\"risk_notes\": \"NOT airline/$100M; scoped to IBM base-resume portfolio claim only.\",",
+          "L3115:\"description\": \"Major-airline DevOps/AWS modernization engagement (directional anchor)\",",
+          "L3125:\"risk_notes\": \"INFERENCE_ONLY_PENDING_OPERATOR_SOURCE: operator requested major-airline ~$100M DevOps/AWS engagement anchor; no matching text in repo resume archive or candidate ledger.\","
+        ],
+        "tcv_100m_hit_count": 4,
+        "tcv_100m_hits": [
+          "L1072:\"owned $100M engagement\",",
+          "L1138:\"$100M engagement owner\",",
+          "L3089:\"risk_notes\": \"NOT airline/$100M; scoped to IBM base-resume portfolio claim only.\",",
+          "L3125:\"risk_notes\": \"INFERENCE_ONLY_PENDING_OPERATOR_SOURCE: operator requested major-airline ~$100M DevOps/AWS engagement anchor; no matching text in repo resume archive or candidate ledger.\","
+        ],
+        "quota_100m_hit_count": 3,
+        "quota_100m_hits": [
+          "L275:\"carried $100M presales quota\"",
+          "L388:\"personally carried $100M quota every year\"",
+          "L1071:\"carried $100M presales quota\","
+        ]
+      },
+      {
+        "path": "docs\\reports\\apps_rg\\exec_summary_fact_ledger_expansion_audit.json",
+        "exists": true,
+        "airline_hit_count": 0,
+        "airline_hits": [],
+        "tcv_100m_hit_count": 0,
+        "tcv_100m_hits": [],
+        "quota_100m_hit_count": 0,
+        "quota_100m_hits": []
+      }
+    ],
+    "archive_on_disk_note": "Phase I resume archive filenames appear in design/candidate ledger metadata only; no .txt/.docx Amit Ayer resume variants on disk under apps_rg/resume (3 files present \u2014 base resume JSON only).",
+    "total_airline_hits_in_scan": 14,
+    "total_tcv_100m_hits_excl_quota": 8
+  },
+  "support_item_manifest": [
+    {
+      "support_item": "major_airline_aviation_travel_carrier_client_context",
+      "confidence_recommendation": "LOW",
+      "supports_airline_anchor": false,
+      "best_evidence": {
+        "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+        "source_quote": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains.",
+        "linked_fact_id": null,
+        "candidate_fact_id": "fact_consulting_001"
+      },
+      "alternate_evidence": [],
+      "rationale": "No repo evidence ties this support item to a major-airline ~$100M DevOps/AWS engagement."
+    },
+    {
+      "support_item": "aws_modernization_program",
+      "confidence_recommendation": "HIGH",
+      "supports_airline_anchor": false,
+      "best_evidence": {
+        "source_path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+        "source_quote": "Cloud Infrastructure Modernization: Led migration from legacy on-prem environments to scalable cloud-native architectures, reducing infrastructure overhead by 30%...",
+        "linked_fact_id": null,
+        "candidate_fact_id": "bul_ibm_002 / exp_ibm_001"
+      },
+      "alternate_evidence": [
+        {
+          "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+          "source_quote": "Developed industry-specific AI, analytics, and cloud modernization solutions across financial-services risk, compliance, fraud, and regulatory use cases.",
+          "linked_fact_id": "fact_solutions_002",
+          "confidence": "MEDIUM",
+          "supports_airline_anchor": false,
+          "rationale": "AWS/cloud modernization exists but financial-services vertical only; no airline client."
+        }
+      ],
+      "rationale": "No repo evidence ties this support item to a major-airline ~$100M DevOps/AWS engagement."
+    },
+    {
+      "support_item": "devops_pipeline_modernization",
+      "confidence_recommendation": "HIGH",
+      "supports_airline_anchor": false,
+      "best_evidence": {
+        "source_path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+        "source_quote": "Governed Runtime Reliability: Strengthened enterprise retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards...",
+        "linked_fact_id": "fact_engineering_platform_003",
+        "candidate_fact_id": "bul_unify_003 / fact_engineering_platform_003"
+      },
+      "alternate_evidence": [],
+      "rationale": "No repo evidence ties this support item to a major-airline ~$100M DevOps/AWS engagement."
+    },
+    {
+      "support_item": "technical_architecture_or_solutioning_contribution",
+      "confidence_recommendation": "HIGH",
+      "supports_airline_anchor": false,
+      "best_evidence": {
+        "source_path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+        "source_quote": "Led architecture and commercial ownership of a $30M cloud and AI transformation portfolio, serving as systems architect for Fortune 500 financial institutions...",
+        "linked_fact_id": null,
+        "candidate_fact_id": "exp_ibm_001"
+      },
+      "alternate_evidence": [],
+      "rationale": "No repo evidence ties this support item to a major-airline ~$100M DevOps/AWS engagement."
+    },
+    {
+      "support_item": "presales_pursuit_solution_architecture",
+      "confidence_recommendation": "MEDIUM",
+      "supports_airline_anchor": false,
+      "best_evidence": {
+        "source_path": "docs/reports/apps_rg/exec_summary_fact_ledger_expansion_audit.json",
+        "source_quote": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+        "linked_fact_id": "fact_solutions_001",
+        "candidate_fact_id": "fact_solutions_001"
+      },
+      "alternate_evidence": [],
+      "rationale": "No repo evidence ties this support item to a major-airline ~$100M DevOps/AWS engagement."
+    },
+    {
+      "support_item": "approximate_100m_engagement_scope_or_tcv",
+      "confidence_recommendation": "MEDIUM",
+      "supports_airline_anchor": false,
+      "best_evidence": {
+        "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+        "source_quote": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations...",
+        "linked_fact_id": "fact_sales_accounts_002",
+        "candidate_fact_id": "fact_sales_accounts_002"
+      },
+      "alternate_evidence": [
+        {
+          "source_path": "docs/reports/apps_rg/master_skills_arsenal_ledger_design.json",
+          "source_quote": "forbidden_phrases_without_stronger_support: carried $100M presales quota",
+          "linked_fact_id": null,
+          "confidence": "LOW",
+          "supports_airline_anchor": false,
+          "rationale": "$100M appears only as forbidden quota language \u2014 not engagement TCV proof."
+        }
+      ],
+      "rationale": "No repo evidence ties this support item to a major-airline ~$100M DevOps/AWS engagement."
+    }
+  ],
+  "explicit_non_claims": [
+    "No major-airline / aviation / travel-carrier client named in searchable repo sources.",
+    "No ~$100M engagement TCV or program scope tied to an airline client.",
+    "Do not claim personal ownership of full ~$100M engagement.",
+    "IBM $30M cloud/AI transformation portfolio (exp_ibm_001) is financial-institutions scope \u2014 not airline.",
+    "$100M presales quota phrases are forbidden unsupported claims \u2014 not engagement proof.",
+    "Generic AWS modernization, DevOps/CI-CD, and solution-architecture evidence does not lift airline anchor.",
+    "No customer-success claims added."
+  ],
+  "evidence_gaps_remaining": [
+    {
+      "gap_id": "major_airline_client_context",
+      "reason": "No airline/aviation/travel carrier string in resume archive, base resume, or candidate ledger.",
+      "promotion_requires": "Phase I resume variant or SOW naming airline + role scope."
+    },
+    {
+      "gap_id": "engagement_100m_scope",
+      "reason": "Only $100M strings in graph are forbidden presales-quota phrases, not engagement proof.",
+      "promotion_requires": "Signed SOW/CRM export or resume bullet with engagement TCV and role (not personal quota)."
+    },
+    {
+      "gap_id": "devops_pipeline_major_airline",
+      "reason": "DevOps/CI-CD evidence is Unify platform engineering, not airline-client-specific.",
+      "promotion_requires": "Client-named delivery receipt or resume bullet tying pipeline work to airline program."
+    },
+    {
+      "gap_id": "presales_contribution_airline",
+      "reason": "Pre-sales workshop/pilot evidence is financial-institution phrasing in archive.",
+      "promotion_requires": "Archive line naming airline + solutioning/pursuit role."
+    },
+    {
+      "gap_id": "commercial_outcome_airline",
+      "reason": "No closed-won / TCV outcome linked to airline in candidate facts.",
+      "promotion_requires": "fact_sales_accounts_* or partnerships fact with airline + metric."
+    },
+    {
+      "gap_id": "estimation_sizing_models",
+      "reason": "No estimation/sizing model evidence in ledger.",
+      "promotion_requires": "Resume or artifact describing sizing methodology used in pursuits."
+    }
+  ],
+  "next_blocker": "Ingest operator-approved source naming the airline client, engagement TCV (~$100M if claimed), DevOps/AWS scope, and Amit's role (solutioning vs delivery vs portfolio owner) \u2014 then re-run this audit.",
+  "ledger_mutation": false
+}

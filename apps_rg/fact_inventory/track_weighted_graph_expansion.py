@@ -67,7 +67,62 @@ ROLE_FAMILY_TRACK_WEIGHTS: dict[str, dict[str, float]] = {
         "track_data_tech_cloud_ml": 0.70,
         "track_genai_agentic": 0.25,
     },
+    # W14b — senior-role profiles (mirrors senior_role_track_weight_profiles_design.yaml)
+    "INSURANCE_CARRIER_TRANSFORMATION": {
+        "track_actuarial_risk_derivatives": 0.35,
+        "track_data_tech_cloud_ml": 0.25,
+        "track_genai_agentic": 0.40,
+    },
+    "INSURER_IT_AI_ENABLEMENT": {
+        "track_actuarial_risk_derivatives": 0.20,
+        "track_data_tech_cloud_ml": 0.45,
+        "track_genai_agentic": 0.35,
+    },
+    "INSURANCE_BROKERAGE_IT_INNOVATION": {
+        "track_actuarial_risk_derivatives": 0.10,
+        "track_data_tech_cloud_ml": 0.50,
+        "track_genai_agentic": 0.40,
+    },
+    "BANKING_PLATFORM_AI": {
+        "track_actuarial_risk_derivatives": 0.35,
+        "track_data_tech_cloud_ml": 0.30,
+        "track_genai_agentic": 0.35,
+    },
+    "REGULATED_AI_GOVERNANCE": {
+        "track_actuarial_risk_derivatives": 0.40,
+        "track_data_tech_cloud_ml": 0.30,
+        "track_genai_agentic": 0.30,
+    },
+    "PARTNER_APPLIED_AI_ARCHITECTURE": {
+        "track_actuarial_risk_derivatives": 0.05,
+        "track_data_tech_cloud_ml": 0.55,
+        "track_genai_agentic": 0.40,
+    },
+    "HYPERSCALER_MARKETPLACE_GTM": {
+        "track_actuarial_risk_derivatives": 0.05,
+        "track_data_tech_cloud_ml": 0.70,
+        "track_genai_agentic": 0.25,
+    },
+    "CONSULTING_DELIVERY_LEADERSHIP": {
+        "track_actuarial_risk_derivatives": 0.15,
+        "track_data_tech_cloud_ml": 0.50,
+        "track_genai_agentic": 0.35,
+    },
 }
+
+# Taxonomy ids with dedicated W0.5b projection profiles (JD targeting only).
+SENIOR_ROLE_TAXONOMY_IDS: frozenset[str] = frozenset(
+    {
+        "INSURANCE_CARRIER_TRANSFORMATION",
+        "INSURER_IT_AI_ENABLEMENT",
+        "INSURANCE_BROKERAGE_IT_INNOVATION",
+        "BANKING_PLATFORM_AI",
+        "REGULATED_AI_GOVERNANCE",
+        "PARTNER_APPLIED_AI_ARCHITECTURE",
+        "HYPERSCALER_MARKETPLACE_GTM",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+    }
+)
 
 TAXONOMY_TO_PROJECTION_ROLE: dict[str, str] = {
     "ENGINEERING_PLATFORM": "SVP_ENGINEERING_AI_PLATFORM",
@@ -76,6 +131,14 @@ TAXONOMY_TO_PROJECTION_ROLE: dict[str, str] = {
     "PARTNERSHIPS_GTM": "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
     "EXECUTIVE_LEADERSHIP": "CHIEF_AI_OFFICER",
     "AI_SOLUTIONS_ARCHITECTURE": "FIELD_CTO",
+    "INSURANCE_CARRIER_TRANSFORMATION": "INSURANCE_CARRIER_TRANSFORMATION",
+    "INSURER_IT_AI_ENABLEMENT": "INSURER_IT_AI_ENABLEMENT",
+    "INSURANCE_BROKERAGE_IT_INNOVATION": "INSURANCE_BROKERAGE_IT_INNOVATION",
+    "BANKING_PLATFORM_AI": "BANKING_PLATFORM_AI",
+    "REGULATED_AI_GOVERNANCE": "REGULATED_AI_GOVERNANCE",
+    "PARTNER_APPLIED_AI_ARCHITECTURE": "PARTNER_APPLIED_AI_ARCHITECTURE",
+    "HYPERSCALER_MARKETPLACE_GTM": "HYPERSCALER_MARKETPLACE_GTM",
+    "CONSULTING_DELIVERY_LEADERSHIP": "CONSULTING_DELIVERY_LEADERSHIP",
 }
 
 HYBRID_JD_FIXTURE = (
@@ -205,7 +268,48 @@ def infer_projection_role_family_key(
         taxonomy=taxonomy,
     )
     if priorities:
-        top_tax = priorities[0].role_family
+        top = priorities[0]
+        banking = next((p for p in priorities if p.role_family == "BANKING_PLATFORM_AI"), None)
+        regulated = next((p for p in priorities if p.role_family == "REGULATED_AI_GOVERNANCE"), None)
+        if (
+            banking
+            and regulated
+            and banking.score >= 2
+            and banking.score >= regulated.score - 2
+        ):
+            mapped = TAXONOMY_TO_PROJECTION_ROLE.get("BANKING_PLATFORM_AI")
+            if mapped:
+                return mapped
+
+        senior_hits = [
+            p
+            for p in priorities
+            if p.role_family in SENIOR_ROLE_TAXONOMY_IDS and p.score > 0
+        ]
+        if senior_hits:
+            best_score = max(p.score for p in senior_hits)
+            if top.score > best_score:
+                mapped = TAXONOMY_TO_PROJECTION_ROLE.get(top.role_family)
+                if mapped:
+                    return mapped
+            tie_order = (
+                "PARTNER_APPLIED_AI_ARCHITECTURE",
+                "INSURANCE_CARRIER_TRANSFORMATION",
+                "INSURER_IT_AI_ENABLEMENT",
+                "INSURANCE_BROKERAGE_IT_INNOVATION",
+                "BANKING_PLATFORM_AI",
+                "CONSULTING_DELIVERY_LEADERSHIP",
+                "HYPERSCALER_MARKETPLACE_GTM",
+                "REGULATED_AI_GOVERNANCE",
+            )
+            order_rank = {rid: idx for idx, rid in enumerate(tie_order)}
+            tied = [p for p in senior_hits if p.score == best_score]
+            tied.sort(key=lambda p: order_rank.get(p.role_family, 99))
+            mapped = TAXONOMY_TO_PROJECTION_ROLE.get(tied[0].role_family)
+            if mapped:
+                return mapped
+
+        top_tax = top.role_family
         mapped = TAXONOMY_TO_PROJECTION_ROLE.get(top_tax)
         if mapped:
             return mapped

@@ -1,0 +1,229 @@
+{
+  "schema": "phase2_graph_scope_closeout_receipt_v1",
+  "generated_at_utc": "2026-05-20T12:58:00Z",
+  "STATUS": "GRAPH_SCOPE_COMPLETE",
+  "PLAN_ID": "phase2-gtm-presales-remaining-f7a2c9",
+  "GRAPH_SCOPE_STATUS": "GRAPH_SCOPE_COMPLETE",
+  "SCOPE_MATCH": true,
+  "FILES_CHANGED": [
+    ".cursor/plans/phase2-gtm-presales-remaining-f7a2c9.md",
+    "docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.json",
+    "docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.md"
+  ],
+  "COMMANDS_RUN": [
+    {
+      "command": "python tools/notion/plan_notion_sync_graph_scope_closeout.py",
+      "exit_code": 0,
+      "notion_action": "created",
+      "notion_page_id": "36627693-f55c-8100-b2d2-c88818048def",
+      "notion_status": "Completed"
+    }
+  ],
+  "NOTION_PLANS_ROW": {
+    "slug": "phase2-gtm-presales-remaining-f7a2c9",
+    "page_id": "36627693-f55c-8100-b2d2-c88818048def",
+    "status": "Completed",
+    "plan_file_path": ".cursor/plans/phase2-gtm-presales-remaining-f7a2c9.md"
+  },
+  "ARTIFACTS_WRITTEN": [
+    "docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.json",
+    "docs/reports/apps_rg/phase2_graph_scope_closeout_receipt.md",
+    ".cursor/plans/phase2-gtm-presales-remaining-f7a2c9.md"
+  ],
+  "GRAPH_COMPLETION_EVIDENCE": {
+    "prior_gtm_closeout": {
+      "receipt": "docs/reports/apps_rg/skills_graph_phase2_gtm_presales_closeout.json",
+      "status": "PASS",
+      "note": "P2 GTM/pre-sales baseline graph augmentation (pre-senior-role)"
+    },
+    "w05b_taxonomy_track_weight": {
+      "receipt": "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.json",
+      "status": "PASS",
+      "wave": "W0.5b"
+    },
+    "w8_w11_senior_role_graph": {
+      "receipt": "docs/reports/apps_rg/phase2_w8_w11_senior_role_graph_receipt.json",
+      "status": "PASS",
+      "wave": "W8-W11-graph",
+      "pillar_count_after": 27,
+      "skill_count_after": 158,
+      "bridge_edges_added": 10
+    },
+    "w12_partner_hyperscaler_graph": {
+      "receipt": "docs/reports/apps_rg/phase2_w12_partner_hyperscaler_graph_receipt.json",
+      "status": "PASS",
+      "wave": "W12-graph",
+      "pillar_count_after": 29,
+      "skill_count_after": 162,
+      "bridge_edges_after": 16
+    },
+    "w13_archetype_fixtures": {
+      "receipt": "docs/reports/apps_rg/phase2_w13_archetype_fixtures_receipt.json",
+      "status": "PASS",
+      "wave": "W13",
+      "archetype_fixture_count": 7
+    },
+    "w14_offline_traversal": {
+      "receipt": "docs/reports/apps_rg/phase2_w14_offline_traversal_receipt.json",
+      "status": "PASS",
+      "wave": "W14",
+      "traversal_pass_rate": 1.0,
+      "archetypes": 7
+    },
+    "w14b_taxonomy_wiring": {
+      "receipt": "docs/reports/apps_rg/phase2_w14b_taxonomy_track_weight_wiring_receipt.json",
+      "status": "PASS",
+      "wave": "W14b",
+      "weight_override_required": false,
+      "traversal_pass_rate": 1.0
+    },
+    "w4_w14_multilane_section_projection": {
+      "receipt": "docs/reports/apps_rg/phase2_w4_w14_multilane_section_projection_receipt.json",
+      "status": "PASS",
+      "wave": "W4/W14",
+      "section_projection_pass_rate": 1.0,
+      "section_cells": "49/49"
+    }
+  },
+  "GRAPH_WAVES_COMPLETED": [
+    {
+      "wave": "W0",
+      "status": "COMPLETE",
+      "proof": "inventory lock / GTM closeout SSOT"
+    },
+    {
+      "wave": "W0.5",
+      "status": "COMPLETE",
+      "proof": "phase2_senior_role_implementation_backlog.json"
+    },
+    {
+      "wave": "W0.5b",
+      "status": "COMPLETE",
+      "proof": "phase2_w05b_taxonomy_track_weight_receipt.json"
+    },
+    {
+      "wave": "W8-W11-graph",
+      "status": "COMPLETE",
+      "proof": "phase2_w8_w11_senior_role_graph_receipt.json"
+    },
+    {
+      "wave": "W12-graph",
+      "status": "COMPLETE",
+      "proof": "phase2_w12_partner_hyperscaler_graph_receipt.json"
+    },
+    {
+      "wave": "W13",
+      "status": "COMPLETE",
+      "proof": "phase2_w13_archetype_fixtures_receipt.json"
+    },
+    {
+      "wave": "W14",
+      "status": "COMPLETE",
+      "proof": "phase2_w14_offline_traversal_receipt.json"
+    },
+    {
+      "wave": "W14b",
+      "status": "COMPLETE",
+      "proof": "phase2_w14b_taxonomy_track_weight_wiring_receipt.json"
+    },
+    {
+      "wave": "W4/W14",
+      "status": "COMPLETE",
+      "proof": "phase2_w4_w14_multilane_section_projection_receipt.json"
+    }
+  ],
+  "GRAPH_INVENTORY_FINAL": {
+    "pillars": 29,
+    "skills": 162,
+    "graph_edges": 1406,
+    "phase_bridge_edges": 16,
+    "archetype_fixtures": 7,
+    "authority": "augmented_skills_graph",
+    "broad_skills_ledger": "deprecated_non_authority"
+  },
+  "COMPLETION_STATEMENTS": {
+    "graph_taxonomy_complete": true,
+    "graph_pillars_skills_bridge_edges_complete": true,
+    "seven_archetype_fixtures_complete": true,
+    "offline_traversal_passes": true,
+    "track_weight_default_without_override": true,
+    "section_projection_49_of_49": true,
+    "augmented_skills_graph_authority_unchanged": true,
+    "executive_summary_policy_unchanged": true,
+    "no_graph_prompt_runtime_srfs_change_required_before_hitl_or_runtime": true
+  },
+  "KNOWN_DEFERRED_ITEMS": [
+    {
+      "id": "DEFER-BROKERAGE-PILLAR",
+      "item": "pillar_insurance_brokerage_distribution",
+      "reason": "No brokerage/distribution source evidence in Phase I archive or candidate ledger",
+      "action": "Do not fabricate; brown_brokerage_it uses interoperability + GTM pillars only",
+      "receipt_ref": "phase2_w8_w11_senior_role_graph_receipt.json"
+    },
+    {
+      "id": "DEFER-AIRLINE-ANCHOR",
+      "item": "skill_p2_anchor_major_airline_devops_aws",
+      "reason": "INTERNAL_ONLY / DO_NOT_PROMOTE until hard evidence promotion",
+      "wave": "W2a"
+    },
+    {
+      "id": "DEFER-ESTIMATION-SIZING",
+      "item": "skill_p2_tech_estimation_sizing_directional",
+      "reason": "INTERNAL_ONLY / DO_NOT_PROMOTE until hard evidence promotion",
+      "wave": "W2b"
+    }
+  ],
+  "NON_GRAPH_REMAINING_WORK": [
+    {
+      "wave": "W1",
+      "workstream": "WS-1",
+      "title": "Human-confirmation packet for blocked MEDIUM facts"
+    },
+    {
+      "wave": "W2a",
+      "workstream": "WS-2a",
+      "title": "Airline anchor evidence uplift decision"
+    },
+    {
+      "wave": "W2b",
+      "workstream": "WS-2b",
+      "title": "Estimation/sizing evidence uplift decision"
+    },
+    {
+      "wave": "W3",
+      "workstream": "WS-3",
+      "title": "x2_srfs_claim_business_metrics_substrate diagnosis"
+    },
+    {
+      "wave": "W4-runtime",
+      "workstream": "WS-4",
+      "title": "Canonical runtime proof per lane (python -m apps_rg --section <lane>)"
+    },
+    {
+      "wave": "W5",
+      "workstream": "WS-5",
+      "title": "Executive_summary policy ADR SSOT"
+    },
+    {
+      "wave": "W6",
+      "workstream": "WS-6",
+      "title": "Conditional DRAFT P2 skill activation"
+    },
+    {
+      "wave": "W7",
+      "workstream": "WS-7",
+      "title": "Release-eligible certification path"
+    }
+  ],
+  "SCOPE_BOUNDARY": "No new pillars, skills, edges, archetypes, or fixtures unless a new role exposes a documented P0 traversal failure. Graph expansion for phase2-gtm-presales-remaining-f7a2c9 is closed.",
+  "PROOF_CLASSIFICATION": "graph_scope_closeout_offline_receipts_not_runtime_release_proof",
+  "EXPLICIT_NON_CLAIMS": [
+    "JD_and_briefing_targeting_only",
+    "no_brokerage_pillar_fabrication",
+    "no_auto_MEDIUM_promotion_to_executive_summary",
+    "no_airline_100m_or_estimation_sizing_external_without_promotion",
+    "broad_skills_ledger_not_authority",
+    "graph_closeout_does_not_imply_runtime_X3_ALLOW"
+  ],
+  "NEXT_RECOMMENDED_WAVE": "W1_human_confirmation_packet_or_W4_runtime_minimum_per_lane"
+}

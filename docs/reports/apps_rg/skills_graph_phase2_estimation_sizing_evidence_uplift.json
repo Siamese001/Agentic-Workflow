@@ -1,0 +1,309 @@
+{
+  "schema": "skills_graph_phase2_estimation_sizing_evidence_uplift_v1",
+  "generated_at_utc": "2026-05-19T23:53:41Z",
+  "status": "PASS",
+  "scope": "phase2_estimation_sizing_evidence_uplift_readonly",
+  "closeout_ssot": "docs/reports/apps_rg/skills_graph_phase2_gtm_presales_closeout.json",
+  "target_skill_id": "skill_p2_tech_estimation_sizing_directional",
+  "skill_row_after_audit": {
+    "skill_id": "skill_p2_tech_estimation_sizing_directional",
+    "support_level": "INTERNAL_ONLY",
+    "visibility_rule": "never_external",
+    "fact_id_links": [],
+    "source_snippets": []
+  },
+  "inference_only": true,
+  "promotion_decision": "DO_NOT_PROMOTE",
+  "proof_classification": "NO_PROMOTION_ADJACENT_EVIDENCE_WRONG_DOMAIN",
+  "promotion_rationale": "Repo contains financial/commercial modeling (synergy models, usage-based forecasting, ROI deal proof) and cost/TCO outcomes, but no source-backed technical pre-sales estimation or sizing methodology (architecture sizing, cloud workload estimation, migration sizing, delivery effort models). Adjacent evidence is already represented on other skill rows; bridging would over-claim.",
+  "repo_scan": [
+    {
+      "path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "exists": true,
+      "technical_sizing_hits": [],
+      "financial_modeling_hits": [],
+      "roi_business_case_hits": [],
+      "cost_modeling_hits": [
+        "L143:\"metric_raw\": \"40% TCO reduction\","
+      ]
+    },
+    {
+      "path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "exists": true,
+      "technical_sizing_hits": [],
+      "financial_modeling_hits": [
+        "L498:\"claim_text\": \"Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.\","
+      ],
+      "roi_business_case_hits": [
+        "L346:\"claim_text\": \"Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.\",",
+        "L571:\"claim_text\": \"Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.\","
+      ],
+      "cost_modeling_hits": [
+        "L523:\"claim_text\": \"Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.\",",
+        "L525:\"30% cost optimization\"",
+        "L1500:\"30% cost optimization\"",
+        "L1821:\"capability_name\": \"Cost Optimization\",",
+        "L1829:\"30% cost optimization\"",
+        "L2320:\"30% cost optimization\""
+      ]
+    },
+    {
+      "path": "docs/reports/apps_rg/exec_summary_fact_ledger_expansion_audit.json",
+      "exists": true,
+      "technical_sizing_hits": [],
+      "financial_modeling_hits": [
+        "L934:\"claim_text\": \"Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.\","
+      ],
+      "roi_business_case_hits": [
+        "L718:\"claim_text\": \"Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.\",",
+        "L1041:\"claim_text\": \"Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.\","
+      ],
+      "cost_modeling_hits": [
+        "L971:\"claim_text\": \"Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.\",",
+        "L989:\"30% cost optimization\""
+      ]
+    },
+    {
+      "path": "docs/reports/apps_rg/master_experience_ledger_archive_audit.json",
+      "exists": true,
+      "technical_sizing_hits": [],
+      "financial_modeling_hits": [
+        "L699:\"claim_text\": \"Led FP&A and SaaS metric programs spanning ARR, churn, LTV/CAC, usage-based forecasting, and executive reporting for subscription revenue models.\",",
+        "L714:\"usage-based forecasting\"",
+        "L896:\"claim_text\": \"Increased annual recurring revenue by  through AI-enhanced usage-based forecasting and subscription pricing optimization.\","
+      ],
+      "roi_business_case_hits": [],
+      "cost_modeling_hits": []
+    },
+    {
+      "path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "exists": true,
+      "technical_sizing_hits": [],
+      "financial_modeling_hits": [
+        "L21373:\"usage-based forecasting\"",
+        "L24079:\"Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue\"",
+        "L24089:\"usage-based forecasting\",",
+        "L31370:\"description\": \"Usage-based forecasting for subscription pricing and renewals\",",
+        "L31372:\"source_evidence\": \"Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue\",",
+        "L31375:\"usage-based forecasting\","
+      ],
+      "roi_business_case_hits": [
+        "L21258:\"measurable ROI\",",
+        "L21281:\"validating measurable ROI for clients through pilot engagements\"",
+        "L22049:\"measurable ROI\",",
+        "L22078:\"validating measurable ROI for clients through pilot engagements\"",
+        "L24232:\"Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.\"",
+        "L24805:\"Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.\"",
+        "L24815:\"measurable ROI\"",
+        "L24962:\"validating measurable ROI for clients through pilot engagements\"",
+        "L24972:\"measurable ROI\"",
+        "L31443:\"source_evidence\": \"Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.\",",
+        "L31712:\"source_evidence\": \"Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.\",",
+        "L31716:\"measurable ROI\"",
+        "L31785:\"description\": \"Commercial validation through pilots and measurable ROI\",",
+        "L31787:\"source_evidence\": \"validating measurable ROI for clients through pilot engagements\",",
+        "L31791:\"measurable ROI\""
+      ],
+      "cost_modeling_hits": [
+        "L24447:\"Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams\"",
+        "L24457:\"30% cost optimization\",",
+        "L31542:\"source_evidence\": \"Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams\",",
+        "L31545:\"30% cost optimization\","
+      ]
+    }
+  ],
+  "candidate_evidence_table": [
+    {
+      "search_theme": "estimation_models",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_revenue_ops_005",
+      "existing_skill_id": "skill_finance_ma_synergy_due_diligence",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities.",
+      "rationale": "Synergy/integration-cost models are M&A financial modeling \u2014 not technical pre-sales sizing."
+    },
+    {
+      "search_theme": "sizing_models",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_revenue_ops_003",
+      "existing_skill_id": "skill_revops_usage_based_subscription_forecasting",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.",
+      "rationale": "Subscription/revenue forecasting \u2014 commercial finance sizing, not cloud architecture workload sizing."
+    },
+    {
+      "search_theme": "architecture_sizing",
+      "evidence_type": "delivery_estimation",
+      "supports_target_skill": false,
+      "confidence": "LOW",
+      "linked_fact_id": null,
+      "existing_skill_id": null,
+      "source_path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "source_quote": "No architecture-sizing / workload-estimation methodology string in searchable sources.",
+      "rationale": "Absence of technical sizing vocabulary in ledger inputs."
+    },
+    {
+      "search_theme": "capacity_planning",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_quant_hpc_001",
+      "existing_skill_id": null,
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Launched AWS streaming microservices / streaming analytics ecosystems to validate market data in near real time and increase decision capacity by about 25%.",
+      "rationale": "Operational/trading capacity outcome \u2014 not cloud migration capacity-planning methodology."
+    },
+    {
+      "search_theme": "cost_modeling",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_revenue_ops_004",
+      "existing_skill_id": "skill_finance_cost_optimization_dashboards",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.",
+      "rationale": "Finance cost-optimization dashboards \u2014 not pursuit-level technical cost/TCO sizing models."
+    },
+    {
+      "search_theme": "cost_modeling",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "HIGH",
+      "linked_fact_id": "bul_insurtech_001",
+      "existing_skill_id": null,
+      "source_path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_quote": "Led end-to-end modernization of monolithic policy administration systems into AWS-based architectures, reducing total cost of ownership by 40%...",
+      "rationale": "TCO reduction outcome \u2014 does not describe estimation/sizing methodology."
+    },
+    {
+      "search_theme": "migration_sizing",
+      "evidence_type": "delivery_estimation",
+      "supports_target_skill": false,
+      "confidence": "HIGH",
+      "linked_fact_id": "bul_ibm_002",
+      "existing_skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "source_path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_quote": "Cloud Infrastructure Modernization: Led migration from legacy on-prem environments to scalable cloud-native architectures, reducing infrastructure overhead by 30%...",
+      "rationale": "Migration delivery evidence without workload/effort sizing model."
+    },
+    {
+      "search_theme": "cloud_workload_estimation",
+      "evidence_type": "delivery_estimation",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_engineering_platform_005",
+      "existing_skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+      "rationale": "Architecture delivery \u2014 no workload-estimation or sizing-model claim."
+    },
+    {
+      "search_theme": "delivery_effort_estimation",
+      "evidence_type": "delivery_estimation",
+      "supports_target_skill": false,
+      "confidence": "LOW",
+      "linked_fact_id": null,
+      "existing_skill_id": null,
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "No person-month, effort-estimate, WBS, or delivery-sizing methodology in candidate ledger.",
+      "rationale": "Gap remains for delivery effort estimation."
+    },
+    {
+      "search_theme": "commercial_pursuit_sizing",
+      "evidence_type": "commercial_sizing",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_revenue_ops_001",
+      "existing_skill_id": "skill_revops_salesforce_pipeline_analytics",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+      "rationale": "Pipeline prioritization analytics \u2014 not technical/commercial sizing models for pursuits."
+    },
+    {
+      "search_theme": "roi_business_case_sizing",
+      "evidence_type": "commercial_sizing",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_solutions_001",
+      "existing_skill_id": "skill_p2_gtm_solution_mapping",
+      "source_path": "docs/reports/apps_rg/exec_summary_fact_ledger_expansion_audit.json",
+      "source_quote": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+      "rationale": "ROI translation for executives \u2014 not estimation/sizing-model methodology."
+    },
+    {
+      "search_theme": "roi_business_case_sizing",
+      "evidence_type": "commercial_sizing",
+      "supports_target_skill": false,
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_sales_accounts_002",
+      "existing_skill_id": "skill_sales_modernization_deals_15m",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+      "rationale": "Deal-win ROI proof via HPC stress scenarios \u2014 adjacent to business case, not sizing models."
+    },
+    {
+      "search_theme": "estimation_models",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "HIGH",
+      "linked_fact_id": "fact_ma_synergy_modeling_001",
+      "existing_skill_id": null,
+      "source_path": "docs/reports/apps_rg/master_experience_ledger_archive_audit.json",
+      "source_quote": "Conducted M&A readiness reviews, synergy modeling, and post-merger risk-model consolidation for executive stakeholders.",
+      "rationale": "Archive audit cites synergy modeling \u2014 already covered by strategic-finance skill row."
+    },
+    {
+      "search_theme": "sizing_models",
+      "evidence_type": "financial_modeling",
+      "supports_target_skill": false,
+      "confidence": "HIGH",
+      "linked_fact_id": null,
+      "existing_skill_id": "skill_capital_capital_modeling",
+      "source_path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "source_quote": "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna.",
+      "rationale": "Actuarial capital modeling (Phase 1 track) \u2014 wrong domain for Phase 2 technical pre-sales sizing."
+    }
+  ],
+  "related_skills_do_not_promote_target": [
+    "skill_finance_ma_synergy_due_diligence",
+    "skill_revops_usage_based_subscription_forecasting",
+    "skill_revops_salesforce_pipeline_analytics",
+    "skill_sales_modernization_deals_15m",
+    "skill_p2_gtm_solution_mapping",
+    "skill_finance_cost_optimization_dashboards"
+  ],
+  "explicit_non_claims": [
+    "No technical pre-sales estimation or sizing methodology in repo sources.",
+    "Synergy models (fact_revenue_ops_005) are M&A financial modeling \u2014 not architecture/cloud workload sizing.",
+    "Usage-based forecasting models (fact_revenue_ops_003) are subscription/revenue finance \u2014 not technical sizing.",
+    "ROI on HPC simulations (fact_sales_accounts_002) is deal-win proof \u2014 not sizing-model methodology.",
+    "TCO/cost-optimization outcomes are results metrics \u2014 not estimation models.",
+    "Actuarial capital modeling is Phase 1 domain \u2014 do not bridge to Phase 2 technical presales sizing.",
+    "Do not fabricate pursuit sizing, migration sizing, or cloud workload estimation claims."
+  ],
+  "evidence_gaps_remaining": [
+    {
+      "gap_id": "technical_architecture_sizing_methodology",
+      "reason": "No architecture/cloud workload sizing model evidence."
+    },
+    {
+      "gap_id": "migration_effort_sizing",
+      "reason": "Migration bullets lack effort/workload estimation methodology."
+    },
+    {
+      "gap_id": "delivery_effort_estimation",
+      "reason": "No WBS/person-month/effort-estimate language in ledger."
+    },
+    {
+      "gap_id": "commercial_pursuit_sizing_models",
+      "reason": "Pipeline analytics and ROI translation are not sizing models."
+    }
+  ],
+  "closeout_gap_note": "Closeout gap 'estimation_sizing_models' is accurate for the target skill: modeling evidence exists but under financial/commercial domains on other skill rows \u2014 not technical pre-sales sizing.",
+  "next_blocker": "Ingest resume/archive text naming sizing methodology (e.g., cloud workload estimates, migration effort models, pursuit sizing worksheets) with role scope \u2014 then re-run audit before promoting skill_p2_tech_estimation_sizing_directional.",
+  "ledger_mutation": false
+}

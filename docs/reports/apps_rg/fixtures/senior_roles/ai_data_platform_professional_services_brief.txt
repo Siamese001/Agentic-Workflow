@@ -1,0 +1,17 @@
+Operator brief (W13/W14):
+
+Archetype: post-sales AI/data platform professional services — not GTM-only, not CS-only.
+
+Surface where evidence-backed:
+- Unify Solution Accelerator delivery, platform commercialization, client go-lives
+- P2 presales-to-delivery handoff (pursuit → implementation boundary)
+- Executive stakeholder alignment and joint vendor/partner roadmaps
+- Cloud/data platform and reusable implementation accelerators
+
+Block unless human-confirmed or HIGH source:
+- VP Global Professional Services title as employment claim
+- Services P&L, utilization optimization, margin ownership
+- Customer success function ownership; NRR/CS metrics as ownership
+- Product roadmap / product feedback loops external
+
+Regression example (not company target): EDB-style VP Global Professional Services for AI/data platform services.

@@ -1,0 +1,1 @@
+Operator brief: Partner rank above default genai-only. Partner engineering and product feedback loops remain DO_NOT_PROMOTE.

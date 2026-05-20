@@ -1,0 +1,1980 @@
+{
+  "status": "PASS",
+  "scope": "phase2_gtm_presales_section_projection_audit",
+  "career_track": "TRACK_DATA_TECH_CLOUD_ML",
+  "p2_skill_classifications": {
+    "skill_p2_gtm_discovery_qualification": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_revenue_ops_001"
+      ],
+      "blocked_fact_links": [
+        "fact_revenue_ops_001"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies"
+      ]
+    },
+    "skill_p2_gtm_solution_mapping": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "skill_active_fact_srfs_confirmation_gated",
+      "fact_id_links": [
+        "fact_solutions_001"
+      ],
+      "blocked_fact_links": [
+        "fact_solutions_001"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "ibm_narrative"
+      ],
+      "srfs_confirmation_queue_facts": [
+        "fact_solutions_001"
+      ]
+    },
+    "skill_p2_gtm_stakeholder_alignment": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "skill_active_fact_srfs_confirmation_gated",
+      "fact_id_links": [
+        "fact_partnerships_gtm_005"
+      ],
+      "blocked_fact_links": [
+        "fact_partnerships_gtm_005"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "srfs_confirmation_queue_facts": [
+        "fact_partnerships_gtm_005"
+      ]
+    },
+    "skill_p2_gtm_executive_buyer_alignment": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_sales_accounts_001"
+      ],
+      "blocked_fact_links": [
+        "fact_sales_accounts_001"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "headline"
+      ]
+    },
+    "skill_p2_gtm_commercial_validation_pilots": {
+      "confidence": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": true,
+      "proof_classification": "snippet_eligible_track_expansion_blocked",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "ibm_bullets",
+        "competencies"
+      ]
+    },
+    "skill_p2_gtm_enterprise_deal_support": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_sales_accounts_001"
+      ],
+      "blocked_fact_links": [
+        "fact_sales_accounts_001"
+      ],
+      "allowed_sections": [
+        "unify_narrative",
+        "executive_summary"
+      ]
+    },
+    "skill_p2_gtm_presales_delivery_handoff": {
+      "confidence": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": true,
+      "proof_classification": "snippet_eligible_track_expansion_blocked",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "unify_narrative",
+        "unify_bullets"
+      ]
+    },
+    "skill_p2_gtm_joint_vendor_roadmaps": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_partnerships_gtm_004"
+      ],
+      "blocked_fact_links": [
+        "fact_partnerships_gtm_004"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets"
+      ]
+    },
+    "skill_p2_tech_reference_architecture": {
+      "confidence": "MEDIUM",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "skill_active_fact_srfs_confirmation_gated",
+      "fact_id_links": [
+        "fact_solutions_002"
+      ],
+      "blocked_fact_links": [
+        "fact_solutions_002"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "ibm_bullets"
+      ],
+      "srfs_confirmation_queue_facts": [
+        "fact_solutions_002"
+      ]
+    },
+    "skill_p2_tech_aws_modernization_patterns": {
+      "confidence": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_partnerships_gtm_002"
+      ],
+      "blocked_fact_links": [
+        "fact_partnerships_gtm_002"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "ibm_bullets"
+      ]
+    },
+    "skill_p2_tech_devops_pipeline_blueprint": {
+      "confidence": "HIGH",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_engineering_platform_003"
+      ],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "unify_bullets",
+        "competencies"
+      ]
+    },
+    "skill_p2_tech_demoable_accelerator": {
+      "confidence": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": true,
+      "proof_classification": "snippet_eligible_track_expansion_blocked",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "unify_narrative",
+        "executive_summary"
+      ]
+    },
+    "skill_p2_tech_reusable_accelerators": {
+      "confidence": "HIGH",
+      "support_level": "DERIVED_SUPPORTED",
+      "activation_status": "ACTIVE",
+      "external_claim_eligible": true,
+      "proof_classification": "claim_eligible_active_fact_backed",
+      "fact_id_links": [
+        "fact_engineering_platform_006"
+      ],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "unify_bullets",
+        "executive_summary"
+      ]
+    },
+    "skill_p2_tech_adoption_derisking": {
+      "confidence": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": true,
+      "proof_classification": "snippet_eligible_track_expansion_blocked",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+      "confidence": "HIGH",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": true,
+      "proof_classification": "anchor_only_ibm_portfolio",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": [
+        "ibm_narrative",
+        "executive_summary"
+      ]
+    },
+    "skill_p2_tech_estimation_sizing_directional": {
+      "confidence": "LOW",
+      "support_level": "INTERNAL_ONLY",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": false,
+      "proof_classification": "directional_internal_only",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": []
+    },
+    "skill_p2_anchor_major_airline_devops_aws": {
+      "confidence": "LOW",
+      "support_level": "INTERNAL_ONLY",
+      "activation_status": "DRAFT",
+      "external_claim_eligible": false,
+      "proof_classification": "directional_internal_only",
+      "fact_id_links": [],
+      "blocked_fact_links": [],
+      "allowed_sections": []
+    }
+  },
+  "section_rollups": {
+    "headline": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_executive_buyer_alignment"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [],
+      "fact_srfs_blocked": [
+        "skill_p2_gtm_executive_buyer_alignment"
+      ]
+    },
+    "executive_summary": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_adoption_derisking",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [
+        "skill_p2_tech_reusable_accelerators"
+      ],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "fact_srfs_blocked": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_enterprise_deal_support"
+      ]
+    },
+    "unify_bullets": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_adoption_derisking",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_reusable_accelerators"
+      ],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [],
+      "fact_srfs_blocked": [
+        "skill_p2_gtm_joint_vendor_roadmaps"
+      ]
+    },
+    "unify_narrative": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_adoption_derisking",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [],
+      "fact_srfs_blocked": [
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_enterprise_deal_support"
+      ]
+    },
+    "ibm_bullets": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_adoption_derisking",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [],
+      "fact_srfs_blocked": [
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns"
+      ]
+    },
+    "ibm_narrative": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reusable_accelerators"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [],
+      "fact_srfs_blocked": [
+        "skill_p2_gtm_solution_mapping"
+      ]
+    },
+    "competencies": {
+      "eligible_as_inputs": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_adoption_derisking",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "must_avoid": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "claim_eligible": [
+        "skill_p2_tech_devops_pipeline_blueprint"
+      ],
+      "anchor_only": [
+        "skill_p2_tech_ibm_cloud_portfolio_anchor"
+      ],
+      "directional": [
+        "skill_p2_tech_estimation_sizing_directional",
+        "skill_p2_anchor_major_airline_devops_aws"
+      ],
+      "draft_snippet_only": [
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_tech_adoption_derisking"
+      ],
+      "fact_srfs_blocked": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_aws_modernization_patterns"
+      ]
+    }
+  },
+  "blocked_skills": [
+    "skill_p2_tech_estimation_sizing_directional",
+    "skill_p2_anchor_major_airline_devops_aws"
+  ],
+  "blocked_srfs_facts_in_exec_audit": [
+    "fact_consulting_002",
+    "fact_customer_success_001",
+    "fact_data_analytics_001",
+    "fact_data_analytics_002",
+    "fact_data_analytics_003",
+    "fact_data_analytics_004",
+    "fact_exec_001",
+    "fact_governance_001",
+    "fact_governance_002",
+    "fact_governance_004",
+    "fact_governance_005",
+    "fact_partnerships_gtm_001",
+    "fact_partnerships_gtm_002",
+    "fact_partnerships_gtm_003",
+    "fact_partnerships_gtm_004",
+    "fact_partnerships_gtm_005",
+    "fact_quant_hpc_004",
+    "fact_revenue_ops_001",
+    "fact_revenue_ops_002",
+    "fact_revenue_ops_003",
+    "fact_revenue_ops_004",
+    "fact_revenue_ops_005",
+    "fact_sales_accounts_001",
+    "fact_sales_accounts_002",
+    "fact_sales_accounts_003",
+    "fact_sales_accounts_004",
+    "fact_sales_accounts_005",
+    "fact_solutions_001",
+    "fact_solutions_002"
+  ],
+  "p2_skills_with_blocked_fact_links": {
+    "skill_p2_gtm_discovery_qualification": [
+      "fact_revenue_ops_001"
+    ],
+    "skill_p2_gtm_solution_mapping": [
+      "fact_solutions_001"
+    ],
+    "skill_p2_gtm_stakeholder_alignment": [
+      "fact_partnerships_gtm_005"
+    ],
+    "skill_p2_gtm_executive_buyer_alignment": [
+      "fact_sales_accounts_001"
+    ],
+    "skill_p2_gtm_enterprise_deal_support": [
+      "fact_sales_accounts_001"
+    ],
+    "skill_p2_gtm_joint_vendor_roadmaps": [
+      "fact_partnerships_gtm_004"
+    ],
+    "skill_p2_tech_reference_architecture": [
+      "fact_solutions_002"
+    ],
+    "skill_p2_tech_aws_modernization_patterns": [
+      "fact_partnerships_gtm_002"
+    ]
+  },
+  "track_expansion_admits_p2_skills": [
+    "skill_p2_gtm_discovery_qualification",
+    "skill_p2_gtm_enterprise_deal_support",
+    "skill_p2_gtm_executive_buyer_alignment"
+  ],
+  "draft_activation_p2_skills": [
+    "skill_p2_gtm_commercial_validation_pilots",
+    "skill_p2_gtm_presales_delivery_handoff",
+    "skill_p2_tech_demoable_accelerator",
+    "skill_p2_tech_adoption_derisking",
+    "skill_p2_tech_ibm_cloud_portfolio_anchor",
+    "skill_p2_tech_estimation_sizing_directional",
+    "skill_p2_anchor_major_airline_devops_aws"
+  ],
+  "section_eligibility_matrix": {
+    "headline": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "ibm_anchor_via_exp_ibm_facts_only_not_skill_node"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": false,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    },
+    "executive_summary": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "graph_snippet_only_draft_activation",
+        "usage": "internal_planning_only_until_ACTIVE"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "graph_projection_eligible_not_in_current_expansion",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "graph_snippet_only_draft_activation",
+        "usage": "internal_planning_only_until_ACTIVE"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    },
+    "unify_bullets": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "allowed_section_fact_not_in_srfs_slice",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "allowed_section_fact_not_in_srfs_slice",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "ibm_anchor_via_exp_ibm_facts_only_not_skill_node"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    },
+    "unify_narrative": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "ibm_anchor_via_exp_ibm_facts_only_not_skill_node"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    },
+    "ibm_bullets": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "ibm_anchor_via_exp_ibm_facts_only_not_skill_node"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    },
+    "ibm_narrative": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "pillar_fit_only_use_via_other_skills_facts",
+        "usage": "thematic_only_no_direct_skill_projection"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_section_eligible",
+        "usage": "ibm_anchor_via_exp_ibm_facts_only_not_skill_node"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    },
+    "competencies": {
+      "skill_p2_gtm_discovery_qualification": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_solution_mapping": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_stakeholder_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_executive_buyer_alignment": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_commercial_validation_pilots": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "graph_snippet_only_draft_activation",
+        "usage": "internal_planning_only_until_ACTIVE"
+      },
+      "skill_p2_gtm_enterprise_deal_support": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_gtm_presales_delivery_handoff": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_gtm_joint_vendor_roadmaps": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_reference_architecture": {
+        "confidence": "MEDIUM",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_aws_modernization_patterns": {
+        "confidence": "HIGH",
+        "proof_classification": "skill_eligible_fact_srfs_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "skill_allowed_fact_srfs_blocked",
+        "usage": "do_not_claim_linked_facts_until_unblocked"
+      },
+      "skill_p2_tech_devops_pipeline_blueprint": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "graph_projection_eligible_not_in_current_expansion",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_demoable_accelerator": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_reusable_accelerators": {
+        "confidence": "HIGH",
+        "proof_classification": "claim_eligible_active_fact_backed",
+        "external_claim_eligible": true,
+        "activation_status": "ACTIVE",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "avoid_or_indirect_only"
+      },
+      "skill_p2_tech_adoption_derisking": {
+        "confidence": "HIGH",
+        "proof_classification": "snippet_eligible_track_expansion_blocked",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": true,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "graph_snippet_only_draft_activation",
+        "usage": "internal_planning_only_until_ACTIVE"
+      },
+      "skill_p2_tech_ibm_cloud_portfolio_anchor": {
+        "confidence": "HIGH",
+        "proof_classification": "anchor_only_ibm_portfolio",
+        "external_claim_eligible": true,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "not_in_allowed_sections",
+        "usage": "ibm_anchor_via_exp_ibm_facts_only_not_skill_node"
+      },
+      "skill_p2_tech_estimation_sizing_directional": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      },
+      "skill_p2_anchor_major_airline_devops_aws": {
+        "confidence": "LOW",
+        "proof_classification": "directional_internal_only",
+        "external_claim_eligible": false,
+        "activation_status": "DRAFT",
+        "allowed_sections_match": false,
+        "pillar_section_fit": true,
+        "proof_pool_admission": "blocked_skill",
+        "usage": "avoid_all_generated_content"
+      }
+    }
+  },
+  "proof_pool_by_section": {
+    "headline": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_headline",
+      "fact_count": 5,
+      "p2_linked_facts_in_pool": [
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_006"
+      ]
+    },
+    "executive_summary": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_c03_graphrag",
+      "fact_count": 7,
+      "p2_linked_facts_in_pool": []
+    },
+    "unify_bullets": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_unify_bullets_company_hint",
+      "fact_count": 6,
+      "p2_linked_facts_in_pool": []
+    },
+    "unify_narrative": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_unify_narrative_company_hint",
+      "fact_count": 6,
+      "p2_linked_facts_in_pool": []
+    },
+    "ibm_bullets": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_ibm_bullets",
+      "fact_count": 6,
+      "p2_linked_facts_in_pool": [
+        "fact_partnerships_gtm_002",
+        "fact_revenue_ops_001"
+      ]
+    },
+    "ibm_narrative": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_ibm_narrative_company_hint",
+      "fact_count": 3,
+      "p2_linked_facts_in_pool": []
+    },
+    "competencies": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_track_weighted_competencies",
+      "fact_count": 13,
+      "p2_linked_facts_in_pool": [
+        "fact_engineering_platform_003",
+        "fact_revenue_ops_001",
+        "fact_sales_accounts_001"
+      ]
+    }
+  },
+  "graph_default_proof": {
+    "headline": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_headline",
+      "fact_count": 5,
+      "p2_linked_facts_in_pool": [
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_006"
+      ]
+    },
+    "executive_summary": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_c03_graphrag",
+      "fact_count": 7,
+      "p2_linked_facts_in_pool": []
+    },
+    "unify_bullets": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_unify_bullets_company_hint",
+      "fact_count": 6,
+      "p2_linked_facts_in_pool": []
+    },
+    "unify_narrative": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_unify_narrative_company_hint",
+      "fact_count": 6,
+      "p2_linked_facts_in_pool": []
+    },
+    "ibm_bullets": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_ibm_bullets",
+      "fact_count": 6,
+      "p2_linked_facts_in_pool": [
+        "fact_partnerships_gtm_002",
+        "fact_revenue_ops_001"
+      ]
+    },
+    "ibm_narrative": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_ibm_narrative_company_hint",
+      "fact_count": 3,
+      "p2_linked_facts_in_pool": []
+    },
+    "competencies": {
+      "proof_source": "augmented_skills_graph",
+      "graph_default_authority": true,
+      "broad_skills_ledger_used_as_authority": false,
+      "broad_skills_ledger_fallback": false,
+      "selection_method": "augmented_skills_graph_track_weighted_competencies",
+      "fact_count": 13,
+      "p2_linked_facts_in_pool": [
+        "fact_engineering_platform_003",
+        "fact_revenue_ops_001",
+        "fact_sales_accounts_001"
+      ]
+    }
+  },
+  "legacy_ledger_proof": {
+    "legacy_broad_skills_ledger_flag_raises": true,
+    "broad_skills_ledger_used_as_authority_any_section": false,
+    "broad_skills_ledger_fallback_any_section": false,
+    "skills_authority": "augmented_skills_graph",
+    "claim_substrate": "master_candidate_skills_fact_ledger (SRFS facts only, not skills labels)"
+  },
+  "proof_classification_legend": {
+    "claim_eligible_active_fact_backed": "ACTIVE skill with fact_id_links; may enter track expansion or SRFS pool via facts",
+    "snippet_eligible_track_expansion_blocked": "DRAFT activation; snippets exist but excluded from track_weighted_graph_expansion",
+    "snippet_eligible_no_fact_link": "DIRECT_FROM_RESUME_ARCHIVE snippets only; no fact_id_links",
+    "anchor_only_ibm_portfolio": "IBM  portfolio anchor skill; DRAFT; use IBM employment facts not skill node",
+    "directional_internal_only": "INTERNAL_ONLY; never external claims",
+    "skill_eligible_fact_srfs_blocked": "Skill passes external gate but linked fact BLOCKED in exec audit"
+  },
+  "explicit_non_claims": [
+    "No repo evidence for major-airline client naming or ~$100M engagement scope.",
+    "No claim of personal ownership of a $100M presales quota (forbidden on pillar_presales_solutioning).",
+    "No claim of full $100M engagement ownership (operator anchor is directional only).",
+    "IBM $30M cloud/AI portfolio (base resume) is not the airline engagement and must not be conflated.",
+    "No customer-success-primary claims added (per guardrail).",
+    "fact_solutions_001/002 remain SRFS-blocked; graph skills are anchors pending human confirm.",
+    "Delivery execution at Unify/IBM does not imply named pre-sales quota carrying without archive proof."
+  ],
+  "blocking_defects_found": [],
+  "srfs_confirmation_gated_facts": [
+    "fact_solutions_001",
+    "fact_solutions_002",
+    "fact_partnerships_gtm_005"
+  ],
+  "exec_audit_blocked_fact_count": 29
+}

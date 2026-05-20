@@ -1,0 +1,613 @@
+{
+  "label": "insurance brokerage IT innovation",
+  "traversal_status_w14b": "PASS_WITH_DOCUMENTED_GAP",
+  "projection_role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+  "sections": {
+    "headline": {
+      "section": "headline",
+      "expected_output_posture": "concise_HIGH_confidence_only",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_p2_gtm_executive_buyer_alignment"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_capital_capital_modeling",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_joint_vendor_roadmaps"
+      ],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_consulting_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_engineering_platform_005",
+        "fact_engineering_platform_006",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_consulting_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_engineering_platform_005",
+        "fact_engineering_platform_006",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_002",
+        "fact_partnerships_gtm_004",
+        "fact_partnerships_gtm_005",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_001",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [
+        "MEDIUM_blocked_from_headline:fact_governance_001",
+        "MEDIUM_blocked_from_headline:fact_partnerships_gtm_002",
+        "MEDIUM_blocked_from_headline:fact_partnerships_gtm_004",
+        "MEDIUM_blocked_from_headline:fact_partnerships_gtm_005",
+        "MEDIUM_blocked_from_headline:fact_revenue_ops_001",
+        "MEDIUM_blocked_from_headline:fact_revenue_ops_004",
+        "MEDIUM_blocked_from_headline:fact_revenue_ops_005",
+        "MEDIUM_blocked_from_headline:fact_sales_accounts_001",
+        "MEDIUM_blocked_from_headline:fact_solutions_001"
+      ],
+      "allowed_source_fact_candidates": [],
+      "srfs_selected_fact_ids": [
+        "fact_consulting_001",
+        "fact_engineering_platform_005",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_engineering_platform_006"
+      ],
+      "track_balanced_exec_projection_present": false,
+      "competencies_grouped_by_track_present": false,
+      "section_policy_conservative": true
+    },
+    "executive_summary": {
+      "section": "executive_summary",
+      "expected_output_posture": "HIGH_or_human_confirmed_no_auto_MEDIUM",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_capital_capital_modeling",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_sr_microservices_integration_platform"
+      ],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002",
+        "fact_quant_hpc_003"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002",
+        "fact_quant_hpc_003"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_002",
+        "fact_partnerships_gtm_004",
+        "fact_partnerships_gtm_005",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_001",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [
+        "MEDIUM_blocked_from_executive_summary:fact_governance_001",
+        "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_002",
+        "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_004",
+        "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_005",
+        "MEDIUM_blocked_from_executive_summary:fact_revenue_ops_001",
+        "MEDIUM_blocked_from_executive_summary:fact_revenue_ops_004",
+        "MEDIUM_blocked_from_executive_summary:fact_revenue_ops_005",
+        "MEDIUM_blocked_from_executive_summary:fact_sales_accounts_001",
+        "MEDIUM_blocked_from_executive_summary:fact_solutions_001"
+      ],
+      "allowed_source_fact_candidates": [],
+      "srfs_selected_fact_ids": [
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_governance_003",
+        "fact_exec_002",
+        "fact_certs_001",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "track_balanced_exec_projection_present": true,
+      "competencies_grouped_by_track_present": false,
+      "section_policy_conservative": true
+    },
+    "unify_bullets": {
+      "section": "unify_bullets",
+      "expected_output_posture": "unify_lane_HIGH_plus_claim_eligible_MEDIUM",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_sr_microservices_integration_platform"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_capital_capital_modeling",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_003",
+        "fact_quant_hpc_003",
+        "fact_revenue_ops_003",
+        "fact_sales_accounts_001"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_003",
+        "fact_quant_hpc_003",
+        "fact_revenue_ops_003",
+        "fact_sales_accounts_001"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_005",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [],
+      "allowed_source_fact_candidates": [
+        "fact_partnerships_gtm_004",
+        "fact_revenue_ops_004"
+      ],
+      "srfs_selected_fact_ids": [
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_003",
+        "fact_revenue_ops_003",
+        "fact_sales_accounts_001"
+      ],
+      "track_balanced_exec_projection_present": false,
+      "competencies_grouped_by_track_present": false,
+      "section_policy_conservative": false
+    },
+    "unify_narrative": {
+      "section": "unify_narrative",
+      "expected_output_posture": "unify_lane_HIGH_plus_claim_eligible_MEDIUM",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_stakeholder_alignment"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_capital_capital_modeling",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_joint_vendor_roadmaps"
+      ],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_005",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [],
+      "allowed_source_fact_candidates": [
+        "fact_sales_accounts_001"
+      ],
+      "srfs_selected_fact_ids": [],
+      "track_balanced_exec_projection_present": false,
+      "competencies_grouped_by_track_present": false,
+      "section_policy_conservative": false
+    },
+    "ibm_bullets": {
+      "section": "ibm_bullets",
+      "expected_output_posture": "ibm_lane_only_no_unrelated_domain",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_capital_capital_modeling",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_executive_buyer_alignment"
+      ],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_partnerships_gtm_002",
+        "fact_quant_hpc_003",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_002"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_partnerships_gtm_002",
+        "fact_quant_hpc_003",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_002"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_005",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [],
+      "allowed_source_fact_candidates": [],
+      "srfs_selected_fact_ids": [
+        "fact_sales_accounts_002",
+        "fact_revenue_ops_004",
+        "fact_partnerships_gtm_002",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_005"
+      ],
+      "track_balanced_exec_projection_present": false,
+      "competencies_grouped_by_track_present": false,
+      "section_policy_conservative": false
+    },
+    "ibm_narrative": {
+      "section": "ibm_narrative",
+      "expected_output_posture": "ibm_lane_only_no_unrelated_domain",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_p2_gtm_solution_mapping"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_capital_capital_modeling",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_executive_buyer_alignment"
+      ],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003",
+        "fact_sales_accounts_003"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003",
+        "fact_sales_accounts_003"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_005",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [],
+      "allowed_source_fact_candidates": [],
+      "srfs_selected_fact_ids": [
+        "fact_sales_accounts_003"
+      ],
+      "track_balanced_exec_projection_present": false,
+      "competencies_grouped_by_track_present": false,
+      "section_policy_conservative": false
+    },
+    "competencies": {
+      "section": "competencies",
+      "expected_output_posture": "broader_domain_skills_with_claim_tier_separation",
+      "section_eligibility_decision": "PASS",
+      "policy_violations": [],
+      "selected_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_regulatory_governance",
+        "pillar_revenue_commercialization",
+        "pillar_strategic_finance_saas",
+        "pillar_technical_presales_accelerators",
+        "pillar_agentic_ai_platforms",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_actuarial_foundation",
+        "pillar_capital_modeling"
+      ],
+      "selected_skills": [
+        "skill_actuarial_fsa_fellowship",
+        "skill_agent_to_human_handoff_design",
+        "skill_agentic_control_plane_design",
+        "skill_agentic_platform_productization",
+        "skill_ai_governance_certification",
+        "skill_ai_platform_commercialization",
+        "skill_app_overlay_runtime_binding",
+        "skill_app_specific_runtime_overlay_design",
+        "skill_approval_gated_workflow_design",
+        "skill_capital_capital_modeling",
+        "skill_finance_cost_optimization_dashboards",
+        "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "skill_sr_microservices_integration_platform"
+      ],
+      "directional_internal_only_skills": [],
+      "blocked_skills": [],
+      "selected_fact_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003"
+      ],
+      "claim_eligible_facts": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_003"
+      ],
+      "blocked_facts": [
+        "fact_governance_001",
+        "fact_partnerships_gtm_002",
+        "fact_partnerships_gtm_004",
+        "fact_partnerships_gtm_005",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_001",
+        "fact_solutions_001"
+      ],
+      "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [],
+      "allowed_source_fact_candidates": [],
+      "srfs_selected_fact_ids": [],
+      "track_balanced_exec_projection_present": false,
+      "competencies_grouped_by_track_present": true,
+      "section_policy_conservative": false
+    }
+  },
+  "overclaim_risks": [],
+  "undermatch_risks": [
+    "documented_brokerage_pillar_evidence_gap_no_fabrication",
+    "brokerage_pillar_deferred_use_interop_gtm_only"
+  ]
+}

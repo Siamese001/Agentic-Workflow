@@ -1,0 +1,1 @@
+Operator brief: Brokerage fixture must not conflate with carrier transformation. Brokerage pillar deferred — use interoperability + GTM.

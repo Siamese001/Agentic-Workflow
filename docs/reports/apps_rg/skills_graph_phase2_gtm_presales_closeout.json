@@ -1,0 +1,398 @@
+{
+  "generated_at_utc": "2026-05-19T23:47:16Z",
+  "status": "PASS",
+  "scope": "skills_graph_phase2_gtm_presales",
+  "career_track": "TRACK_DATA_TECH_CLOUD_ML",
+  "before_after_counts": {
+    "before": {
+      "pillar_count": 19,
+      "skill_row_count": 131,
+      "graph_node_count": 179,
+      "graph_edge_count": 1183
+    },
+    "after": {
+      "pillar_count": 21,
+      "skill_row_count": 148,
+      "graph_node_count": 198,
+      "graph_edge_count": 1281
+    }
+  },
+  "new_pillars": [
+    "pillar_gtm_presales_motion",
+    "pillar_technical_presales_accelerators"
+  ],
+  "new_skills": [
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_revenue_ops_001",
+      "source_resume_file": "Strategic Finance - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_solutions_001",
+      "source_resume_file": "Field CTO - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_partnerships_gtm_005",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_gtm_commercial_validation_pilots",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "HIGH",
+      "linked_fact_id": null,
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_gtm_presales_delivery_handoff",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "HIGH",
+      "linked_fact_id": null,
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_partnerships_gtm_004",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_tech_reference_architecture",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "MEDIUM",
+      "linked_fact_id": "fact_solutions_002",
+      "source_resume_file": "Industry Solutions - Amit Ayer.txt",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "linked_fact_id": "fact_partnerships_gtm_002",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "linked_fact_id": "fact_engineering_platform_003",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_tech_demoable_accelerator",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "linked_fact_id": null,
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_reusable_accelerators",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "linked_fact_id": "fact_engineering_platform_006",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "support_status": "DERIVED_SUPPORTED"
+    },
+    {
+      "skill_id": "skill_p2_tech_adoption_derisking",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "linked_fact_id": null,
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "linked_fact_id": null,
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_estimation_sizing_directional",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "LOW",
+      "linked_fact_id": null,
+      "source_resume_file": null,
+      "support_status": "INTERNAL_ONLY"
+    },
+    {
+      "skill_id": "skill_p2_anchor_major_airline_devops_aws",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "LOW",
+      "linked_fact_id": null,
+      "source_resume_file": null,
+      "support_status": "INTERNAL_ONLY"
+    }
+  ],
+  "node_evidence_manifest": [
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_revenue_ops_001",
+      "source_resume_file": "Strategic Finance - Amit Ayer.txt",
+      "source_evidence": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_solutions_001",
+      "source_resume_file": "Field CTO - Amit Ayer.txt",
+      "source_evidence": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_partnerships_gtm_005",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.txt",
+      "source_evidence": "Facilitated an executive governance council with partner stakeholders to align solution architecture, data security protocols, and regulatory mandates.",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "source_evidence": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_commercial_validation_pilots",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "HIGH",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "linked_fact_id": null,
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "validating measurable ROI for clients through pilot engagements",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "source_evidence": "Drove $5 Million in Annual Contract Value",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_presales_delivery_handoff",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "HIGH",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "linked_fact_id": null,
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "converting bespoke client delivery into reusable IP deployed across enterprise lines of business",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "pillar": "pillar_gtm_presales_motion",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_partnerships_gtm_004",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "source_evidence": "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_reference_architecture",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "MEDIUM",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_solutions_002",
+      "source_resume_file": "Industry Solutions - Amit Ayer.txt",
+      "source_evidence": "Developed industry-specific AI, analytics, and cloud modernization solutions across financial-services risk, compliance, fraud, and regulatory use cases.",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "linked_fact_id": "fact_partnerships_gtm_002",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "AWS Partner: Advanced Migration and Modernization Sales Training",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_engineering_platform_003",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Strengthened enterprise retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_demoable_accelerator",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "linked_fact_id": null,
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "commercialization of a production-grade generative AI Solution Accelerator within a consulting firm",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_reusable_accelerators",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "support_status": "DERIVED_SUPPORTED",
+      "linked_fact_id": "fact_engineering_platform_006",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Productized core agentic AI primitives into reusable platform services, generating $22M in IP-led revenue",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_adoption_derisking",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "linked_fact_id": null,
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "executive workshops, leading to faster adoption across major financial accounts",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "HIGH",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "linked_fact_id": null,
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Led architecture and commercial ownership of a $30M cloud and AI transformation portfolio",
+      "inference_only": false
+    },
+    {
+      "skill_id": "skill_p2_tech_estimation_sizing_directional",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "LOW",
+      "support_status": "INTERNAL_ONLY",
+      "linked_fact_id": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "inference_only": true
+    },
+    {
+      "skill_id": "skill_p2_anchor_major_airline_devops_aws",
+      "pillar": "pillar_technical_presales_accelerators",
+      "confidence": "LOW",
+      "support_status": "INTERNAL_ONLY",
+      "linked_fact_id": null,
+      "source_resume_file": null,
+      "source_evidence": null,
+      "inference_only": true
+    }
+  ],
+  "explicit_non_claims": [
+    "No repo evidence for major-airline client naming or ~$100M engagement scope.",
+    "No claim of personal ownership of a $100M presales quota (forbidden on pillar_presales_solutioning).",
+    "No claim of full $100M engagement ownership (operator anchor is directional only).",
+    "IBM $30M cloud/AI portfolio (base resume) is not the airline engagement and must not be conflated.",
+    "No customer-success-primary claims added (per guardrail).",
+    "fact_solutions_001/002 remain SRFS-blocked; graph skills are anchors pending human confirm.",
+    "Delivery execution at Unify/IBM does not imply named pre-sales quota carrying without archive proof."
+  ],
+  "evidence_gaps": [
+    {
+      "gap_id": "major_airline_client_context",
+      "reason": "No airline/aviation/travel carrier string in resume archive, base resume, or candidate ledger.",
+      "promotion_requires": "Phase I resume variant or SOW naming airline + role scope."
+    },
+    {
+      "gap_id": "engagement_100m_scope",
+      "reason": "Only $100M strings in graph are forbidden presales-quota phrases, not engagement proof.",
+      "promotion_requires": "Signed SOW/CRM export or resume bullet with engagement TCV and role (not personal quota)."
+    },
+    {
+      "gap_id": "devops_pipeline_major_airline",
+      "reason": "DevOps/CI-CD evidence is Unify platform engineering, not airline-client-specific.",
+      "promotion_requires": "Client-named delivery receipt or resume bullet tying pipeline work to airline program."
+    },
+    {
+      "gap_id": "presales_contribution_airline",
+      "reason": "Pre-sales workshop/pilot evidence is financial-institution phrasing in archive.",
+      "promotion_requires": "Archive line naming airline + solutioning/pursuit role."
+    },
+    {
+      "gap_id": "commercial_outcome_airline",
+      "reason": "No closed-won / TCV outcome linked to airline in candidate facts.",
+      "promotion_requires": "fact_sales_accounts_* or partnerships fact with airline + metric."
+    },
+    {
+      "gap_id": "estimation_sizing_models",
+      "reason": "No estimation/sizing model evidence in ledger.",
+      "promotion_requires": "Resume or artifact describing sizing methodology used in pursuits."
+    }
+  ],
+  "related_high_evidence_anchors_not_airline": [
+    {
+      "skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
+      "claim": "$30M cloud and AI transformation portfolio (IBM Partner, base resume)",
+      "confidence": "HIGH"
+    },
+    {
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "claim": ">$15M modernization deals (Strategic Account Executive archive)",
+      "confidence": "MEDIUM"
+    },
+    {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "claim": "AWS Migration and Modernization partner training",
+      "confidence": "HIGH"
+    }
+  ],
+  "scope_control": {
+    "phase1_actuarial_track_touched": false,
+    "phase3_genai_track_touched": false,
+    "section_prompts_touched": false,
+    "agentic_core_touched": false
+  }
+}
