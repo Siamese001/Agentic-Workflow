@@ -1,0 +1,235 @@
+{
+  "schema": "phase2_w05b_taxonomy_track_weight_receipt_v1",
+  "status": "PASS",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "wave": "W0.5b",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "backlog_ssot": "phase2_senior_role_implementation_backlog.json",
+  "scope_match": true,
+  "scope_description": "Role-family taxonomy YAML additions and design-only track-weight profiles. No graph ledger, skills, facts, fixtures, runtime, prompts, or agentic_core edits.",
+  "generated_at_utc": "2026-05-20T12:00:00Z",
+  "proof_classification": "taxonomy_config_and_design_receipt_only",
+  "files_changed": [
+    "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml",
+    "apps_rg/config/domain_contract/senior_role_track_weight_profiles_design.yaml",
+    "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.json",
+    "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.md"
+  ],
+  "files_changed_links": [
+    {
+      "path": "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml",
+      "markdown": "[master_role_family_taxonomy.yaml](apps_rg/config/domain_contract/master_role_family_taxonomy.yaml)"
+    },
+    {
+      "path": "apps_rg/config/domain_contract/senior_role_track_weight_profiles_design.yaml",
+      "markdown": "[senior_role_track_weight_profiles_design.yaml](apps_rg/config/domain_contract/senior_role_track_weight_profiles_design.yaml)"
+    },
+    {
+      "path": "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.json",
+      "markdown": "[phase2_w05b_taxonomy_track_weight_receipt.json](docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.md",
+      "markdown": "[phase2_w05b_taxonomy_track_weight_receipt.md](docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.md)"
+    }
+  ],
+  "commands_run": [
+    {
+      "command": "python -c taxonomy load/count/unique (20 families, 7 additions present)",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_cro_projection_profile_hardening.py::test_taxonomy_has_no_standalone_cro_role_family -q",
+      "exit_code": 0
+    },
+    {
+      "command": "python smoke: infer_role_family_priorities + infer_projection_role_family_key for carrier/brokerage JD snippets",
+      "exit_code": 0
+    }
+  ],
+  "role_families_added": [
+    "INSURANCE_CARRIER_TRANSFORMATION",
+    "INSURER_IT_AI_ENABLEMENT",
+    "INSURANCE_BROKERAGE_IT_INNOVATION",
+    "BANKING_PLATFORM_AI",
+    "REGULATED_AI_GOVERNANCE",
+    "PARTNER_APPLIED_AI_ARCHITECTURE",
+    "HYPERSCALER_MARKETPLACE_GTM"
+  ],
+  "taxonomy_before_count": 13,
+  "taxonomy_after_count": 20,
+  "track_weight_profiles_added_or_blocked": {
+    "runtime_config_added": false,
+    "design_yaml_added": true,
+    "blocked_reason": "BLOCKED_BY_CODE_CHANGE_REQUIRED",
+    "blocked_code_paths": [
+      "apps_rg/fact_inventory/track_weighted_graph_expansion.py:ROLE_FAMILY_TRACK_WEIGHTS",
+      "apps_rg/fact_inventory/track_weighted_graph_expansion.py:TAXONOMY_TO_PROJECTION_ROLE",
+      "apps_rg/fact_inventory/track_weighted_graph_expansion.py:infer_projection_role_family_key"
+    ],
+    "offline_override_available": "resolve_career_track_weights(..., weight_override=...) and fixture weight_override in W13",
+    "design_profile_keys": [
+      "INSURANCE_CARRIER_TRANSFORMATION",
+      "INSURER_IT_AI_ENABLEMENT",
+      "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "BANKING_PLATFORM_AI",
+      "REGULATED_AI_GOVERNANCE",
+      "PARTNER_APPLIED_AI_ARCHITECTURE",
+      "HYPERSCALER_MARKETPLACE_GTM"
+    ]
+  },
+  "config_paths": {
+    "taxonomy_ssot": "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml",
+    "track_weight_design_only": "apps_rg/config/domain_contract/senior_role_track_weight_profiles_design.yaml",
+    "track_weight_runtime_code": "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
+    "composite_projection_reference": "apps_rg/config/domain_contract/composite_projection_profiles.yaml",
+    "jd_inference_consumer": "apps_rg/fact_inventory/selected_role_fact_set.py:infer_role_family_priorities"
+  },
+  "artifacts_written": [
+    "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.json",
+    "docs/reports/apps_rg/phase2_w05b_taxonomy_track_weight_receipt.md"
+  ],
+  "role_family_pillar_mapping": [
+    {
+      "role_family_id": "INSURANCE_CARRIER_TRANSFORMATION",
+      "gap_ids": ["GAP-001"],
+      "fixture_slug": "aig_carrier_agentic",
+      "existing_pillars": [
+        "pillar_actuarial_foundation",
+        "pillar_embedded_options_insurance",
+        "pillar_agentic_ai_platforms",
+        "pillar_regulatory_governance"
+      ],
+      "proposed_pillars_ws8": [
+        "pillar_insurance_carrier_transformation",
+        "pillar_underwriting_claims_ops_ai"
+      ]
+    },
+    {
+      "role_family_id": "INSURER_IT_AI_ENABLEMENT",
+      "gap_ids": ["GAP-004"],
+      "fixture_slug": "lincoln_insurer_it_ai",
+      "existing_pillars": [
+        "pillar_cloud_data_aws",
+        "pillar_agentic_ai_platforms",
+        "pillar_actuarial_foundation",
+        "pillar_executive_leadership"
+      ],
+      "proposed_pillars_ws9": [
+        "pillar_insurer_it_strategy_ai_enablement",
+        "pillar_enterprise_portfolio_governance"
+      ]
+    },
+    {
+      "role_family_id": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "gap_ids": ["GAP-001"],
+      "fixture_slug": "brown_brokerage_it",
+      "existing_pillars": [
+        "pillar_gtm_presales_motion",
+        "pillar_cloud_data_aws",
+        "pillar_executive_leadership"
+      ],
+      "proposed_pillars_ws11": [
+        "pillar_insurance_brokerage_distribution",
+        "pillar_interoperability_integration_ecosystem"
+      ]
+    },
+    {
+      "role_family_id": "BANKING_PLATFORM_AI",
+      "gap_ids": ["GAP-008"],
+      "fixture_slug": "citi_banking_platform_ai",
+      "existing_pillars": [
+        "pillar_regulatory_governance",
+        "pillar_agentic_ai_platforms",
+        "pillar_cloud_data_aws",
+        "pillar_enterprise_risk_controls"
+      ],
+      "proposed_pillars_ws10": ["pillar_banking_platform_responsible_ai"]
+    },
+    {
+      "role_family_id": "REGULATED_AI_GOVERNANCE",
+      "gap_ids": ["GAP-010", "GAP-014"],
+      "existing_pillars": [
+        "pillar_regulatory_governance",
+        "pillar_enterprise_risk_controls",
+        "pillar_risk_management"
+      ],
+      "proposed_pillars": [],
+      "notes": "Splits Basel/CCAR/lineage targeting from AI_GOVERNANCE_RISK and ENGINEERING_PLATFORM; shares GOVERNANCE_RISK track-weight intent in design YAML."
+    },
+    {
+      "role_family_id": "PARTNER_APPLIED_AI_ARCHITECTURE",
+      "gap_ids": ["GAP-009"],
+      "fixture_slug": "anthropic_partner_applied_ai",
+      "existing_pillars": [
+        "pillar_partner_gtm_alliances",
+        "pillar_presales_solutioning",
+        "pillar_technical_presales_accelerators",
+        "pillar_cosell_partner_engineering"
+      ],
+      "proposed_pillars_ws12": ["pillar_applied_ai_partner_architecture"]
+    },
+    {
+      "role_family_id": "HYPERSCALER_MARKETPLACE_GTM",
+      "gap_ids": ["GAP-003", "GAP-009"],
+      "existing_pillars": [
+        "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
+        "pillar_cloud_data_aws"
+      ],
+      "proposed_pillars_ws12": ["pillar_hyperscaler_marketplace_partner_gtm"]
+    }
+  ],
+  "taxonomy_absence_analysis": {
+    "prior_to_w05b": "Seven senior-role families were absent from master_role_family_taxonomy.yaml (13 legacy families only). Gap analysis GAP-001, GAP-004, GAP-007, GAP-008, GAP-009, GAP-011.",
+    "closest_legacy_families": {
+      "INSURANCE_CARRIER_TRANSFORMATION": "AI_GOVERNANCE_RISK + actuarial/insurance pillar nodes (conflated)",
+      "INSURER_IT_AI_ENABLEMENT": "ENGINEERING_PLATFORM",
+      "INSURANCE_BROKERAGE_IT_INNOVATION": "PARTNERSHIPS_GTM / GTM pillars",
+      "BANKING_PLATFORM_AI": "AI_GOVERNANCE_RISK + ENGINEERING_PLATFORM",
+      "REGULATED_AI_GOVERNANCE": "AI_GOVERNANCE_RISK",
+      "PARTNER_APPLIED_AI_ARCHITECTURE": "PARTNERSHIPS_GTM",
+      "HYPERSCALER_MARKETPLACE_GTM": "PARTNERSHIPS_GTM"
+    }
+  },
+  "track_weighting_analysis": {
+    "config_without_code": false,
+    "jd_targeting_without_code": true,
+    "default_runtime_weights": {
+      "track_actuarial_risk_derivatives": 0.1,
+      "track_data_tech_cloud_ml": 0.25,
+      "track_genai_agentic": 0.65
+    },
+    "smoke_test": {
+      "jd_snippet": "insurance carrier agentic AI transformation underwriting claims operations",
+      "inferred_top_taxonomy": "INSURANCE_CARRIER_TRANSFORMATION",
+      "projection_key_used": "SVP_ENGINEERING_AI_PLATFORM",
+      "uses_default_weights": true,
+      "conclusion": "Taxonomy inference works; track weights remain default until TAXONOMY_TO_PROJECTION_ROLE + ROLE_FAMILY_TRACK_WEIGHTS extended in code wave."
+    }
+  },
+  "explicit_non_claims": [
+    "underwriting",
+    "claims",
+    "policy administration",
+    "billing",
+    "brokerage distribution ownership",
+    "transaction banking",
+    "payments",
+    "liquidity",
+    "trade",
+    "investor services",
+    "issuer services",
+    "fraud operations",
+    "Fed/regulator-facing work",
+    "marketplace co-sell",
+    "Databricks",
+    "Snowflake",
+    "GCP",
+    "Azure partner exclusivity",
+    "partner sales",
+    "major airline ~ engagement ownership",
+    "technical estimation/sizing methodology without evidence"
+  ],
+  "next_recommended_wave": "W8-W11-graph — evidence-gated proposed pillars and bridge-edge families per phase2_senior_role_implementation_backlog.json (step 2); then W12-graph partner DRAFT activation."
+}

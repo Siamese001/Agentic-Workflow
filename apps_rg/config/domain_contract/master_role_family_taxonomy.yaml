@@ -1,5 +1,5 @@
 # apps_rg — canonical role-family taxonomy for adaptive fact selection (design / retrieval).
-# SSOT count: thirteen role families listed below.
+# SSOT count: twenty role families (thirteen legacy + seven senior-role W0.5b additions).
 # Ledger JSON may reference legacy alias ids; normalize via role_family_id_aliases.
 
 schema_version: "1"
@@ -145,6 +145,135 @@ role_families:
       - board
       - C-suite alignment
       - organizational scaling
+
+  # --- Senior-role traversal families (W0.5b — JD targeting only; not proof) ---
+  - id: INSURANCE_CARRIER_TRANSFORMATION
+    summary: >-
+      Insurance carrier agentic AI transformation across underwriting, claims, operations,
+      and corporate functions — distinct from brokerage distribution and generic FS GTM.
+    jd_signal_keywords:
+      - insurance carrier
+      - carrier transformation
+      - insurance operations
+      - underwriting
+      - claims
+      - agentic AI transformation
+      - insurance industry
+    proposed_pillar_ids:
+      - pillar_insurance_carrier_transformation
+      - pillar_underwriting_claims_ops_ai
+      - pillar_actuarial_foundation
+      - pillar_agentic_ai_platforms
+      - pillar_regulatory_governance
+
+  - id: INSURER_IT_AI_ENABLEMENT
+    summary: >-
+      Insurer IT strategy, AI enablement, enterprise architecture, data strategy, and
+      portfolio governance — forward-project actuarial foundation beyond early-career only.
+    jd_signal_keywords:
+      - IT strategy
+      - AI enablement
+      - enterprise architecture
+      - insurer
+      - insurance IT
+      - DevSecOps
+      - data governance
+      - portfolio management
+    proposed_pillar_ids:
+      - pillar_insurer_it_strategy_ai_enablement
+      - pillar_enterprise_portfolio_governance
+      - pillar_cloud_data_aws
+      - pillar_actuarial_foundation
+      - pillar_agentic_ai_platforms
+
+  - id: INSURANCE_BROKERAGE_IT_INNOVATION
+    summary: >-
+      Insurance brokerage and distribution technology, interoperability, and innovation —
+      not carrier underwriting/claims transformation.
+    jd_signal_keywords:
+      - insurance brokerage
+      - brokerage
+      - distribution technology
+      - interoperability
+      - innovation incubation
+      - broker
+    proposed_pillar_ids:
+      - pillar_insurance_brokerage_distribution
+      - pillar_interoperability_integration_ecosystem
+      - pillar_gtm_presales_motion
+      - pillar_cloud_data_aws
+      - pillar_executive_leadership
+
+  - id: BANKING_PLATFORM_AI
+    summary: >-
+      Regulated banking AI platform and productization — platform/data services leadership;
+      not transaction-banking product claims without evidence.
+    jd_signal_keywords:
+      - banking platform
+      - platform and data services
+      - financial services platform
+      - regulated banking
+      - PDS
+      - banking AI
+    proposed_pillar_ids:
+      - pillar_banking_platform_responsible_ai
+      - pillar_regulatory_governance
+      - pillar_agentic_ai_platforms
+      - pillar_cloud_data_aws
+
+  - id: REGULATED_AI_GOVERNANCE
+    summary: >-
+      Basel, CCAR, lineage, auditability, model risk, and responsible AI governance —
+      split from generic engineering platform and banking productization.
+    jd_signal_keywords:
+      - Basel
+      - CCAR
+      - regulatory reporting
+      - data lineage
+      - auditability
+      - model risk
+      - responsible AI governance
+      - regulatory governance
+    proposed_pillar_ids:
+      - pillar_regulatory_governance
+      - pillar_banking_platform_responsible_ai
+      - pillar_enterprise_risk_controls
+      - pillar_risk_management
+
+  - id: PARTNER_APPLIED_AI_ARCHITECTURE
+    summary: >-
+      Partner applied AI architecture, joint solutions, reference architectures, and
+      partner engineering — distinct from generic partnerships GTM quota motion.
+    jd_signal_keywords:
+      - applied AI architecture
+      - partner engineering
+      - joint solution
+      - reference architecture
+      - partner-led
+      - alliances architecture
+    proposed_pillar_ids:
+      - pillar_applied_ai_partner_architecture
+      - pillar_partner_gtm_alliances
+      - pillar_presales_solutioning
+      - pillar_technical_presales_accelerators
+
+  - id: HYPERSCALER_MARKETPLACE_GTM
+    summary: >-
+      Hyperscaler, marketplace, GSI, and co-sell GTM — AWS/GCP/Azure only where evidence exists;
+      not exclusivity or unsupported marketplace claims.
+    jd_signal_keywords:
+      - hyperscaler
+      - marketplace
+      - GSI
+      - cloud marketplace
+      - co-sell
+      - AWS partner
+      - cloud partner ecosystem
+    proposed_pillar_ids:
+      - pillar_hyperscaler_marketplace_partner_gtm
+      - pillar_partner_gtm_alliances
+      - pillar_gtm_presales_motion
+      - pillar_cloud_data_aws
 
 # Ledger rows may cite FIELD_SOLUTIONS_ARCHITECTURE; fold into AI_SOLUTIONS_ARCHITECTURE for scoring.
 role_family_id_aliases:

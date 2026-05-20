@@ -1,0 +1,109 @@
+# Design-only track-weight profiles for senior-role traversal (W0.5b).
+# NOT loaded at runtime — ROLE_FAMILY_TRACK_WEIGHTS and TAXONOMY_TO_PROJECTION_ROLE
+# remain in apps_rg/fact_inventory/track_weighted_graph_expansion.py until a follow-on code wave.
+# Fixture offline runs may pass weight_override per docs/reports/apps_rg/fixtures/senior_roles/ (W13).
+
+schema_version: "1"
+status: design_only_not_loaded_at_runtime
+plan_id: phase2-gtm-presales-remaining-f7a2c9
+audit_id: senior_role_graph_gap_analysis_20260520
+blocked_reason: BLOCKED_BY_CODE_CHANGE_REQUIRED
+
+description: >-
+  Normalized career_track weights (must sum to 1.0 after normalize). Keys are graph
+  track node ids. Maps taxonomy role_family id → projection_profile_key (Python dict key).
+
+track_node_ids:
+  - track_actuarial_risk_derivatives
+  - track_data_tech_cloud_ml
+  - track_genai_agentic
+
+taxonomy_to_projection_profile_key:
+  INSURANCE_CARRIER_TRANSFORMATION: INSURANCE_CARRIER_TRANSFORMATION
+  INSURER_IT_AI_ENABLEMENT: INSURER_IT_AI_ENABLEMENT
+  INSURANCE_BROKERAGE_IT_INNOVATION: INSURANCE_BROKERAGE_IT_INNOVATION
+  BANKING_PLATFORM_AI: BANKING_PLATFORM_AI
+  REGULATED_AI_GOVERNANCE: REGULATED_AI_GOVERNANCE
+  PARTNER_APPLIED_AI_ARCHITECTURE: PARTNER_APPLIED_AI_ARCHITECTURE
+  HYPERSCALER_MARKETPLACE_GTM: HYPERSCALER_MARKETPLACE_GTM
+  PARTNERSHIPS_GTM: ANTHROPIC_PARTNERSHIPS_APPLIED_AI
+  ENGINEERING_PLATFORM: SVP_ENGINEERING_AI_PLATFORM
+  AI_GOVERNANCE_RISK: GOVERNANCE_RISK
+  QUANT_TRADING_HPC: QUANT_TRADING
+  EXECUTIVE_LEADERSHIP: CHIEF_AI_OFFICER
+  AI_SOLUTIONS_ARCHITECTURE: FIELD_CTO
+
+projection_profiles:
+  - projection_profile_key: INSURANCE_CARRIER_TRANSFORMATION
+    taxonomy_ids:
+      - INSURANCE_CARRIER_TRANSFORMATION
+    weights:
+      track_actuarial_risk_derivatives: 0.35
+      track_data_tech_cloud_ml: 0.25
+      track_genai_agentic: 0.40
+    rationale: Elevate actuarial + agentic; reduce blind GTM-only (GAP-010).
+
+  - projection_profile_key: INSURER_IT_AI_ENABLEMENT
+    taxonomy_ids:
+      - INSURER_IT_AI_ENABLEMENT
+    weights:
+      track_actuarial_risk_derivatives: 0.20
+      track_data_tech_cloud_ml: 0.45
+      track_genai_agentic: 0.35
+    rationale: IT/cloud enablement forward; actuarial not buried (GAP-004).
+
+  - projection_profile_key: INSURANCE_BROKERAGE_IT_INNOVATION
+    taxonomy_ids:
+      - INSURANCE_BROKERAGE_IT_INNOVATION
+    weights:
+      track_actuarial_risk_derivatives: 0.10
+      track_data_tech_cloud_ml: 0.50
+      track_genai_agentic: 0.40
+    rationale: Distribution/interop; forbid carrier-underwriting dominance (GAP-001).
+
+  - projection_profile_key: BANKING_PLATFORM_AI
+    taxonomy_ids:
+      - BANKING_PLATFORM_AI
+    weights:
+      track_actuarial_risk_derivatives: 0.35
+      track_data_tech_cloud_ml: 0.30
+      track_genai_agentic: 0.35
+    rationale: Governance + platform; moderate genai vs default 0.65 (GAP-008, GAP-010).
+
+  - projection_profile_key: REGULATED_AI_GOVERNANCE
+    taxonomy_ids:
+      - REGULATED_AI_GOVERNANCE
+    weights:
+      track_actuarial_risk_derivatives: 0.40
+      track_data_tech_cloud_ml: 0.30
+      track_genai_agentic: 0.30
+    rationale: Align with GOVERNANCE_RISK profile; split agentic swamping (GAP-014).
+
+  - projection_profile_key: PARTNER_APPLIED_AI_ARCHITECTURE
+    taxonomy_ids:
+      - PARTNER_APPLIED_AI_ARCHITECTURE
+    weights:
+      track_actuarial_risk_derivatives: 0.05
+      track_data_tech_cloud_ml: 0.55
+      track_genai_agentic: 0.40
+    rationale: Partner + presales surface; less genai-only than ENGINEERING default.
+
+  - projection_profile_key: HYPERSCALER_MARKETPLACE_GTM
+    taxonomy_ids:
+      - HYPERSCALER_MARKETPLACE_GTM
+    weights:
+      track_actuarial_risk_derivatives: 0.05
+      track_data_tech_cloud_ml: 0.70
+      track_genai_agentic: 0.25
+    rationale: Same intent as ANTHROPIC_PARTNERSHIPS_APPLIED_AI profile (GAP-003, GAP-009).
+
+  - projection_profile_key: ANTHROPIC_PARTNERSHIPS_APPLIED_AI
+    taxonomy_ids:
+      - PARTNER_APPLIED_AI_ARCHITECTURE
+      - HYPERSCALER_MARKETPLACE_GTM
+      - PARTNERSHIPS_GTM
+    weights:
+      track_actuarial_risk_derivatives: 0.05
+      track_data_tech_cloud_ml: 0.70
+      track_genai_agentic: 0.25
+    rationale: Existing Python profile — preserved for GTM/partner baseline.
