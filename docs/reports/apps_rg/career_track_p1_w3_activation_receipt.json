@@ -1,16 +1,16 @@
 {
   "schema": "career_track_p1_w3_activation_receipt_v1",
   "plan_id": "graph-skills-hardening-f3a8c1",
-  "generated_at": "2026-05-19T15:23:32Z",
-  "empty_fact_id_links_before": 47,
-  "empty_fact_id_links_after": 47,
-  "activated_count": 84,
+  "generated_at": "2026-05-20T12:20:17Z",
+  "empty_fact_id_links_before": 55,
+  "empty_fact_id_links_after": 55,
+  "activated_count": 106,
   "active_skills_by_track": {
-    "track_actuarial_risk_derivatives": 7,
-    "track_data_tech_cloud_ml": 15,
+    "track_actuarial_risk_derivatives": 9,
+    "track_data_tech_cloud_ml": 35,
     "track_genai_agentic": 62
   },
-  "unsupported_rows_remaining_draft": 47,
+  "unsupported_rows_remaining_draft": 56,
   "confidence_upgrades": [],
   "activated_sample": [
     {

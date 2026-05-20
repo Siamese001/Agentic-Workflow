@@ -1,7 +1,7 @@
 {
   "schema": "career_track_p1_w2_employment_receipt_v1",
   "plan_id": "graph-skills-hardening-f3a8c1",
-  "generated_at": "2026-05-19T15:23:32Z",
+  "generated_at": "2026-05-20T12:20:17Z",
   "employment_node_count": 5,
   "employment_primary_track_coverage": {
     "exp_unify_001": "track_genai_agentic",

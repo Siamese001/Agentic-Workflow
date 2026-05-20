@@ -1,0 +1,209 @@
+{
+  "schema": "phase2_w12_partner_hyperscaler_graph_receipt_v1",
+  "status": "PASS",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "wave": "W12-graph",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "scope_match": true,
+  "proof_classification": "graph_materialization_receipt_only",
+  "generated_at_utc": "2026-05-20T12:20:17Z",
+  "pillar_count_before_after": {
+    "before": 27,
+    "after": 29
+  },
+  "skill_count_before_after": {
+    "before": 158,
+    "after": 162
+  },
+  "edge_count_before_after": {
+    "before": 1370,
+    "after": 1406
+  },
+  "bridge_edge_count_before_after": {
+    "before": 10,
+    "after": 16
+  },
+  "active_vs_draft_counts": {
+    "activation_active": 88,
+    "activation_active_confirmed": 18,
+    "activation_draft": 56,
+    "internal_only_skill_rows": 3,
+    "user_confirmed_pending_source": 9
+  },
+  "pillars_added": [
+    "pillar_hyperscaler_marketplace_partner_gtm",
+    "pillar_applied_ai_partner_architecture"
+  ],
+  "skills_added": [
+    "skill_sr_w12_databricks_lakehouse_fundamentals",
+    "skill_sr_w12_hyperscaler_alliance_co_sell",
+    "skill_sr_w12_joint_ai_solution_development",
+    "skill_sr_w12_industry_reference_architecture"
+  ],
+  "bridge_edges_added": [
+    "hyperscaler_to_applied_ai_architecture",
+    "marketplace_to_partner_gtm",
+    "partner_engineering_to_reference_architecture",
+    "partner_ecosystem_to_ai_adoption",
+    "domain_expertise_to_section_eligibility",
+    "domain_expertise_to_section_eligibility"
+  ],
+  "w12_partner_activation_criteria": [
+    {
+      "item_id": "skill_partner_aws_ecosystem",
+      "topic": "AWS partner ecosystem",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Archive AWS Partner training; existing partner_gtm_matrix row; external via gate not AUTO MEDIUM."
+    },
+    {
+      "item_id": "skill_partner_cloud_partner_ecosystem",
+      "topic": "IBM\u2013AWS alliance",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Partnerships archive IBM\u2013AWS alliance line."
+    },
+    {
+      "item_id": "skill_partner_co_selling",
+      "topic": "Co-sell with SI/ISV",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Archive co-selling frameworks; fact_partnerships_gtm_003 MEDIUM \u2014 not marketplace co-sell."
+    },
+    {
+      "item_id": "skill_partner_partner_engineering",
+      "topic": "Partner engineering",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "USER_CONFIRMED_PENDING_SOURCE; no archive snippet."
+    },
+    {
+      "item_id": "skill_partner_product_feedback_loops",
+      "topic": "Product feedback loops",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "USER_CONFIRMED_PENDING_SOURCE; trading-desk feedback loops in archive are not partner-product scope."
+    },
+    {
+      "item_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+      "topic": "Databricks Lakehouse",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "cert_databricks_lakehouse_001 + fact_engineering_platform_005; accreditation not marketplace."
+    },
+    {
+      "item_id": "skill_sr_w12_hyperscaler_alliance_co_sell",
+      "topic": "Hyperscaler alliance co-sell",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "bul_ibm_005 base resume; co-sell/alliance \u2014 forbidden: marketplace listing."
+    },
+    {
+      "item_id": "skill_sr_w12_joint_ai_solution_development",
+      "topic": "Joint AI solution development",
+      "evidence_class": "MEDIUM_NEEDS_HUMAN_CONFIRMATION",
+      "activation_decision": "DRAFT",
+      "notes": "fact_partnerships_gtm_001 partner-led co-development; human confirm before MEDIUM external."
+    },
+    {
+      "item_id": "skill_sr_w12_industry_reference_architecture",
+      "topic": "Reference architectures (partner applied AI)",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Phase I Industry Solutions + skill_p2_tech_reference_architecture archive lines."
+    },
+    {
+      "item_id": "snowflake_partner",
+      "topic": "Snowflake",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "No Snowflake string in Phase I archive grep."
+    },
+    {
+      "item_id": "cloud_marketplace_listing",
+      "topic": "Cloud marketplace GTM",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "Pillar id retains taxonomy label; external claims block marketplace/co-sell listing phrases."
+    },
+    {
+      "item_id": "gsi_enablement",
+      "topic": "GSI enablement",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "No GSI string in archive."
+    }
+  ],
+  "direct_evidence_items": [
+    "skill_partner_aws_ecosystem",
+    "skill_partner_cloud_partner_ecosystem",
+    "skill_partner_co_selling",
+    "skill_sr_w12_databricks_lakehouse_fundamentals",
+    "skill_sr_w12_hyperscaler_alliance_co_sell",
+    "skill_sr_w12_industry_reference_architecture"
+  ],
+  "human_confirmation_required": [
+    "skill_sr_w12_joint_ai_solution_development"
+  ],
+  "draft_internal_only_items": [
+    "skill_partner_partner_engineering",
+    "skill_partner_product_feedback_loops",
+    "snowflake_partner",
+    "cloud_marketplace_listing",
+    "gsi_enablement"
+  ],
+  "do_not_promote_external_blocked": [
+    "skill_partner_partner_engineering",
+    "skill_partner_product_feedback_loops"
+  ],
+  "explicit_non_claims": [
+    "No cloud marketplace listing / marketplace co-sell claim (no marketplace string in approved sources).",
+    "No Snowflake partner or platform claim (ABSENT_EVIDENCE in archive).",
+    "No GCP or Azure partner exclusivity or sole-hyperscaler mandate.",
+    "No partner engineering or product feedback loops in external claims until operator source.",
+    "No GSI enablement claim (ABSENT_EVIDENCE).",
+    "No indirect revenue ownership beyond archive-scoped partner-derived / alliance metrics.",
+    "Do not conflate IBM/AWS alliance co-sell with hyperscaler marketplace GTM.",
+    "broad_skills_ledger remains non-authority."
+  ],
+  "w8_w11_integrity_check": "PASS",
+  "files_changed": [
+    "apps_rg/fact_inventory/apply_phase2_senior_role_graph_w12.py",
+    "apps_rg/fact_inventory/arsenal_graph_w4a_spec.py",
+    "apps_rg/fact_inventory/materialize_arsenal_from_design.py",
+    "apps_rg/fact_inventory/materialize_career_tracks_p1.py",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "docs/reports/apps_rg/master_skills_arsenal_ledger_design.json",
+    "docs/reports/apps_rg/career_track_taxonomy_operator_confirmed.json",
+    "tests/unit/apps_rg/fact_inventory/test_master_skills_arsenal_ledger.py",
+    "docs/reports/apps_rg/phase2_w12_partner_hyperscaler_graph_receipt.json",
+    "docs/reports/apps_rg/phase2_w12_partner_hyperscaler_graph_receipt.md"
+  ],
+  "commands_run": [
+    {"command": "python apps_rg/fact_inventory/apply_phase2_senior_role_graph_w12.py", "exit_code": 0},
+    {"command": "python -c validate_arsenal_ledger_shape + w12 gates", "exit_code": 0},
+    {
+      "command": "python -m pytest test_master_skills_arsenal_ledger + test_arsenal_graph_w4a + test_career_track_materialization_p1 -q",
+      "exit_code": 0
+    }
+  ],
+  "validation_results": {
+    "validate_arsenal_ledger_shape": "PASS",
+    "broad_skills_ledger_non_authority": "PASS",
+    "w8_w11_pillars_and_skills_intact": "PASS",
+    "partner_engineering_external_blocked": "PASS",
+    "product_feedback_loops_external_blocked": "PASS",
+    "no_snowflake_skill_added": "PASS",
+    "pytest_graph_subset_23": "PASS"
+  },
+  "forbidden_claims_blocked": [
+    "cloud marketplace listing",
+    "marketplace co-sell",
+    "Snowflake",
+    "GCP/Azure exclusivity",
+    "GSI enablement",
+    "partner engineering external",
+    "product feedback loops external"
+  ],
+  "next_recommended_wave": "W13 — senior-role fixtures and offline traversal receipts"
+}

@@ -235,8 +235,9 @@ def _edge(
     projection_behavior: str = "graph_traversal",
     external_claim_policy: str = "skill_projection_not_proof",
     validation_status: str = "validated",
+    extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
+    out = {
         "edge_id": edge_id,
         "edge_type": edge_type,
         "source_node_id": source,
@@ -246,6 +247,47 @@ def _edge(
         "external_claim_policy": external_claim_policy,
         "validation_status": validation_status,
     }
+    if extra:
+        out.update(extra)
+    return out
+
+
+def append_senior_role_bridge_edges(
+    edges: list[dict[str, Any]],
+    bridge_specs: list[dict[str, Any]],
+    *,
+    valid_pillar_ids: set[str],
+) -> None:
+    """Evidence-gated pillar phase bridges (W8–W11); traversal-only, not external proof."""
+    for spec in bridge_specs:
+        src = str(spec.get("source_pillar_id") or "")
+        tgt = str(spec.get("target_pillar_id") or "")
+        family = str(spec.get("bridge_edge_family") or "unknown")
+        edge_type = str(spec.get("edge_type") or "pillar_phase_bridge")
+        tgt_ok = tgt in valid_pillar_ids or (
+            edge_type == "pillar_section_eligibility" and tgt.startswith("section_")
+        )
+        if src not in valid_pillar_ids or not tgt_ok:
+            continue
+        eid = str(spec.get("edge_id") or f"edge_bridge_{family}_{src}_to_{tgt}")
+        edges.append(
+            _edge(
+                eid,
+                str(spec.get("edge_type") or "pillar_phase_bridge"),
+                src,
+                tgt,
+                str(spec.get("rationale") or f"Phase bridge: {family}"),
+                projection_behavior=str(spec.get("projection_behavior") or "graph_traversal_forward"),
+                external_claim_policy=str(spec.get("external_claim_policy") or "internal_traversal_only"),
+                validation_status=str(spec.get("validation_status") or "validated"),
+                extra={
+                    "bridge_edge_family": family,
+                    "direction": str(spec.get("direction") or "forward"),
+                    "evidence_fact_ids": list(spec.get("evidence_fact_ids") or []),
+                    "evidence_sources": list(spec.get("evidence_sources") or []),
+                },
+            )
+        )
 
 
 def build_graph_nodes(
@@ -452,6 +494,7 @@ def build_w4a_graph_package(
     *,
     pillars: list[dict[str, Any]],
     legacy_skill_rows: list[dict[str, Any]],
+    bridge_specs: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     agentic_rows = build_agentic_runtime_matrix()
     enhanced_legacy = [enhance_legacy_skill_row(r) for r in legacy_skill_rows]
@@ -466,6 +509,12 @@ def build_w4a_graph_package(
 
     nodes = build_graph_nodes(pillars, skill_rows)
     edges = build_graph_edges(skill_rows, pillars)
+    if bridge_specs:
+        append_senior_role_bridge_edges(
+            edges,
+            bridge_specs,
+            valid_pillar_ids={str(p["pillar_id"]) for p in pillars},
+        )
 
     agentic_by_domain: dict[str, list[str]] = {}
     for row in agentic_rows:

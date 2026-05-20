@@ -1018,6 +1018,542 @@
         "ibm_narrative": true,
         "early_career": false
       }
+    },
+    {
+      "pillar_id": "pillar_gtm_presales_motion",
+      "name": "Go-to-Market / Pre-Sales Motion",
+      "description": "Discovery through pursuit: qualification, solution mapping, stakeholder and executive-buyer alignment, commercial validation, deal support, and delivery handoff.",
+      "subskills": [
+        "discovery_qualification",
+        "solution_mapping",
+        "stakeholder_alignment",
+        "executive_buyer_alignment",
+        "commercial_validation",
+        "deal_support",
+        "presales_to_delivery_handoff",
+        "joint_gtm_roadmaps"
+      ],
+      "evidence_sources": [
+        "Sales - Amit Ayer.txt",
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Field CTO - Amit Ayer.docx",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "archive_snippets": [
+        "aligning C level stakeholders around data centric solutions",
+        "executive workshops, leading to faster adoption",
+        "validating measurable ROI for clients through pilot engagements"
+      ],
+      "user_confirmed_pending_source": [
+        "primary_quota_carrying_ae",
+        "major_airline_client_naming",
+        "engagement_100m_scope_ownership"
+      ],
+      "linked_fact_ids": [
+        "fact_sales_accounts_001",
+        "fact_revenue_ops_001",
+        "fact_partnerships_gtm_004",
+        "fact_partnerships_gtm_005",
+        "fact_solutions_001"
+      ],
+      "allowed_phrases": [
+        "discovery",
+        "qualification",
+        "solution mapping",
+        "stakeholder alignment",
+        "executive workshops",
+        "pilot engagements",
+        "measurable ROI",
+        "deal support",
+        "go-to-market"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "carried $100M presales quota",
+        "owned $100M engagement",
+        "major airline client",
+        "primary customer-success owner"
+      ],
+      "role_family_weights": {
+        "SALES_STRATEGIC_ACCOUNTS": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.9,
+        "PARTNERSHIPS_GTM": 0.85,
+        "REVENUE_OPERATIONS": 0.75
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_technical_presales_accelerators",
+      "name": "Technical Pre-Sales Accelerators",
+      "description": "Reference architectures, repeatable DevOps/CI-CD blueprints, AWS modernization patterns, demoable accelerators, adoption de-risking, and reusable implementation assets for pursuits.",
+      "subskills": [
+        "reference_architectures",
+        "devops_pipeline_blueprints",
+        "aws_modernization_patterns",
+        "estimation_sizing_models",
+        "demoable_end_to_end_flows",
+        "adoption_derisking_patterns",
+        "reusable_implementation_accelerators"
+      ],
+      "evidence_sources": [
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Industry Solutions - Amit Ayer.txt",
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+      ],
+      "archive_snippets": [
+        "AWS Partner: Advanced Migration and Modernization Sales Training",
+        "generative AI Solution Accelerator",
+        "cloud-native architectures"
+      ],
+      "user_confirmed_pending_source": [
+        "major_airline_devops_pipeline_engagement",
+        "engagement_100m_technical_or_commercial_ownership",
+        "formal_estimation_sizing_models"
+      ],
+      "linked_fact_ids": [
+        "fact_solutions_002",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_005",
+        "fact_engineering_platform_006",
+        "fact_partnerships_gtm_002"
+      ],
+      "allowed_phrases": [
+        "reference architecture",
+        "AWS modernization",
+        "cloud migration",
+        "CI/CD",
+        "Solution Accelerator",
+        "reusable platform",
+        "pilot engagements"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "$100M engagement owner",
+        "major airline",
+        "DevOps pipeline for major airline"
+      ],
+      "role_family_weights": {
+        "AI_SOLUTIONS_ARCHITECTURE": 1.0,
+        "ENGINEERING_PLATFORM": 0.95,
+        "PARTNERSHIPS_GTM": 0.85,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_insurance_carrier_transformation",
+      "name": "Insurance Carrier Technology Transformation",
+      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption \u2014 middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
+      "subskills": [
+        "legacy_cloud_modernization",
+        "regulated_insurer_controls",
+        "carrier_technology_fluency"
+      ],
+      "evidence_sources": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+      ],
+      "archive_snippets": [
+        "modernizing legacy insurance technology stacks for middle-market insurers",
+        "AWS-based architectures, reducing total cost of ownership",
+        "SOC 2-aligned cloud control frameworks for regulated insurers"
+      ],
+      "linked_fact_ids": [
+        "exp_insurtech_001",
+        "bul_insurtech_001",
+        "bul_insurtech_002"
+      ],
+      "user_confirmed_pending_source": [],
+      "allowed_phrases": [
+        "middle-market insurers",
+        "legacy insurance technology",
+        "cloud modernization",
+        "regulated insurers",
+        "SOC 2",
+        "auditability"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "underwriting operations owner",
+        "claims operations owner",
+        "policy administration owner",
+        "billing owner",
+        "brokerage distribution"
+      ],
+      "role_family_weights": {
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.85,
+        "REGULATED_AI_GOVERNANCE": 0.7
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_underwriting_claims_ops_ai",
+      "name": "Insurance Systems Resilience (Internal Traversal)",
+      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals \u2014 does not assert underwriting/claims/policy-admin AI product ownership.",
+      "subskills": [
+        "platform_resilience_internal"
+      ],
+      "evidence_sources": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
+      ],
+      "archive_snippets": [],
+      "linked_fact_ids": [
+        "bul_insurtech_003"
+      ],
+      "user_confirmed_pending_source": [
+        "underwriting_claims_ops_ai_product_ownership"
+      ],
+      "allowed_phrases": [
+        "high availability",
+        "platform resilience",
+        "real-time ingestion"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "underwriting AI",
+        "claims AI",
+        "policy administration",
+        "claims operations",
+        "underwriting operations"
+      ],
+      "role_family_weights": {
+        "INSURANCE_CARRIER_TRANSFORMATION": 0.5
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": false,
+        "competencies": false,
+        "unify_bullets": false,
+        "unify_narrative": false,
+        "ibm_bullets": false,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+      "name": "Insurer IT Strategy & AI Enablement",
+      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts \u2014 not brokerage distribution.",
+      "subskills": [
+        "it_strategy",
+        "cloud_enablement",
+        "ai_enablement"
+      ],
+      "evidence_sources": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+        "Industry Solutions - Amit Ayer.txt"
+      ],
+      "archive_snippets": [
+        "Founded and led a cloud-native engineering firm",
+        "cloud-native architectures"
+      ],
+      "linked_fact_ids": [
+        "exp_insurtech_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003"
+      ],
+      "allowed_phrases": [
+        "cloud-native",
+        "IT strategy",
+        "data platform",
+        "AI enablement"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "brokerage",
+        "distribution technology owner"
+      ],
+      "role_family_weights": {
+        "INSURER_IT_AI_ENABLEMENT": 1.0,
+        "ENGINEERING_PLATFORM": 0.9,
+        "INSURANCE_CARRIER_TRANSFORMATION": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_enterprise_portfolio_governance",
+      "name": "Enterprise Portfolio & Data Governance",
+      "description": "Enterprise portfolio governance, data catalogs, and executive alignment \u2014 EY/regulatory program and governance facts.",
+      "subskills": [
+        "portfolio_governance",
+        "data_catalogs",
+        "executive_alignment"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Chief Technology Officer - Amit Ayer.txt"
+      ],
+      "linked_fact_ids": [
+        "fact_governance_004",
+        "fact_engineering_platform_004"
+      ],
+      "allowed_phrases": [
+        "data catalogs",
+        "governance",
+        "executive alignment",
+        "portfolio"
+      ],
+      "forbidden_phrases_without_stronger_support": [],
+      "role_family_weights": {
+        "INSURER_IT_AI_ENABLEMENT": 0.85,
+        "REGULATED_AI_GOVERNANCE": 0.9,
+        "EXECUTIVE_LEADERSHIP": 0.8
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": false,
+        "unify_narrative": true,
+        "ibm_bullets": false,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_banking_platform_responsible_ai",
+      "name": "Banking Platform & Responsible AI (Regulated)",
+      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance \u2014 not transaction banking product lines.",
+      "subskills": [
+        "basel_ccar_lineage",
+        "responsible_ai_governance",
+        "financial_institutions_fluency"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - Strategic Account Executive.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "linked_fact_ids": [
+        "fact_governance_001",
+        "fact_governance_003"
+      ],
+      "allowed_phrases": [
+        "Basel",
+        "CCAR",
+        "data lineage",
+        "regulatory reporting",
+        "financial institutions",
+        "responsible AI"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "payments",
+        "liquidity",
+        "trade operations",
+        "transaction banking owner",
+        "fraud operations",
+        "investor services"
+      ],
+      "role_family_weights": {
+        "BANKING_PLATFORM_AI": 1.0,
+        "REGULATED_AI_GOVERNANCE": 0.95,
+        "AI_GOVERNANCE_RISK": 0.85
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_interoperability_integration_ecosystem",
+      "name": "Interoperability & Integration Platform",
+      "description": "Microservices and integration-platform patterns for regulated enterprises \u2014 not insurance brokerage distribution.",
+      "subskills": [
+        "microservices_integration",
+        "cloud_native_integration"
+      ],
+      "evidence_sources": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Revenue Operations - Amit Ayer.txt"
+      ],
+      "archive_snippets": [
+        "microservices architecture",
+        "cloud-native microservices"
+      ],
+      "linked_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
+      "allowed_phrases": [
+        "microservices",
+        "cloud-native",
+        "integration"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "brokerage",
+        "insurance distribution owner"
+      ],
+      "role_family_weights": {
+        "INSURANCE_BROKERAGE_IT_INNOVATION": 0.4,
+        "INSURER_IT_AI_ENABLEMENT": 0.85,
+        "ENGINEERING_PLATFORM": 0.9
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": false,
+        "ibm_bullets": true,
+        "ibm_narrative": false,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+      "name": "Hyperscaler Alliance & Co-Sell GTM",
+      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue \u2014 not cloud marketplace listing GTM (no marketplace evidence).",
+      "subskills": [
+        "aws_partner_accreditation",
+        "hyperscaler_alliance_co_sell",
+        "partner_co_sell_frameworks",
+        "databricks_accreditation"
+      ],
+      "evidence_sources": [
+        "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Amit Ayer Resume - Strategic Account Executive.txt"
+      ],
+      "archive_snippets": [
+        "AWS Partner: Advanced Migration and Modernization Sales Training",
+        "Structured multi-year hyperscaler alliances generating $15M in incremental revenue through co-sell motions",
+        "Forged co-selling frameworks with SIs and ISVs",
+        "Databricks Lakehouse Fundamentals Accreditation"
+      ],
+      "linked_fact_ids": [
+        "bul_ibm_005",
+        "cert_databricks_lakehouse_001",
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_003"
+      ],
+      "user_confirmed_pending_source": [
+        "cloud_marketplace_listing",
+        "snowflake_partner_platform",
+        "gsi_enablement",
+        "exclusive_hyperscaler_mandate"
+      ],
+      "allowed_phrases": [
+        "AWS Partner",
+        "hyperscaler alliances",
+        "co-sell",
+        "co-selling",
+        "IBM\u2013AWS alliance",
+        "partner-derived revenue",
+        "Databricks Lakehouse Fundamentals"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "cloud marketplace",
+        "marketplace co-sell",
+        "Snowflake",
+        "GCP partner",
+        "Azure exclusivity",
+        "GSI enablement",
+        "partner engineering",
+        "product feedback loops"
+      ],
+      "role_family_weights": {
+        "HYPERSCALER_MARKETPLACE_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 0.85,
+        "PARTNERSHIPS_GTM": 0.9
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
+    },
+    {
+      "pillar_id": "pillar_applied_ai_partner_architecture",
+      "name": "Applied AI Partner Architecture",
+      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture \u2014 distinct from generic quota-carrying partner sales.",
+      "subskills": [
+        "reference_architectures",
+        "joint_ai_solutions",
+        "solution_accelerators",
+        "solution_architecture"
+      ],
+      "evidence_sources": [
+        "Industry Solutions - Amit Ayer.docx",
+        "Field CTO - Amit Ayer.docx",
+        "Partnerships & Alliances - Amit Ayer.docx"
+      ],
+      "linked_fact_ids": [
+        "fact_partnerships_gtm_001",
+        "fact_solutions_001",
+        "fact_solutions_002"
+      ],
+      "user_confirmed_pending_source": [
+        "partner_engineering_delivery_receipts"
+      ],
+      "allowed_phrases": [
+        "reference architecture",
+        "Solution Accelerator",
+        "co-developing",
+        "partner-led",
+        "solution architecture",
+        "executive workshops"
+      ],
+      "forbidden_phrases_without_stronger_support": [
+        "partner engineering owner",
+        "product feedback loops",
+        "partner sales quota owner"
+      ],
+      "role_family_weights": {
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "PARTNERSHIPS_GTM": 0.85
+      },
+      "section_fit": {
+        "headline": false,
+        "executive_summary": true,
+        "competencies": true,
+        "unify_bullets": true,
+        "unify_narrative": true,
+        "ibm_bullets": true,
+        "ibm_narrative": true,
+        "early_career": false
+      }
     }
   ],
   "actuarial_career_matrix": [
@@ -2211,14 +2747,20 @@
   },
   "honest_caveat": "Embedded options, structured derivatives, insurance liabilities, delta/rho/convexity, and partner engineering are USER_CONFIRMED_PENDING_SOURCE\u2014no dedicated archive lines found. Archive 'embedded' elsewhere means DevSecOps/embedded analytics, not insurance embedded options. Revenue-target claims are context-specific (e.g., TraderSense 110%); verify employer scope before activation.",
   "stats": {
-    "pillar_count": 19,
+    "pillar_count": 21,
     "actuarial_matrix_rows": 22,
     "partner_gtm_matrix_rows": 16,
     "pending_source_rows": 9,
     "linked_existing_facts": 42,
     "revenue_operations_matrix_rows": 5,
     "role_family_projection_profile_count": 9,
-    "commercial_expansion_matrix_rows": 10
+    "commercial_expansion_matrix_rows": 10,
+    "phase2_gtm_presales_matrix_rows": 8,
+    "phase2_technical_presales_matrix_rows": 9,
+    "senior_role_w8_w11_matrix_rows": 10,
+    "senior_role_bridge_edges": 10,
+    "senior_role_w12_partner_matrix_rows": 4,
+    "w12_partner_activation_criteria_rows": 12
   },
   "revenue_operations_matrix": [
     {
@@ -2581,6 +3123,1064 @@
       "linked_fact_id": null,
       "skill_id": "skill_commercial_gtm_investment_pipeline",
       "target_pillar": "pillar_revenue_operations"
+    }
+  ],
+  "phase2_gtm_presales_matrix": [
+    {
+      "skill": "discovery_qualification",
+      "description": "Discovery and qualification via pipeline analytics",
+      "source_resume_file": "Strategic Finance - Amit Ayer.txt",
+      "source_evidence": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "prioritize high-potential deals",
+        "GTM strategies"
+      ],
+      "role_relevance": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_revenue_ops_001.",
+      "linked_fact_id": "fact_revenue_ops_001",
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "solution_mapping_executive_value",
+      "description": "Solution mapping to executive value and ROI",
+      "source_resume_file": "Field CTO - Amit Ayer.txt",
+      "source_evidence": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "executive value propositions",
+        "measurable ROI"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies",
+        "ibm_narrative"
+      ],
+      "risk_notes": "MEDIUM; fact_solutions_001 BLOCKED in SRFS audit \u2014 graph skill anchor only.",
+      "linked_fact_id": "fact_solutions_001",
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "stakeholder_alignment_governance",
+      "description": "Stakeholder alignment across partner and client governance",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.txt",
+      "source_evidence": "Facilitated an executive governance council with partner stakeholders to align solution architecture, data security protocols, and regulatory mandates.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "executive governance council",
+        "stakeholder alignment"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_005.",
+      "linked_fact_id": "fact_partnerships_gtm_005",
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "executive_buyer_alignment",
+      "description": "Executive / CFO buyer alignment on data-centric solutions",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "source_evidence": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "CFO priorities",
+        "enterprise-wide adoption",
+        "$5M ACV"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "headline"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_sales_accounts_001.",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "commercial_validation_pilots",
+      "description": "Commercial validation through pilots and measurable ROI",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "validating measurable ROI for clients through pilot engagements",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "pilot engagements",
+        "measurable ROI"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "ibm_bullets",
+        "competencies"
+      ],
+      "risk_notes": "Archive-backed; complements existing skill_partner_pre_sales.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_gtm_commercial_validation_pilots",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "enterprise_deal_support",
+      "description": "Enterprise deal support and ACV pursuit",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "source_evidence": "Drove $5 Million in Annual Contract Value",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "Annual Contract Value",
+        "enterprise-wide adoption"
+      ],
+      "role_relevance": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "unify_narrative",
+        "executive_summary"
+      ],
+      "risk_notes": "Same fact as skill_partner_customer_deal_support; Phase-2 pillar placement.",
+      "linked_fact_id": "fact_sales_accounts_001",
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "presales_to_delivery_handoff",
+      "description": "Handoff from pursuit to reusable delivery / platform IP",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "converting bespoke client delivery into reusable IP deployed across enterprise lines of business",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "reusable IP",
+        "bespoke client delivery",
+        "Solution Accelerator"
+      ],
+      "role_relevance": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "where_to_use": [
+        "unify_narrative",
+        "unify_bullets"
+      ],
+      "risk_notes": "Base resume exp_unify_001 narrative; not a named pre-sales title.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_gtm_presales_delivery_handoff",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "joint_gtm_cloud_vendor_roadmaps",
+      "description": "Joint GTM and solution roadmaps with cloud/AI vendors",
+      "source_resume_file": "Sales - Amit Ayer.txt",
+      "source_evidence": "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "joint go-to-market",
+        "solution roadmaps",
+        "cloud and AI vendors"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "MEDIUM candidate fact fact_partnerships_gtm_004.",
+      "linked_fact_id": "fact_partnerships_gtm_004",
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "target_pillar": "pillar_gtm_presales_motion",
+      "evidence_confidence": "MEDIUM"
+    }
+  ],
+  "phase2_technical_presales_matrix": [
+    {
+      "skill": "reference_architecture_industry_solutions",
+      "description": "Industry reference architectures for regulated modernization",
+      "source_resume_file": "Industry Solutions - Amit Ayer.txt",
+      "source_evidence": "Developed industry-specific AI, analytics, and cloud modernization solutions across financial-services risk, compliance, fraud, and regulatory use cases.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "industry-specific",
+        "cloud modernization solutions",
+        "reference architecture"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "competencies",
+        "ibm_bullets"
+      ],
+      "risk_notes": "MEDIUM; fact_solutions_002 BLOCKED in SRFS audit \u2014 graph anchor only.",
+      "linked_fact_id": "fact_solutions_002",
+      "skill_id": "skill_p2_tech_reference_architecture",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "aws_migration_modernization_patterns",
+      "description": "AWS migration and modernization patterns (partner + delivery)",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "AWS Partner: Advanced Migration and Modernization Sales Training",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "AWS Partner",
+        "Migration and Modernization",
+        "cloud migration"
+      ],
+      "role_relevance": [
+        "PARTNERSHIPS_GTM",
+        "ENGINEERING_PLATFORM"
+      ],
+      "where_to_use": [
+        "competencies",
+        "ibm_bullets"
+      ],
+      "risk_notes": "Complements skill_partner_aws_ecosystem; verify accreditations against portal.",
+      "linked_fact_id": "fact_partnerships_gtm_002",
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "devops_pipeline_cicd_blueprint",
+      "description": "Repeatable DevOps / AI CI-CD pipeline blueprint",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Strengthened enterprise retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "AI CI/CD standards",
+        "evaluation gates",
+        "rollback controls"
+      ],
+      "role_relevance": [
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "unify_bullets",
+        "competencies"
+      ],
+      "risk_notes": "HIGH base resume bul_unify_003 + candidate fact_engineering_platform_003.",
+      "linked_fact_id": "fact_engineering_platform_003",
+      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "demoable_solution_accelerator",
+      "description": "Demoable end-to-end Solution Accelerator flows",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "commercialization of a production-grade generative AI Solution Accelerator within a consulting firm",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Solution Accelerator",
+        "production-grade generative AI"
+      ],
+      "role_relevance": [
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "unify_narrative",
+        "executive_summary"
+      ],
+      "risk_notes": "Base resume exp_unify_001 role_narrative.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_tech_demoable_accelerator",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "reusable_implementation_accelerators",
+      "description": "Reusable implementation accelerators and platform IP",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Productized core agentic AI primitives into reusable platform services, generating $22M in IP-led revenue",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "reusable platform services",
+        "$22M IP-led revenue"
+      ],
+      "role_relevance": [
+        "ENGINEERING_PLATFORM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "where_to_use": [
+        "unify_bullets",
+        "executive_summary"
+      ],
+      "risk_notes": "HIGH candidate fact fact_engineering_platform_006.",
+      "linked_fact_id": "fact_engineering_platform_006",
+      "skill_id": "skill_p2_tech_reusable_accelerators",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "adoption_derisking_pilots",
+      "description": "Adoption de-risking via pilots, workshops, and governance",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "executive workshops, leading to faster adoption across major financial accounts",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "executive workshops",
+        "faster adoption"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "ibm_narrative",
+        "competencies"
+      ],
+      "risk_notes": "Financial-institution accounts only in archive; not airline-specific.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_tech_adoption_derisking",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "ibm_cloud_portfolio_architecture_anchor",
+      "description": "Large cloud/AI portfolio technical architecture (IBM Partner)",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Led architecture and commercial ownership of a $30M cloud and AI transformation portfolio",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "$30M cloud and AI transformation portfolio",
+        "systems architect"
+      ],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "where_to_use": [
+        "ibm_narrative",
+        "executive_summary"
+      ],
+      "risk_notes": "NOT airline/$100M; scoped to IBM base-resume portfolio claim only.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "estimation_sizing_directional",
+      "description": "Estimation and sizing models (directional \u2014 no metric anchor)",
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "INTERNAL_ONLY",
+      "allowed_phrases": [],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "where_to_use": [],
+      "risk_notes": "INFERENCE_ONLY: no resume-archive or candidate-fact sizing/estimation proof located.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_tech_estimation_sizing_directional",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "LOW"
+    },
+    {
+      "skill": "anchor_major_airline_devops_aws_directional",
+      "description": "Major-airline DevOps/AWS modernization engagement (directional anchor)",
+      "source_resume_file": null,
+      "source_evidence": null,
+      "support_status": "INTERNAL_ONLY",
+      "allowed_phrases": [],
+      "role_relevance": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "where_to_use": [],
+      "risk_notes": "INFERENCE_ONLY_PENDING_OPERATOR_SOURCE: operator requested major-airline ~$100M DevOps/AWS engagement anchor; no matching text in repo resume archive or candidate ledger.",
+      "linked_fact_id": null,
+      "skill_id": "skill_p2_anchor_major_airline_devops_aws",
+      "target_pillar": "pillar_technical_presales_accelerators",
+      "evidence_confidence": "LOW"
+    }
+  ],
+  "senior_role_w8_w11_matrix": [
+    {
+      "skill": "insurtech_legacy_cloud_modernization",
+      "skill_id": "skill_sr_insurtech_legacy_cloud_modernization",
+      "target_pillar": "pillar_insurance_carrier_transformation",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Led end-to-end modernization of monolithic policy administration systems into AWS-based architectures for middle-market insurers (InsurTech CTO).",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "middle-market insurers",
+        "AWS",
+        "legacy modernization",
+        "TCO"
+      ],
+      "role_relevance": [
+        "INSURANCE_CARRIER_TRANSFORMATION",
+        "INSURER_IT_AI_ENABLEMENT"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies",
+        "ibm_bullets"
+      ],
+      "risk_notes": "Policy-admin systems mentioned as legacy modernization target only \u2014 not ownership of policy-admin product.",
+      "linked_fact_id": "bul_insurtech_001",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "insurtech_regulated_insurer_controls",
+      "skill_id": "skill_sr_insurtech_regulated_insurer_controls",
+      "target_pillar": "pillar_insurance_carrier_transformation",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Designed SOC 2-aligned cloud control frameworks enabling regulated insurers to adopt modern analytics and ML with auditability.",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "SOC 2",
+        "regulated insurers",
+        "auditability",
+        "ML capabilities"
+      ],
+      "role_relevance": [
+        "INSURANCE_CARRIER_TRANSFORMATION",
+        "REGULATED_AI_GOVERNANCE"
+      ],
+      "where_to_use": [
+        "competencies",
+        "ibm_bullets"
+      ],
+      "risk_notes": "Carrier/regulated-insurer fluency only.",
+      "linked_fact_id": "bul_insurtech_002",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "insurance_systems_resilience_internal",
+      "skill_id": "skill_sr_insurance_systems_resilience_internal",
+      "target_pillar": "pillar_underwriting_claims_ops_ai",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Re-architected systems for high availability (99.99% uptime) and real-time ingestion \u2014 internal traversal only; no underwriting/claims ops AI ownership.",
+      "support_status": "INTERNAL_ONLY",
+      "allowed_phrases": [],
+      "role_relevance": [
+        "INSURANCE_CARRIER_TRANSFORMATION"
+      ],
+      "where_to_use": [],
+      "risk_notes": "Source bullet references underwriting systems \u2014 forbidden for external claims; INTERNAL_ONLY.",
+      "linked_fact_id": "bul_insurtech_003",
+      "evidence_confidence": "LOW"
+    },
+    {
+      "skill": "insurtech_cto_it_enablement",
+      "skill_id": "skill_sr_insurtech_cto_it_enablement",
+      "target_pillar": "pillar_insurer_it_strategy_ai_enablement",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Founded and led a cloud-native engineering firm modernizing legacy insurance technology stacks for middle-market insurers.",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "cloud-native engineering",
+        "insurance technology",
+        "middle-market insurers"
+      ],
+      "role_relevance": [
+        "INSURER_IT_AI_ENABLEMENT",
+        "INSURANCE_CARRIER_TRANSFORMATION"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies",
+        "ibm_narrative"
+      ],
+      "risk_notes": "InsurTech employment spine \u2014 exp_insurtech_001.",
+      "linked_fact_id": "exp_insurtech_001",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "cloud_data_platform_engineering",
+      "skill_id": "skill_sr_cloud_data_platform_engineering",
+      "target_pillar": "pillar_insurer_it_strategy_ai_enablement",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "source_resume_file": "Industry Solutions - Amit Ayer.txt",
+      "source_evidence": "Cloud-native architectures and platform engineering for regulated financial services clients.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "cloud-native",
+        "platform engineering"
+      ],
+      "role_relevance": [
+        "INSURER_IT_AI_ENABLEMENT",
+        "ENGINEERING_PLATFORM"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "Linked fact_engineering_platform_001.",
+      "linked_fact_id": "fact_engineering_platform_001",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "enterprise_portfolio_data_governance",
+      "skill_id": "skill_sr_enterprise_portfolio_data_governance",
+      "target_pillar": "pillar_enterprise_portfolio_governance",
+      "career_epoch": "epoch_enterprise_risk_governance",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.txt",
+      "source_evidence": "Defined documentation standards and centralized data catalogs that expedited audits.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "data catalogs",
+        "documentation standards",
+        "audits"
+      ],
+      "role_relevance": [
+        "REGULATED_AI_GOVERNANCE",
+        "INSURER_IT_AI_ENABLEMENT"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies"
+      ],
+      "risk_notes": "fact_governance_004 MEDIUM \u2014 DRAFT until human confirm.",
+      "linked_fact_id": "fact_governance_004",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "basel_ccar_lineage_regulatory",
+      "skill_id": "skill_sr_basel_ccar_lineage_regulatory",
+      "target_pillar": "pillar_banking_platform_responsible_ai",
+      "career_epoch": "epoch_enterprise_risk_governance",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.txt",
+      "source_evidence": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "Basel",
+        "CCAR",
+        "data lineage",
+        "regulatory reporting"
+      ],
+      "role_relevance": [
+        "REGULATED_AI_GOVERNANCE",
+        "BANKING_PLATFORM_AI"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "fact_governance_003 HIGH candidate \u2014 human_confirm per ledger policy.",
+      "linked_fact_id": "fact_governance_003",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "banking_ai_governance_controls",
+      "skill_id": "skill_sr_banking_ai_governance_controls",
+      "target_pillar": "pillar_banking_platform_responsible_ai",
+      "career_epoch": "epoch_enterprise_risk_governance",
+      "source_resume_file": "AI and Data Governance - Amit Ayer.txt",
+      "source_evidence": "Enterprise AI rollout for a major banking client with data usage controls and compliance checkpoints.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "banking client",
+        "compliance checkpoints",
+        "data usage controls"
+      ],
+      "role_relevance": [
+        "BANKING_PLATFORM_AI",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "where_to_use": [
+        "executive_summary"
+      ],
+      "risk_notes": "fact_governance_001 MEDIUM \u2014 not transaction-banking product scope.",
+      "linked_fact_id": "fact_governance_001",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "regulated_financial_institutions_fluency",
+      "skill_id": "skill_sr_regulated_financial_institutions_fluency",
+      "target_pillar": "pillar_banking_platform_responsible_ai",
+      "career_epoch": "epoch_enterprise_risk_governance",
+      "source_resume_file": "Amit Ayer Resume - Strategic Account Executive.txt",
+      "source_evidence": "Regulatory IT transformations for top banks and insurers with Basel and CCAR compliance emphasis.",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "financial institutions",
+        "Basel",
+        "CCAR",
+        "regulatory IT"
+      ],
+      "role_relevance": [
+        "BANKING_PLATFORM_AI",
+        "REGULATED_AI_GOVERNANCE"
+      ],
+      "where_to_use": [
+        "competencies",
+        "ibm_narrative"
+      ],
+      "risk_notes": "Broad regulated-enterprise fluency \u2014 not payments/liquidity/trade claims.",
+      "linked_fact_id": null,
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "microservices_integration_platform",
+      "skill_id": "skill_sr_microservices_integration_platform",
+      "target_pillar": "pillar_interoperability_integration_ecosystem",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "source_resume_file": "Industry Solutions - Amit Ayer.txt",
+      "source_evidence": "Migrated monolithic systems to cloud-native microservices for high availability and integration.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "microservices",
+        "cloud-native",
+        "integration"
+      ],
+      "role_relevance": [
+        "INSURER_IT_AI_ENABLEMENT",
+        "ENGINEERING_PLATFORM"
+      ],
+      "where_to_use": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "risk_notes": "W11 interoperability via platform integration evidence \u2014 not brokerage distribution.",
+      "linked_fact_id": "fact_engineering_platform_002",
+      "evidence_confidence": "MEDIUM"
+    }
+  ],
+  "senior_role_bridge_edges": [
+    {
+      "bridge_edge_family": "actuarial_to_insurer_ai_strategy",
+      "source_pillar_id": "pillar_actuarial_foundation",
+      "target_pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "evidence_sources": [
+        "career_arc_actuarial_to_insurtech_cto"
+      ],
+      "rationale": "Actuarial foundation epoch precedes InsurTech CTO cloud/IT enablement (employment spine).",
+      "edge_id": "edge_bridge_actuarial_to_insurer_ai_strategy_pillar_actuarial_foundation_to_pillar_insurer_it_strategy_ai_enablement"
+    },
+    {
+      "bridge_edge_family": "actuarial_to_agentic_transformation",
+      "source_pillar_id": "pillar_actuarial_foundation",
+      "target_pillar_id": "pillar_insurance_carrier_transformation",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "evidence_sources": [
+        "insurtech_carrier_modernization_to_agentic_epoch"
+      ],
+      "rationale": "Actuarial/insurance domain fluency bridges to carrier transformation pillar for agentic targeting.",
+      "edge_id": "edge_bridge_actuarial_to_agentic_transformation_pillar_actuarial_foundation_to_pillar_insurance_carrier_transformation"
+    },
+    {
+      "bridge_edge_family": "actuarial_to_agentic_transformation",
+      "source_pillar_id": "pillar_actuarial_foundation",
+      "target_pillar_id": "pillar_agentic_ai_platforms",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "evidence_sources": [
+        "regulated_enterprise_agentic_platform"
+      ],
+      "rationale": "Forward bridge from actuarial/regulatory domain to agentic runtime pillar (traversal only).",
+      "edge_id": "edge_bridge_actuarial_to_agentic_transformation_pillar_actuarial_foundation_to_pillar_agentic_ai_platforms"
+    },
+    {
+      "bridge_edge_family": "insurance_to_underwriting_claims_ops",
+      "source_pillar_id": "pillar_insurance_carrier_transformation",
+      "target_pillar_id": "pillar_underwriting_claims_ops_ai",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "bul_insurtech_003"
+      ],
+      "evidence_sources": [
+        "internal_only_resilience_signal"
+      ],
+      "rationale": "Directional internal bridge to resilience pillar \u2014 external claims blocked.",
+      "external_claim_policy": "internal_traversal_only",
+      "edge_id": "edge_bridge_insurance_to_underwriting_claims_ops_pillar_insurance_carrier_transformation_to_pillar_underwriting_claims_ops_ai"
+    },
+    {
+      "bridge_edge_family": "insurtech_to_insurer_it_strategy",
+      "source_pillar_id": "pillar_insurance_carrier_transformation",
+      "target_pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "evidence_sources": [
+        "same_employment_insurtech_spine"
+      ],
+      "rationale": "InsurTech employment links carrier transformation to IT/AI enablement.",
+      "edge_id": "edge_bridge_insurtech_to_insurer_it_strategy_pillar_insurance_carrier_transformation_to_pillar_insurer_it_strategy_ai_enablement"
+    },
+    {
+      "bridge_edge_family": "basel_ccar_to_ai_auditability",
+      "source_pillar_id": "pillar_regulatory_governance",
+      "target_pillar_id": "pillar_banking_platform_responsible_ai",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_governance_003"
+      ],
+      "evidence_sources": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "rationale": "Basel/CCAR lineage evidence bridges regulatory governance to banking responsible-AI pillar.",
+      "edge_id": "edge_bridge_basel_ccar_to_ai_auditability_pillar_regulatory_governance_to_pillar_banking_platform_responsible_ai"
+    },
+    {
+      "bridge_edge_family": "regulatory_governance_to_responsible_ai",
+      "source_pillar_id": "pillar_regulatory_governance",
+      "target_pillar_id": "pillar_banking_platform_responsible_ai",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_governance_001",
+        "fact_governance_003"
+      ],
+      "rationale": "Regulatory governance pillar forward to banking platform responsible AI.",
+      "edge_id": "edge_bridge_regulatory_governance_to_responsible_ai_pillar_regulatory_governance_to_pillar_banking_platform_responsible_ai"
+    },
+    {
+      "bridge_edge_family": "data_lineage_to_ai_traceability",
+      "source_pillar_id": "pillar_regulatory_governance",
+      "target_pillar_id": "pillar_agentic_ai_platforms",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_governance_003"
+      ],
+      "evidence_sources": [
+        "skill_contradiction_and_lineage_handling"
+      ],
+      "rationale": "Data lineage / regulatory reporting bridges to agentic auditability and traceability skills.",
+      "edge_id": "edge_bridge_data_lineage_to_ai_traceability_pillar_regulatory_governance_to_pillar_agentic_ai_platforms"
+    },
+    {
+      "bridge_edge_family": "domain_expertise_to_section_eligibility",
+      "source_pillar_id": "pillar_insurance_carrier_transformation",
+      "target_pillar_id": "section_executive_summary",
+      "direction": "forward",
+      "edge_type": "pillar_section_eligibility",
+      "evidence_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "rationale": "Carrier transformation pillar eligible for executive_summary when facts active.",
+      "edge_id": "edge_bridge_domain_expertise_to_section_eligibility_pillar_insurance_carrier_transformation_to_section_executive_summary"
+    },
+    {
+      "bridge_edge_family": "domain_expertise_to_section_eligibility",
+      "source_pillar_id": "pillar_banking_platform_responsible_ai",
+      "target_pillar_id": "section_competencies",
+      "direction": "forward",
+      "edge_type": "pillar_section_eligibility",
+      "evidence_fact_ids": [
+        "fact_governance_003"
+      ],
+      "rationale": "Banking/regulatory pillar eligible for competencies section projection.",
+      "edge_id": "edge_bridge_domain_expertise_to_section_eligibility_pillar_banking_platform_responsible_ai_to_section_competencies"
+    },
+    {
+      "bridge_edge_family": "hyperscaler_to_applied_ai_architecture",
+      "source_pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+      "target_pillar_id": "pillar_applied_ai_partner_architecture",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "bul_ibm_005",
+        "fact_partnerships_gtm_001"
+      ],
+      "rationale": "Alliance co-sell and joint solution development bridge hyperscaler GTM to applied AI architecture.",
+      "edge_id": "edge_bridge_hyperscaler_to_applied_ai_architecture_pillar_hyperscaler_marketplace_partner_gtm_to_pillar_applied_ai_partner_architecture"
+    },
+    {
+      "bridge_edge_family": "marketplace_to_partner_gtm",
+      "source_pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+      "target_pillar_id": "pillar_partner_gtm_alliances",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_partnerships_gtm_003"
+      ],
+      "rationale": "Co-sell/alliance traversal to partner GTM pillar \u2014 not cloud marketplace listing (marketplace phrase blocked on pillar).",
+      "external_claim_policy": "internal_traversal_only",
+      "edge_id": "edge_bridge_marketplace_to_partner_gtm_pillar_hyperscaler_marketplace_partner_gtm_to_pillar_partner_gtm_alliances"
+    },
+    {
+      "bridge_edge_family": "partner_engineering_to_reference_architecture",
+      "source_pillar_id": "pillar_cosell_partner_engineering",
+      "target_pillar_id": "pillar_applied_ai_partner_architecture",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_solutions_002"
+      ],
+      "evidence_sources": [
+        "skill_partner_pre_sales",
+        "skill_partner_solution_architecture"
+      ],
+      "rationale": "Co-sell/presales engineering surface bridges to reference architecture; skill_partner_partner_engineering remains DO_NOT_PROMOTE.",
+      "edge_id": "edge_bridge_partner_engineering_to_reference_architecture_pillar_cosell_partner_engineering_to_pillar_applied_ai_partner_architecture"
+    },
+    {
+      "bridge_edge_family": "partner_ecosystem_to_ai_adoption",
+      "source_pillar_id": "pillar_partner_gtm_alliances",
+      "target_pillar_id": "pillar_agentic_ai_platforms",
+      "direction": "forward",
+      "evidence_fact_ids": [
+        "fact_partnerships_gtm_001",
+        "fact_engineering_platform_001"
+      ],
+      "rationale": "Partner GTM ecosystem bridges to agentic AI platform adoption (traversal only).",
+      "edge_id": "edge_bridge_partner_ecosystem_to_ai_adoption_pillar_partner_gtm_alliances_to_pillar_agentic_ai_platforms"
+    },
+    {
+      "bridge_edge_family": "domain_expertise_to_section_eligibility",
+      "source_pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+      "target_pillar_id": "section_executive_summary",
+      "direction": "forward",
+      "edge_type": "pillar_section_eligibility",
+      "evidence_fact_ids": [
+        "bul_ibm_005"
+      ],
+      "rationale": "Hyperscaler alliance pillar eligible for executive_summary when facts active.",
+      "edge_id": "edge_bridge_domain_expertise_to_section_eligibility_pillar_hyperscaler_marketplace_partner_gtm_to_section_executive_summary"
+    },
+    {
+      "bridge_edge_family": "domain_expertise_to_section_eligibility",
+      "source_pillar_id": "pillar_applied_ai_partner_architecture",
+      "target_pillar_id": "section_competencies",
+      "direction": "forward",
+      "edge_type": "pillar_section_eligibility",
+      "evidence_fact_ids": [
+        "fact_solutions_002"
+      ],
+      "rationale": "Applied AI partner architecture eligible for competencies projection.",
+      "edge_id": "edge_bridge_domain_expertise_to_section_eligibility_pillar_applied_ai_partner_architecture_to_section_competencies"
+    }
+  ],
+  "senior_role_w12_partner_matrix": [
+    {
+      "skill": "databricks_lakehouse_fundamentals",
+      "skill_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+      "target_pillar": "pillar_hyperscaler_marketplace_partner_gtm",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Databricks Lakehouse Fundamentals Accreditation (2023); AWS/Databricks lakehouse architecture in platform engineering.",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "Databricks Lakehouse Fundamentals",
+        "Databricks Lakehouse",
+        "AWS and Databricks"
+      ],
+      "role_relevance": [
+        "HYPERSCALER_MARKETPLACE_GTM",
+        "ENGINEERING_PLATFORM",
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "competencies"
+      ],
+      "risk_notes": "Accreditation + engineering fact; not Snowflake; not marketplace listing.",
+      "linked_fact_id": "cert_databricks_lakehouse_001",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "hyperscaler_alliance_co_sell",
+      "skill_id": "skill_sr_w12_hyperscaler_alliance_co_sell",
+      "target_pillar": "pillar_hyperscaler_marketplace_partner_gtm",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "source_evidence": "Structured multi-year hyperscaler alliances generating $15M in incremental revenue through co-sell motions aligned to platform modernization and AI growth.",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "hyperscaler alliances",
+        "co-sell motions",
+        "incremental revenue",
+        "platform modernization"
+      ],
+      "role_relevance": [
+        "HYPERSCALER_MARKETPLACE_GTM",
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "executive_summary",
+        "ibm_bullets",
+        "unify_bullets"
+      ],
+      "risk_notes": "IBM Partner stint bullet; do not upgrade to marketplace or personal quota carry.",
+      "linked_fact_id": "bul_ibm_005",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "skill": "joint_ai_solution_development",
+      "skill_id": "skill_sr_w12_joint_ai_solution_development",
+      "target_pillar": "pillar_applied_ai_partner_architecture",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
+      "source_evidence": "Co-developing advanced analytics frameworks with strategic partners.",
+      "support_status": "DERIVED_SUPPORTED",
+      "allowed_phrases": [
+        "co-developing",
+        "partner-led",
+        "advanced analytics frameworks"
+      ],
+      "role_relevance": [
+        "PARTNER_APPLIED_AI_ARCHITECTURE",
+        "PARTNERSHIPS_GTM"
+      ],
+      "where_to_use": [
+        "unify_bullets",
+        "competencies"
+      ],
+      "risk_notes": "fact_partnerships_gtm_001 MEDIUM \u2014 human confirmation before external MEDIUM claim.",
+      "linked_fact_id": "fact_partnerships_gtm_001",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "skill": "industry_reference_architecture_partner",
+      "skill_id": "skill_sr_w12_industry_reference_architecture",
+      "target_pillar": "pillar_applied_ai_partner_architecture",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "source_resume_file": "Industry Solutions - Amit Ayer.docx",
+      "source_evidence": "Industry Solutions archive: reference architectures and regulated modernization patterns (complements skill_p2_tech_reference_architecture).",
+      "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
+      "allowed_phrases": [
+        "reference architecture",
+        "regulated modernization",
+        "Solution Accelerator"
+      ],
+      "role_relevance": [
+        "PARTNER_APPLIED_AI_ARCHITECTURE",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "where_to_use": [
+        "competencies",
+        "ibm_bullets"
+      ],
+      "risk_notes": "Not partner-engineering-specific; presales/solutioning surface.",
+      "linked_fact_id": "fact_solutions_002",
+      "evidence_confidence": "HIGH"
+    }
+  ],
+  "w12_partner_activation_criteria": [
+    {
+      "item_id": "skill_partner_aws_ecosystem",
+      "topic": "AWS partner ecosystem",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Archive AWS Partner training; existing partner_gtm_matrix row; external via gate not AUTO MEDIUM."
+    },
+    {
+      "item_id": "skill_partner_cloud_partner_ecosystem",
+      "topic": "IBM\u2013AWS alliance",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Partnerships archive IBM\u2013AWS alliance line."
+    },
+    {
+      "item_id": "skill_partner_co_selling",
+      "topic": "Co-sell with SI/ISV",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Archive co-selling frameworks; fact_partnerships_gtm_003 MEDIUM \u2014 not marketplace co-sell."
+    },
+    {
+      "item_id": "skill_partner_partner_engineering",
+      "topic": "Partner engineering",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "USER_CONFIRMED_PENDING_SOURCE; no archive snippet."
+    },
+    {
+      "item_id": "skill_partner_product_feedback_loops",
+      "topic": "Product feedback loops",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "USER_CONFIRMED_PENDING_SOURCE; trading-desk feedback loops in archive are not partner-product scope."
+    },
+    {
+      "item_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+      "topic": "Databricks Lakehouse",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "cert_databricks_lakehouse_001 + fact_engineering_platform_005; accreditation not marketplace."
+    },
+    {
+      "item_id": "skill_sr_w12_hyperscaler_alliance_co_sell",
+      "topic": "Hyperscaler alliance co-sell",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "bul_ibm_005 base resume; co-sell/alliance \u2014 forbidden: marketplace listing."
+    },
+    {
+      "item_id": "skill_sr_w12_joint_ai_solution_development",
+      "topic": "Joint AI solution development",
+      "evidence_class": "MEDIUM_NEEDS_HUMAN_CONFIRMATION",
+      "activation_decision": "DRAFT",
+      "notes": "fact_partnerships_gtm_001 partner-led co-development; human confirm before MEDIUM external."
+    },
+    {
+      "item_id": "skill_sr_w12_industry_reference_architecture",
+      "topic": "Reference architectures (partner applied AI)",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "activation_decision": "DRAFT",
+      "notes": "Phase I Industry Solutions + skill_p2_tech_reference_architecture archive lines."
+    },
+    {
+      "item_id": "snowflake_partner",
+      "topic": "Snowflake",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "No Snowflake string in Phase I archive grep."
+    },
+    {
+      "item_id": "cloud_marketplace_listing",
+      "topic": "Cloud marketplace GTM",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "Pillar id retains taxonomy label; external claims block marketplace/co-sell listing phrases."
+    },
+    {
+      "item_id": "gsi_enablement",
+      "topic": "GSI enablement",
+      "evidence_class": "ABSENT_EVIDENCE",
+      "activation_decision": "DO_NOT_PROMOTE",
+      "notes": "No GSI string in archive."
     }
   ]
 }

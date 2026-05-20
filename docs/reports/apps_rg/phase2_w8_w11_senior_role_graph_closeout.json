@@ -1,0 +1,61 @@
+{
+  "schema": "phase2_w8_w11_senior_role_graph_closeout_v1",
+  "status": "PASS",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "wave": "W8-W11-graph",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "generated_at_utc": "2026-05-20T12:12:27Z",
+  "proof_classification": "graph_materialization_receipt_only",
+  "before_after_counts": {
+    "before": {
+      "pillar_count": 27,
+      "skill_row_count": 158,
+      "graph_node_count": 214,
+      "graph_edge_count": 1368,
+      "bridge_edge_count": 8,
+      "activation_active": 87,
+      "activation_active_confirmed": 15,
+      "activation_draft": 56,
+      "internal_only_skill_rows": 3
+    },
+    "after": {
+      "pillar_count": 27,
+      "skill_row_count": 158,
+      "graph_node_count": 214,
+      "graph_edge_count": 1370,
+      "bridge_edge_count": 10,
+      "activation_active": 87,
+      "activation_active_confirmed": 15,
+      "activation_draft": 56,
+      "internal_only_skill_rows": 3
+    }
+  },
+  "pillars_added": [],
+  "pillars_deferred": [
+    {
+      "pillar_id": "pillar_insurance_brokerage_distribution",
+      "reason": "No brokerage/distribution/interoperability-for-brokers evidence in resume archive or candidate ledger.",
+      "wave": "W11-deferred"
+    }
+  ],
+  "skills_added": [],
+  "bridge_edge_families_added": [],
+  "explicit_non_claims": [
+    "No underwriting, claims, policy administration, or billing ownership claims.",
+    "No brokerage distribution ownership or broker-channel product claims.",
+    "No transaction banking, payments, liquidity, trade, investor/issuer services, or fraud operations.",
+    "No Fed/regulator-facing work, marketplace co-sell, or hyperscaler exclusivity.",
+    "No airline ~$100M engagement or technical estimation/sizing without evidence.",
+    "JD/briefing and taxonomy keywords are targeting-only, not proof.",
+    "broad_skills_ledger remains non-authority."
+  ],
+  "scope_control": {
+    "w12_partner_hyperscaler": false,
+    "w13_fixtures": false,
+    "runtime_proof": false,
+    "track_weight_code": false,
+    "agentic_core": false,
+    "prompts": false,
+    "broad_skills_ledger_authority": false
+  }
+}

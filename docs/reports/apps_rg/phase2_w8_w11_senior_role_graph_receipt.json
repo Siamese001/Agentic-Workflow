@@ -1,0 +1,210 @@
+{
+  "schema": "phase2_w8_w11_senior_role_graph_receipt_v1",
+  "status": "PASS",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "wave": "W8-W11-graph",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "prior_wave_receipt": "phase2_w05b_taxonomy_track_weight_receipt.json",
+  "scope_match": true,
+  "scope_description": "Evidence-gated pillars, skills, and phase bridge edges for W8–W11 only. No W12 partner activation, W13 fixtures, runtime proof, or track-weight code.",
+  "generated_at_utc": "2026-05-20T12:20:00Z",
+  "proof_classification": "graph_materialization_receipt_only",
+  "pillar_count_before_after": { "before": 21, "after": 27 },
+  "skill_count_before_after": { "before": 148, "after": 158 },
+  "edge_count_before_after": { "before": 1281, "after": 1370 },
+  "active_vs_draft_counts": {
+    "skill_rows_active": 87,
+    "skill_rows_active_confirmed": 15,
+    "skill_rows_draft": 56,
+    "senior_role_skill_rows_total": 10,
+    "senior_role_internal_only": 1,
+    "senior_role_external_eligible_by_gate": 9,
+    "senior_role_active_confirmed": 3
+  },
+  "evidence_backed_items_count": {
+    "pillars_with_linked_facts": 6,
+    "skills_with_fact_or_archive_snippet": 10,
+    "bridge_edges_with_evidence_fact_ids": 10
+  },
+  "deferred_items_count": {
+    "pillars_deferred": 1,
+    "w12_pillars_not_added": 2
+  },
+  "pillars_added_or_deferred": {
+    "added": [
+      "pillar_insurance_carrier_transformation",
+      "pillar_underwriting_claims_ops_ai",
+      "pillar_insurer_it_strategy_ai_enablement",
+      "pillar_enterprise_portfolio_governance",
+      "pillar_banking_platform_responsible_ai",
+      "pillar_interoperability_integration_ecosystem"
+    ],
+    "deferred": [
+      {
+        "pillar_id": "pillar_insurance_brokerage_distribution",
+        "wave": "W11",
+        "reason": "No brokerage/distribution evidence in Phase I archive or candidate ledger (gap analysis GAP-001 Brown & Brown)."
+      }
+    ],
+    "excluded_w12": [
+      "pillar_hyperscaler_marketplace_partner_gtm",
+      "pillar_applied_ai_partner_architecture"
+    ]
+  },
+  "skills_added_or_deferred": {
+    "added": [
+      "skill_sr_insurtech_legacy_cloud_modernization",
+      "skill_sr_insurtech_regulated_insurer_controls",
+      "skill_sr_insurance_systems_resilience_internal",
+      "skill_sr_insurtech_cto_it_enablement",
+      "skill_sr_cloud_data_platform_engineering",
+      "skill_sr_enterprise_portfolio_data_governance",
+      "skill_sr_basel_ccar_lineage_regulatory",
+      "skill_sr_banking_ai_governance_controls",
+      "skill_sr_regulated_financial_institutions_fluency",
+      "skill_sr_microservices_integration_platform"
+    ],
+    "draft_internal_only": ["skill_sr_insurance_systems_resilience_internal"]
+  },
+  "bridge_edges_added_or_deferred": {
+    "added_families": [
+      "actuarial_to_insurer_ai_strategy",
+      "actuarial_to_agentic_transformation",
+      "insurance_to_underwriting_claims_ops",
+      "insurtech_to_insurer_it_strategy",
+      "basel_ccar_to_ai_auditability",
+      "regulatory_governance_to_responsible_ai",
+      "data_lineage_to_ai_traceability",
+      "domain_expertise_to_section_eligibility"
+    ],
+    "edge_count": 10,
+    "edge_types": ["pillar_phase_bridge", "pillar_section_eligibility"],
+    "directional": true,
+    "deferred_w12_families": [
+      "hyperscaler_to_applied_ai_architecture",
+      "marketplace_to_partner_gtm",
+      "partner_engineering_to_reference_architecture",
+      "partner_ecosystem_to_ai_adoption"
+    ]
+  },
+  "evidence_manifest": [
+    {
+      "item": "pillar_insurance_carrier_transformation",
+      "evidence": ["exp_insurtech_001", "bul_insurtech_001", "bul_insurtech_002"],
+      "sources": ["apps_rg/resume/base/amit_ayer_base_resume_v1.json"]
+    },
+    {
+      "item": "pillar_underwriting_claims_ops_ai",
+      "evidence": ["bul_insurtech_003"],
+      "status": "INTERNAL_ONLY traversal pillar — external claims blocked"
+    },
+    {
+      "item": "pillar_insurer_it_strategy_ai_enablement",
+      "evidence": ["exp_insurtech_001", "fact_engineering_platform_001", "fact_engineering_platform_003"]
+    },
+    {
+      "item": "pillar_enterprise_portfolio_governance",
+      "evidence": ["fact_governance_004", "fact_engineering_platform_004"]
+    },
+    {
+      "item": "pillar_banking_platform_responsible_ai",
+      "evidence": ["fact_governance_001", "fact_governance_003"],
+      "sources": ["AI and Data Governance - Amit Ayer.txt", "Amit Ayer Resume - Strategic Account Executive.txt"]
+    },
+    {
+      "item": "pillar_interoperability_integration_ecosystem",
+      "evidence": ["fact_engineering_platform_002"],
+      "note": "Microservices/integration fluency — not brokerage distribution"
+    }
+  ],
+  "section_eligibility_impact": {
+    "pillar_insurance_carrier_transformation": {
+      "executive_summary": true,
+      "competencies": true,
+      "unify_bullets": true,
+      "ibm_bullets": true
+    },
+    "pillar_underwriting_claims_ops_ai": {
+      "executive_summary": false,
+      "note": "section_fit all false — internal traversal only"
+    },
+    "pillar_banking_platform_responsible_ai": {
+      "executive_summary": true,
+      "competencies": true,
+      "bridge": "pillar_section_eligibility → section_competencies"
+    },
+    "exec_summary_policy": "unchanged — MEDIUM facts not auto-promoted; pending-source skills remain blocked"
+  },
+  "draft_internal_only_items": [
+    "skill_sr_insurance_systems_resilience_internal",
+    "pillar_underwriting_claims_ops_ai (all section_fit false)"
+  ],
+  "validation_results": {
+    "validate_arsenal_ledger_shape": "PASS",
+    "assert_skills_not_broad_ledger_authority": "PASS",
+    "taxonomy_load_20_families": "PASS",
+    "pytest_test_master_skills_arsenal_ledger_shape_subset": "PASS (23 tests)",
+    "pytest_test_agentic_core_diff_empty": "FAIL pre-existing (unrelated guardian_report.json drift)"
+  },
+  "forbidden_claims_blocked": [
+    "underwriting operations ownership",
+    "claims operations ownership",
+    "policy administration ownership",
+    "brokerage distribution ownership",
+    "transaction banking product lines",
+    "payments/liquidity/trade/fraud/investor/issuer services"
+  ],
+  "files_changed": [
+    "apps_rg/fact_inventory/apply_phase2_senior_role_graph_w8_w11.py",
+    "apps_rg/fact_inventory/arsenal_graph_w4a_spec.py",
+    "apps_rg/fact_inventory/arsenal_graph_w4a_builder.py",
+    "apps_rg/fact_inventory/materialize_arsenal_from_design.py",
+    "apps_rg/fact_inventory/materialize_career_tracks_p1.py",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "docs/reports/apps_rg/master_skills_arsenal_ledger_design.json",
+    "docs/reports/apps_rg/career_track_taxonomy_operator_confirmed.json",
+    "tests/unit/apps_rg/fact_inventory/test_master_skills_arsenal_ledger.py",
+    "docs/reports/apps_rg/phase2_w8_w11_senior_role_graph_closeout.json",
+    "docs/reports/apps_rg/phase2_w8_w11_senior_role_graph_closeout.md",
+    "docs/reports/apps_rg/phase2_w8_w11_senior_role_graph_receipt.json",
+    "docs/reports/apps_rg/phase2_w8_w11_senior_role_graph_receipt.md"
+  ],
+  "commands_run": [
+    {
+      "command": "python apps_rg/fact_inventory/apply_phase2_senior_role_graph_w8_w11.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c validate_arsenal_ledger_shape + bridge/pillar checks",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_master_skills_arsenal_ledger.py::test_arsenal_ledger_loads_and_top_level_keys tests/unit/apps_rg/fact_inventory/test_arsenal_graph_w4a.py tests/unit/apps_rg/fact_inventory/test_career_track_materialization_p1.py -q",
+      "exit_code": 0
+    }
+  ],
+  "explicit_non_claims": [
+    "underwriting",
+    "claims",
+    "policy administration",
+    "billing",
+    "brokerage distribution ownership",
+    "transaction banking",
+    "payments",
+    "liquidity",
+    "trade",
+    "investor services",
+    "issuer services",
+    "fraud operations",
+    "Fed/regulator-facing work",
+    "marketplace co-sell",
+    "Databricks",
+    "Snowflake",
+    "GCP",
+    "Azure partner exclusivity",
+    "partner sales",
+    "major airline ~ engagement ownership",
+    "technical estimation/sizing methodology without evidence"
+  ],
+  "next_recommended_wave": "W12-graph — partner/hyperscaler DRAFT activation criteria; then W13 senior-role fixtures with offline traversal receipts; track-weight code wiring optional before W13 if designed weights required without weight_override."
+}

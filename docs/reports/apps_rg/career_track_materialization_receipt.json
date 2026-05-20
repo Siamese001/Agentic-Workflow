@@ -6,7 +6,7 @@
     "P1-W2",
     "P1-W3"
   ],
-  "generated_at": "2026-05-19T15:23:32Z",
+  "generated_at": "2026-05-20T12:20:17Z",
   "p1_w1": {
     "career_track_count": 3,
     "epoch_primary_coverage": {
@@ -87,15 +87,15 @@
     ]
   },
   "p1_w3": {
-    "empty_fact_id_links_before": 47,
-    "empty_fact_id_links_after": 47,
-    "activated_count": 84,
+    "empty_fact_id_links_before": 55,
+    "empty_fact_id_links_after": 55,
+    "activated_count": 106,
     "active_skills_by_track": {
-      "track_actuarial_risk_derivatives": 7,
-      "track_data_tech_cloud_ml": 15,
+      "track_actuarial_risk_derivatives": 9,
+      "track_data_tech_cloud_ml": 35,
       "track_genai_agentic": 62
     },
-    "unsupported_rows_remaining_draft": 47,
+    "unsupported_rows_remaining_draft": 56,
     "confidence_upgrades": [],
     "activated_sample": [
       {

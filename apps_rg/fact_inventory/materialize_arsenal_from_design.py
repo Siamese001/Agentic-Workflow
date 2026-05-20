@@ -31,6 +31,49 @@ REVOPS_SKILL_TO_PILLAR: dict[str, str] = {
     "multi_channel_gtm_alignment": PILLAR_REVOPS,
 }
 
+PHASE2_GTM_SKILL_TO_PILLAR: dict[str, str] = {
+    "discovery_qualification": "pillar_gtm_presales_motion",
+    "solution_mapping_executive_value": "pillar_gtm_presales_motion",
+    "stakeholder_alignment_governance": "pillar_gtm_presales_motion",
+    "executive_buyer_alignment": "pillar_gtm_presales_motion",
+    "commercial_validation_pilots": "pillar_gtm_presales_motion",
+    "enterprise_deal_support": "pillar_gtm_presales_motion",
+    "presales_to_delivery_handoff": "pillar_gtm_presales_motion",
+    "joint_gtm_cloud_vendor_roadmaps": "pillar_gtm_presales_motion",
+}
+
+SENIOR_W12_SKILL_TO_PILLAR: dict[str, str] = {
+    "databricks_lakehouse_fundamentals": "pillar_hyperscaler_marketplace_partner_gtm",
+    "hyperscaler_alliance_co_sell": "pillar_hyperscaler_marketplace_partner_gtm",
+    "joint_ai_solution_development": "pillar_applied_ai_partner_architecture",
+    "industry_reference_architecture_partner": "pillar_applied_ai_partner_architecture",
+}
+
+SENIOR_W811_SKILL_TO_PILLAR: dict[str, str] = {
+    "insurtech_legacy_cloud_modernization": "pillar_insurance_carrier_transformation",
+    "insurtech_regulated_insurer_controls": "pillar_insurance_carrier_transformation",
+    "insurance_systems_resilience_internal": "pillar_underwriting_claims_ops_ai",
+    "insurtech_cto_it_enablement": "pillar_insurer_it_strategy_ai_enablement",
+    "cloud_data_platform_engineering": "pillar_insurer_it_strategy_ai_enablement",
+    "enterprise_portfolio_data_governance": "pillar_enterprise_portfolio_governance",
+    "basel_ccar_lineage_regulatory": "pillar_banking_platform_responsible_ai",
+    "banking_ai_governance_controls": "pillar_banking_platform_responsible_ai",
+    "regulated_financial_institutions_fluency": "pillar_banking_platform_responsible_ai",
+    "microservices_integration_platform": "pillar_interoperability_integration_ecosystem",
+}
+
+PHASE2_TECH_SKILL_TO_PILLAR: dict[str, str] = {
+    "reference_architecture_industry_solutions": "pillar_technical_presales_accelerators",
+    "aws_migration_modernization_patterns": "pillar_technical_presales_accelerators",
+    "devops_pipeline_cicd_blueprint": "pillar_technical_presales_accelerators",
+    "demoable_solution_accelerator": "pillar_technical_presales_accelerators",
+    "reusable_implementation_accelerators": "pillar_technical_presales_accelerators",
+    "adoption_derisking_pilots": "pillar_technical_presales_accelerators",
+    "ibm_cloud_portfolio_architecture_anchor": "pillar_technical_presales_accelerators",
+    "estimation_sizing_directional": "pillar_technical_presales_accelerators",
+    "anchor_major_airline_devops_aws_directional": "pillar_technical_presales_accelerators",
+}
+
 COMMERCIAL_SKILL_TO_PILLAR: dict[str, str] = {
     "modernization_deals_15m": "pillar_revenue_commercialization",
     "global_financial_institutions_sales_leadership": "pillar_customer_stakeholder",
@@ -156,6 +199,65 @@ def _matrix_revops_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _matrix_phase2_row(
+    row: dict[str, Any],
+    *,
+    pillar_map: dict[str, str],
+    domain_id: str,
+    domain_label: str,
+) -> dict[str, Any]:
+    support = str(row["support_status"])
+    user_confirmed = support == "USER_CONFIRMED_PENDING_SOURCE"
+    activation, visibility, human_req = _activation_and_visibility(support, user_confirmed)
+    if support == "INTERNAL_ONLY":
+        visibility = "never_external"
+        activation = "DRAFT"
+    skill_key = str(row.get("skill") or "")
+    target_pillar = str(row.get("target_pillar") or "")
+    src_files = [str(row["source_resume_file"])] if row.get("source_resume_file") else []
+    snippets = [str(row["source_evidence"])] if row.get("source_evidence") else []
+    fact_links: list[str] = []
+    if row.get("linked_fact_id"):
+        fact_links.append(str(row["linked_fact_id"]))
+    risk_raw = str(row.get("risk_notes") or "low").lower()
+    evidence_risk = "medium" if "medium" in risk_raw else ("high" if "high" in risk_raw else "low")
+    ext_policy = (
+        "derived_supported_with_fact"
+        if support == "DERIVED_SUPPORTED" and fact_links
+        else (
+            "pending_source_internal_only"
+            if support == "INTERNAL_ONLY"
+            else "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+        )
+    )
+    pillar = target_pillar or pillar_map.get(skill_key, "pillar_gtm_presales_motion")
+    return {
+        "skill_id": row["skill_id"],
+        "fact_id_links": fact_links,
+        "pillar": pillar,
+        "subpillar": skill_key,
+        "career_stage": "cross_career",
+        "source_resume_files": src_files,
+        "source_snippets": snippets,
+        "user_confirmed": user_confirmed,
+        "support_level": support,
+        "role_family_weights": _role_weights(list(row.get("role_relevance") or [])),
+        "allowed_phrases": list(row.get("allowed_phrases") or []),
+        "forbidden_phrases": [],
+        "allowed_sections": list(row.get("where_to_use") or []),
+        "visibility_rule": visibility,
+        "evidence_risk": evidence_risk,
+        "activation_status": activation,
+        "human_confirmation_required": human_req,
+        "external_claim_policy": ext_policy,
+        "projection_behavior": "rank_and_project_facts",
+        "career_epoch": str(row.get("career_epoch") or "epoch_partner_gtm_revenue_leadership"),
+        "domain_id": domain_id,
+        "domain": domain_label,
+        "capability": skill_key,
+    }
+
+
 def _matrix_commercial_row(row: dict[str, Any]) -> dict[str, Any]:
     support = str(row["support_status"])
     user_confirmed = support == "USER_CONFIRMED_PENDING_SOURCE"
@@ -262,10 +364,59 @@ def build_ledger_payload(design: dict[str, Any]) -> dict[str, Any]:
     partner_rows = [_matrix_partner_row(r) for r in design.get("partner_gtm_matrix") or []]
     revops_rows = [_matrix_revops_row(r) for r in design.get("revenue_operations_matrix") or []]
     commercial_rows = [_matrix_commercial_row(r) for r in design.get("commercial_expansion_matrix") or []]
-    legacy_matrix = actuarial_rows + partner_rows + revops_rows + commercial_rows
+    phase2_gtm_rows = [
+        _matrix_phase2_row(
+            r,
+            pillar_map=PHASE2_GTM_SKILL_TO_PILLAR,
+            domain_id="domain_phase2_gtm_presales",
+            domain_label="Phase 2 GTM / Pre-Sales",
+        )
+        for r in design.get("phase2_gtm_presales_matrix") or []
+    ]
+    phase2_tech_rows = [
+        _matrix_phase2_row(
+            r,
+            pillar_map=PHASE2_TECH_SKILL_TO_PILLAR,
+            domain_id="domain_phase2_technical_presales",
+            domain_label="Phase 2 Technical Pre-Sales Accelerators",
+        )
+        for r in design.get("phase2_technical_presales_matrix") or []
+    ]
+    senior_w811_rows = [
+        _matrix_phase2_row(
+            r,
+            pillar_map=SENIOR_W811_SKILL_TO_PILLAR,
+            domain_id="domain_senior_role_w8_w11",
+            domain_label="Senior Role W8–W11 Graph",
+        )
+        for r in design.get("senior_role_w8_w11_matrix") or []
+    ]
+    senior_w12_rows = [
+        _matrix_phase2_row(
+            r,
+            pillar_map=SENIOR_W12_SKILL_TO_PILLAR,
+            domain_id="domain_senior_role_w12_partner",
+            domain_label="Senior Role W12 Partner / Hyperscaler",
+        )
+        for r in design.get("senior_role_w12_partner_matrix") or []
+    ]
+    legacy_matrix = (
+        actuarial_rows
+        + partner_rows
+        + revops_rows
+        + commercial_rows
+        + phase2_gtm_rows
+        + phase2_tech_rows
+        + senior_w811_rows
+        + senior_w12_rows
+    )
     pillars = _normalize_pillars(design.get("capability_taxonomy") or [])
 
-    w4a = build_w4a_graph_package(pillars=pillars, legacy_skill_rows=legacy_matrix)
+    w4a = build_w4a_graph_package(
+        pillars=pillars,
+        legacy_skill_rows=legacy_matrix,
+        bridge_specs=design.get("senior_role_bridge_edges") or [],
+    )
     skill_rows = w4a["skill_rows"]
 
     schema = design.get("schema_extension") or {}
@@ -318,6 +469,12 @@ def build_ledger_payload(design: dict[str, Any]) -> dict[str, Any]:
         "partner_gtm_matrix": design.get("partner_gtm_matrix") or [],
         "revenue_operations_matrix": design.get("revenue_operations_matrix") or [],
         "commercial_expansion_matrix": design.get("commercial_expansion_matrix") or [],
+        "phase2_gtm_presales_matrix": design.get("phase2_gtm_presales_matrix") or [],
+        "phase2_technical_presales_matrix": design.get("phase2_technical_presales_matrix") or [],
+        "senior_role_w8_w11_matrix": design.get("senior_role_w8_w11_matrix") or [],
+        "senior_role_w12_partner_matrix": design.get("senior_role_w12_partner_matrix") or [],
+        "w12_partner_activation_criteria": design.get("w12_partner_activation_criteria") or [],
+        "senior_role_bridge_edges": design.get("senior_role_bridge_edges") or [],
         "role_family_projection_profiles": design.get("role_family_projection_map") or {},
         "validation_rules": {
             "jd_briefing_never_proof": True,

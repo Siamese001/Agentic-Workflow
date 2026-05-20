@@ -14,7 +14,9 @@
         "epoch_actuarial_financial_engineering",
         "epoch_enterprise_risk_governance"
       ],
-      "pillars_exclude": ["pillar_trading_hpc"]
+      "pillars_exclude": [
+        "pillar_trading_hpc"
+      ]
     },
     {
       "track_id": "TRACK_DATA_TECH_CLOUD_ML",
@@ -32,7 +34,16 @@
         "pillar_trading_hpc",
         "pillar_partner_gtm_alliances",
         "pillar_cosell_partner_engineering",
-        "pillar_presales_solutioning"
+        "pillar_presales_solutioning",
+        "pillar_gtm_presales_motion",
+        "pillar_technical_presales_accelerators",
+        "pillar_insurance_carrier_transformation",
+        "pillar_underwriting_claims_ops_ai",
+        "pillar_insurer_it_strategy_ai_enablement",
+        "pillar_enterprise_portfolio_governance",
+        "pillar_interoperability_integration_ecosystem",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_applied_ai_partner_architecture"
       ]
     },
     {
@@ -42,8 +53,12 @@
       "start_year": 2022,
       "end_year": null,
       "end_year_present": true,
-      "epochs": ["epoch_agentic_ai_runtime_architecture"],
-      "pillars_include": ["pillar_agentic_ai_platforms"]
+      "epochs": [
+        "epoch_agentic_ai_runtime_architecture"
+      ],
+      "pillars_include": [
+        "pillar_agentic_ai_platforms"
+      ]
     }
   ],
   "career_sequence": [

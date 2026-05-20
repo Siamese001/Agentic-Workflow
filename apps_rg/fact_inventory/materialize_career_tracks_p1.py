@@ -62,7 +62,17 @@ PILLAR_TO_TRACK_OVERRIDE: dict[str, str] = {
     "pillar_partner_gtm_alliances": "track_data_tech_cloud_ml",
     "pillar_cosell_partner_engineering": "track_data_tech_cloud_ml",
     "pillar_presales_solutioning": "track_data_tech_cloud_ml",
+    "pillar_gtm_presales_motion": "track_data_tech_cloud_ml",
+    "pillar_technical_presales_accelerators": "track_data_tech_cloud_ml",
     "pillar_agentic_ai_platforms": "track_genai_agentic",
+    "pillar_insurance_carrier_transformation": "track_data_tech_cloud_ml",
+    "pillar_underwriting_claims_ops_ai": "track_data_tech_cloud_ml",
+    "pillar_insurer_it_strategy_ai_enablement": "track_data_tech_cloud_ml",
+    "pillar_enterprise_portfolio_governance": "track_data_tech_cloud_ml",
+    "pillar_banking_platform_responsible_ai": "track_actuarial_risk_derivatives",
+    "pillar_interoperability_integration_ecosystem": "track_data_tech_cloud_ml",
+    "pillar_hyperscaler_marketplace_partner_gtm": "track_data_tech_cloud_ml",
+    "pillar_applied_ai_partner_architecture": "track_data_tech_cloud_ml",
 }
 
 SECTION_TO_EMPLOYMENT: dict[str, str] = {

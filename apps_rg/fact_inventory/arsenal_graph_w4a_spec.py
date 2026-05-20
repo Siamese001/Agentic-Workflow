@@ -81,17 +81,35 @@ CAREER_EPOCHS: list[dict[str, Any]] = [
     {
         "node_id": "epoch_actuarial_financial_engineering",
         "label": "Actuarial & Financial Engineering",
-        "pillars": ["pillar_actuarial_foundation", "pillar_derivatives_structured", "pillar_greeks_hedging", "pillar_capital_modeling", "pillar_risk_management"],
+        "pillars": [
+            "pillar_actuarial_foundation",
+            "pillar_derivatives_structured",
+            "pillar_greeks_hedging",
+            "pillar_capital_modeling",
+            "pillar_risk_management",
+            "pillar_insurance_carrier_transformation",
+            "pillar_underwriting_claims_ops_ai",
+        ],
     },
     {
         "node_id": "epoch_enterprise_risk_governance",
         "label": "Enterprise Risk & Governance",
-        "pillars": ["pillar_regulatory_governance", "pillar_enterprise_risk_controls", "pillar_risk_management"],
+        "pillars": [
+            "pillar_regulatory_governance",
+            "pillar_enterprise_risk_controls",
+            "pillar_risk_management",
+            "pillar_banking_platform_responsible_ai",
+            "pillar_enterprise_portfolio_governance",
+        ],
     },
     {
         "node_id": "epoch_cloud_data_platform_engineering",
         "label": "Cloud & Data Platform Engineering",
-        "pillars": ["pillar_cloud_data_aws"],
+        "pillars": [
+            "pillar_cloud_data_aws",
+            "pillar_insurer_it_strategy_ai_enablement",
+            "pillar_interoperability_integration_ecosystem",
+        ],
     },
     {
         "node_id": "epoch_ai_platform_commercialization",
@@ -101,7 +119,10 @@ CAREER_EPOCHS: list[dict[str, Any]] = [
     {
         "node_id": "epoch_agentic_ai_runtime_architecture",
         "label": "Agentic AI Runtime Architecture",
-        "pillars": ["pillar_agentic_ai_platforms"],
+        "pillars": [
+            "pillar_agentic_ai_platforms",
+            "pillar_insurance_carrier_transformation",
+        ],
         "capability_domain_ids": [d["domain_id"] for d in AGENTIC_CAPABILITY_DOMAINS],
     },
     {
@@ -111,6 +132,10 @@ CAREER_EPOCHS: list[dict[str, Any]] = [
             "pillar_partner_gtm_alliances",
             "pillar_cosell_partner_engineering",
             "pillar_presales_solutioning",
+            "pillar_gtm_presales_motion",
+            "pillar_technical_presales_accelerators",
+            "pillar_hyperscaler_marketplace_partner_gtm",
+            "pillar_applied_ai_partner_architecture",
             "pillar_cloud_data_aws",
             "pillar_revenue_commercialization",
             "pillar_revenue_operations",
