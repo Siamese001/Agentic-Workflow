@@ -143,6 +143,9 @@ class GovernedE2ERunRecord:
     # "BLOCKED" when UWG rejected the commit.
     # "COMMIT_FAILED" when the commit raised unexpectedly.
     l4_brief_committed: str = "PENDING"
+    # Bridge-facing evidence lineage (AppsResearchBridge._translate reads this).
+    evidence_items: tuple[Any, ...] = ()
+    confidence_score: float = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -187,6 +190,18 @@ class GovernedResearchRun(GovernedAppRunner):
 
     def __init__(self, collection: str = "process_docs") -> None:
         super().__init__(collection=collection)
+        self._last_c0_bundle: Any | None = None
+
+    def _c0_retrieve(
+        self,
+        query: str,
+        *,
+        inject_chunks: list[Any] | None = None,
+    ) -> tuple[int, Any]:
+        """C0 retrieve with bundle capture for bridge evidence translation."""
+        raw_count, bundle = super()._c0_retrieve(query, inject_chunks=inject_chunks)
+        self._last_c0_bundle = bundle
+        return raw_count, bundle
 
     @traces_execute(layer="L3_ORCHESTRATION")
     def run_governed_e2e(
@@ -216,6 +231,19 @@ class GovernedResearchRun(GovernedAppRunner):
         # W5: build_app_record handles all substrate fields automatically.
         # apps_research renames `query` -> `topic`; everything else is name-matched.
         fec_ctx = hop_payload.get("fec_context", {})
+        from apps_research.integrations.evidence_lineage import (  # noqa: PLC0415
+            materialize_research_evidence,
+        )
+
+        evidence_items = materialize_research_evidence(
+            bundle=self._last_c0_bundle,
+            request=request,
+            support_coverage=core.support_coverage,
+        )
+        confidence_score = max(
+            float(core.support_coverage or 0.0),
+            max((getattr(item, "confidence", 0.0) for item in evidence_items), default=0.0),
+        )
         record = build_app_record(
             GovernedE2ERunRecord, core,
             aliases={"topic": "query"},
@@ -223,6 +251,8 @@ class GovernedResearchRun(GovernedAppRunner):
             hop_terminal_error=hop_payload["terminal_error"],
             research_depth_profile=fec_ctx.get("research_depth_profile"),
             fec_run_context=fec_ctx,
+            evidence_items=evidence_items,
+            confidence_score=confidence_score,
         )
 
         # ── L4 durable write path (DS-3) — fail-soft ──────────────────────────

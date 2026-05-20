@@ -258,3 +258,40 @@ def collapse_group_dedup(results: list[_T], max_per_group: int = 2) -> list[_T]:
             filtered.append(r)
             group_counts[group] = count + 1
     return filtered
+
+
+class EvidenceShaper:
+    """Shape raw hybrid-search hits into a sealed :class:`EvidenceBundle`."""
+
+    def shape(
+        self,
+        *,
+        query: str,
+        results: list[Any],
+        collection_name: str,
+        chroma_client: Any | None = None,
+    ) -> EvidenceBundle:
+        """Run the C0 shaping pipeline on retrieval results."""
+        del chroma_client  # reserved for future chroma-side expansion hooks
+        input_count = len(results or [])
+        shaped = apply_authority_rerank(list(results or []), authority_bonus=0.15)
+        shaped = doc_family_dedup(shaped, max_per_family=3)
+        shaped = collapse_group_dedup(shaped, max_per_group=2)
+        anchors: dict[str, CitationAnchor] = {}
+        for chunk in shaped:
+            anchor = make_citation_anchor_from_chunk(chunk)
+            if anchor.chunk_id:
+                anchors[anchor.chunk_id] = anchor
+        return EvidenceBundle(
+            query=str(query or ""),
+            collection=str(collection_name or ""),
+            ranked_chunks=shaped,
+            citation_anchors=anchors,
+            contradiction_flags=[],
+            exact_match_winners=[],
+            expanded_chunk_ids=[],
+            shaping_stats={
+                "input_count": input_count,
+                "after_dedup": len(shaped),
+            },
+        )

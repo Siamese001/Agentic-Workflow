@@ -311,6 +311,7 @@ class OutputFormatSection(_ImmutableModel):
 class ResearchRequirementsSection(_ImmutableModel):
     """Research stage hints."""
 
+    allow_research: bool = False
     required_evidence_types: List[str] = Field(default_factory=list)
     freshness_class: str = "any"
     max_sources: Optional[int] = None

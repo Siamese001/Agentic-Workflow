@@ -340,6 +340,9 @@ def _run_r3r4_research(
             response_payload["research_run_id"] = outcome.research_run_id
             response_payload["research_evidence_count"] = outcome.research_evidence_count
             response_payload["confidence_score"] = outcome.confidence_score
+            response_payload["evidence_lineage"] = list(
+                getattr(outcome, "evidence_lineage", ()) or ()
+            )
         _sr.write_stage_receipt(
             artifact_dir / _sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
             response_payload,
@@ -397,6 +400,7 @@ def run_canonical_apps_lic_spine(
     artifacts.append(u0_path)
 
     research_note = ""
+    research_failed = False
     if route.route_family == ROUTE_FAMILY_R3R4 and not skip_r3r4_research:
         ok, research_note, manifest = _run_r3r4_research(
             route=route,
@@ -414,6 +418,61 @@ def run_canonical_apps_lic_spine(
             )
             l1 = l1_plan_apps_lic(validated_request)
             route = l0_route_apps_lic(l1)
+        else:
+            research_failed = True
+
+    if research_failed:
+        stage_refs = _sr.standard_stage_receipt_refs(
+            terminal_r5=True,
+            c0_invoked=False,
+            pa_invoked=False,
+            l3_participated=False,
+        )
+        terminal_reason = research_note or "APPS_RESEARCH_FAILED"
+        manifest = {
+            "route_id": route.route_id,
+            "route_family": ROUTE_FAMILY_R5,
+            "execution_form": _EXECUTION_TERMINAL,
+            "l3_required": False,
+            "reason_codes": list(route.reason_codes) + [terminal_reason],
+            "request_id": route.request_id,
+            "run_id": route.run_id,
+            "trace_id": route.trace_id,
+            "terminal_r5": True,
+            "terminal_r5_reason": terminal_reason,
+            "x3_disposition": "DENY",
+            "exit_status": "failure",
+            "outcome_authorized": False,
+            "exit_stage_policy": "r3r4_research_fail_closed_no_exit_receipt",
+            "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
+            "research_note": terminal_reason,
+            "stage_receipt_refs": list(stage_refs),
+        }
+        manifest_path = _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_SPINE_MANIFEST,
+            manifest,
+        )
+        artifacts.append(manifest_path)
+        proof_path = write_runtime_proof_bundle(
+            artifact_dir,
+            manifest,
+            terminal_r5=True,
+        )
+        artifacts.append(proof_path)
+        _assert_runtime_proof_bundle_pass(artifact_dir)
+        return SpineRunResult(
+            run_id=run_id,
+            request_id=route.request_id,
+            trace_id=route.trace_id,
+            route_id=route.route_id,
+            route_family=ROUTE_FAMILY_R5,
+            execution_form=_EXECUTION_TERMINAL,
+            x3_disposition="DENY",
+            terminal_r5=True,
+            terminal_r5_reason=terminal_reason,
+            artifact_dir=artifact_dir,
+            artifacts=tuple(artifacts),
+        )
 
     l1_path = _sr.write_stage_receipt(
         artifact_dir / _sr.FILENAME_L1_PLAN,

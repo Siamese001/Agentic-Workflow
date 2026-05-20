@@ -127,7 +127,7 @@ apps_lic has two rollback layers:
 - `engines/hop_stage_registry.py` — hop topology
 - `config/retry_policy_config.py` — retry / backoff (22KB)
 - `validators/*.py` — per-stage validators
-- `tools/run_workflow_lic.py` — CLI entry; the highest-emit-edge file (85 ADG edges) — **THIS is your operational entry point**
+- `python -m apps_lic` — **product CLI entry** (`run_canonical_apps_lic_spine` only; see `apps_lic/__main__.py`)
 
 ## Escalation Contacts
 
@@ -251,19 +251,16 @@ python -m pytest tests/governance/test_apps_lic_entrypoint_purity.py \
 
 ### Architecture
 
-**R4 Static Recipe** (briefing present):
-1. `validate_input` — schema validation
-2. `compile_prompt` — PA compiler → CompiledPromptArtifact
-3. `compose_draft` — consumes artifact, produces outreach_draft
-4. `seal_output` — ExitReviewPacket-compatible artifact
+**R4 managed draft** (briefing present at L0):
+`U0 → L1 → L0 (R4) → C0 → PA → L3 HOP → L2 → Exit`
 
-**R3R4 Managed Recipe** (briefing missing/stale):
-1. R3: `validate_request_for_briefing` → `authorize_research` → `research_bridge_adapter` → `validate_research_and_build_manifest`
-2. R4: Resume static recipe with fresh PreloadedOutreachContextManifest
-3. Fail-closed on APPS_RESEARCH_BLOCKED/FAILED/EMPTY/STALE/WEAK_SUPPORT
+**R3R4 managed research then draft** (briefing missing, research authorized):
+`U0 → L1 → L0 (R3R4) → managed_workflow_dispatcher / apps_research_bridge → re-plan → L0 (R4) → C0 → PA → L3 HOP → L2 → Exit`
 
-**Legacy Quarantined**:
-- `apps_lic/tools/run_workflow_lic.py` — QUARANTINED, unreachable from all active paths
+Live R3R4 research CLI: `WIZARD_FILE_MODE=1 python -m apps_lic` with wizard briefing `mode=auto` and **no** `APPS_LIC_MOCK_RESEARCH`. Mock bridge is **EVAL_ONLY** and does not satisfy release eligibility.
+
+**Deleted shadow runners (P3–P5 hard-delete)**:
+- `run_workflow_lic.py`, `governed_lic_run.py`, `spine_handoff.py`, YAML L2 DAGs — removed; not importable from product CLI
 
 ### Invariants Preserved
 
@@ -279,10 +276,10 @@ python -m pytest tests/governance/test_apps_lic_entrypoint_purity.py \
 
 | Purpose | Path |
 |---------|------|
-| Recipe registry | `apps_lic/integrations/lic_l2_recipe_registry.py` |
-| Step adapters | `apps_lic/integrations/lic_l2_step_adapters.py` |
-| Static DAG | `apps_lic/config/apps_lic_static_dag.yaml` |
-| Managed DAG | `apps_lic/config/apps_lic_managed_dag.yaml` |
+| Product dispatch | `apps_lic/runtime/dispatch/canonical_dispatch.py` |
+| L2 HOP SSOT | `apps_lic/config/hop_pipeline.py` (`REGISTRY`) |
+| L2 execution | `apps_lic/runtime/bindings/l2_binding.py` |
 | Research bridge | `apps_lic/integrations/apps_research_bridge.py` |
 | Workflow dispatcher | `apps_lic/integrations/managed_workflow_dispatcher.py` |
-| Governance tests | `tests/governance/test_apps_lic_*.py` (81 tests) |
+| Eval harness (non-product) | `apps_lic/eval/` — **EVAL_ONLY**; not reachable from `python -m apps_lic` |
+| Governance tests | `tests/governance/test_apps_lic_*.py` |

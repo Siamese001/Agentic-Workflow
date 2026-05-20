@@ -1088,8 +1088,53 @@ class HybridSearchEngine:
             results = collapse_group_dedup(results, max_per_group=collapse_group_dedup_max)
         return results
 
+    def shape_search(
+        self,
+        query: str,
+        *,
+        collection_name: str = "code_chunks",
+        top_k: int | None = None,
+    ) -> Any:
+        """Hybrid search + EvidenceShaper.shape() → EvidenceBundle."""
+        from agentic_core.L3_orchestration.reasoning.engines.evidence_shaper import (
+            EvidenceShaper,
+        )
+
+        effective_top_k = max(1, int(top_k if top_k is not None else self.top_k))
+        raw = self.search(query, collection_name=collection_name)
+        if effective_top_k < len(raw):
+            raw = raw[:effective_top_k]
+        return EvidenceShaper().shape(
+            query=query,
+            results=raw,
+            collection_name=collection_name,
+            chroma_client=self.chroma_client,
+        )
+
 
 _global_hybrid_engine: HybridSearchEngine | None = None
+_engines_by_collection: dict[tuple[str, int], HybridSearchEngine] = {}
+
+
+def get_hybrid_search_engine(
+    *,
+    collection_name: str = "code_chunks",
+    top_k: int = 10,
+) -> HybridSearchEngine:
+    """Return a collection-scoped engine (GovernedAppRunner C0 entry point)."""
+    key = (str(collection_name or "code_chunks"), max(1, int(top_k)))
+    cached = _engines_by_collection.get(key)
+    if cached is not None:
+        return cached
+    try:
+        import chromadb
+
+        client = chromadb.PersistentClient()
+    except (ImportError, RuntimeError, ValueError, TypeError, OSError):
+        client = None
+    engine = HybridSearchEngine(chroma_client=client, top_k=key[1])
+    _engines_by_collection[key] = engine
+    return engine
 
 
 def get_global_hybrid_engine() -> HybridSearchEngine:

@@ -1,7 +1,7 @@
 ---
 plan_id: apps-lic-spine-product-convergence-b7e4a2
 plan_type: refactor
-status: Not Started
+status: Completed
 parent_plan: apps-lic-u0-boundary-alignment-4f1d9c
 authored_at: 2026-05-20
 dod_exempt: false
@@ -76,12 +76,17 @@ U0 (ingress + reflection + runtime_customization_package)
 
 | Wave | Focus | Status |
 |------|-------|--------|
-| W0 | Baseline + gap receipt | 🔲 TODO |
-| W1 | `apps_lic/runtime/bindings/` migration | 🔲 TODO |
-| W2 | Canonical dispatch + CLI spine entry | 🔲 TODO |
-| W3 | R3R4 / `apps_research` + L0 routing on CLI | 🔲 TODO |
-| W4 | HOP ↔ PA/C0 consumption | 🔲 TODO |
-| W5 | `outreach_message` proof lane + CI + closeout | 🔲 TODO |
+| W0 | Baseline + gap receipt | ✅ Completed |
+| W1 | `apps_lic/runtime/bindings/` migration | ✅ Completed |
+| W2 | Canonical dispatch + CLI spine entry | ✅ Completed |
+| W3 | R3R4 / `apps_research` + L0 routing on CLI | ✅ Completed |
+| W4 | HOP ↔ PA/C0 consumption | ✅ Completed |
+| W5 | `outreach_message` proof lane + CI + closeout | ✅ Completed |
+| R-W1 | Release blocker: `EvidenceShaper` + evidence translation | ✅ Completed (2026-05-20) |
+| R-W2 | Release blocker: R3R4 fail-closed | ✅ Completed (2026-05-20) |
+| R-W3 | Release blocker: live R3R4 proof (no mock) | ✅ Completed (2026-05-20) |
+
+**Release eligibility:** `RELEASE_ELIGIBLE` — see [release_eligibility_verification_receipt.md](../docs/reports/apps_lic/release_eligibility_verification_receipt.md) and [r3r4_release_blocker_waves_closeout_receipt.md](../docs/reports/apps_lic/r3r4_release_blocker_waves_closeout_receipt.md).
 
 ---
 

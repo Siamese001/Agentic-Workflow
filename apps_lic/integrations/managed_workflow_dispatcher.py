@@ -130,6 +130,7 @@ class BriefingReady:
     confidence_score: float
     dispatch_duration_ms: float
     audit_refs: tuple
+    evidence_lineage: tuple = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)
@@ -312,6 +313,17 @@ def dispatch_managed_briefing(
         getattr(research_result, "trace_id", trace_id)
     ]
 
+    lineage = tuple(
+        {
+            "source_id": getattr(ev, "source_id", ""),
+            "label": getattr(ev, "label", ""),
+            "uri": getattr(ev, "uri", ""),
+            "source_type": getattr(ev, "source_type", ""),
+            "field_ref": getattr(ev, "field_ref", ""),
+            "confidence": float(getattr(ev, "confidence", 0.0)),
+        }
+        for ev in evidence_items
+    )
     return BriefingReady(
         request_id=request_id,
         run_id=run_id,
@@ -322,6 +334,7 @@ def dispatch_managed_briefing(
         confidence_score=confidence,
         dispatch_duration_ms=_utc_ms() - t_start,
         audit_refs=tuple(audit_refs_for := audit_refs_list),
+        evidence_lineage=lineage,
     )
 
 

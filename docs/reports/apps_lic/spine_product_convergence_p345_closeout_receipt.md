@@ -1,5 +1,7 @@
 # apps_lic spine product convergence — P3/P4/P5 closeout receipt
 
+> **Superseded by:** [spine_product_convergence_closeout_receipt.md](spine_product_convergence_closeout_receipt.md) (combined P2+P3–P5 SSOT).
+
 ## STATUS: PASS (P3–P5 scoped slice)
 
 Canonical CLI, L0 execution_form normalization, YAML L2 retirement, legacy file deletes, and negative proofs are complete for the requested slice. Pre-existing failures in `test_w6_e2e.py` / `test_w4_research_bridge.py` remain outside this scope.

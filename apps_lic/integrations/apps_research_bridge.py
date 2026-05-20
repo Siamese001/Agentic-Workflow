@@ -251,11 +251,7 @@ class AppsResearchBridge:
         from apps_research.integrations.governed_research_run import (
             GovernedResearchRun,
         )
-        from apps_research.types.research_types import (
-            ResearchRequest,
-            ArtifactMode,
-            AudienceStyle,
-        )
+        from apps_research.types.research_types import ResearchRequest
         
         # Determine research depth based on recipient class
         depth_profile_map = {
@@ -270,8 +266,10 @@ class AppsResearchBridge:
         # Construct research request
         research_request = ResearchRequest(
             topic=f"{company_name} company briefing for outreach",
-            mode=ArtifactMode("brief"),
-            audience_style=AudienceStyle("executive" if "EXECUTIVE" in recipient_class.upper() else "technical"),
+            mode="brief",
+            audience_style=(
+                "executive" if "EXECUTIVE" in recipient_class.upper() else "technical"
+            ),
             depth_profile=depth_profile,
             trace_id=trace_id,
             jd_context={
@@ -303,7 +301,20 @@ class AppsResearchBridge:
         import hashlib
         import json as _json
 
-        evidence_items_raw = getattr(raw, "evidence_items", []) or []
+        evidence_items_raw = getattr(raw, "evidence_items", None) or ()
+        if not evidence_items_raw:
+            fec_ctx = getattr(raw, "fec_run_context", None) or {}
+            c0_bundle = fec_ctx.get("c0_bundle") if isinstance(fec_ctx, dict) else None
+            if c0_bundle:
+                from apps_research.integrations.evidence_lineage import (  # noqa: PLC0415
+                    evidence_from_c0_bundle,
+                )
+
+                evidence_items_raw = evidence_from_c0_bundle(
+                    c0_bundle,
+                    default_confidence=float(getattr(raw, "support_coverage", 0.0) or 0.0),
+                )
+
         evidence_items = tuple(
             EvidenceItem(
                 source_id=str(getattr(ev, "source_id", f"ev-{i}")),
@@ -316,7 +327,10 @@ class AppsResearchBridge:
             for i, ev in enumerate(evidence_items_raw)
         )
 
-        confidence = float(getattr(raw, "confidence_score", 0.0))
+        raw_confidence = getattr(raw, "confidence_score", None)
+        if raw_confidence is None:
+            raw_confidence = getattr(raw, "support_coverage", 0.0)
+        confidence = float(raw_confidence or 0.0)
         is_blocked = bool(getattr(raw, "is_blocked", False))
         is_stale = bool(getattr(raw, "is_stale", False))
         age_days = float(getattr(raw, "age_days", 0.0))

@@ -34,6 +34,13 @@ def test_canonical_spine_r4_managed_workflow(tmp_path: Path) -> None:
     assert result.pa_invoked is True
     manifest_path = result.artifact_dir / "spine_run_manifest.json"
     assert manifest_path.is_file()
+    import json
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["x3_disposition"] == result.x3_disposition
+    assert manifest["x3_disposition"] != "UNKNOWN"
+    assert manifest["exit_status"] == result.exit_status
+    assert manifest["outcome_authorized"] == result.outcome_authorized
 
 
 def test_canonical_spine_r5_without_context_or_research(tmp_path: Path) -> None:

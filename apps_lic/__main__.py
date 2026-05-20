@@ -86,6 +86,14 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "When provided, skips R3R4 managed workflow."
         ),
     )
+    parser.add_argument(
+        "--auto-research",
+        action="store_true",
+        help=(
+            "Authorize R3R4 managed workflow via apps_research when no manual brief "
+            "(requires live AppsResearchBridge; not compatible with release mock env)."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -100,7 +108,7 @@ def _load_manual_brief_text(manual_brief: str) -> str:
 
 
 def _allow_research_from_args(args: argparse.Namespace, manual_brief_text: str) -> bool:
-    """True only when interactive wizard explicitly selected auto-research."""
+    """True when CLI or wizard explicitly authorizes R3R4 research (no manual brief)."""
     if manual_brief_text.strip():
         return False
     return bool(getattr(args, "auto_research", False))
@@ -236,7 +244,12 @@ def main() -> int:
 
     args = _parse_args(sys.argv[1:])
 
-    if not args.recipient_class or not args.channel or not args.outreach_mode or not args.manual_brief:
+    if (
+        not args.recipient_class
+        or not args.channel
+        or not args.outreach_mode
+        or (not args.manual_brief and not args.auto_research)
+    ):
         _interactive_wizard(args)
 
     manual_brief_text = _load_manual_brief_text(args.manual_brief)
