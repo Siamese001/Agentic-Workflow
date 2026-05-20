@@ -1,0 +1,82 @@
+{
+  "plan_slug": "exec-summary-token-budget-a8f3c2",
+  "plan_file": ".cursor/plans/exec-summary-token-budget-a8f3c2.md",
+  "status": "Completed",
+  "completed_at_utc": "2026-05-20",
+  "notion": {
+    "plan_page_id": "36627693-f55c-8141-abd5-fe2685ebd2ac",
+    "wave_rows": {
+      "EXEC-TB-W1": "36627693-f55c-81f8-8511-d770a0f881ba",
+      "EXEC-TB-W2": "36627693-f55c-81e3-9a8b-cda9c8474527",
+      "EXEC-TB-W3": "36627693-f55c-81ce-823b-dc801a3f0a2e",
+      "EXEC-TB-W4": "36627693-f55c-81e0-9e60-d8ae9b5ffc7a"
+    }
+  },
+  "scope": "apps_rg executive_summary pre-dispatch token budget",
+  "policy_ids": [
+    "executive_summary_optional_trim_only_v2",
+    "executive_summary_evidence_capsule_v1",
+    "executive_summary_capsule_mode_targeting_cap_v1"
+  ],
+  "waves": [
+    {
+      "wave_id": "W1",
+      "phase_id": "EXEC-TB-W1",
+      "title": "v2 optional-only token budget policy + tests",
+      "status": "Done",
+      "proof_classification": "CONTRACT_TEST_PROOF",
+      "receipt": "docs/reports/apps_rg/executive_summary_token_budget_policy_closeout_receipt.md",
+      "code": [
+        "apps_rg/runtime/sections/executive_summary_token_budget.py",
+        "apps_rg/runtime/sections/executive_summary_lane.py"
+      ],
+      "tests": [
+        "tests/unit/apps_rg/runtime/sections/test_executive_summary_token_budget.py",
+        "tests/_apps_contract/test_executive_summary_token_budget_contract.py"
+      ]
+    },
+    {
+      "wave_id": "W2",
+      "phase_id": "EXEC-TB-W2",
+      "title": "Brown LIVE_BLOCK fail-closed (v2)",
+      "status": "Done",
+      "proof_classification": "LIVE_BLOCK_PROOF",
+      "receipt": "docs/reports/apps_rg/executive_summary_token_budget_v2_live_block_proof_receipt.md",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_142647",
+      "token_budget_receipt": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_142647/token_budget_receipt.json",
+      "fail_closed_reason": "TOKEN_BUDGET_EXCEEDED_AFTER_TRIM",
+      "provider_attempted": false
+    },
+    {
+      "wave_id": "W3",
+      "phase_id": "EXEC-TB-W3",
+      "title": "Evidence capsule + Brown LIVE_BLOCK",
+      "status": "Done",
+      "proof_classification": "LIVE_BLOCK_PROOF",
+      "receipt": "docs/reports/apps_rg/executive_summary_evidence_capsule_closeout_receipt.md",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_144110",
+      "evidence_capsule_receipt": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_144110/evidence_capsule_receipt.json",
+      "after_capsule_estimate": 17519,
+      "still_blocked": true
+    },
+    {
+      "wave_id": "W4",
+      "phase_id": "EXEC-TB-W4",
+      "title": "Targeting cap + Brown LIVE_RUNTIME",
+      "status": "Done",
+      "proof_classification": "LIVE_RUNTIME_PROOF",
+      "receipt": "docs/reports/apps_rg/executive_summary_targeting_cap_live_runtime_proof_receipt.md",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_144839",
+      "token_budget_receipt": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_144839/token_budget_receipt.json",
+      "targeting_tokens_before_cap": 4708,
+      "targeting_tokens_after_cap": 943,
+      "after_targeting_cap_estimate": 13753,
+      "available_input_tokens": 14848,
+      "provider_attempted": true,
+      "x2": "PASS",
+      "x3": "BLOCK"
+    }
+  ],
+  "supersedes_run": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_134924",
+  "canonical_proof_command": "APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS=1024 python -m apps_rg --section executive_summary --target-company \"Brown & Brown\" --target-role \"Senior Vice President, IT Strategy & Innovation\" --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt"
+}
