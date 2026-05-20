@@ -1,0 +1,535 @@
+{
+  "schema": "phase2_senior_role_implementation_backlog_v1",
+  "plan_id": "phase2-gtm-presales-remaining-f7a2c9",
+  "audit_id": "senior_role_graph_gap_analysis_20260520",
+  "audit_ssot": "senior_role_graph_gap_analysis_20260520",
+  "generated_at_utc": "2026-05-20T10:43:36Z",
+  "status": "PASS",
+  "proof_classification": "plan-update-only",
+  "authority": "augmented_skills_graph",
+  "deprecated_authority_excluded": "broad_skills_ledger",
+  "gap_counts": {
+    "total": 18,
+    "p0": 6,
+    "p1": 8,
+    "p2": 3,
+    "p3": 1
+  },
+  "current_graph_summary": {
+    "pillar_count": 21,
+    "skill_row_count": 148,
+    "graph_edge_count": 1281,
+    "career_tracks": [
+      "track_actuarial_risk_derivatives",
+      "track_data_tech_cloud_ml",
+      "track_genai_agentic"
+    ],
+    "p2_pillars": [
+      "pillar_gtm_presales_motion",
+      "pillar_technical_presales_accelerators"
+    ],
+    "active_skill_rows": 94,
+    "draft_skill_rows": 54,
+    "phase_bridge_edges_actuarial_to_agentic": 0,
+    "pillar_to_pillar_edges": 0
+  },
+  "implementation_backlog_by_correction_class": {
+    "CONFIDENCE_GAP": {
+      "gap_ids": [
+        "GAP-003",
+        "GAP-012"
+      ],
+      "count": 2
+    },
+    "EDGE_GAP": {
+      "gap_ids": [
+        "GAP-002",
+        "GAP-014"
+      ],
+      "count": 2
+    },
+    "EVIDENCE_GAP": {
+      "gap_ids": [
+        "GAP-013"
+      ],
+      "count": 1
+    },
+    "FACT_LINK_GAP": {
+      "gap_ids": [
+        "GAP-015"
+      ],
+      "count": 1
+    },
+    "HUMAN_CONFIRMATION_REQUIRED": {
+      "gap_ids": [
+        "GAP-016"
+      ],
+      "count": 1
+    },
+    "NO_ACTION_NEEDED": {
+      "gap_ids": [
+        "GAP-017",
+        "GAP-018"
+      ],
+      "count": 2
+    },
+    "RUNTIME_OBSERVABILITY_GAP": {
+      "gap_ids": [
+        "GAP-006"
+      ],
+      "count": 1
+    },
+    "SECTION_POLICY_GAP": {
+      "gap_ids": [
+        "GAP-005"
+      ],
+      "count": 1
+    },
+    "SRFS_SELECTION_GAP": {
+      "gap_ids": [
+        "GAP-010"
+      ],
+      "count": 1
+    },
+    "TAXONOMY_GAP": {
+      "gap_ids": [
+        "GAP-001",
+        "GAP-004",
+        "GAP-007",
+        "GAP-008",
+        "GAP-009",
+        "GAP-011"
+      ],
+      "count": 6
+    }
+  },
+  "prioritized_gap_backlog": [
+    {
+      "gap_id": "GAP-001",
+      "severity": "P0",
+      "roles": [
+        "AIG",
+        "Lincoln",
+        "Brown_Brown"
+      ],
+      "correction_class": "TAXONOMY_GAP",
+      "title": "No carrier-insurance vs brokerage-distribution taxonomy",
+      "detail": "Graph conflates generic financial-services/insurance liability actuarial nodes with no pillar for insurance carrier transformation, underwriting/claims/operations AI, or brokerage IT strategy/innovation.",
+      "evidence": "skill/node search: brokerage, carrier, underwriting, claims_ops, insurtech -> NONE as distinct skills; InsurTech employment exists only as locked base-resume employment node."
+    },
+    {
+      "gap_id": "GAP-002",
+      "severity": "P0",
+      "roles": [
+        "AIG",
+        "Lincoln",
+        "Citi"
+      ],
+      "correction_class": "EDGE_GAP",
+      "title": "Zero phase-bridge edges from actuarial/insurance/regulatory pillars to agentic/GTM pillars",
+      "detail": "No pillar->pillar or skill_bridge edges connecting epoch_actuarial_financial_engineering / pillar_regulatory_governance to pillar_agentic_ai_platforms or pillar_gtm_presales_motion.",
+      "evidence": "Graph edge scan: actuarial/insurance/reg -> agentic/gtm/partner edges = 0"
+    },
+    {
+      "gap_id": "GAP-003",
+      "severity": "P0",
+      "roles": [
+        "Anthropic",
+        "GTM_baseline"
+      ],
+      "correction_class": "CONFIDENCE_GAP",
+      "title": "Partner hyperscaler ecosystem skills predominantly DRAFT",
+      "detail": "skill_partner_aws_ecosystem, skill_partner_cloud_partner_ecosystem, skill_partner_gtm_enablement, skill_partner_pre_sales, skill_partner_partner_engineering are DRAFT or pending_source; track expansion for PARTNERSHIPS_GTM underweights partner surface.",
+      "evidence": "master_skills_arsenal_ledger.json activation_status on partner epoch skills (23 DRAFT / 6 ACTIVE_CONFIRMED / 19 ACTIVE)"
+    },
+    {
+      "gap_id": "GAP-004",
+      "severity": "P0",
+      "roles": [
+        "AIG",
+        "Lincoln"
+      ],
+      "correction_class": "TAXONOMY_GAP",
+      "title": "Phase-1 actuarial/insurance skills trapped in DRAFT or early-career-only sections",
+      "detail": "13/20 actuarial-epoch skills DRAFT; insurance liability skills DRAFT; skill_actuarial_actuarial_software limited to early_career/ibm_narrative\u2014not executive_summary/unify for insurer strategy roles.",
+      "evidence": "epoch_actuarial_financial_engineering activation split; section edges on skill_actuarial_actuarial_software"
+    },
+    {
+      "gap_id": "GAP-005",
+      "severity": "P0",
+      "roles": [
+        "Citi",
+        "AIG"
+      ],
+      "correction_class": "SECTION_POLICY_GAP",
+      "title": "Executive_summary SRFS blocks core MEDIUM domain facts (by design) causing undermatch",
+      "detail": "GTM/exec projection audit: fact_srfs_blocked includes most P2 GTM MEDIUM facts; only skill_p2_tech_reusable_accelerators claim_eligible for exec_summary. Regulated-domain MEDIUM facts (fact_governance_001 banking) not in commercial_claim_eligibility exec path.",
+      "evidence": "skills_graph_phase2_section_projection_audit.json executive_summary.fact_srfs_blocked; commercial_claim_eligibility.yaml excludes executive_summary"
+    },
+    {
+      "gap_id": "GAP-006",
+      "severity": "P0",
+      "roles": [
+        "GTM_baseline",
+        "Citi"
+      ],
+      "correction_class": "RUNTIME_OBSERVABILITY_GAP",
+      "title": "X2 business-metrics substrate failure on mock exec_summary run",
+      "detail": "x2_srfs_claim_business_metrics_substrate failed\u2014gross margin attributed without substrate; X3_BLOCK even when graph loads.",
+      "evidence": "artifacts/.../exec_summary_20260520_094345/section_exit_x2_result.json"
+    },
+    {
+      "gap_id": "GAP-007",
+      "severity": "P1",
+      "roles": [
+        "Lincoln",
+        "Brown_Brown"
+      ],
+      "correction_class": "TAXONOMY_GAP",
+      "title": "No IT strategy / AI enablement / enterprise architecture / portfolio governance pillar family",
+      "detail": "Lincoln SVP IT Strategy and Brown & Brown SVP IT Strategy require IT strategy, App Dev CoE, DevSecOps, platform engineering, portfolio/financial management\u2014absent as named pillars/skills (only generic executive_leadership, cloud_data_aws, agentic).",
+      "evidence": "skill search: it_strategy, ai_enablement, devsecops, portfolio_management -> NONE"
+    },
+    {
+      "gap_id": "GAP-008",
+      "severity": "P1",
+      "roles": [
+        "Citi"
+      ],
+      "correction_class": "TAXONOMY_GAP",
+      "title": "Banking productization not separated from generic FS governance",
+      "detail": "No distinct skills for payments, liquidity, trade, investor/issuer services, fraud/compliance product lines\u2014only fact_governance_001 (major banking client) MEDIUM and fact_governance_003 Basel/CCAR HIGH.",
+      "evidence": "Candidate ledger fact domain hits: banking=1, payments/liquidity/fraud skill ids NONE"
+    },
+    {
+      "gap_id": "GAP-009",
+      "severity": "P1",
+      "roles": [
+        "Anthropic"
+      ],
+      "correction_class": "TAXONOMY_GAP",
+      "title": "Marketplace GTM / GSI enablement / joint solution dev not distinct from generic partnerships",
+      "detail": "No marketplace, Snowflake, GCP, Azure-specific skill nodes (only aws_modernization HIGH and cloud_vendor_joint_gtm MEDIUM). Partner-led pre-sales conflated with generic presales_solutioning pillar.",
+      "evidence": "skill id search: marketplace, snowflake, gcp, azure -> NONE"
+    },
+    {
+      "gap_id": "GAP-010",
+      "severity": "P1",
+      "roles": [
+        "AIG",
+        "Citi"
+      ],
+      "correction_class": "SRFS_SELECTION_GAP",
+      "title": "Default track weights favor genai_agentic (0.65) over actuarial (0.10)",
+      "detail": "Unless JD fixture overrides weights, TRACK_DATA_TECH_CLOUD_ML + genai track dominates traversal; insurer transformation JDs will surface agentic platform skills before domain transformation ops.",
+      "evidence": "track_weighted_graph_expansion.py DEFAULT_TRACK_WEIGHTS"
+    },
+    {
+      "gap_id": "GAP-011",
+      "severity": "P1",
+      "roles": [
+        "AIG",
+        "Lincoln",
+        "Citi",
+        "Brown_Brown",
+        "Anthropic"
+      ],
+      "correction_class": "TAXONOMY_GAP",
+      "title": "Role-family taxonomy lacks insurer/carrier, brokerage, banking-platform slices",
+      "detail": "master_role_family_taxonomy.yaml has 13 families\u2014no INSURANCE_CARRIER_TRANSFORMATION, INSURANCE_BROKERAGE_IT, BANKING_PLATFORM_AI. Targeting folds into AI_GOVERNANCE_RISK, EXECUTIVE_LEADERSHIP, PARTNERSHIPS_GTM.",
+      "evidence": "master_role_family_taxonomy.yaml role_families list"
+    },
+    {
+      "gap_id": "GAP-012",
+      "severity": "P1",
+      "roles": [
+        "GTM_baseline"
+      ],
+      "correction_class": "CONFIDENCE_GAP",
+      "title": "P2 HIGH skills without fact links remain DRAFT (track expansion blocked)",
+      "detail": "commercial_validation_pilots, presales_delivery_handoff, demoable_accelerator, adoption_derisking, ibm_cloud_portfolio_anchor are DRAFT despite HIGH confidence\u2014snippet-only.",
+      "evidence": "skills_graph_phase2_section_projection_audit.json proof_classification snippet_eligible_track_expansion_blocked"
+    },
+    {
+      "gap_id": "GAP-013",
+      "severity": "P1",
+      "roles": [
+        "GTM_baseline"
+      ],
+      "correction_class": "EVIDENCE_GAP",
+      "title": "Blocked anchors remain INTERNAL_ONLY (correct) but create narrative holes",
+      "detail": "skill_p2_anchor_major_airline_devops_aws and skill_p2_tech_estimation_sizing_directional DO_NOT_PROMOTE per evidence uplift audits.",
+      "evidence": "skills_graph_phase2_airline_anchor_evidence_uplift.json; skills_graph_phase2_estimation_sizing_evidence_uplift.json"
+    },
+    {
+      "gap_id": "GAP-014",
+      "severity": "P1",
+      "roles": [
+        "Citi",
+        "AIG"
+      ],
+      "correction_class": "EDGE_GAP",
+      "title": "Regulatory governance skills routed through agentic capability domain",
+      "detail": "pillar_regulatory_governance projects 25 skills via domain_security_governance_compliance overlapping runtime-gate/agentic skills\u2014risk of agentic AI swamping Basel/CCAR differentiators in competencies/unify when genai track weight high.",
+      "evidence": "Graph traversal: pillar_regulatory_governance -> domain_security_governance_compliance -> skill_runtime_gate_* under pillar_agentic_ai_platforms domains"
+    },
+    {
+      "gap_id": "GAP-015",
+      "severity": "P2",
+      "roles": [
+        "Lincoln"
+      ],
+      "correction_class": "FACT_LINK_GAP",
+      "title": "InsurTech carrier modernization evidence not linked to forward-projecting skills",
+      "detail": "Base resume InsurTech CTO narrative (middle-market insurers) exists as employment node but no ACTIVE skill_insurtech_carrier_modernization or edge to agentic transformation.",
+      "evidence": "amit_ayer_base_resume_v1.json InsurTech employment; no insurtech skill id"
+    },
+    {
+      "gap_id": "GAP-016",
+      "severity": "P2",
+      "roles": [
+        "Anthropic"
+      ],
+      "correction_class": "HUMAN_CONFIRMATION_REQUIRED",
+      "title": "Partner engineering / product feedback loops pending source",
+      "detail": "skill_partner_partner_engineering and skill_partner_product_feedback_loops are USER_CONFIRMED_PENDING_SOURCE / internal_rank_only.",
+      "evidence": "master_skills_arsenal_ledger.json support_level USER_CONFIRMED_PENDING_SOURCE"
+    },
+    {
+      "gap_id": "GAP-017",
+      "severity": "P2",
+      "roles": [
+        "Citi",
+        "AIG"
+      ],
+      "correction_class": "NO_ACTION_NEEDED",
+      "title": "Executive_summary correctly suppresses unsupported banking/insurance product claims",
+      "detail": "Policy blocks MEDIUM facts and LOW/INTERNAL_ONLY nodes\u2014reduces overclaim risk for Citi payments/fraud and AIG underwriting ops when evidence absent.",
+      "evidence": "commercial_claim_eligibility.yaml; section projection must_avoid LOW nodes"
+    },
+    {
+      "gap_id": "GAP-018",
+      "severity": "P3",
+      "roles": [
+        "GTM_baseline"
+      ],
+      "correction_class": "NO_ACTION_NEEDED",
+      "title": "Graph augmentation/consumption proven for TRACK_DATA_TECH_CLOUD_ML P2 slice",
+      "detail": "Closeout PASS: 21 pillars, 148 skills, C03 binding, 10 ACTIVE P2 skills under GTM JD offline projection.",
+      "evidence": "skills_graph_phase2_gtm_presales_closeout.json status PASS"
+    }
+  ],
+  "proposed_pillars": [
+    {
+      "pillar_id": "pillar_insurance_carrier_transformation",
+      "ws": "WS-8"
+    },
+    {
+      "pillar_id": "pillar_underwriting_claims_ops_ai",
+      "ws": "WS-8"
+    },
+    {
+      "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+      "ws": "WS-9"
+    },
+    {
+      "pillar_id": "pillar_enterprise_portfolio_governance",
+      "ws": "WS-9"
+    },
+    {
+      "pillar_id": "pillar_banking_platform_responsible_ai",
+      "ws": "WS-10"
+    },
+    {
+      "pillar_id": "pillar_insurance_brokerage_distribution",
+      "ws": "WS-11"
+    },
+    {
+      "pillar_id": "pillar_interoperability_integration_ecosystem",
+      "ws": "WS-11"
+    },
+    {
+      "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+      "ws": "WS-12"
+    },
+    {
+      "pillar_id": "pillar_applied_ai_partner_architecture",
+      "ws": "WS-12"
+    }
+  ],
+  "proposed_bridge_edge_families": [
+    {
+      "edge_family": "actuarial_to_insurer_ai_strategy",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "actuarial_to_agentic_transformation",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "insurance_to_underwriting_claims_ops",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "insurtech_to_insurer_it_strategy",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "basel_ccar_to_ai_auditability",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "regulatory_governance_to_responsible_ai",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "data_lineage_to_ai_traceability",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "hyperscaler_to_applied_ai_architecture",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "marketplace_to_partner_gtm",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "partner_engineering_to_reference_architecture",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "partner_ecosystem_to_ai_adoption",
+      "evidence_required": true
+    },
+    {
+      "edge_family": "domain_expertise_to_section_eligibility",
+      "evidence_required": true
+    }
+  ],
+  "role_family_taxonomy_additions": [
+    "INSURANCE_CARRIER_TRANSFORMATION",
+    "INSURER_IT_AI_ENABLEMENT",
+    "INSURANCE_BROKERAGE_IT_INNOVATION",
+    "BANKING_PLATFORM_AI",
+    "REGULATED_AI_GOVERNANCE",
+    "PARTNER_APPLIED_AI_ARCHITECTURE",
+    "HYPERSCALER_MARKETPLACE_GTM"
+  ],
+  "fixture_slugs": [
+    {
+      "slug": "aig_carrier_agentic",
+      "label": "AIG-style insurance agentic transformation",
+      "role_family": "INSURANCE_CARRIER_TRANSFORMATION"
+    },
+    {
+      "slug": "lincoln_insurer_it_ai",
+      "label": "Lincoln-style insurer IT strategy / AI enablement",
+      "role_family": "INSURER_IT_AI_ENABLEMENT"
+    },
+    {
+      "slug": "citi_banking_platform_ai",
+      "label": "Citi-style banking AI platform / responsible AI",
+      "role_family": "BANKING_PLATFORM_AI"
+    },
+    {
+      "slug": "brown_brokerage_it",
+      "label": "Brown & Brown-style insurance brokerage IT strategy",
+      "role_family": "INSURANCE_BROKERAGE_IT_INNOVATION"
+    },
+    {
+      "slug": "anthropic_partner_applied_ai",
+      "label": "Anthropic-style partner applied AI architecture",
+      "role_family": "PARTNER_APPLIED_AI_ARCHITECTURE"
+    },
+    {
+      "slug": "gtm_presales_baseline",
+      "label": "GTM/pre-sales baseline",
+      "role_family": "PARTNERSHIPS_GTM"
+    }
+  ],
+  "implementation_sequence": [
+    {
+      "step": 1,
+      "wave": "W0.5b",
+      "action": "Taxonomy split \u2014 role-family YAML + track-weight profiles"
+    },
+    {
+      "step": 2,
+      "wave": "W8-W11-graph",
+      "action": "Evidence-gated bridge-edge design + proposed pillars"
+    },
+    {
+      "step": 3,
+      "wave": "W12-graph",
+      "action": "Partner/hyperscaler DRAFT activation criteria"
+    },
+    {
+      "step": 4,
+      "wave": "W1",
+      "action": "Human-confirmation packets (domain MEDIUM + partner source)"
+    },
+    {
+      "step": 5,
+      "wave": "W13",
+      "action": "Senior-role fixtures published + offline traversal receipts"
+    },
+    {
+      "step": 6,
+      "wave": "W4/W14",
+      "action": "Section projection + multilane runtime proof"
+    },
+    {
+      "step": 7,
+      "wave": "W3/W3b",
+      "action": "X2 business-metrics substrate fix"
+    },
+    {
+      "step": 8,
+      "wave": "W7",
+      "action": "Release-eligible proof ladder"
+    }
+  ],
+  "workstreams": [
+    "WS-8",
+    "WS-9",
+    "WS-10",
+    "WS-11",
+    "WS-12",
+    "WS-13",
+    "WS-14"
+  ],
+  "explicit_non_claims": [
+    "underwriting",
+    "claims",
+    "policy administration",
+    "billing",
+    "brokerage distribution ownership",
+    "transaction banking",
+    "payments",
+    "liquidity",
+    "trade",
+    "investor services",
+    "issuer services",
+    "fraud operations",
+    "Fed/regulator-facing work",
+    "marketplace co-sell",
+    "Databricks",
+    "Snowflake",
+    "GCP",
+    "Azure partner exclusivity",
+    "partner sales",
+    "major airline ~ engagement ownership",
+    "technical estimation/sizing methodology without evidence"
+  ],
+  "guardrails": [
+    "do_not_weaken_executive_summary_policy",
+    "do_not_auto_promote_medium",
+    "do_not_admit_low_internal_only_draft_external",
+    "jd_briefing_targeting_only_not_proof",
+    "no_broad_skills_ledger_authority",
+    "no_agentic_core_edits",
+    "no_section_prompt_edits_in_w0_5",
+    "no_runtime_patches_in_w0_5"
+  ]
+}
