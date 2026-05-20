@@ -1,9 +1,16 @@
 {
   "session_id": "apps_research-u0-spine-20260520",
   "commit": "59385f10de",
+  "closeout_commit": "589d2fc30b",
   "branch": "main",
   "remote_sync": "origin/main",
   "overall_status": "PASS",
+  "merged_plan": {
+    "slug": "apps-research-u0-spine-convergence-589d2f",
+    "plan_file": ".cursor/plans/apps-research-u0-spine-convergence-589d2f.md",
+    "notion_plan_url": "https://www.notion.so/apps-research-u0-spine-convergence-589d2f-36627693f55c812b9e87eeecb0cae4b9",
+    "notion_backlog_url": "https://www.notion.so/P1-W-AR-U0-apps_research-U0-profile-spine-convergence-merged-plan-36627693f55c814988e6c53d6a2a5aa8"
+  },
   "waves": [
     {
       "wave_id": "W-AR-U0-1",
