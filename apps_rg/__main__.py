@@ -635,9 +635,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--provider",
         default=argparse.SUPPRESS,
-        choices=["mock", "qwen_vllm"],
+        choices=["qwen_vllm"],
         help=(
-            "Optional override for section-only lanes (mock or qwen_vllm); when omitted, uses "
+            "Optional override for section-only lanes (qwen_vllm only); when omitted, uses "
             "APPS_RG_MODULAR_LANE_PROVIDER (see apps_rg.l2_recipe.r4_generation_mode). "
             "Ignored for full R4 runs."
         ),
@@ -748,6 +748,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             return 7
         try:
             validate_executive_summary_mandatory_inputs(args)
+            from apps_rg.runtime.targeting_input_freshness import (
+                validate_executive_summary_targeting_inputs_updated,
+            )
+
+            validate_executive_summary_targeting_inputs_updated(args)
         except SectionCliConfigError as exc:
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
             return 2
@@ -770,6 +775,19 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         )
         print(sentinel, flush=True)
         return 7
+
+    lane_provider_eff: str | None = None
+    lane_provider_resolution_source: str | None = None
+    if section_eff in section_lane_ids:
+        from apps_rg.runtime.section_cli_defaults import resolve_cli_lane_provider_with_source
+
+        try:
+            lane_provider_eff, lane_provider_resolution_source = resolve_cli_lane_provider_with_source(
+                getattr(args, "provider", None)
+            )
+        except SectionCliConfigError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            return 2
 
     if args.dry_run:
         print("DRY RUN: apps_rg pipeline validation complete (no LLM call).", flush=True)
@@ -800,26 +818,24 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             f"ready={_qdr.get('ready')} probe={_qdr.get('probe_status')!r}",
             flush=True,
         )
-        if not _qdr.get("ready"):
-            print(
-                "[apps_rg] WARNING: vLLM not healthy after restart within "
-                f"{_qdr.get('wait_cap_seconds')}s: {_qdr.get('probe_error')}",
-                file=sys.stderr,
-                flush=True,
-            )
-    elif not _qdr.get("skipped") and _qdr.get("error"):
-        print(
-            f"[apps_rg] qwen_vllm docker restart error ({_qdr.get('reason')}): {_qdr.get('error')}",
-            file=sys.stderr,
-            flush=True,
-        )
-
     from apps_rg.runtime.qwen_transport_diag import persist_docker_restart_readiness_artifact, set_docker_restart_audit
 
     set_docker_restart_audit(dict(_qdr))
     _ad = str(getattr(args, "artifact_dir", "") or "").strip()
     if _ad:
         persist_docker_restart_readiness_artifact(_ad, dict(_qdr))
+
+    if section_eff in section_lane_ids and lane_provider_eff is not None:
+        from apps_rg.runtime.section_cli_preflight import require_qwen_vllm_cli_health
+
+        try:
+            require_qwen_vllm_cli_health(
+                lane_provider=lane_provider_eff,
+                docker_restart_audit=dict(_qdr),
+            )
+        except SectionCliConfigError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            return 2
 
     # Cross-company contamination guards
     if args.target_company:
@@ -848,16 +864,17 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 resolve_cli_x1d_judges,
             )
 
-            try:
-                lane_provider_eff, lane_provider_resolution_source = resolve_cli_lane_provider_with_source(
-                    getattr(args, "provider", None)
-                )
-            except SectionCliConfigError as exc:
-                print(f"ERROR: {exc}", file=sys.stderr, flush=True)
-                return 2
-            except RuntimeError as exc:
-                print(f"ERROR: {exc}", file=sys.stderr, flush=True)
-                return 2
+            if lane_provider_eff is None or lane_provider_resolution_source is None:
+                try:
+                    lane_provider_eff, lane_provider_resolution_source = (
+                        resolve_cli_lane_provider_with_source(getattr(args, "provider", None))
+                    )
+                except SectionCliConfigError as exc:
+                    print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+                    return 2
+                except RuntimeError as exc:
+                    print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+                    return 2
 
             plumbing_waiver = bool(getattr(args, "allow_non_allow_exit_zero", False))
             if (

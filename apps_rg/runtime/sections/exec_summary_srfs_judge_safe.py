@@ -35,6 +35,8 @@ _BANNED_PROSE_FRAGMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bexecutive platform record above\b", re.I), ""),
     (re.compile(r"\bplatform record above\b", re.I), ""),
     (re.compile(r"\brecord above\b", re.I), ""),
+    (re.compile(r"\bbalance engineering execution and governance depth\b", re.I), ""),
+    (re.compile(r"\bacross regulated platform programs\b", re.I), ""),
     (re.compile(r"\s{2,}"), " "),
 )
 
@@ -71,9 +73,133 @@ def build_fact_tight_s1_sentence(selected_facts: list[dict[str, Any]]) -> str:
     )
 
 
-def build_fact_tight_s2_sentence(selected_facts: list[dict[str, Any]]) -> str:
-    """S2 mechanism sentence using vocabulary from allowed executive_summary facts only."""
+def _facts_support_blob(selected_facts: list[dict[str, Any]]) -> str:
+    parts: list[str] = []
+    for row in selected_facts:
+        if not isinstance(row, dict):
+            continue
+        parts.append(str(row.get("claim_text") or ""))
+        for mv in row.get("metric_values") or []:
+            parts.append(str(mv))
+        parts.append(str(row.get("metric_raw") or ""))
+    return " ".join(parts).lower()
+
+
+def _phrase_supported(phrase: str, blob: str) -> bool:
+    return str(phrase or "").strip().lower() in blob
+
+
+def _sentence_has_unsupported_business_metric(sentence: str, blob: str) -> bool:
+    sl = str(sentence or "").lower()
+    if "gross margin" in sl and "gross margin" not in blob:
+        return True
+    if re.search(r"\b\d+\s*%", sl):
+        for m in re.findall(r"\b(\d+)\s*%", sl):
+            if f"{m}%" not in blob and f"{m} %" not in blob:
+                return True
+    return False
+
+
+def _sentence_has_unsupported_mechanism_stack(sentence: str, blob: str) -> bool:
+    sl = str(sentence or "").lower()
+    risky = (
+        "vector services",
+        "api gateways",
+        "cloud-native microservices",
+        "data pipelines",
+        "operates cloud-native",
+        "designs and operates cloud-native",
+    )
+    return any(r in sl and r not in blob for r in risky)
+
+
+def _sentence_has_unsupported_commercialization(sentence: str, blob: str) -> bool:
+    sl = str(sentence or "").lower()
+    risky = (
+        "commercialization",
+        "reusable platform services",
+        "bespoke delivery",
+        "enterprise programs",
+    )
+    return any(r in sl and r not in blob for r in risky)
+
+
+def _sentence_s1_s2_thesis_echo(s1: str, s2: str) -> bool:
+    """True when S2 repeats S1 thesis phrasing instead of mechanism delivery."""
+    a = str(s1 or "").lower()
+    b = str(s2 or "").lower()
+    if "governed agentic ai platform" in a and "governed agentic ai platform" in b:
+        return True
+    return False
+
+
+def _sentence_s2_dual_thread_overload(sentence: str) -> bool:
+    """True when S2 fuses platform mechanism and Basel/CCAR governance in one run-on."""
+    sl = str(sentence or "").lower()
+    platform_thread = any(
+        p in sl
+        for p in (
+            "graphrag",
+            "multi-agent",
+            "agentic ai platform capabilities",
+            "deterministic routing",
+        )
+    )
+    gov_thread = any(p in sl for p in ("basel", "ccar", "regulatory reporting errors"))
+    return platform_thread and gov_thread
+
+
+def _sentence_s4_needs_fact_tight_rewrite(
+    sentence: str,
+    selected_facts: list[dict[str, Any]],
+    blob: str,
+) -> bool:
+    """True when S4 adds outcomes beyond fact_exec_002 / allowed substrate."""
     by_id = _facts_index(selected_facts)
+    if "fact_exec_002" not in by_id:
+        return (
+            _sentence_has_unsupported_business_metric(sentence, blob)
+            or _sentence_has_unsupported_commercialization(sentence, blob)
+        )
+    sl = str(sentence or "").lower()
+    claim = str(by_id["fact_exec_002"].get("claim_text") or "").lower()
+    risky = (
+        "revenue",
+        "revenue growth",
+        "significant revenue",
+        "significant growth",
+        "gross margin",
+        "commercialization",
+        "ip-led",
+        "$22",
+    )
+    if any(r in sl and r not in claim and r not in blob for r in risky):
+        return True
+    return (
+        _sentence_has_unsupported_business_metric(sentence, blob)
+        or _sentence_has_unsupported_commercialization(sentence, blob)
+    )
+
+
+def _sentence_s3_needs_lifecycle_rewrite(sentence: str) -> bool:
+    """True when S3 reads as tactical tooling without lifecycle / operating-model scope."""
+    sl = str(sentence or "").lower()
+    tactical = "dependency graph" in sl or "legacy-system analysis" in sl
+    lifecycle = any(
+        p in sl for p in ("lifecycle", "operating model", "engineering scale-out", "architecture")
+    )
+    return tactical and not lifecycle
+
+
+def build_fact_tight_s2_sentence(selected_facts: list[dict[str, Any]]) -> str:
+    """S2 mechanism sentence — single proof thread (platform capabilities only)."""
+    by_id = _facts_index(selected_facts)
+    if "fact_engineering_platform_001" in by_id:
+        return (
+            "Designs and operationalizes deterministic routing, multi-agent orchestration, "
+            "GraphRAG retrieval, sandboxed execution, policy gating, and validation controls "
+            "for regulated enterprise workflows."
+        )
     if "fact_engineering_platform_005" in by_id:
         if "fact_governance_003" in by_id:
             return (
@@ -116,17 +242,71 @@ def _s5_depth_tail_from_cert_fact(cert_claim: str) -> str:
     return "quantitative rigor and enterprise risk discipline"
 
 
+def build_fact_tight_s3_sentence(selected_facts: list[dict[str, Any]]) -> str:
+    """S3 lifecycle / delivery scope — executive platform arc, not standalone tactical tooling."""
+    by_id = _facts_index(selected_facts)
+    has_001 = "fact_engineering_platform_001" in by_id
+    has_002 = "fact_engineering_platform_002" in by_id
+    has_003 = "fact_governance_003" in by_id
+    if has_001 and has_003 and has_002:
+        return (
+            "Leads platform lifecycle across architecture and operating model with engineering "
+            "scale-out; uses dependency graph intelligence to reduce refactor risk; implements "
+            "Basel III and CCAR validation frameworks that cut regulatory reporting errors by 40%."
+        )
+    if has_001 and has_003:
+        return (
+            "Leads platform lifecycle across architecture, operating model, and engineering scale-out, "
+            "and implements Basel III and CCAR data lineage, cataloging, and automated validation "
+            "frameworks that cut regulatory reporting errors by 40%."
+        )
+    if has_001 and has_002:
+        return (
+            "Leads platform lifecycle across architecture, operating model, and engineering scale-out, "
+            "applying software dependency graph intelligence to expose dependency chains and reduce "
+            "refactor risk."
+        )
+    if has_001:
+        return (
+            "Leads platform lifecycle work across architecture, operating model, and "
+            "engineering scale-out for governed agentic AI delivery."
+        )
+    if has_002:
+        return (
+            "Advances platform lifecycle delivery through software dependency graph intelligence "
+            "that accelerates legacy-system analysis and reduces refactor risk."
+        )
+    if has_003:
+        return str(by_id["fact_governance_003"].get("claim_text") or "").strip().rstrip(".") + "."
+    return "Leads platform lifecycle work across architecture and engineering scale-out."
+
+
+def build_fact_tight_s4_sentence(selected_facts: list[dict[str, Any]]) -> str:
+    """S4 measurable outcomes — metrics only from cited fact claim_text / metric_values."""
+    by_id = _facts_index(selected_facts)
+    if "fact_exec_002" in by_id:
+        return str(by_id["fact_exec_002"].get("claim_text") or "").strip().rstrip(".") + "."
+    if "fact_governance_003" in by_id:
+        return str(by_id["fact_governance_003"].get("claim_text") or "").strip().rstrip(".") + "."
+    return "Delivers measurable platform outcomes supported by the selected fact plan."
+
+
 def build_fact_tight_s5_sentence(selected_facts: list[dict[str, Any]]) -> str:
-    """S5 integrated credibility — credentials woven into platform/governance arc (no meta 'above')."""
+    """S5 executive arc closure — credentials tied to governed platform and risk-aware design."""
     by_id = _facts_index(selected_facts)
     if "fact_certs_001" not in by_id:
         return (
             "Brings AWS, Databricks, and platform credentials that align with the selected executive facts."
         )
-    depth = _s5_depth_tail_from_cert_fact(str(by_id["fact_certs_001"].get("claim_text") or ""))
+    if "fact_quant_hpc_003" in by_id:
+        return (
+            "Brings AWS, Databricks, and FSA credentials together with derivatives pricing and "
+            "capital modeling experience to strengthen enterprise risk discipline on regulated "
+            "platform programs."
+        )
     return (
-        f"Combines AWS, Databricks, and FSA credentials with {depth} to balance engineering "
-        "execution, governance, and commercialization across regulated platform programs."
+        "Brings AWS, Databricks, and FSA credentials to strengthen enterprise risk discipline "
+        "on regulated platform programs."
     )
 
 
@@ -139,9 +319,16 @@ def s5_needs_integrated_rewrite(sentence: str) -> bool:
         or "platform record" in sl
         or "as shown above" in sl
         or "credential pointer" in sl
+        or "platform/governance depth" in sl
+        or "balance engineering execution" in sl
+        or "across regulated platform programs" in sl
         or sl.strip().startswith("pairs aws")
         or sl.strip().startswith("holds ")
         or sl.strip().startswith("holds certifications")
+        or sl.strip().startswith("combines aws")
+        or sl.strip().startswith("applies aws")
+        or " applies aws" in sl
+        or " applies " in sl and "credentials" in sl
     )
 
 
@@ -231,13 +418,103 @@ def _replace_sentence(sentences: list[str], index: int, new_sentence: str) -> No
         sentences[index] = s
 
 
+def _source_fact_ids_for_s1(selected_facts: list[dict[str, Any]], slice_ids: frozenset[str]) -> list[str]:
+    by_id = _facts_index(selected_facts)
+    for fid in ("fact_engineering_platform_001", "fact_engineering_platform_005", "fact_engineering_platform_006"):
+        if fid in by_id and fid in slice_ids:
+            return [fid]
+    for fid in sorted(slice_ids):
+        if fid in by_id:
+            return [fid]
+    return []
+
+
+def _source_fact_ids_for_s2(selected_facts: list[dict[str, Any]], slice_ids: frozenset[str]) -> list[str]:
+    by_id = _facts_index(selected_facts)
+    if "fact_engineering_platform_001" in by_id:
+        return ["fact_engineering_platform_001"] if "fact_engineering_platform_001" in slice_ids else []
+    if "fact_engineering_platform_005" in by_id and "fact_governance_003" in by_id:
+        return [x for x in ("fact_engineering_platform_005", "fact_governance_003") if x in slice_ids]
+    if "fact_engineering_platform_005" in by_id:
+        return ["fact_engineering_platform_005"] if "fact_engineering_platform_005" in slice_ids else []
+    if "fact_governance_003" in by_id:
+        return ["fact_governance_003"] if "fact_governance_003" in slice_ids else []
+    return []
+
+
+def _source_fact_ids_for_s3(
+    selected_facts: list[dict[str, Any]],
+    slice_ids: frozenset[str],
+    sentence: str = "",
+) -> list[str]:
+    by_id = _facts_index(selected_facts)
+    sl = str(sentence or "").lower()
+    ids: list[str] = []
+    if "fact_engineering_platform_001" in by_id and "fact_engineering_platform_001" in slice_ids:
+        if any(
+            k in sl
+            for k in ("lifecycle", "operating model", "architecture", "scale-out", "agentic ai delivery")
+        ):
+            ids.append("fact_engineering_platform_001")
+    if "fact_engineering_platform_002" in by_id and "fact_engineering_platform_002" in slice_ids:
+        if any(k in sl for k in ("dependency graph", "legacy-system", "refactor risk")):
+            ids.append("fact_engineering_platform_002")
+    if "fact_governance_003" in by_id and "fact_governance_003" in slice_ids:
+        if any(k in sl for k in ("basel", "ccar", "40%", "regulatory reporting")):
+            ids.append("fact_governance_003")
+    if not ids and "fact_engineering_platform_001" in by_id and "fact_engineering_platform_001" in slice_ids:
+        ids.append("fact_engineering_platform_001")
+    return ids
+
+
+def _source_fact_ids_for_s4(selected_facts: list[dict[str, Any]], slice_ids: frozenset[str]) -> list[str]:
+    by_id = _facts_index(selected_facts)
+    if "fact_exec_002" in by_id and "fact_exec_002" in slice_ids:
+        return ["fact_exec_002"]
+    if "fact_governance_003" in by_id and "fact_governance_003" in slice_ids:
+        return ["fact_governance_003"]
+    return []
+
+
+def _source_fact_ids_for_s5(
+    selected_facts: list[dict[str, Any]],
+    slice_ids: frozenset[str],
+    sentence: str,
+) -> list[str]:
+    by_id = _facts_index(selected_facts)
+    ids: list[str] = []
+    if "fact_certs_001" in by_id and "fact_certs_001" in slice_ids:
+        ids.append("fact_certs_001")
+    sl = str(sentence or "").lower()
+    if (
+        (
+            "actuarial" in sl
+            or "derivatives pricing" in sl
+            or "capital modeling" in sl
+            or "grounds governed" in sl
+            or "risk-aware ai validation" in sl
+            or "brings aws" in sl
+            or "quantitative rigor" in sl
+            or "enterprise risk discipline" in sl
+        )
+        and "fact_quant_hpc_003" in by_id
+        and "fact_quant_hpc_003" in slice_ids
+    ):
+        ids.append("fact_quant_hpc_003")
+    return ids
+
+
 def _sync_claim_row_for_sentence(
     claim_ledger: list[dict[str, Any]],
     sentence_index: int,
     new_sentence: str,
+    *,
+    source_fact_ids: list[str] | None = None,
 ) -> None:
     if sentence_index < len(claim_ledger) and isinstance(claim_ledger[sentence_index], dict):
         claim_ledger[sentence_index]["claim_text"] = new_sentence.strip().rstrip(".")
+        if source_fact_ids is not None:
+            claim_ledger[sentence_index]["source_fact_ids"] = list(source_fact_ids)
 
 
 def apply_srfs_judge_safe_repair(
@@ -269,8 +546,11 @@ def apply_srfs_judge_safe_repair(
         out["resume_display_text"] = text
         return out
 
+    blob = _facts_support_blob(selected_facts)
     s1_idx = 0
     s2_idx = 1
+    s3_idx = 2
+    s4_idx = 3 if len(sentences) == 5 else 2
     s5_idx = 4 if len(sentences) == 5 else 3
 
     if agentic_ai_supported_in_facts(selected_facts):
@@ -279,23 +559,81 @@ def apply_srfs_judge_safe_repair(
             new_s1 = build_fact_tight_s1_sentence(selected_facts)
             _replace_sentence(sentences, s1_idx, new_s1)
             if len(ledger) > s1_idx:
-                _sync_claim_row_for_sentence(ledger, s1_idx, new_s1)
+                _sync_claim_row_for_sentence(
+                    ledger,
+                    s1_idx,
+                    new_s1,
+                    source_fact_ids=_source_fact_ids_for_s1(selected_facts, slice_ids),
+                )
 
     s2 = sentences[s2_idx]
-    if _JUDGE_RISK_S2_RE.search(s2) or any(
-        t in s2.lower()
-        for t in ("orchestration", "graph-aware", "deterministic routing", "multi-agent")
+    if (
+        _JUDGE_RISK_S2_RE.search(s2)
+        or _sentence_has_unsupported_mechanism_stack(s2, blob)
+        or _sentence_has_unsupported_business_metric(s2, blob)
+        or _sentence_s2_dual_thread_overload(s2)
+        or _sentence_s1_s2_thesis_echo(sentences[s1_idx], s2)
     ):
         new_s2 = build_fact_tight_s2_sentence(selected_facts)
         _replace_sentence(sentences, s2_idx, new_s2)
-        _sync_claim_row_for_sentence(ledger, s2_idx, new_s2)
+        _sync_claim_row_for_sentence(
+            ledger,
+            s2_idx,
+            new_s2,
+            source_fact_ids=_source_fact_ids_for_s2(selected_facts, slice_ids),
+        )
+
+    if len(sentences) >= 3:
+        s3 = sentences[s3_idx]
+        if _sentence_has_unsupported_commercialization(s3, blob) or _sentence_s3_needs_lifecycle_rewrite(
+            s3
+        ):
+            new_s3 = build_fact_tight_s3_sentence(selected_facts)
+            _replace_sentence(sentences, s3_idx, new_s3)
+            _sync_claim_row_for_sentence(
+                ledger,
+                s3_idx,
+                new_s3,
+                source_fact_ids=_source_fact_ids_for_s3(selected_facts, slice_ids, new_s3),
+            )
+
+    if len(sentences) >= 4 and "fact_exec_002" in slice_ids:
+        s4 = sentences[s4_idx]
+        new_s4 = build_fact_tight_s4_sentence(selected_facts)
+        if s4.strip() != new_s4.strip() or _sentence_s4_needs_fact_tight_rewrite(s4, selected_facts, blob):
+            _replace_sentence(sentences, s4_idx, new_s4)
+            _sync_claim_row_for_sentence(
+                ledger,
+                s4_idx,
+                new_s4,
+                source_fact_ids=_source_fact_ids_for_s4(selected_facts, slice_ids),
+            )
 
     if len(sentences) == 5 and "fact_certs_001" in slice_ids:
-        if s5_needs_integrated_rewrite(sentences[s5_idx]):
-            new_s5 = build_fact_tight_s5_sentence(selected_facts)
-            _replace_sentence(sentences, s5_idx, new_s5)
-            if len(ledger) > s5_idx:
-                _sync_claim_row_for_sentence(ledger, s5_idx, new_s5)
+        new_s5 = build_fact_tight_s5_sentence(selected_facts)
+        _replace_sentence(sentences, s5_idx, new_s5)
+        if len(ledger) > s5_idx:
+            _sync_claim_row_for_sentence(
+                ledger,
+                s5_idx,
+                new_s5,
+                source_fact_ids=_source_fact_ids_for_s5(selected_facts, slice_ids, new_s5),
+            )
+
+    if len(sentences) == 5 and len(ledger) >= 5:
+        for idx, id_fn in (
+            (0, lambda sf, si: _source_fact_ids_for_s1(sf, si)),
+            (1, lambda sf, si: _source_fact_ids_for_s2(sf, si)),
+            (2, lambda sf, si: _source_fact_ids_for_s3(sf, si, sentences[2])),
+            (3, lambda sf, si: _source_fact_ids_for_s4(sf, si)),
+            (4, lambda sf, si: _source_fact_ids_for_s5(sf, si, sentences[4])),
+        ):
+            _sync_claim_row_for_sentence(
+                ledger,
+                idx,
+                sentences[idx],
+                source_fact_ids=id_fn(selected_facts, slice_ids),
+            )
 
     cleaned = []
     for i, s in enumerate(sentences):

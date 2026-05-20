@@ -880,17 +880,17 @@ def resolve_section_proof_pool(
             )
 
     if section == "executive_summary" and not srfs_path:
-        return _resolve_executive_summary_graph_only_proof_pool(
-            root=root,
-            broad_skills_ledger_path=broad_skills_ledger_path,
+        from apps_rg.runtime.sections.executive_summary_srfs_binding import (
+            resolve_executive_summary_default_srfs_path,
+        )
+
+        srfs_path = resolve_executive_summary_default_srfs_path(
+            repo_root=root,
             target_company=company_eff,
             target_role=role_eff,
             jd_text=jd_eff,
             briefing_text=br_eff,
-            base_ref_str=base_ref_str,
-            base_hash=base_hash,
-            override_used=override_used,
-            targeting=targeting,
+            broad_skills_ledger_path=broad_skills_ledger_path,
         )
 
     if section not in ("competencies", "executive_summary") and not srfs_path:
@@ -912,6 +912,18 @@ def resolve_section_proof_pool(
         facts = list(plan.get("facts") or [])
         bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
         digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+        if section == "executive_summary":
+            graph_auth = resolve_augmented_skills_graph_authority(repo_root=root)
+            if str(graph_auth.get("skills_authority_status") or "") != "PASS":
+                reason = graph_auth.get("skills_authority_block_reason") or "augmented_skills_graph_unavailable"
+                raise ValueError(f"executive_summary SRFS binding BLOCKED: {reason}")
+            meta = {
+                **meta,
+                **graph_auth,
+                "srfs_backed_augmented_skills_graph": True,
+                "graph_only_claim_authority": False,
+                "active_srfs_json_ref": srfs_path,
+            }
         meta = _merge_dual_source_metadata(
             meta,
             repo_root=root,

@@ -838,6 +838,9 @@ NORTH_STAR_SIGNATURE_PHRASES = (
     "reclaimed $14 m",
     "reclaimed $14",
     "productized ai revenue",
+    "gross margins",
+    "gross margin expansion",
+    "expanding gross margins",
 )
 
 
@@ -851,6 +854,85 @@ def _selected_facts_support_blob(selected_facts: list[dict[str, Any]] | None) ->
         parts.append(str(fact.get("metric_raw") or ""))
         parts.append(str(fact.get("text") or ""))
     return " ".join(parts).lower()
+
+
+_SRFS_PERCENT_CAPTURE_RE = re.compile(r"\b(\d+)\s*%")
+
+
+def _percent_values_from_text(text: str) -> set[str]:
+    """Capture N% tokens; avoid trailing \\b after % (fails before punctuation)."""
+    return set(_SRFS_PERCENT_CAPTURE_RE.findall(str(text or "").lower()))
+
+
+def _metric_tokens_from_text(text: str) -> list[str]:
+    tokens: list[str] = []
+    for m in _SRFS_PERCENT_CAPTURE_RE.findall(str(text or "").lower()):
+        tokens.append(f"{m}%")
+    if "gross margin" in str(text or "").lower():
+        tokens.append("gross margin")
+    return tokens
+
+
+def check_srfs_claim_business_metrics_substrate(
+    claim_ledger: list[dict[str, Any]],
+    selected_facts: list[dict[str, Any]] | None,
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    """SRFS: every business metric in claim_ledger rows must appear in cited fact substrate."""
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    by_id: dict[str, dict[str, Any]] = {}
+    for fact in selected_facts or []:
+        if isinstance(fact, dict):
+            fid = str(fact.get("fact_id") or fact.get("candidate_fact_id") or "").strip()
+            if fid:
+                by_id[fid] = fact
+    violations: list[str] = []
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        claim_text = str(row.get("claim_text") or "")
+        metric_tokens = _metric_tokens_from_text(claim_text)
+        if not metric_tokens:
+            continue
+        cited_facts: list[dict[str, Any]] = []
+        for fid in row.get("source_fact_ids") or []:
+            base = str(fid).split("_metric_", 1)[0]
+            fact = by_id.get(base)
+            if fact:
+                cited_facts.append(fact)
+        if not cited_facts:
+            continue
+        row_substrate = _selected_facts_support_blob(cited_facts)
+        for token in metric_tokens:
+            if token not in row_substrate:
+                ids = [
+                    str(f.get("fact_id") or f.get("candidate_fact_id") or "")
+                    for f in cited_facts
+                ]
+                violations.append(
+                    f"{token} in claim row not supported by cited facts {ids}"
+                )
+    if violations:
+        return False, "; ".join(violations[:5])
+    return True, "ok"
+
+
+def check_srfs_display_ledger_percent_parity(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    """SRFS: percent metrics in resume_display_text must match claim_ledger rows."""
+    if not _srfs_mode_active(srfs_integration):
+        return True, "skipped_no_selected_role_fact_set"
+    display_percents = _percent_values_from_text(resume_display_text)
+    ledger_percents: set[str] = set()
+    for row in claim_ledger:
+        ledger_percents.update(_percent_values_from_text(str(row.get("claim_text") or "")))
+    if display_percents != ledger_percents:
+        return False, f"display_percents={sorted(display_percents)} ledger_percents={sorted(ledger_percents)}"
+    return True, "ok"
 
 
 def check_north_star_style_example_echo_unsupported(
@@ -1350,7 +1432,29 @@ def run_x2_gates(
         "no_unsupported_style_echo",
         north_reason,
     )
-    
+
+    srfs_metric_sub_ok, srfs_metric_sub_reason = check_srfs_claim_business_metrics_substrate(
+        claim_ledger, selected_facts, srfs_integration
+    )
+    add(
+        "x2_srfs_claim_business_metrics_substrate",
+        srfs_metric_sub_ok,
+        srfs_metric_sub_reason or "ok",
+        "metrics_in_cited_fact_substrate",
+        srfs_metric_sub_reason,
+    )
+
+    srfs_parity_ok, srfs_parity_reason = check_srfs_display_ledger_percent_parity(
+        resume_display_text, claim_ledger, srfs_integration
+    )
+    add(
+        "x2_srfs_display_ledger_percent_parity",
+        srfs_parity_ok,
+        srfs_parity_reason or "ok",
+        "display_ledger_percent_match",
+        srfs_parity_reason,
+    )
+
     # New coverage accounting gate
     accounting_ok, accounting_reason = check_claim_coverage_accounting(
         resume_display_text, parsed_output, text_claim_coverage, claim_ledger

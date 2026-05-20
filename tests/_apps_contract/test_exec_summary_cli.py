@@ -23,6 +23,8 @@ from apps_rg.runtime.section_cli_defaults import (
 )
 
 REPO = Path(__file__).resolve().parents[2]
+_EXEC_SUMMARY_JD_FIXTURE = REPO / "tests" / "_fixtures" / "ci-probe-jd.txt"
+_EXEC_SUMMARY_BRIEF_FIXTURE = REPO / "tests" / "_fixtures" / "ci-probe-briefing.txt"
 
 # Deterministic provider trace: strip ambient modular provider; optional Qwen offline stub.
 _EXEC_SUMMARY_SUBPROCESS_STRIP_KEYS: frozenset[str] = frozenset(
@@ -110,7 +112,18 @@ def _assert_stdout_matches_persisted_report(rd: Path, stdout: str) -> dict[str, 
 
 
 def _cli_argv() -> list[str]:
-    return ["--section", "executive_summary"]
+    return [
+        "--section",
+        "executive_summary",
+        "--target-company",
+        "CI-Probe-Co",
+        "--target-role",
+        "Software Engineer",
+        "--jd",
+        str(_EXEC_SUMMARY_JD_FIXTURE),
+        "--manual-brief",
+        str(_EXEC_SUMMARY_BRIEF_FIXTURE),
+    ]
 
 
 def _subprocess_env() -> dict[str, str]:
@@ -122,6 +135,101 @@ def _subprocess_env_provider_unset() -> dict[str, str]:
         allow_non_allow_exit_zero=True,
         qwen_offline_contract_stub=True,
     )
+
+
+def test_executive_summary_cli_fails_on_stale_default_targeting_files() -> None:
+    r = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "apps_rg",
+            "--section",
+            "executive_summary",
+            "--target-company",
+            "Unify Consulting",
+            "--target-role",
+            "SVP Engineering",
+            "--jd",
+            str(REPO / "apps_rg" / "config" / "default_jd_targeting.txt"),
+            "--manual-brief",
+            str(REPO / "apps_rg" / "config" / "default_targeting_briefing.txt"),
+        ],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        env=_subprocess_env(),
+    )
+    assert r.returncode == 2, (r.stdout, r.stderr)
+    assert "not updated" in (r.stderr or "").lower()
+
+
+def test_executive_summary_cli_fails_without_target_company() -> None:
+    r = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "apps_rg",
+            "--section",
+            "executive_summary",
+            "--target-role",
+            "VP Engineering",
+            "--jd",
+            str(_EXEC_SUMMARY_JD_FIXTURE),
+            "--manual-brief",
+            str(_EXEC_SUMMARY_BRIEF_FIXTURE),
+        ],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=_subprocess_env(),
+    )
+    assert r.returncode == 2
+    assert "--target-company" in (r.stderr or "")
+
+
+def test_executive_summary_dry_run_still_requires_updated_targeting() -> None:
+    r = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "apps_rg",
+            "--dry-run",
+            "--section",
+            "executive_summary",
+            "--target-company",
+            "Unify Consulting",
+            "--target-role",
+            "SVP Engineering",
+            "--jd",
+            str(REPO / "apps_rg" / "config" / "default_jd_targeting.txt"),
+            "--manual-brief",
+            str(REPO / "apps_rg" / "config" / "default_targeting_briefing.txt"),
+        ],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=_subprocess_env(),
+    )
+    assert r.returncode == 2
+    assert "not updated" in (r.stderr or "").lower()
+
+
+def test_executive_summary_cli_fails_without_mandatory_targeting_inputs() -> None:
+    r = subprocess.run(
+        [sys.executable, "-m", "apps_rg", "--section", "executive_summary"],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        env=_subprocess_env(),
+    )
+    assert r.returncode == 2, r.stdout
+    assert "--target-company" in (r.stderr or "")
+    assert "--jd" in (r.stderr or "")
+    assert "--manual-brief" in (r.stderr or "")
 
 
 def test_no_standalone_executive_summary_pipeline_module():

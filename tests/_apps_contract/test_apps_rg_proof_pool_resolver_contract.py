@@ -17,15 +17,15 @@ from apps_rg.runtime.proof_pool_resolver import (
 
 REPO = Path(__file__).resolve().parents[2]
 LEDGER_PATH = default_ledger_path(REPO)
-SECTION_IDS = (
+GRAPH_DEFAULT_SECTION_IDS = (
     "headline",
-    "executive_summary",
     "unify_bullets",
     "unify_narrative",
     "ibm_bullets",
     "ibm_narrative",
     "competencies",
 )
+SECTION_IDS = ("executive_summary",) + GRAPH_DEFAULT_SECTION_IDS
 def _high_row(candidate_fact_id: str, *, claim_text: str = "Fixture claim.") -> dict:
     return {
         "candidate_fact_id": candidate_fact_id,
@@ -51,7 +51,7 @@ def _srfs_doc(sections: dict[str, list[dict]]) -> dict:
     return out
 
 
-@pytest.mark.parametrize("section_id", SECTION_IDS)
+@pytest.mark.parametrize("section_id", GRAPH_DEFAULT_SECTION_IDS)
 def test_default_resolves_augmented_skills_graph_when_srfs_absent(section_id: str) -> None:
     if not LEDGER_PATH.is_file():
         pytest.skip(f"ledger missing: {LEDGER_PATH}")
@@ -74,6 +74,78 @@ def test_default_resolves_augmented_skills_graph_when_srfs_absent(section_id: st
     assert meta.get("broad_skills_ledger_used_as_authority") is False
     assert pool.targeting_inputs_used.get("jd_title_company") is True
     assert pool.targeting_inputs_used.get("briefing") is True
+
+
+def test_executive_summary_default_srfs_binding_fail_closed_when_unresolved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Default path must not fall back to graph-only claim authority when SRFS binding fails."""
+    def _srfs_binding_blocked(**_kwargs: object) -> str:
+        raise ValueError("executive_summary SRFS binding BLOCKED: test fixture")
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_srfs_binding.resolve_executive_summary_default_srfs_path",
+        _srfs_binding_blocked,
+    )
+    with pytest.raises(ValueError, match="SRFS binding BLOCKED"):
+        resolve_section_proof_pool(
+            section="executive_summary",
+            selected_role_fact_set_path=None,
+            repo_root=REPO,
+            target_company="Unify Consulting",
+            target_role="SVP Engineering, Agentic AI Platforms",
+            jd_text="enterprise AI platform leadership.",
+            briefing_text="regulated enterprise environment.",
+            product_visible=False,
+        )
+
+
+def test_executive_summary_explicit_empty_srfs_fail_closed_not_graph_only(
+    tmp_path: Path,
+) -> None:
+    """Empty SRFS slice must fail closed; must not resolve as graph-only proof authority."""
+    srfs_path = tmp_path / "empty_exec_srfs.json"
+    srfs_path.write_text(
+        json.dumps(_srfs_doc({"executive_summary": []})),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="SRFS section slice is empty"):
+        resolve_section_proof_pool(
+            section="executive_summary",
+            selected_role_fact_set_path=str(srfs_path),
+            repo_root=REPO,
+            target_company="Acme",
+            target_role="VP Engineering",
+            jd_text="Lead platform programs.",
+            briefing_text="Governed AI delivery.",
+            product_visible=False,
+        )
+
+
+def test_executive_summary_default_resolves_active_srfs_binding() -> None:
+    if not LEDGER_PATH.is_file():
+        pytest.skip(f"ledger missing: {LEDGER_PATH}")
+    from apps_rg.runtime.sections.executive_summary_srfs_binding import ACTIVE_SRFS_JSON_REL
+
+    pool = resolve_section_proof_pool(
+        section="executive_summary",
+        selected_role_fact_set_path=None,
+        repo_root=REPO,
+        target_company="Unify Consulting",
+        target_role="SVP Engineering, Agentic AI Platforms",
+        jd_text="enterprise AI platform leadership, agentic AI systems, runtime governance.",
+        briefing_text="regulated enterprise environment, platform modernization.",
+        product_visible=False,
+    )
+    assert pool.proof_source == PROOF_SOURCE_SRFS
+    assert pool.srfs_present is True
+    assert pool.srfs_ref
+    assert (REPO / ACTIVE_SRFS_JSON_REL).is_file()
+    assert pool.proof_pool_metadata.get("selected_role_fact_set_used") is True
+    assert pool.proof_pool_metadata.get("proof_pool_type") == "selected_role_fact_set"
+    assert pool.proof_pool_metadata.get("srfs_backed_augmented_skills_graph") is True
+    assert pool.proof_pool_metadata.get("graph_only_claim_authority") is False
+    assert (REPO / ACTIVE_SRFS_JSON_REL).is_file()
 
 
 @pytest.mark.parametrize("section_id", SECTION_IDS)

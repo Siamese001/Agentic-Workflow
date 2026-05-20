@@ -306,6 +306,46 @@ def _run_executive_summary_lane_from_cli(
     jd_text = jd_resolved.description
     briefing = brief_resolved.text
 
+    import os
+
+    from apps_rg.runtime.targeting_input_freshness import (
+        is_stale_default_targeting_briefing,
+        is_stale_default_targeting_jd,
+    )
+
+    allow_stale = os.environ.get("APPS_RG_ALLOW_STALE_TARGETING_SSOT", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+        "on",
+    }
+    stale_parts: list[str] = []
+    if not allow_stale:
+        if is_stale_default_targeting_jd(jd_text):
+            stale_parts.append("JD")
+        if is_stale_default_targeting_briefing(briefing):
+            stale_parts.append("briefing")
+    if stale_parts:
+        return {
+            "exit_status": "error",
+            "execution_status": "failed",
+            "outcome_authorized": False,
+            "error": (
+                "executive_summary targeting inputs are not updated (still DEFAULT_SSOT placeholder): "
+                + ", ".join(stale_parts)
+                + ". Edit apps_rg/config/default_* files is not sufficient — pass run-specific "
+                "--jd and --manual-brief material."
+            ),
+            "x3_disposition": "",
+            "fault": "stale_targeting_inputs",
+            "artifact_dir": "",
+            "run_id": "",
+            "request_id": "",
+            "l7_how_trace_emitted": False,
+            "terminal_r5": False,
+        }
+
     raw_request = build_raw_request_for_r4(
         target_company=tc,
         target_role=tr,

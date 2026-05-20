@@ -93,12 +93,15 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
 
     if cli_value is not None and str(cli_value).strip():
         v = str(cli_value).strip().lower()
-        if v not in ("qwen_vllm", "mock"):
-            raise SectionCliConfigError(
-                f"Invalid --provider {cli_value!r} (expected qwen_vllm or mock)."
-            )
         if v == "mock":
-            return v, CLI_PROVIDER_RESOLUTION_TEST_MOCK
+            raise SectionCliConfigError(
+                "Invalid --provider 'mock': section lanes require qwen_vllm. "
+                "For plumbing without live vLLM, set APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1."
+            )
+        if v != "qwen_vllm":
+            raise SectionCliConfigError(
+                f"Invalid --provider {cli_value!r} (expected qwen_vllm)."
+            )
         return v, CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
     raw_env = str(os.environ.get(ENV_APPS_RG_MODULAR_LANE_PROVIDER) or "").strip()

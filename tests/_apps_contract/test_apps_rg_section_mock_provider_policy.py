@@ -29,6 +29,7 @@ def _env(extra: dict[str, str] | None = None) -> dict[str, str]:
 
 @pytest.mark.parametrize("lane", GENERATED_LANES)
 def test_invalid_provider_rejected(lane: str) -> None:
+    """``--provider mock`` must fast-fail at CLI parse/resolve (no lane dispatch)."""
     r = subprocess.run(
         [
             sys.executable,
@@ -43,12 +44,13 @@ def test_invalid_provider_rejected(lane: str) -> None:
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
-        timeout=120,
+        timeout=30,
         env=_env(),
     )
-    assert r.returncode == 2
+    assert r.returncode == 2, (r.stdout, r.stderr)
     err = (r.stderr or "").lower()
     assert "invalid" in err and "provider" in err
+    assert "mock" in err
 
 
 @pytest.mark.parametrize("lane", GENERATED_LANES)

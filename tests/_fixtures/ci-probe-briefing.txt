@@ -1,0 +1,5 @@
+CI Probe briefing for automated executive_summary contract tests.
+
+Company context: CI-Probe-Co operates a regulated testing program for resume section lanes.
+Role context: Software Engineer on the CI testing team validates smoke gates and runtime contracts.
+Themes: pytest discipline, fail-closed targeting inputs, and deterministic proof bundles.

@@ -1208,11 +1208,24 @@ def run_executive_summary_execution(
                 )
                 if density_repair_meta:
                     write_json(artifact_dir / "srfs_density_micro_repair.json", density_repair_meta)
+                _before_judge_safe = json.dumps(parsed, sort_keys=True)
                 parsed = apply_srfs_judge_safe_repair(
                     parsed,
                     _srfs_facts,
                     _srfs_i,
                 )
+                if json.dumps(parsed, sort_keys=True) != _before_judge_safe:
+                    write_json(
+                        artifact_dir / "srfs_judge_safe_repair.json",
+                        {
+                            "schema": "srfs_judge_safe_repair_v1",
+                            "repaired": True,
+                            "before_resume_display_text": json.loads(_before_judge_safe).get(
+                                "resume_display_text"
+                            ),
+                            "after_resume_display_text": parsed.get("resume_display_text"),
+                        },
+                    )
                 parsed, density_post_judge_meta = apply_srfs_density_micro_expansion(
                     parsed, _srfs_i, selected_facts=_srfs_facts
                 )
@@ -1221,6 +1234,25 @@ def run_executive_summary_execution(
                         **(density_repair_meta or {}),
                         "post_judge_safe_pass": density_post_judge_meta,
                     }
+                _before_final_judge_safe = json.dumps(parsed, sort_keys=True)
+                parsed = apply_srfs_judge_safe_repair(
+                    parsed,
+                    _srfs_facts,
+                    _srfs_i,
+                )
+                if json.dumps(parsed, sort_keys=True) != _before_final_judge_safe:
+                    write_json(
+                        artifact_dir / "srfs_judge_safe_repair_final.json",
+                        {
+                            "schema": "srfs_judge_safe_repair_v1",
+                            "pass": "post_density",
+                            "repaired": True,
+                            "before_resume_display_text": json.loads(_before_final_judge_safe).get(
+                                "resume_display_text"
+                            ),
+                            "after_resume_display_text": parsed.get("resume_display_text"),
+                        },
+                    )
                 raw_output = parsed_to_raw_model_output_json(parsed)
         if parsed and isinstance(parsed, dict):
             _srfs_final = runtime_payload.get("srfs_integration")
