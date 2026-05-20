@@ -13,7 +13,7 @@
   },
   "receipt": {
     "files_changed": [
-      "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "apps_rg/runtime/sections/competencies_lane_api.py",
       "apps_rg/runtime/proof_pool_lane_integration.py",
       "tests/_apps_contract/test_competencies_canonical_lane_contract.py",
       "tests/_apps_contract/test_competencies_dispatch_retirement_inventory.py",

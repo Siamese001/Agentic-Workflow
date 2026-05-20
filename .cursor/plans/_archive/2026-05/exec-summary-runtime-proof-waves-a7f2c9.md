@@ -11,7 +11,7 @@ Audience: Operators and Cursor agents owning `apps_rg` executive_summary L2 prom
 
 - **Prompt / template SSOT**: `apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml` (instructional XML sections, sentence-role goals, many-shot examples, internal deliberation without CoT in output).
 - **PA**: `apps_rg/runtime/dispatch/executive_summary_pa.py` (targeting-only JD_TEXT/BRIEFING, sentence roles in `u0_user_task`, raw JSON contract).
-- **Dispatch**: `apps_rg/runtime/dispatch/executive_summary_dispatch.py` (narrative heuristics, `retry_qwen_for_synthesis` repair aligned to sentence roles).
+- **Dispatch**: `apps_rg/runtime/sections/executive_summary_lane_api.py` (narrative heuristics, `retry_qwen_for_synthesis` repair aligned to sentence roles).
 - **Contracts**: `tests/_apps_contract/test_exec_summary_pa_compiled_prompt.py` gates prompt sources (no fixed two-sentence mandate, etc.).
 
 **Recent fix:** `GEMINI_JUDGE_MAX_OUTPUT_TOKENS` exported as alias of `GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS` in `apps_rg/runtime/judges/executive_summary_x1d.py` so `test_gemini_generation_config_has_tokens_and_compact_instruction` can import it.

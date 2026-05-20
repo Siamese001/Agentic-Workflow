@@ -46,11 +46,11 @@ class TestMissingRecipeFailsClosed:
 
     def test_unknown_app_name_fails_closed(self, raw_request, artifact_dir):
         """app_name='nonexistent_app' → L2_RECIPE_NOT_FOUND fault."""
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-            run_integrated_r4_deterministic_pipeline,
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+            run_integrated_single_action_spine,
         )
 
-        result = run_integrated_r4_deterministic_pipeline(
+        result = run_integrated_single_action_spine(
             raw_request=raw_request,
             app_name="nonexistent_app",
             artifact_dir=artifact_dir,
@@ -62,13 +62,13 @@ class TestMissingRecipeFailsClosed:
 
     def test_no_artifacts_on_missing_recipe(self, raw_request, tmp_path):
         """No receipt files written when recipe is missing."""
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-            run_integrated_r4_deterministic_pipeline,
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+            run_integrated_single_action_spine,
         )
 
         art_dir = tmp_path / "run_artifacts"
 
-        result = run_integrated_r4_deterministic_pipeline(
+        result = run_integrated_single_action_spine(
             raw_request=raw_request,
             app_name="nonexistent_app",
             artifact_dir=art_dir,
@@ -91,13 +91,14 @@ class TestMissingRecipeFailsClosed:
         try:
             with mock.patch.dict("sys.modules", {"apps_rg.l2_recipe": None, "apps_rg.l2_recipe.registry": None}):
                 l2_recipe_resolver._RECIPE_REGISTRY = None
-                from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-                    run_integrated_r4_deterministic_pipeline,
+                from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+                    run_integrated_single_action_spine,
                 )
-                result = run_integrated_r4_deterministic_pipeline(
+                result = run_integrated_single_action_spine(
                     raw_request=raw_request,
                     app_name="apps_rg",
                     artifact_dir=artifact_dir,
+                    _test_mode=True,
                 )
                 assert result.fault
                 assert "L2_RECIPE_NOT_FOUND" in result.fault

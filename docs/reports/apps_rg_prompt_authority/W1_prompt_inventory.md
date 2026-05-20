@@ -20,13 +20,13 @@ Runtime inline-authority map: `artifacts/apps_rg/prompt_authority/runtime_bypass
 
 | File | Classification |
 |------|----------------|
-| `apps_rg/runtime/dispatch/competencies_dispatch.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W5 |
-| `apps_rg/runtime/dispatch/executive_summary_dispatch.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W4 |
+| `apps_rg/runtime/sections/competencies_lane_api.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W5 |
+| `apps_rg/runtime/sections/executive_summary_lane_api.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W4 |
 | `apps_rg/runtime/dispatch/headline_dispatch.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W6 |
-| `apps_rg/runtime/dispatch/ibm_bullets_dispatch.py` | Import-only re-export shim → canonical lane ``ibm_bullets_lane`` + PA adapter W7 |
-| `apps_rg/runtime/dispatch/ibm_narrative_dispatch.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W7 |
-| `apps_rg/runtime/dispatch/unify_bullets_dispatch.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W7 |
-| `apps_rg/runtime/dispatch/unify_narrative_dispatch.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W7 |
+| `apps_rg/runtime/sections/ibm_bullets_lane_api.py` | Import-only re-export shim → canonical lane ``ibm_bullets_lane`` + PA adapter W7 |
+| `apps_rg/runtime/sections/ibm_narrative_lane_api.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W7 |
+| `apps_rg/runtime/sections/unify_bullets_lane_api.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W7 |
+| `apps_rg/runtime/sections/unify_narrative_lane_api.py` | INLINE_BUILD_PROMPT_MESSAGES → adapter W7 |
 
 Slice tests may import `build_prompt_messages` for shape checks — see `runtime_bypass_map.json`.
 

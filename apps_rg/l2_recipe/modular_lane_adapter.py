@@ -1,7 +1,7 @@
 """Phase 1 — in-process modular lane helpers (apps_rg only; no l2 envelope).
 
 Real lane execution uses ``run_canonical_apps_rg_from_cli_primitives`` (same as ``python -m apps_rg``);
-``run_dispatch_main`` is a fail-closed legacy stub.
+``run_dispatch_main`` raises ImportError (retired).
 """
 
 from __future__ import annotations
@@ -110,12 +110,11 @@ def lane_argv_for_provider(*, provider: str) -> list[str]:
 
 
 def run_dispatch_main(module_qualname: str, argv: list[str]) -> int:  # noqa: ARG001
-    """Deprecated — legacy ``*-dispatch.main`` helper; fail-closed (do not execute lane)."""
-    from apps_rg.runtime.deprecated_runtime_cli import exit_deprecated_dispatch_cli
-
-    tail = str(module_qualname).rsplit(".", 1)[-1]
-    section = tail[: -len("_dispatch")] if tail.endswith("_dispatch") else None
-    return exit_deprecated_dispatch_cli(section=section)
+    """Removed — legacy ``*-dispatch.main`` is not callable."""
+    raise ImportError(
+        f"run_dispatch_main is retired ({module_qualname!r}). "
+        "Use: python -m apps_rg --section <lane>"
+    )
 
 
 def resolve_latest_lane_run_dir(

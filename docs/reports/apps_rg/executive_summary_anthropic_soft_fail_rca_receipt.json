@@ -1,0 +1,35 @@
+{
+  "schema": "apps_rg.executive_summary_anthropic_soft_fail_rca.v1",
+  "status": "PASS",
+  "run_id": "exec_summary_20260520_125832",
+  "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_125832",
+  "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL",
+  "anthropic_score": 3.5,
+  "anthropic_threshold": 4.0,
+  "peer_scores": {
+    "gemini_pro": 5.0,
+    "openai_chatgpt": 4.3
+  },
+  "root_cause": {
+    "primary": "srfs_judge_safe_repair_induced_synthesis_quality_regression",
+    "failing_rubric_dimension": "synthesis_quality",
+    "anthropic_fail_reasons": [
+      "S1-S2 redundancy reduces synthesis quality below threshold.",
+      "S3 lifecycle clause lacks direct fact citation, weakening factual support."
+    ],
+    "anthropic_quality_flags": [
+      "s1_s2_redundancy",
+      "unused_high_value_metric_fact_engineering_platform_004"
+    ],
+    "unsupported_claims": false,
+    "pre_dispatch_defect": false,
+    "rubric_mismatch": false
+  },
+  "recommended_zero_loss_correction": [
+    "Preserve fact_engineering_platform_004 / 6mo-3wk metric in S3 or S4 when in SRFS slice",
+    "Differentiate S1 thesis from S2 mechanism when both use fact_engineering_platform_001",
+    "Skip aggressive S3 rewrite when Qwen already has valid lifecycle+metrics split"
+  ],
+  "proof_classification": "JUDGE_VARIANCE_WITH_REPAIR_INDUCED_SYNTHESIS_REGRESSION",
+  "code_changed": false
+}

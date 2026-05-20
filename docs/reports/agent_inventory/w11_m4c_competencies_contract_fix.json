@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11_M4C_FIX",
+  "status": "PASS",
+  "receipt": {
+    "files_changed": [
+      "apps_rg/runtime/sections/competencies_lane_api.py",
+      "tests/_apps_contract/test_competencies_canonical_lane_contract.py"
+    ],
+    "commands_run": [
+      "git status --short",
+      "python -m compileall agentic_core apps_rg apps_shared apps_eval -q",
+      "git grep x2_no_keyword_stuffing|competencies_lane|41|42 apps_rg tests docs"
+    ],
+    "tests_run": [
+      {
+        "command": "pytest tests/_apps_contract/test_competencies_canonical_lane_contract.py::test_canonical_lane_x2_gate_cardinality tests/_apps_contract/test_competencies_canonical_lane_contract.py::test_canonical_lane_mock_judge_x3_review_code -vv",
+        "result": "2 passed"
+      },
+      {
+        "command": "pytest tests/_apps_contract/test_competencies_canonical_lane_contract.py -q",
+        "result": "10 passed"
+      },
+      {
+        "command": "pytest tests -k \"competencies and (canonical or lane or x2 or x3 or keyword)\" -q",
+        "result": "58 passed (52 collection errors unrelated to seam)"
+      },
+      {
+        "command": "pytest test_lane_pa_helper_parity + canonical_runtime_hygiene + deprecated_path_quarantine -q",
+        "result": "38 passed"
+      }
+    ],
+    "artifacts_written": [
+      "docs/reports/agent_inventory/w11_m4c_competencies_contract_fix.md",
+      "docs/reports/agent_inventory/w11_m4c_competencies_contract_fix.json"
+    ]
+  },
+  "root_cause": {
+    "failing_tests": [
+      "test_canonical_lane_x2_gate_cardinality",
+      "test_canonical_lane_mock_judge_x3_review_code"
+    ],
+    "expected": {
+      "total_x2_gates": 41,
+      "x3_code": "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+    },
+    "actual": {
+      "total_x2_gates": 42,
+      "failed_gates": ["x2_no_keyword_stuffing"],
+      "x3_code": "X3_BLOCK",
+      "keyword_stuffing_observed": {
+        "governed": 16,
+        "capability": 16,
+        "cluster": 16
+      }
+    },
+    "cause": "Stale test gate count (41 vs 42 after section_input_usage_x2 gates). SRFS offline stub used repeated 'governed capability cluster' template phrases; reduce_competency_keyword_stuffing cannot trim below 2 terms/category. Not M4C import regression."
+  },
+  "fix_applied": {
+    "files_changed": [
+      "apps_rg/runtime/sections/competencies_lane_api.py",
+      "tests/_apps_contract/test_competencies_canonical_lane_contract.py"
+    ],
+    "why_correct": "SRFS stub phrases diversified; test cardinality aligned to 42 gates and asserts keyword gate passes",
+    "why_not_x2_weakening": "Gate threshold and enforcement unchanged; stub output fixed to satisfy existing gate"
+  },
+  "competencies_result": {
+    "failing_tests_now": 0,
+    "x2_gate_count": 42,
+    "x2_no_keyword_stuffing": "PASS",
+    "x3_result": "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+  },
+  "regression_result": {
+    "competencies_canonical_contract": "10/10 passed",
+    "safety_regression": "38/38 passed"
+  },
+  "updated_counts": {
+    "archived": 1,
+    "delete_ready": 0,
+    "archive_ready": 0,
+    "migration_required": 8,
+    "blocked": 12,
+    "matrix_updated": false
+  },
+  "behavior_change": false,
+  "runtime_change": "none",
+  "next_recommended_action": "Continue W11 M3.5 / dispatch execution shrink",
+  "explicit_non_claims": [
+    "no files deleted",
+    "no archive moves",
+    "no X2/X3 weakened",
+    "no live apps_rg proof",
+    "no broad refactor"
+  ]
+}

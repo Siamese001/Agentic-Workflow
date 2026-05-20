@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 
 def _stub_lane_return() -> dict[str, Any]:

@@ -15,12 +15,12 @@ from apps_rg.runtime.shadow.l6_handoff_packet import (
     L6_PACKET_VERSION,
     UNIFY_REWRITE_POLICY_ID,
 )
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ROLLUP_JSON = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs" / "generated_lane_rollup" / "generated_lane_rollup.json"
 PKG_X3 = REPO_ROOT / RUNTIME_PROOFS / "resume_package" / "resume_package_x3_disposition.json"
-RESUME_PKG_MOD = REPO_ROOT / "apps_rg" / "runtime" / "package" / "resume_package_x3.py"
+RESUME_PKG_MOD = REPO_ROOT / "apps_rg" / "runtime" / "_offline" / "resume_package_disposition.py"
 
 
 @pytest.fixture(scope="module")
@@ -39,8 +39,7 @@ def _l6_packet(repo_root: Path, rollup: dict, lane_key: str) -> dict:
 
 REGEN_HINT = (
     "Run the seven REAL_LLM lane dispatches, "
-    "`python -m apps_rg.runtime.reports.generated_lane_rollup`, "
-    "then `python -m apps_rg.runtime.package.resume_package_x3`."
+    "internal rollup + emit_resume_package_artifacts (not module CLIs)."
 )
 
 

@@ -14,8 +14,8 @@
     {"command": "python -m apps_rg --section ibm_bullets --provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude --allow-non-allow-exit-zero", "exit_code": 0, "run_id": "ibm_bullets_20260519_090504", "x3": "X3_BLOCK", "runtime_generation_status": "BLOCKED"},
     {"command": "W15 judge replay on pin ibm_bullets_20260518_224815", "exit_code": 0, "x3": "X3_ALLOW"},
     {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write --product-proof", "exit_code": 0},
-    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
-    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0, "final_x3_code": "X3_ALLOW"},
+    {"command": "python -m apps_rg.runtime.internal.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
+    {"command": "python -m apps_rg.runtime.internal.resume_package_disposition", "exit_code": 0, "final_x3_code": "X3_ALLOW"},
     {"command": "pytest tests/unit/apps_rg -k aggregation or final_resume or package_x3 or review_lane or coherent_rollup or ibm_bullets", "exit_code": 0, "passed": 19},
     {"command": "pytest tests/_apps_contract -k apps_rg and (aggregation or final_resume or package_x3 or review_lane or coherent_rollup or ibm_bullets)", "exit_code": 1, "passed": 28, "failed": 4, "note": "ibm_bullets provider-down / authority label contract flakes"},
     {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}

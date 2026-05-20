@@ -14,7 +14,7 @@ Execution must not begin until Phase 0 acceptance below is met. No SSOT flip unt
 | Surface | Role | Body generation |
 |--------|------|-----------------|
 | `python -m apps_rg` | Canonical **R4 product** CLI | Monolithic: `GenerateResumeStep` → `run_apps_rg_l2_envelope` + tailor-existing CPA |
-| `python -m apps_rg.runtime.orchestrate_full_resume` | **Offline** modular orchestrator (no `agentic_core` R4 spine) | Seven subprocess lane modules → rollup → locked copy → `final_resume_assembler` → DOCX (`runtime_proofs`-centric paths today) |
+| `python -m apps_rg.runtime.internal.lane_batch` | **Offline** modular orchestrator (no `agentic_core` R4 spine) | Seven subprocess lane modules → rollup → locked copy → `final_resume_assembler` → DOCX (`runtime_proofs`-centric paths today) |
 | `apps_rg/l2_recipe/r4_generation_route.py` | SSOT for R4 style / flags | Today: `monolithic_full_resume`, `R4_RECIPE_USES_FULL_RESUME_ENVELOPE_CPA=True` |
 
 ---
@@ -72,7 +72,7 @@ Phase 0 must prove whether the offline modular runner can be **reused in-process
 
 **Acceptance:**
 
-1. **Inventory subprocess / path assumptions** in `apps_rg.runtime.orchestrate_full_resume`:
+1. **Inventory subprocess / path assumptions** in `apps_rg.runtime.internal.lane_batch`:
    - Subprocess `cwd=repo`, fixed `RUNTIME_PROOFS` / `PLANNED_DOCX_REL` strings
    - Modules that assume paths under `artifacts/apps_rg/runtime_proofs/`
    - Pointer mutation (`active_base_resume_pointer.json`) — R4 may need a no-pointer or scoped variant when using `artifact_dir`
@@ -90,25 +90,25 @@ Phase 0 must prove whether the offline modular runner can be **reused in-process
 
 ### 1.1 Entry
 
-- **Module:** `apps_rg.runtime.orchestrate_full_resume`
+- **Module:** `apps_rg.runtime.internal.lane_batch`
 - **API:** `run_orchestration(...)` / CLI `main()` — **legacy orchestration shell**; should call `run_modular_resume_generation` once extracted.
 - **Lane loop:** `LANE_MODULES` — subprocess `python -m <lane>` for each:
 
   1. `apps_rg.runtime.dispatch.headline_dispatch`
-  2. `apps_rg.runtime.dispatch.executive_summary_dispatch`
-  3. `apps_rg.runtime.dispatch.unify_bullets_dispatch`
-  4. `apps_rg.runtime.dispatch.unify_narrative_dispatch`
-  5. `apps_rg.runtime.dispatch.ibm_bullets_dispatch`
-  6. `apps_rg.runtime.dispatch.ibm_narrative_dispatch`
-  7. `apps_rg.runtime.dispatch.competencies_dispatch`
+  2. `apps_rg.runtime.sections.executive_summary_lane_api`
+  3. `apps_rg.runtime.sections.unify_bullets_lane_api`
+  4. `apps_rg.runtime.sections.unify_narrative_lane_api`
+  5. `apps_rg.runtime.sections.ibm_bullets_lane_api`
+  6. `apps_rg.runtime.sections.ibm_narrative_lane_api`
+  7. `apps_rg.runtime.sections.competencies_lane_api`
 
 ### 1.2 Post-lane pipeline (subprocess, in order)
 
-- `apps_rg.runtime.reports.generated_lane_rollup`
-- `apps_rg.runtime.locked_copy.locked_copy_builder`
-- `apps_rg.runtime.assembly.final_resume_assembler`
+- `apps_rg.runtime.internal.generated_lane_rollup`
+- `apps_rg.runtime.internal.locked_copy_builder`
+- `apps_rg.runtime.internal.final_resume_assembler`
 - In-process: `_run_docx_emit` → `docx_manifest_builder` + `docx_renderer`
-- `apps_rg.runtime.package.resume_package_x3.emit_resume_package_artifacts`
+- `apps_rg.runtime.internal.resume_package_disposition.emit_resume_package_artifacts`
 
 ### 1.3 Section output schemas
 
@@ -292,7 +292,7 @@ Until then, SSOT remains monolithic defaults per today’s `r4_generation_route.
 - `apps_rg/l2_recipe/steps.py` — explicit mode; modular vs legacy; no silent fallback
 - `apps_rg/l2_recipe/r4_generation_route.py` — SSOT flip **only** after gate
 - New: `run_modular_resume_generation`, `ModularR4GenerationResult`, modular pipeline modules
-- Refactor: `apps_rg/runtime/orchestrate_full_resume.py` — delegate to shared runner
+- Refactor: `apps_rg/runtime/internal/lane_batch.py` — delegate to shared runner
 - `apps_rg/runtime/dispatch/*` — in-process hooks as needed
 - `tests/_apps_contract/` — no-bypass + gate tests
 

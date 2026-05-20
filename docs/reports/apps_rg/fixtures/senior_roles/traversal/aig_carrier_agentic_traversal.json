@@ -53,7 +53,7 @@
     "track_data_tech_cloud_ml": 0.2609,
     "track_genai_agentic": 0.3913
   },
-  "manifest_weight_override_applied": false,
+  "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
     "track_actuarial_risk_derivatives": 0.3478,
@@ -61,11 +61,11 @@
     "track_genai_agentic": 0.3913
   },
   "track_weights_applied": {
-    "track_actuarial_risk_derivatives": 0.3478,
-    "track_data_tech_cloud_ml": 0.2609,
-    "track_genai_agentic": 0.3913
+    "track_actuarial_risk_derivatives": 0.35,
+    "track_data_tech_cloud_ml": 0.25,
+    "track_genai_agentic": 0.4
   },
-  "weight_override_required": false,
+  "weight_override_required": true,
   "default_expansion_error": null,
   "tracks_with_facts": [
     "track_actuarial_risk_derivatives",
@@ -76,67 +76,67 @@
     {
       "pillar_id": "pillar_agentic_ai_platforms",
       "skill_hits": 18,
-      "weight_sum": 18.7826,
+      "weight_sum": 18.8,
       "rank": 1
     },
     {
       "pillar_id": "pillar_regulatory_governance",
       "skill_hits": 11,
-      "weight_sum": 9.1739,
+      "weight_sum": 9.2,
       "rank": 2
     },
     {
       "pillar_id": "pillar_revenue_commercialization",
       "skill_hits": 3,
-      "weight_sum": 1.1739,
+      "weight_sum": 1.2,
       "rank": 3
     },
     {
       "pillar_id": "pillar_capital_modeling",
       "skill_hits": 2,
-      "weight_sum": 0.6956,
+      "weight_sum": 0.7,
       "rank": 4
     },
     {
       "pillar_id": "pillar_risk_management",
       "skill_hits": 2,
-      "weight_sum": 0.6956,
+      "weight_sum": 0.7,
       "rank": 5
     },
     {
       "pillar_id": "pillar_insurance_carrier_transformation",
       "skill_hits": 2,
-      "weight_sum": 0.5218,
+      "weight_sum": 0.5,
       "rank": 6
     },
     {
       "pillar_id": "pillar_strategic_finance_saas",
       "skill_hits": 2,
-      "weight_sum": 0.5218,
+      "weight_sum": 0.5,
       "rank": 7
     },
     {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
-      "weight_sum": 0.3478,
+      "weight_sum": 0.35,
       "rank": 8
     },
     {
       "pillar_id": "pillar_derivatives_structured",
       "skill_hits": 1,
-      "weight_sum": 0.3478,
+      "weight_sum": 0.35,
       "rank": 9
     },
     {
       "pillar_id": "pillar_greeks_hedging",
       "skill_hits": 1,
-      "weight_sum": 0.3478,
+      "weight_sum": 0.35,
       "rank": 10
     },
     {
       "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
       "skill_hits": 1,
-      "weight_sum": 0.2609,
+      "weight_sum": 0.25,
       "rank": 11
     }
   ],
@@ -509,7 +509,7 @@
     "expected_skill_track_underfire:skill_governed_agentic_systems_architecture"
   ],
   "supplemental_skill_count": 24,
-  "default_track_weights_underfire": false,
+  "default_track_weights_underfire": true,
   "gtm_phase2_closeout_check": null,
   "broad_skills_ledger_used_as_authority": false,
   "proof_classification": "offline_traversal_receipt_not_runtime_proof"

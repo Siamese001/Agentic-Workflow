@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from apps_rg.runtime.orchestrate_full_resume import CANONICAL_BASE_RESUME_REPO_REL, find_repo_root
+from apps_rg.runtime.internal.lane_batch import CANONICAL_BASE_RESUME_REPO_REL, find_repo_root
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -51,12 +51,8 @@ def main(argv: list[str] | None = None) -> int:
             return target.resolve().as_posix()
 
     suggested = (
-        "python -m apps_rg.runtime.orchestrate_full_resume "
-        "--provider qwen_vllm "
-        "--x1d-judges gemini_pro,openai_chatgpt,anthropic_claude "
-        "--allow-non-allow-exit-zero "
-        f"--job-description {_repo_rel(jd_r)} "
-        f"--briefing {_repo_rel(br_r)}"
+        "python -m apps_rg --target-company <co> --target-role <role> "
+        f"--jd {_repo_rel(jd_r)} --manual-brief {_repo_rel(br_r)}"
     )
     payload = {
         "job_description_repo_relative": _repo_rel(jd_r),

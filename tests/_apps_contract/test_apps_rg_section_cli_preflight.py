@@ -2,9 +2,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
+
+REPO = Path(__file__).resolve().parents[2]
+_FRESH_JD = REPO / "tests" / "_fixtures" / "ci-probe-jd.txt"
+_FRESH_BRIEF = REPO / "tests" / "_fixtures" / "ci-probe-briefing.txt"
 
 
 def test_main_returns_2_when_vllm_http_unreachable(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -27,6 +33,10 @@ def test_main_returns_2_when_vllm_http_unreachable(monkeypatch: pytest.MonkeyPat
             "CI-Probe-Co",
             "--target-role",
             "Engineer",
+            "--jd",
+            str(_FRESH_JD),
+            "--manual-brief",
+            str(_FRESH_BRIEF),
         ]
     )
     assert rc == 2

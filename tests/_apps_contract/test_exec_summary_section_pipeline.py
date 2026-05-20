@@ -136,7 +136,7 @@ def test_canonical_claim_ledger_always_on_truncated_qwen(monkeypatch, tmp_path: 
     monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
     monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
 
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
 
     args = build_parser().parse_args(
         ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
@@ -173,7 +173,7 @@ def test_truncated_json_fails_x2_json_and_schema_gates(monkeypatch, tmp_path: Pa
     monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
     monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
 
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
 
     args = build_parser().parse_args(
         ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
@@ -218,7 +218,7 @@ def test_x3_blocks_when_x2_fails_truncated_path(monkeypatch, tmp_path: Path):
     monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
     monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
 
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
 
     args = build_parser().parse_args(
         ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
@@ -276,7 +276,7 @@ def test_qwen_unavailable_does_not_mock(monkeypatch, tmp_path: Path):
     monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
     monkeypatch.setattr(lane, "call_qwen_vllm", _blocked)
 
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
 
     args = build_parser().parse_args(
         ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]

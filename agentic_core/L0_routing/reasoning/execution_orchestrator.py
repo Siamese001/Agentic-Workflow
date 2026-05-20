@@ -42,7 +42,7 @@ def _stable_request_hash(value: dict[str, Any]) -> str:
 def _semantic_cache_enabled() -> bool:
     import os as _os  # noqa: PLC0415
 
-    return _os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+    return _os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1").strip().lower() in {"1", "true", "yes"}
 
 
 def _semantic_cache_promote_enabled() -> bool:

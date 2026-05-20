@@ -20,9 +20,8 @@ When ``--resume`` is omitted (or empty), the CLI uses the canonical base resume 
 **modular** (seven section lanes + deterministic merge) when
 ``APPS_RG_R4_GENERATION_MODE`` is unset — see ``apps_rg.l2_recipe.r4_generation_route``.
 Set ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for explicit **rollback** to one
-``run_apps_rg_l2_envelope`` call with a full tailor-existing CPA. Offline per-lane
-orchestration under ``python -m apps_rg.runtime.orchestrate_full_resume`` is a separate
-module entry from integrated dispatch.
+``run_apps_rg_l2_envelope`` call with a full tailor-existing CPA. Offline batch orchestration is library-only (``apps_rg.runtime.internal.lane_batch.run_orchestration``);
+there is no separate offline orchestrate module CLI.
 
 **L2 model execution (résumé body):** by default ``APPS_RG_L2_PROVIDER_MODE`` is unset
 and the v4 envelope uses **local vLLM** (``ProviderGateway`` ``local_only``).
@@ -59,9 +58,6 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable
 
-from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-    run_integrated_r4_deterministic_pipeline,
-)
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
 from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
 from apps_rg.runtime.cli_section_execution_report import (
@@ -80,7 +76,7 @@ __all__ = [
     "check_r1a_cache",
     "compute_r1a_key",
     "main",
-    "run_integrated_r4_deterministic_pipeline",
+    "run_integrated_single_action_spine",
     "stamp_r1a_cache",
 ]
 
@@ -501,6 +497,16 @@ def _run_with_args(
         policy_hash=env_policy,
         blueprint_hash=env_bp,
     )
+    from apps_rg.cache.cache_preflight_evidence import (
+        build_cache_preflight_evidence,
+        write_cache_miss_receipt,
+        write_whole_run_cache_preflight_artifact,
+    )
+
+    evidence = build_cache_preflight_evidence(preflight, artifact_dir=artifact_dir_override)
+    if artifact_dir_override is not None:
+        write_whole_run_cache_preflight_artifact(Path(artifact_dir_override), preflight, evidence)
+
     if not preflight.generation_required:
         raise SystemExit(0)
 
@@ -519,10 +525,19 @@ def _run_with_args(
     if artifact_dir_override is None:
         artifact_root.mkdir(parents=True, exist_ok=True)
 
-    outcome = run_integrated_r4_deterministic_pipeline(
+    if artifact_dir_override is not None:
+        write_cache_miss_receipt(Path(artifact_root), preflight, evidence)
+
+    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+        run_integrated_single_action_spine,
+    )
+
+    outcome = run_integrated_single_action_spine(
         raw_request=raw_request,
         app_name="apps_rg",
         artifact_dir=artifact_root,
+        route_family="R4_SINGLE_ACTION",
+        cache_preflight_evidence=evidence,
     )
 
     rid = str(getattr(outcome, "run_id", "") or "").strip()
@@ -748,11 +763,6 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             return 7
         try:
             validate_executive_summary_mandatory_inputs(args)
-            from apps_rg.runtime.targeting_input_freshness import (
-                validate_executive_summary_targeting_inputs_updated,
-            )
-
-            validate_executive_summary_targeting_inputs_updated(args)
         except SectionCliConfigError as exc:
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
             return 2
@@ -789,21 +799,37 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
             return 2
 
-    if args.dry_run:
-        print("DRY RUN: apps_rg pipeline validation complete (no LLM call).", flush=True)
-        cli_in = getattr(args, "_interactive_cli_inputs_dir", "")
-        if cli_in:
-            print(f"cli_inputs_dir={cli_in}", flush=True)
-        if args.interactive or args.jd or args.manual_brief:
-            preview = _build_raw_request(args)
-            jp = preview.get("jd_payload")
-            if isinstance(jp, dict) and jp:
-                print(f"jd_payload title={jp.get('title', '')!r}", flush=True)
-            mb = str(args.manual_brief or "").strip()
-            if mb:
-                src = "url" if mb.startswith(("http://", "https://")) else "path"
-                print(f"manual_brief ({src}): {mb[:120]}{'…' if len(mb) > 120 else ''}", flush=True)
-        return 0
+    _qdr: dict[str, Any] = {}
+    if section_eff in section_lane_ids and lane_provider_eff is not None:
+        from apps_rg.runtime.pre_dispatch_preflight import (
+            evaluate_jd_cli_input,
+            evaluate_manual_brief_cli_input,
+            resolve_preflight_receipt_path,
+            run_pre_dispatch_preflight,
+            write_pre_dispatch_preflight_receipt,
+        )
+
+        jd_status, jd_path = evaluate_jd_cli_input(str(getattr(args, "jd", "") or ""))
+        brief_status, brief_path = evaluate_manual_brief_cli_input(
+            str(getattr(args, "manual_brief", "") or "")
+        )
+        if jd_status != "PASS" or brief_status != "PASS":
+            blocked = run_pre_dispatch_preflight(
+                section=section_eff,
+                jd=str(getattr(args, "jd", "") or ""),
+                manual_brief=str(getattr(args, "manual_brief", "") or ""),
+                lane_provider=lane_provider_eff,
+                provider_resolution_source=str(lane_provider_resolution_source or ""),
+                docker_restart_audit=None,
+            )
+            receipt_path = resolve_preflight_receipt_path(
+                artifact_dir=str(getattr(args, "artifact_dir", "") or ""),
+                section=section_eff,
+            )
+            write_pre_dispatch_preflight_receipt(receipt_path, blocked)
+            print(f"ERROR: {blocked.decisive_reason}", file=sys.stderr, flush=True)
+            print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
+            return 2
 
     # Optional local Qwen vLLM Docker restart (opt-in — see qwen_vllm_docker_restart module).
     from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
@@ -826,16 +852,49 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         persist_docker_restart_readiness_artifact(_ad, dict(_qdr))
 
     if section_eff in section_lane_ids and lane_provider_eff is not None:
-        from apps_rg.runtime.section_cli_preflight import require_qwen_vllm_cli_health
+        from apps_rg.runtime.pre_dispatch_preflight import (
+            enforce_pre_dispatch_preflight,
+            resolve_preflight_receipt_path,
+        )
 
         try:
-            require_qwen_vllm_cli_health(
+            preflight = enforce_pre_dispatch_preflight(
+                section=section_eff,
+                jd=str(getattr(args, "jd", "") or ""),
+                manual_brief=str(getattr(args, "manual_brief", "") or ""),
                 lane_provider=lane_provider_eff,
+                provider_resolution_source=str(lane_provider_resolution_source or ""),
+                artifact_dir=_ad,
                 docker_restart_audit=dict(_qdr),
             )
+            receipt_path = resolve_preflight_receipt_path(artifact_dir=_ad, section=section_eff)
+            print(
+                f"pre_dispatch_preflight: dispatch_started={preflight.dispatch_started} "
+                f"jd_status={preflight.jd_status} manual_brief_status={preflight.manual_brief_status} "
+                f"qwen_health={preflight.qwen_health_status} "
+                f"qwen_model_ready={preflight.qwen_model_ready_status}",
+                flush=True,
+            )
+            print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
         except SectionCliConfigError as exc:
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
             return 2
+
+    if args.dry_run:
+        print("DRY RUN: apps_rg pre-dispatch validation complete (no lane runtime).", flush=True)
+        cli_in = getattr(args, "_interactive_cli_inputs_dir", "")
+        if cli_in:
+            print(f"cli_inputs_dir={cli_in}", flush=True)
+        if args.interactive or args.jd or args.manual_brief:
+            preview = _build_raw_request(args)
+            jp = preview.get("jd_payload")
+            if isinstance(jp, dict) and jp:
+                print(f"jd_payload title={jp.get('title', '')!r}", flush=True)
+            mb = str(args.manual_brief or "").strip()
+            if mb:
+                src = "url" if mb.startswith(("http://", "https://")) else "path"
+                print(f"manual_brief ({src}): {mb[:120]}{'…' if len(mb) > 120 else ''}", flush=True)
+        return 0
 
     # Cross-company contamination guards
     if args.target_company:

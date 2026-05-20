@@ -17,7 +17,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MAIN_PY = REPO_ROOT / "apps_rg" / "__main__.py"
-R4_ENTRYPOINT = REPO_ROOT / "agentic_core" / "runtime" / "entrypoints" / "integrated_r4_deterministic_pipeline_run.py"
+R4_ENTRYPOINT = REPO_ROOT / "agentic_core" / "runtime" / "entrypoints" / "integrated_single_action_spine_run.py"
 
 
 def _src(path: Path) -> str:

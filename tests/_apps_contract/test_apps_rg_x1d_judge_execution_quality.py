@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.util
 import subprocess
 import unittest
 from unittest.mock import patch
@@ -78,15 +77,6 @@ def _policy_all_credentials() -> dict[str, object]:
             "anthropic_claude": "external_cloud_llm_judge",
         },
     }
-
-
-def _load_prove_module():  # noqa: ANN201
-    path = _REPO_ROOT / "ops_scripts" / "ci" / "prove_apps_rg_e2e_runtime.py"
-    spec = importlib.util.spec_from_file_location("_prove_apps_rg_e2e_runtime_under_test_execq", path)
-    mod = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(mod)
-    return mod
 
 
 class TestX1dJudgeExecutionQuality(unittest.TestCase):
@@ -264,15 +254,15 @@ class TestX1dJudgeExecutionQuality(unittest.TestCase):
         self.assertNotIn("fort knox", blob)
 
     def test_agentic_core_dirty_never_modified_by_this_task_finalize(self) -> None:
-        peg = _load_prove_module()
+        from tests.helpers import ci_lane_dev_boundary as peg
 
         def fake_run(argv: list[str], *, cwd: Path, env=None):  # noqa: ANN001
             if argv[:7] == ["git", "status", "--porcelain=v1", "--", "agentic_core"]:
                 return subprocess.CompletedProcess(argv, 0, " M agentic_core/runtime/x.py\n", "")
             raise AssertionError(f"unexpected argv: {argv}")
 
-        with patch.object(peg, "_run_cmd", fake_run):
-            art = peg._minimal_artifact()
+        with patch.object(peg, "run_git_cmd", fake_run):
+            art = peg.minimal_ci_lane_dev_artifact()
             peg.finalize_boundary_no_bypass(art, _REPO_ROOT)
         box = art["boundary_no_bypass"]
         self.assertTrue(box["agentic_core_modified"])

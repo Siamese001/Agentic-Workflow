@@ -299,7 +299,7 @@ def test_lane_repair_prompt_uses_sentence_roles_not_fixed_count():
 
 
 def test_dispatch_parser_default_provider_is_mock_with_qwen_opt_in():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
 
     p = build_parser()
     ns = p.parse_args([])
@@ -537,8 +537,11 @@ def test_srfs_judge_safe_repair_tightens_s2_s5_and_canonical_ids():
     assert "documented credential training" not in text
     assert "platform record above" not in text
     assert "regulated platform programs" in text
-    assert "commercialization" in text
-    assert out["claim_ledger"][1]["source_fact_ids"] == ["fact_governance_003"]
+    assert "commercialization" not in text
+    assert out["claim_ledger"][1]["source_fact_ids"] == [
+        "fact_engineering_platform_005",
+        "fact_governance_003",
+    ]
 
 
 def test_build_fact_tight_s1_includes_agentic_when_supported():

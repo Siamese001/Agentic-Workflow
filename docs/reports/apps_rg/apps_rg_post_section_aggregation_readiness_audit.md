@@ -13,10 +13,10 @@
 | Component | Path | Role |
 |-----------|------|------|
 | Section lanes | `apps_rg/runtime/sections/*`, `apps_rg/runtime/dispatch/*` | Per-section L2 + X2 + usage ledger + proof-pool receipt |
-| Lane rollup | `apps_rg/runtime/reports/generated_lane_rollup.py` | Filesystem pointers per lane (`latest_successful_real_run.json`) |
-| Final assembler | `apps_rg/runtime/assembly/final_resume_assembler.py` | Deterministic `final_resume.json` from rollup + locked copy + base resume |
+| Lane rollup | `apps_rg/runtime/internal/generated_lane_rollup.py` | Filesystem pointers per lane (`latest_successful_real_run.json`) |
+| Final assembler | `apps_rg/runtime/internal/final_resume_assembler.py` | Deterministic `final_resume.json` from rollup + locked copy + base resume |
 | Assembly X2 | `apps_rg/runtime/assembly/final_resume_x2.py` | Structural/provenance gates (order, snapshots, locked copy) — **no semantic dedup** |
-| Package X3 | `apps_rg/runtime/package/resume_package_x3.py` | Whole-resume disposition rollup |
+| Package X3 | `apps_rg/runtime/internal/resume_package_disposition.py` | Whole-resume disposition rollup |
 | SRFS audit | `apps_rg/audit/srfs_receipt_aggregator.py` | Cross-section SRFS receipt aggregation (audit-only) |
 | Modular output | `apps_rg/l2_recipe/modular_rg_output_builder.py` | Alternate `rg_output` path (not same artifact as assembler) |
 

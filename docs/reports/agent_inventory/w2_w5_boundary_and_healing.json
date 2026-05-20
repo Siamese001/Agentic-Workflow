@@ -1,0 +1,132 @@
+{
+  "report_id": "w2_w5_boundary_and_healing",
+  "generated_at": "2026-05-19",
+  "waves": ["W2", "W3", "W4", "W5"],
+  "status": "PASS",
+  "behavior_change": false,
+  "runtime_change": false,
+  "w2_generation_boundary": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "summary": "AST contract tests prove modular section generation (apps_rg/runtime/sections, qwen_vllm_provider, section_qwen_slice) does not import spine model_registry IDs or getenv spine model vars. Qwen/VLLM env defaults asserted.",
+    "tests": [
+      "tests/_apps_contract/test_apps_rg_generation_model_env_boundary.py (8 passed)"
+    ],
+    "grep_evidence": [
+      "git grep apps_rg: spine vars only in dry_run/, judges/, docs — not in runtime/sections/"
+    ],
+    "allowed_exceptions": [
+      "apps_rg/runtime/dry_run/executive_summary_demo.py — classified non-generation demo",
+      "apps_rg/runtime/judges/* — judge path (W3), not section body generation",
+      "apps_rg/l2_recipe/pa_to_core_cpa.py — QWEN_LOCAL_MODEL_ID (Qwen SSOT, not OPENAI/GOOGLE spine chat vars)"
+    ]
+  },
+  "w3_judge_boundary": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "summary": "Proof judge resolution prefers APPS_RG_*_JUDGE_MODEL_{ENHANCED|STANDARD}. GOOGLE_AI_PRO_MODEL is explicit env_tier fallback when APPS_RG unset; flash-tier spine value is forbidden and falls through to profile_default.",
+    "tests": [
+      "tests/_apps_contract/test_apps_rg_judge_model_env_boundary.py (7 passed)"
+    ],
+    "grep_evidence": [
+      "apps_rg/runtime/judges/section_judge_profile.py:57 env_tier GOOGLE_AI_PRO_MODEL",
+      "apps_rg/runtime/judges/X1D_PROVIDER_CONFIG.md: OPENAI_MODEL/GOOGLE_AI_MODEL not used for proof judges"
+    ],
+    "limited_fallback": {
+      "location": "apps_rg/runtime/judges/section_judge_profile.py",
+      "mechanism": "env_tier GOOGLE_AI_PRO_MODEL + google_ai_pro_model_id() before profile_defaults",
+      "classification": "LIMITED_FALLBACK"
+    },
+    "needs_decision": [
+      "Whether GOOGLE_AI_PRO_MODEL env_tier should remain for standard gemini_pro judges when APPS_RG_* unset (production pinning vs strict APPS_RG-only)"
+    ]
+  },
+  "w4_signal_quality_decision": {
+    "decision": "QUARANTINE",
+    "alias": "KEEP_STUBBED",
+    "wire_to_core": false,
+    "confidence": "HIGH",
+    "ssot": "agentic_core/runtime/config/signal_quality_config.py (SIGNAL_* env, QualityThresholds, get_signal_enhancer, assess_signal)",
+    "stubs_quarantined": [
+      "apps_shared/utils/subatomic_hop_util.py — local no-op SignalQuality stub; real import commented",
+      "apps_shared/types/engine_type_types.py — stub signal_enhancer.assess_signal returns empty assessment"
+    ],
+    "rationale": "Core SSOT is real and used for signal labeling. apps_shared stubs are not wired to core; wiring without migration would risk proof contamination. SIGNAL_* getenv scan: no reads outside signal_quality_config in apps_rg or L2 healers.",
+    "tests": [
+      "tests/_apps_contract/test_apps_rg_signal_env_boundary.py (6 passed)"
+    ],
+    "not_used_for": [
+      "apps_rg section body generation",
+      "apps_rg proof judge model pins",
+      "heal-tier routing (HEALING_* / router thresholds are separate)"
+    ]
+  },
+  "w5_healing_guardrails": {
+    "result": "PASS",
+    "confidence": "MEDIUM",
+    "summary": "repair_decision() blocks non-same-authority/policy cases; apply_routing_gates routes GATEWAY_BYPASS to HITL when Gemini prohibited; HealingRouter HITL dispatch returns hitl executor without model repair.",
+    "tests": [
+      "tests/unit/agentic_core/L2_execution/test_l2_same_authority_healing_guardrails.py (14 passed)",
+      "tests/unit/agentic_core/L2_execution/orchestration/ (8 passed)"
+    ],
+    "allowed_repairs": [
+      "JSON/schema repair",
+      "output reformat",
+      "transient retry",
+      "deterministic trim",
+      "checkpoint resume within same route/authority"
+    ],
+    "non_healable_documented": [
+      "missing authority",
+      "ACL/policy breach",
+      "stale policy/registry (structural failure types → HITL gate when provider prohibited)",
+      "HITL need",
+      "provider substitution / capability expansion (v4 invariant no_silent_swap)"
+    ],
+    "partial_caveat": "Structural failures without provider_prohibited_gemini may still route to MEDIUM/LOW heal tiers per healing_router — not expanded in this wave; gate coverage tested for GATEWAY_BYPASS + prohibited Gemini only."
+  },
+  "commands": {
+    "git_status_short": { "exit_code": 0 },
+    "compileall_agentic_core_apps_rg_apps_shared": { "exit_code": 0 },
+    "pytest_w2_w5_new": {
+      "command": "pytest tests/_apps_contract/test_apps_rg_*_boundary.py tests/unit/agentic_core/L2_execution/test_l2_same_authority_healing_guardrails.py -p no:xdist",
+      "exit_code": 0,
+      "passed": 35
+    },
+    "pytest_l2_orchestration": { "exit_code": 0, "passed": 8 },
+    "pytest_apps_contract_filtered": {
+      "status": "NOT_RUN_SLOW",
+      "note": "1187 selected; many pre-existing failures unrelated to W2-W5; new boundary tests passed when collected"
+    },
+    "pytest_unit_apps_rg_filtered": {
+      "exit_code": 1,
+      "passed": 111,
+      "failed": 4,
+      "note": "Failures are pre-existing modular generation / ingress parity — not W2-W5 boundary tests"
+    },
+    "pytest_unit_agentic_core_filtered": {
+      "exit_code": 1,
+      "passed": 736,
+      "failed": 39,
+      "errors": 3,
+      "note": "Pre-existing ADG/generated test failures; new healing guardrail tests passed"
+    }
+  },
+  "files_changed": [
+    "tests/_apps_contract/test_apps_rg_generation_model_env_boundary.py",
+    "tests/_apps_contract/test_apps_rg_judge_model_env_boundary.py",
+    "tests/_apps_contract/test_apps_rg_signal_env_boundary.py",
+    "tests/unit/agentic_core/L2_execution/test_l2_same_authority_healing_guardrails.py",
+    "docs/reports/agent_inventory/w2_w5_boundary_and_healing.md",
+    "docs/reports/agent_inventory/w2_w5_boundary_and_healing.json"
+  ],
+  "explicit_non_claims": [
+    "no files deleted",
+    "no deprecated path removed",
+    "no broad refactor",
+    "no X2/X3 weakened",
+    "no full live apps_rg proof run",
+    "static/env boundary tests do not prove live generation quality"
+  ],
+  "next_recommended_waves": ["W6", "W7", "W8"]
+}

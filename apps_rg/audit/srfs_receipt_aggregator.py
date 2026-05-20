@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 PROOF_LEVEL = "SECTION_SRFS_STRUCTURAL_AUDIT_ONLY"
 AUDIT_REPORT_SCHEMA = "apps_rg.srfs_audit_report.v1"

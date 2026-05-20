@@ -28,7 +28,7 @@
     {
       "section": "executive_summary",
       "runtime_lane": "apps_rg/runtime/sections/executive_summary_lane.py",
-      "pa_dispatcher": "apps_rg/runtime/dispatch/executive_summary_dispatch.py",
+      "pa_dispatcher": "apps_rg/runtime/sections/executive_summary_lane_api.py",
       "pa_template_compiler": "apps_rg/runtime/dispatch/executive_summary_pa.py",
       "source_resolver": "apps_rg/runtime/proof_pool_resolver.py + exec_summary_srfs_arsenal (ranking)",
       "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
@@ -42,7 +42,7 @@
     {
       "section": "competencies",
       "runtime_lane": "apps_rg/runtime/sections/competencies_lane.py",
-      "pa_dispatcher": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "pa_dispatcher": "apps_rg/runtime/sections/competencies_lane_api.py",
       "pa_template_compiler": "apps_rg/runtime/dispatch/competencies_pa.py",
       "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
       "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
@@ -56,7 +56,7 @@
     {
       "section": "unify_bullets",
       "runtime_lane": "apps_rg/runtime/sections/unify_bullets_lane.py",
-      "pa_dispatcher": "apps_rg/runtime/dispatch/unify_bullets_dispatch.py",
+      "pa_dispatcher": "apps_rg/runtime/sections/unify_bullets_lane_api.py",
       "pa_template_compiler": "apps_rg/runtime/dispatch/unify_bullets_pa.py",
       "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
       "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
@@ -70,7 +70,7 @@
     {
       "section": "unify_narrative",
       "runtime_lane": "apps_rg/runtime/sections/unify_narrative_lane.py",
-      "pa_dispatcher": "apps_rg/runtime/dispatch/unify_narrative_dispatch.py",
+      "pa_dispatcher": "apps_rg/runtime/sections/unify_narrative_lane_api.py",
       "pa_template_compiler": "apps_rg/runtime/dispatch/unify_narrative_pa.py",
       "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
       "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
@@ -84,7 +84,7 @@
     {
       "section": "ibm_bullets",
       "runtime_lane": "apps_rg/runtime/sections/ibm_bullets_lane.py",
-      "pa_dispatcher": "apps_rg/runtime/dispatch/ibm_bullets_dispatch.py",
+      "pa_dispatcher": "apps_rg/runtime/sections/ibm_bullets_lane_api.py",
       "pa_template_compiler": "apps_rg/runtime/dispatch/ibm_bullets_pa.py",
       "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
       "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",
@@ -98,7 +98,7 @@
     {
       "section": "ibm_narrative",
       "runtime_lane": "apps_rg/runtime/sections/ibm_narrative_lane.py",
-      "pa_dispatcher": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "pa_dispatcher": "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
       "pa_template_compiler": "apps_rg/runtime/dispatch/ibm_narrative_pa.py",
       "source_resolver": "apps_rg/runtime/proof_pool_resolver.py",
       "proof_pool_source_claim": "srfs | broad_skills_ledger | base_resume_fallback",

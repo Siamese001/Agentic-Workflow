@@ -1,6 +1,6 @@
 """Canonical competencies lane runtime execution (W11-M4C / legacy burndown Phase D).
 
-``apps_rg.runtime.dispatch.competencies_dispatch`` retains shared compile/repair helpers and
+``apps_rg.runtime.sections.competencies_lane_api`` retains shared compile/repair helpers and
 compat re-exports; product entry is ``python -m apps_rg --section competencies``.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from typing import Any
 
 
 def _hydrate_dispatch_helpers() -> None:
-    import apps_rg.runtime.dispatch.competencies_dispatch as _cd
+    import apps_rg.runtime.sections.competencies_lane_api as _cd
 
     _skip = frozenset({
         "run_competencies_execution",
@@ -775,7 +775,7 @@ def run_competencies_execution(
     args: argparse.Namespace,
     *,
     artifact_dir_override: Path | None = None,
-    trace_runtime_path: str = "apps_rg.runtime.dispatch.competencies_dispatch",
+    trace_runtime_path: str = "apps_rg.runtime.sections.competencies_lane_api",
     print_output: bool = True,
 ) -> dict[str, Any]:
     """Compat alias — canonical trace path is sections.competencies_lane."""

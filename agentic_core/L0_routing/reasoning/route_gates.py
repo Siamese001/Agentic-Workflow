@@ -207,7 +207,7 @@ def _d2_enabled() -> bool:
     ``execution_orchestrator._semantic_cache_enabled`` so operators only have
     one switch to flip.
     """
-    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0").strip().lower() in {
+    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1").strip().lower() in {
         "1",
         "true",
         "yes",

@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11-M2.2_M3_M4",
+  "mode": "planning_only",
+  "status": "PASS",
+  "adg_snapshot_id": "05192026_0920",
+  "files_changed": [
+    "docs/reports/agent_inventory/w11_candidate_fanin_matrix.json",
+    "docs/reports/agent_inventory/w11_gated_archive_delete_plan.md",
+    "docs/reports/agent_inventory/w11_gated_archive_delete_plan.json",
+    "docs/reports/agent_inventory/w11_migration_checklist.md",
+    "docs/reports/agent_inventory/_w11_adg_expand.py",
+    "docs/reports/agent_inventory/_w11_remaining_candidates_prep.py",
+    "docs/reports/agent_inventory/w11_remaining_candidates_prep_receipt.md",
+    "docs/reports/agent_inventory/w11_remaining_candidates_prep_receipt.json",
+    ".cursor/plans/l2-rationalization-waves-c8e4f1.md"
+  ],
+  "commands_run": [
+    {"command": "git status --short", "exit_code": 0},
+    {"command": "python -m compileall agentic_core apps_rg apps_shared -q", "exit_code": 0},
+    {"command": "git grep validation_orchestrator (scoped roots)", "exit_code": 0},
+    {"command": "git grep Rg* / apps_rg.reasoning (scoped roots)", "exit_code": 0},
+    {"command": "git grep dispatch/dry_run/orchestrate_full_resume (scoped roots)", "exit_code": 0},
+    {"command": "python docs/reports/agent_inventory/_w11_fanin_scan.py", "exit_code": 0},
+    {"command": "python docs/reports/agent_inventory/_w11_adg_expand.py", "exit_code": 0},
+    {"command": "python docs/reports/agent_inventory/_w11_remaining_candidates_prep.py", "exit_code": 0}
+  ],
+  "tests_run": [
+    {
+      "command": "pytest tests/_apps_contract/test_apps_rg_deprecated_path_quarantine.py tests/_apps_contract/test_apps_rg_canonical_runtime_hygiene.py tests/_apps_contract/test_apps_rg_exit_uwg_l4_no_bypass_boundary.py -q -p no:xdist -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 39,
+      "failed": 0
+    },
+    {
+      "command": "pytest tests/unit/agentic_core/L2_execution/test_l2_e2_validation_entrypoint_boundary.py tests/unit/agentic_core/L2_execution/orchestration/ -q -p no:xdist -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 13,
+      "failed": 0
+    },
+    {
+      "command": "pytest tests/unit/apps_rg/reasoning/test_rg_resume_orchestrator.py tests/apps_rg/test_rg_reasoning.py -q -p no:xdist -p pytest_timeout",
+      "exit_code": 0,
+      "passed": 27,
+      "failed": 0,
+      "note": "nearest targeted Rg* tests; full reasoning suite NOT_RUN_SLOW"
+    }
+  ],
+  "artifacts_written": [
+    "docs/reports/agent_inventory/w11_remaining_candidates_prep_receipt.md",
+    "docs/reports/agent_inventory/w11_remaining_candidates_prep_receipt.json",
+    "docs/reports/agent_inventory/w11_candidate_fanin_matrix.json",
+    "docs/reports/agent_inventory/w11_gated_archive_delete_plan.md",
+    "docs/reports/agent_inventory/w11_gated_archive_delete_plan.json",
+    "docs/reports/agent_inventory/w11_migration_checklist.md"
+  ],
+  "validation_orchestrator_status": {
+    "classification": "ARCHIVE_CANDIDATE_AFTER_30D",
+    "fanin": {"static_grep": 5, "python_import_outside_self": 0, "adg_import_fanin": 0},
+    "adg_status": "ok",
+    "blockers": [
+      "ops_scripts/ci/hollow_file_baseline.json",
+      "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+      "tests/architecture/mirror_discovery_snapshot.json"
+    ],
+    "next_action": "30d quarantine then remove CI baselines; re-score archive_readiness"
+  },
+  "rg_reasoning_status": {
+    "files_assessed": [
+      "apps_rg/reasoning/RgResumeOrchestrator.py",
+      "apps_rg/reasoning/RgHealingOrchestrator.py",
+      "apps_rg/reasoning/RgReflectionAgent.py",
+      "apps_rg/reasoning/RgStrategicPlannerAgent.py",
+      "apps_rg/reasoning/RgTemplateOptimizerAgent.py",
+      "apps_rg/reasoning/RGStrategyExecutor.py",
+      "apps_rg/reasoning/rg_agent_base.py"
+    ],
+    "product_dependency": false,
+    "test_dependency": true,
+    "facade_dependency": true,
+    "docs_dependency": true,
+    "migration_required": true,
+    "proposed_final_classification": "QUARANTINE_30D",
+    "blockers": ["apps_shared facades", "unit tests", "core taxonomy/schema string refs"],
+    "next_action": "Migrate facades and contract smoke; per-file test retirement before archive"
+  },
+  "deprecated_dispatch_dryrun_status": {
+    "files_assessed": [
+      "apps_rg/runtime/dispatch/*_dispatch.py (8)",
+      "apps_rg/runtime/dispatch/apps_rg_dispatch.py",
+      "apps_rg/runtime/deprecated_runtime_cli.py",
+      "apps_rg/runtime/dry_run/",
+      "apps_rg/runtime/internal/lane_batch.py"
+    ],
+    "product_dependency": "lanes import dispatch PA modules; canonical chain does not use retired dispatch CLIs",
+    "test_dependency": true,
+    "rollback_dependency": true,
+    "classification_summary": {
+      "dispatch_pa_modules": "QUARANTINE_30D",
+      "dry_run_dir": "QUARANTINE_30D",
+      "orchestrate_full_resume": "KEEP_TEST_SUPPORT_ONLY",
+      "legacy_full_resume_env": "KEEP_ROLLBACK_ONLY",
+      "apps_rg_dispatch": "KEEP"
+    },
+    "blockers": ["section lanes still import dispatch helper modules"],
+    "next_action": "Extract PA imports to sections/ before *_dispatch archive"
+  },
+  "updated_counts": {
+    "archived_count": 1,
+    "delete_ready": 0,
+    "archive_ready": 0,
+    "migration_required": 8,
+    "blocked": 12
+  },
+  "behavior_change": false,
+  "runtime_change": false,
+  "next_recommended_action": "Execute validation_orchestrator CI baseline removal after 30d; M3 facade migration; M4 lane PA extraction",
+  "explicit_non_claims": [
+    "no_files_deleted",
+    "no_archive_moves",
+    "no_product_runtime_behavior_changed",
+    "no_x2_x3_weakened",
+    "no_live_apps_rg_proof_run",
+    "no_broad_archive_delete",
+    "static_grep_not_runtime_proof",
+    "remaining_candidates_do_not_delete"
+  ]
+}

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""apps_rg C0-backed section-dispatch runtime proof: live C0 FEC → lanes → rollup → assembly.
+"""apps_rg lane-dev CI harness: C0 FEC → section lanes → rollup → assembly (not product spine proof).
+
+Classification: ``LANE_DEV_HARNESS`` / ``OFFLINE_PACKAGE_ROLLUP`` — not Fort Knox, not L7 certified,
+not release-eligible product proof. Integrated R4 product proof requires ``python -m apps_rg`` whole-run.
 
 Writes ``artifacts/ci/apps_rg_e2e_runtime_proof.json`` and the whole-run review packet.
 """
@@ -108,6 +111,19 @@ def _persist_e2e_proof_artifact(artifact: dict[str, Any], repo: Path) -> None:
         if ln.strip()
     }
     artifact["files_changed"] = sorted(names)
+    from apps_rg.runtime.non_product_proof_stamp import CI_LANE_DEV_HARNESS_CLASSIFICATION
+
+    artifact["proof_classification"] = CI_LANE_DEV_HARNESS_CLASSIFICATION
+    artifact["product_certification"] = "NOT_CLAIMED"
+    artifact["l7_certification"] = "NOT_CLAIMED"
+    artifact["fort_knox_certification"] = "NOT_CLAIMED"
+    artifact["integrated_r4_invoked"] = False
+    artifact["explicit_non_claims"] = [
+        "CI lane rollup harness only",
+        "not product runtime certification",
+        "not L7 or Fort Knox proof",
+        "integrated R4 requires python -m apps_rg whole-run gate separately",
+    ]
     ARTIFACT_PATH.parent.mkdir(parents=True, exist_ok=True)
     ARTIFACT_PATH.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
 
@@ -432,78 +448,95 @@ def main() -> int:
         _persist_e2e_proof_artifact(art, cwd)
         return 1
 
-    from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
-    from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
-    from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
-
-    section_allow_exit = bool(allow_non_allow)
     judge_csv = judge_policy.get("default_if_unset_csv", "gemini_pro,openai_chatgpt,anthropic_claude")
-
-    def _lane_rc(res: dict[str, Any]) -> int:
-        if res.get("fault") == "temperature_range":
-            return 2
-        if section_allow_exit:
-            return 0
-        authorized = bool(res.get("outcome_authorized"))
-        if str(res.get("exit_status") or "") == "success" and authorized:
-            return 0
-        return 2
+    lane_inputs = cwd / "artifacts" / "ci" / "lane_dev_inputs"
+    lane_inputs.mkdir(parents=True, exist_ok=True)
+    jd_path = lane_inputs / "e2e_job_description.txt"
+    br_path = lane_inputs / "e2e_briefing.txt"
+    jd_path.write_text(JD_INLINE.strip() + "\n", encoding="utf-8")
+    br_path.write_text(full_briefing.strip() + "\n", encoding="utf-8")
 
     for lk in LANE_KEYS:
-        res = run_canonical_apps_rg_from_cli_primitives(
-            target_company=target_company,
-            target_role=target_role,
-            jd="",
-            job_description_ref="",
-            job_description_text=JD_INLINE,
-            manual_brief=full_briefing,
-            resume_path="",
-            source_resume_text="",
-            generation_mode="strategic_tailor",
-            artifact_dir="",
-            section=lk,
-            lane_provider=provider,
-            lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
-            lane_temperature=default_temperature_for_section(lk),
-            lane_x1d_judges=str(judge_csv),
-            lane_mock_judges=False,
-        )
-        rc = _lane_rc(res if isinstance(res, dict) else {})
-        lane_cmd = (
-            f"{sys.executable} -m apps_rg --section {lk} --provider {provider} "
-            f"--x1d-judges {judge_csv} (canonical in-process)"
-        )
+        lane_argv = [
+            sys.executable,
+            "-m",
+            "apps_rg",
+            "--section",
+            lk,
+            "--target-company",
+            target_company,
+            "--target-role",
+            target_role,
+            "--jd",
+            str(jd_path.relative_to(cwd).as_posix()),
+            "--manual-brief",
+            str(br_path.relative_to(cwd).as_posix()),
+            "--provider",
+            provider,
+            "--x1d-judges",
+            str(judge_csv),
+            "--allow-non-allow-exit-zero",
+        ]
+        r_lane = _run_cmd(lane_argv, cwd=cwd, env=_penv)
+        lane_cmd = " ".join(lane_argv)
         art["commands_run"].append(
             {
                 "cmd": lane_cmd,
-                "exit_code": rc,
-                "stdout_tail": "",
-                "stderr_tail": str((res or {}).get("error") or "")[-1200:] if isinstance(res, dict) else "",
+                "exit_code": r_lane.returncode,
+                "stdout_tail": (r_lane.stdout or "")[-2500:],
+                "stderr_tail": (r_lane.stderr or "")[-1200:],
             }
         )
-        if rc != 0:
-            art["decisive_reason"] = f"LANE_CANONICAL_NONZERO:{lk}"
+        if r_lane.returncode != 0:
+            art["decisive_reason"] = f"LANE_CLI_NONZERO:{lk}"
             _persist_e2e_proof_artifact(art, cwd)
             return 1
 
-    for argv in (
-        [sys.executable, "-m", "apps_rg.runtime.reports.generated_lane_rollup"],
-        [sys.executable, "-m", "apps_rg.runtime.locked_copy.locked_copy_builder"],
-        [sys.executable, "-m", "apps_rg.runtime.assembly.final_resume_assembler"],
-    ):
-        r_post = _run_cmd(argv, cwd=cwd, env=_penv)
-        art["commands_run"].append(
-            {
-                "cmd": " ".join(argv),
-                "exit_code": r_post.returncode,
-                "stdout_tail": (r_post.stdout or "")[-2500:],
-                "stderr_tail": (r_post.stderr or "")[-1200:],
-            }
+    try:
+        from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resume
+        from apps_rg.runtime.internal.locked_copy_builder import build_locked_copy
+        from apps_rg.runtime.internal import generated_lane_rollup as glr
+
+        rollup_data = glr.build_rollup(rollup_artifact_mode="real")
+        glr.ROLLUP_DIR.mkdir(parents=True, exist_ok=True)
+        (glr.ROLLUP_DIR / "generated_lane_rollup.json").write_text(
+            json.dumps(rollup_data, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
         )
-        if r_post.returncode != 0:
-            art["decisive_reason"] = f"POST_STEP_NONZERO:{argv[-1]}"
+        (glr.ROLLUP_DIR / "generated_lane_rollup.md").write_text(
+            glr.render_markdown(rollup_data),
+            encoding="utf-8",
+        )
+        lc = build_locked_copy()
+        if lc["receipt"].get("x2_failed"):
+            art["decisive_reason"] = "LOCKED_COPY_X2_FAILED"
             _persist_e2e_proof_artifact(art, cwd)
             return 1
+        asm = assemble_final_resume()
+        if not asm["gates_all_pass"]:
+            art["decisive_reason"] = "FINAL_RESUME_ASSEMBLY_FAILED"
+            _persist_e2e_proof_artifact(art, cwd)
+            return 1
+        art["commands_run"].append(
+            {
+                "cmd": "internal:generated_lane_rollup+locked_copy+assemble_final_resume",
+                "exit_code": 0,
+                "stdout_tail": "",
+                "stderr_tail": "",
+            }
+        )
+    except Exception as exc:
+        art["decisive_reason"] = f"POST_STEP_INTERNAL_ERROR:{type(exc).__name__}"
+        art["commands_run"].append(
+            {
+                "cmd": "internal:post_lane_rollup_pipeline",
+                "exit_code": 1,
+                "stdout_tail": "",
+                "stderr_tail": str(exc)[-1200:],
+            }
+        )
+        _persist_e2e_proof_artifact(art, cwd)
+        return 1
 
     rollup = _rollup_json(cwd)
     if not rollup:
@@ -902,4 +935,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.stderr.write(
+        "ERROR: ops_scripts/ci/prove_apps_rg_e2e_runtime.py is not a product proof entrypoint. "
+        "Use python -m apps_rg for integrated proof and python -m apps_rg --section <lane> for lane-dev.\n"
+    )
+    raise SystemExit(1)

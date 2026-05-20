@@ -1,4 +1,4 @@
-"""Contract tests for `apps_rg.runtime.orchestrate_full_resume` (step order + JSON shape).
+"""Contract tests for `apps_rg.runtime.internal.lane_batch` (step order + JSON shape).
 
 Full real-LLM E2E is exercised manually via the module CLI; these tests stub subprocess + package emit.
 """
@@ -12,7 +12,7 @@ from unittest import mock
 
 import pytest
 
-from apps_rg.runtime import orchestrate_full_resume as ofr
+from apps_rg.runtime.internal import lane_batch as ofr
 from apps_rg.runtime.locked_copy.locked_copy_manifest import sha256_hex
 
 
@@ -100,12 +100,6 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     (fr_dir / "final_resume_x2_gate_outputs.json").write_text(json.dumps(fr_x2), encoding="utf-8")
 
     recorded: list[list[str]] = []
-    canonical_calls: list[dict[str, Any]] = []
-
-    def fake_canonical(**kwargs: Any) -> dict[str, Any]:
-        canonical_calls.append(kwargs)
-        return _canonical_success_stub()
-
     def fake_run(argv, cwd=None, **_kwargs):  # type: ignore[no-untyped-def]
         recorded.append(list(argv))
         return _FakeProc()
@@ -127,18 +121,30 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     with (
         mock.patch("subprocess.run", side_effect=fake_run),
         mock.patch(
-            "apps_rg.runtime.orchestrate_full_resume.run_canonical_apps_rg_from_cli_primitives",
-            side_effect=fake_canonical,
-        ),
-        mock.patch(
-            "apps_rg.runtime.orchestrate_full_resume._run_docx_emit",
+            "apps_rg.runtime.internal.lane_batch._run_docx_emit",
             return_value={
                 "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
                 "render": {"gates_all_pass": True, "failed_gate_ids": []},
             },
         ),
         mock.patch(
-            "apps_rg.runtime.package.resume_package_x3.emit_resume_package_artifacts",
+            "apps_rg.runtime.internal.generated_lane_rollup.build_rollup",
+            return_value=rollup_blob,
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.generated_lane_rollup.render_markdown",
+            return_value="# rollup\n",
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.locked_copy_builder.build_locked_copy",
+            return_value={"receipt": {"x2_failed": False}},
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.final_resume_assembler.assemble_final_resume",
+            return_value={"gates_all_pass": True, "failed_gate_ids": []},
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.resume_package_disposition.emit_resume_package_artifacts",
             return_value={
                 "resume_package_disposition": disposition,
                 "resume_package_manifest_path": repo / "manifest.json",
@@ -159,23 +165,15 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
             output_docx=None,
         )
 
-    assert [c.get("section") for c in canonical_calls] == list(ofr.SECTION_ORDER)
-    assert all(c.get("lane_mock_judges") for c in canonical_calls)
-    assert all(c.get("lane_allow_test_mock_judges") for c in canonical_calls)
-
-    rollup_hit = locked_hit = assembler_hit = False
+    lane_sections = []
     for av in recorded:
-        if "-m" in av:
+        if "-m" in av and "apps_rg" in av:
             i = av.index("-m")
-            mod = av[i + 1]
-            if mod == "apps_rg.runtime.reports.generated_lane_rollup":
-                rollup_hit = True
-            elif mod == "apps_rg.runtime.locked_copy.locked_copy_builder":
-                locked_hit = True
-            elif mod == "apps_rg.runtime.assembly.final_resume_assembler":
-                assembler_hit = True
-
-    assert rollup_hit and locked_hit and assembler_hit
+            if av[i + 1] == "apps_rg" and "--section" in av:
+                lane_sections.append(av[av.index("--section") + 1])
+    assert lane_sections == list(ofr.SECTION_ORDER)
+    assert any("--mock-judges" in av for av in recorded)
+    assert any("--allow-test-mock-judges" in av for av in recorded)
     assert out["orchestrator_status"] == "PASS"
     assert out["package_x3_code"] == "X3_ALLOW"
     assert "paths" in out and out["paths"]["final_docx"].endswith("amit_ayer_resume_v1.docx")
@@ -228,18 +226,30 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     with (
         mock.patch("subprocess.run", return_value=_FakeProc()),
         mock.patch(
-            "apps_rg.runtime.orchestrate_full_resume.run_canonical_apps_rg_from_cli_primitives",
-            return_value=_canonical_success_stub(),
-        ),
-        mock.patch(
-            "apps_rg.runtime.orchestrate_full_resume._run_docx_emit",
+            "apps_rg.runtime.internal.lane_batch._run_docx_emit",
             return_value={
                 "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
                 "render": {"gates_all_pass": True, "failed_gate_ids": []},
             },
         ),
         mock.patch(
-            "apps_rg.runtime.package.resume_package_x3.emit_resume_package_artifacts",
+            "apps_rg.runtime.internal.generated_lane_rollup.build_rollup",
+            return_value={"rollup_id": "t", "lanes": {}},
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.generated_lane_rollup.render_markdown",
+            return_value="# rollup\n",
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.locked_copy_builder.build_locked_copy",
+            return_value={"receipt": {"x2_failed": False}},
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.final_resume_assembler.assemble_final_resume",
+            return_value={"gates_all_pass": True, "failed_gate_ids": []},
+        ),
+        mock.patch(
+            "apps_rg.runtime.internal.resume_package_disposition.emit_resume_package_artifacts",
             return_value={
                 "resume_package_disposition": disposition,
                 "resume_package_manifest_path": repo / "manifest.json",
@@ -324,53 +334,5 @@ def test_missing_default_base_resume_fails_before_subprocess(tmp_path: Path) -> 
         prun.assert_not_called()
 
 
-def test_main_allow_non_allow_exit_zero_returns_zero_on_partial(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    partial = {
-        "orchestrator_status": "PARTIAL",
-        "package_x3_code": "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",
-        "paths": {"final_docx": "x"},
-        "deterministic_gates_summary": {},
-        "generated_lane_x2_and_x3_summary": {},
-        "section_x3_summary": {},
-        "l6_handoff_summary": {},
-        "final_resume_assembly_result": {},
-        "docx_manifest_result": {},
-        "docx_render_result": {},
-        "non_generation_calls": {},
-    }
-    monkeypatch.setattr(ofr, "run_orchestration", lambda **_: partial)
-    monkeypatch.setattr(ofr, "find_repo_root", lambda: REPO_ROOT)
-    code = ofr.main(
-        [
-            "--provider",
-            "qwen_vllm",
-            "--x1d-judges",
-            "gemini_pro",
-            "--mock-judges",
-            "--allow-test-mock-judges",
-            "--allow-non-allow-exit-zero",
-        ],
-    )
-    assert code == 0
-
-
-def test_main_fail_non_allow_partial_exit_code(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    partial = {
-        "orchestrator_status": "PARTIAL",
-        "package_x3_code": "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",
-        "paths": {},
-        "deterministic_gates_summary": {},
-        "generated_lane_x2_and_x3_summary": {},
-        "section_x3_summary": {},
-        "l6_handoff_summary": {},
-        "final_resume_assembly_result": {},
-        "docx_manifest_result": {},
-        "docx_render_result": {},
-        "non_generation_calls": {},
-    }
-    monkeypatch.setattr(ofr, "run_orchestration", lambda **_: partial)
-    monkeypatch.setattr(ofr, "find_repo_root", lambda: REPO_ROOT)
-    code = ofr.main(
-        ["--provider", "qwen_vllm", "--x1d-judges", "gemini_pro", "--mock-judges", "--allow-test-mock-judges"]
-    )
-    assert code == 2
+def test_lane_batch_has_no_cli_main() -> None:
+    assert not hasattr(ofr, "main")

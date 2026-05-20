@@ -6,7 +6,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.preflight import (
     normalize_to_packet,
     validate_required_receipts,
 )
-from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
     _build_l2_exit_receipts,
 )
 

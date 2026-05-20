@@ -14,7 +14,7 @@ except ImportError:
     Document = None
 
 from apps_rg.runtime.assembly.final_resume_x2 import CANONICAL_ASSEMBLED_SECTION_ORDER
-from apps_rg.runtime.render.docx_renderer import build_docx_from_final_resume, resolve_docx_renderer_paths
+from apps_rg.runtime.internal.docx_renderer import build_docx_from_final_resume, resolve_docx_renderer_paths
 
 
 _EXPECTED_ARTIFACTS = frozenset(
@@ -87,7 +87,7 @@ def test_section_heading_order_and_content_present(rpaths):
 
 def test_render_package_under_apps_rg():
     from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root  # noqa: PLC0415
-    import apps_rg.runtime.render.docx_renderer as dr  # noqa: PLC0415
+    import apps_rg.runtime.internal.docx_renderer as dr  # noqa: PLC0415
 
     repo = find_repo_root().resolve()
     rf = Path(dr.__file__).resolve()

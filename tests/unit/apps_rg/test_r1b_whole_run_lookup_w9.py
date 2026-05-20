@@ -132,7 +132,7 @@ def test_main_r1a_before_r1b_order(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
     monkeypatch.setattr(
         m,
-        "run_integrated_r4_deterministic_pipeline",
+        "run_integrated_single_action_spine",
         lambda **k: order.append("PIPELINE") or _fake_outcome(tmp_path),
     )
     monkeypatch.setattr(m, "stamp_r1a_cache", lambda *a, **k: None)
@@ -198,7 +198,7 @@ def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyP
         pipeline_called.append(True)
         return _fake_outcome(tmp_path)
 
-    monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+    monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
     def fake_r1b(**kwargs):
         from apps_rg.cache.r1b_whole_run_preflight import WholeRunR1BPreflightResult

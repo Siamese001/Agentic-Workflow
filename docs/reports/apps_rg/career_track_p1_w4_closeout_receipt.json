@@ -1,12 +1,12 @@
 {
   "schema": "career_track_p1_w4_closeout_receipt_v1",
-  "generated_at": "2026-05-19T15:54:27Z",
+  "generated_at": "2026-05-20T12:40:42Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4-CLOSEOUT",
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:02be8ad784a61557",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:f07c04d6399ba244",
     "c03_graph_hop_paths_count": 21,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",

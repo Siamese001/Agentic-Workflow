@@ -14,11 +14,11 @@ if str(_REPO) not in sys.path:
 
 _DISPATCH_MODULES = [
     "apps_rg.runtime.sections.headline_lane",
-    "apps_rg.runtime.dispatch.executive_summary_dispatch",
-    "apps_rg.runtime.dispatch.competencies_dispatch",
-    "apps_rg.runtime.dispatch.unify_narrative_dispatch",
+    "apps_rg.runtime.sections.executive_summary_lane_api",
+    "apps_rg.runtime.sections.competencies_lane_api",
+    "apps_rg.runtime.sections.unify_narrative_lane_api",
     "apps_rg.runtime.sections.unify_bullets_lane",
-    "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
+    "apps_rg.runtime.sections.ibm_narrative_lane_api",
     "apps_rg.runtime.sections.ibm_bullets_lane",
 ]
 

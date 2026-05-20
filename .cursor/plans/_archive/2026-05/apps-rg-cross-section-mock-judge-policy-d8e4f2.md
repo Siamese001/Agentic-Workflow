@@ -7,10 +7,10 @@
 
 | File / hit surface | Classification | Action |
 |---|---|---|
-| `apps_rg/runtime/dispatch/executive_summary_dispatch.py` — `--mock-judges`, exit 14, proof bundle | SECTION_RUNTIME_CLI | Reference preserved; delegate bundle to shared helper |
+| `apps_rg/runtime/sections/executive_summary_lane_api.py` — `--mock-judges`, exit 14, proof bundle | SECTION_RUNTIME_CLI | Reference preserved; delegate bundle to shared helper |
 | `apps_rg/runtime/dispatch/*_dispatch.py` (non-exec) — `--mock-judges`, `judge_mode` mocked without hatch guard | SECTION_RUNTIME_CLI | **MUST_PATCH:** gate before run + hatch CLI + shared bundle |
 | `apps_rg/runtime/dispatch/mock_runtime_proof_policy.py` | JUDGE_PROVIDER / policy SSOT | **MUST_PATCH:** `compute_lane_proof_bundle`, stderr helper reuse |
-| `apps_rg/runtime/orchestrate_full_resume.py` — forward mock judges | ORCHESTRATOR_FORWARDING | **MUST_PATCH:** require `--allow-test-mock-judges`; forward hatch |
+| `apps_rg/runtime/internal/lane_batch.py` — forward mock judges | ORCHESTRATOR_FORWARDING | **MUST_PATCH:** require `--allow-test-mock-judges`; forward hatch |
 | `apps_rg/l2_recipe/modular_lane_adapter.py` — mock argv | MODULAR_LANE_FORWARDING | **MUST_PATCH:** append hatch |
 | `apps_rg/l2_recipe/modular_resume_generation.py` — exec-only hatch | MODULAR_LANE_FORWARDING | **MUST_PATCH:** remove special case (adapter fixed) |
 | `apps_rg/runtime/runtime_proof_layout.py` — `latest_successful_real_run`, `proof_eligible` | SAFE_TO_LEAVE | Already skips pointer when `proof_eligible=False` |

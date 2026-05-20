@@ -25,7 +25,7 @@ Not a D2 helper-identity regression. Failure chain after **P2-W1A `augmented_ski
 |------|--------|
 | [competencies_graph_skills_proof_pool.py](apps_rg/fact_inventory/competencies_graph_skills_proof_pool.py) | Payload always uses `NOT_CLAIMED_FOR_P2_W1A` for `c03_graph_bound_status` |
 | [proof_pool_resolver.py](apps_rg/runtime/proof_pool_resolver.py) | Initialize `te` before use (UnboundLocalError) |
-| [competencies_dispatch.py](apps_rg/runtime/dispatch/competencies_dispatch.py) | `build_mock_output` handles `augmented_skills_graph`; grounded stub terms from plan facts; final `expand_structured_competencies_min_two_terms` pass |
+| [competencies_dispatch.py](apps_rg/runtime/sections/competencies_lane_api.py) | `build_mock_output` handles `augmented_skills_graph`; grounded stub terms from plan facts; final `expand_structured_competencies_min_two_terms` pass |
 | [fact_id_typo_repair.py](apps_rg/runtime/validators/fact_id_typo_repair.py) | Strip interior whitespace; zero-pad `fact_*_<n>` → `fact_*_<nnn>` when in allowlist |
 | [competencies_lane_execution.py](apps_rg/runtime/sections/competencies_lane_execution.py) | Second expand pass after prune |
 

@@ -251,3 +251,31 @@ redis_namespace_stats(top_n=10)
   ]
 }
 ```
+
+---
+
+## Windows dev steady state (ADG + Docker)
+
+**Problem:** A stopped or restarted `redis-memory` container (`redis:7-alpine` on host port
+6379) competes with the Windows `Redis` service. MCP and `ADG_REDIS_URL` then hit the wrong
+backend (empty Docker vs populated Windows cache).
+
+**Default (recommended):**
+
+1. One listener on **6379** — Windows Redis with `ADG_REDIS_URL=redis://localhost:6379/0`.
+2. **Remove** container `redis-memory`; **keep** the `redis:7-alpine` image for CI/compose.
+3. Graph queries use **`adg_sqlite` MCP** (Redis is internal read-through cache, not the `redis` MCP).
+4. After a new ADG snapshot: `python tools/adg/adg_redis_ingest.py` then `--check`.
+
+**Apply + verify in one command:**
+
+```bash
+python ops_scripts/adg/redis_dev_steady_state.py
+```
+
+**Integration tests** use [docker-compose.redis.yml](../../docker-compose.redis.yml) on port **6390**
+(not 6379) to avoid clashing with dev Redis.
+
+**Optional migration to Docker Redis 7:** stop Windows `Redis` service, run a single container on
+6379, then `python tools/adg/adg_redis_ingest.py --force` and confirm `redis_version` is 7.x on
+localhost.

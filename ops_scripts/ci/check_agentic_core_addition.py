@@ -143,12 +143,17 @@ _GOV3_BASELINE: dict[str, dict] = {
         "target_module": "apps_rg.prompt_governance.pa_binding",
         "issue": "GOV-3-BASELINE-006",
     },
-    "agentic_core/L2_execution/apps_rg_l2_binding.py": {
-        "expiry": "2026-08-13",
-        "classification": "TEMPORARY_THIN_ADAPTER",
-        "migration_plan": "apps-rg-golden-state-section-generation-a4f9e1",
+    "archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py": {
+        "expiry": "2027-12-31",
+        "classification": "ARCHIVED",
+        "migration_plan": "l2-rationalization-waves-c8e4f1",
         "target_module": "apps_rg.runtime.bindings.l2_binding",
-        "issue": "GOV-3-BASELINE-007",
+        "archived_from": "agentic_core/L2_execution/apps_rg_l2_binding.py",
+        "rationale": (
+            "W11-SHIM-ARCHIVE: moved out of agentic_core; canonical binding active; "
+            "not scanned as core addition"
+        ),
+        "issue": "GOV-3-BASELINE-007-ARCHIVED",
     },
     "agentic_core/base_agents/SovereignBaseAgent.py": {
         "expiry": "2026-08-13",
@@ -1126,7 +1131,10 @@ def main() -> int:  # noqa: C901 — complexity acceptable for a gate script
     scan_findings, baselined_paths = _scan_agentic_core(changed_core_paths)
     findings.extend(scan_findings)
     if baselined_paths:
-        print(f"  GOV-3 BASELINE: {len(baselined_paths)} path(s) suppressed (pre-existing TEMPORARY_THIN_ADAPTER):")
+        print(
+            f"  GOV-3 BASELINE: {len(baselined_paths)} path(s) suppressed "
+            f"(TEMPORARY_THIN_ADAPTER / ARCHIVE_PENDING):"
+        )
         for bp in baselined_paths:
             entry = _GOV3_BASELINE.get(bp, {})
             print(f"    {bp} — expiry={entry.get('expiry','?')} issue={entry.get('issue','?')}")

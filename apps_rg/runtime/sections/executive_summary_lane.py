@@ -51,7 +51,11 @@ from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     compute_lane_proof_bundle,
 )
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
+from apps_rg.runtime.providers.qwen_vllm_provider import (
+    DEFAULT_QWEN_MODEL,
+    ProviderResult,
+    build_qwen_request,
+)
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
 from apps_rg.runtime.judges.executive_summary_judge_packet import (
@@ -1073,7 +1077,99 @@ def run_executive_summary_execution(
         run_id=str(runtime_payload.get("run_id") or ""),
     )
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    section_compiled = compile_executive_summary_prompt(runtime_payload, run_id=runtime_payload["run_id"])
+    from apps_rg.runtime.sections.executive_summary_evidence_capsule import (
+        ExecutiveSummaryEvidenceCapsuleError,
+        _capsule_enabled,
+        compile_executive_summary_evidence_capsule,
+        write_evidence_capsule_receipt,
+    )
+    from apps_rg.runtime.sections.executive_summary_token_budget import (
+        ExecutiveSummaryTokenBudgetExceeded,
+        apply_executive_summary_token_budget_policy,
+        estimate_tokens_approximate,
+        write_token_budget_receipt,
+    )
+
+    evidence_capsule_block_reason: str | None = None
+    if _capsule_enabled(runtime_payload):
+        try:
+            baseline_payload = dict(runtime_payload)
+            baseline_payload["evidence_capsule_active"] = False
+            baseline_payload["evidence_capsule_disabled"] = True
+            baseline_compiled = compile_executive_summary_prompt(
+                baseline_payload, run_id=runtime_payload["run_id"]
+            )
+            before_capsule_est = estimate_tokens_approximate(
+                str(baseline_compiled.artifact.messages[0].get("content") or "")
+            )
+            _, capsule_receipt = compile_executive_summary_evidence_capsule(runtime_payload)
+            if before_capsule_est and capsule_receipt.get("capsule_token_estimate") is not None:
+                capsule_receipt["capsule_reduction_estimate"] = max(
+                    0,
+                    before_capsule_est
+                    - int(capsule_receipt["capsule_token_estimate"]),
+                )
+            write_evidence_capsule_receipt(artifact_dir, capsule_receipt)
+            section_compiled = compile_executive_summary_prompt(
+                runtime_payload, run_id=runtime_payload["run_id"]
+            )
+            after_capsule_est = estimate_tokens_approximate(
+                str(section_compiled.artifact.messages[0].get("content") or "")
+            )
+            runtime_payload["prompt_token_estimates"] = {
+                "before_capsule_prompt_estimate": before_capsule_est,
+                "after_capsule_prompt_estimate": after_capsule_est,
+            }
+        except ExecutiveSummaryEvidenceCapsuleError as cap_exc:
+            evidence_capsule_block_reason = str(
+                cap_exc.receipt.get("fail_closed_reason") or cap_exc
+            )
+            write_evidence_capsule_receipt(artifact_dir, cap_exc.receipt)
+            runtime_payload["evidence_capsule_policy"] = {
+                "fail_closed": True,
+                "fail_closed_reason": evidence_capsule_block_reason,
+            }
+            section_compiled = compile_executive_summary_prompt(
+                runtime_payload, run_id=runtime_payload["run_id"]
+            )
+    else:
+        section_compiled = compile_executive_summary_prompt(
+            runtime_payload, run_id=runtime_payload["run_id"]
+        )
+
+    token_budget_block_reason: str | None = None
+    token_budget_receipt: dict[str, Any] | None = None
+    max_out_tokens = int(
+        os.environ.get(
+            "APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS",
+            str(_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS),
+        )
+    )
+    if not evidence_capsule_block_reason:
+        try:
+            section_compiled, token_budget_receipt = apply_executive_summary_token_budget_policy(
+                section_compiled,
+                runtime_payload=runtime_payload,
+                provider=str(args.provider),
+                model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
+                requested_max_output_tokens=max_out_tokens,
+            )
+            write_token_budget_receipt(artifact_dir, token_budget_receipt)
+        except ExecutiveSummaryTokenBudgetExceeded as budget_exc:
+            token_budget_receipt = budget_exc.receipt
+            write_token_budget_receipt(artifact_dir, token_budget_receipt)
+            token_budget_block_reason = str(
+                token_budget_receipt.get("fail_closed_reason") or budget_exc
+            )
+            runtime_payload["token_budget_policy"] = {
+                "fail_closed": True,
+                "fail_closed_reason": token_budget_block_reason,
+                "dispatch_allowed": False,
+                "prompt_shape_preserved": token_budget_receipt.get("prompt_shape_preserved"),
+                "evidence_contract_preserved": token_budget_receipt.get(
+                    "evidence_contract_preserved"
+                ),
+            }
     messages = section_compiled.artifact.messages
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
@@ -1108,6 +1204,22 @@ def run_executive_summary_execution(
                 "graph_only_claim_authority": pool.proof_source == "augmented_skills_graph",
                 "c03_graphrag_bound_status": (proof_pool_metadata or {}).get("c03_graphrag_bound_status"),
                 "allowed_source_fact_ids_count": len(allowed_fact_ids),
+                **(
+                    {
+                        "token_budget_trim_applied": token_budget_receipt.get("trim_applied"),
+                        "token_budget_receipt_ref": "token_budget_receipt.json",
+                    }
+                    if token_budget_receipt
+                    else {}
+                ),
+                **(
+                    {
+                        "evidence_capsule_active": True,
+                        "evidence_capsule_receipt_ref": "evidence_capsule_receipt.json",
+                    }
+                    if runtime_payload.get("evidence_capsule_active")
+                    else {}
+                ),
             },
             runtime_payload,
         ),
@@ -1129,18 +1241,79 @@ def run_executive_summary_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
-        messages=messages,
-        prompt_hash=prompt_hash,
-        input_payload_hash=input_payload_hash,
-        temperature=args.temperature,
-        max_tokens=_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS,
-    )
-    provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
-    provider_request_data = provider_req.to_dict()
-    write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
-    if effective_offline_contract_stub_enabled():
+    provider_req: Any = None
+    provider_payload: dict[str, Any] = {}
+    if evidence_capsule_block_reason:
+        provider_request_data = {
+            "provider_requested": str(args.provider),
+            "provider_attempted": False,
+            "blocked_before_dispatch": True,
+            "fail_closed_reason": evidence_capsule_block_reason,
+            "max_tokens": max_out_tokens,
+            "evidence_capsule_receipt_ref": "evidence_capsule_receipt.json",
+            "mock_fallback_allowed": False,
+        }
+        write_json(artifact_dir / "provider_request.json", provider_request_data)
+        result = ProviderResult(
+            provider_requested=str(args.provider),
+            provider_attempted=False,
+            provider_available=False,
+            exact_provider_error=f"L2_BLOCK:{evidence_capsule_block_reason}",
+            runtime_generation_status="BLOCKED",
+            model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
+            raw_model_output="",
+            provider_response={
+                "evidence_capsule_blocked": True,
+                "reason": evidence_capsule_block_reason,
+            },
+        )
+        req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    elif token_budget_block_reason:
+        provider_request_data = {
+            "provider_requested": str(args.provider),
+            "provider_attempted": False,
+            "blocked_before_dispatch": True,
+            "fail_closed_reason": token_budget_block_reason,
+            "max_tokens": max_out_tokens,
+            "token_budget_receipt_ref": "token_budget_receipt.json",
+            "mock_fallback_allowed": False,
+        }
+        write_json(artifact_dir / "provider_request.json", provider_request_data)
+        result = ProviderResult(
+            provider_requested=str(args.provider),
+            provider_attempted=False,
+            provider_available=False,
+            exact_provider_error=f"L2_BLOCK:{token_budget_block_reason}",
+            runtime_generation_status="BLOCKED",
+            model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
+            raw_model_output="",
+            provider_response={"token_budget_blocked": True, "reason": token_budget_block_reason},
+        )
+        req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    else:
+        provider_req, provider_payload = build_qwen_request(
+            messages=messages,
+            prompt_hash=prompt_hash,
+            input_payload_hash=input_payload_hash,
+            temperature=args.temperature,
+            max_tokens=max_out_tokens,
+        )
+        provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
+        provider_request_data = provider_req.to_dict()
+        if token_budget_receipt:
+            provider_request_data["token_budget"] = {
+                "trim_applied": token_budget_receipt.get("trim_applied"),
+                "compiled_prompt_tokens_after_trim": token_budget_receipt.get(
+                    "compiled_prompt_tokens_after_trim"
+                ),
+                "available_input_tokens": token_budget_receipt.get("available_input_tokens"),
+                "provider_context_window": token_budget_receipt.get("provider_context_window"),
+            }
+        write_json(artifact_dir / "provider_request.json", provider_request_data)
+        req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
+    if evidence_capsule_block_reason or token_budget_block_reason:
+        pass
+    elif effective_offline_contract_stub_enabled():
         from apps_rg.runtime.qwen_offline_contract_stub import synthetic_qwen_provider_result
 
         stub_doc = build_mock_output(runtime_payload)
@@ -1203,11 +1376,6 @@ def run_executive_summary_execution(
                 )
 
                 _srfs_facts = list(selected_fact_plan.get("facts") or [])
-                parsed, density_repair_meta = apply_srfs_density_micro_expansion(
-                    parsed, _srfs_i, selected_facts=_srfs_facts
-                )
-                if density_repair_meta:
-                    write_json(artifact_dir / "srfs_density_micro_repair.json", density_repair_meta)
                 _before_judge_safe = json.dumps(parsed, sort_keys=True)
                 parsed = apply_srfs_judge_safe_repair(
                     parsed,
@@ -1226,6 +1394,12 @@ def run_executive_summary_execution(
                             "after_resume_display_text": parsed.get("resume_display_text"),
                         },
                     )
+                density_repair_meta = None
+                parsed, density_repair_meta = apply_srfs_density_micro_expansion(
+                    parsed, _srfs_i, selected_facts=_srfs_facts
+                )
+                if density_repair_meta:
+                    write_json(artifact_dir / "srfs_density_micro_repair.json", density_repair_meta)
                 parsed, density_post_judge_meta = apply_srfs_density_micro_expansion(
                     parsed, _srfs_i, selected_facts=_srfs_facts
                 )
@@ -1683,6 +1857,15 @@ def run_executive_summary_execution(
         provider_proof_eligible=proof_bundle["provider_proof_eligible"],
         test_only_mock_judges=proof_bundle["test_only_mock_judges"],
         proof_closeout_note=proof_bundle.get("proof_closeout_note") or None,
+    )
+    from apps_rg.runtime.section_l7_binding_lane_integration import finalize_section_l7_binding
+
+    finalize_section_l7_binding(
+        artifact_dir,
+        section_id="executive_summary",
+        runtime_payload=runtime_payload,
+        repo_root=REPO_ROOT,
+        command_surface="python -m apps_rg --section executive_summary",
     )
     return {
         "artifact_dir": artifact_dir,

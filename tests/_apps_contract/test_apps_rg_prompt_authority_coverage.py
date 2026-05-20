@@ -299,7 +299,7 @@ def test_11_pa_sole_generation_authority():
         REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
         REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
         REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
-        REPO_ROOT / "agentic_core" / "L2_execution" / "apps_rg_l2_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
         REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
     ]
     violations = []
@@ -449,7 +449,7 @@ def test_16_rubrics_map_to_exit(cls_map, mat_map):
 
 def test_17_l2_no_raw_prompt_load():
     """T17: the L2 binding source does not open or parse apps_rg prompt files."""
-    l2_path = REPO_ROOT / "agentic_core" / "L2_execution" / "apps_rg_l2_binding.py"
+    l2_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py"
     content = l2_path.read_text(encoding="utf-8")
     forbidden = [
         "rg_prompt_profile",
@@ -515,7 +515,7 @@ def test_20_no_chromadb_mutation():
         REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
         REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
         REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
-        REPO_ROOT / "agentic_core" / "L2_execution" / "apps_rg_l2_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
         REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
     ]
     chroma_mutations = [".add(", ".upsert(", ".delete(", "chromadb", "Collection.add"]
@@ -545,7 +545,7 @@ def test_21_no_embedding_generation():
         REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
         REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
         REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
-        REPO_ROOT / "agentic_core" / "L2_execution" / "apps_rg_l2_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
         REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
     ]
     # Only catch external embedding library imports/calls — NOT hashlib .encode("utf-8")

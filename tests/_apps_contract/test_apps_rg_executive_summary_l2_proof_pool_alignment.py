@@ -169,7 +169,7 @@ def test_mock_executive_summary_lane_digest_and_receipt_match_usage_ledger(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
     from apps_rg.runtime.sections.executive_summary_lane import run_executive_summary_execution
     from tests._apps_contract.test_exec_summary_section_pipeline import _tag_exec_summary_provider_resolution
 

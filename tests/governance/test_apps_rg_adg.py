@@ -17,7 +17,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MAIN_PY = REPO_ROOT / "apps_rg" / "__main__.py"
-R4_ENTRYPOINT = REPO_ROOT / "agentic_core" / "runtime" / "entrypoints" / "integrated_r4_deterministic_pipeline_run.py"
+R4_ENTRYPOINT = REPO_ROOT / "agentic_core" / "runtime" / "entrypoints" / "integrated_single_action_spine_run.py"
 
 
 # ---------------------------------------------------------------------------
@@ -82,13 +82,13 @@ def test_apps_rg_l0_emits_exactly_one_route_contract() -> None:
 
     # The entrypoint file must exist (P3)
     assert R4_ENTRYPOINT.exists(), (
-        f"integrated_r4_deterministic_pipeline_run.py not found at {R4_ENTRYPOINT}. "
+        f"integrated_single_action_spine_run.py not found at {R4_ENTRYPOINT}. "
         "W2 P3 must land before this test can pass."
     )
 
     # Must reference the canonical capability name
     assert "resume_generation_v1" in src, (
-        "integrated_r4_deterministic_pipeline_run.py must reference "
+        "integrated_single_action_spine_run.py must reference "
         "'resume_generation_v1' capability (single route contract per run)."
     )
 

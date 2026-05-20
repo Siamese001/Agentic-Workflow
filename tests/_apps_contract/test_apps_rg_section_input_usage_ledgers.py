@@ -48,20 +48,38 @@ def _latest_mock_run_dir(lane: str) -> Path:
     return rd
 
 
+def _section_cli_argv(section_id: str) -> list[str]:
+    argv = [
+        sys.executable,
+        "-m",
+        "apps_rg",
+        "--section",
+        section_id,
+        "--provider",
+        "mock",
+        "--mock-judges",
+        "--allow-test-mock-judges",
+    ]
+    if section_id == "executive_summary":
+        argv.extend(
+            [
+                "--target-company",
+                "CI-Probe-Co",
+                "--target-role",
+                "Software Engineer",
+                "--jd",
+                str(REPO / "tests" / "_fixtures" / "ci-probe-jd.txt"),
+                "--manual-brief",
+                str(REPO / "apps_rg" / "config" / "default_targeting_briefing.txt"),
+            ]
+        )
+    return argv
+
+
 @pytest.mark.parametrize("section_id", SECTION_IDS)
 def test_section_cli_emits_input_usage_ledger_and_prompt_authority(section_id: str) -> None:
     r = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "apps_rg",
-            "--section",
-            section_id,
-            "--provider",
-            "mock",
-            "--mock-judges",
-            "--allow-test-mock-judges",
-        ],
+        _section_cli_argv(section_id),
         cwd=REPO,
         capture_output=True,
         text=True,

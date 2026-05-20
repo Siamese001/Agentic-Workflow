@@ -33,8 +33,8 @@ def _raw_request_minimal() -> dict:
 
 def test_integrated_r4_l2_fault_coerces_x3_not_allow(tmp_path: Path) -> None:
     """Simulated L2 failure must not leave X3D on sealed R4 manifests."""
-    from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-        run_integrated_r4_deterministic_pipeline,
+    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+        run_integrated_single_action_spine,
     )
 
     artifact_dir = tmp_path / "artifacts"
@@ -43,7 +43,7 @@ def test_integrated_r4_l2_fault_coerces_x3_not_allow(tmp_path: Path) -> None:
     def _failing_l2() -> dict:
         raise RuntimeError("FAILED_PROVIDER: simulated envelope failure")
 
-    result = run_integrated_r4_deterministic_pipeline(
+    result = run_integrated_single_action_spine(
         raw_request=_raw_request_minimal(),
         app_name="apps_rg",
         artifact_dir=artifact_dir,

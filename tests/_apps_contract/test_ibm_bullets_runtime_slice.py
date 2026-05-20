@@ -40,18 +40,19 @@ def load_json_at(rd: Path, name: str):
     return json.loads((rd / name).read_text(encoding="utf-8"))
 
 
-def test_deprecated_dispatch_module_exits_2():
-    """``python -m apps_rg.runtime.dispatch.ibm_bullets_dispatch`` exits fail-closed; use ``--section ibm_bullets``."""
+def test_deprecated_dispatch_module_not_a_cli():
+    """``python -m apps_rg.runtime.sections.ibm_bullets_lane_api`` is not an entrypoint."""
     r = subprocess.run(
-        [sys.executable, "-m", "apps_rg.runtime.dispatch.ibm_bullets_dispatch"],
+        [sys.executable, "-m", "apps_rg.runtime.sections.ibm_bullets_lane_api"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
         timeout=60,
     )
-    assert r.returncode == 2, r.stderr
+    assert r.returncode == 1, r.stderr
     blob = (r.stderr + r.stdout).lower()
-    assert "deprecated" in blob or "ibm_bullets" in blob
+    assert "not an operator cli entrypoint" in blob
+    assert "python -m apps_rg" in blob
 
 
 def test_mock_dispatch_executes():
@@ -137,7 +138,7 @@ def test_l6_shadow_offline_only():
 
 def test_ibm_overlay_files_exist():
     expected = [
-        "apps_rg/runtime/dispatch/ibm_bullets_dispatch.py",
+        "apps_rg/runtime/sections/ibm_bullets_lane_api.py",
         "apps_rg/runtime/validators/ibm_bullets_x2.py",
         "apps_rg/runtime/judges/ibm_bullets_x1d.py",
         "apps_rg/runtime/exit/ibm_bullets_x3.py",
@@ -149,7 +150,7 @@ def test_ibm_overlay_files_exist():
 
 def test_no_agentic_core_in_overlay_files():
     overlay = [
-        REPO_ROOT / "apps_rg/runtime/dispatch/ibm_bullets_dispatch.py",
+        REPO_ROOT / "apps_rg/runtime/sections/ibm_bullets_lane_api.py",
         REPO_ROOT / "apps_rg/runtime/validators/ibm_bullets_x2.py",
         REPO_ROOT / "apps_rg/runtime/judges/ibm_bullets_x1d.py",
         REPO_ROOT / "apps_rg/runtime/exit/ibm_bullets_x3.py",

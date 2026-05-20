@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.runtime.assembly.final_resume_assembler import assemble_final_resume
+from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resume
 from apps_rg.runtime.assembly.final_resume_manifest import resolve_default_paths
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 

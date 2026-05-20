@@ -6,7 +6,7 @@ from typing import Literal
 
 import pytest
 
-from apps_rg.runtime.reports import generated_lane_rollup as glr
+from apps_rg.runtime.internal import generated_lane_rollup as glr
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     load_latest_successful_real_pointer,
@@ -35,7 +35,7 @@ def _lane_artifact_base(lane: str) -> Path:
 
 @pytest.fixture(scope="module")
 def rollup_data() -> dict:
-    """Assumes `python -m apps_rg.runtime.reports.generated_lane_rollup` was run."""
+    """Assumes generated_lane_rollup.json exists (from build_rollup or prior lane runs)."""
     if not ROLLUP_JSON.is_file():
         pytest.skip(f"Missing rollup artifact: {ROLLUP_JSON} — run generated_lane_rollup first")
     return json.loads(ROLLUP_JSON.read_text(encoding="utf-8"))

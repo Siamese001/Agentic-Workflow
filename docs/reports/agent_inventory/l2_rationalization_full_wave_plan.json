@@ -1,0 +1,327 @@
+{
+  "generated_at": "2026-05-19T10:32:57.118933+00:00",
+  "recommended_wave_count": 12,
+  "waves": [
+    {
+      "id": "W0",
+      "objective": "Freeze inventory SSOT and ADG provenance",
+      "depends_on": [],
+      "combine_with": [],
+      "why": "Baseline before quarantine labels change imports",
+      "files_likely_touched": [
+        "docs/reports/agent_inventory/*"
+      ],
+      "tests": [
+        "python docs/reports/agent_inventory/_generate_l2_inventory.py"
+      ],
+      "commands": [
+        "python -m compileall agentic_core apps_rg -q",
+        "python docs/reports/agent_inventory/_generate_l2_inventory.py"
+      ],
+      "acceptance": "Assessment JSON matches ADG snapshot; compileall exit 0",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W1",
+      "objective": "Document L2 subphase vocabulary E2/E3/E4 vs legacy enums",
+      "depends_on": [
+        "W0"
+      ],
+      "combine_with": [],
+      "why": "Prevents wiring healers to wrong phase hooks",
+      "files_likely_touched": [],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W2",
+      "objective": "Spine model env guards for apps_rg generation path",
+      "depends_on": [
+        "W1"
+      ],
+      "combine_with": [
+        "W3"
+      ],
+      "why": "Stops spine vars bleeding into Qwen product path",
+      "files_likely_touched": [
+        "apps_rg/runtime/providers/qwen_vllm_provider.py",
+        ".env.example",
+        "tests/_apps_contract/"
+      ],
+      "tests": [
+        "pytest tests/unit/apps_rg/test_section_judge_policy.py -q"
+      ],
+      "commands": [
+        "pytest tests/_apps_contract/test_apps_rg_generation_entrypoints.py -q"
+      ],
+      "acceptance": "Contract test fails if generation lane imports GEMINI_FLASH_MODEL_ID",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "False positives on legitimate judge fallback",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W3",
+      "objective": "apps_rg judge env isolation and receipt model_source",
+      "depends_on": [
+        "W2"
+      ],
+      "combine_with": [
+        "W2"
+      ],
+      "why": "APPS_RG_*_JUDGE must be sole proof-judge source",
+      "files_likely_touched": [],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W4",
+      "objective": "Signal-quality SSOT wire-up or stub quarantine",
+      "depends_on": [
+        "W0"
+      ],
+      "combine_with": [],
+      "must_stay_separate_from": [
+        "W2"
+      ],
+      "why": "Stub signal_enhancer mimics SSOT \u2014 proof contamination risk",
+      "files_likely_touched": [],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Breaking apps_shared if forced SSOT import",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W5",
+      "objective": "Same-authority healing enforcement audit",
+      "depends_on": [
+        "W1"
+      ],
+      "combine_with": [],
+      "why": "L2.4 must not heal authority/ACL/HITL failures",
+      "files_likely_touched": [
+        "agentic_core/L2_execution/healers/healing_router.py",
+        "tests/unit/agentic_core/L2_execution/healers/"
+      ],
+      "tests": [
+        "pytest tests/unit/agentic_core/L2_execution/healers/ -q"
+      ],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Negative tests: non-healable signals skip Gemini cascade",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W6",
+      "objective": "Retire apps_rg_l2_binding shim",
+      "depends_on": [
+        "W2",
+        "W3"
+      ],
+      "combine_with": [],
+      "why": "Canonical l2_execute lives in apps_rg binding",
+      "files_likely_touched": [
+        "agentic_core/L2_execution/apps_rg_l2_binding.py",
+        "tests/_apps_contract/test_ag6_apps_rg_golden_path.py"
+      ],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W7",
+      "objective": "Quarantine non-product apps_rg paths",
+      "depends_on": [
+        "W0"
+      ],
+      "combine_with": [
+        "W8"
+      ],
+      "why": "Demo/smoke paths mistaken for product proof",
+      "files_likely_touched": [],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W8",
+      "objective": "Consolidate dispatch vs section lane surfaces",
+      "depends_on": [
+        "W7"
+      ],
+      "combine_with": [
+        "W7"
+      ],
+      "why": "dispatch/* vs sections/* drift",
+      "files_likely_touched": [],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W9",
+      "objective": "L2 E2 validator/gateway consolidation",
+      "depends_on": [
+        "W1",
+        "W5"
+      ],
+      "combine_with": [],
+      "why": "Overlapping E2 enforcement modules",
+      "files_likely_touched": [],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W10",
+      "objective": "Exit/UWG/L4/L6 no-bypass contract tests",
+      "depends_on": [
+        "W5"
+      ],
+      "combine_with": [],
+      "why": "Architecture law enforcement",
+      "files_likely_touched": [],
+      "tests": [
+        "pytest tests/_apps_contract/ -k uwg -q",
+        "pytest tests/_apps_contract/ -k exit -q"
+      ],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "Scoped tests green",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Regression in scoped tests",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    },
+    {
+      "id": "W11",
+      "objective": "Gated archive/delete after fan-in zero",
+      "depends_on": [
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10"
+      ],
+      "combine_with": [],
+      "why": "No delete until fan-in zero + quarantine elapsed",
+      "files_likely_touched": [
+        "archives/l2_rationalization_*"
+      ],
+      "tests": [],
+      "commands": [
+        "pytest <scoped> -q"
+      ],
+      "acceptance": "ADG fan-in=0 + migration receipt + 30d quarantine",
+      "rollback": "Revert commit or restore from archives/ manifest",
+      "risks": "Premature delete breaks CI",
+      "pass_criteria": "Command output captured; scoped pytest PASS",
+      "partial_criteria": "Docs/plan updated; tests not yet run",
+      "fail_criteria": "pytest or compileall fails with no mitigation"
+    }
+  ],
+  "safe_to_combine": [
+    [
+      "W0"
+    ],
+    [
+      "W2",
+      "W3"
+    ],
+    [
+      "W7",
+      "W8"
+    ]
+  ],
+  "must_stay_separate": [
+    "W4 independent from W2/W3",
+    "W5/W6/W10 before W11"
+  ],
+  "top_risks": [
+    "Mis-identifying live paths from grep alone",
+    "Judge env incomplete \u2192 BLOCKED_PROVIDER_UNAVAILABLE",
+    "Healing over-restriction blocks legitimate flash-tier repair",
+    "Removing apps_rg_l2_binding breaks test_ag6 golden path",
+    "Signal stub wire increases apps_shared \u2192 agentic_core coupling",
+    "dispatch/section consolidation breaks proof receipt layout",
+    "legacy_full_resume rollback still required for emergencies",
+    "TwoPhaseHealerFn migration incomplete \u2192 INV-RC-5 advisory only",
+    "Offline stub env mistaken for live proof",
+    "W11 delete before fan-in zero"
+  ],
+  "top_decisions": [
+    "Wire apps_shared signal stubs to SSOT vs quarantine-only",
+    "Keep legacy_full_resume mode indefinitely vs sunset date",
+    "Retire validation_orchestrator E2 vs fold into l2_phase_pipeline only",
+    "Allow GOOGLE_AI_PRO_MODEL judge fallback in production",
+    "Migrate RgResumeOrchestrator tests to section lane harness",
+    "Single E2 entry: guardrail_gate vs e2_agent_gate vs authority_validator",
+    "QwenJudgeGateway in L2 healers vs apps_rg-only",
+    "ConfidenceAwareExecutor vs healing_router duplication",
+    "Archive vs delete for dry_run/",
+    "CI proof_eligible manifest enforcement location (ops_scripts vs tests)"
+  ],
+  "first_implementation_prompt": "Execute W0+W1 only: refresh inventory JSON, add architecture doc table mapping L2.2/L2.3/L2.4 \u2194 E2/E3/E4 with zero behavior change; run compileall and tests/unit/agentic_core/L2_execution/orchestration/ if present."
+}

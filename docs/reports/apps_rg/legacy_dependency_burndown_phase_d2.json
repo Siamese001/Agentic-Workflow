@@ -85,8 +85,8 @@
     }
   ],
   "reexports_kept": [
-    "apps_rg.runtime.dispatch.competencies_dispatch — all extracted symbols remain importable with `is` identity to sections/exit SSOT",
-    "apps_rg.runtime.dispatch.ibm_narrative_dispatch — lane defaults, artifact I/O, metric trim, collect_employment_bullets re-exports"
+    "apps_rg.runtime.sections.competencies_lane_api — all extracted symbols remain importable with `is` identity to sections/exit SSOT",
+    "apps_rg.runtime.sections.ibm_narrative_lane_api — lane defaults, artifact I/O, metric trim, collect_employment_bullets re-exports"
   ],
   "helper_fanin_after": {
     "apps_rg_production_imports_from_dispatch": [

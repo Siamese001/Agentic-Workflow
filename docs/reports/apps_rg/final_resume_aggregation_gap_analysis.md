@@ -23,10 +23,10 @@ This is **not FAIL**: assembly embeds verbatim `l2_output_snapshot` (no claim in
 
 | Entry | Command / module | Role |
 |-------|------------------|------|
-| **Primary (assembly)** | `python -m apps_rg.runtime.assembly.final_resume_assembler` | `apps_rg/runtime/assembly/final_resume_assembler.py` — writes `artifacts/apps_rg/runtime_proofs/final_resume_assembly/` |
-| **Full offline orchestrator** | `python -m apps_rg.runtime.orchestrate_full_resume` | Lanes → rollup → locked copy → assembly → DOCX → `resume_package_x3` |
-| **Rollup SSOT** | `python -m apps_rg.runtime.reports.generated_lane_rollup` | `generated_lane_rollup.json` pointer index |
-| **Package disposition** | `apps_rg.runtime.package.resume_package_x3` | Whole-resume `final_x3_code` (apps_rg package plane, not spine Exit) |
+| **Primary (assembly)** | `python -m apps_rg.runtime.internal.final_resume_assembler` | `apps_rg/runtime/internal/final_resume_assembler.py` — writes `artifacts/apps_rg/runtime_proofs/final_resume_assembly/` |
+| **Full offline orchestrator** | `python -m apps_rg.runtime.internal.lane_batch` | Lanes → rollup → locked copy → assembly → DOCX → `resume_package_x3` |
+| **Rollup SSOT** | `python -m apps_rg.runtime.internal.generated_lane_rollup` | `generated_lane_rollup.json` pointer index |
+| **Package disposition** | `apps_rg.runtime.internal.resume_package_disposition` | Whole-resume `final_x3_code` (apps_rg package plane, not spine Exit) |
 | **Alternate product path** | `apps_rg.l2_recipe.modular_rg_output_builder` | Integrated `rg_output` — separate grain from `final_resume.json` |
 | **SRFS audit only** | `apps_rg.audit.srfs_receipt_aggregator` | Cross-section SRFS structural audit — **not** wired into assembly |
 
@@ -231,7 +231,7 @@ Current `final_resume_receipt.json` (`final_resume_assembly_receipt_v1`) fields:
 ## Runtime proof (this audit)
 
 ```text
-python -m apps_rg.runtime.assembly.final_resume_assembler
+python -m apps_rg.runtime.internal.final_resume_assembler
 → ASSEMBLY_DONE gates_all_pass=True final_resume_hash=35e071b829603b3d5663a6156b86e9248687e6cfcca2f3c4b548d9da7f070d9a
 ```
 

@@ -21,7 +21,7 @@ import pytest
 
 
 def _fake_r4_result(fault: str = "", terminal_r5: bool = False) -> Any:
-    """Build a minimal fake R4IntegratedRunResult."""
+    """Build a minimal fake SingleActionSpineRunResult."""
     result = MagicMock()
     result.run_id = "run-test-abc123"
     result.x3_disposition = "allow"
@@ -146,7 +146,7 @@ class TestMainR1AWiring:
             pipeline_called.append(True)
             return _fake_r4_result()
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -171,7 +171,7 @@ class TestMainR1AWiring:
             pipeline_called.append(True)
             return _fake_r4_result()
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -201,7 +201,7 @@ class TestMainR1AWiring:
         def fake_pipeline(**kwargs):
             return _fake_r4_result(fault="")
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -231,7 +231,7 @@ class TestMainR1AWiring:
         def fake_pipeline(**kwargs):
             return _fake_r4_result(fault="L2_EXECUTION_ERROR:something")
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -261,7 +261,7 @@ class TestMainR1AWiring:
         def fake_pipeline(**kwargs):
             return _fake_r4_result(terminal_r5=True)
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -309,7 +309,7 @@ class TestMainR1BWiring:
             def fake_pipeline(**kwargs):
                 return _fake_r4_result()
 
-            monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+            monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
             args = self._make_args(tmp_path)
             with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
                 with pytest.raises(SystemExit):
@@ -331,7 +331,7 @@ class TestMainR1BWiring:
             pipeline_called.append(True)
             return _fake_r4_result()
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -359,7 +359,7 @@ class TestMainR1BWiring:
             pipeline_called.append(True)
             return _fake_r4_result()
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -392,7 +392,7 @@ class TestMainR1BWiring:
             r.artifact_dir = artifact_dir
             return r
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         mock_adapter = MagicMock()
         mock_adapter.store_intent_and_output.return_value = None
@@ -421,7 +421,7 @@ class TestMainR1BWiring:
         def fake_pipeline(**kwargs):
             return _fake_r4_result()
 
-        monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+        monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
 
         mock_adapter = MagicMock()
 
@@ -443,17 +443,17 @@ class TestMainR1BWiring:
 # ---------------------------------------------------------------------------
 
 class TestLoadRouteIdForApp:
-    """Tests for _load_route_id_for_app helper in integrated_r4_deterministic_pipeline_run."""
+    """Tests for _load_route_id_for_app helper in integrated_single_action_spine_run."""
 
     def test_returns_route_id_constant_when_no_app(self):
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
             _load_route_id_for_app,
             ROUTE_ID,
         )
         assert _load_route_id_for_app("") == ROUTE_ID
 
     def test_returns_route_id_constant_when_registry_absent(self, tmp_path, monkeypatch):
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
             _load_route_id_for_app,
             ROUTE_ID,
         )
@@ -461,7 +461,7 @@ class TestLoadRouteIdForApp:
         assert _load_route_id_for_app("nonexistent_app") == ROUTE_ID
 
     def test_reads_route_id_from_yaml(self, tmp_path, monkeypatch):
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
             _load_route_id_for_app,
         )
         monkeypatch.chdir(tmp_path)
@@ -475,7 +475,7 @@ class TestLoadRouteIdForApp:
         assert result == "my_app.primary_v1"
 
     def test_fallback_on_malformed_yaml(self, tmp_path, monkeypatch):
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
             _load_route_id_for_app,
             ROUTE_ID,
         )
@@ -489,7 +489,7 @@ class TestLoadRouteIdForApp:
         assert result == ROUTE_ID
 
     def test_fallback_on_empty_routes(self, tmp_path, monkeypatch):
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
             _load_route_id_for_app,
             ROUTE_ID,
         )
@@ -504,7 +504,7 @@ class TestLoadRouteIdForApp:
 
     def test_apps_rg_registry_resolves_correct_route_id(self):
         """Integration: actual apps_rg registry returns the declared route_id."""
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
             _load_route_id_for_app,
         )
         result = _load_route_id_for_app("apps_rg")

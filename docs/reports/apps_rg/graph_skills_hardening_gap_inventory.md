@@ -39,7 +39,7 @@
 | Competencies ledger plan | `proof_pool_resolver.py::_build_competencies_ledger_plan` → `selection_method=broad_skills_ledger_competencies` |
 | Prompt compile | `apps_rg/runtime/sections/competencies_pa.py::compile_competencies_prompt` |
 | C0 / FEC | `wire_section_fec_bridge_for_lane` + `build_c0_proof_support_blob` (ledger bullets) |
-| Post-parse repair | `apps_rg/runtime/dispatch/competencies_dispatch.py` (structured repairs; **not** graph-only) |
+| Post-parse repair | `apps_rg/runtime/sections/competencies_lane_api.py` (structured repairs; **not** graph-only) |
 | X2 | `apps_rg/runtime/validators/competencies_x2.py::run_competencies_x2_gates` |
 | X1D | `apps_rg/runtime/judges/competencies_x1d.py` (`COMPETENCIES_RUBRIC`) |
 | X3 | `apps_rg/runtime/exit/competencies_x3.py` |

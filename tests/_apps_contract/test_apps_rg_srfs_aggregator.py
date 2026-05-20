@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from apps_rg.audit import srfs_receipt_aggregator as agg
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 REPO = Path(__file__).resolve().parents[2]
 AGG_SOURCE = REPO / "apps_rg" / "audit" / "srfs_receipt_aggregator.py"

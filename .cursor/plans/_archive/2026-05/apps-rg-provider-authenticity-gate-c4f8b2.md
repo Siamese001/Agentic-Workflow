@@ -166,7 +166,7 @@ WAVE_COMPLETE: NO
 
 ### W3.1 — X3 / Exit visibility
 
-- Surface `provider_authenticity` / `generation_status` / `full_resume_generated` on objects already read by **`apps_rg/runtime/package/resume_package_x3.py`** (or add an apps_rg deterministic pre-X3 gate that sets blocking facts consumed by X3 aggregation).
+- Surface `provider_authenticity` / `generation_status` / `full_resume_generated` on objects already read by **`apps_rg/runtime/internal/resume_package_disposition.py`** (or add an apps_rg deterministic pre-X3 gate that sets blocking facts consumed by X3 aggregation).
 - **Invariant**: X3D “full success” path requires **`REAL_RESUME`** and forbids **`STUB_RECEIPT`**, **`FAILED_PROVIDER`**, **`BLOCKED_STUB_PROVIDER`**.
 - Do not weaken core X3; add inputs or lane block reasons only.
 

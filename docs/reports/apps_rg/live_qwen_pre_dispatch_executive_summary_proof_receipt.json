@@ -1,0 +1,53 @@
+{
+  "schema": "apps_rg.live_qwen_pre_dispatch_proof.v1",
+  "status": "PARTIAL",
+  "scope_match": "python -m apps_rg --section executive_summary; live Qwen; no stub; no allow-non-allow-exit-zero",
+  "commands_run": [
+    {
+      "command": "python -m apps_rg --section executive_summary --target-company \"CI Probe Company\" --target-role \"CI Probe Role\" --jd tests/_fixtures/ci-probe-jd.txt --manual-brief tests/_fixtures/ci-probe-briefing.txt",
+      "exit_code": 1
+    }
+  ],
+  "preflight_receipt": {
+    "path": "artifacts/apps_rg/preflight_receipts/pre_dispatch_executive_summary_20260520_085831.json",
+    "jd_status": "PASS",
+    "manual_brief_status": "PASS",
+    "provider_resolution_source": "DEV_DEFAULT_QWEN_VLLM",
+    "qwen_health_status": "PASS",
+    "qwen_model_ready_status": "PASS",
+    "dispatch_started": true
+  },
+  "latest_run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_125832",
+  "artifacts_inspected": [
+    "run_manifest.json",
+    "compiled_prompt_artifact.json",
+    "provider_request.json",
+    "provider_response.json",
+    "x2_gate_outputs.json",
+    "x3_disposition.json",
+    "section_metric_receipt.json",
+    "l6_shadow_eval_package.json"
+  ],
+  "runtime_findings": {
+    "provider_called": true,
+    "provider": "qwen_vllm",
+    "model": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    "runtime_generation_status": "REAL_LLM",
+    "x2_status": "PASS",
+    "x2_passed": 68,
+    "x2_failed": 0,
+    "x3_disposition": "X3_REVIEW_JUDGE_SOFT_FAIL",
+    "x3_blocker": "anthropic_claude soft-fail (3.5 < 4.0 threshold)"
+  },
+  "proof_classification": {
+    "LIVE_QWEN_PREFLIGHT_AND_DISPATCH_PROOF": true,
+    "LIVE_RUNTIME_X3_ALLOW_PROOF": false,
+    "overall": "PARTIAL"
+  },
+  "explicit_non_claims": [
+    "X3_ALLOW not claimed",
+    "release eligibility not claimed",
+    "full R4 not claimed"
+  ],
+  "code_changed": false
+}

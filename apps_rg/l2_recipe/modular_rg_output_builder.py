@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Final, Mapping
 
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 # Locked roles that are not driven by generated lanes must provide enough base bullets to
 # populate ``rg_output.sections.experience[*].bullets``. Default minimum is three (schema);

@@ -1,6 +1,6 @@
 """Canonical IBM narrative lane runtime execution (legacy burndown Phase D).
 
-``apps_rg.runtime.dispatch.ibm_narrative_dispatch`` retains shared helpers and compat re-exports;
+``apps_rg.runtime.sections.ibm_narrative_lane_api`` retains shared helpers and compat re-exports;
 product entry is ``python -m apps_rg --section ibm_narrative``.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from typing import Any
 
 
 def _hydrate_dispatch_helpers() -> None:
-    import apps_rg.runtime.dispatch.ibm_narrative_dispatch as _cd
+    import apps_rg.runtime.sections.ibm_narrative_lane_api as _cd
 
     _skip = frozenset({
         "run_ibm_narrative_execution",
@@ -741,7 +741,7 @@ def run_ibm_narrative_execution(
     args: argparse.Namespace,
     *,
     artifact_dir_override: Path | None = None,
-    trace_runtime_path: str = "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
+    trace_runtime_path: str = "apps_rg.runtime.sections.ibm_narrative_lane_api",
     print_output: bool = False,
 ) -> dict[str, Any]:
     """Compat alias — canonical trace path is sections.ibm_narrative_lane."""

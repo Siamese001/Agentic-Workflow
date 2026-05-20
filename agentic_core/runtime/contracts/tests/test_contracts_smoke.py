@@ -151,7 +151,7 @@ class TestAppsRgRuntimeAuthorityPolicy:
                 AuthorityDenyRule(pattern=r"apps_rg.*Orchestrator", reason="no runtime authority"),
             ],
         )
-        receipt = policy.validate("apps_rg.engines.RgResumeOrchestrator")
+        receipt = policy.validate("apps_rg.reasoning.RgResumeOrchestrator")
         assert receipt.allowed is False
         assert receipt.matched_rule is not None
         assert "no runtime authority" in receipt.reason

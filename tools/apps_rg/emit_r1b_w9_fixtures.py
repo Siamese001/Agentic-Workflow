@@ -94,7 +94,7 @@ def main() -> int:
         "outcome": miss.outcome,
         "generation_required": miss.generation_required,
         "pipeline_invoked": True,
-        "note": "On r1b_miss or r1b_inadmissible_only, apps_rg/__main__ continues to run_integrated_r4_deterministic_pipeline",
+        "note": "On r1b_miss or r1b_inadmissible_only, apps_rg/__main__ continues to run_integrated_single_action_spine",
         "preflight_order": list(miss.to_dict().get("preflight_order", [])),
     }
     (out / "fallthrough_to_generation.json").write_text(

@@ -1,0 +1,83 @@
+{
+  "schema": "apps_rg.pre_dispatch_preflight_closeout.v1",
+  "recorded_at": "2026-05-20",
+  "status": "PASS",
+  "scope_match": "Canonical python -m apps_rg --section <lane> pre-dispatch fail-closed gates (targeting + Qwen readiness) before lane runtime; all seven section lanes.",
+  "files_changed": [
+    "apps_rg/runtime/pre_dispatch_preflight.py",
+    "apps_rg/__main__.py",
+    "tests/_apps_contract/test_apps_rg_pre_dispatch_preflight.py",
+    "tests/unit/apps_rg/test_pre_dispatch_preflight.py",
+    "tests/_apps_contract/test_apps_rg_section_cli_preflight.py"
+  ],
+  "files_changed_links": [
+    {"path": "apps_rg/runtime/pre_dispatch_preflight.py", "markdown": "[pre_dispatch_preflight.py](apps_rg/runtime/pre_dispatch_preflight.py)"},
+    {"path": "apps_rg/__main__.py", "markdown": "[__main__.py](apps_rg/__main__.py)"},
+    {"path": "tests/_apps_contract/test_apps_rg_pre_dispatch_preflight.py", "markdown": "[test_apps_rg_pre_dispatch_preflight.py](tests/_apps_contract/test_apps_rg_pre_dispatch_preflight.py)"},
+    {"path": "tests/unit/apps_rg/test_pre_dispatch_preflight.py", "markdown": "[test_pre_dispatch_preflight.py](tests/unit/apps_rg/test_pre_dispatch_preflight.py)"},
+    {"path": "tests/_apps_contract/test_apps_rg_section_cli_preflight.py", "markdown": "[test_apps_rg_section_cli_preflight.py](tests/_apps_contract/test_apps_rg_section_cli_preflight.py)"}
+  ],
+  "commands_run": [
+    {
+      "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/_apps_contract/test_apps_rg_pre_dispatch_preflight.py tests/unit/apps_rg/test_pre_dispatch_preflight.py tests/_apps_contract/test_apps_rg_section_cli_preflight.py -o addopts= -q",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m apps_rg --section headline ... --jd apps_rg/config/default_jd_targeting.txt --manual-brief tests/_fixtures/ci-probe-briefing.txt (stale JD negative)",
+      "exit_code": 2
+    },
+    {
+      "command": "python -m apps_rg --section headline ... --jd tests/_fixtures/ci-probe-jd.txt --manual-brief apps_rg/config/default_targeting_briefing.txt (stale briefing negative)",
+      "exit_code": 2
+    },
+    {
+      "command": "python -m apps_rg --section headline ... APPS_RG_QWEN_DISABLE_OFFLINE_STUB=1 VLLM_BASE_URL=http://127.0.0.1:9/ (Qwen down negative)",
+      "exit_code": 2
+    },
+    {
+      "command": "python -m apps_rg --section headline ... --dry-run APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1 (fresh inputs positive)",
+      "exit_code": 0
+    }
+  ],
+  "tests_gates": [
+    {
+      "command": "pytest pre_dispatch + section_cli_preflight contract/unit",
+      "exit_code": 0,
+      "result": "23 passed"
+    }
+  ],
+  "negative_controls": {
+    "stale_jd_blocks_before_dispatch": {"exit_code": 2, "receipt": "artifacts/apps_rg/preflight_receipts/pre_dispatch_headline_20260520_085437.json", "jd_status": "DEFAULT_BLOCKED", "dispatch_started": false},
+    "stale_briefing_blocks_before_dispatch": {"exit_code": 2, "receipt": "artifacts/apps_rg/preflight_receipts/pre_dispatch_headline_20260520_085438.json", "manual_brief_status": "DEFAULT_BLOCKED", "dispatch_started": false},
+    "qwen_down_blocks_before_dispatch": {"exit_code": 2, "dispatch_started": false},
+    "no_silent_mock_provider_fallback": {"proof": "resolve_cli_lane_provider_with_source(None) -> qwen_vllm + DEV_DEFAULT_QWEN_VLLM; mock rejected at CLI"}
+  },
+  "positive_control": {
+    "fresh_jd_and_briefing_dry_run": {
+      "exit_code": 0,
+      "receipt": "artifacts/apps_rg/preflight_receipts/pre_dispatch_headline_20260520_085441.json",
+      "dispatch_started": true,
+      "jd_status": "PASS",
+      "manual_brief_status": "PASS",
+      "qwen_health_status": "SKIPPED",
+      "note": "Live Qwen healthy run not executed in this closeout; stub dry-run proves dispatch_started=true after gates."
+    }
+  },
+  "artifacts_written": [
+    "artifacts/apps_rg/preflight_receipts/pre_dispatch_headline_20260520_085437.json",
+    "artifacts/apps_rg/preflight_receipts/pre_dispatch_headline_20260520_085438.json",
+    "artifacts/apps_rg/preflight_receipts/pre_dispatch_headline_20260520_085441.json"
+  ],
+  "proof_classification": "contract_and_canonical_cli_preflight",
+  "explicit_non_claims": [
+    "No live REAL_LLM lane run with healthy Docker Qwen in this closeout (stub dry-run only for positive path).",
+    "Full R4 integrated dispatch (no --section) not gated by this change.",
+    "Whole-run R1A/R1B cache preflight unchanged."
+  ],
+  "forbidden_files_touched": {
+    "agentic_core": false,
+    "unrelated_section_prompts": false,
+    "unrelated_dispatch_smoke_paths": false
+  },
+  "next_blocker": null
+}

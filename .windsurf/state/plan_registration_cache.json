@@ -1,7 +1,115 @@
 {
-  "fetched_at": "2026-05-17T12:07:15Z",
-  "fetched_at_epoch": 1779019635.5083308,
+  "fetched_at": "2026-05-19T16:08:49Z",
+  "fetched_at_epoch": 1779206929.386404,
   "plans": {
+    "one-canonical-spine-e8b4a1": {
+      "status": "Not Started",
+      "page_id": "36527693-f55c-81e4-b461-df5061cbc993",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-legacy-dependency-burndown-b7e4a2": {
+      "status": "Not Started",
+      "page_id": "36527693-f55c-8178-8c13-f1c889dccaf1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l2-rationalization-waves-c8e4f1": {
+      "status": "In Progress",
+      "page_id": "36527693-f55c-81d1-928c-c387dfcdafc5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "graph-skills-hardening-f3a8c1": {
+      "status": "Not Started",
+      "page_id": "36527693-f55c-819e-b5ea-c819b319fe4c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-graph-only-b5a963": {
+      "status": "Completed",
+      "page_id": "36527693-f55c-81ae-ab37-e924c1e91957",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-forensic-tier1-burndown-e8f3c1": {
+      "status": "Not Started",
+      "page_id": "36527693-f55c-81f5-8513-caf8213e4835",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "cursor-governance-two-tier-b4e8f2": {
+      "status": "Completed",
+      "page_id": "36527693-f55c-8150-9586-fdc2e5cd7b4b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "final-resume-aggregation-product-closeout-c8f4e2": {
+      "status": "Completed",
+      "page_id": "36527693-f55c-81ba-bc3a-c794b0a7d809",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-r1b-w7-w12-closeout-e8f4a1": {
+      "status": "Completed",
+      "page_id": "36427693-f55c-81b2-8511-fcb3b83f0c68",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-section-judge-policy-f60c6c": {
+      "status": "Not Started",
+      "page_id": "36427693-f55c-8165-8302-cf31304b0c6b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-exec-summary-arsenal-w4-c4e8f2": {
+      "status": "Completed",
+      "page_id": "36427693-f55c-81bd-8d98-f06a5ac43a1a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-srfs-aggregator-e7b2a1": {
+      "status": "Completed",
+      "page_id": "36427693-f55c-813a-add1-cd73a593de6f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-srfs-per-section-proof-b8e4a2": {
+      "status": "Completed",
+      "page_id": "36427693-f55c-8117-885d-d6299624836c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-qwen-vllm-reliability-waves-f8e3c2": {
+      "status": "Completed",
+      "page_id": "36427693-f55c-817a-a917-cd9b616021dd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps_rg SRFS per-section proof plan (2026-05-18)": {
+      "status": "Not Started",
+      "page_id": "36427693-f55c-8113-88de-c4feda263425",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-rg-agg-harden-spec-c91d4f": {
+      "status": "Not Started",
+      "page_id": "36327693-f55c-8168-bb17-f9cddfae3d38",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-finish-reason-runtime-proof-c9d4e2": {
+      "status": "Completed",
+      "page_id": "36327693-f55c-81ce-8424-eea8564f7b39",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-run-evidence-consolidation-d2c8e4": {
+      "status": "Completed",
+      "page_id": "36327693-f55c-8176-b956-fe6217a0f4b4",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "exec-summary-runtime-proof-waves-a7f2c9": {
       "status": "Completed",
       "page_id": "36327693-f55c-812b-95c1-d74661affebc",
@@ -21,7 +129,7 @@
       "has_ai_summary": true
     },
     "confidence-routing-ssot-cleanup-b7e2f1": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "36327693-f55c-81b9-a2be-df873c125125",
       "exists_on_disk": true,
       "has_ai_summary": true

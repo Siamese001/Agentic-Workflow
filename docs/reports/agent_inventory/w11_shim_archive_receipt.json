@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11-SHIM-ARCHIVE",
+  "status": "PASS",
+  "archive_move": {
+    "source": "agentic_core/L2_execution/apps_rg_l2_binding.py",
+    "destination": "archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py",
+    "rollback_command": "copy archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py agentic_core/L2_execution/apps_rg_l2_binding.py",
+    "manifest": "archives/l2_rationalization_20260519/MANIFEST.json"
+  },
+  "shim_archive_result": {
+    "archived": true,
+    "importers_after": [],
+    "adg_fanin_after": 0,
+    "adg_note": "archived file not in ADG module index (no_module_node); import fan-in N/A outside agentic_core",
+    "archive_path": "archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py",
+    "delete_ready": false
+  },
+  "updated_counts": {
+    "delete_ready": 0,
+    "archive_ready": 0,
+    "archived_count": 1,
+    "migration_required": 8,
+    "blocked": 10
+  },
+  "behavior_change": false,
+  "runtime_change": false,
+  "commands": {
+    "archive_move": 0,
+    "compileall": 0,
+    "fanin_scan": 0,
+    "adg_expand": 0,
+    "pytest": 0
+  }
+}

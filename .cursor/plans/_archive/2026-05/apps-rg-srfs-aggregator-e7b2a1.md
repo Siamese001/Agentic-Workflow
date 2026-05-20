@@ -48,7 +48,7 @@ Build an **apps_rg product audit consumer** that:
 
 1. Loads per-section `section_metric_receipt.json` files from a **caller-supplied `--receipt-manifest`** (preferred: explicit `section_id` → path map) or, as convenience only, `--receipt-root` recursive discovery. Never auto-resolves `latest_successful_*` pointers.
 2. Normalizes field aliases into a canonical per-section row.
-3. Validates inventory against the seven expected generated lanes (`GENERATED_LANES` in `apps_rg/runtime/reports/generated_lane_rollup.py`).
+3. Validates inventory against the seven expected generated lanes (`GENERATED_LANES` in `apps_rg/runtime/internal/generated_lane_rollup.py`).
 4. Emits one normalized cross-section report: `apps_rg_srfs_audit_report.json` (+ human-readable `.md` sibling).
 5. Optionally attaches **advisory-only** LLM-as-judge commentary on the completed audit report (clarity, completeness, consistency) — never runtime release authority.
 

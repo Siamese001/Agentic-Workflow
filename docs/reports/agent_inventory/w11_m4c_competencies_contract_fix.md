@@ -8,7 +8,7 @@
 ```
 STATUS: PASS
 FILES_CHANGED:
-- [competencies_dispatch.py](../../apps_rg/runtime/dispatch/competencies_dispatch.py)
+- [competencies_dispatch.py](../../apps_rg/runtime/sections/competencies_lane_api.py)
 - [test_competencies_canonical_lane_contract.py](../../tests/_apps_contract/test_competencies_canonical_lane_contract.py)
 COMMANDS_RUN:
 - git status --short -> scoped competencies files modified

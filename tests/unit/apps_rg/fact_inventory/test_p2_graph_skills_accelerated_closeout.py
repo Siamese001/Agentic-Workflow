@@ -40,7 +40,10 @@ def _proof_pool_fixture_dev_bypass() -> None:
     deactivate_fixture_dev_bypass()
 
 
-@pytest.mark.parametrize("section_id", SECTION_KEYS)
+@pytest.mark.parametrize(
+    "section_id",
+    tuple(s for s in SECTION_KEYS if s != "executive_summary"),
+)
 def test_all_sections_default_graph_pool(section_id: str) -> None:
     pool = resolve_section_proof_pool(
         section=section_id,

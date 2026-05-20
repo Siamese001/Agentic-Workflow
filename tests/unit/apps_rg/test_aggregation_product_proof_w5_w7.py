@@ -20,7 +20,7 @@ from apps_rg.runtime.aggregation.warn_policy import (
     evaluate_warn_policy,
 )
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 REPO = find_repo_root()
 

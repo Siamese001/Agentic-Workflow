@@ -1,0 +1,50 @@
+[
+  {
+    "path": "agentic_core\\L2_execution\\_agentic_core_smoke.py",
+    "classification": "NEEDS_DECISION",
+    "has_heal": false,
+    "has_execute": false,
+    "uses_openai_model": false,
+    "uses_google_ai": false
+  },
+  {
+    "path": "agentic_core\\L2_execution\\_placeholder_smoke.py",
+    "classification": "NEEDS_DECISION",
+    "has_heal": false,
+    "has_execute": false,
+    "uses_openai_model": false,
+    "uses_google_ai": false
+  },
+  {
+    "path": "agentic_core\\L2_execution\\apps_lic_l2_binding.py",
+    "classification": "NEEDS_DECISION",
+    "has_heal": false,
+    "has_execute": true,
+    "uses_openai_model": false,
+    "uses_google_ai": false
+  },
+  {
+    "path": "agentic_core\\L2_execution\\apps_research_l2_binding.py",
+    "classification": "NEEDS_DECISION",
+    "has_heal": false,
+    "has_execute": false,
+    "uses_openai_model": false,
+    "uses_google_ai": false
+  },
+  {
+    "path": "agentic_core\\L2_execution\\apps_rg_l2_binding.py",
+    "classification": "NEEDS_DECISION",
+    "has_heal": false,
+    "has_execute": false,
+    "uses_openai_model": false,
+    "uses_google_ai": false
+  },
+  {
+    "path": "agentic_core\\L2_execution\\bounded_executor.py",
+    "classification": "NEEDS_DECISION",
+    "has_heal": false,
+    "has_execute": true,
+    "uses_openai_model": false,
+    "uses_google_ai": false
+  }
+]

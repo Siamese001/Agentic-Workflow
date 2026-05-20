@@ -27,7 +27,7 @@ Pre-existing cross-lane references remain unchanged (e.g. competencies companion
 
 | Layer | Before | After |
 |-------|--------|-------|
-| E2E execution | [competencies_dispatch.py](apps_rg/runtime/dispatch/competencies_dispatch.py) `run_competencies_execution` (~667 LOC) | [competencies_lane_execution.py](apps_rg/runtime/sections/competencies_lane_execution.py) `run_competencies_lane_execution` |
+| E2E execution | [competencies_dispatch.py](apps_rg/runtime/sections/competencies_lane_api.py) `run_competencies_execution` (~667 LOC) | [competencies_lane_execution.py](apps_rg/runtime/sections/competencies_lane_execution.py) `run_competencies_lane_execution` |
 | Dispatch module | ~2232 lines (helpers + execution + CLI) | ~1574 lines (**helpers +** `run_dispatch` + lazy PEP 562 re-export) |
 | Canonical CLI | `python -m apps_rg --section competencies` → [competencies_lane.py](apps_rg/runtime/sections/competencies_lane.py) | unchanged |
 | Legacy `-m …competencies_dispatch` | `exit_deprecated_dispatch_cli` | unchanged (exit 2) |
@@ -36,7 +36,7 @@ Pre-existing cross-lane references remain unchanged (e.g. competencies companion
 
 | Layer | Before | After |
 |-------|--------|-------|
-| E2E execution | [ibm_narrative_dispatch.py](apps_rg/runtime/dispatch/ibm_narrative_dispatch.py) `run_ibm_narrative_execution` (~650 LOC) | [ibm_narrative_lane_execution.py](apps_rg/runtime/sections/ibm_narrative_lane_execution.py) `run_ibm_narrative_lane_execution` |
+| E2E execution | [ibm_narrative_dispatch.py](apps_rg/runtime/sections/ibm_narrative_lane_api.py) `run_ibm_narrative_execution` (~650 LOC) | [ibm_narrative_lane_execution.py](apps_rg/runtime/sections/ibm_narrative_lane_execution.py) `run_ibm_narrative_lane_execution` |
 | Dispatch module | ~1288 lines | ~647 lines (helpers + lazy re-export + deprecated `__main__`) |
 | Canonical CLI | `python -m apps_rg --section ibm_narrative` → [ibm_narrative_lane.py](apps_rg/runtime/sections/ibm_narrative_lane.py) | unchanged |
 | Legacy `-m …ibm_narrative_dispatch` | `exit_deprecated_dispatch_cli` | unchanged |

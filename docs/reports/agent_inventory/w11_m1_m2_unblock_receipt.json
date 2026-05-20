@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11-M1-M2",
+  "status": "PASS",
+  "m1_shim_importer_migration": {
+    "before_importers": [
+      "tests/_apps_contract/test_ag6_apps_rg_golden_path.py",
+      "tests/_apps_contract/test_apps_rg_pipeline_capability.py",
+      "tests/_apps_contract/test_apps_rg_prompt_authority_coverage.py",
+      "ops_scripts/ci/check_apps_rg_golden_path_runtime.py",
+      "ops_scripts/ci/check_apps_rg_prompt_authority_coverage.py",
+      "ops_scripts/ci/check_apps_rg_type_validation.py"
+    ],
+    "after_importers": [],
+    "migrated_importers": [
+      "tests/_apps_contract/test_ag6_apps_rg_golden_path.py",
+      "tests/_apps_contract/test_apps_rg_pipeline_capability.py",
+      "tests/_apps_contract/test_apps_rg_prompt_authority_coverage.py",
+      "ops_scripts/ci/check_apps_rg_golden_path_runtime.py",
+      "ops_scripts/ci/check_apps_rg_prompt_authority_coverage.py",
+      "ops_scripts/ci/check_apps_rg_type_validation.py"
+    ],
+    "remaining_importers": [
+      "tests/_apps_contract/test_apps_rg_l2_binding_shim_boundary.py",
+      "tests/governance/test_apps_rg_l1_core_boundary.py",
+      "ops_scripts/ci/check_agentic_core_addition.py",
+      "tests/_apps_contract/test_apps_rg_exit_uwg_l4_no_bypass_boundary.py",
+      "docs/reports/agent_inventory/_w11_fanin_scan.py",
+      "apps_rg/runtime/bindings/l2_binding_adapter.py"
+    ],
+    "blockers": [
+      "governance test asserts shim file exists under agentic_core (intentional boundary)",
+      "check_agentic_core_addition.py registers shim as allowed core path until archive",
+      "exit_uwg quarantine registry lists shim path string (not a Python import)",
+      "l2_binding_adapter docstring references legacy shim module name"
+    ],
+    "python_import_fanin": 0
+  },
+  "m2_adg_expansion": {
+    "candidates_total": 13,
+    "adg_run_count": 8,
+    "adg_not_supported_count": 5,
+    "adg_not_available_count": 0,
+    "fanin_zero_count": 8,
+    "fanin_nonzero_count": 0,
+    "adg_snapshot_id": "05192026_0920",
+    "not_supported_pattern_ids": [
+      "legacy_full_resume_env",
+      "offline_contract_stub_env",
+      "stub_only_provider_env",
+      "mock_judges_cli"
+    ],
+    "note": "Env/CLI hatches marked NOT_SUPPORTED_PATTERN; aggregate import fan-in across multi-file candidates (Rg*, dispatch, dry_run, code_quality)"
+  },
+  "updated_counts": {
+    "delete_ready": 0,
+    "archive_ready": 0,
+    "migration_required": 9,
+    "blocked": 11
+  },
+  "do_not_delete_yet": "all_13_candidates",
+  "durable_write_admission_proof_update": "unchanged — HIGH structural / MEDIUM runtime admit fan-in",
+  "behavior_change": false,
+  "runtime_change": false,
+  "explicit_non_claims": [
+    "no_files_deleted",
+    "no_archive_moves",
+    "no_deprecation_markers",
+    "no_product_runtime_behavior_changed",
+    "no_x2_x3_weakened",
+    "no_live_apps_rg_proof_run",
+    "no_mock_smoke_offline_stub_as_product_proof",
+    "no_static_grep_as_runtime_reachability",
+    "adg_not_faked_for_unsupported_patterns"
+  ],
+  "commands": {
+    "compileall": 0,
+    "fanin_scan": 0,
+    "adg_expand": 0,
+    "pytest_shim_boundary": 0,
+    "pytest_contracts": 0,
+    "pytest_core_boundary": 0,
+    "pytest_orchestration": 0
+  }
+}

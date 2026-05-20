@@ -46,18 +46,26 @@ class TestCannotInjectL2Callable:
 
     def test_l2_callable_with_app_name_rejected(self, raw_request, artifact_dir):
         """l2_callable + app_name without _test_mode → fault."""
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-            run_integrated_r4_deterministic_pipeline,
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+            run_integrated_single_action_spine,
         )
 
         def _fake_l2():
             return {"fake": True}
 
-        result = run_integrated_r4_deterministic_pipeline(
+        result = run_integrated_single_action_spine(
             raw_request=raw_request,
             app_name="apps_rg",
             l2_callable=_fake_l2,
             artifact_dir=artifact_dir,
+            cache_preflight_evidence={
+                "cache_preflight_completed": True,
+                "r1a_preflight_status": "miss",
+                "r1b_preflight_status": "miss",
+                "cache_result": "fallthrough_generation",
+                "generation_spine_invocation_allowed": True,
+                "route_family": "R4_SINGLE_ACTION",
+            },
         )
 
         assert result.fault
@@ -65,8 +73,8 @@ class TestCannotInjectL2Callable:
 
     def test_l2_callable_allowed_in_test_mode(self, raw_request, artifact_dir):
         """_test_mode=True allows l2_callable past the injection guard."""
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-            run_integrated_r4_deterministic_pipeline,
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+            run_integrated_single_action_spine,
         )
 
         def _fake_l2():
@@ -77,7 +85,7 @@ class TestCannotInjectL2Callable:
         # construction), but the key assertion is that L2_CALLABLE_INJECTION_REJECTED
         # is NOT the fault reason.
         try:
-            result = run_integrated_r4_deterministic_pipeline(
+            result = run_integrated_single_action_spine(
                 raw_request=raw_request,
                 l2_callable=_fake_l2,
                 artifact_dir=artifact_dir,
@@ -92,11 +100,11 @@ class TestCannotInjectL2Callable:
 
     def test_neither_app_name_nor_l2_callable_fails_closed(self, raw_request, artifact_dir):
         """No app_name + no l2_callable → fault."""
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-            run_integrated_r4_deterministic_pipeline,
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+            run_integrated_single_action_spine,
         )
 
-        result = run_integrated_r4_deterministic_pipeline(
+        result = run_integrated_single_action_spine(
             raw_request=raw_request,
             artifact_dir=artifact_dir,
         )

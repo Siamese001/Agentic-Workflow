@@ -256,7 +256,7 @@ Starting paths from scope-gap matrix / CSV (non-exhaustive — expand in W1 tabl
 
 **Seed paths**
 
-- `apps_rg/runtime/dispatch/executive_summary_dispatch.py`
+- `apps_rg/runtime/sections/executive_summary_lane_api.py`
 - `apps_rg/runtime/providers/qwen_vllm_provider.py`
 - Governed bindings: `apps_rg/runtime/bindings/pa_binding.py`, `apps_rg/runtime/bindings/l2_binding.py` (if present)
 

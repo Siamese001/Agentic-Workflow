@@ -25,7 +25,7 @@
     "apps_rg/runtime/sections/headline_lane.py",
     "apps_rg/runtime/sections/executive_summary_lane.py",
     "apps_rg/runtime/sections/unify_narrative_lane.py",
-    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py"
+    "apps_rg/runtime/sections/ibm_narrative_lane_api.py"
   ],
   "mock_stub_alignment": [
     "headline_lane.build_mock_output uses ledger/SRFS stub ids",

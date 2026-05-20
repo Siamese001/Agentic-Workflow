@@ -33,7 +33,7 @@ _LAYER_BINDINGS: list[tuple[str, str, str]] = [
     ("agentic_core.L0_routing.apps_rg_l0_binding", "l0_route_apps_rg", "L0"),
     ("agentic_core.runtime.c0.apps_rg_c0_binding", "c0_retrieve_apps_rg", "C0"),
     ("agentic_core.prompt_governance.apps_rg_pa_binding", "pa_compose_apps_rg", "PA"),
-    ("agentic_core.L2_execution.apps_rg_l2_binding", "l2_execute_apps_rg", "L2"),
+    ("apps_rg.runtime.bindings.l2_binding", "l2_execute_apps_rg", "L2"),
     ("agentic_core.runtime.exit.apps_rg_exit_binding", "exit_finalize_apps_rg", "Exit"),
 ]
 

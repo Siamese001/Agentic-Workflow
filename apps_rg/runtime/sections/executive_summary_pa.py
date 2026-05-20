@@ -208,6 +208,11 @@ SRFS_FORBIDDEN_PHRASES_ALWAYS: tuple[str, ...] = (
     "self-learning runtime",
     "autonomous AGI without oversight",
     "unsupervised production agents",
+    "commercialization",
+    "bespoke delivery",
+    "reusable platform services adopted across enterprise programs",
+    "engineering scale-out",
+    "converting bespoke delivery",
 )
 
 
@@ -240,9 +245,8 @@ SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
     "systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine "
     "deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, "
     "replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and "
-    "deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, "
-    "and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise "
-    "programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating "
+    "deployment speed. Standardized AI lifecycle practices across intake, validation, execution, monitoring, and "
+    "remediation, reducing lab-to-production cycle time from six months to three weeks. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating "
     "capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready "
     "infrastructure. Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and "
     "distributed systems engineering."
@@ -304,13 +308,18 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "- Use **only** mechanism language present in selected facts (e.g. cloud-native microservices, AWS, "
         "Databricks, data pipelines, vector services, API gateways, identity controls, containerized microservices, "
         "HPC workflows, automated validation frameworks, Basel III / CCAR lineage).\n"
+        "- When **fact_governance_003** is cited, use **past tense** from its claim_text (**Implemented** …), not present "
+        "tense **Implements**.\n"
         "- **Forbidden unless verbatim in a selected fact claim_text:** deterministic routing, multi-agent "
         "orchestration, graph-aware retrieval, GraphRAG, sandboxed execution, replayable traces (see "
         f"``{SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER}`` for unsupported GraphRAG extrapolation).\n"
         "- **Must not include:** revenue, margin, dollars, org-scale spans, or credential nouns in this lane.\n\n"
-        "**Sentence 3 - platform lifecycle / operating model / commercialization bridge:**\n"
-        "- Connect architecture to **reusable services**, adoption, enterprise programs, or operating model **without** "
-        "dropping commercial **metrics** here (keep **$ / revenue / margin / headcount spans** for Sentence 4).\n"
+        "**Sentence 3 - platform lifecycle (fact_engineering_platform_004 when present):**\n"
+        "- When **fact_engineering_platform_004** is in ALLOWED_SOURCE_FACT_IDS, use **only** the lifecycle clause from "
+        "that fact's claim_text (the portion **before** \"reducing lab-to-production\" if present). Do **not** add "
+        "commercialization, bespoke delivery, reusable platform services, enterprise programs, engineering scale-out, "
+        "or operating model unless those phrases appear **verbatim** in the cited fact claim_text.\n"
+        "- Keep **six-month / three-week** cycle metrics in **Sentence 4**, not Sentence 3.\n"
         "- **No** credential inventory in Sentence 3.\n\n"
         "**Sentence 4 - measurable outcomes:**\n"
         "- Commercial, margin, team-scale, latency, deployment-cycle, or capacity metrics **when supported**; group "
@@ -342,8 +351,8 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "(emit **agentic** only when ALLOWED_SOURCE_FACT_IDS include agentic AI substance).\n"
         "- S2: Designs cloud-native microservices across AWS and Databricks with data pipelines, vector services, API "
         "gateways, and automated validation frameworks that strengthen reliability and auditability (mechanism IDs only).\n"
-        "- S3: Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and "
-        "commercialization, turning bespoke delivery into reusable platform services adopted across enterprise programs.\n"
+        "- S3: Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation "
+        "(lifecycle clause from fact_engineering_platform_004 when that ID is in the pool; no commercialization filler).\n"
         "- S4: Groups proof-backed revenue, margin, org-scale, and cycle-time outcomes consistent with metric facts in the "
         "allowed pool (do not invent $14M capacity unless proved).\n"
         "- S5 (integrated credibility): **Combines** proved AWS / Databricks / FSA credentials with platform/governance "
@@ -501,6 +510,13 @@ def build_executive_summary_assembly_input(
     if not allowed_ids:
         raise ValueError("allowed_fact_ids or non-empty fact_id on each selected fact is required for executive_summary PA")
 
+    use_capsule = bool(runtime_payload.get("evidence_capsule_active"))
+    cap = runtime_payload.get("evidence_capsule") if use_capsule else None
+    if use_capsule and isinstance(cap, dict) and cap.get("c0_block"):
+        c0_content = str(cap["c0_block"])
+    else:
+        c0_content = format_selected_facts_for_c0(facts, allowed_ids)
+
     u0 = (
         f"Generate executive summary for target title: {t_title!r}. "
         f"Target company (positioning only, never as employer proof): {t_company!r}.\n"
@@ -551,7 +567,7 @@ def build_executive_summary_assembly_input(
         y0_style_preferences=slots.get("Y0"),
         c0_candidate_facts=EvidenceSource(
             source_type="selected_facts",
-            content=format_selected_facts_for_c0(facts, allowed_ids),
+            content=c0_content,
             confidence=1.0,
             source_tag="selected_facts",
         ),
@@ -624,14 +640,23 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
         skills_authority_metadata=pp if isinstance(pp, dict) else None,
     )
     if srfs_mode:
-        appendix = format_srfs_role_adaptive_appendix(srfs)
-        style_oneshot = format_srfs_style_only_quality_oneshot_block()
+        use_capsule = bool(runtime_payload.get("evidence_capsule_active"))
+        cap = runtime_payload.get("evidence_capsule")
+        if use_capsule and isinstance(cap, dict) and cap.get("appendix_capsule"):
+            appendix = str(cap["appendix_capsule"])
+            style_oneshot = ""
+        else:
+            appendix = format_srfs_role_adaptive_appendix(srfs)
+            style_oneshot = format_srfs_style_only_quality_oneshot_block()
         art = compiled.artifact
         msgs = [dict(m) for m in art.messages]
         if msgs:
             last = msgs[-1]
             content = str(last.get("content") or "").rstrip()
-            last["content"] = f"{content}\n\n{appendix}\n\n{style_oneshot}".rstrip() + "\n"
+            if style_oneshot:
+                last["content"] = f"{content}\n\n{appendix}\n\n{style_oneshot}".rstrip() + "\n"
+            else:
+                last["content"] = f"{content}\n\n{appendix}".rstrip() + "\n"
             msgs[-1] = last
         compiled = SectionCompiledPrompt(
             section_id=compiled.section_id,

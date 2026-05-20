@@ -16,7 +16,7 @@ This module declares the **recipe SSOT** after a guarded proof bundle
 Set ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for explicit monolithic rollback;
 there is **no** silent downgrade from modular to legacy.
 
-Offline modular orchestration under ``python -m apps_rg.runtime.orchestrate_full_resume``
+Offline modular orchestration library: ``apps_rg.runtime.internal.lane_batch.run_orchestration`` (no module CLI)
 remains a **distinct** entry surface from integrated R4 dispatch; see
 ``MODULAR_SECTION_ORCHESTRATOR_MODULE``.
 """
@@ -55,7 +55,7 @@ CANONICAL_INTEGRATED_PRODUCT_ENTRY_IMPORT = (
 CANONICAL_CLI_MODULE = "apps_rg.__main__:main"
 
 # Offline / lane-based orchestration (no agentic_core R4); modular Qwen by lane.
-MODULAR_SECTION_ORCHESTRATOR_MODULE = "apps_rg.runtime.orchestrate_full_resume"
+MODULAR_SECTION_ORCHESTRATOR_MODULE = "apps_rg.runtime.internal.lane_batch"
 
 __all__ = [
     "CANONICAL_CLI_MODULE",

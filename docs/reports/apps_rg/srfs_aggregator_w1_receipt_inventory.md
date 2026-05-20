@@ -16,8 +16,8 @@
 | `unify_bullets` | `apps_rg/runtime/sections/unify_bullets_lane.py` | 732, 878 | Pending → final overwrite | Yes (`732`) |
 | `unify_narrative` | `apps_rg/runtime/sections/unify_narrative_lane.py` | 816, 942 | Pending → final overwrite | Yes (`816`) |
 | `ibm_bullets` | `apps_rg/runtime/sections/ibm_bullets_lane.py` | 799 | Final only | No |
-| `ibm_narrative` | `apps_rg/runtime/dispatch/ibm_narrative_dispatch.py` | 1109 | Final only | No |
-| `competencies` | `apps_rg/runtime/dispatch/competencies_dispatch.py` | 1934 | Final only | No |
+| `ibm_narrative` | `apps_rg/runtime/sections/ibm_narrative_lane_api.py` | 1109 | Final only | No |
+| `competencies` | `apps_rg/runtime/sections/competencies_lane_api.py` | 1934 | Final only | No |
 
 **Shared normalizer:** `apps_rg/runtime/sections/selected_role_fact_set.py` — `merge_normalized_srfs_reporting_into_dict` / `normalized_srfs_section_reporting_fields` (called from every final write above).
 
@@ -165,9 +165,9 @@ W6 tests: `test_apps_rg_srfs_w6_reporting.py` (SRFS mode all fields), `test_sect
 - `apps_rg/runtime/sections/unify_bullets_lane.py`
 - `apps_rg/runtime/sections/unify_narrative_lane.py`
 - `apps_rg/runtime/sections/ibm_bullets_lane.py`
-- `apps_rg/runtime/dispatch/ibm_narrative_dispatch.py`
-- `apps_rg/runtime/dispatch/competencies_dispatch.py`
+- `apps_rg/runtime/sections/ibm_narrative_lane_api.py`
+- `apps_rg/runtime/sections/competencies_lane_api.py`
 - `apps_rg/runtime/sections/selected_role_fact_set.py`
-- `apps_rg/runtime/reports/generated_lane_rollup.py` (`GENERATED_LANES`)
+- `apps_rg/runtime/internal/generated_lane_rollup.py` (`GENERATED_LANES`)
 - `tests/_apps_contract/test_apps_rg_srfs_w6_reporting.py`
 - `artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260518_173654/section_metric_receipt.json`

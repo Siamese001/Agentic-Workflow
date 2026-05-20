@@ -11,7 +11,7 @@ from typing import Any
 
 from apps_rg.runtime.aggregation.preflight import REQUIRED_PROOF_FILES
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 AUDIT_LANES = (
     "headline",

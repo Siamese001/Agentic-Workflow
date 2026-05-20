@@ -208,7 +208,7 @@ def _check_binding_isolation(findings: list) -> None:
                           "_build_user_instruction", "_build_u0_task_block"],
         },
         {
-            "path": REPO_ROOT / "agentic_core" / "L2_execution" / "apps_rg_l2_binding.py",
+            "path": REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
             "name": "L2",
             "forbidden": ["rg_prompt_profile", "rg_style_profile", "slot_mapper", "prompt_bom",
                           "strategic_tailor", "warmup_pairs", "_build_system_preamble"],

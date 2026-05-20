@@ -1,6 +1,6 @@
 """Competencies lane X2 / FEC parity diagnostics for E2E proof (apps_rg-local).
 
-Used by ``ops_scripts/ci/prove_apps_rg_e2e_runtime.py`` — does not import agentic_core.
+Used by CI lane-dev boundary tests — does not import agentic_core.
 """
 
 from __future__ import annotations

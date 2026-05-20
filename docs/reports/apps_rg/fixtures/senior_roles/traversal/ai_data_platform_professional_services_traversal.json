@@ -66,7 +66,7 @@
     "track_data_tech_cloud_ml": 0.5238,
     "track_genai_agentic": 0.3333
   },
-  "manifest_weight_override_applied": false,
+  "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
     "track_actuarial_risk_derivatives": 0.1429,
@@ -74,11 +74,11 @@
     "track_genai_agentic": 0.3333
   },
   "track_weights_applied": {
-    "track_actuarial_risk_derivatives": 0.1429,
-    "track_data_tech_cloud_ml": 0.5238,
-    "track_genai_agentic": 0.3333
+    "track_actuarial_risk_derivatives": 0.15,
+    "track_data_tech_cloud_ml": 0.5,
+    "track_genai_agentic": 0.35
   },
-  "weight_override_required": false,
+  "weight_override_required": true,
   "default_expansion_error": null,
   "tracks_with_facts": [
     "track_actuarial_risk_derivatives",
@@ -89,25 +89,25 @@
     {
       "pillar_id": "pillar_agentic_ai_platforms",
       "skill_hits": 20,
-      "weight_sum": 36.6666,
+      "weight_sum": 36.7,
       "rank": 1
     },
     {
       "pillar_id": "pillar_gtm_presales_motion",
       "skill_hits": 6,
-      "weight_sum": 3.1428,
+      "weight_sum": 3.0,
       "rank": 2
     },
     {
       "pillar_id": "pillar_revenue_commercialization",
       "skill_hits": 5,
-      "weight_sum": 3.5237,
+      "weight_sum": 3.55,
       "rank": 3
     },
     {
       "pillar_id": "pillar_technical_presales_accelerators",
       "skill_hits": 3,
-      "weight_sum": 8.5238,
+      "weight_sum": 8.5,
       "rank": 4
     },
     {
@@ -119,19 +119,19 @@
     {
       "pillar_id": "pillar_strategic_finance_saas",
       "skill_hits": 2,
-      "weight_sum": 1.0476,
+      "weight_sum": 1.0,
       "rank": 6
     },
     {
       "pillar_id": "pillar_regulatory_governance",
       "skill_hits": 2,
-      "weight_sum": 0.6666,
+      "weight_sum": 0.7,
       "rank": 7
     },
     {
       "pillar_id": "pillar_capital_modeling",
       "skill_hits": 2,
-      "weight_sum": 0.2858,
+      "weight_sum": 0.3,
       "rank": 8
     },
     {
@@ -143,7 +143,7 @@
     {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
-      "weight_sum": 0.1429,
+      "weight_sum": 0.15,
       "rank": 10
     }
   ],
@@ -524,13 +524,13 @@
     "expected_skill_track_underfire:skill_sr_w12_joint_ai_solution_development",
     "expected_skill_track_underfire:skill_revops_usage_based_subscription_forecasting",
     "expected_skill_track_underfire:skill_sr_w12_industry_reference_architecture",
-    "expected_pillar_track_underfire:pillar_cloud_data_aws",
     "expected_pillar_track_underfire:pillar_executive_leadership",
-    "expected_pillar_track_underfire:pillar_hyperscaler_marketplace_partner_gtm",
-    "expected_pillar_track_underfire:pillar_enterprise_portfolio_governance"
+    "expected_pillar_track_underfire:pillar_enterprise_portfolio_governance",
+    "expected_pillar_track_underfire:pillar_cloud_data_aws",
+    "expected_pillar_track_underfire:pillar_hyperscaler_marketplace_partner_gtm"
   ],
   "supplemental_skill_count": 24,
-  "default_track_weights_underfire": false,
+  "default_track_weights_underfire": true,
   "gtm_phase2_closeout_check": null,
   "broad_skills_ledger_used_as_authority": false,
   "proof_classification": "offline_traversal_receipt_not_runtime_proof"

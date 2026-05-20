@@ -253,7 +253,7 @@ class TestLayerReceiptCompleteness:
             "blueprint_hash": "blueprint_v1",
             "caller_surface": "apps_rg_cli",
             "started_at_utc": "2026-05-04T17:00:00Z",
-            "producer_component": "agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run",
+            "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
         }))
 
         # PA prompt artifact (prompt_bom)
@@ -271,7 +271,7 @@ class TestLayerReceiptCompleteness:
 
         # R4 run manifest (X3 receipt)
         (d / "r4_run_manifest.json").write_text(json.dumps({
-            "producer_component": "agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run",
+            "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
             "run_id": "run-001",
             "request_id": "req-001",
             "route_id": "R4_SINGLE_ACTION",

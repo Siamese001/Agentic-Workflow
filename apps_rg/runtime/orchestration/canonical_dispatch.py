@@ -18,8 +18,8 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-    run_integrated_r4_deterministic_pipeline,
+from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+    run_integrated_single_action_spine,
 )
 
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
@@ -909,7 +909,7 @@ def build_raw_request_for_r4(
     source_resume_text: str = "",
     generation_mode: str = "strategic_tailor",
 ) -> dict[str, Any]:
-    """Shape a raw_request dict for ``run_integrated_r4_deterministic_pipeline``."""
+    """Shape a raw_request dict for ``run_integrated_single_action_spine``."""
     jd_legacy = str(jd).strip()
     jd_ref = str(job_description_ref).strip()
     jd_txt = str(job_description_text).strip()
@@ -1268,16 +1268,32 @@ def run_canonical_apps_rg_from_cli_primitives(
         blueprint_hash=os.environ.get("APPS_RG_BLUEPRINT_HASH"),
         section=section,
     )
+    from apps_rg.cache.cache_preflight_evidence import (
+        build_cache_preflight_evidence,
+        write_cache_hit_receipt,
+        write_cache_miss_receipt,
+        write_whole_run_cache_preflight_artifact,
+    )
+
+    evidence = build_cache_preflight_evidence(preflight, artifact_dir=art)
+    write_whole_run_cache_preflight_artifact(art, preflight, evidence)
+
     if not preflight.generation_required:
+        write_cache_hit_receipt(art, preflight, evidence)
         hit_result = build_cache_hit_dispatch_result(preflight)
+        hit_result["cache_preflight"] = evidence
         if preflight.r1a_hit:
             hit_result["artifact_dir"] = preflight.r1a_artifact_dir
         return hit_result
 
-    result = run_integrated_r4_deterministic_pipeline(
+    write_cache_miss_receipt(art, preflight, evidence)
+
+    result = run_integrated_single_action_spine(
         raw_request=raw_request,
         app_name="apps_rg",
         artifact_dir=art,
+        route_family="R4_SINGLE_ACTION",
+        cache_preflight_evidence=evidence,
     )
     _augment_integrated_manifest_with_apps_rg_docx(art)
     _augment_r4_run_manifest_for_apps_rg_l2_fault(

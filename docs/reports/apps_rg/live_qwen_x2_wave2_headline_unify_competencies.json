@@ -39,7 +39,7 @@
   "patches": [
     "apps_rg/runtime/validators/fact_id_typo_repair.py",
     "apps_rg/runtime/sections/headline_lane.py",
-    "apps_rg/runtime/dispatch/competencies_dispatch.py",
+    "apps_rg/runtime/sections/competencies_lane_api.py",
     "apps_rg/runtime/dispatch/competencies_pa.py",
     "apps_rg/runtime/sections/unify_narrative_lane.py",
     "apps_rg/runtime/proof_pool_resolver.py",

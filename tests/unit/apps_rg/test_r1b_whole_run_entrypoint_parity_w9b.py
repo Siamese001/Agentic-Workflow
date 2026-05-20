@@ -131,7 +131,7 @@ def test_canonical_dispatch_invokes_preflight_before_pipeline(
             },
         )()
 
-    monkeypatch.setattr(cd, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+    monkeypatch.setattr(cd, "run_integrated_single_action_spine", fake_pipeline)
     monkeypatch.setattr(
         "apps_rg.cache.whole_run_entrypoint_preflight.run_whole_run_cache_preflight",
         fake_preflight,
@@ -173,7 +173,7 @@ def test_canonical_dispatch_r1b_hit_skips_pipeline(
         pipeline_called.append(True)
         raise AssertionError("pipeline should not run")
 
-    monkeypatch.setattr(cd, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
+    monkeypatch.setattr(cd, "run_integrated_single_action_spine", fake_pipeline)
 
     with patch.object(cd, "build_raw_request_for_r4", return_value=_req()):
         with patch.object(cd, "_default_artifact_dir", return_value=tmp_path / "art"):
@@ -184,7 +184,11 @@ def test_canonical_dispatch_r1b_hit_skips_pipeline(
 
     assert not pipeline_called
     assert result.get("generation_skipped") is True
-    assert result.get("cache_preflight") == "r1b_hit"
+    cp = result.get("cache_preflight")
+    if isinstance(cp, dict):
+        assert cp.get("cache_result") == "r1b_hit"
+    else:
+        assert cp == "r1b_hit"
 
 
 def test_preflight_order_constant() -> None:

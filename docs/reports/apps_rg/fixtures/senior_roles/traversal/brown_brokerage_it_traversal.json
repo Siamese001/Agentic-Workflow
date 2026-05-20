@@ -55,7 +55,7 @@
     "track_data_tech_cloud_ml": 0.5238,
     "track_genai_agentic": 0.381
   },
-  "manifest_weight_override_applied": false,
+  "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
     "track_actuarial_risk_derivatives": 0.0952,
@@ -63,11 +63,11 @@
     "track_genai_agentic": 0.381
   },
   "track_weights_applied": {
-    "track_actuarial_risk_derivatives": 0.0952,
-    "track_data_tech_cloud_ml": 0.5238,
-    "track_genai_agentic": 0.381
+    "track_actuarial_risk_derivatives": 0.1,
+    "track_data_tech_cloud_ml": 0.5,
+    "track_genai_agentic": 0.4
   },
-  "weight_override_required": false,
+  "weight_override_required": true,
   "default_expansion_error": null,
   "tracks_with_facts": [
     "track_actuarial_risk_derivatives",
@@ -78,37 +78,37 @@
     {
       "pillar_id": "pillar_gtm_presales_motion",
       "skill_hits": 6,
-      "weight_sum": 3.1428,
+      "weight_sum": 3.0,
       "rank": 1
     },
     {
       "pillar_id": "pillar_regulatory_governance",
       "skill_hits": 3,
-      "weight_sum": 1.143,
+      "weight_sum": 1.2,
       "rank": 2
     },
     {
       "pillar_id": "pillar_revenue_commercialization",
       "skill_hits": 3,
-      "weight_sum": 1.143,
+      "weight_sum": 1.2,
       "rank": 3
     },
     {
       "pillar_id": "pillar_strategic_finance_saas",
       "skill_hits": 2,
-      "weight_sum": 1.0476,
+      "weight_sum": 1.0,
       "rank": 4
     },
     {
       "pillar_id": "pillar_technical_presales_accelerators",
       "skill_hits": 2,
-      "weight_sum": 1.0476,
+      "weight_sum": 1.0,
       "rank": 5
     },
     {
       "pillar_id": "pillar_agentic_ai_platforms",
       "skill_hits": 2,
-      "weight_sum": 0.762,
+      "weight_sum": 0.8,
       "rank": 6
     },
     {
@@ -120,13 +120,13 @@
     {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
-      "weight_sum": 0.0952,
+      "weight_sum": 0.1,
       "rank": 8
     },
     {
       "pillar_id": "pillar_capital_modeling",
       "skill_hits": 1,
-      "weight_sum": 0.0952,
+      "weight_sum": 0.1,
       "rank": 9
     }
   ],
@@ -374,7 +374,7 @@
     "expected_pillar_track_underfire:pillar_cloud_data_aws"
   ],
   "supplemental_skill_count": 1,
-  "default_track_weights_underfire": false,
+  "default_track_weights_underfire": true,
   "gtm_phase2_closeout_check": null,
   "broad_skills_ledger_used_as_authority": false,
   "proof_classification": "offline_traversal_receipt_not_runtime_proof"

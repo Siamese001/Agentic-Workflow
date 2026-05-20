@@ -29,7 +29,7 @@ import pytest
 
 
 # ---------------------------------------------------------------------------
-# Fake result matching the R4IntegratedRunResult shape
+# Fake result matching the SingleActionSpineRunResult shape
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
@@ -99,7 +99,7 @@ def fake_artifact_dir(tmp_path):
 
     # R4 run manifest (X3 receipt)
     (d / "r4_run_manifest.json").write_text(json.dumps({
-        "producer_component": "agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run",
+        "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
         "run_id": "test-run-001",
         "x3_disposition": "EXIT_OK",
         "terminal_r5": False,
@@ -125,7 +125,7 @@ class TestAppsRgArtifactCompleteness:
     """Every successful R4 run produces the required receipt classes."""
 
     def test_main_delegates_to_r4_pipeline(self, tmp_path):
-        """main() calls run_integrated_r4_deterministic_pipeline with correct shape."""
+        """main() calls run_integrated_single_action_spine with correct shape."""
         captured_kwargs: dict[str, Any] = {}
 
         def _fake_pipeline(**kwargs):
@@ -138,8 +138,14 @@ class TestAppsRgArtifactCompleteness:
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
 
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
-             mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _fake_pipeline), \
-             mock.patch.object(rg_main, "R4IntegratedRunResult", _FakeR4Result), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+                 _fake_pipeline,
+             ), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.SingleActionSpineRunResult",
+                 _FakeR4Result,
+             ), \
              mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cursor-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
              mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
@@ -177,8 +183,14 @@ class TestAppsRgArtifactCompleteness:
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
 
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
-             mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _fake_pipeline), \
-             mock.patch.object(rg_main, "R4IntegratedRunResult", _FakeR4Result), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+                 _fake_pipeline,
+             ), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.SingleActionSpineRunResult",
+                 _FakeR4Result,
+             ), \
              mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cursor-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
              mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
@@ -257,8 +269,14 @@ class TestAppsRgArtifactCompleteness:
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
 
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
-             mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _fake_pipeline), \
-             mock.patch.object(rg_main, "R4IntegratedRunResult", _FakeR4Result), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+                 _fake_pipeline,
+             ), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.SingleActionSpineRunResult",
+                 _FakeR4Result,
+             ), \
              mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cursor-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
              mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
@@ -279,8 +297,14 @@ class TestAppsRgArtifactCompleteness:
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
 
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
-             mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _fake_pipeline), \
-             mock.patch.object(rg_main, "R4IntegratedRunResult", _FakeR4Result), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+                 _fake_pipeline,
+             ), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.SingleActionSpineRunResult",
+                 _FakeR4Result,
+             ), \
              mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cursor-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
              mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
@@ -307,8 +331,14 @@ class TestAppsRgArtifactCompleteness:
         }
 
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
-             mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _fake_pipeline), \
-             mock.patch.object(rg_main, "R4IntegratedRunResult", _FakeR4Result), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+                 _fake_pipeline,
+             ), \
+             mock.patch(
+                 "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.SingleActionSpineRunResult",
+                 _FakeR4Result,
+             ), \
              mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cursor-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
              mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 

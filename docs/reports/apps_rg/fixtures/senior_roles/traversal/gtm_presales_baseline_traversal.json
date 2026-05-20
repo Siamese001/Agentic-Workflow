@@ -60,7 +60,7 @@
     "track_data_tech_cloud_ml": 0.6818,
     "track_genai_agentic": 0.2727
   },
-  "manifest_weight_override_applied": false,
+  "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
     "track_actuarial_risk_derivatives": 0.0455,
@@ -68,11 +68,11 @@
     "track_genai_agentic": 0.2727
   },
   "track_weights_applied": {
-    "track_actuarial_risk_derivatives": 0.0455,
-    "track_data_tech_cloud_ml": 0.6818,
-    "track_genai_agentic": 0.2727
+    "track_actuarial_risk_derivatives": 0.05,
+    "track_data_tech_cloud_ml": 0.7,
+    "track_genai_agentic": 0.25
   },
-  "weight_override_required": false,
+  "weight_override_required": true,
   "default_expansion_error": null,
   "tracks_with_facts": [
     "track_actuarial_risk_derivatives",
@@ -83,55 +83,55 @@
     {
       "pillar_id": "pillar_gtm_presales_motion",
       "skill_hits": 6,
-      "weight_sum": 4.0908,
+      "weight_sum": 4.2,
       "rank": 1
     },
     {
       "pillar_id": "pillar_technical_presales_accelerators",
       "skill_hits": 4,
-      "weight_sum": 2.7272,
+      "weight_sum": 2.8,
       "rank": 2
     },
     {
       "pillar_id": "pillar_strategic_finance_saas",
       "skill_hits": 2,
-      "weight_sum": 1.3636,
+      "weight_sum": 1.4,
       "rank": 3
     },
     {
       "pillar_id": "pillar_regulatory_governance",
       "skill_hits": 2,
-      "weight_sum": 0.5454,
+      "weight_sum": 0.5,
       "rank": 4
     },
     {
       "pillar_id": "pillar_revenue_commercialization",
       "skill_hits": 2,
-      "weight_sum": 0.5454,
+      "weight_sum": 0.5,
       "rank": 5
     },
     {
       "pillar_id": "pillar_cosell_partner_engineering",
       "skill_hits": 1,
-      "weight_sum": 0.6818,
+      "weight_sum": 0.7,
       "rank": 6
     },
     {
       "pillar_id": "pillar_partner_gtm_alliances",
       "skill_hits": 1,
-      "weight_sum": 0.6818,
+      "weight_sum": 0.7,
       "rank": 7
     },
     {
       "pillar_id": "pillar_agentic_ai_platforms",
       "skill_hits": 1,
-      "weight_sum": 0.2727,
+      "weight_sum": 0.25,
       "rank": 8
     },
     {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
-      "weight_sum": 0.0455,
+      "weight_sum": 0.05,
       "rank": 9
     }
   ],
@@ -370,7 +370,7 @@
   "track_weighted_only_pillar_match_rate": 1.0,
   "track_underfire_notes": [],
   "supplemental_skill_count": 0,
-  "default_track_weights_underfire": false,
+  "default_track_weights_underfire": true,
   "gtm_phase2_closeout_check": {
     "closeout_p2_skill_count": 17,
     "traversal_p2_hits": [

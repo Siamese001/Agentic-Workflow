@@ -182,7 +182,7 @@ def test_validator_fails_mock_provider_marker(tmp_path: Path, monkeypatch: pytes
 def test_validator_fails_deprecated_dispatch_reference(tmp_path: Path) -> None:
     run = _minimal_graph_run_dir(tmp_path)
     manifest = json.loads((run / "run_manifest.json").read_text(encoding="utf-8"))
-    manifest["command"] = "python -m apps_rg.runtime.dispatch.executive_summary_dispatch"
+    manifest["command"] = "python -m apps_rg.runtime.sections.executive_summary_lane_api"
     (run / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     report = validate_run_dir(run, repo=REPO)
     assert report.status == "FAIL"

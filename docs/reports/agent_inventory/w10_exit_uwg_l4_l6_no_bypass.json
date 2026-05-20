@@ -1,0 +1,89 @@
+{
+  "report_id": "w10_exit_uwg_l4_l6_no_bypass",
+  "generated_at": "2026-05-19",
+  "wave": "W10",
+  "status": "PASS",
+  "behavior_change": false,
+  "runtime_change": false,
+  "plan_sync": {
+    "last_completed_wave": "W10",
+    "current_wave": "W11",
+    "receipts": {
+      "w2_w5": "docs/reports/agent_inventory/w2_w5_boundary_and_healing.md",
+      "w6_w9": "docs/reports/agent_inventory/w6_w9_quarantine_and_e2_boundary.md",
+      "w10": "docs/reports/agent_inventory/w10_exit_uwg_l4_l6_no_bypass.md"
+    }
+  },
+  "w10_l2_no_direct_l4": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "evidence": [
+      "l2_phase_pipeline.py documents no L4/UWG write",
+      "DispatchReceipt.has_commit_payload raises ValueError",
+      "AttemptReceipt.proposed_state_diff documented inert",
+      "DispatchReceipt targets exit_eval/uwg_decision/l6_audit"
+    ],
+    "tests": ["tests/unit/agentic_core/test_l2_exit_uwg_l4_no_bypass_boundary.py (8 passed)"]
+  },
+  "w10_exit_x3": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "evidence": [
+      "run_bundle_index _LANE_CORE includes x3_disposition.json",
+      "review_lane_policy: X3_ALLOW + REAL_LLM required for product ALLOW",
+      "exit_binding exports exit_finalize_apps_rg + X3Disposition",
+      "test_gap001_exit_l4_boundary_hardening.py regression harness"
+    ],
+    "tests": ["tests/_apps_contract/test_apps_rg_exit_uwg_l4_no_bypass_boundary.py"]
+  },
+  "w10_uwg_l4": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "implementation_note": "UniversalWriteGate + FutureRunPromotionRequest exist with structural invariants",
+    "evidence": [
+      "FutureRunPromotionRequest: current_run_mutation_allowed=False enforced",
+      "FutureRunPromotionRequest: requires_uwg=True enforced",
+      "_FORBIDDEN_DIRECT_WRITE_SOURCES includes L2, Exit, L6",
+      "universal_write_gate.py documents UWG-only durable admission"
+    ],
+    "tests": ["test_l2_exit_uwg_l4_no_bypass_boundary.py UWG cases"]
+  },
+  "w10_l6_firewall": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "evidence": [
+      "G29 LearningFirewallGate denies current_run mutation (DENY)",
+      "G29 blocks L6 direct L4 write (BLOCK_COMMIT)",
+      "assert_l6_eval_no_current_run_mutation validator",
+      "FutureRunPromotionRequest post-run shape"
+    ],
+    "tests": ["tests/unit/agentic_core/test_l6_current_run_learning_firewall_boundary.py (5 passed)"]
+  },
+  "w10_deprecated_path_no_bypass": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "classified_non_product": [
+      "apps_rg/runtime/dry_run/",
+      "apps_rg/reasoning/RgResumeOrchestrator.py",
+      "agentic_core/L2_execution/apps_rg_l2_binding.py",
+      "MOCK_RUNTIME_STATUSES / stub env markers"
+    ],
+    "tests": ["test_apps_rg_exit_uwg_l4_no_bypass_boundary.py quarantine cases"]
+  },
+  "commands": {
+    "compileall": { "exit_code": 0 },
+    "pytest_w10_new_plus_orchestration": { "exit_code": 0, "passed": 32 },
+    "pytest_apps_contract_filtered": { "status": "NOT_RUN_SLOW" },
+    "pytest_unit_agentic_core_filtered": { "status": "NOT_RUN_SLOW" },
+    "pytest_unit_apps_rg_filtered": { "status": "NOT_RUN_SLOW" }
+  },
+  "w11_readiness": "READY_FOR_PLANNING — W10 guardrails landed; W11 still requires ADG fan-in zero + migration receipt before archive/delete",
+  "needs_decision": [
+    "Runtime reachability of UniversalWriteGate.admit() on all durable-write paths (static tests only in W10)",
+    "Migrate apps_rg_l2_binding shim importers before W11 delete"
+  ],
+  "allowed_exceptions": [
+    "L6 shadow_eval_package.json is canonical lane artifact but not product ALLOW proof by itself",
+    "proposed_state_diff may be non-empty on SealedL2Artifact — inert until Exit/UWG admits"
+  ]
+}

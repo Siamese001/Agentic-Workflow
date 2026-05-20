@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.sections import selected_role_fact_set as srfs
 from apps_rg.runtime.validators.competencies_x2 import run_competencies_x2_gates
 from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
@@ -186,7 +186,7 @@ def test_offline_stub_includes_srfs_slice_gate_pass(structure_w4_srfs: Path, sec
         run_headline_execution(args, artifact_dir_override=run_dir, print_output=False)
     elif section == "executive_summary":
         from apps_rg.runtime.sections.executive_summary_lane import run_executive_summary_execution
-        from apps_rg.runtime.dispatch.executive_summary_dispatch import build_parser
+        from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
         from tests._apps_contract.test_exec_summary_section_pipeline import _tag_exec_summary_provider_resolution
 
         args = build_parser().parse_args(["--provider", "mock", "--mock-judges", "--allow-non-allow-exit-zero"])

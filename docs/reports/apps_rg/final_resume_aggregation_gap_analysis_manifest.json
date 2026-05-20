@@ -4,11 +4,11 @@
   "status": "PARTIAL",
   "status_note": "Structural assembly and final_resume_x2 PASS on current rollup; target contract gaps remain for cross-section overlap, aggregate claim/proof-pool refs, overlap receipt, and orchestration coherence.",
   "canonical_aggregation_entrypoint": {
-    "command": "python -m apps_rg.runtime.assembly.final_resume_assembler",
-    "module": "apps_rg.runtime.assembly.final_resume_assembler",
-    "orchestrator": "apps_rg.runtime.orchestrate_full_resume",
-    "rollup_module": "apps_rg.runtime.reports.generated_lane_rollup",
-    "package_x3_module": "apps_rg.runtime.package.resume_package_x3"
+    "command": "python -m apps_rg.runtime.internal.final_resume_assembler",
+    "module": "apps_rg.runtime.internal.final_resume_assembler",
+    "orchestrator": "apps_rg.runtime.internal.lane_batch",
+    "rollup_module": "apps_rg.runtime.internal.generated_lane_rollup",
+    "package_x3_module": "apps_rg.runtime.internal.resume_package_disposition"
   },
   "aggregation_codepath_map": [
     {
@@ -211,7 +211,7 @@
     ]
   },
   "runtime_proof": {
-    "command": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+    "command": "python -m apps_rg.runtime.internal.final_resume_assembler",
     "exit_code": 0,
     "gates_all_pass": true,
     "final_resume_hash": "35e071b829603b3d5663a6156b86e9248687e6cfcca2f3c4b548d9da7f070d9a"
@@ -270,7 +270,7 @@
       "skipped": 1
     },
     {
-      "cmd": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+      "cmd": "python -m apps_rg.runtime.internal.final_resume_assembler",
       "exit_code": 0,
       "gates_all_pass": true
     },

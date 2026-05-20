@@ -1,0 +1,89 @@
+{
+  "report_id": "w6_w9_quarantine_and_e2_boundary",
+  "generated_at": "2026-05-19",
+  "waves": ["W6", "W7", "W8", "W9"],
+  "status": "PASS",
+  "behavior_change": false,
+  "runtime_change": false,
+  "w6_l2_binding_shim": {
+    "result": "RETIRE_CANDIDATE",
+    "confidence": "HIGH",
+    "canonical": "apps_rg/runtime/bindings/l2_binding.py → l2_binding_adapter.l2_execute_apps_rg",
+    "shim": "agentic_core/L2_execution/apps_rg_l2_binding.py",
+    "product_path_imports_shim": false,
+    "importers_classification": "TEST_SUPPORT_ONLY / CI / governance",
+    "tests": ["tests/_apps_contract/test_apps_rg_l2_binding_shim_boundary.py (7 passed)"],
+    "needs_decision": ["Migrate test_ag6, pipeline_capability, CI allowlists to apps_rg.runtime.bindings before shim removal (W11)"]
+  },
+  "w7_deprecated_path_quarantine": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "registry": {
+      "apps_rg/runtime/dry_run/": "QUARANTINE_UNTIL_REVIEW",
+      "apps_rg/runtime/internal/lane_batch.py": "TEST_SUPPORT_ONLY",
+      "apps_rg/reasoning/Rg*.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
+      "apps_rg/runtime/dispatch/*_dispatch.py": "QUARANTINE_UNTIL_REVIEW (exit_deprecated or ImportError stub)",
+      "apps_rg/runtime/deprecated_runtime_cli.py": "KEEP_APPS_RG"
+    },
+    "non_product_proof_env": [
+      "APPS_RG_R4_GENERATION_MODE=legacy_full_resume",
+      "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1",
+      "APPS_RG_L2_PROVIDER_MODE=stub_only",
+      "APPS_RG_L2_FORCE_STUB=1",
+      "--mock-judges without --allow-test-mock-judges"
+    ],
+    "tests": ["tests/_apps_contract/test_apps_rg_deprecated_path_quarantine.py (21 passed)"]
+  },
+  "w8_canonical_runtime_hygiene": {
+    "result": "PASS",
+    "confidence": "HIGH",
+    "canonical_chain": [
+      "python -m apps_rg → apps_rg.__main__",
+      "dispatch_apps_rg_run → run_canonical_apps_rg_from_cli_primitives",
+      "modular_section_lanes / run_modular_resume_generation",
+      "runtime/sections/*_lane.py + qwen_vllm_provider",
+      "section_judge_profile (X1D judges)",
+      "runtime_proof_layout.prepare_runtime_proof_run_dir (artifacts)"
+    ],
+    "default_mode": "modular_section_lanes",
+    "non_product_proof_markers": [
+      "dry_run/",
+      "contract_harness/",
+      "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
+      "stub_only / FORCE_STUB",
+      "legacy_full_resume",
+      "mock-judges without hatch"
+    ],
+    "tests": [
+      "tests/_apps_contract/test_apps_rg_canonical_runtime_hygiene.py (7 passed)",
+      "tests/_apps_contract/test_apps_rg_generation_entrypoints.py (existing)"
+    ]
+  },
+  "w9_e2_entrypoint_decision": {
+    "decision": "KEEP_CORE",
+    "validation_orchestrator_classification": "QUARANTINE_UNTIL_REVIEW",
+    "single_e2_entry_shape": "L2PhasePipeline E2 VALID → ValidationReceipt (validator_fn adapter); supplemental e2_validate_before_execute / e2_agent_gate / boundary_validator / authority_validator compose inside validator_fn — not a second pipeline",
+    "validation_orchestrator_static_import_fanin": 0,
+    "confidence": "HIGH for l2_phase_pipeline; MEDIUM for orchestrator retire (ADG runtime fan-in not run)",
+    "tests": ["tests/unit/agentic_core/L2_execution/test_l2_e2_validation_entrypoint_boundary.py (5 passed)"],
+    "needs_decision": ["ADG fan-in on ValidationOrchestrator class before RETIRE_CANDIDATE promotion"]
+  },
+  "commands": {
+    "git_status_short": { "exit_code": 0 },
+    "compileall": { "exit_code": 0 },
+    "pytest_w6_w9_new": { "exit_code": 0, "passed": 40 },
+    "pytest_l2_orchestration": { "exit_code": 0, "passed": 8 },
+    "pytest_apps_contract_filtered": { "status": "NOT_RUN_SLOW" },
+    "pytest_unit_apps_rg_filtered": { "status": "NOT_RUN_SLOW" },
+    "pytest_unit_agentic_core_filtered": { "status": "NOT_RUN_SLOW" }
+  },
+  "files_changed": [
+    "tests/_apps_contract/test_apps_rg_l2_binding_shim_boundary.py",
+    "tests/_apps_contract/test_apps_rg_deprecated_path_quarantine.py",
+    "tests/_apps_contract/test_apps_rg_canonical_runtime_hygiene.py",
+    "tests/unit/agentic_core/L2_execution/test_l2_e2_validation_entrypoint_boundary.py",
+    "docs/reports/agent_inventory/w6_w9_quarantine_and_e2_boundary.md",
+    "docs/reports/agent_inventory/w6_w9_quarantine_and_e2_boundary.json"
+  ],
+  "next_recommended_waves": ["W10", "W11"]
+}

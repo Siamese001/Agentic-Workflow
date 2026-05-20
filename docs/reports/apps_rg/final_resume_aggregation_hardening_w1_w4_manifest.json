@@ -52,7 +52,7 @@
     "apps_rg/runtime/aggregation/section_sealed_index.py",
     "apps_rg/runtime/aggregation/preflight.py",
     "apps_rg/runtime/aggregation/cross_section_x2.py",
-    "apps_rg/runtime/assembly/final_resume_assembler.py",
+    "apps_rg/runtime/internal/final_resume_assembler.py",
     "apps_rg/runtime/assembly/final_resume_x2.py",
     "tools/apps_rg/build_coherent_aggregation_rollup.py",
     "tests/unit/apps_rg/test_aggregation_run_fingerprint.py",
@@ -72,7 +72,7 @@
       "exit_code": 0
     },
     {
-      "cmd": "python -m apps_rg.runtime.assembly.final_resume_assembler",
+      "cmd": "python -m apps_rg.runtime.internal.final_resume_assembler",
       "exit_code": 0,
       "gates_all_pass": true
     },
@@ -139,8 +139,8 @@
       "markdown": "[cross_section_x2.py](apps_rg/runtime/aggregation/cross_section_x2.py)"
     },
     {
-      "path": "apps_rg/runtime/assembly/final_resume_assembler.py",
-      "markdown": "[final_resume_assembler.py](apps_rg/runtime/assembly/final_resume_assembler.py)"
+      "path": "apps_rg/runtime/internal/final_resume_assembler.py",
+      "markdown": "[final_resume_assembler.py](apps_rg/runtime/internal/final_resume_assembler.py)"
     },
     {
       "path": "apps_rg/runtime/assembly/final_resume_x2.py",

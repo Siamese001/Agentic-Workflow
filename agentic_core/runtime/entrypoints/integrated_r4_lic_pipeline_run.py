@@ -38,7 +38,7 @@ C0 Policy (W3 c0-policy-rectification-deferred-f7b2a9):
     L0 is the authority.
 
 Relationship to apps_rg entrypoint:
-    ``integrated_r4_deterministic_pipeline_run`` owns the apps_rg identity
+    ``integrated_single_action_spine_run`` owns the apps_rg identity
     (source_channel="apps_rg_cli", declared_schema="apps_rg_jd_v1").
     This module owns the apps_lic identity (source_channel="apps_lic_cli",
     declared_schema="apps_lic_outreach_v1").  The pipeline logic is identical;

@@ -50,7 +50,7 @@ class TestAllBindingsImportable:
 
     def test_l2_binding_importable(self):
         """L2 binding can be imported and is callable."""
-        from agentic_core.L2_execution.apps_rg_l2_binding import l2_execute_apps_rg
+        from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
         assert callable(l2_execute_apps_rg)
 
     def test_exit_binding_importable(self):
@@ -178,7 +178,7 @@ class TestL2StubBehavior:
 
     def test_l2_stub_without_health_probe(self):
         """When force-stub is set, L2 skips health probe entirely."""
-        from agentic_core.L2_execution.apps_rg_l2_binding import l2_execute_apps_rg
+        from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
         from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
 
         prompt = CompiledPromptArtifact(

@@ -132,7 +132,7 @@ def test_collect_lane_mocked_not_latest_successful_real(tmp_path: Path) -> None:
     ptr_root = base.parent.parent
     (ptr_root / "latest_successful_real_run.json").write_text(json.dumps(ptr), encoding="utf-8")
 
-    from apps_rg.runtime.reports.generated_lane_rollup import collect_lane_from_run_dir
+    from apps_rg.runtime.internal.generated_lane_rollup import collect_lane_from_run_dir
 
     row = collect_lane_from_run_dir(lane, base, repo=repo)
     assert row["accepted_real_evidence_resolution"] != "latest_successful_real_run.json"
@@ -168,7 +168,7 @@ def test_collect_lane_real_llm_with_pointer_matches_gate(tmp_path: Path) -> None
         json.dumps(ptr),
         encoding="utf-8",
     )
-    from apps_rg.runtime.reports.generated_lane_rollup import collect_lane_from_run_dir
+    from apps_rg.runtime.internal.generated_lane_rollup import collect_lane_from_run_dir
 
     row = collect_lane_from_run_dir(lane, base, repo=repo)
     assert row["accepted_real_evidence_resolution"] == "latest_successful_real_run.json"

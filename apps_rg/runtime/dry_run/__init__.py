@@ -1,3 +1,3 @@
-"""apps_rg runtime dry-run harness for executive summary generation."""
+"""Reserved package path; demo harness removed — use ``python -m apps_rg --section executive_summary``."""
 
-__all__ = ["ExecutiveSummaryDryRun", "run_executive_summary_demo"]
+__all__: list[str] = []

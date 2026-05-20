@@ -27,7 +27,7 @@ Section lanes and `orchestrate_full_resume` remain out of scope.
 | `apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives` | yes | yes | R1A→R1B→gen | early return cache hit dict | `run_integrated_r4_deterministic_pipeline` | `exit_review_required` on R1B hit | wired_w9b |
 | `apps_rg.runtime.dispatch.apps_rg_dispatch.apps_rg_dispatch` | yes | yes | inherited | via `dispatch_apps_rg_run` | via `dispatch_apps_rg_run` | inherited | wired_w9b |
 | `apps_rg.__main__._run_with_args` | yes | yes | R1A→R1B→gen | `SystemExit(0)` | pipeline + post-Exit ingest | receipt `r1b_whole_run_preflight_hit.json` | wired_w9 |
-| `apps_rg.runtime.orchestrate_full_resume` | no | no | gen only | N/A | offline lanes | N/A | out_of_scope |
+| `apps_rg.runtime.internal.lane_batch` | no | no | gen only | N/A | offline lanes | N/A | out_of_scope |
 
 ## Wiring changes
 

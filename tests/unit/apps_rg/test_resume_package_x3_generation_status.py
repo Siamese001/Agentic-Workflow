@@ -18,7 +18,7 @@ from apps_rg.l2_recipe.resume_output_shape import (
 from apps_rg.runtime.package.apps_rg_full_resume_x3_eligibility import (
     evaluate_apps_rg_full_success_eligibility,
 )
-from apps_rg.runtime.package.resume_package_x3 import (
+from apps_rg.runtime.internal.resume_package_disposition import (
     X3_ALLOW_CODE,
     X3_BLOCKED_DETERMINISTIC,
     evaluate_resume_package,

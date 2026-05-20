@@ -12,7 +12,7 @@
 ```
 STATUS: PASS
 FILES_CHANGED:
-- [competencies_dispatch.py](../../apps_rg/runtime/dispatch/competencies_dispatch.py) (SRFS stub phrases; prior M4C-FIX)
+- [competencies_dispatch.py](../../apps_rg/runtime/sections/competencies_lane_api.py) (SRFS stub phrases; prior M4C-FIX)
 - [proof_pool_lane_integration.py](../../apps_rg/runtime/proof_pool_lane_integration.py) (front-spine before proof_pool)
 - [test_competencies_canonical_lane_contract.py](../../tests/_apps_contract/test_competencies_canonical_lane_contract.py)
 - [test_competencies_dispatch_retirement_inventory.py](../../tests/_apps_contract/test_competencies_dispatch_retirement_inventory.py)

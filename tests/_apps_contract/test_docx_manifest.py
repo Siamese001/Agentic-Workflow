@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from apps_rg.runtime.assembly.final_resume_x2 import CANONICAL_ASSEMBLED_SECTION_ORDER
-from apps_rg.runtime.render.docx_manifest_builder import (
+from apps_rg.runtime.internal.docx_manifest_builder import (
     PLANNED_DOCX_POSIX,
     build_docx_manifest,
     resolve_docx_manifest_paths,

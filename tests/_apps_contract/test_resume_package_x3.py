@@ -15,7 +15,7 @@ from apps_rg.runtime.package.resume_package_manifest import (
 )
 from apps_rg.runtime.shadow.l6_handoff_packet import build_l6_shadow_handoff_dict
 from apps_rg.runtime.package.resume_package_l6_audit import audit_l6_shadow_packet_for_lane
-from apps_rg.runtime.package.resume_package_x3 import (
+from apps_rg.runtime.internal.resume_package_disposition import (
     X3_ALLOW_CODE,
     X3_BLOCKED_DETERMINISTIC,
     X3_BLOCK_L6_HANDOFF_INCOMPLETE,
@@ -23,7 +23,7 @@ from apps_rg.runtime.package.resume_package_x3 import (
     emit_resume_package_artifacts,
     evaluate_resume_package,
 )
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 
 _ART = RUNTIME_PROOFS
@@ -222,7 +222,7 @@ def _workspace_package_paths_or_skip() -> ResumePackageProofPaths:
         and p.package_x3_json().is_file()
         and p.package_receipt_json().is_file()
     ):
-        pytest.skip("resume_package artifacts absent; run `python -m apps_rg.runtime.package.resume_package_x3` first")
+        pytest.skip("resume_package artifacts absent; call emit_resume_package_artifacts() in tests or run canonical lanes first")
     return p
 
 
@@ -368,7 +368,7 @@ def test_current_workspace_expectation_review_when_not_allow():
 
 
 def test_package_module_has_no_foreign_network_providers():
-    rf = Path(__file__).resolve().parents[2] / "apps_rg" / "runtime" / "package" / "resume_package_x3.py"
+    rf = Path(__file__).resolve().parents[2] / "apps_rg" / "runtime" / "_offline" / "resume_package_disposition.py"
     src = rf.read_text(encoding="utf-8")
     banned = ("openai", "anthropic", "google.generativeai", "httpx.get", "requests.")
     for b in banned:

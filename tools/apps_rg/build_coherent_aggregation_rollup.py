@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from apps_rg.runtime.aggregation.preflight import REQUIRED_PROOF_FILES
-from apps_rg.runtime.reports.generated_lane_rollup import (
+from apps_rg.runtime.internal.generated_lane_rollup import (
     GENERATED_LANES,
     collect_lane_from_run_dir,
     render_markdown,

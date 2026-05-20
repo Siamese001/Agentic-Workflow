@@ -15,7 +15,7 @@ Reduce remaining **helper** fan-in on `competencies_dispatch` / `ibm_narrative_d
 | [headline_lane.py](apps_rg/runtime/sections/headline_lane.py) | `build_resume_support_blob`, `load_companion_context`, `load_base_resume` |
 | [competencies_lane.py](apps_rg/runtime/sections/competencies_lane.py) | CLI defaults (`PROMPT_ID`, `TARGET_*`, `JD_TEXT_DEFAULT`, …) |
 | [ibm_narrative_lane.py](apps_rg/runtime/sections/ibm_narrative_lane.py) | IBM CLI defaults + `REPO_ROOT` |
-| [ibm_narrative_dispatch.py](apps_rg/runtime/dispatch/ibm_narrative_dispatch.py) | `collect_employment_bullets` via competencies_dispatch |
+| [ibm_narrative_dispatch.py](apps_rg/runtime/sections/ibm_narrative_lane_api.py) | `collect_employment_bullets` via competencies_dispatch |
 | [proof_pool_resolver.py](apps_rg/runtime/proof_pool_resolver.py) | lazy `collect_employment_bullets` from competencies_dispatch |
 | [competencies_x2_diagnostics.py](apps_rg/runtime/competencies_x2_diagnostics.py) | `term_phrase` |
 | [proof_pool_source_fact_validation.py](apps_rg/runtime/validators/proof_pool_source_fact_validation.py) | lazy `write_json` |

@@ -44,7 +44,7 @@ GATE_VERSION = "1.0.0"
 C0_PA_L2_EXIT_MODULES = [
     "agentic_core/runtime/c0/apps_rg_c0_binding.py",
     "agentic_core/prompt_governance/apps_rg_pa_binding.py",
-    "agentic_core/L2_execution/apps_rg_l2_binding.py",
+    "apps_rg/runtime/bindings/l2_binding_adapter.py",
     "agentic_core/runtime/exit/apps_rg_exit_binding.py",
 ]
 
@@ -239,7 +239,7 @@ def check_pa_preserves_evidence_data_only() -> tuple[bool, str]:
 def check_l2_preserves_evidence_refs() -> tuple[bool, str]:
     """Check that L2 preserves evidence refs in SealedL2Artifact."""
     repo_root = _resolve_repo_root()
-    l2_path = repo_root / "agentic_core" / "L2_execution" / "apps_rg_l2_binding.py"
+    l2_path = repo_root / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py"
     
     if not l2_path.exists():
         return False, f"L2 binding not found: {l2_path}"

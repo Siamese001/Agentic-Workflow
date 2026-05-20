@@ -19,7 +19,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
 )
 from apps_rg.runtime.validators.executive_summary_x2 import REQUIRED_JUDGE_PROVIDERS
 
-# Explicit default for ``ops_scripts/ci/prove_apps_rg_e2e_runtime.py`` — matches validators.
+# Explicit default for CI lane-dev boundary helpers — matches validators.
 APPS_RG_E2E_DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDERS)
 
 _PROVIDER_TYPES: dict[str, str] = {
@@ -187,7 +187,7 @@ def preflight_x1d_judge_policy(
         "repo_dotenv_loaded": bool(repo_dotenv_loaded),
         "resolver_sources_checked": [
             "executive_summary_x1d.resolve_x1d_provider_credentials",
-            "apps_rg.runtime.dispatch.* load_dotenv() parity via prove_apps_rg_e2e_runtime repo .env bootstrap",
+            "apps_rg.runtime.dispatch.* load_dotenv() parity via canonical apps_rg repo .env bootstrap",
         ],
         "configured_judges": configured,
         "required_judges": required,

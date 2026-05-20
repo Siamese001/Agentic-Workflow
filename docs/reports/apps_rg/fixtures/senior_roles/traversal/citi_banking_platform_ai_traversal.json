@@ -59,7 +59,7 @@
     "track_data_tech_cloud_ml": 0.2857,
     "track_genai_agentic": 0.3333
   },
-  "manifest_weight_override_applied": false,
+  "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
     "track_actuarial_risk_derivatives": 0.381,
@@ -67,11 +67,11 @@
     "track_genai_agentic": 0.3333
   },
   "track_weights_applied": {
-    "track_actuarial_risk_derivatives": 0.381,
-    "track_data_tech_cloud_ml": 0.2857,
-    "track_genai_agentic": 0.3333
+    "track_actuarial_risk_derivatives": 0.35,
+    "track_data_tech_cloud_ml": 0.3,
+    "track_genai_agentic": 0.35
   },
-  "weight_override_required": false,
+  "weight_override_required": true,
   "default_expansion_error": null,
   "tracks_with_facts": [
     "track_actuarial_risk_derivatives",
@@ -82,68 +82,62 @@
     {
       "pillar_id": "pillar_agentic_ai_platforms",
       "skill_hits": 17,
-      "weight_sum": 17.6666,
+      "weight_sum": 17.7,
       "rank": 1
     },
     {
       "pillar_id": "pillar_regulatory_governance",
       "skill_hits": 11,
-      "weight_sum": 9.6666,
+      "weight_sum": 9.7,
       "rank": 2
     },
     {
       "pillar_id": "pillar_gtm_presales_motion",
       "skill_hits": 4,
-      "weight_sum": 1.1428,
+      "weight_sum": 1.2,
       "rank": 3
     },
     {
       "pillar_id": "pillar_revenue_commercialization",
       "skill_hits": 3,
-      "weight_sum": 0.9999,
+      "weight_sum": 1.05,
       "rank": 4
     },
     {
       "pillar_id": "pillar_banking_platform_responsible_ai",
       "skill_hits": 2,
-      "weight_sum": 0.762,
+      "weight_sum": 0.7,
       "rank": 5
     },
     {
       "pillar_id": "pillar_capital_modeling",
       "skill_hits": 2,
-      "weight_sum": 0.762,
+      "weight_sum": 0.7,
       "rank": 6
     },
     {
       "pillar_id": "pillar_strategic_finance_saas",
       "skill_hits": 2,
-      "weight_sum": 0.5714,
+      "weight_sum": 0.6,
       "rank": 7
     },
     {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
-      "weight_sum": 0.381,
+      "weight_sum": 0.35,
       "rank": 8
     },
     {
       "pillar_id": "pillar_derivatives_structured",
       "skill_hits": 1,
-      "weight_sum": 0.381,
+      "weight_sum": 0.35,
       "rank": 9
     },
     {
       "pillar_id": "pillar_greeks_hedging",
       "skill_hits": 1,
-      "weight_sum": 0.381,
+      "weight_sum": 0.35,
       "rank": 10
-    },
-    {
-      "pillar_id": "pillar_risk_management",
-      "skill_hits": 1,
-      "weight_sum": 0.381,
-      "rank": 11
     }
   ],
   "selected_skills_ranked": [
@@ -190,200 +184,200 @@
       "rank": 7
     },
     {
-      "skill_id": "skill_risk_enterprise_risk_controls",
-      "pillar": "pillar_risk_management",
-      "career_track": "track_actuarial_risk_derivatives",
-      "rank": 8
-    },
-    {
       "skill_id": "skill_finance_cost_optimization_dashboards",
       "pillar": "pillar_strategic_finance_saas",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 9
+      "rank": 8
     },
     {
       "skill_id": "skill_finance_ma_synergy_due_diligence",
       "pillar": "pillar_strategic_finance_saas",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 10
+      "rank": 9
     },
     {
       "skill_id": "skill_p2_gtm_discovery_qualification",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 11
+      "rank": 10
     },
     {
       "skill_id": "skill_p2_gtm_enterprise_deal_support",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 12
+      "rank": 11
     },
     {
       "skill_id": "skill_p2_gtm_executive_buyer_alignment",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 13
+      "rank": 12
     },
     {
       "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 14
+      "rank": 13
     },
     {
       "skill_id": "skill_agent_to_human_handoff_design",
       "pillar": "pillar_regulatory_governance",
       "career_track": "track_genai_agentic",
-      "rank": 15
+      "rank": 14
     },
     {
       "skill_id": "skill_agentic_control_plane_design",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "track_genai_agentic",
-      "rank": 16
+      "rank": 15
     },
     {
       "skill_id": "skill_agentic_platform_productization",
       "pillar": "pillar_revenue_commercialization",
       "career_track": "track_genai_agentic",
-      "rank": 17
+      "rank": 16
     },
     {
       "skill_id": "skill_ai_governance_certification",
       "pillar": "pillar_regulatory_governance",
       "career_track": "track_genai_agentic",
-      "rank": 18
+      "rank": 17
     },
     {
       "skill_id": "skill_ai_platform_commercialization",
       "pillar": "pillar_revenue_commercialization",
       "career_track": "track_genai_agentic",
-      "rank": 19
+      "rank": 18
     },
     {
       "skill_id": "skill_app_overlay_runtime_binding",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "track_genai_agentic",
-      "rank": 20
+      "rank": 19
     },
     {
       "skill_id": "skill_app_specific_runtime_overlay_design",
       "pillar": "pillar_revenue_commercialization",
       "career_track": "track_genai_agentic",
-      "rank": 21
+      "rank": 20
     },
     {
       "skill_id": "skill_governed_agentic_systems_architecture",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 22
+      "rank": 21
     },
     {
       "skill_id": "skill_approval_gated_workflow_design",
       "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
-      "rank": 23
+      "rank": 22
     },
     {
       "skill_id": "skill_audit_grade_observability",
       "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
-      "rank": 24
+      "rank": 23
     },
     {
       "skill_id": "skill_authority_and_registry_binding",
       "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
-      "rank": 25
+      "rank": 24
     },
     {
       "skill_id": "skill_authority_ordered_prompt_packaging",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 26
+      "rank": 25
     },
     {
       "skill_id": "skill_bounded_agent_execution",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 27
+      "rank": 26
     },
     {
       "skill_id": "skill_bounded_fanout_and_retry_design",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 28
+      "rank": 27
     },
     {
       "skill_id": "skill_cache_fallback_grounded_action_routing",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 29
+      "rank": 28
     },
     {
       "skill_id": "skill_confidence_based_escalation",
       "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
-      "rank": 30
+      "rank": 29
     },
     {
       "skill_id": "skill_context_engineering",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 31
+      "rank": 30
     },
     {
       "skill_id": "skill_contradiction_and_lineage_handling",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 32
+      "rank": 31
     },
     {
       "skill_id": "skill_dense_sparse_exact_retrieval_design",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 33
+      "rank": 32
     },
     {
       "skill_id": "skill_dependency_and_join_control",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 34
+      "rank": 33
     },
     {
       "skill_id": "skill_deterministic_route_selection",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 35
+      "rank": 34
     },
     {
       "skill_id": "skill_evidence_contract_design",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 36
+      "rank": 35
     },
     {
       "skill_id": "skill_exit_disposition_governance",
       "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
-      "rank": 37
+      "rank": 36
     },
     {
       "skill_id": "skill_external_egress_control",
       "pillar": "pillar_agentic_ai_platforms",
       "career_track": "manifest_supplemental",
-      "rank": 38
+      "rank": 37
     },
     {
       "skill_id": "skill_fail_closed_gate_semantics",
       "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
-      "rank": 39
+      "rank": 38
     },
     {
       "skill_id": "skill_graph_aware_relationship_grounding",
       "pillar": "pillar_agentic_ai_platforms",
+      "career_track": "manifest_supplemental",
+      "rank": 39
+    },
+    {
+      "skill_id": "skill_hitl_escalation_architecture",
+      "pillar": "pillar_regulatory_governance",
       "career_track": "manifest_supplemental",
       "rank": 40
     }
@@ -504,7 +498,7 @@
     "expected_skill_track_underfire:skill_governed_agentic_systems_architecture"
   ],
   "supplemental_skill_count": 24,
-  "default_track_weights_underfire": false,
+  "default_track_weights_underfire": true,
   "gtm_phase2_closeout_check": null,
   "broad_skills_ledger_used_as_authority": false,
   "proof_classification": "offline_traversal_receipt_not_runtime_proof"

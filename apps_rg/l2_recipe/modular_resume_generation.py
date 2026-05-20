@@ -28,11 +28,11 @@ from apps_rg.l2_recipe.modular_rg_output_builder import (
     extract_lane_l2_from_assembled_final,
 )
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
-from apps_rg.runtime.assembly.final_resume_assembler import assemble_final_resume
+from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resume
 from apps_rg.runtime.assembly.final_resume_manifest import FinalResumePaths
-from apps_rg.runtime.locked_copy.locked_copy_builder import build_locked_copy
+from apps_rg.runtime.internal.locked_copy_builder import build_locked_copy
 from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
-from apps_rg.runtime.reports.generated_lane_rollup import (
+from apps_rg.runtime.internal.generated_lane_rollup import (
     GENERATED_LANES,
     build_modular_lane_rollup,
 )
@@ -46,17 +46,17 @@ from apps_rg.runtime.section_cli_defaults import (
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
 
-# Same seven modules as ``apps_rg.runtime.orchestrate_full_resume`` (single SSOT).
+# Same seven modules as ``apps_rg.runtime.internal.lane_batch`` (single SSOT).
 # competencies_dispatch remains listed for legacy argparse/import tooling parity — canonical lane runtime:
 # apps_rg.runtime.sections.competencies_lane (selected-section entry via python -m apps_rg --section competencies).
 LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
     "apps_rg.runtime.sections.headline_lane",
-    "apps_rg.runtime.dispatch.executive_summary_dispatch",
-    "apps_rg.runtime.dispatch.unify_bullets_dispatch",
-    "apps_rg.runtime.dispatch.unify_narrative_dispatch",
+    "apps_rg.runtime.sections.executive_summary_lane_api",
+    "apps_rg.runtime.sections.unify_bullets_lane_api",
+    "apps_rg.runtime.sections.unify_narrative_lane_api",
     "apps_rg.runtime.sections.ibm_bullets_lane",
-    "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
-    "apps_rg.runtime.dispatch.competencies_dispatch",
+    "apps_rg.runtime.sections.ibm_narrative_lane_api",
+    "apps_rg.runtime.sections.competencies_lane_api",
 )
 
 

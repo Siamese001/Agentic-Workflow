@@ -14,7 +14,7 @@ ARTIFACT_DIR = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs" / "locked_
 MANIFEST_PATH = ARTIFACT_DIR / "locked_copy_manifest.json"
 X2_PATH = ARTIFACT_DIR / "locked_copy_x2_gate_outputs.json"
 RECEIPT_PATH = ARTIFACT_DIR / "locked_copy_receipt.json"
-BUILDER_CMD = [sys.executable, "-m", "apps_rg.runtime.locked_copy.locked_copy_builder"]
+BUILDER_CMD = [sys.executable, "-m", "apps_rg.runtime.internal.locked_copy_builder"]
 
 
 @pytest.fixture(scope="module")
@@ -184,7 +184,7 @@ def test_x2_gate_outputs_all_pass(build_once: subprocess.CompletedProcess[str]):
 
 def test_no_agentic_core_in_locked_copy_modules():
     for rel in (
-        "apps_rg/runtime/locked_copy/locked_copy_builder.py",
+        "apps_rg/runtime/internal/locked_copy_builder.py",
         "apps_rg/runtime/locked_copy/locked_copy_manifest.py",
         "apps_rg/runtime/locked_copy/locked_copy_x2.py",
     ):
@@ -195,7 +195,7 @@ def test_no_agentic_core_in_locked_copy_modules():
 
 def test_no_registry_in_locked_copy_modules():
     for rel in (
-        "apps_rg/runtime/locked_copy/locked_copy_builder.py",
+        "apps_rg/runtime/internal/locked_copy_builder.py",
         "apps_rg/runtime/locked_copy/locked_copy_manifest.py",
         "apps_rg/runtime/locked_copy/locked_copy_x2.py",
     ):

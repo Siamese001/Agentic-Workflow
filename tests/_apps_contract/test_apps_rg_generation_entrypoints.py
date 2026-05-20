@@ -6,7 +6,7 @@ ENTRYPOINT_MATRIX (code-derived; keep in sync with ``apps_rg.l2_recipe.r4_genera
    - Command/import: ``python -m apps_rg`` → ``apps_rg.__main__.main`` →
      ``agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run`` →
      ``apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives`` →
-     ``agentic_core...run_integrated_r4_deterministic_pipeline``
+     ``agentic_core...run_integrated_single_action_spine``
    - Runner: R4 pipeline + apps_rg L2 recipe
    - Declared **canonical proven** execution style: **modular_section_lanes**
      (see ``R4_RECIPE_GENERATION_EXECUTION_STYLE``) — seven section lanes + merge when
@@ -23,16 +23,10 @@ ENTRYPOINT_MATRIX (code-derived; keep in sync with ``apps_rg.l2_recipe.r4_genera
    - DOCX export: yes (``DocxExportStep`` + gate) when generation succeeds
    - Status: **supported** canonical product entry
 
-2) **Offline modular lane orchestrator (not R4 dispatch surface)**
-   - Command: ``python -m apps_rg.runtime.orchestrate_full_resume``
-   - Runner: ``apps_rg.runtime.orchestrate_full_resume.run_orchestration``
-   - Execution style: **modular_section_l2** naming in subprocess lane modules (seven ``*_dispatch``)
-   - Provider call expectation: **per-lane** (subprocess-dispatched lanes)
-   - Qwen full résumé in one call: **no** (lane-scoped generation)
-   - Qwen sections-only: **yes**
-   - Deterministic merge / locked copy: **yes** (orchestrator pipeline)
-   - DOCX: **yes** (runtime_proofs path)
-   - Status: **supported** for offline proofs; **not** the same module path as ``dispatch_apps_rg_run``
+2) **Offline modular lane library (not a CLI; not R4 dispatch surface)**
+   - Import: ``apps_rg.runtime.internal.lane_batch.run_orchestration`` (tests/library only)
+   - No ``python -m apps_rg.runtime.internal.lane_batch`` command surface
+   - Status: **library-only** batch helper; product proof uses ``python -m apps_rg`` only
 
 3) **Direct envelope adapter (tests / advanced callers)**
    - Import: ``apps_rg.runtime.bindings.l2_envelope_adapter.run_apps_rg_l2_envelope``
@@ -50,7 +44,7 @@ import inspect
 
 from apps_rg.l2_recipe import r4_generation_route as rr
 from apps_rg.l2_recipe.steps import GenerateResumeStep
-from apps_rg.runtime import orchestrate_full_resume as ofr
+from apps_rg.runtime.internal import lane_batch as ofr
 
 
 def test_canonical_product_entry_is_dispatch_apps_rg_run() -> None:
@@ -74,7 +68,7 @@ def test_generate_resume_step_supports_legacy_envelope_and_modular() -> None:
 
 def test_modular_orchestrator_is_not_core_r4_dispatch() -> None:
     """Lane orchestrator must remain a distinct module from integrated R4."""
-    assert rr.MODULAR_SECTION_ORCHESTRATOR_MODULE == "apps_rg.runtime.orchestrate_full_resume"
+    assert rr.MODULAR_SECTION_ORCHESTRATOR_MODULE == "apps_rg.runtime.internal.lane_batch"
     canon_src = inspect.getsource(
         importlib.import_module("apps_rg.runtime.orchestration.canonical_dispatch").run_canonical_apps_rg_from_cli_primitives
     )

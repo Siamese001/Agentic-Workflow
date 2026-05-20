@@ -21,16 +21,9 @@ _SRFS_DENSITY_TARGET_MIN = 100
 _SRFS_DENSITY_GATE_MIN = 95
 _MAX_MICRO_EXPANSION_WORDS = 24
 
-# Substantive connective tails only — no meta references ("above", "record above").
-_PHRASE_S2 = ", integrating identity controls and highly available execution layers"
-_PHRASE_S3 = ", through operating model scale-out and enterprise program adoption"
-_PHRASE_S4 = ", while strengthening regulated program delivery and audit-ready governance"
-
-_MICRO_PHRASES_BY_ROLE: tuple[tuple[int, int, str], ...] = (
-    (1, 2, _PHRASE_S2),
-    (2, 3, _PHRASE_S3),
-    (3, 4, _PHRASE_S4),
-)
+# Micro-expansion phrases removed: prior S2/S3/S4 tails injected ledger/display drift
+# (identity controls, scale-out, enterprise adoption) not grounded in SRFS claim_text.
+_MICRO_PHRASES_BY_ROLE: tuple[tuple[int, int, str], ...] = ()
 
 
 def _resume_word_count(resume_display_text: str) -> int:

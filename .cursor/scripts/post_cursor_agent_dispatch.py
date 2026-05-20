@@ -67,29 +67,18 @@ NATIVE_HANDLERS: list[tuple[str, Callable[[ParsedResponse, Path], None]]] = [
 # ---------------------------------------------------------------------------
 
 LEGACY_SCRIPTS: list[str] = [
-    # Slot 3-4 in hooks.json
-    "post_cursor_agent_author_gate_capture.py",
-    "post_cursor_agent_author_gate_miss_detector.py",
-    "post_cursor_agent_author_gate_schema_audit.py",
-    # Slot 5
-    "post_cursor_agent_adg_audit.py",
-    # Slot 7
+    # Author-Gate + ADG run in after_agent_governance_dispatch before dispatch; skip re-run here.
     "post_cursor_agent_scope_drift_detector.py",
-    # Slot 8
     "post_cursor_agent_writeback_audit.py",
-    # Slot 9
     "post_cursor_agent_deferred_scope_capture.py",
-    # Slot 10
     "post_cursor_agent_next_step_capture.py",
-    # Slot 11
+    "post_cursor_agent_next_step_miss_detector.py",
+    "post_cursor_agent_wave_lifecycle_capture.py",
+    "post_cursor_agent_wave_completion_audit.py",
     "post_cursor_agent_adr_registry_capture.py",
-    # Slot 12-13
     "post_cursor_agent_mcp_preflight_audit.py",
-    # Slot 14
-    "post_cursor_agent_long_command_audit.py",
-    # Slot 15
     "post_cursor_agent_plan_evidence_gate.py",
-    # Slot 16
+    "post_cursor_agent_plan_registration_capture.py",
     "post_cursor_agent_fortknox_integrity_audit.py",
 ]
 

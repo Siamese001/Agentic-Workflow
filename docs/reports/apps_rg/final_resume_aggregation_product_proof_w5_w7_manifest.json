@@ -9,8 +9,8 @@
     "apps_rg/runtime/aggregation/review_lane_policy.py",
     "apps_rg/runtime/aggregation/warn_policy.py",
     "apps_rg/runtime/aggregation/run_fingerprint.py",
-    "apps_rg/runtime/assembly/final_resume_assembler.py",
-    "apps_rg/runtime/package/resume_package_x3.py",
+    "apps_rg/runtime/internal/final_resume_assembler.py",
+    "apps_rg/runtime/internal/resume_package_disposition.py",
     "tests/unit/apps_rg/test_aggregation_product_proof_w5_w7.py",
     "docs/reports/apps_rg/final_resume_aggregation_product_proof_w5_w7.md",
     "docs/reports/apps_rg/final_resume_aggregation_product_proof_w5_w7_manifest.json"
@@ -18,8 +18,8 @@
   "commands_run": [
     {"command": "python -m compileall apps_rg -q", "exit_code": 0},
     {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write", "exit_code": 0},
-    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0},
-    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.internal.final_resume_assembler", "exit_code": 0},
+    {"command": "python -m apps_rg.runtime.internal.resume_package_disposition", "exit_code": 0},
     {"command": "pytest tests/unit/apps_rg -k aggregation...", "exit_code": 0, "selected": 22, "passed": 22},
     {"command": "pytest tests/_apps_contract -k apps_rg aggregation...", "exit_code": 0, "selected": 15, "passed": 15},
     {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}

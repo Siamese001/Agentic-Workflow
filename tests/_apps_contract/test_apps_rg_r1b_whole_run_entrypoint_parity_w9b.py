@@ -31,7 +31,7 @@ def test_canonical_dispatch_wires_whole_run_preflight() -> None:
     src = inspect.getsource(mod.run_canonical_apps_rg_from_cli_primitives)
     assert "run_whole_run_cache_preflight" in src
     assert "build_cache_hit_dispatch_result" in src
-    assert "run_integrated_r4_deterministic_pipeline" in src
+    assert "run_integrated_single_action_spine" in src
 
 
 def test_dispatch_apps_rg_run_delegates_to_canonical() -> None:

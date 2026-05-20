@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from apps_rg.runtime.dispatch.competencies_dispatch import clarify_x3_for_competencies_live_provider_preflight
+from apps_rg.runtime.sections.competencies_lane_api import clarify_x3_for_competencies_live_provider_preflight
 from apps_rg.runtime.exit.competencies_x3 import X3Disposition, aggregate_x3
 from apps_rg.runtime.providers.competencies_live_provider_gate import (
     REASON_PROVIDER_UNAVAILABLE,

@@ -1,0 +1,177 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11_M3B_M4B_M4C_M4D",
+  "status": "PARTIAL",
+  "receipt": {
+    "files_changed": [
+      "apps_eval/engines/narrative_judge_scorer.py",
+      "apps_shared/adapters/rg_integrations_facade.py",
+      "apps_rg/integrations/__init__.py",
+      "apps_rg/integrations/anti_overfitting.py",
+      "apps_rg/integrations/length_budget.py",
+      "apps_rg/integrations/hops/_llm_client.py",
+      "apps_rg/runtime/sections/competencies_lane.py",
+      "apps_rg/runtime/sections/competencies_lane_execution.py",
+      "apps_rg/runtime/sections/prompt_trace_reasoning.py",
+      "apps_rg/runtime/sections/resume_employment_bullets.py",
+      "apps_rg/runtime/sections/headline_pa.py",
+      "apps_rg/runtime/sections/competencies_pa.py",
+      "apps_rg/runtime/sections/ibm_bullets_pa.py",
+      "apps_rg/runtime/sections/ibm_narrative_pa.py",
+      "apps_rg/runtime/sections/unify_bullets_pa.py",
+      "apps_rg/runtime/sections/unify_narrative_pa.py",
+      "apps_rg/runtime/sections/executive_summary_pa.py",
+      "apps_rg/runtime/dispatch/headline_pa.py",
+      "apps_rg/runtime/dispatch/competencies_pa.py",
+      "apps_rg/runtime/dispatch/ibm_bullets_pa.py",
+      "apps_rg/runtime/dispatch/ibm_narrative_pa.py",
+      "apps_rg/runtime/dispatch/unify_bullets_pa.py",
+      "apps_rg/runtime/dispatch/unify_narrative_pa.py",
+      "apps_rg/runtime/dispatch/executive_summary_pa.py",
+      "apps_rg/runtime/sections/executive_summary_lane.py",
+      "apps_rg/runtime/sections/headline_lane.py",
+      "apps_rg/runtime/sections/ibm_bullets_lane.py",
+      "apps_rg/runtime/sections/unify_bullets_lane.py",
+      "apps_rg/runtime/sections/unify_narrative_lane.py",
+      "tests/unit/apps_shared/adapters/test_w3_boundary_facades.py",
+      "tests/unit/apps_rg/runtime/sections/test_lane_pa_helper_parity.py"
+    ],
+    "commands_run": [
+      "git status --short",
+      "python -m compileall agentic_core apps_rg apps_shared apps_eval -q",
+      "git grep apps_rg.reasoning|Rg*|rg_orchestrator_facade apps_eval apps_shared apps_rg tests",
+      "git grep dispatch_pa|competencies_dispatch|competencies_lane apps_rg tests docs",
+      "python docs/reports/agent_inventory/_w11_fanin_scan.py",
+      "python docs/reports/agent_inventory/_w11_adg_expand.py",
+      "python docs/reports/agent_inventory/_w11_remaining_candidates_prep.py"
+    ],
+    "tests_run": [
+      {
+        "command": "pytest tests/unit/apps_shared/adapters/test_w3_boundary_facades.py -q -p no:xdist",
+        "result": "18 passed"
+      },
+      {
+        "command": "pytest tests/unit/apps_rg/runtime/sections/test_lane_pa_helper_parity.py -q -p no:xdist",
+        "result": "10 passed"
+      },
+      {
+        "command": "pytest tests/unit/apps_rg/reasoning/test_rg_*.py -q -p no:xdist",
+        "result": "42 passed"
+      },
+      {
+        "command": "pytest tests/_apps_contract/test_apps_rg_*_quarantine|hygiene|exit_uwg -q -p no:xdist",
+        "result": "42 passed"
+      },
+      {
+        "command": "pytest tests/_apps_contract/test_competencies_canonical_lane_contract.py -q -p no:xdist",
+        "result": "8 passed, 2 failed",
+        "failures": [
+          "test_canonical_lane_x2_gate_cardinality (total_x2_gates 42 != 41)",
+          "test_canonical_lane_mock_judge_x3_review_code (X3_BLOCK != X3_REVIEW_MOCKED_PLUMBING_ONLY)"
+        ]
+      }
+    ],
+    "artifacts_written": [
+      "docs/reports/agent_inventory/w11_fast_blocker_burn_m3b_m4d.md",
+      "docs/reports/agent_inventory/w11_fast_blocker_burn_m3b_m4d.json",
+      "docs/reports/agent_inventory/w11_lane_dispatch_pa_map.md",
+      "docs/reports/agent_inventory/w11_candidate_fanin_matrix.json",
+      "docs/reports/agent_inventory/w11_gated_archive_delete_plan.md",
+      "docs/reports/agent_inventory/w11_migration_checklist.md",
+      ".cursor/plans/l2-rationalization-waves-c8e4f1.md"
+    ]
+  },
+  "m3b_rg_boundary": {
+    "migrated": [
+      "apps_eval/engines/narrative_judge_scorer.py -> apps_shared.adapters.rg_integrations_facade",
+      "apps_rg/integrations minimal restore for lazy facade"
+    ],
+    "retained": [
+      "apps_eval/engines/scenario_runner.py -> rg_orchestrator_facade.RgResumeOrchestrator",
+      "tests/unit/apps_rg/reasoning/*"
+    ],
+    "blockers": [
+      "Rg* QUARANTINE_30D — facades, eval, contract strings"
+    ]
+  },
+  "m4b_pa_extraction": {
+    "helpers_extracted": [
+      "compile_headline_prompt",
+      "compile_competencies_prompt",
+      "compile_ibm_bullets_prompt",
+      "compile_ibm_narrative_prompt",
+      "compile_unify_bullets_prompt",
+      "compile_unify_narrative_prompt",
+      "compile_executive_summary_prompt"
+    ],
+    "ssot_dir": "apps_rg/runtime/sections/",
+    "reexports_kept": "apps_rg/runtime/dispatch/*_pa.py",
+    "parity_tests": "tests/unit/apps_rg/runtime/sections/test_lane_pa_helper_parity.py",
+    "blockers": [
+      "competencies_dispatch / ibm_narrative_dispatch execution bodies not moved",
+      "graph projection still references dispatch PA path string"
+    ]
+  },
+  "m4c_competencies_split": {
+    "changed": [
+      "apps_rg/runtime/sections/competencies_lane_execution.py",
+      "apps_rg/runtime/sections/competencies_lane.py"
+    ],
+    "retained_compat": [
+      "apps_rg/runtime/dispatch/competencies_dispatch.run_competencies_execution"
+    ],
+    "tests": {
+      "passed": [
+        "test_canonical_lane_records_trace_runtime_path",
+        "test_competencies_lane_execution_import_surface"
+      ],
+      "failed": [
+        "test_canonical_lane_x2_gate_cardinality",
+        "test_canonical_lane_mock_judge_x3_review_code"
+      ]
+    },
+    "blockers": [
+      "Full execution body move deferred (~665+ lines coupled)"
+    ]
+  },
+  "m4d_fanin_update": {
+    "fanin_before": {
+      "archived": 1,
+      "delete_ready": 0,
+      "archive_ready": 0,
+      "migration_required": 8,
+      "blocked": 11
+    },
+    "fanin_after": {
+      "archived": 1,
+      "delete_ready": 0,
+      "archive_ready": 0,
+      "migration_required": 8,
+      "blocked": 12
+    },
+    "archive_ready_candidates": [],
+    "next_single_archive_target": {
+      "id": "validation_orchestrator",
+      "path": "agentic_core/L2_execution/reasoning/validation_orchestrator.py",
+      "classification": "ARCHIVE_CANDIDATE_AFTER_30D",
+      "blockers": ["CI baselines", "30d quarantine clock"]
+    }
+  },
+  "updated_counts": {
+    "archived": 1,
+    "delete_ready": 0,
+    "archive_ready": 0,
+    "migration_required": 8,
+    "blocked": 12
+  },
+  "behavior_change": false,
+  "runtime_change": "trace_runtime_path default for canonical competencies entry only",
+  "next_recommended_action": "M3.5 migrate apps_shared/contract Rg* strings; M4.7 shrink dispatch execution modules; re-baseline competencies stub contract if X2=42 is canonical",
+  "explicit_non_claims": [
+    "no files deleted",
+    "no archive moves",
+    "no product runtime behavior changed",
+    "no X2/X3 weakened",
+    "no live apps_rg proof"
+  ]
+}

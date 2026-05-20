@@ -1,0 +1,487 @@
+{
+  "generated_at": "2026-05-19T10:32:57.118933+00:00",
+  "adg_snapshot_id": "05172026_0651",
+  "adg_sqlite": "artifacts/adg/adg_indexed_05172026_0651.sqlite",
+  "compileall_exit_code": 0,
+  "git_status_short": [
+    "M .cursor/migration_allowlist.json",
+    " M .cursor/scripts/check_cursor_native_config.py",
+    " M .cursor/scripts/check_cursor_optimized_config.py",
+    " M .env.example",
+    " M agentic_core/L0_routing/reasoning/execution_orchestrator.py",
+    " M agentic_core/L0_routing/reasoning/route_gates.py",
+    " M apps_rg/__main__.py",
+    " M apps_rg/cache/whole_run_entrypoint_preflight.py",
+    " M apps_rg/config/domain_contract/section_retrieval_profile.yaml",
+    " M apps_rg/fact_inventory/augmented_skills_graph.py",
+    " M apps_rg/runtime/dispatch/executive_summary_pa.py",
+    " M apps_rg/runtime/dispatch/input_authority_prompt_block.py",
+    " M apps_rg/runtime/judges/X1D_PROVIDER_CONFIG.md",
+    " M apps_rg/runtime/judges/competencies_x1d.py",
+    " M apps_rg/runtime/judges/executive_summary_judge_profile.py",
+    " M apps_rg/runtime/judges/executive_summary_x1d.py",
+    " M apps_rg/runtime/judges/section_judge_profile.py",
+    " M apps_rg/runtime/proof_pool_lane_integration.py",
+    " M apps_rg/runtime/proof_pool_resolver.py",
+    " M apps_rg/runtime/sections/executive_summary_lane.py",
+    " M apps_rg/runtime/sections/selected_role_fact_set.py",
+    " M apps_rg/runtime/validators/proof_pool_source_fact_validation.py",
+    " M ops_scripts/ci/check_always_on_token_budget.py",
+    " M tests/_apps_contract/test_exec_summary_runtime_slice.py",
+    " M tests/unit/apps_rg/test_section_judge_policy.py",
+    "?? .cursor/plans/adg-forensic-tier1-burndown-e8f3c1.md",
+    "?? .cursor/plans/cursor-governance-two-tier-b4e8f2.md",
+    "?? .cursor/plans/l2-rationalization-waves-c8e4f1.md",
+    "?? apps_rg/runtime/c03_graphrag_bound.py",
+    "?? apps_rg/runtime/validators/validate_exec_summary_graph_only_generation.py",
+    "?? docs/reports/agent_inventory/",
+    "?? docs/reports/apps_rg/executive_summary_graph_only_generation_live_proof.json",
+    "?? docs/reports/apps_rg/executive_summary_graph_only_generation_live_proof.md",
+    "?? docs/reports/cursor/",
+    "?? ops_scripts/ci/governance_tier_measurement.py",
+    "?? tests/_apps_contract/test_exec_summary_graph_only_generation_live_proof.py"
+  ],
+  "grep_via": "git grep (rg not in PATH on Windows shell)",
+  "grep_counts": {
+    "agent_healer_judge_patterns": 633,
+    "model_env_patterns": 1946
+  },
+  "questions": {
+    "1_l2_contains": {
+      "module_count_approx": 273,
+      "subtrees": {
+        "enforcement": "SovereignLLMGateway, E2 gates, provider substitution, write/read gateways",
+        "healers": "healing_router, cascade registry, Gemini/Qwen gateways, local_healer",
+        "reasoning": "StructuredEngineAgent, validation_orchestrator, ToolsmithAgent, executors",
+        "orchestration": "l2_phase_pipeline (E1-E5 receipts; E2/E3/E4 = validate/execute/heal)",
+        "providers": "gemini_provider, deterministic providers",
+        "types": "l2_v3_receipts, l2_v4_contracts, heal contracts, agent taxonomy",
+        "utils": "write_gateway, tool chains, l2_agent_wrappers",
+        "bindings": "apps_rg_l2_binding (RETIRE shim), apps_lic_l2_binding, apps_research_l2_binding"
+      },
+      "phase_mapping": {
+        "L2.2_validate": "E2 in l2_phase_pipeline (ValidatorResult)",
+        "L2.3_execute": "E3 in l2_phase_pipeline (ExecutorResult)",
+        "L2.4_heal": "E4 in l2_phase_pipeline (HealerResult; TwoPhaseHealerFn)",
+        "legacy_enum_warning": "l2_execution_contract.py CanonicalAgentRole may label EXECUTE as L2.2 \u2014 docs-only mismatch"
+      }
+    },
+    "2_useful_core": [
+      {
+        "path": "agentic_core/L2_execution/orchestration/l2_phase_pipeline.py",
+        "role": "E1-E5 spine orchestrator",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/healers/healing_router.py",
+        "role": "L2.4 tier routing (flash/pro)",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/healers/healing_cascade_registry.py",
+        "role": "Heal tier model IDs incl HEALING_GOOGLE_AI_PRO_MODEL",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
+        "role": "Provider gateway chokepoint",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/bounded_executor.py",
+        "role": "Bounded L2 execution envelope",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/l2_package_driven_executor.py",
+        "role": "Package-driven L2 execute",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/reasoning/validation_orchestrator.py",
+        "role": "Pre-exec validation orchestration",
+        "confidence": "MEDIUM"
+      },
+      {
+        "path": "agentic_core/L2_execution/reasoning/authority_validator.py",
+        "role": "Authority slot validation",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/healers/gemini_gateway_provisioner.py",
+        "role": "Gemini heal provisioning",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L2_execution/healers/qwen_strict_diagnostic.py",
+        "role": "Qwen heal diagnostics",
+        "confidence": "MEDIUM"
+      },
+      {
+        "path": "agentic_core/L2_execution/healers/vllm_health_probe.py",
+        "role": "vLLM health (used by apps_rg)",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/L0_routing/config/model_registry.py",
+        "role": "Spine model ID SSOT",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "agentic_core/config/google_ai_env.py",
+        "role": "Google env var names",
+        "confidence": "HIGH"
+      }
+    ],
+    "3_obsolete_core": [
+      {
+        "path": "agentic_core/L2_execution/apps_rg_l2_binding.py",
+        "classification": "RETIRE",
+        "confidence": "HIGH",
+        "note": "Shim to apps_rg.runtime.bindings.l2_binding"
+      },
+      {
+        "path": "agentic_core/L2_execution/_agentic_core_smoke.py",
+        "classification": "QUARANTINE_UNTIL_REVIEW",
+        "confidence": "MEDIUM"
+      },
+      {
+        "path": "agentic_core/L2_execution/reasoning/examples/code_quality_healer.py",
+        "classification": "QUARANTINE_UNTIL_REVIEW",
+        "confidence": "HIGH",
+        "note": "Exemplar only"
+      },
+      {
+        "path": "agentic_core/L2_execution/reasoning/examples/code_quality_validator.py",
+        "classification": "QUARANTINE_UNTIL_REVIEW",
+        "confidence": "HIGH"
+      }
+    ],
+    "4_canonical_apps_rg": [
+      {
+        "path": "apps_rg/__main__.py",
+        "role": "Integrated R4 CLI",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/orchestration/canonical_dispatch.py",
+        "role": "Section + integrated dispatch SSOT",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/l2_recipe/r4_generation_route.py",
+        "role": "Default modular_section_lanes",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/bindings/l2_binding.py",
+        "role": "Canonical l2_execute_apps_rg",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/providers/qwen_vllm_provider.py",
+        "role": "Product generation provider",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/judges/section_judge_profile.py",
+        "role": "APPS_RG_*_JUDGE_MODEL_* resolution",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/sections/executive_summary_lane.py",
+        "role": "Section lane (Qwen)",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/validators/",
+        "role": "X2 deterministic gates per section",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/exit/",
+        "role": "X3 disposition helpers",
+        "confidence": "HIGH"
+      }
+    ],
+    "5_non_product_apps_rg": [
+      {
+        "path": "apps_rg/reasoning/RgResumeOrchestrator.py",
+        "classification": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/reasoning/RgHealingOrchestrator.py",
+        "classification": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/reasoning/RGStrategyExecutor.py",
+        "classification": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
+        "confidence": "MEDIUM"
+      },
+      {
+        "path": "apps_rg/runtime/dry_run/executive_summary_demo.py",
+        "classification": "QUARANTINE_UNTIL_REVIEW",
+        "confidence": "HIGH"
+      },
+      {
+        "path": "apps_rg/runtime/internal/lane_batch.py",
+        "classification": "QUARANTINE_UNTIL_REVIEW",
+        "confidence": "HIGH",
+        "note": "Offline orchestrator; not integrated dispatch"
+      }
+    ],
+    "6_model_consumers": {
+      "GOOGLE_AI_MODEL": [
+        "agentic_core/L0_routing/config/model_registry.py -> GEMINI_FLASH_MODEL_ID",
+        "agentic_core/L2_execution/healers/healing_router.py",
+        "agentic_core/L2_execution/healers/gemini_gateway_provisioner.py",
+        "agentic_core/L3_orchestration/exit_eval/judges/google_judge.py",
+        "agentic_core/config/sovereign_config.py",
+        "apps_lic/reasoning/enterprise_campaign_orchestrator.py"
+      ],
+      "GOOGLE_AI_PRO_MODEL": [
+        "agentic_core/L0_routing/config/model_registry.py -> GEMINI_PRO_MODEL_ID",
+        "agentic_core/L1_cognition/enforcement/consensus_validator.py (juror)",
+        "agentic_core/L3_orchestration/reasoning/engines/sub_atomic_engine_impl.py",
+        "agentic_core/runtime/providers/provider_registry.py",
+        "apps_rg/runtime/judges/executive_summary_x1d.py (fallback only)"
+      ],
+      "OPENAI_MODEL": [
+        "agentic_core/L0_routing/config/model_registry.py -> OPENAI_MODEL_ID",
+        "agentic_core/evaluation/judges/openai_judge.py",
+        "agentic_core/runtime/config/reasoning_types.py",
+        "apps_rg/runtime/judges/executive_summary_x1d.py (fallback)",
+        "apps_rg/runtime/dry_run/executive_summary_demo.py (hardcoded demo)"
+      ],
+      "HEALING_GOOGLE_AI_PRO_MODEL": [
+        "agentic_core/L2_execution/healers/healing_cascade_registry.py",
+        "agentic_core/config/google_ai_env.py"
+      ],
+      "APPS_RG_JUDGE_VARS": [
+        "apps_rg/runtime/judges/section_judge_profile.py",
+        "apps_rg/runtime/judges/executive_summary_judge_profile.py",
+        "apps_rg/runtime/judges/X1D_PROVIDER_CONFIG.md"
+      ],
+      "QWEN_VLLM": [
+        "apps_rg/runtime/providers/qwen_vllm_provider.py",
+        "apps_rg/runtime/sections/*_lane.py",
+        "agentic_core/L0_routing/config/model_registry.py (QWEN_LOCAL_MODEL_ID / VLLM_*)"
+      ],
+      "SIGNAL_*": [
+        "agentic_core/runtime/config/signal_quality_config.py",
+        "apps_shared/utils/subatomic_hop_util.py (STUB)",
+        "apps_shared/types/engine_type_types.py (STUB)"
+      ]
+    },
+    "7_spine_only_vars": [
+      "GOOGLE_AI_MODEL",
+      "GOOGLE_AI_PRO_MODEL",
+      "OPENAI_MODEL",
+      "HEALING_GOOGLE_AI_PRO_MODEL",
+      "ANTHROPIC_MODEL"
+    ],
+    "8_apps_rg_vars": {
+      "generation": [
+        "QWEN_VLLM_MODEL",
+        "VLLM_BASE_URL",
+        "VLLM_MODEL_NAME",
+        "APPS_RG_*_QWEN_*",
+        "APPS_RG_L2_PROVIDER_MODE"
+      ],
+      "judges": [
+        "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
+        "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD",
+        "APPS_RG_OPENAI_JUDGE_MODEL_*",
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_*"
+      ]
+    },
+    "9_signal_quality": {
+      "real_ssot": "agentic_core/runtime/config/signal_quality_config.py",
+      "stubbed": [
+        "apps_shared/utils/subatomic_hop_util.py",
+        "apps_shared/types/engine_type_types.py"
+      ],
+      "does_not_drive": [
+        "apps_rg section generation",
+        "apps_rg judges",
+        "L2 heal tier routing"
+      ]
+    },
+    "10_waves": [
+      {
+        "id": "W0",
+        "objective": "Freeze inventory SSOT and ADG provenance",
+        "depends_on": [],
+        "combine_with": []
+      },
+      {
+        "id": "W1",
+        "objective": "Document L2 subphase vocabulary E2/E3/E4 vs legacy enums",
+        "depends_on": [
+          "W0"
+        ],
+        "combine_with": []
+      },
+      {
+        "id": "W2",
+        "objective": "Spine model env guards for apps_rg generation path",
+        "depends_on": [
+          "W1"
+        ],
+        "combine_with": [
+          "W3"
+        ]
+      },
+      {
+        "id": "W3",
+        "objective": "apps_rg judge env isolation and receipt model_source",
+        "depends_on": [
+          "W2"
+        ],
+        "combine_with": [
+          "W2"
+        ]
+      },
+      {
+        "id": "W4",
+        "objective": "Signal-quality SSOT wire-up or stub quarantine",
+        "depends_on": [
+          "W0"
+        ],
+        "combine_with": [],
+        "must_stay_separate_from": [
+          "W2"
+        ]
+      },
+      {
+        "id": "W5",
+        "objective": "Same-authority healing enforcement audit",
+        "depends_on": [
+          "W1"
+        ],
+        "combine_with": []
+      },
+      {
+        "id": "W6",
+        "objective": "Retire apps_rg_l2_binding shim",
+        "depends_on": [
+          "W2",
+          "W3"
+        ],
+        "combine_with": []
+      },
+      {
+        "id": "W7",
+        "objective": "Quarantine non-product apps_rg paths",
+        "depends_on": [
+          "W0"
+        ],
+        "combine_with": [
+          "W8"
+        ]
+      },
+      {
+        "id": "W8",
+        "objective": "Consolidate dispatch vs section lane surfaces",
+        "depends_on": [
+          "W7"
+        ],
+        "combine_with": [
+          "W7"
+        ]
+      },
+      {
+        "id": "W9",
+        "objective": "L2 E2 validator/gateway consolidation",
+        "depends_on": [
+          "W1",
+          "W5"
+        ],
+        "combine_with": []
+      },
+      {
+        "id": "W10",
+        "objective": "Exit/UWG/L4/L6 no-bypass contract tests",
+        "depends_on": [
+          "W5"
+        ],
+        "combine_with": []
+      },
+      {
+        "id": "W11",
+        "objective": "Gated archive/delete after fan-in zero",
+        "depends_on": [
+          "W6",
+          "W7",
+          "W8",
+          "W9",
+          "W10"
+        ],
+        "combine_with": []
+      }
+    ],
+    "11_combine_rules": {
+      "safe_to_combine": [
+        [
+          "W0"
+        ],
+        [
+          "W2",
+          "W3"
+        ],
+        [
+          "W7",
+          "W8"
+        ]
+      ],
+      "must_stay_separate": [
+        "W4 signal vs W2 model env",
+        "W5 healing before W11 delete",
+        "W6 shim retirement before W11 delete",
+        "W10 boundary tests before W11 delete"
+      ]
+    }
+  },
+  "classifications": {
+    "KEEP_CORE": 13,
+    "KEEP_APPS_RG": 9,
+    "RETIRE": 1,
+    "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME": 3,
+    "QUARANTINE_UNTIL_REVIEW": 5,
+    "NEEDS_DECISION": [
+      "apps_shared signal stub wire vs quarantine",
+      "legacy_full_resume rollback retention",
+      "validation_orchestrator vs l2_phase_pipeline E2 duplication"
+    ]
+  },
+  "explicit_non_claims": [
+    "No runtime proof that all healing respects same-authority (planned W5)",
+    "No deprecation or deletion performed in this planning pass",
+    "RgResumeOrchestrator still has unit tests and alias facade \u2014 not proven dead",
+    "grep counts include tests/docs \u2014 not all hits are production paths"
+  ],
+  "waves_completed": {
+    "W0": {
+      "status": "PASS",
+      "note": "Inventory JSON regenerated; compileall exit 0; confidence preserved"
+    },
+    "W1": {
+      "status": "PASS",
+      "note": "Ownership docs added; zero runtime behavior change"
+    }
+  },
+  "w1_documentation_artifacts": [
+    "docs/reports/agent_inventory/l2_ownership_model.md",
+    "docs/reports/agent_inventory/apps_rg_canonical_runtime_boundary.md",
+    "docs/reports/agent_inventory/env_ownership_boundary.md"
+  ],
+  "canonical_plan": {
+    "slug": "l2-rationalization-waves-c8e4f1",
+    "path": ".cursor/plans/l2-rationalization-waves-c8e4f1.md",
+    "notion_page_id": "36527693-f55c-81d1-928c-c387dfcdafc5",
+    "notion_url": "https://www.notion.so/l2-rationalization-waves-c8e4f1-36527693f55c81d1928cc387dfcdafc5",
+    "notion_status": "In Progress"
+  }
+}

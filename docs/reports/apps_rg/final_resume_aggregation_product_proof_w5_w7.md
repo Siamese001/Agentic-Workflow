@@ -45,8 +45,8 @@ Cross-section gates: structural PASS with WARN on `x2_cross_section_exact_duplic
 ```text
 python -m compileall apps_rg -q
 python tools/apps_rg/build_coherent_aggregation_rollup.py --write
-python -m apps_rg.runtime.assembly.final_resume_assembler
-python -m apps_rg.runtime.package.resume_package_x3
+python -m apps_rg.runtime.internal.final_resume_assembler
+python -m apps_rg.runtime.internal.resume_package_disposition
 pytest tests/unit/apps_rg -k "aggregation or overlap or final_resume or claim_ledger or run_fingerprint or package_x3" -q --tb=short
 pytest tests/_apps_contract -k "apps_rg and (aggregation or overlap or final_resume or claim_ledger or run_fingerprint or cross_section_x2 or package_x3)" -q --tb=short
 git diff HEAD -- agentic_core

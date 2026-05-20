@@ -439,6 +439,18 @@ def build_lane_runtime_proof_bundle_document(
         )
     )
     _finalize_entries(entries)
+    evidence_pkg = artifact_dir / "evidence_package_index.json"
+    verified_refs: list[dict[str, Any]] = []
+    if evidence_pkg.is_file():
+        try:
+            ep = json.loads(evidence_pkg.read_text(encoding="utf-8"))
+            if isinstance(ep, dict):
+                vr = ep.get("verified_external_refs")
+                if isinstance(vr, list):
+                    verified_refs = [x for x in vr if isinstance(x, dict)]
+        except (OSError, json.JSONDecodeError, TypeError):
+            verified_refs = []
+
     doc: dict[str, Any] = {
         "schema_version": _SCHEMA_VERSION,
         "run_id": rid,
@@ -450,6 +462,11 @@ def build_lane_runtime_proof_bundle_document(
         "artifact_namespace": art_ns,
         "log_namespace": log_ns,
         "entries": entries,
+        "evidence_package_index_ref": "evidence_package_index.json"
+        if evidence_pkg.is_file()
+        else None,
+        "verified_external_refs": verified_refs,
+        "imported_core_evidence_snapshots": [],
     }
     mf_path = artifact_dir / "run_manifest.json"
     if mf_path.is_file():

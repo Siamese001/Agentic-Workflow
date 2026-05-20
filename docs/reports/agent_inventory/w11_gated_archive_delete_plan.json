@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11",
+  "mode": "planning_only",
+  "execution_approved": false,
+  "adg_snapshot_id": "05192026_0920",
+  "adg_status": "COMPLETE_MODULE_SCOPE",
+  "adg_note": "M2.2+M3+M4: 8 module groups fan-in 0; dry_run 2 files; 4 env/CLI NOT_SUPPORTED_PATTERN.",
+  "m1_m2_receipt": "docs/reports/agent_inventory/w11_m1_m2_unblock_receipt.json",
+  "shim_archive_prep_receipt": "docs/reports/agent_inventory/w11_shim_archive_prep_receipt.json",
+  "shim_archived": true,
+  "shim_archive_path": "archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py",
+  "shim_archive_receipt": "docs/reports/agent_inventory/w11_shim_archive_receipt.json",
+  "remaining_candidates_prep_receipt": "docs/reports/agent_inventory/w11_remaining_candidates_prep_receipt.json",
+  "summary": {
+    "candidates_assessed": 13,
+    "delete_ready_count": 0,
+    "archive_ready_count": 0,
+    "archived_count": 1,
+    "migration_required_count": 8,
+    "blocked_count": 12
+  },
+  "classifications_m222_m3_m4": {
+    "validation_orchestrator": "ARCHIVE_CANDIDATE_AFTER_30D",
+    "rg_reasoning_agents": "QUARANTINE_30D",
+    "deprecated_dispatch_clis": "QUARANTINE_30D",
+    "dry_run_dir": "QUARANTINE_30D",
+    "orchestrate_full_resume": "KEEP_TEST_SUPPORT_ONLY"
+  },
+  "durable_write_admission_proof": {
+    "structural_confidence": "HIGH",
+    "runtime_admit_fanin_confidence": "MEDIUM",
+    "uwg_module": "agentic_core/runtime/uwg/universal_write_gate.py",
+    "l4_adapter": "agentic_core/L4_state/adapters/write_adapters.py",
+    "w10_tests": [
+      "tests/unit/agentic_core/test_l2_exit_uwg_l4_no_bypass_boundary.py",
+      "tests/_apps_contract/test_apps_rg_exit_uwg_l4_no_bypass_boundary.py"
+    ],
+    "runtime_proof_gap": "OTel trace showing live apps_rg commit -> UniversalWriteGate.admit() -> L4WriteAdapter"
+  },
+  "delete_gate": [
+    "fan_in_zero",
+    "no_test_imports",
+    "no_product_cli_refs",
+    "no_runtime_receipt_ssot",
+    "rollback_plan_ok",
+    "docs_updated",
+    "compileall_pass",
+    "contract_tests_pass",
+    "migration_receipt"
+  ],
+  "archive_gate": [
+    "product_zero_dependency",
+    "tests_migrated",
+    "archive_manifest",
+    "import_breakage_tested",
+    "replacement_documented"
+  ],
+  "artifacts": {
+    "plan_md": "docs/reports/agent_inventory/w11_gated_archive_delete_plan.md",
+    "fanin_matrix": "docs/reports/agent_inventory/w11_candidate_fanin_matrix.json",
+    "migration_checklist": "docs/reports/agent_inventory/w11_migration_checklist.md",
+    "rollback_plan": "docs/reports/agent_inventory/w11_rollback_plan.md",
+    "remaining_prep_receipt": "docs/reports/agent_inventory/w11_remaining_candidates_prep_receipt.json"
+  },
+  "explicit_non_claims": [
+    "no_files_deleted",
+    "no_archive_moves_in_m222_m3_m4",
+    "no_runtime_behavior_changed",
+    "no_product_behavior_changed",
+    "no_x2_x3_weakened",
+    "no_live_apps_rg_proof_run",
+    "no_mock_smoke_offline_stub_as_product_proof",
+    "no_static_grep_as_runtime_reachability"
+  ],
+  "do_not_delete_yet": "all_remaining_candidates",
+  "next_recommended_action": "30d quarantine validation_orchestrator CI baselines; M3 facade migration; M4 lane PA extraction"
+}

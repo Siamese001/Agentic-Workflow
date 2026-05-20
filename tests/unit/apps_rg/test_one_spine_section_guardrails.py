@@ -27,7 +27,7 @@ def test_inventory_two_paths_and_canonical_target():
     assert inv["two_paths_found"] is True
     assert list(inv["canonical_spine_target"]) == list(CANONICAL_SPINE_CHAIN)
     assert inv["path_a_section_cli"]["exemplar_lane"] == "executive_summary"
-    assert inv["path_b_canonical_r4"]["dispatch"].endswith("run_integrated_r4_deterministic_pipeline")
+    assert inv["path_b_canonical_r4"]["dispatch"].endswith("run_integrated_single_action_spine")
 
 
 def test_section_graph_binding_shim_not_spine_fec():

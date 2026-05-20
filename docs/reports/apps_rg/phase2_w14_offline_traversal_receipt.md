@@ -2,7 +2,7 @@
 
 **STATUS:** PASS
 **PLAN_ID:** phase2-gtm-presales-remaining-f7a2c9
-**WAVE:** W14_BASELINE
+**WAVE:** W14
 **SCOPE_MATCH:** True
 **ARCHETYPE_COUNT:** 7
 **TRAVERSAL_PASS_RATE:** 1.0

@@ -41,7 +41,7 @@ Rollback: [w11_rollback_plan.md](w11_rollback_plan.md)
 | `agentic_core/L2_execution/_agentic_core_smoke.py` | QUARANTINE | **KEEP_TEST_SUPPORT_ONLY** | LOW | 27 test refs | NOT_RUN | YES | NO | L2 smoke harness |
 | `agentic_core/L2_execution/reasoning/examples/code_quality_*` | QUARANTINE | **ARCHIVE_CANDIDATE** | LOW | 5 | NOT_RUN | YES | NO | exemplar tests |
 | `apps_rg/runtime/dry_run/` | QUARANTINE | **QUARANTINE_30D** | LOW | 6 | ok, **0** (2 files) | YES | NO | contract quarantine tests |
-| `apps_rg/runtime/orchestrate_full_resume.py` | TEST_SUPPORT | **KEEP_TEST_SUPPORT_ONLY** | MEDIUM | 9 | NOT_RUN | YES | NO | e2e resume tests + preflight |
+| `apps_rg/runtime/internal/lane_batch.py` | TEST_SUPPORT | **KEEP_TEST_SUPPORT_ONLY** | MEDIUM | 9 | NOT_RUN | YES | NO | e2e resume tests + preflight |
 | `apps_rg/reasoning/Rg*.py` | SUPERSEDED | **QUARANTINE_30D** | LOW | 40+ | ok, **0** per file | YES | NO | facades, unit tests; no product import |
 | `apps_rg/runtime/dispatch/*_dispatch.py` | DOC_DEPRECATE | **QUARANTINE_30D** | MEDIUM | 58 | ok (8 files) | YES | NO | lanes import PA helpers; CLI retired |
 | `APPS_RG_R4_GENERATION_MODE=legacy_full_resume` | ROLLBACK | **KEEP_ROLLBACK_ONLY** | HIGH | env refs | N/A | NO | NO | intentional rollback |

@@ -216,7 +216,7 @@ def test_x2_first_person_gate_catches_bad_text():
 
 
 def test_provider_prompt_forbids_markdown_fences():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_prompt_messages
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_prompt_messages
 
     messages = build_prompt_messages(
         {
@@ -234,7 +234,7 @@ def test_provider_prompt_forbids_markdown_fences():
 
 
 def test_provider_prompt_includes_allowed_source_fact_ids_contract_and_spacing_examples():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_prompt_messages
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_prompt_messages
 
     messages = build_prompt_messages(
         {
@@ -264,7 +264,7 @@ def test_provider_prompt_includes_allowed_source_fact_ids_contract_and_spacing_e
 
 
 def test_provider_prompt_requires_dense_paragraph_narrative_arc():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import build_prompt_messages
+    from apps_rg.runtime.sections.executive_summary_lane_api import build_prompt_messages
 
     messages = build_prompt_messages(
         {
@@ -286,7 +286,7 @@ def test_provider_prompt_requires_dense_paragraph_narrative_arc():
 
 
 def test_narrative_shape_rejects_sentence_stacked_proof():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_lane_api import (
         check_executive_summary_narrative_shape,
     )
 
@@ -302,7 +302,7 @@ def test_narrative_shape_rejects_sentence_stacked_proof():
 
 
 def test_narrative_shape_rejects_long_enumeration():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_lane_api import (
         check_executive_summary_narrative_shape,
     )
 
@@ -316,7 +316,7 @@ def test_narrative_shape_rejects_long_enumeration():
 
 
 def test_l2_resume_voice_rejects_first_person():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import check_l2_resume_voice
+    from apps_rg.runtime.sections.executive_summary_lane_api import check_l2_resume_voice
 
     text = (
         "As an enterprise AI platform leader, I have generated $22M in IP-led revenue "
@@ -328,7 +328,7 @@ def test_l2_resume_voice_rejects_first_person():
 
 
 def test_l2_resume_voice_rejects_achieved_through_bridge():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import check_l2_resume_voice
+    from apps_rg.runtime.sections.executive_summary_lane_api import check_l2_resume_voice
 
     text = (
         "Enterprise AI platform leader who generated $22M in IP-led revenue. "
@@ -340,7 +340,7 @@ def test_l2_resume_voice_rejects_achieved_through_bridge():
 
 
 def test_narrative_shape_accepts_two_sentence_executive_arc():
-    from apps_rg.runtime.dispatch.executive_summary_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_lane_api import (
         build_mock_output,
         check_executive_summary_narrative_shape,
     )
@@ -1786,7 +1786,7 @@ def test_source_sensitive_audit_token_requires_fact_support():
 
 def test_no_agentic_core_in_overlay_files():
     overlay_files = [
-        "apps_rg/runtime/dispatch/executive_summary_dispatch.py",
+        "apps_rg/runtime/sections/executive_summary_lane_api.py",
         "apps_rg/runtime/sections/executive_summary_lane.py",
         "apps_rg/runtime/providers/qwen_vllm_provider.py",
         "apps_rg/runtime/validators/executive_summary_x2.py",

@@ -5,7 +5,7 @@ from __future__ import annotations
 from agentic_core.L3_orchestration.exit_eval.v6.preflight import normalize_to_packet
 from agentic_core.L3_orchestration.exit_eval.v6.types import GateResult
 from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import eval_x1a
-from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
+from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
     _build_l2_exit_receipts,
 )
 

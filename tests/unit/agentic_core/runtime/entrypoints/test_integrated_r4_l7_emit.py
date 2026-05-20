@@ -1,4 +1,4 @@
-"""L7_AUDITABILITY emit verification for integrated_r4_deterministic_pipeline_run.
+"""L7_AUDITABILITY emit verification for integrated_single_action_spine_run.
 
 Tests that the R4 entrypoint produces the four canonical L7 artifacts:
 - agentic_core_how_trace.json
@@ -15,8 +15,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-    run_integrated_r4_deterministic_pipeline,
+from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+    run_integrated_single_action_spine,
 )
 
 
@@ -55,7 +55,7 @@ class TestR4L7Emit:
         ) as mock_resolve:
             mock_resolve.return_value = mock_l2_callable
 
-            result = run_integrated_r4_deterministic_pipeline(
+            result = run_integrated_single_action_spine(
                 raw_request=_minimal_raw_request(),
                 app_name="apps_rg",
                 artifact_dir=temp_artifact_dir,
@@ -99,7 +99,7 @@ class TestR4L7Emit:
         ) as mock_resolve:
             mock_resolve.return_value = mock_l2_callable
 
-            run_integrated_r4_deterministic_pipeline(
+            run_integrated_single_action_spine(
                 raw_request=_minimal_raw_request(),
                 app_name="apps_rg",
                 artifact_dir=temp_artifact_dir,
@@ -127,7 +127,7 @@ class TestR4L7Emit:
         ) as mock_resolve:
             mock_resolve.return_value = mock_l2_callable
 
-            run_integrated_r4_deterministic_pipeline(
+            run_integrated_single_action_spine(
                 raw_request=_minimal_raw_request(),
                 app_name="apps_rg",
                 artifact_dir=temp_artifact_dir,
@@ -155,7 +155,7 @@ class TestR4L7Emit:
         ) as mock_resolve:
             mock_resolve.return_value = mock_l2_callable
 
-            result = run_integrated_r4_deterministic_pipeline(
+            result = run_integrated_single_action_spine(
                 raw_request=_minimal_raw_request(),
                 app_name="apps_rg",
                 artifact_dir=temp_artifact_dir,

@@ -40,6 +40,26 @@ _BANNED_PROSE_FRAGMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\s{2,}"), " "),
 )
 
+_UNSUPPORTED_DENSITY_MICRO_TAILS: tuple[str, ...] = (
+    ", integrating identity controls and highly available execution layers",
+    ", while strengthening regulated program delivery and audit-ready governance",
+)
+
+
+def _strip_unsupported_density_micro_tails(sentence: str) -> str:
+    """Remove legacy density-repair tails not grounded in SRFS claim_text."""
+    s = str(sentence or "").strip()
+    low = s.lower()
+    for tail in _UNSUPPORTED_DENSITY_MICRO_TAILS:
+        pos = low.find(tail.lower())
+        if pos < 0:
+            continue
+        s = s[:pos].rstrip()
+        if s and not s.endswith((".", "!", "?")):
+            s += "."
+        low = s.lower()
+    return s
+
 
 def _facts_index(selected_facts: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
@@ -120,6 +140,12 @@ def _sentence_has_unsupported_commercialization(sentence: str, blob: str) -> boo
         "reusable platform services",
         "bespoke delivery",
         "enterprise programs",
+        "engineering scale-out",
+        "operating model",
+        "adopted across",
+        "converting bespoke",
+        "converting delivery",
+        "full platform lifecycle",
     )
     return any(r in sl and r not in blob for r in risky)
 
@@ -131,6 +157,230 @@ def _sentence_s1_s2_thesis_echo(s1: str, s2: str) -> bool:
     if "governed agentic ai platform" in a and "governed agentic ai platform" in b:
         return True
     return False
+
+
+def _sentence_s1_s3_thesis_echo(s1: str, s3: str) -> bool:
+    """True when S3 repeats S1 governed-platform thesis instead of lifecycle scope."""
+    return _sentence_s1_s2_thesis_echo(s1, s3)
+
+
+def _sentence_s1_s2_capability_redundant(s1: str, s2: str) -> bool:
+    """True when S2 repeats the full fact_engineering_platform_001 capability stack from S1."""
+    s2l = str(s2 or "").lower()
+    stack_markers = (
+        "deterministic routing",
+        "multi-agent orchestration",
+        "graphrag",
+        "sandboxed execution",
+        "policy gating",
+    )
+    if sum(1 for m in stack_markers if m in s2l) >= 3:
+        return True
+    return _sentence_s1_s2_thesis_echo(s1, s2)
+
+
+def _srfs_slice_has_platform_004(slice_ids: frozenset[str]) -> bool:
+    return any(
+        str(fid).strip() == "fact_engineering_platform_004"
+        or str(fid).strip().startswith("fact_engineering_platform_004_metric_")
+        for fid in slice_ids
+    )
+
+
+def _platform_004_row(by_id: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
+    """Prefer platform_004* rows that carry the lab-to-production cycle metric."""
+    cycle_row: dict[str, Any] | None = None
+    fallback: dict[str, Any] | None = None
+    for fid, row in by_id.items():
+        if fid != "fact_engineering_platform_004" and not str(fid).startswith(
+            "fact_engineering_platform_004_metric_"
+        ):
+            continue
+        claim = str(row.get("claim_text") or "").strip()
+        blob = f"{claim} {' '.join(str(x) for x in row.get('metric_values') or [])}"
+        if claim and _sentence_has_supported_cycle_metric(claim, blob.lower()):
+            return row
+        if str(fid).startswith("fact_engineering_platform_004_metric_"):
+            cycle_row = row
+        elif fid == "fact_engineering_platform_004":
+            fallback = row
+    return cycle_row or fallback
+
+
+def _platform_004_cycle_metric_text(by_id: dict[str, dict[str, Any]]) -> str:
+    """Lifecycle/outcome metric text from fact_engineering_platform_004* rows."""
+    for fid in sorted(by_id.keys()):
+        if fid == "fact_engineering_platform_004" or fid.startswith(
+            "fact_engineering_platform_004_metric_"
+        ):
+            raw = str(by_id[fid].get("claim_text") or "").strip()
+            blob = f"{raw} {' '.join(str(x) for x in by_id[fid].get('metric_values') or [])}"
+            low = blob.lower()
+            if "month" in low and "week" in low:
+                return raw
+    row = _platform_004_row(by_id)
+    return str(row.get("claim_text") or "").strip() if row else ""
+
+
+def _split_claim_at_metric_clause(claim_text: str) -> tuple[str, str]:
+    """Split combined platform_004 claim into lifecycle clause and cycle-outcome tail."""
+    raw = str(claim_text or "").strip()
+    if not raw:
+        return "", ""
+    low = raw.lower()
+    for sep in ("reducing lab-to-production", "from six months", "from 6 months"):
+        if sep in low:
+            idx = low.index(sep)
+            head = raw[:idx].strip().rstrip(",").rstrip(".")
+            tail = raw[idx:].strip().rstrip(".")
+            return head, tail
+    return raw, ""
+
+
+def _platform_004_lifecycle_clause_for_s3(by_id: dict[str, dict[str, Any]]) -> str:
+    """S3 lifecycle clause — verbatim SRFS text without the six-month/three-week outcome tail."""
+    row = _platform_004_row(by_id)
+    if row is None:
+        return ""
+    claim = str(row.get("claim_text") or "").strip()
+    blob = f"{claim} {' '.join(str(x) for x in row.get('metric_values') or [])}"
+    if claim and _sentence_has_supported_cycle_metric(claim, blob.lower()):
+        head, _tail = _split_claim_at_metric_clause(claim)
+        return head
+    return claim
+
+
+def _platform_004_cycle_outcome_clause_for_s4(by_id: dict[str, dict[str, Any]]) -> str:
+    """S4 outcome clause — cycle metric tail from platform_004* rows when present."""
+    row = _platform_004_row(by_id)
+    if row is not None:
+        claim = str(row.get("claim_text") or "").strip()
+        blob = f"{claim} {' '.join(str(x) for x in row.get('metric_values') or [])}"
+        if claim and _sentence_has_supported_cycle_metric(claim, blob.lower()):
+            _head, tail = _split_claim_at_metric_clause(claim)
+            if tail:
+                return tail
+    return _platform_004_cycle_metric_text(by_id)
+
+
+def _sentence_s3_carries_cycle_metric(sentence: str) -> bool:
+    sl = str(sentence or "").lower()
+    return ("month" in sl or "6 months" in sl) and ("week" in sl or "3 weeks" in sl)
+
+
+def _sentence_s3_org_scale_violation(sentence: str) -> bool:
+    """S3 lifecycle bridge must not carry team-scale / org-span metrics (X2 shape gate)."""
+    sl = str(sentence or "").lower()
+    return bool(re.search(r"\b8\s+to\s+28\b", sl)) or "specialist" in sl
+
+
+def _sentence_s3_s4_duplicate_lifecycle_opener(s3: str, s4: str) -> bool:
+    """True when S3 and S4 repeat the same leading lifecycle clause from platform_004."""
+    s3l = str(s3 or "").lower().strip()
+    s4l = str(s4 or "").lower().strip()
+    if not s3l or not s4l:
+        return False
+    prefix = "standardized ai lifecycle practices"
+    return s3l.startswith(prefix) and s4l.startswith(prefix)
+
+
+def _sentence_s3_has_unsupported_embellishment(sentence: str, blob: str) -> bool:
+    sl = str(sentence or "").lower()
+    risky = (
+        "operating model scale-out and enterprise program adoption",
+        "through operating model scale-out",
+        "enterprise program adoption",
+    )
+    return any(r in sl and r not in blob for r in risky)
+
+
+def _sentence_s2_drops_governance_metric(sentence: str, by_id: dict[str, dict[str, Any]]) -> bool:
+    if "fact_governance_003" not in by_id:
+        return False
+    claim = str(by_id["fact_governance_003"].get("claim_text") or "").lower()
+    if "40%" not in claim and "by 40" not in claim:
+        return False
+    sl = str(sentence or "").lower()
+    return "40%" not in sl and "by 40" not in sl
+
+
+def _sentence_s2_governance_wrong_tense(sentence: str, by_id: dict[str, dict[str, Any]]) -> bool:
+    """True when governance fact is past-tense Implemented but prose uses present Implements."""
+    if "fact_governance_003" not in by_id:
+        return False
+    claim = str(by_id["fact_governance_003"].get("claim_text") or "").strip().lower()
+    sl = str(sentence or "").lower()
+    if not claim.startswith("implemented"):
+        return False
+    if re.search(r"\bimplements\b", sl) and any(
+        p in sl for p in ("basel", "ccar", "regulatory reporting")
+    ):
+        return True
+    return False
+
+
+def _governance_003_claim_sentence(by_id: dict[str, dict[str, Any]]) -> str:
+    claim = str(by_id.get("fact_governance_003", {}).get("claim_text") or "").strip()
+    if not claim:
+        return ""
+    return claim.rstrip(".") + "."
+
+
+def _sentence_s3_mechanism_lifecycle_stitch(sentence: str) -> bool:
+    """True when S3 merges platform mechanism with lifecycle in one stitched sentence."""
+    sl = str(sentence or "").lower()
+    if ";" in sl:
+        return True
+    return ("standardized ai lifecycle" in sl or "intake, validation" in sl) and (
+        "designed and operationalized" in sl
+        or "deterministic routing" in sl
+        or "regulated enterprise workflows" in sl
+    )
+
+
+def _sentence_s3_bas_lifecycle_stitch(sentence: str) -> bool:
+    """True when S3 fuses Basel/CCAR governance with lifecycle operating-model language."""
+    sl = str(sentence or "").lower()
+    gov = any(p in sl for p in ("basel", "ccar", "regulatory reporting errors"))
+    lifecycle = any(
+        p in sl
+        for p in ("lifecycle", "operating model", "engineering scale-out", "architecture")
+    )
+    return gov and lifecycle
+
+
+def _sentence_has_supported_cycle_metric(sentence: str, blob: str) -> bool:
+    sl = str(sentence or "").lower()
+    if not (("month" in sl or "6 months" in sl) and ("week" in sl or "3 weeks" in sl)):
+        return False
+    return (
+        "6 months to 3 weeks" in blob
+        or "six months to three weeks" in blob
+        or ("6 months" in blob and "3 weeks" in blob)
+    )
+
+
+def _sentence_supports_004_lifecycle_arc(s3: str, blob: str) -> bool:
+    """True when S3 already carries a supported lifecycle clause without Basel stitch."""
+    if _sentence_has_unsupported_commercialization(s3, blob):
+        return False
+    sl = str(s3 or "").lower()
+    if _sentence_s3_bas_lifecycle_stitch(s3):
+        return False
+    lifecycle_ok = any(
+        p in sl
+        for p in (
+            "standardized ai lifecycle",
+            "lab-to-production",
+            "six months",
+            "three weeks",
+            "6 months",
+            "3 weeks",
+        )
+    )
+    return lifecycle_ok and (
+        "lifecycle" in blob or "month" in blob or "week" in blob
+    )
 
 
 def _sentence_s2_dual_thread_overload(sentence: str) -> bool:
@@ -155,6 +405,8 @@ def _sentence_s4_needs_fact_tight_rewrite(
     blob: str,
 ) -> bool:
     """True when S4 adds outcomes beyond fact_exec_002 / allowed substrate."""
+    if _sentence_has_supported_cycle_metric(sentence, blob):
+        return False
     by_id = _facts_index(selected_facts)
     if "fact_exec_002" not in by_id:
         return (
@@ -192,13 +444,21 @@ def _sentence_s3_needs_lifecycle_rewrite(sentence: str) -> bool:
 
 
 def build_fact_tight_s2_sentence(selected_facts: list[dict[str, Any]]) -> str:
-    """S2 mechanism sentence — single proof thread (platform capabilities only)."""
+    """S2 mechanism — governance thread or narrow mechanism, not a repeat of S1 capability stack."""
     by_id = _facts_index(selected_facts)
+    if "fact_governance_003" in by_id:
+        gov = _governance_003_claim_sentence(by_id)
+        if gov:
+            return gov
+    if "fact_engineering_platform_001" in by_id and "fact_engineering_platform_002" in by_id:
+        return (
+            "Applies software dependency graph intelligence to expose dependency chains "
+            "and reduce refactor risk across governed platform delivery."
+        )
     if "fact_engineering_platform_001" in by_id:
         return (
-            "Designs and operationalizes deterministic routing, multi-agent orchestration, "
-            "GraphRAG retrieval, sandboxed execution, policy gating, and validation controls "
-            "for regulated enterprise workflows."
+            "Operationalizes policy gating and validation controls that strengthen "
+            "reliability and auditability for regulated enterprise workflows."
         )
     if "fact_engineering_platform_005" in by_id:
         if "fact_governance_003" in by_id:
@@ -216,11 +476,6 @@ def build_fact_tight_s2_sentence(selected_facts: list[dict[str, Any]]) -> str:
         return (
             "Re-architects containerized microservices and parallel HPC workflows that enable "
             "real-time stress testing and lower end-to-end latency while strengthening reliability."
-        )
-    if "fact_governance_003" in by_id:
-        return (
-            "Implements Basel III and CCAR data lineage, cataloging, and automated validation "
-            "frameworks that cut regulatory reporting errors and strengthen auditability."
         )
     return (
         "Designs governed platform execution with validation controls that strengthen "
@@ -242,9 +497,38 @@ def _s5_depth_tail_from_cert_fact(cert_claim: str) -> str:
     return "quantitative rigor and enterprise risk discipline"
 
 
+def _platform_001_regulated_workflows_clause(by_id: dict[str, dict[str, Any]]) -> str:
+    """Narrow platform-delivery clause from fact_engineering_platform_001 without mechanism stack."""
+    row = by_id.get("fact_engineering_platform_001")
+    if not isinstance(row, dict):
+        return ""
+    claim = str(row.get("claim_text") or "").strip()
+    low = claim.lower()
+    marker = ", including"
+    if marker in low:
+        return claim[: low.index(marker)].strip().rstrip(",")
+    if "regulated enterprise workflows" in low:
+        return claim
+    return ""
+
+
+def _platform_004_claim_has_cycle_metric(by_id: dict[str, dict[str, Any]]) -> bool:
+    return _platform_004_row(by_id) is not None and bool(
+        _platform_004_cycle_metric_text(by_id)
+    )
+
+
 def build_fact_tight_s3_sentence(selected_facts: list[dict[str, Any]]) -> str:
     """S3 lifecycle / delivery scope — executive platform arc, not standalone tactical tooling."""
     by_id = _facts_index(selected_facts)
+    lifecycle_clause = _platform_004_lifecycle_clause_for_s3(by_id)
+    if lifecycle_clause:
+        return lifecycle_clause.rstrip(".") + "."
+    row_004 = _platform_004_row(by_id)
+    if row_004 is not None:
+        lifecycle = str(row_004.get("claim_text") or "").strip()
+        if lifecycle and not _sentence_has_supported_cycle_metric(lifecycle, lifecycle.lower()):
+            return lifecycle.rstrip(".") + "."
     has_001 = "fact_engineering_platform_001" in by_id
     has_002 = "fact_engineering_platform_002" in by_id
     has_003 = "fact_governance_003" in by_id
@@ -281,9 +565,29 @@ def build_fact_tight_s3_sentence(selected_facts: list[dict[str, Any]]) -> str:
     return "Leads platform lifecycle work across architecture and engineering scale-out."
 
 
+def _capitalize_sentence_start(text: str) -> str:
+    s = str(text or "").strip()
+    if s and s[0].islower():
+        return s[0].upper() + s[1:]
+    return s
+
+
 def build_fact_tight_s4_sentence(selected_facts: list[dict[str, Any]]) -> str:
     """S4 measurable outcomes — metrics only from cited fact claim_text / metric_values."""
     by_id = _facts_index(selected_facts)
+    if _platform_004_claim_has_cycle_metric(by_id):
+        if _platform_001_regulated_workflows_clause(by_id) and _platform_004_lifecycle_clause_for_s3(by_id):
+            outcome = _platform_004_cycle_outcome_clause_for_s4(by_id)
+            if outcome:
+                return _capitalize_sentence_start(outcome.rstrip(".") + ".")
+    row_004 = _platform_004_row(by_id)
+    if row_004 is not None and _platform_004_claim_has_cycle_metric(by_id):
+        full = str(row_004.get("claim_text") or "").strip()
+        if full:
+            return _capitalize_sentence_start(full.rstrip(".") + ".")
+    cycle = _platform_004_cycle_metric_text(by_id)
+    if cycle:
+        return _capitalize_sentence_start(cycle.rstrip(".") + ".")
     if "fact_exec_002" in by_id:
         return str(by_id["fact_exec_002"].get("claim_text") or "").strip().rstrip(".") + "."
     if "fact_governance_003" in by_id:
@@ -299,6 +603,15 @@ def build_fact_tight_s5_sentence(selected_facts: list[dict[str, Any]]) -> str:
             "Brings AWS, Databricks, and platform credentials that align with the selected executive facts."
         )
     if "fact_quant_hpc_003" in by_id:
+        cert_claim = str(by_id["fact_certs_001"].get("claim_text") or "").strip()
+        if cert_claim.lower().startswith("holds "):
+            cert_claim = cert_claim[6:].strip()
+        if cert_claim:
+            return (
+                f"Brings {cert_claim.rstrip('.')} together with derivatives pricing and "
+                "capital modeling experience to strengthen enterprise risk discipline on "
+                "regulated platform programs."
+            )
         return (
             "Brings AWS, Databricks, and FSA credentials together with derivatives pricing and "
             "capital modeling experience to strengthen enterprise risk discipline on regulated "
@@ -341,13 +654,18 @@ def polish_srfs_sentence_fragments(sentence: str, role: int) -> str:
             s,
             flags=re.I,
         )
+        for tail in (
+            r",\s*integrating identity controls and highly available execution layers\.?$",
+            r",\s*integrating identity controls\.?$",
+        ):
+            s = re.sub(tail, ".", s, flags=re.I)
     if role == 3:
-        s = re.sub(
+        for tail in (
+            r",\s*through operating model scale-out and enterprise program adoption\.?$",
             r",\s*through operating model scale-out\.?$",
-            " with operating model scale-out.",
-            s,
-            flags=re.I,
-        )
+            r",\s*with operating model scale-out and enterprise program adoption\.?$",
+        ):
+            s = re.sub(tail, ".", s, flags=re.I)
     return s.strip()
 
 
@@ -431,6 +749,16 @@ def _source_fact_ids_for_s1(selected_facts: list[dict[str, Any]], slice_ids: fro
 
 def _source_fact_ids_for_s2(selected_facts: list[dict[str, Any]], slice_ids: frozenset[str]) -> list[str]:
     by_id = _facts_index(selected_facts)
+    if "fact_engineering_platform_001" in by_id and "fact_governance_003" in by_id:
+        if "fact_governance_003" in slice_ids:
+            return ["fact_governance_003"]
+    if "fact_engineering_platform_001" in by_id and "fact_engineering_platform_002" in by_id:
+        ids = [
+            x
+            for x in ("fact_engineering_platform_002", "fact_engineering_platform_001")
+            if x in slice_ids
+        ]
+        return ids[:1] if ids else []
     if "fact_engineering_platform_001" in by_id:
         return ["fact_engineering_platform_001"] if "fact_engineering_platform_001" in slice_ids else []
     if "fact_engineering_platform_005" in by_id and "fact_governance_003" in by_id:
@@ -450,10 +778,35 @@ def _source_fact_ids_for_s3(
     by_id = _facts_index(selected_facts)
     sl = str(sentence or "").lower()
     ids: list[str] = []
+    if "fact_exec_002" in by_id and "fact_exec_002" in slice_ids:
+        if any(k in sl for k in ("scaled ml", "8 to 28", "platform leads", "specialists")):
+            ids.append("fact_exec_002")
+    if "fact_engineering_platform_004" in by_id and "fact_engineering_platform_004" in slice_ids:
+        if any(
+            k in sl
+            for k in (
+                "lifecycle",
+                "lab-to-production",
+                "bespoke",
+                "reusable",
+                "six months",
+                "three weeks",
+                "auditability",
+                "standardized ai lifecycle",
+            )
+        ):
+            ids.append("fact_engineering_platform_004")
     if "fact_engineering_platform_001" in by_id and "fact_engineering_platform_001" in slice_ids:
         if any(
             k in sl
-            for k in ("lifecycle", "operating model", "architecture", "scale-out", "agentic ai delivery")
+            for k in (
+                "lifecycle",
+                "operating model",
+                "architecture",
+                "scale-out",
+                "agentic ai delivery",
+                "regulated enterprise workflows",
+            )
         ):
             ids.append("fact_engineering_platform_001")
     if "fact_engineering_platform_002" in by_id and "fact_engineering_platform_002" in slice_ids:
@@ -469,6 +822,15 @@ def _source_fact_ids_for_s3(
 
 def _source_fact_ids_for_s4(selected_facts: list[dict[str, Any]], slice_ids: frozenset[str]) -> list[str]:
     by_id = _facts_index(selected_facts)
+    sl_candidates: list[str] = []
+    for fid in slice_ids:
+        if fid == "fact_engineering_platform_004" or fid.startswith(
+            "fact_engineering_platform_004_metric_"
+        ):
+            sl_candidates.append("fact_engineering_platform_004")
+            break
+    if sl_candidates:
+        return sl_candidates
     if "fact_exec_002" in by_id and "fact_exec_002" in slice_ids:
         return ["fact_exec_002"]
     if "fact_governance_003" in by_id and "fact_governance_003" in slice_ids:
@@ -550,8 +912,12 @@ def apply_srfs_judge_safe_repair(
     s1_idx = 0
     s2_idx = 1
     s3_idx = 2
-    s4_idx = 3 if len(sentences) == 5 else 2
-    s5_idx = 4 if len(sentences) == 5 else 3
+    if len(sentences) >= 5:
+        s4_idx, s5_idx = 3, 4
+    elif len(sentences) == 4:
+        s4_idx, s5_idx = 3, -1
+    else:
+        s4_idx, s5_idx = 2, -1
 
     if agentic_ai_supported_in_facts(selected_facts):
         s1 = sentences[s1_idx]
@@ -566,13 +932,25 @@ def apply_srfs_judge_safe_repair(
                     source_fact_ids=_source_fact_ids_for_s1(selected_facts, slice_ids),
                 )
 
-    s2 = sentences[s2_idx]
+    by_id = _facts_index(selected_facts)
+    s2 = _strip_unsupported_density_micro_tails(sentences[s2_idx])
+    if s2 != sentences[s2_idx]:
+        _replace_sentence(sentences, s2_idx, s2)
+        if len(ledger) > s2_idx and isinstance(ledger[s2_idx], dict):
+            _sync_claim_row_for_sentence(
+                ledger,
+                s2_idx,
+                s2,
+                source_fact_ids=ledger[s2_idx].get("source_fact_ids"),
+            )
     if (
         _JUDGE_RISK_S2_RE.search(s2)
         or _sentence_has_unsupported_mechanism_stack(s2, blob)
         or _sentence_has_unsupported_business_metric(s2, blob)
         or _sentence_s2_dual_thread_overload(s2)
-        or _sentence_s1_s2_thesis_echo(sentences[s1_idx], s2)
+        or _sentence_s1_s2_capability_redundant(sentences[s1_idx], s2)
+        or _sentence_s2_drops_governance_metric(s2, by_id)
+        or _sentence_s2_governance_wrong_tense(s2, by_id)
     ):
         new_s2 = build_fact_tight_s2_sentence(selected_facts)
         _replace_sentence(sentences, s2_idx, new_s2)
@@ -583,11 +961,25 @@ def apply_srfs_judge_safe_repair(
             source_fact_ids=_source_fact_ids_for_s2(selected_facts, slice_ids),
         )
 
+    has_004_slice = _srfs_slice_has_platform_004(slice_ids)
+
     if len(sentences) >= 3:
         s3 = sentences[s3_idx]
-        if _sentence_has_unsupported_commercialization(s3, blob) or _sentence_s3_needs_lifecycle_rewrite(
-            s3
-        ):
+        needs_s3 = (
+            _sentence_has_unsupported_commercialization(s3, blob)
+            or _sentence_s3_needs_lifecycle_rewrite(s3)
+            or _sentence_s3_bas_lifecycle_stitch(s3)
+            or _sentence_s3_mechanism_lifecycle_stitch(s3)
+            or _sentence_s3_carries_cycle_metric(s3)
+            or _sentence_s3_has_unsupported_embellishment(s3, blob)
+            or _sentence_s3_org_scale_violation(s3)
+            or _sentence_s1_s3_thesis_echo(sentences[s1_idx], s3)
+            or (
+                has_004_slice
+                and not _sentence_supports_004_lifecycle_arc(s3, blob)
+            )
+        )
+        if needs_s3:
             new_s3 = build_fact_tight_s3_sentence(selected_facts)
             _replace_sentence(sentences, s3_idx, new_s3)
             _sync_claim_row_for_sentence(
@@ -597,10 +989,34 @@ def apply_srfs_judge_safe_repair(
                 source_fact_ids=_source_fact_ids_for_s3(selected_facts, slice_ids, new_s3),
             )
 
-    if len(sentences) >= 4 and "fact_exec_002" in slice_ids:
+    if len(sentences) >= 3 and len(sentences) >= 4:
+        s3_now = sentences[s3_idx]
+        s4_now = sentences[s4_idx]
+        if _sentence_s3_s4_duplicate_lifecycle_opener(s3_now, s4_now):
+            by_id_dup = _facts_index(selected_facts)
+            head = _platform_004_lifecycle_clause_for_s3(by_id_dup)
+            if head:
+                new_s3 = _capitalize_sentence_start(head.rstrip(".") + ".")
+            else:
+                new_s3 = build_fact_tight_s3_sentence(selected_facts)
+            _replace_sentence(sentences, s3_idx, new_s3)
+            _sync_claim_row_for_sentence(
+                ledger,
+                s3_idx,
+                new_s3,
+                source_fact_ids=_source_fact_ids_for_s3(selected_facts, slice_ids, new_s3),
+            )
+
+    if len(sentences) >= 4:
         s4 = sentences[s4_idx]
         new_s4 = build_fact_tight_s4_sentence(selected_facts)
-        if s4.strip() != new_s4.strip() or _sentence_s4_needs_fact_tight_rewrite(s4, selected_facts, blob):
+        # When platform_004 is in SRFS, S4 must be the cycle-metric row only — never preserve
+        # a mixed Qwen S4 that also carries unsupported $22M / gross-margin commercial lines.
+        replace_s4 = has_004_slice or (
+            s4.strip() != new_s4.strip()
+            or _sentence_s4_needs_fact_tight_rewrite(s4, selected_facts, blob)
+        )
+        if replace_s4:
             _replace_sentence(sentences, s4_idx, new_s4)
             _sync_claim_row_for_sentence(
                 ledger,

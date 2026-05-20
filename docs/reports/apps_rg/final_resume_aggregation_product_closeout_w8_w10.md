@@ -49,8 +49,8 @@ python tools/apps_rg/audit_blocked_lanes.py --write
 python -m apps_rg --section headline --provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude --allow-non-allow-exit-zero
 python -m apps_rg --section ibm_bullets --provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude --allow-non-allow-exit-zero
 python tools/apps_rg/build_coherent_aggregation_rollup.py --write --product-proof
-python -m apps_rg.runtime.assembly.final_resume_assembler
-python -m apps_rg.runtime.package.resume_package_x3
+python -m apps_rg.runtime.internal.final_resume_assembler
+python -m apps_rg.runtime.internal.resume_package_disposition
 pytest (unit + contract scoped) — 26 passed
 git diff HEAD -- agentic_core — empty
 ```

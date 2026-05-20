@@ -16,8 +16,8 @@
   "load_base_resume": {
     "fanin_before": [
       "apps_rg/runtime/sections/headline_lane.py → competencies_dispatch.load_base_resume",
-      "apps_rg/runtime/dispatch/competencies_dispatch.py (definition)",
-      "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py (definition)",
+      "apps_rg/runtime/sections/competencies_lane_api.py (definition)",
+      "apps_rg/runtime/sections/ibm_narrative_lane_api.py (definition)",
       "contract/unit tests importing from competencies_dispatch"
     ],
     "extracted": "apps_rg/runtime/sections/lane_base_resume.py",

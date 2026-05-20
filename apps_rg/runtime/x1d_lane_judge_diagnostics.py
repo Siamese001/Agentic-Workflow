@@ -1,7 +1,7 @@
 """Per-lane X1D judge diagnostics for E2E proof (apps_rg-local).
 
 Separates preflight credential availability from runtime judge execution outcomes and quality.
-Used by ``ops_scripts/ci/prove_apps_rg_e2e_runtime.py`` and ``whole_run_exit`` reason codes.
+Used by whole-run exit reason codes and lane-dev diagnostics.
 
 Does not import agentic_core.
 """
@@ -12,7 +12,7 @@ from typing import Any, Mapping
 
 from apps_rg.runtime.validators.executive_summary_x2 import REQUIRED_JUDGE_PROVIDERS
 
-# Rollup column -> provider_key (matches generated_lane_rollup / prove_apps_rg_e2e_runtime judge_rows)
+# Rollup column -> provider_key (matches generated_lane_rollup judge_rows)
 _COL_TO_PROVIDER: dict[str, str] = {
     "gemini": "gemini_pro",
     "openai": "openai_chatgpt",

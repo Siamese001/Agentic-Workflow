@@ -18,7 +18,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import eval_x1a
 from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import (
     SPINE_EXIT_V6_PREFLIGHT_DENIAL_CARRIER_REF,
 )
-from agentic_core.runtime.entrypoints import integrated_r4_deterministic_pipeline_run as r4
+from agentic_core.runtime.entrypoints import integrated_single_action_spine_run as r4
 from agentic_core.runtime.profiles.profile_resolver import RuntimeProfileResolver
 
 
@@ -169,11 +169,11 @@ def test_l7_disposition_includes_x3d_for_successful_mock_run(tmp_path: Path) -> 
     mock_l2 = MagicMock(return_value={"status": "success"})
     with patch("agentic_core.runtime.l2_recipe_resolver.resolve_l2_recipe") as mock_res:
         mock_res.return_value = mock_l2
-        from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-            run_integrated_r4_deterministic_pipeline,
+        from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+            run_integrated_single_action_spine,
         )
 
-        result = run_integrated_r4_deterministic_pipeline(
+        result = run_integrated_single_action_spine(
             raw_request={
                 "jd_payload": {"title": "T", "description": "D"},
                 "jd_hash": "aa",

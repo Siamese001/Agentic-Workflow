@@ -15,7 +15,7 @@ from apps_rg.l2_recipe.modular_resume_generation import (
     run_modular_resume_generation,
 )
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
 from apps_rg.runtime.sections_root_manifest import (
     SECTIONS_ROOT_MANIFEST_FILENAME,

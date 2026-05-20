@@ -11,7 +11,7 @@ from typing import Any, Final
 
 from apps_rg.l2_recipe.r4_generation_mode import MODE_MODULAR_SECTION_LANES
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 R4_RECORDED_MODULAR_PROOF_RUN_ID: Final[str] = "cli_e6a9b9d74b09"
 

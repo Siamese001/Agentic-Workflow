@@ -10,7 +10,7 @@
     "competencies": {
       "before": {
         "dispatch_module_lines": 2232,
-        "execution_in": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+        "execution_in": "apps_rg/runtime/sections/competencies_lane_api.py",
         "entry_run_fn": "run_competencies_execution",
         "canonical_cli": "python -m apps_rg --section competencies via competencies_lane"
       },
@@ -18,13 +18,13 @@
         "dispatch_module_lines": 1574,
         "execution_in": "apps_rg/runtime/sections/competencies_lane_execution.py",
         "dispatch_retains": "compile/repair helpers, run_dispatch/build_parser (deprecated CLI), lazy __getattr__ re-export",
-        "compat_reexport": "apps_rg.runtime.dispatch.competencies_dispatch.run_competencies_execution"
+        "compat_reexport": "apps_rg.runtime.sections.competencies_lane_api.run_competencies_execution"
       }
     },
     "ibm_narrative": {
       "before": {
         "dispatch_module_lines": 1288,
-        "execution_in": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+        "execution_in": "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
         "entry_run_fn": "run_ibm_narrative_execution",
         "canonical_cli": "python -m apps_rg --section ibm_narrative via ibm_narrative_lane"
       },
@@ -32,25 +32,25 @@
         "dispatch_module_lines": 647,
         "execution_in": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
         "dispatch_retains": "parse/normalize/metric-trim helpers, lazy __getattr__ re-export, deprecated __main__",
-        "compat_reexport": "apps_rg.runtime.dispatch.ibm_narrative_dispatch.run_ibm_narrative_execution"
+        "compat_reexport": "apps_rg.runtime.sections.ibm_narrative_lane_api.run_ibm_narrative_execution"
       }
     }
   },
   "migrated": [
     {
       "symbol": "run_competencies_lane_execution",
-      "from": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "from": "apps_rg/runtime/sections/competencies_lane_api.py",
       "to": "apps_rg/runtime/sections/competencies_lane_execution.py"
     },
     {
       "symbol": "run_ibm_narrative_lane_execution",
-      "from": "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+      "from": "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
       "to": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py"
     }
   ],
   "retained_compat": [
-    "apps_rg/runtime/dispatch/competencies_dispatch.py — helpers + run_dispatch + PEP562 lazy run_* re-export",
-    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py — helpers + PEP562 lazy run_* re-export",
+    "apps_rg/runtime/sections/competencies_lane_api.py — helpers + run_dispatch + PEP562 lazy run_* re-export",
+    "apps_rg/runtime/sections/ibm_narrative_lane_api.py — helpers + PEP562 lazy run_* re-export",
     "run_competencies_execution / run_ibm_narrative_execution compat aliases on lane_execution modules",
     "tests importing repair helpers from dispatch (unchanged public helper surface)",
     "headline_lane imports build_resume_support_blob/load_companion_context from competencies_dispatch"
@@ -114,8 +114,8 @@
     }
   ],
   "files_changed": [
-    "apps_rg/runtime/dispatch/competencies_dispatch.py",
-    "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+    "apps_rg/runtime/sections/competencies_lane_api.py",
+    "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
     "apps_rg/runtime/sections/competencies_lane_execution.py",
     "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
     "apps_rg/runtime/sections/competencies_lane.py",

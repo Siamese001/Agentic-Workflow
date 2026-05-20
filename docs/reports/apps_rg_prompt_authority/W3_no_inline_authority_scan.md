@@ -7,13 +7,13 @@
 
 | Path | Notes |
 |------|--------|
-| `apps_rg/runtime/dispatch/competencies_dispatch.py` | Primary inline prompt assembly seam for competencies (**not** a product CLI; canonical entry `python -m apps_rg --section competencies`) |
-| `apps_rg/runtime/dispatch/executive_summary_dispatch.py` | Primary inline prompt assembly for executive summary lane |
+| `apps_rg/runtime/sections/competencies_lane_api.py` | Primary inline prompt assembly seam for competencies (**not** a product CLI; canonical entry `python -m apps_rg --section competencies`) |
+| `apps_rg/runtime/sections/executive_summary_lane_api.py` | Primary inline prompt assembly for executive summary lane |
 | `apps_rg/runtime/dispatch/headline_dispatch.py` | Primary inline prompt assembly for headline lane |
-| `apps_rg/runtime/dispatch/ibm_bullets_dispatch.py` | Import-only shim; canonical IBM bullets prompt assembly in ``sections/ibm_bullets_lane.py`` |
-| `apps_rg/runtime/dispatch/ibm_narrative_dispatch.py` | Primary inline prompt assembly IBM narrative |
-| `apps_rg/runtime/dispatch/unify_bullets_dispatch.py` | Primary inline prompt assembly Unify bullets |
-| `apps_rg/runtime/dispatch/unify_narrative_dispatch.py` | Primary inline prompt assembly Unify narrative |
+| `apps_rg/runtime/sections/ibm_bullets_lane_api.py` | Import-only shim; canonical IBM bullets prompt assembly in ``sections/ibm_bullets_lane.py`` |
+| `apps_rg/runtime/sections/ibm_narrative_lane_api.py` | Primary inline prompt assembly IBM narrative |
+| `apps_rg/runtime/sections/unify_bullets_lane_api.py` | Primary inline prompt assembly Unify bullets |
+| `apps_rg/runtime/sections/unify_narrative_lane_api.py` | Primary inline prompt assembly Unify narrative |
 
 ## Test-only imports (reference)
 

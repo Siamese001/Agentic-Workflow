@@ -13,6 +13,11 @@ Approved callers:
 
 All other imports of write_section_to_semantic_cache = violation.
 
+W6A note: core D2 Chroma upsert via execution_orchestrator → promote_to_long_term is
+not covered by this AST gate (no import of write_section_to_semantic_cache). Runtime
+quarantine is enforced via apps_rg no_direct_chroma_write_bypass_assertion.json on
+section evidence packages (see apps_rg/runtime/semantic_cache_persistence_quarantine.py).
+
 Exit codes:
   0 — clean
   1 — violation(s) found

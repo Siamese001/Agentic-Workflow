@@ -9,7 +9,7 @@ import pytest
 
 from apps_rg.runtime.providers import section_qwen_slice
 from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
-from apps_rg.runtime.dispatch.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
+from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.reasoning.apps_rg_http_reasoning_plan import build_apps_rg_http_reasoning_plan
 from apps_rg.runtime.reasoning.section_reasoning_intensity import (
     ReasoningIntensityTier,

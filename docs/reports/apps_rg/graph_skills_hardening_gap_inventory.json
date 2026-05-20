@@ -55,7 +55,7 @@
     },
     "post_parse_repair": {
       "present": true,
-      "module": "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "module": "apps_rg/runtime/sections/competencies_lane_api.py",
       "functions": [
         "repair_structured_competencies_source_facts",
         "coerce_structured_competencies_resume_support",

@@ -43,8 +43,8 @@ def build_one_spine_section_path_inventory() -> dict[str, Any]:
         },
         "path_b_canonical_r4": {
             "entry": "apps_rg/__main__.py (no --section) OR dispatch_apps_rg_run",
-            "dispatch": "canonical_dispatch → run_integrated_r4_deterministic_pipeline",
-            "spine_module": "agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py",
+            "dispatch": "canonical_dispatch → run_integrated_single_action_spine",
+            "spine_module": "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py",
             "c0_pa_wiring": "agentic_core/runtime/entry/apps_rg_dispatch.py::run_ag2_retrieval_and_prompt (ValidatedRequest → c0_retrieve_apps_rg → pa_compose_apps_rg)",
             "dense_c0_optional": "apps_rg/runtime/bindings/c0_binding.py (Chroma C0.2 when EMBEDDING_ENABLED + CHROMA_PERSIST_DIR)",
             "observed_chain": list(CANONICAL_SPINE_CHAIN),

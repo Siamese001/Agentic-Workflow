@@ -107,6 +107,9 @@ def build_section_c03_graphrag_bound(
     graph_digest: str,
     selected_fact_ids: Iterable[str],
     evidence_items: list[dict[str, Any]] | None = None,
+    role_family_key: str = "SVP_ENGINEERING_AI_PLATFORM",
+    attach_sqlite_context: bool = True,
+    repo_root: Any = None,
 ) -> dict[str, Any]:
     """Lane-local section graph binding shim for any apps_rg section."""
     doc = build_executive_summary_c03_graphrag_bound(
@@ -124,6 +127,16 @@ def build_section_c03_graphrag_bound(
         if isinstance(item, dict) and str(item.get("source_class") or "") != SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH:
             non_graph += 1
     doc["non_graph_evidence_items_count"] = non_graph
+    if attach_sqlite_context:
+        from apps_rg.runtime.c03_graph_sqlite_context import enrich_c03_bound_with_sqlite_context
+
+        doc = enrich_c03_bound_with_sqlite_context(
+            doc,
+            role_family_key=role_family_key,
+            section_id=doc["section_id"],
+            selected_fact_ids=list(selected_fact_ids),
+            repo_root=repo_root,
+        )
     return doc
 
 

@@ -491,11 +491,11 @@ def test_full_dispatch_succeeds_with_ag2_wiring() -> None:
     from pathlib import Path
     from unittest.mock import patch
 
-    from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-        R4IntegratedRunResult,
+    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+        SingleActionSpineRunResult,
     )
 
-    fake_result = R4IntegratedRunResult(
+    fake_result = SingleActionSpineRunResult(
         run_id="smoke-run",
         request_id="smoke-req",
         route_id="R4_SINGLE_ACTION",
@@ -509,7 +509,7 @@ def test_full_dispatch_succeeds_with_ag2_wiring() -> None:
     envelope = apps_rg_parse(_thin_payload())
     assert envelope is not None
     with patch(
-        "apps_rg.runtime.orchestration.canonical_dispatch.run_integrated_r4_deterministic_pipeline",
+        "apps_rg.runtime.orchestration.canonical_dispatch.run_integrated_single_action_spine",
         return_value=fake_result,
     ) as mock_run:
         result = apps_rg_dispatch(envelope)

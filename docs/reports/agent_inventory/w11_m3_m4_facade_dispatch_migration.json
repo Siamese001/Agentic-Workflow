@@ -1,0 +1,99 @@
+{
+  "generated_at": "2026-05-19",
+  "wave": "W11-M3A_M4A",
+  "status": "PASS",
+  "status_note": "PRE_EXISTING_FAILURE: test_apps_eval_has_no_direct_apps_rg_imports (narrative_judge_scorer.py)",
+  "m3_rg_facade_migration": {
+    "refs_before": {
+      "facade_lazy_symbols": ["RgResumeOrchestrator"],
+      "canonical_on_facade": false
+    },
+    "refs_after": {
+      "facade_lazy_symbols": [
+        "RgResumeOrchestrator",
+        "run_canonical_apps_rg_from_cli_primitives"
+      ],
+      "canonical_metadata": [
+        "CANONICAL_PRODUCT_MODULE",
+        "CANONICAL_DISPATCH_MODULE",
+        "CANONICAL_DISPATCH_SYMBOL",
+        "CANONICAL_SECTION_LANE_PACKAGE"
+      ]
+    },
+    "migrated_files": [
+      "apps_shared/adapters/rg_orchestrator_facade.py",
+      "apps_shared/integrations/adapters/rg_orchestrator_facade.py",
+      "tests/unit/apps_shared/adapters/test_w3_boundary_facades.py",
+      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
+    ],
+    "retained_legacy": [
+      "apps_eval/engines/scenario_runner.py:RgResumeOrchestrator",
+      "tests/unit/apps_rg/reasoning/*",
+      "apps_rg/reasoning/Rg*.py"
+    ],
+    "blockers": [
+      "unit tests direct-import Rg*",
+      "apps_eval/engines/narrative_judge_scorer.py direct apps_rg imports"
+    ],
+    "archive_readiness": "NO"
+  },
+  "m4_dispatch_pa_extraction": {
+    "lane_dispatch_pa_map": "docs/reports/agent_inventory/w11_lane_dispatch_pa_map.md",
+    "helpers_extracted": [
+      {
+        "symbol": "attach_reasoning_to_prompt_trace",
+        "ssot": "apps_rg/runtime/sections/prompt_trace_reasoning.py",
+        "compat": "apps_rg/runtime/dispatch/prompt_trace_reasoning.py"
+      },
+      {
+        "symbol": "collect_employment_bullets",
+        "ssot": "apps_rg/runtime/sections/resume_employment_bullets.py",
+        "compat": "apps_rg/runtime/sections/competencies_lane_api.py"
+      }
+    ],
+    "lanes_updated": [
+      "executive_summary_lane",
+      "headline_lane",
+      "ibm_bullets_lane",
+      "unify_bullets_lane",
+      "unify_narrative_lane"
+    ],
+    "compatibility_refs_retained": true,
+    "tests": [
+      {
+        "path": "tests/unit/apps_rg/runtime/sections/test_lane_pa_helper_parity.py",
+        "exit_code": 0,
+        "passed": 2
+      },
+      {
+        "path": "tests/_apps_contract/test_apps_rg_*",
+        "exit_code": 0,
+        "passed": 39
+      }
+    ],
+    "blockers": [
+      "compile_*_prompt still in dispatch/*_pa.py",
+      "competencies_lane delegates to competencies_dispatch.run_competencies_execution"
+    ],
+    "archive_readiness": "NO"
+  },
+  "updated_counts": {
+    "archived": 1,
+    "delete_ready": 0,
+    "archive_ready": 0,
+    "migration_required": 8,
+    "blocked": 11
+  },
+  "behavior_change": false,
+  "runtime_change": false,
+  "next_recommended_action": "M4B: extract one *_pa.py per lane to sections/; M3B: migrate apps_eval narrative_judge_scorer to facade or canonical dispatch",
+  "explicit_non_claims": [
+    "no_files_deleted",
+    "no_archive_moves",
+    "no_deprecation_markers",
+    "no_product_runtime_behavior_changed",
+    "no_x2_x3_weakened",
+    "no_live_apps_rg_proof_run",
+    "remaining_candidates_do_not_delete"
+  ]
+}

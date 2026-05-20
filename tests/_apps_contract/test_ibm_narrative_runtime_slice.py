@@ -200,7 +200,7 @@ def test_mock_x3_review_plumbing():
 
 def test_deprecated_ibm_narrative_dispatch_module_exits_with_guidance():
     r = subprocess.run(
-        [sys.executable, "-m", "apps_rg.runtime.dispatch.ibm_narrative_dispatch"],
+        [sys.executable, "-m", "apps_rg.runtime.sections.ibm_narrative_lane_api"],
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
@@ -213,7 +213,7 @@ def test_deprecated_ibm_narrative_dispatch_module_exits_with_guidance():
 
 def test_ibm_narrative_overlay_files_exist():
     expected = [
-        "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+        "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
         "apps_rg/runtime/sections/ibm_narrative_lane.py",
         "apps_rg/runtime/validators/ibm_narrative_x2.py",
         "apps_rg/runtime/judges/ibm_narrative_x1d.py",
@@ -226,7 +226,7 @@ def test_ibm_narrative_overlay_files_exist():
 
 def test_no_agentic_core_in_overlay_files():
     overlay = [
-        REPO_ROOT / "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
+        REPO_ROOT / "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
         REPO_ROOT / "apps_rg/runtime/sections/ibm_narrative_lane.py",
         REPO_ROOT / "apps_rg/runtime/validators/ibm_narrative_x2.py",
         REPO_ROOT / "apps_rg/runtime/judges/ibm_narrative_x1d.py",
@@ -375,7 +375,7 @@ def test_x2_metric_replay_fails_with_full_metric_companion_bundle():
 
 
 def test_companion_metric_budget_collapse_strips_tracked_metrics_to_zero_when_companion_kpi_bundle():
-    from apps_rg.runtime.dispatch.ibm_narrative_dispatch import collapse_narrative_sentence_for_companion_metric_budget
+    from apps_rg.runtime.sections.ibm_narrative_lane_api import collapse_narrative_sentence_for_companion_metric_budget
     from apps_rg.runtime.validators.ibm_narrative_x2 import count_ibm_narrative_metric_hits
 
     noisy = (
@@ -386,7 +386,7 @@ def test_companion_metric_budget_collapse_strips_tracked_metrics_to_zero_when_co
 
 
 def test_truncate_keeps_only_first_numeric_metric_in_clause():
-    from apps_rg.runtime.dispatch.ibm_narrative_dispatch import truncate_narrative_after_first_metric_hit
+    from apps_rg.runtime.sections.ibm_narrative_lane_api import truncate_narrative_after_first_metric_hit
     from apps_rg.runtime.validators.ibm_narrative_x2 import count_ibm_narrative_metric_hits
 
     raw = "IBM teams captured $15M savings while sustaining 99.9% uptime in regulated delivery."

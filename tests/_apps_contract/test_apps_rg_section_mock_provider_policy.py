@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from apps_rg.runtime.section_proof.mock_runtime_proof_policy import MOCK_JUDGES_REJECT_EXIT_CODE
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

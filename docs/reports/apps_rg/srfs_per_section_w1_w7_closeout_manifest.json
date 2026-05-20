@@ -38,8 +38,8 @@
       "apps_rg/runtime/sections/unify_bullets_lane.py",
       "apps_rg/runtime/sections/unify_narrative_lane.py",
       "apps_rg/runtime/sections/ibm_bullets_lane.py",
-      "apps_rg/runtime/dispatch/ibm_narrative_dispatch.py",
-      "apps_rg/runtime/dispatch/competencies_dispatch.py",
+      "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
+      "apps_rg/runtime/sections/competencies_lane_api.py",
       "apps_rg/runtime/sections/competencies_lane.py"
     ],
     "prompt_dispatch": [

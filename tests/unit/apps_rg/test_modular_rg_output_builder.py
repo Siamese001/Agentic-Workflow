@@ -11,7 +11,7 @@ from apps_rg.l2_recipe.modular_rg_output_builder import build_rg_output_from_mod
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
-from apps_rg.runtime.reports.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 
 def _real_status() -> str:

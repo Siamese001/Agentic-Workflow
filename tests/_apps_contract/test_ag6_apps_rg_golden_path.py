@@ -64,7 +64,7 @@ try:
     from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
     from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
     from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
-    from agentic_core.L2_execution.apps_rg_l2_binding import l2_execute_apps_rg
+    from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
     from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
     from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import (
         build_x1_checkout_result,
@@ -453,7 +453,7 @@ BS Computer Science, UC Berkeley (2018)
         modules_to_check = [
             "agentic_core.runtime.c0.apps_rg_c0_binding",
             "agentic_core.prompt_governance.apps_rg_pa_binding",
-            "agentic_core.L2_execution.apps_rg_l2_binding",
+            "apps_rg.runtime.bindings.l2_binding",
             "agentic_core.runtime.exit.apps_rg_exit_binding",
         ]
         
@@ -487,7 +487,7 @@ BS Computer Science, UC Berkeley (2018)
         modules_to_check = [
             "agentic_core.runtime.c0.apps_rg_c0_binding",
             "agentic_core.prompt_governance.apps_rg_pa_binding",
-            "agentic_core.L2_execution.apps_rg_l2_binding",
+            "apps_rg.runtime.bindings.l2_binding",
         ]
         
         forbidden_patterns = ["embed_texts", "bge_embed", "get_embeddings"]
@@ -581,7 +581,7 @@ class TestAG6X1ExitIntegration(unittest.TestCase):
         )
         
         # Build minimal sealed artifact
-        from agentic_core.L2_execution.apps_rg_l2_binding import APPS_RG_L2_CERT_REF
+        from apps_rg.runtime.bindings.l2_binding import APPS_RG_L2_CERT_REF
         sealed = SealedL2Artifact(
             request_id="x1-test-001",
             run_id="x1-run-001",

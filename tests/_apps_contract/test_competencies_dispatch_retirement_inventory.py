@@ -15,8 +15,8 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _FORBIDDEN_SUBPROCESS_SNIPPETS = (
-    '"-m", "apps_rg.runtime.dispatch.competencies_dispatch"',
-    "'-m', 'apps_rg.runtime.dispatch.competencies_dispatch'",
+    '"-m", "apps_rg.runtime.sections.competencies_lane_api"',
+    "'-m', 'apps_rg.runtime.sections.competencies_lane_api'",
 )
 
 
@@ -37,7 +37,7 @@ def test_contract_tests_do_not_spawn_standalone_competencies_dispatch_module(sni
 
 def test_deprecated_competencies_dispatch_module_main_is_non_executable_product_path() -> None:
     proc = subprocess.run(
-        [sys.executable, "-m", "apps_rg.runtime.dispatch.competencies_dispatch"],
+        [sys.executable, "-m", "apps_rg.runtime.sections.competencies_lane_api"],
         cwd=str(REPO_ROOT),
         capture_output=True,
         text=True,

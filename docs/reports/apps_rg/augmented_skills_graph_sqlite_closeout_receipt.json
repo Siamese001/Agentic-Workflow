@@ -1,0 +1,98 @@
+{
+  "STATUS": "PASS",
+  "PLAN_ID": "graph-skills-sqlite-c03-w1",
+  "WAVE": "graph-sqlite-c03-w1",
+  "SCOPE_MATCH": true,
+  "FILES_CHANGED": [
+    "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",
+    "apps_rg/runtime/c03_graph_sqlite_context.py",
+    "apps_rg/runtime/c03_graphrag_bound.py",
+    "apps_rg/fact_inventory/run_materialize_augmented_skills_graph_sqlite.py"
+  ],
+  "COMMANDS_RUN": [
+    {
+      "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe apps_rg/fact_inventory/run_w4_w14_multilane_section_projection.py",
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"STATUS\": \"PASS\",\n  \"SECTION_PROJECTION_PASS_RATE\": 1.0,\n  \"W14B_INTEGRITY\": {\n    \"all_archetypes_pass_without_weight_override\": true,\n    \"traversal_by_slug\": {\n      \"aig_carrier_agentic\": \"PASS\",\n      \"lincoln_insurer_it_ai\": \"PASS\",\n      \"citi_banking_platform_ai\": \"PASS\",\n      \"brown_brokerage_it\": \"PASS_WITH_DOCUMENTED_GAP\",\n      \"anthropic_partner_applied_ai\": \"PASS\",\n      \"gtm_presales_baseline\": \"PASS\",\n      \"ai_data_platform_professional_services\": \"PASS\"\n    }\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe apps_rg/fact_inventory/run_w14_senior_role_offline_traversal.py",
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"STATUS\": \"PASS\",\n  \"TRAVERSAL_PASS_RATE\": 1.0,\n  \"WAVE\": \"W14\"\n}\n",
+      "stderr_tail": ""
+    }
+  ],
+  "SQLITE_DB_PATH": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+  "TABLES_CREATED": [
+    "graph_nodes",
+    "graph_edges",
+    "skill_fact_links",
+    "section_eligibility",
+    "role_family_projection",
+    "graph_metadata"
+  ],
+  "GRAPH_VERSION": "master_skills_arsenal_graph_v1",
+  "GRAPH_HASH": "f07c04d6399ba24488970353641a5ed597ae5a692ea85d49207b39a5061ff575",
+  "NODE_COUNT": 492,
+  "EDGE_COUNT": 1402,
+  "SKILL_FACT_LINK_COUNT": 108,
+  "SECTION_ELIGIBILITY_COUNT": 412,
+  "ROLE_FAMILY_PROJECTION_COUNT": 9,
+  "C0_3_INTEGRATION_STATUS": "SQLITE_CONTEXT_AVAILABLE",
+  "C0_3_RECEIPT_PATH": "artifacts\\apps_rg\\runtime_proofs\\c03_graph_sqlite_context\\c03_graph_sqlite_context_20260520_144636.json",
+  "VALIDATION_RESULTS": {
+    "status": "PASS",
+    "issues": [],
+    "sqlite_db_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+    "graph_version": "master_skills_arsenal_graph_v1",
+    "graph_hash": "f07c04d6399ba24488970353641a5ed597ae5a692ea85d49207b39a5061ff575",
+    "node_count": 492,
+    "edge_count": 1402,
+    "expected_node_count_json": 220,
+    "expected_edge_count_json": 1402,
+    "expected_edge_count_metadata": 1406,
+    "skill_fact_link_count": 108,
+    "section_eligibility_count": 412,
+    "role_family_projection_count": 9,
+    "broad_skills_ledger_status": "non_authority"
+  },
+  "SECTION_PROJECTION_PARITY_STATUS": "PASS",
+  "W14B_TRAVERSAL_PARITY_STATUS": "PASS",
+  "BROAD_SKILLS_LEDGER_STATUS": "non_authority",
+  "PROOF_CLASSIFICATION": "graph_context_routing_support_not_claim_proof",
+  "EXPLICIT_NON_CLAIMS": [
+    "sqlite_graph_rows_are_not_claim_proof",
+    "jd_briefing_not_proof",
+    "skills_not_proof_without_active_fact_binding",
+    "broad_skills_ledger_non_authority"
+  ],
+  "NEXT_RECOMMENDED_WAVE": "wire_c03_sqlite_context_into_section_prompt_assembly_read_only",
+  "materialization_summary": {
+    "sqlite_db_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+    "graph_version": "master_skills_arsenal_graph_v1",
+    "graph_hash": "f07c04d6399ba24488970353641a5ed597ae5a692ea85d49207b39a5061ff575",
+    "materialized_at": "2026-05-20T14:46:36Z",
+    "materialized_from": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+    "node_count_json": 220,
+    "edge_count_json": 1406,
+    "node_count_sqlite": 492,
+    "edge_count_sqlite": 1402,
+    "skill_fact_link_count": 108,
+    "section_eligibility_count": 412,
+    "role_family_projection_count": 9,
+    "tables_created": [
+      "graph_nodes",
+      "graph_edges",
+      "skill_fact_links",
+      "section_eligibility",
+      "role_family_projection",
+      "graph_metadata"
+    ]
+  },
+  "c03_context_sample": {
+    "pillar_count": 5,
+    "skill_count": 40,
+    "bridge_edge_count": 10
+  }
+}

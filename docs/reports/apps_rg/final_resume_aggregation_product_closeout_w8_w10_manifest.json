@@ -18,8 +18,8 @@
     {"command": "python -m apps_rg --section headline --provider qwen_vllm ...", "exit_code": 0, "run_id": "headline_20260518_233123", "x3": "X3_BLOCK", "real_llm": true},
     {"command": "python -m apps_rg --section ibm_bullets --provider qwen_vllm ...", "exit_code": 0, "run_id": "ibm_bullets_20260518_233233", "x3": "X3_BLOCK", "real_llm": true},
     {"command": "python tools/apps_rg/build_coherent_aggregation_rollup.py --write --product-proof", "exit_code": 0},
-    {"command": "python -m apps_rg.runtime.assembly.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
-    {"command": "python -m apps_rg.runtime.package.resume_package_x3", "exit_code": 0, "final_x3_code": "X3_REVIEW_SECTION_JUDGE_STATUS"},
+    {"command": "python -m apps_rg.runtime.internal.final_resume_assembler", "exit_code": 0, "gates_all_pass": true},
+    {"command": "python -m apps_rg.runtime.internal.resume_package_disposition", "exit_code": 0, "final_x3_code": "X3_REVIEW_SECTION_JUDGE_STATUS"},
     {"command": "pytest tests/unit/apps_rg -k aggregation|final_resume|package_x3|review_lane|coherent_rollup", "exit_code": 0, "passed": 18},
     {"command": "pytest tests/_apps_contract -k apps_rg aggregation...", "exit_code": 0, "passed": 8},
     {"command": "git diff HEAD -- agentic_core", "exit_code": 0, "diff_empty": true}

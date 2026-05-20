@@ -5,7 +5,7 @@
 
 ## Summary
 
-Implemented W1–W4 aggregation hardening under `apps_rg/runtime/aggregation/` and wired into [final_resume_assembler.py](apps_rg/runtime/assembly/final_resume_assembler.py):
+Implemented W1–W4 aggregation hardening under `apps_rg/runtime/aggregation/` and wired into [final_resume_assembler.py](apps_rg/runtime/internal/final_resume_assembler.py):
 
 | Wave | Deliverable |
 |------|-------------|
@@ -20,14 +20,14 @@ Default per-lane `latest_successful_real` pointers may lack `x2_source_fact_pool
 
 ```bash
 python tools/apps_rg/build_coherent_aggregation_rollup.py --write
-python -m apps_rg.runtime.assembly.final_resume_assembler
+python -m apps_rg.runtime.internal.final_resume_assembler
 ```
 
 ## Runtime proof (this pass)
 
 ```text
 python tools/apps_rg/build_coherent_aggregation_rollup.py --write  → exit 0
-python -m apps_rg.runtime.assembly.final_resume_assembler          → exit 0, gates_all_pass=True
+python -m apps_rg.runtime.internal.final_resume_assembler          → exit 0, gates_all_pass=True
 orchestration_id=c55e027a27c6f2a6d500fac33677bb77
 final_resume_hash=f3329b586891c8e39b85114789727cab867e74501067b651c72c18c3f852e0cf
 ```
