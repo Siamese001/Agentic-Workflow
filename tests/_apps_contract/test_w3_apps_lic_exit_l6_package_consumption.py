@@ -20,14 +20,14 @@ import pytest
 from typing import Any
 from unittest.mock import MagicMock
 
-from agentic_core.runtime.exit.apps_lic_exit_binding import (
+from apps_lic.runtime.bindings.exit_binding import (
     _load_exit_profile,
     _check_gate_mesh_result,
     _check_g27_for_read_only_draft,
     _build_runtime_exhaust_bundle,
     AppsLicExitProfileError,
 )
-from agentic_core.L6_observability.promotion.apps_lic_promo_binding import (
+from apps_lic.runtime.bindings.promo_binding import (
     L6PromoResult,
     l6_process_apps_lic,
     l6_require_uwg_for_promotion,
@@ -455,7 +455,7 @@ class TestW35ExitProfileFailClosed:
         agentic_core must NOT synthesise a fallback gate set. Absence of the
         config file is a terminal failure — callers must treat it as blocked.
         """
-        import agentic_core.runtime.exit.apps_lic_exit_binding as _mod
+        import apps_lic.runtime.bindings.exit_binding as _mod
 
         nonexistent = tmp_path / "does_not_exist.json"
         monkeypatch.setattr(_mod, "_EXIT_PROFILE_PATH", nonexistent)
@@ -468,7 +468,7 @@ class TestW35ExitProfileFailClosed:
 
         A malformed config must not produce a synthesised gate set.
         """
-        import agentic_core.runtime.exit.apps_lic_exit_binding as _mod
+        import apps_lic.runtime.bindings.exit_binding as _mod
 
         bad_json = tmp_path / "malformed.json"
         bad_json.write_text("{ not valid json !!!", encoding="utf-8")
@@ -484,7 +484,7 @@ class TestW35ExitProfileFailClosed:
         must not produce a synthesised gate set.
         """
         import json
-        import agentic_core.runtime.exit.apps_lic_exit_binding as _mod
+        import apps_lic.runtime.bindings.exit_binding as _mod
 
         no_gates = tmp_path / "no_gates.json"
         no_gates.write_text(

@@ -421,6 +421,20 @@ def build_section_l7_binding_manifest(
     explicit_non_claims.append("apps_rg X2 is never 00C GateVerdict")
     explicit_non_claims.append("section_runtime_proof_bundle is never 99 RuntimeProofBundle")
 
+    from apps_rg.runtime.shadow_product_path_quarantine import assess_shadow_product_shaped_artifacts
+
+    shadow_q = assess_shadow_product_shaped_artifacts(artifact_dir, repo_root)
+    for row in shadow_q.get("untrusted") or []:
+        if isinstance(row, dict):
+            l7_untrusted.append(
+                {
+                    "artifact": str(row.get("artifact") or ""),
+                    "reason": str(row.get("reason") or "shadow_path"),
+                }
+            )
+    if shadow_q.get("shadow_paths_present"):
+        explicit_non_claims.extend(shadow_q.get("explicit_non_claims") or [])
+
     pc_impact = _product_certification_impact(artifact_dir)
     proof_class = _proof_classification(
         integrated_l7_invoked=integrated_l7_invoked,
@@ -479,6 +493,8 @@ def build_section_l7_binding_manifest(
         "lane_proof_eligible": lane_proof_eligible,
         "section_l7_refs_are_correlation_only": bool(l7_correlation),
         "section_l7_refs_do_not_prove_spine_runtime": bool(l7_correlation),
+        "shadow_path_quarantine": shadow_q,
+        "shadow_paths_present": bool(shadow_q.get("shadow_paths_present")),
     }
 
 

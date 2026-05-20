@@ -122,7 +122,8 @@ UWG_CHAIN_ARTIFACTS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "uwg_commit_receipt.json",
         ),
     ),
-    ("chroma_collection_index_ref", ()),
+    ("chroma_collection_index_ref", ("chroma_collection_index_ref.json",)),
+    ("chroma_read_after_write", ("chroma_read_after_write_receipt.json",)),
     ("request_intent_embedding_ref", ("request_intent_embedding_ref.json",)),
     ("request_intent_embedding_ref_mapping_receipt", ("request_intent_embedding_ref_mapping_receipt.json",)),
     ("cache_embedding_ref", ("cache_embedding_ref.json",)),
@@ -137,6 +138,7 @@ SEMANTIC_CACHE_SLOT_IDS: tuple[str, ...] = (
     "read_surface_refresh_receipt",
     "l4_namespace_object_ref",
     "chroma_collection_index_ref",
+    "chroma_read_after_write",
     "request_intent_embedding_ref",
     "cache_embedding_ref",
     "fact_vector_ref",
@@ -258,22 +260,51 @@ def assess_uwg_durable_write_chain(
     validation_ok = bool(found["state_diff_validation_result"]["present"])
     commit_receipt_ok = bool(found["state_commit_receipt_or_blocked"]["present"])
 
+    chroma_index_ok = bool(found["chroma_collection_index_ref"]["present"])
+    read_after_ok = bool(found["chroma_read_after_write"]["present"])
+    embedding_ok = bool(found["request_intent_embedding_ref"]["present"])
+    mapping_ok = bool(found["request_intent_embedding_ref_mapping_receipt"]["present"])
+    compat_ok = bool(found["compatibility_proof"]["present"])
+    assertion_ok = (artifact_dir / NO_DIRECT_CHROMA_ASSERTION_ARTIFACT).is_file()
+
     r1b_uwg_chain_core = commit_ok and validation_ok and commit_receipt_ok
-    chain_steps_ok = r1b_uwg_chain_core and refresh_canonical
+    read_surface_refresh_complete = refresh_canonical
+    chroma_projection_complete = chroma_index_ok and read_after_ok
+    chain_steps_ok = r1b_uwg_chain_core and read_surface_refresh_complete
+    governed_chroma_refresh = (
+        chain_steps_ok and chroma_projection_complete and assertion_ok
+    )
+    durable_vector_chain_artifacts_complete = (
+        r1b_uwg_chain_core
+        and read_surface_refresh_complete
+        and chroma_projection_complete
+        and l4_path is not None
+        and embedding_ok
+        and mapping_ok
+        and compat_ok
+        and read_after_ok
+    )
+    durable_vector_persistence_proven = (
+        durable_vector_chain_artifacts_complete and assertion_ok
+    )
     uwg_path_present = (
         commit_ok
         or validation_ok
         or commit_receipt_ok
         or refresh_canonical
         or refresh_noncanonical
+        or chroma_index_ok
         or bool(chain_manifest)
     )
 
-    governed_chroma_refresh = chain_steps_ok
     return {
         "uwg_path_present": uwg_path_present,
         "r1b_uwg_chain_core_complete": r1b_uwg_chain_core,
-        "durable_proof_chain_complete": chain_steps_ok,
+        "read_surface_refresh_complete": read_surface_refresh_complete,
+        "chroma_projection_complete": chroma_projection_complete,
+        "durable_vector_chain_artifacts_complete": durable_vector_chain_artifacts_complete,
+        "durable_vector_persistence_proven": durable_vector_persistence_proven,
+        "durable_proof_chain_complete": governed_chroma_refresh,
         "governed_chroma_refresh_proven": governed_chroma_refresh,
         "refresh_noncanonical_without_canonical": refresh_noncanonical and not refresh_canonical,
         "r1b_governed_receipt_chain": chain_manifest,
@@ -539,12 +570,18 @@ def build_semantic_cache_persistence_slots(
             notes="no L4 namespace/object ref in CommitRequest receipt",
         )
 
-    if uwg_assessment.get("governed_chroma_refresh_proven"):
+    chroma_row = artifacts.get("chroma_collection_index_ref") or {}
+    if chroma_row.get("present"):
+        p = chroma_row.get("source_path")
+        path = repo_root / p if p else None
         slots["chroma_collection_index_ref"] = _slot(
             "chroma_collection_index_ref",
             status="PRESENT",
+            artifact_name=chroma_row.get("artifact_name"),
+            source_path=p,
             owner_class="CORE_L4_DURABLE_STATE",
-            notes="governed refresh proven via UWG chain (collection ref from refresh receipt)",
+            sha256=_sha256_file(path) if path and path.is_file() else "",
+            notes="governed apps_rg read-surface Chroma collection ref (not core D2)",
         )
     else:
         slots["chroma_collection_index_ref"] = _slot(
@@ -552,8 +589,27 @@ def build_semantic_cache_persistence_slots(
             status="MISSING",
             notes=(
                 "core D2 shadow path uses agentic_core/L4_state/cache/gptcache_client Chroma upsert; "
-                "classified NON_DURABLE_INDEX_WRITE — not durable proof"
+                "classified NON_DURABLE_INDEX_WRITE without governed read_surface_refresh chain"
             ),
+        )
+
+    read_after_row = artifacts.get("chroma_read_after_write") or {}
+    if read_after_row.get("present"):
+        p = read_after_row.get("source_path")
+        path = repo_root / p if p else None
+        slots["chroma_read_after_write"] = _slot(
+            "chroma_read_after_write",
+            status="PRESENT",
+            artifact_name=read_after_row.get("artifact_name"),
+            source_path=p,
+            owner_class="CORE_L4_DURABLE_STATE",
+            sha256=_sha256_file(path) if path and path.is_file() else "",
+        )
+    else:
+        slots["chroma_read_after_write"] = _slot(
+            "chroma_read_after_write",
+            status="MISSING",
+            notes="no chroma_read_after_write_receipt.json after governed projection",
         )
 
     mapping_path, _ = _find_first_existing(
@@ -641,8 +697,12 @@ def build_semantic_cache_persistence_slots(
             notes=str(chain_doc.get("reason") or W6C_READ_SURFACE_DEFERRED_REASON),
         )
 
-    if isinstance(chain_doc, Mapping) and chain_doc.get("semantic_cache_persistence_status"):
+    if uwg_assessment.get("durable_vector_persistence_proven"):
+        persistence_status = "PROVEN_GOVERNED_VECTOR_CHAIN"
+    elif isinstance(chain_doc, Mapping) and chain_doc.get("semantic_cache_persistence_status"):
         persistence_status = str(chain_doc["semantic_cache_persistence_status"])
+    elif uwg_assessment.get("governed_chroma_refresh_proven"):
+        persistence_status = "PROVEN_GOVERNED_VECTOR_CHAIN"
     elif uwg_assessment.get("durable_proof_chain_complete"):
         persistence_status = "PROVEN_UWG_CHAIN_ONLY"
     elif uwg_assessment.get("r1b_uwg_chain_core_complete"):
@@ -657,9 +717,17 @@ def build_semantic_cache_persistence_slots(
         "generated_at_utc": _utc_now(),
         "producer": _CANONICAL_PRODUCER,
         "semantic_cache_persistence_status": persistence_status,
-        "vector_persistence_claimed": False,
-        "chroma_persistence_claimed": False,
-        "durable_proof_present": bool(uwg_assessment.get("durable_proof_chain_complete")),
+        "vector_persistence_claimed": bool(uwg_assessment.get("durable_vector_persistence_proven")),
+        "chroma_persistence_claimed": bool(uwg_assessment.get("chroma_projection_complete")),
+        "durable_proof_present": bool(uwg_assessment.get("governed_chroma_refresh_proven")),
+        "r1b_uwg_chain_core_complete": bool(uwg_assessment.get("r1b_uwg_chain_core_complete")),
+        "read_surface_refresh_complete": bool(
+            uwg_assessment.get("read_surface_refresh_complete")
+        ),
+        "chroma_projection_complete": bool(uwg_assessment.get("chroma_projection_complete")),
+        "durable_vector_persistence_proven": bool(
+            uwg_assessment.get("durable_vector_persistence_proven")
+        ),
         "slots": slots,
         "missing_slot_ids": missing_ids,
         "drift_slot_ids": drift_ids,
@@ -689,6 +757,7 @@ def finalize_semantic_cache_quarantine(
         integrated_dir=integrated_dir,
     )
     chroma_class = classify_shadow_chroma_write_path(uwg_assessment=uwg)
+    assertion_path = artifact_dir / NO_DIRECT_CHROMA_ASSERTION_ARTIFACT
     assertion = build_no_direct_chroma_write_bypass_assertion(
         repo_root=repo_root,
         artifact_dir=artifact_dir,
@@ -697,7 +766,24 @@ def finalize_semantic_cache_quarantine(
         uwg_assessment=uwg,
         chroma_classification=chroma_class,
     )
-    assertion_path = artifact_dir / NO_DIRECT_CHROMA_ASSERTION_ARTIFACT
+    assertion_path.write_text(
+        json.dumps(assertion, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    uwg = assess_uwg_durable_write_chain(
+        repo_root=repo_root,
+        artifact_dir=artifact_dir,
+        integrated_dir=integrated_dir,
+    )
+    chroma_class = classify_shadow_chroma_write_path(uwg_assessment=uwg)
+    assertion = build_no_direct_chroma_write_bypass_assertion(
+        repo_root=repo_root,
+        artifact_dir=artifact_dir,
+        section_id=section_id,
+        run_id=run_id,
+        uwg_assessment=uwg,
+        chroma_classification=chroma_class,
+    )
     assertion_path.write_text(
         json.dumps(assertion, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",

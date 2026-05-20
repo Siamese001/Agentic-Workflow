@@ -169,13 +169,29 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry | FormalExceptionEn
         routing_target="resume_generation_assembly",
         proof_prefix="RG",
     ),
-    "apps_lic": GovernedAppEntry(
+    "apps_lic": FormalExceptionEntry(
         app_name="apps_lic",
-        status=GovernanceStatus.GOVERNED,
-        runner_module="apps_lic.integrations.governed_lic_run",
-        runner_class="GovernedLicRun",
-        capability_token="apps_lic.governed_e2e.v1",
-        routing_target="lic_campaign_assembly",
+        status=GovernanceStatus.EXCEPTION,
+        exception_reason_code=ExceptionReasonCode.PENDING_MIGRATION,
+        exception_reason=(
+            "apps_lic product runtime uses AG-8 canonical_dispatch spine "
+            "(run_canonical_apps_lic_spine), not GovernedAppRunner. "
+            "GovernedLicRun and shadow pipelines hard-deleted."
+        ),
+        blocked_layers=("GovernedAppRunner", "GovernedLicRun"),
+        safe_layers=(
+            "canonical_dispatch",
+            "agentic_core spine bindings (L0/L1/L2/L3/C0/PA/Exit)",
+        ),
+        compensating_controls=(
+            "CC-LIC-01: python -m apps_lic invokes run_canonical_apps_lic_spine only",
+            "CC-LIC-02: pytest negative proofs block shadow module imports",
+        ),
+        review_cadence="annual",
+        owner="apps_lic team",
+        target_phase="N/A — canonical_dispatch is product SSOT",
+        partial_adoption_module="apps_lic.runtime.dispatch.canonical_dispatch",
+        partial_adoption_class="CanonicalDispatchResult",
         proof_prefix="LIC",
     ),
     # ── Formal governed exceptions (permanent; FormalExceptionEntry required) ──

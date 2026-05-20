@@ -18,7 +18,7 @@ from apps_rg.cache.r1b_whole_run_preflight import (
     write_r1b_preflight_receipt,
 )
 
-ENTRYPOINT_CLI_SHIM = "apps_rg.__main__._run_with_args"
+ENTRYPOINT_TEST_WHOLE_RUN_HARNESS = "tests.helpers.whole_run_spine_harness.run_whole_run_spine_harness"
 ENTRYPOINT_CANONICAL_DISPATCH = "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives"
 ENTRYPOINT_DISPATCH_APPS_RG_RUN = "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run"
 ENTRYPOINT_ENVELOPE_DISPATCH = "apps_rg.runtime.dispatch.apps_rg_dispatch.apps_rg_dispatch"
@@ -254,8 +254,8 @@ def build_entrypoint_audit_matrix() -> list[dict[str, Any]]:
             "status": "wired_w9b",
         },
         {
-            "entrypoint": ENTRYPOINT_CLI_SHIM,
-            "delegates_to": "run_integrated_single_action_spine (test shim)",
+            "entrypoint": ENTRYPOINT_TEST_WHOLE_RUN_HARNESS,
+            "delegates_to": "run_integrated_single_action_spine (tests/helpers only)",
             "uses_r1a": True,
             "uses_r1b": True,
             "order": list(PREFLIGHT_ORDER),
@@ -263,7 +263,7 @@ def build_entrypoint_audit_matrix() -> list[dict[str, Any]]:
             "miss_behavior": "pipeline + post_exit ingest",
             "exit_handoff": "receipt r1b_whole_run_preflight_hit.json",
             "section_scope": "N/A",
-            "status": "wired_w9",
+            "status": "test_harness_only",
         },
         {
             "entrypoint": "apps_rg.runtime.internal.lane_batch",
@@ -281,7 +281,7 @@ def build_entrypoint_audit_matrix() -> list[dict[str, Any]]:
 
 __all__ = [
     "ENTRYPOINT_CANONICAL_DISPATCH",
-    "ENTRYPOINT_CLI_SHIM",
+    "ENTRYPOINT_TEST_WHOLE_RUN_HARNESS",
     "ENTRYPOINT_DISPATCH_APPS_RG_RUN",
     "ENTRYPOINT_ENVELOPE_DISPATCH",
     "WholeRunCachePreflightOutcome",

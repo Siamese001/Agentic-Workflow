@@ -1,6 +1,6 @@
 """Canonical competencies lane runtime execution (W11-M4C / legacy burndown Phase D).
 
-``apps_rg.runtime.sections.competencies_lane_api`` retains shared compile/repair helpers and
+``apps_rg.runtime.sections.competencies_lane_runtime`` retains shared compile/repair helpers and
 compat re-exports; product entry is ``python -m apps_rg --section competencies``.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from typing import Any
 
 
 def _hydrate_dispatch_helpers() -> None:
-    import apps_rg.runtime.sections.competencies_lane_api as _cd
+    import apps_rg.runtime.sections.competencies_lane_runtime as _cd
 
     _skip = frozenset({
         "run_competencies_execution",
@@ -116,6 +116,12 @@ def run_competencies_lane_execution(
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
+    native_c03 = (pp_meta or {}).get("native_c03_final_evidence")
+    if isinstance(native_c03, dict):
+        write_json(artifact_dir / "native_c03_final_evidence.json", native_c03)
+    c03_local = (pp_meta or {}).get("c03_graphrag_bound")
+    if isinstance(c03_local, dict):
+        write_json(artifact_dir / "c03_graphrag_bound.json", c03_local)
     (artifact_dir / "compiled_prompt.txt").write_text(
         json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -775,7 +781,7 @@ def run_competencies_execution(
     args: argparse.Namespace,
     *,
     artifact_dir_override: Path | None = None,
-    trace_runtime_path: str = "apps_rg.runtime.sections.competencies_lane_api",
+    trace_runtime_path: str = "apps_rg.runtime.sections.competencies_lane_runtime",
     print_output: bool = True,
 ) -> dict[str, Any]:
     """Compat alias — canonical trace path is sections.competencies_lane."""

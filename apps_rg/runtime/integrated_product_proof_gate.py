@@ -11,6 +11,12 @@ from apps_rg.cache.cache_preflight_evidence import (
     CACHE_MISS_RECEIPT_NAME,
     CACHE_PREFLIGHT_MANIFEST_NAME,
 )
+from apps_rg.runtime.section_spine_terminology import (
+    BINDING_CLASSIFICATION_FEC_SHAPE_ONLY,
+    BINDING_CLASSIFICATION_FULL_C03,
+    BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT,
+)
+from apps_rg.runtime.native_c03_skills_graph import validate_native_c03_contract
 from apps_rg.runtime.non_product_proof_stamp import (
     CI_LANE_DEV_HARNESS_CLASSIFICATION,
     DEMO_HARNESS_PROOF_CLASSIFICATION,
@@ -179,6 +185,26 @@ def _harvest_classifications(blobs: list[dict[str, Any]]) -> set[str]:
                 if token in t:
                     found.add(token)
     return found
+
+
+def _invalid_binding_classification_claims(blobs: list[dict[str, Any]]) -> list[str]:
+    """Reject mislabeled C0.3 or section-local bindings posing as product proof."""
+    reasons: list[str] = []
+    for blob in blobs:
+        bc = str(blob.get("binding_classification") or "")
+        if bc == BINDING_CLASSIFICATION_FULL_C03:
+            ok, missing = validate_native_c03_contract(blob)
+            if not ok:
+                reasons.append(f"false_full_c03:{','.join(missing)}")
+        elif bc in (
+            BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT,
+            BINDING_CLASSIFICATION_FEC_SHAPE_ONLY,
+        ):
+            if blob.get("can_satisfy_integrated_product_proof") or blob.get("product_proof_eligible"):
+                reasons.append(f"section_binding_product_claim:{bc}")
+        if blob.get("fec_shape_only") and blob.get("canonical_c0_3_claimed"):
+            reasons.append("fec_shape_claims_full_c03")
+    return reasons
 
 
 def _detect_section_mode(run_dir: Path, blobs: list[dict[str, Any]]) -> bool:
@@ -399,9 +425,13 @@ def validate_integrated_product_proof(
     if rejected:
         explicit_non_claims.append(f"rejected_non_product_classifications={rejected}")
 
+    binding_violations = _invalid_binding_classification_claims(blobs)
+
     hard_fail_reasons: list[str] = []
     if section_mode:
         hard_fail_reasons.append("section_mode")
+    if binding_violations:
+        hard_fail_reasons.append(f"binding_classification:{';'.join(binding_violations)}")
     if rejected:
         hard_fail_reasons.append("non_product_classification")
     if package_only:

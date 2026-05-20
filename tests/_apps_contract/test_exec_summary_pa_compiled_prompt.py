@@ -299,7 +299,7 @@ def test_lane_repair_prompt_uses_sentence_roles_not_fixed_count():
 
 
 def test_dispatch_parser_default_provider_is_mock_with_qwen_opt_in():
-    from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
+    from apps_rg.runtime.sections.executive_summary_lane import build_parser
 
     p = build_parser()
     ns = p.parse_args([])

@@ -18,7 +18,7 @@ L7_AUDITABILITY (`agentic_core/L7_auditability/__init__.py:14`) declares itself 
 | `integrated_safe_reuse_run` (R1B family + R4 + R3 + UWG_*) | yes | (probes / cert harness only) |
 | `integrated_managed_workflow_run` | yes | (probes / cert harness only) |
 | `integrated_grounded_read_run` | yes | (probes only) |
-| `integrated_r4_deterministic_pipeline_run` | NO | `apps_rg` |
+| `integrated_single_action_spine_run` | NO | `apps_rg` |
 | `integrated_r4_lic_pipeline_run` | NO | `apps_lic` (direct path) |
 | `apps_shared.spine_emission.governed_run` | NO | `apps_qna`, `apps_research`, `apps_rfp`, `apps_underwriting_ai`, `apps_lic` (governed path) |
 | (no spine wrapping at all) | NO | `apps_eval`, `apps_repo_brief` |
@@ -43,7 +43,7 @@ Rejected:
 
 ## 3. Goal & Non-Goals
 
-**Goal**: every governed `apps_*` run going through `governed_run`, `integrated_r4_deterministic_pipeline_run`, or `integrated_r4_lic_pipeline_run` emits the four canonical L7 artifacts: `agentic_core_how_trace.json`, `agentic_core_l7_route_family_coverage.json`, `agentic_core_spine_proof.json`, `integrated_runtime_artifact_manifest.json`. The constitutional invariant becomes true for 7 of 8 production apps.
+**Goal**: every governed `apps_*` run going through `governed_run`, `integrated_single_action_spine_run`, or `integrated_r4_lic_pipeline_run` emits the four canonical L7 artifacts: `agentic_core_how_trace.json`, `agentic_core_l7_route_family_coverage.json`, `agentic_core_spine_proof.json`, `integrated_runtime_artifact_manifest.json`. The constitutional invariant becomes true for 7 of 8 production apps.
 
 **Non-Goals**:
 - Wire `apps_eval` and `apps_repo_brief` into governed_run (deferred — see Section 13).
@@ -57,7 +57,7 @@ Rejected:
 ## 4. Scope — Files In Scope
 
 ### Wave 1 — apps_rg (R4 deterministic pipeline)
-- `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` — EDIT
+- `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` — EDIT
 - `tests/unit/agentic_core/runtime/entrypoints/test_integrated_r4_l7_emit.py` — NEW
 
 ### Wave 2 — apps_lic direct (R4 lic pipeline)
@@ -78,7 +78,7 @@ Out of scope (read-only context): `agentic_core/L7_auditability/**`, `apps_*/**`
 | Node | Layer | Archetype | Fan-in | Fan-out | Surface | Justification |
 |---|---|---|---|---|---|---|
 | `apps_shared.spine_emission.context.GovernedRun.emit_post_execution_contracts` | L4 (state) | CENTRAL_DEPENDENCY | 5+ apps via `governed_run` ctx mgr (apps_qna, apps_research, apps_rfp, apps_underwriting_ai, apps_lic) | writes 10 canonical receipts | Write + Observability + State | Highest-fan-in node. Single edit covers 5 apps. Multiplier x1.75 (L4). Impact = 1 * (1 + log10(6)) * 1.75 ~= 3.1 |
-| `integrated_r4_deterministic_pipeline_run` | L4 (state) | ORCHESTRATOR | apps_rg (1 known) | L0/L1/L2/L3 emitters | Observability + Write | Direct entrypoint; missing emit silently violates `__init__.py:14` |
+| `integrated_single_action_spine_run` | L4 (state) | ORCHESTRATOR | apps_rg (1 known) | L0/L1/L2/L3 emitters | Observability + Write | Direct entrypoint; missing emit silently violates `__init__.py:14` |
 | `integrated_r4_lic_pipeline_run` | L4 (state) | ORCHESTRATOR | apps_lic (1 known) | similar | Observability + Write | Verbatim fix shape mirrors W1 |
 
 5-Surfaces: all three intersect **Observability** (silent evidence-plane drop is unobservable from runtime telemetry) and **Write** (artifact emission). The governed_run hotspot additionally intersects **State** (owns run-dir state machine).
@@ -110,7 +110,7 @@ ADG Provenance: backend=sqlite, snapshot=adg_indexed_<latest>.sqlite. Live ADG q
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P1.1 | Add L7 emit block to R4 deterministic entrypoint | `integrated_r4_deterministic_pipeline_run.py` | Locate the existing `_emit(...)` helper and the post-chain seal point; replicate the 30-line block from `integrated_safe_reuse_run.py:1184-1219` verbatim with `chain_kind="R4_SINGLE_ACTION"`; ensure block runs AFTER all chain artifacts are written; preserve fail-loud semantics. | ~3k | Not Started |
+| P1.1 | Add L7 emit block to R4 deterministic entrypoint | `integrated_single_action_spine_run.py` | Locate the existing `_emit(...)` helper and the post-chain seal point; replicate the 30-line block from `integrated_safe_reuse_run.py:1184-1219` verbatim with `chain_kind="R4_SINGLE_ACTION"`; ensure block runs AFTER all chain artifacts are written; preserve fail-loud semantics. | ~3k | Not Started |
 | P1.2 | Regression test for W1 | `tests/unit/agentic_core/runtime/entrypoints/test_integrated_r4_l7_emit.py` (new) | Build minimal fake artifact_dir with chain artifacts `build_how_trace` requires (identity, route, manifest); invoke entrypoint or L7 branch in isolation; assert all 4 L7 artifacts exist with non-empty JSON. | ~2k | Not Started |
 | P1.3 | Live verification W1 | `python -m apps_rg --target-company <test> --target-role <test> --jd <fixture> --manual-brief <fixture>` | Re-run apps_rg; confirm new run dir contains 4 L7 artifacts; spot-check `agentic_core_how_trace.json` against `agentic_core/L7_auditability/contracts/how_trace.py`. | ~1k | Not Started |
 | P2.1 | Add L7 emit block to R4 lic entrypoint | `integrated_r4_lic_pipeline_run.py` | Same shape as P1.1; verify R4 lic uses identical `_emit` signature; if it does not, surface as Author-Gate before proceeding. | ~2k | Not Started |

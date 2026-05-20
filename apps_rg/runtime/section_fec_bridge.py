@@ -36,7 +36,7 @@ OBSERVED_CHAIN_WITH_FEC_BRIDGE: tuple[str, ...] = (
     "L0",
     "proof_pool_resolver",
     "section_fec_bridge",
-    "section_graph_binding_shim",
+    "section_c03_graph_binding",
     "section_PA",
     "section_L2",
     "section_X2",
@@ -127,8 +127,15 @@ def _build_pa_proof_authority_metadata(
         for key in ("graph_lineage_refs", "graph_expansion_refs", "binding_kind", "fec_shape_only"):
             if key in c03 and key not in out:
                 out[key] = c03[key]
+    native_pa = pp_meta.get("c03_pa_metadata")
+    if isinstance(native_pa, dict):
+        for key, val in native_pa.items():
+            out[key] = val
         if "c03_graphrag_bound_status" not in out:
-            out["c03_graphrag_bound_status"] = c03.get("c03_graphrag_bound_status")
+            if isinstance(c03, dict):
+                out["c03_graphrag_bound_status"] = c03.get("c03_graphrag_bound_status")
+            else:
+                out["c03_graphrag_bound_status"] = pp_meta.get("native_c03_status")
     return out
 
 
@@ -202,11 +209,11 @@ def build_section_fec_bridge(
         "canonical_c0_5_claimed": False,
         "canonical_c0_5_fec": False,
         "fec_shape_only": True,
-        "section_graph_binding_shim": isinstance(c03, dict),
+        "section_c03_graph_binding": isinstance(c03, dict),
         "binding_kind": str(
             pp_meta.get("binding_kind")
             or (c03.get("binding_kind") if isinstance(c03, dict) else "")
-            or ("section_graph_binding_shim" if isinstance(c03, dict) else "")
+            or ("section_c03_graph_binding" if isinstance(c03, dict) else "")
         ),
         "final_evidence_contract": fec_snap,
         "proof_pool_type": pp_meta.get("proof_pool_type"),

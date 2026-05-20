@@ -156,19 +156,29 @@ def _make_envelope() -> Any:
 
 
 def _make_validated_request() -> Any:
-    from agentic_core.runtime.entry.u0_apps_lic_binding import u0_validate_apps_lic
+    from apps_lic.runtime.bindings.u0_binding import u0_validate_apps_lic
     envelope = _make_envelope()
     return u0_validate_apps_lic(envelope)
 
 
 def _make_l1_plan() -> Any:
-    from agentic_core.L1_cognition.apps_lic_l1_binding import l1_plan_apps_lic
+    import dataclasses
+
+    from apps_lic.runtime.bindings.l1_binding import l1_plan_apps_lic
+
     vr = _make_validated_request()
+    merged = dict(vr.app_payload)
+    merged["context_signals"] = {
+        "briefing_fresh": True,
+        "lead_profile_valid": True,
+        "context_grounded": True,
+    }
+    vr = dataclasses.replace(vr, app_payload=merged)
     return l1_plan_apps_lic(vr)
 
 
 def _make_route_contract() -> Any:
-    from agentic_core.L0_routing.apps_lic_l0_binding import l0_route_apps_lic
+    from apps_lic.runtime.bindings.l0_binding import l0_route_apps_lic
     l1 = _make_l1_plan()
     return l0_route_apps_lic(l1)
 
@@ -209,14 +219,14 @@ class TestA01_RuntimeImports:
     """All 7 layer binding modules must be importable."""
 
     @pytest.mark.parametrize("module_path", [
-        "agentic_core.runtime.entry.u0_apps_lic_binding",
-        "agentic_core.L1_cognition.apps_lic_l1_binding",
-        "agentic_core.L0_routing.apps_lic_l0_binding",
-        "agentic_core.L3_orchestration.apps_lic_l3_binding",
-        "agentic_core.runtime.c0.apps_lic_c0_binding",
-        "agentic_core.prompt_governance.apps_lic_pa_binding",
-        "agentic_core.L2_execution.apps_lic_l2_binding",
-        "agentic_core.runtime.exit.apps_lic_exit_binding",
+        "apps_lic.runtime.bindings.u0_binding",
+        "apps_lic.runtime.bindings.l1_binding",
+        "apps_lic.runtime.bindings.l0_binding",
+        "apps_lic.runtime.bindings.l3_binding",
+        "apps_lic.runtime.bindings.c0_binding",
+        "apps_lic.runtime.bindings.pa_binding",
+        "apps_lic.runtime.bindings.l2_binding",
+        "apps_lic.runtime.bindings.exit_binding",
     ])
     def test_module_importable(self, module_path: str) -> None:
         mod = importlib.import_module(module_path)
@@ -373,7 +383,7 @@ class TestA07_L1ConsumesAppPayload:
         # Check via AST: .payload attribute access on an object named 'envelope'
         # should not appear in actual code (only in docstrings which AST skips for Expr nodes)
         import ast as _ast
-        mod = importlib.import_module("agentic_core.L1_cognition.apps_lic_l1_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l1_binding")
         src = inspect.getsource(mod)
         tree = _ast.parse(src)
         # Detect envelope.payload as code (not in docstring constant expressions)
@@ -389,7 +399,7 @@ class TestA07_L1ConsumesAppPayload:
         assert not violations, "L1 must not call envelope.payload in actual code (only docstrings allowed)"
 
     def test_l1_references_app_payload(self) -> None:
-        src = _source_of("agentic_core.L1_cognition.apps_lic_l1_binding")
+        src = _source_of("apps_lic.runtime.bindings.l1_binding")
         assert "app_payload" in src, "L1 must reference app_payload"
 
     def test_l1_sets_task_spec(self) -> None:
@@ -413,18 +423,18 @@ class TestA08_L0DeterministicRoute:
         assert isinstance(rc, RouteContract)
 
     def test_l0_route_is_deterministic(self) -> None:
-        from agentic_core.L0_routing.apps_lic_l0_binding import l0_route_apps_lic
+        from apps_lic.runtime.bindings.l0_binding import l0_route_apps_lic
         l1 = _make_l1_plan()
         rc1 = l0_route_apps_lic(l1)
         rc2 = l0_route_apps_lic(l1)
         assert rc1.route_id == rc2.route_id, "L0 route must be deterministic for same L1 input"
 
     def test_l0_does_not_read_legacy_payload(self) -> None:
-        src = _code_only_of("agentic_core.L0_routing.apps_lic_l0_binding")
+        src = _code_only_of("apps_lic.runtime.bindings.l0_binding")
         assert "envelope.payload" not in src
 
     def test_l0_reads_l1_plan_contract(self) -> None:
-        src = _source_of("agentic_core.L0_routing.apps_lic_l0_binding")
+        src = _source_of("apps_lic.runtime.bindings.l0_binding")
         assert "L1PlanContract" in src
 
     def test_l0_emits_exactly_one_route(self) -> None:
@@ -447,7 +457,7 @@ class TestA09_L3ParticipatesForManagedWorkflow:
         )
 
     def test_l3_binding_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l3_binding")
         assert hasattr(mod, "l3_orchestrate_apps_lic")
 
     def test_l3_required_on_route(self) -> None:
@@ -457,11 +467,11 @@ class TestA09_L3ParticipatesForManagedWorkflow:
         )
 
     def test_l3_source_has_no_execute_assertion(self) -> None:
-        src = _source_of("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        src = _source_of("apps_lic.runtime.bindings.l3_binding")
         assert "l3_no_execute_assertion" in src
 
     def test_l3_source_has_no_retrieve_assertion(self) -> None:
-        src = _source_of("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        src = _source_of("apps_lic.runtime.bindings.l3_binding")
         assert "l3_no_retrieve_assertion" in src
 
 
@@ -471,20 +481,20 @@ class TestA09_L3ParticipatesForManagedWorkflow:
 
 class TestA10_C0ProducesFinalEvidenceContract:
     def test_c0_binding_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.runtime.c0.apps_lic_c0_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.c0_binding")
         assert mod is not None
 
     def test_c0_source_references_final_evidence_contract(self) -> None:
-        src = _source_of("agentic_core.runtime.c0.apps_lic_c0_binding")
+        src = _source_of("apps_lic.runtime.bindings.c0_binding")
         assert "FinalEvidenceContract" in src, "C0 must reference FinalEvidenceContract"
 
     def test_c0_source_does_not_import_chromadb(self) -> None:
-        assert not _has_chromadb_import("agentic_core.runtime.c0.apps_lic_c0_binding"), (
+        assert not _has_chromadb_import("apps_lic.runtime.bindings.c0_binding"), (
             "C0 must not import chromadb"
         )
 
     def test_c0_source_references_grounding_required(self) -> None:
-        src = _source_of("agentic_core.runtime.c0.apps_lic_c0_binding")
+        src = _source_of("apps_lic.runtime.bindings.c0_binding")
         assert "grounding_required" in src
 
 
@@ -494,26 +504,26 @@ class TestA10_C0ProducesFinalEvidenceContract:
 
 class TestA11_PAEvidenceDataOnly:
     def test_pa_binding_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.prompt_governance.apps_lic_pa_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.pa_binding")
         assert mod is not None
 
     def test_pa_source_references_evidence_data_only_slot(self) -> None:
-        src = _source_of("agentic_core.prompt_governance.apps_lic_pa_binding")
+        src = _source_of("apps_lic.runtime.bindings.pa_binding")
         assert "C0_EVIDENCE_DATA_ONLY" in src or "evidence_data_only" in src.lower(), (
             "PA must place evidence in C0_EVIDENCE_DATA_ONLY slot"
         )
 
     def test_pa_source_does_not_import_chromadb(self) -> None:
-        assert not _has_chromadb_import("agentic_core.prompt_governance.apps_lic_pa_binding"), (
+        assert not _has_chromadb_import("apps_lic.runtime.bindings.pa_binding"), (
             "PA must not import chromadb"
         )
 
     def test_pa_source_references_slot_lineage_map(self) -> None:
-        src = _source_of("agentic_core.prompt_governance.apps_lic_pa_binding")
+        src = _source_of("apps_lic.runtime.bindings.pa_binding")
         assert "slot_lineage_map" in src, "PA must populate slot_lineage_map"
 
     def test_pa_source_does_not_promote_evidence_to_system_slot(self) -> None:
-        src = _source_of("agentic_core.prompt_governance.apps_lic_pa_binding")
+        src = _source_of("apps_lic.runtime.bindings.pa_binding")
         # Evidence must not land in system/instruction slot — only in data slot
         # Check that PA does not put evidence_items into a SYSTEM_INTERNAL slot
         if "SYSTEM_INTERNAL" in src:
@@ -532,34 +542,34 @@ class TestA11_PAEvidenceDataOnly:
 
 class TestA12_L2PreservesRefs:
     def test_l2_binding_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L2_execution.apps_lic_l2_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l2_binding")
         assert mod is not None
 
     def test_l2_source_references_prompt_artifact_digest(self) -> None:
-        src = _source_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _source_of("apps_lic.runtime.bindings.l2_binding")
         assert "prompt_artifact_digest" in src
 
     def test_l2_source_references_evidence_refs(self) -> None:
-        src = _source_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _source_of("apps_lic.runtime.bindings.l2_binding")
         assert "evidence_refs" in src
 
     def test_l2_source_references_replay_manifest(self) -> None:
-        src = _source_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _source_of("apps_lic.runtime.bindings.l2_binding")
         assert "replay" in src
 
     def test_l2_proposed_state_diff_always_empty(self) -> None:
-        src = _source_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _source_of("apps_lic.runtime.bindings.l2_binding")
         assert "proposed_state_diff" in src
         # Must always be empty or {}
         assert "{}" in src or "proposed_state_diff={}" in src or "proposed_state_diff: {}" in src
 
     def test_l2_no_direct_l4_write(self) -> None:
-        src = _code_only_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _code_only_of("apps_lic.runtime.bindings.l2_binding")
         for forbidden in ("sqlite3.connect", "psycopg2.connect", "sqlalchemy.create_engine"):
             assert forbidden not in src, f"L2 must not contain {forbidden}"
 
     def test_l2_no_chromadb(self) -> None:
-        src = _code_only_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _code_only_of("apps_lic.runtime.bindings.l2_binding")
         assert "chromadb" not in src.lower()
 
 
@@ -569,25 +579,25 @@ class TestA12_L2PreservesRefs:
 
 class TestA13_ExitProducesExitReviewPacket:
     def test_exit_source_builds_exit_review_packet(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert "ExitReviewPacket" in src
 
     def test_exit_review_packet_construction_callable(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.types import ExitReviewPacket
         l2 = _make_sealed_l2()
         packet = _build_exit_review_packet(l2)
         assert isinstance(packet, ExitReviewPacket)
 
     def test_exit_review_packet_has_source_type(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.types import SourceType
         l2 = _make_sealed_l2()
         packet = _build_exit_review_packet(l2)
         assert packet.source_type == SourceType.L2_SEALED_ARTIFACT
 
     def test_exit_review_packet_terminal_class_answer_only(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         l2 = _make_sealed_l2()
         packet = _build_exit_review_packet(l2)
         assert packet.terminal_class == "answer_only"
@@ -599,12 +609,12 @@ class TestA13_ExitProducesExitReviewPacket:
 
 class TestA14_ExitProducesX1CheckoutResult:
     def test_exit_source_references_x1_checkout(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert "build_x1_checkout_result" in src
         assert "run_all_x1_gates" in src
 
     def test_x1_checkout_result_has_10_gates(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import build_x1_checkout_result
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         l2 = _make_sealed_l2()
@@ -624,11 +634,11 @@ class TestA14_ExitProducesX1CheckoutResult:
 
 class TestA15_X2ConsumesX1Checkout:
     def test_exit_source_calls_aggregate_decision(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert "aggregate_decision" in src
 
     def test_aggregate_decision_uses_x1_checkout_result(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert "x1_checkout_result=x1_checkout" in src or "x1_checkout" in src
 
 
@@ -638,21 +648,21 @@ class TestA15_X2ConsumesX1Checkout:
 
 class TestA16_X3EmitsExactlyOneDisposition:
     def test_exactly_one_x3_disposition(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         from agentic_core.runtime.contracts.x3_disposition import X3Disposition
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
         assert isinstance(result, X3Disposition)
 
     def test_exit_status_is_string(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
         assert isinstance(result.exit_status, str)
         assert result.exit_status in {"success", "failure", "escalated", "abstain"}
 
     def test_completed_l2_gives_success(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2(execution_status="completed")
         result = exit_finalize_apps_lic(l2)
         assert result.exit_status == "success"
@@ -665,13 +675,13 @@ class TestA16_X3EmitsExactlyOneDisposition:
 
 class TestA17_X3ReferencesX1X2Evidence:
     def test_gate_verdict_refs_populated(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
         assert result.gate_verdict_refs, "gate_verdict_refs must be non-empty"
 
     def test_gate_verdict_refs_count_10(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
         assert len(result.gate_verdict_refs) == 10, (
@@ -679,7 +689,7 @@ class TestA17_X3ReferencesX1X2Evidence:
         )
 
     def test_gate_verdict_refs_contain_x1a_through_x1j(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
         refs_str = " ".join(result.gate_verdict_refs)
@@ -687,7 +697,7 @@ class TestA17_X3ReferencesX1X2Evidence:
             assert gate in refs_str, f"gate_verdict_refs must include {gate}"
 
     def test_sealed_l2_digest_on_x3(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2(compilation_hash="digest-ag8-test")
         result = exit_finalize_apps_lic(l2)
         assert result.sealed_l2_digest == "digest-ag8-test"
@@ -699,7 +709,7 @@ class TestA17_X3ReferencesX1X2Evidence:
 
 class TestA18_EvalScoreNotAuthoritative:
     def test_eval_score_is_none(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
         assert result.eval_score is None, (
@@ -707,7 +717,7 @@ class TestA18_EvalScoreNotAuthoritative:
         )
 
     def test_outcome_authorized_driven_by_x1x2_not_eval_score(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2_fail = _make_sealed_l2(execution_status="failed", generated_content="")
         result = exit_finalize_apps_lic(l2_fail)
         # Even with eval_score=None, failed L2 must produce outcome_authorized=False
@@ -721,7 +731,7 @@ class TestA18_EvalScoreNotAuthoritative:
 
 class TestA19_MaterialFailCannotAllow:
     def test_failed_l2_denied(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2(execution_status="failed", generated_content="")
         result = exit_finalize_apps_lic(l2)
         assert result.outcome_authorized is False
@@ -729,7 +739,7 @@ class TestA19_MaterialFailCannotAllow:
         assert result.exit_status != "success"
 
     def test_failed_l2_exit_status_not_success(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2(execution_status="stub_fallback", generated_content="")
         result = exit_finalize_apps_lic(l2)
         assert result.exit_status != "success"
@@ -742,7 +752,7 @@ class TestA19_MaterialFailCannotAllow:
 class TestA20_MaterialUnknownCannotPass:
     def test_x1a_unknown_forces_escalate_or_deny(self) -> None:
         """When X1A (authority envelope) is UNKNOWN, exit must not allow."""
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import build_x1_checkout_result
         from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import aggregate_decision
@@ -859,7 +869,7 @@ class TestA21_NotApplicableRequiresReason:
         This is the runtime enforcement of the hard law above — proves the actual
         apps_lic pipeline (X1G and X1J) satisfies the requirement.
         """
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         from agentic_core.L3_orchestration.exit_eval.v6.types import GateResult
         l2 = _make_sealed_l2()
@@ -879,7 +889,7 @@ class TestA21_NotApplicableRequiresReason:
     def test_x1j_not_applicable_carries_reason_code(self) -> None:
         """X1J specifically: when state_diff is empty (answer-only path),
         X1J must be NOT_APPLICABLE AND carry reason_codes."""
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         from agentic_core.L3_orchestration.exit_eval.v6.types import GateResult
         l2 = _make_sealed_l2(proposed_state_diff={})
@@ -902,12 +912,12 @@ class TestA21_NotApplicableRequiresReason:
 
 class TestA22_NoLegacyPayloadDownstream:
     @pytest.mark.parametrize("module_name", [
-        "agentic_core.runtime.exit.apps_lic_exit_binding",
-        "agentic_core.L3_orchestration.apps_lic_l3_binding",
-        "agentic_core.L2_execution.apps_lic_l2_binding",
-        "agentic_core.runtime.c0.apps_lic_c0_binding",
-        "agentic_core.prompt_governance.apps_lic_pa_binding",
-        "agentic_core.L1_cognition.apps_lic_l1_binding",
+        "apps_lic.runtime.bindings.exit_binding",
+        "apps_lic.runtime.bindings.l3_binding",
+        "apps_lic.runtime.bindings.l2_binding",
+        "apps_lic.runtime.bindings.c0_binding",
+        "apps_lic.runtime.bindings.pa_binding",
+        "apps_lic.runtime.bindings.l1_binding",
     ])
     def test_no_envelope_payload_reference(self, module_name: str) -> None:
         import ast as _ast
@@ -941,23 +951,23 @@ class TestA23_NoDirectL4Write:
         "Path(",
     ]
     _MODULES = [
-        "agentic_core.runtime.exit.apps_lic_exit_binding",
-        "agentic_core.L3_orchestration.apps_lic_l3_binding",
-        "agentic_core.L2_execution.apps_lic_l2_binding",
+        "apps_lic.runtime.bindings.exit_binding",
+        "apps_lic.runtime.bindings.l3_binding",
+        "apps_lic.runtime.bindings.l2_binding",
     ]
 
     def test_exit_no_db_write(self) -> None:
-        src = _code_only_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _code_only_of("apps_lic.runtime.bindings.exit_binding")
         for pattern in ("sqlite3.connect", "psycopg2.connect", "sqlalchemy.create_engine"):
             assert pattern not in src, f"Exit must not contain {pattern}"
 
     def test_l3_no_db_write(self) -> None:
-        src = _code_only_of("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        src = _code_only_of("apps_lic.runtime.bindings.l3_binding")
         for pattern in ("sqlite3.connect", "psycopg2.connect"):
             assert pattern not in src
 
     def test_l2_no_db_write(self) -> None:
-        src = _code_only_of("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _code_only_of("apps_lic.runtime.bindings.l2_binding")
         for pattern in ("sqlite3.connect", "psycopg2.connect"):
             assert pattern not in src
 
@@ -968,11 +978,11 @@ class TestA23_NoDirectL4Write:
 
 class TestA24_NoChromaDBMutation:
     @pytest.mark.parametrize("module_name", [
-        "agentic_core.runtime.exit.apps_lic_exit_binding",
-        "agentic_core.L3_orchestration.apps_lic_l3_binding",
-        "agentic_core.L2_execution.apps_lic_l2_binding",
-        "agentic_core.runtime.c0.apps_lic_c0_binding",
-        "agentic_core.prompt_governance.apps_lic_pa_binding",
+        "apps_lic.runtime.bindings.exit_binding",
+        "apps_lic.runtime.bindings.l3_binding",
+        "apps_lic.runtime.bindings.l2_binding",
+        "apps_lic.runtime.bindings.c0_binding",
+        "apps_lic.runtime.bindings.pa_binding",
     ])
     def test_no_chromadb_import(self, module_name: str) -> None:
         assert not _has_chromadb_import(module_name), (
@@ -988,11 +998,11 @@ class TestA25_NoEmbeddingGeneration:
     _FORBIDDEN_EMBEDDING = ["embed_texts", "bge_embed", "get_embeddings", "sentence_transformers"]
 
     @pytest.mark.parametrize("module_name", [
-        "agentic_core.runtime.exit.apps_lic_exit_binding",
-        "agentic_core.L3_orchestration.apps_lic_l3_binding",
-        "agentic_core.L2_execution.apps_lic_l2_binding",
-        "agentic_core.runtime.c0.apps_lic_c0_binding",
-        "agentic_core.prompt_governance.apps_lic_pa_binding",
+        "apps_lic.runtime.bindings.exit_binding",
+        "apps_lic.runtime.bindings.l3_binding",
+        "apps_lic.runtime.bindings.l2_binding",
+        "apps_lic.runtime.bindings.c0_binding",
+        "apps_lic.runtime.bindings.pa_binding",
     ])
     def test_no_embedding_calls(self, module_name: str) -> None:
         src = _code_only_of(module_name)
@@ -1042,7 +1052,7 @@ class TestA26_AG8FU1Documented:
 
     def test_exit_binding_uses_build_x3_packet(self) -> None:
         """AG-8-FU2: apps_lic now uses the shared build_x3_packet path."""
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         code = _code_only(src)
         assert "build_x3_packet(" in code, (
             "build_x3_packet() must be called in apps_lic Exit binding (AG-8-FU2)"

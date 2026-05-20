@@ -102,7 +102,7 @@ class TestAppPayloadContainsRuntimeCustomizationPackage:
     def test_u0_adapter_sets_app_payload_to_contract_dump(self) -> None:
         """apps_lic_u0_adapt sets app_payload = contract.model_dump() which includes RCP."""
         import ast, textwrap
-        import agentic_core.runtime.u0.apps_lic_u0_adapter as mod
+        import apps_lic.runtime.u0.adapter as mod
         src = inspect.getsource(mod)
         # Verify contract_dump is assigned from model_dump and used as app_payload
         assert "contract_dump = contract.model_dump" in src
@@ -183,141 +183,33 @@ class TestPackageDigestField:
 
 
 # ---------------------------------------------------------------------------
-# 4. spine_handoff preserves ValidatedRequest through delegation
+# 4. Shadow spine_handoff / GovernedLic hard-deleted
 # ---------------------------------------------------------------------------
 
-class TestSpineHandoffPreservesValidatedRequest:
-    """run_lic_via_spine delegates to GovernedLicRun without mutating the request."""
+class TestAppsLicShadowHandoffDeleted:
+    """GovernedLic spine_handoff must not exist — product uses canonical_dispatch."""
 
-    def test_run_lic_via_spine_passes_request_unchanged(self) -> None:
-        from apps_lic.integrations.spine_handoff import run_lic_via_spine
-        mock_request = MagicMock()
-        mock_request.trace_id = "trace-001"
-        mock_request.campaign_id = "camp-001"
-        mock_runner = MagicMock()
-        mock_runner.run_governed_e2e.return_value = MagicMock(spec=[])
+    def test_spine_handoff_module_deleted(self) -> None:
+        import importlib
+        with pytest.raises((ModuleNotFoundError, ImportError)):
+            importlib.import_module("apps_lic.integrations.spine_handoff")
 
-        run_lic_via_spine(mock_request, runner=mock_runner)
-
-        # runner.run_governed_e2e called exactly once with the ORIGINAL request object
-        mock_runner.run_governed_e2e.assert_called_once()
-        call_args = mock_runner.run_governed_e2e.call_args
-        assert call_args.args[0] is mock_request, (
-            "spine_handoff must pass the original request object to run_governed_e2e unchanged"
-        )
-
-    def test_run_lic_via_spine_does_not_extract_app_payload(self) -> None:
-        """run_lic_via_spine must not read .app_payload from the request."""
-        import inspect
-        from apps_lic.integrations import spine_handoff as sh
-        src = inspect.getsource(sh.run_lic_via_spine)
-        assert "app_payload" not in src, (
-            "run_lic_via_spine must not read app_payload -- it passes request through unchanged"
-        )
-
-    def test_spine_handoff_does_not_build_validated_request(self) -> None:
-        """spine_handoff must not construct ValidatedRequest (that is apps_qna shape)."""
-        import inspect
-        from apps_lic.integrations import spine_handoff as sh
-        # The module-level docstring says it explicitly; the function body must not call it
-        src = inspect.getsource(sh.run_lic_via_spine)
-        assert "ValidatedRequest(" not in src
+    def test_governed_lic_run_module_deleted(self) -> None:
+        import importlib
+        with pytest.raises((ModuleNotFoundError, ImportError)):
+            importlib.import_module("apps_lic.integrations.governed_lic_run")
 
 
 # ---------------------------------------------------------------------------
-# 5. No R3_grounded_read in active metadata
-# ---------------------------------------------------------------------------
-
-class TestNoStaleRouteLanguage:
-    """R3_grounded_read must not appear in route_type for active metadata."""
-
-    def test_build_metadata_route_type_not_r3_grounded_read(self) -> None:
-        from apps_lic.integrations.spine_handoff import build_lic_r3_handoff_metadata
-        req = MagicMock()
-        req.trace_id = "t1"
-        req.campaign_id = "c1"
-        req.config = None
-        meta = build_lic_r3_handoff_metadata(req)
-        assert meta.route_type != "R3_grounded_read", (
-            f"route_type must not be R3_grounded_read; got {meta.route_type!r}"
-        )
-        assert "grounded_read" not in meta.route_type
-
-    def test_r3_contract_surface_alias_identity(self) -> None:
-        """R3_CONTRACT_SURFACE is CONTRACT_SURFACE — same object, no additional route encoding."""
-        from apps_lic.integrations.spine_handoff import CONTRACT_SURFACE, R3_CONTRACT_SURFACE
-        assert R3_CONTRACT_SURFACE is CONTRACT_SURFACE
-
-    def test_legacy_alias_name_exists(self) -> None:
-        """LEGACY_CONTRACT_SURFACE_ALIAS export exists and equals CONTRACT_SURFACE."""
-        from apps_lic.integrations.spine_handoff import (
-            CONTRACT_SURFACE,
-            LEGACY_CONTRACT_SURFACE_ALIAS,
-        )
-        assert LEGACY_CONTRACT_SURFACE_ALIAS is CONTRACT_SURFACE
-
-    def test_r3_contract_surface_values_contain_no_route_string(self) -> None:
-        """The alias values are contract TYPE objects, not route-name strings."""
-        from apps_lic.integrations.spine_handoff import R3_CONTRACT_SURFACE
-        for k, v in R3_CONTRACT_SURFACE.items():
-            assert not isinstance(v, str), (
-                f"R3_CONTRACT_SURFACE[{k!r}] is a string — must be a type; got {v!r}"
-            )
-
-    def test_run_lic_via_spine_log_no_r3_grounded_read(self) -> None:
-        """run_lic_via_spine log message must not contain R3_grounded_read."""
-        import inspect
-        from apps_lic.integrations import spine_handoff as sh
-        src = inspect.getsource(sh.run_lic_via_spine)
-        assert "R3_grounded_read" not in src, (
-            "run_lic_via_spine source must not reference R3_grounded_read"
-        )
-
-
-# ---------------------------------------------------------------------------
-# 6. R4_MANAGED_DRAFT is the default fresh-context route_type
-# ---------------------------------------------------------------------------
-
-class TestR4ManagedDraftDefault:
-    """build_lic_r3_handoff_metadata returns R4_MANAGED_DRAFT as route_type."""
-
-    def test_default_route_type_is_r4_managed_draft(self) -> None:
-        from apps_lic.integrations.spine_handoff import build_lic_r3_handoff_metadata
-        req = MagicMock()
-        req.trace_id = "t2"
-        req.campaign_id = "c2"
-        req.config = None
-        meta = build_lic_r3_handoff_metadata(req)
-        assert meta.route_type == "R4_MANAGED_DRAFT", (
-            f"Expected R4_MANAGED_DRAFT, got {meta.route_type!r}"
-        )
-
-
-# ---------------------------------------------------------------------------
-# 7. R3R4 and R5 represented in module docstring (not stale docs)
+# 5. lic_ingress_runner + route model (canonical path)
 # ---------------------------------------------------------------------------
 
 class TestRouteModelRepresentation:
-    """The final route model (R4/R3R4/R5) is documented in spine_handoff."""
+    """Product route families are L0-owned (not spine_handoff metadata)."""
 
-    def test_r3r4_in_module_docstring(self) -> None:
-        from apps_lic.integrations import spine_handoff as sh
-        assert "R3R4" in (sh.__doc__ or ""), "R3R4 route model missing from spine_handoff docstring"
-
-    def test_r5_in_module_docstring(self) -> None:
-        from apps_lic.integrations import spine_handoff as sh
-        assert "R5_FALLBACK" in (sh.__doc__ or ""), "R5_FALLBACK missing from spine_handoff docstring"
-
-    def test_r4_managed_draft_in_module_docstring(self) -> None:
-        from apps_lic.integrations import spine_handoff as sh
-        assert "R4_MANAGED_DRAFT" in (sh.__doc__ or ""), "R4_MANAGED_DRAFT missing from spine_handoff docstring"
-
-    def test_r3_grounded_read_absent_from_module_docstring(self) -> None:
-        from apps_lic.integrations import spine_handoff as sh
-        doc = sh.__doc__ or ""
-        assert "R3_grounded_read" not in doc, (
-            "R3_grounded_read must not appear in spine_handoff module docstring"
-        )
+    def test_l0_route_family_r4_managed_draft(self) -> None:
+        from apps_lic.runtime.bindings.l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
+        assert ROUTE_FAMILY_R4_MANAGED_DRAFT == "R4_MANAGED_DRAFT"
 
     def test_lic_ingress_runner_docstring_mentions_runtime_customization_package(self) -> None:
         from apps_lic.integrations import lic_ingress_runner as lir
@@ -393,7 +285,7 @@ class TestPackageDigestValidity:
 
     def test_package_digest_non_empty_after_u0(self) -> None:
         """package_digest must be a non-empty SHA-256 hex string after U0 processing."""
-        from agentic_core.runtime.u0.apps_lic_u0_adapter import apps_lic_u0_adapt
+        from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
         raw = _build_minimal_raw()
         vr, _ = apps_lic_u0_adapt(raw)
         pkg = vr.app_payload.get("runtime_customization_package", {})
@@ -409,7 +301,7 @@ class TestPackageDigestValidity:
 
     def test_package_digest_computed_when_absent(self) -> None:
         """When caller omits runtime_customization_package entirely, U0 DERIVES the digest."""
-        from agentic_core.runtime.u0.apps_lic_u0_adapter import apps_lic_u0_adapt
+        from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
         raw = _build_minimal_raw()
         assert "runtime_customization_package" not in raw, (
             "Precondition: _build_minimal_raw must not include runtime_customization_package"
@@ -430,7 +322,7 @@ class TestPackageDigestValidity:
 
     def test_package_digest_mismatch_fails(self) -> None:
         """Caller-supplied package_digest that doesn't match computed value raises E10 error."""
-        from agentic_core.runtime.u0.apps_lic_u0_adapter import (
+        from apps_lic.runtime.u0.adapter import (
             apps_lic_u0_adapt,
             AppsLicPackageDigestError,
         )
@@ -446,7 +338,7 @@ class TestPackageDigestValidity:
 
     def test_package_digest_preserved_in_validated_request_app_payload(self) -> None:
         """package_digest in ValidatedRequest.app_payload matches the value computed by U0."""
-        from agentic_core.runtime.u0.apps_lic_u0_adapter import apps_lic_u0_adapt
+        from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
         import hashlib, json
         raw = _build_minimal_raw()
         # Compute the digest the adapter will produce

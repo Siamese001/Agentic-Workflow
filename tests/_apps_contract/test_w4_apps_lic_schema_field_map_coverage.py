@@ -292,11 +292,11 @@ class TestW4NoRuntimeBehaviorChanged:
     def test_exit_profile_fail_closed_still_applies(self) -> None:
         """_load_exit_profile still raises AppsLicExitProfileError on missing config."""
         import pytest
-        from agentic_core.runtime.exit.apps_lic_exit_binding import (
+        from apps_lic.runtime.bindings.exit_binding import (
             AppsLicExitProfileError,
             _load_exit_profile,
         )
-        import agentic_core.runtime.exit.apps_lic_exit_binding as _mod
+        import apps_lic.runtime.bindings.exit_binding as _mod
         from pathlib import Path
 
         # Patch to a non-existent path
@@ -311,7 +311,7 @@ class TestW4NoRuntimeBehaviorChanged:
     def test_u0_adapter_imports_cleanly(self) -> None:
         """U0 adapter still imports cleanly — no regressions from W4."""
         import importlib
-        mod = importlib.import_module("agentic_core.runtime.u0.apps_lic_u0_adapter")
+        mod = importlib.import_module("apps_lic.runtime.u0.adapter")
         assert hasattr(mod, "apps_lic_u0_adapt")
 
 

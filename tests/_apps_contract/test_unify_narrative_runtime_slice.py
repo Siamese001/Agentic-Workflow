@@ -142,7 +142,7 @@ def test_x3_soft_fail_unit():
 
 def test_unify_overlay_files_exist():
     for rel in (
-        "apps_rg/runtime/sections/unify_narrative_lane_api.py",
+        "apps_rg/runtime/sections/unify_narrative_lane.py",
         "apps_rg/runtime/validators/unify_narrative_x2.py",
         "apps_rg/runtime/judges/unify_narrative_x1d.py",
         "apps_rg/runtime/exit/unify_narrative_x3.py",

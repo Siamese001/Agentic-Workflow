@@ -1247,69 +1247,23 @@ def test_apps_lic_does_not_require_commit_request() -> None:
     assert "R3R4_managed_workflow" not in sc["manifest_claimed_routes"]
 
 
-def test_apps_lic_is_not_R3R4_managed_workflow() -> None:
-    """apps_lic must NOT be classified as R3R4_managed_workflow. The
-    pre-migration audit found no durable-write surface, no CommitRequest,
-    no StateDiffCandidate, no compliance-log write, no send-queue, and
-    no L4/UWG admission. Adding R3R4 would be contract theater."""
+def test_apps_lic_manifest_claims_r3r4_and_r4_routes() -> None:
+    """Hard-delete convergence: manifest must claim R3R4 + R4 (not legacy R3-only)."""
     repo_root = Path(__file__).resolve().parents[4]
     apps_lic = repo_root / "apps_lic"
     if not apps_lic.is_dir():
         pytest.skip("apps_lic not present in this checkout")
     _runtime_mode, _evidence, sc = _classify(apps_lic)
-    assert sc["manifest_claimed_routes"] == ["R3_grounded_read"]
-    # CommitRequest must not be among the imported contracts either --
-    # importing it without a runtime path would be contract theater.
-    assert "CommitRequest" not in sc["distinct_contracts"], (
-        f"apps_lic spine_handoff.py must not import CommitRequest; "
-        f"distinct_contracts={sc['distinct_contracts']}"
-    )
+    routes = sc["manifest_claimed_routes"]
+    assert "R3R4_MANAGED_WORKFLOW" in routes or "R3R4_managed_workflow" in routes
+    assert "R4_SINGLE_ACTION" in routes or "R4_MANAGED_DRAFT" in routes
 
 
-def test_apps_lic_hitl_enabled_does_not_force_R3R4_managed_workflow() -> None:
-    """The runner-side HITL flag is documented in the manifest (informational,
-    used for compliance-sensitive review of message drafts) but does NOT
-    promote apps_lic to R3R4_managed_workflow. The bucketing rule is:
-    R3R4 requires CommitRequest in the required-contract set; HITL is
-    orthogonal."""
-    from tools.analysis.apps_spine_coverage import (
-        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
-    )
-    repo_root = Path(__file__).resolve().parents[4]
-    apps_lic = repo_root / "apps_lic"
-    if not apps_lic.is_dir():
-        pytest.skip("apps_lic not present in this checkout")
-    _runtime_mode, _evidence, sc = _classify(apps_lic)
-    assert sc["manifest_claimed_routes"] == ["R3_grounded_read"]
-    # The R3 chain alone does not require CommitRequest.
-    r3_required = ROUTE_TYPE_CONTRACT_REQUIREMENTS["R3_grounded_read"]
-    assert "CommitRequest" not in r3_required
-
-
-def test_apps_lic_spine_handoff_module_imports_cleanly() -> None:
-    """The apps_lic spine_handoff module must import without error,
-    expose all 8 R3 contract types via R3_CONTRACT_SURFACE, and NOT
-    expose CommitRequest as part of the surface."""
-    from apps_lic.integrations import spine_handoff
-
-    assert hasattr(spine_handoff, "R3_CONTRACT_SURFACE")
-    surface = spine_handoff.R3_CONTRACT_SURFACE
-    assert len(surface) == 8
-    expected_names = {
-        "ValidatedRequest", "L1PlanContract", "RouteContract",
-        "RetrievalPlan", "FinalEvidenceContract", "CompiledPromptArtifact",
-        "SealedArtifact", "ExitReviewPacket",
-    }
-    assert set(surface.keys()) == expected_names
-    # CommitRequest must NOT be in the surface.
-    assert "CommitRequest" not in surface
-    for name, cls in surface.items():
-        assert cls is not None, f"surface entry {name!r} is None"
-        assert isinstance(cls, type), f"surface entry {name!r} is not a class"
-    valid = spine_handoff.validate_lic_r3_contract_surface()
-    assert valid == {n: True for n in expected_names}
-    # The module's __all__ must not advertise CommitRequest.
-    assert "CommitRequest" not in spine_handoff.__all__
+def test_apps_lic_spine_handoff_module_deleted() -> None:
+    """GovernedLic spine_handoff must be physically deleted."""
+    import importlib
+    with pytest.raises((ModuleNotFoundError, ImportError)):
+        importlib.import_module("apps_lic.integrations.spine_handoff")
 
 
 # ===========================================================================

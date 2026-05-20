@@ -1,25 +1,19 @@
-"""W2 sentinel tests for apps_lic R4 entrypoint + manifest + static DAG.
+"""W2 sentinel tests for apps_lic manifest + HOP L2 SSOT (hard-delete convergence).
 
-Covers P4, P5, P6:
-- P4: integrated_r4_lic_pipeline_run.py exists; apps_lic identity constants correct;
-       LicR4RunResult declared; R5 terminal path wired.
-- P5: PreloadedOutreachContextManifest has exactly 35 fields; manifest_hash is
-       deterministic; build_manifest() works; BriefingReady validation enforces all
-       8 criteria with correct R5 reason codes.
-- P6: apps_lic_static_dag.yaml exists; has exactly 5 stages in correct order;
-       invariants declared; forbidden send_mode entries present.
+Covers:
+- P5: PreloadedOutreachContextManifest (35 fields, BriefingReady)
+- P6: hop_pipeline.py REGISTRY (replaces retired YAML static DAG)
+- Product __main__ uses canonical_dispatch only; integrated_r4 deleted from agentic_core.
 
-Plan: apps-lic-canonical-spine-wireup-e7c2a5 W2.
+Plan: apps-lic-spine-product-convergence hard-delete.
 """
 from __future__ import annotations
 
-import hashlib
 import uuid
 from dataclasses import fields as dc_fields
 from pathlib import Path
 
 import pytest
-import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APP_DIR = REPO_ROOT / "apps_lic"
@@ -30,99 +24,44 @@ MANIFEST_MODULE = APP_DIR / "integrations" / "preloaded_outreach_context_manifes
 STATIC_DAG = APP_DIR / "config" / "apps_lic_static_dag.yaml"
 
 
-def _src(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
-
-
 # ---------------------------------------------------------------------------
-# P4 — R4 entrypoint with apps_lic identity binding
+# Hard-delete — integrated_r4 removed from agentic_core
 # ---------------------------------------------------------------------------
 
-def test_r4_lic_entrypoint_exists():
-    """P4: integrated_r4_lic_pipeline_run.py must exist."""
-    assert R4_LIC_ENTRYPOINT.exists(), (
-        f"Missing: {R4_LIC_ENTRYPOINT}. "
-        "W2 P4 requires a thin R4 wrapper with apps_lic identity."
+def test_integrated_r4_lic_entrypoint_deleted():
+    """integrated_r4_lic_pipeline_run must not exist in agentic_core."""
+    assert not R4_LIC_ENTRYPOINT.exists(), (
+        f"Retired runner must be deleted: {R4_LIC_ENTRYPOINT}"
     )
-
-
-def test_r4_lic_identity_constants():
-    """P4: APP_NAME, SOURCE_CHANNEL, DECLARED_SCHEMA must use apps_lic identity."""
-    from agentic_core.runtime.entrypoints.integrated_r4_lic_pipeline_run import (
-        APP_NAME,
-        SOURCE_CHANNEL,
-        DECLARED_SCHEMA,
-        ROUTE_ID,
-    )
-    assert APP_NAME == "apps_lic"
-    assert "apps_lic" in SOURCE_CHANNEL
-    assert "apps_lic" in DECLARED_SCHEMA
-    assert ROUTE_ID == "R4_SINGLE_ACTION"
-
-
-def test_r4_lic_result_type_declared():
-    """P4: LicR4RunResult must be importable and have required fields."""
-    from agentic_core.runtime.entrypoints.integrated_r4_lic_pipeline_run import (
-        LicR4RunResult,
-    )
-    result_fields = {f.name for f in dc_fields(LicR4RunResult)}
-    required = {
-        "run_id", "request_id", "route_id", "x3_disposition",
-        "terminal_r5", "terminal_r5_reason", "artifact_dir",
-    }
-    missing = required - result_fields
-    assert not missing, f"LicR4RunResult missing fields: {missing}"
 
 
 def test_r4_lic_entrypoint_distinct_from_rg():
-    """P4: apps_lic entrypoint must have its own identity constants, not apps_rg's."""
-    from agentic_core.runtime.entrypoints.integrated_r4_lic_pipeline_run import (
-        APP_NAME,
-        SOURCE_CHANNEL,
-        DECLARED_SCHEMA,
-        _PRODUCER_COMPONENT,
-    )
-    # Runtime constants must be apps_lic — docstring may reference rg for contrast
-    assert APP_NAME == "apps_lic"
-    assert SOURCE_CHANNEL == "apps_lic_cli"
-    assert DECLARED_SCHEMA == "apps_lic_outreach_v1"
-    assert "integrated_r4_lic_pipeline_run" in _PRODUCER_COMPONENT
-    assert "apps_rg" not in _PRODUCER_COMPONENT
-
-
-def test_r4_lic_r5_terminal_path_present():
-    """P4: Entrypoint must have an R5 terminal code path that skips L2."""
-    src = _src(R4_LIC_ENTRYPOINT)
-    assert "terminal_r5=True" in src or "terminal_r5 = True" in src, (
-        "R5 terminal path not found in R4 lic entrypoint. "
-        "When L0 gate fires, L2 must be skipped."
-    )
-    assert "_build_r5_exit_receipts" in src
-
-
-def test_r4_lic_no_durable_write_in_entrypoint():
-    """P4: R4 lic entrypoint must not perform durable writes to artifact dir outside
-    the manifest seal at the end (run manifest JSON is allowed)."""
+    """P4: Product __main__ must not resolve apps_rg L2 recipes or import GovernedLic."""
     import ast
-    tree = ast.parse(_src(R4_LIC_ENTRYPOINT))
-    write_violations = []
+
+    from agentic_core.runtime.l2_recipe_resolver import _register_builtin_recipes
+
+    registry = _register_builtin_recipes()
+    assert "apps_rg" in registry
+    assert "apps_lic" not in registry
+    main_src = (APP_DIR / "__main__.py").read_text(encoding="utf-8")
+    assert "run_canonical_apps_lic_spine" in main_src
+    tree = ast.parse(main_src)
+    forbidden_modules = {
+        "governed_lic_run",
+        "spine_handoff",
+        "campaign_batch_orchestrator",
+        "integrated_r4_lic_pipeline_run",
+    }
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call):
-            func = node.func
-            name = ""
-            if isinstance(func, ast.Name):
-                name = func.id
-            elif isinstance(func, ast.Attribute):
-                name = func.attr
-            if name == "open" and len(node.args) >= 2:
-                mode_arg = node.args[1]
-                if isinstance(mode_arg, ast.Constant) and isinstance(mode_arg.value, str):
-                    if any(c in mode_arg.value for c in ("w", "a", "x")):
-                        write_violations.append(f"open(..., {mode_arg.value!r})")
-    assert not write_violations, (
-        f"Write-mode open() in R4 lic entrypoint: {write_violations}. "
-        "Durable writes must go through Exit → UWG → L4."
-    )
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                mod = alias.name.split(".")[0]
+                assert mod not in forbidden_modules, f"Forbidden import: {alias.name}"
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                root = node.module.split(".")[0]
+                assert root not in forbidden_modules, f"Forbidden import from: {node.module}"
 
 
 # ---------------------------------------------------------------------------
@@ -322,73 +261,40 @@ def test_briefing_ready_allows_stale_when_policy_permits():
 
 
 # ---------------------------------------------------------------------------
-# P6 — apps_lic_static_dag.yaml (5 stages)
+# P6 — hop_pipeline.py REGISTRY (replaces apps_lic_static_dag.yaml)
 # ---------------------------------------------------------------------------
 
-def test_static_dag_exists():
-    """P6: apps_lic_static_dag.yaml must exist."""
-    assert STATIC_DAG.exists(), f"Missing: {STATIC_DAG}"
+def test_static_yaml_dag_deleted():
+    """P4: Legacy static YAML L2 DAG removed."""
+    assert not STATIC_DAG.exists(), f"Retired: {STATIC_DAG}"
 
 
-def test_static_dag_has_5_stages():
-    """P6: Static DAG must have exactly 5 stages."""
-    with STATIC_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    stages = dag.get("stages", [])
-    assert len(stages) == 5, (
-        f"apps_lic_static_dag.yaml has {len(stages)} stages; expected 5. "
-        "Plan spec: load_manifest → validate_context → plan_message → compose_draft → seal_output."
-    )
+def test_hop_pipeline_registry_has_nine_stages():
+    """P6: Product L2 SSOT is 9-stage HOP REGISTRY."""
+    from apps_lic.config.hop_pipeline import REGISTRY
+
+    assert REGISTRY.stage_count() == 9
 
 
-def test_static_dag_stage_order():
-    """P6: Stages must be in canonical order with correct stage_ids."""
-    with STATIC_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    expected_ids = [
-        "load_manifest",
-        "validate_context",
-        "plan_message",
-        "compose_draft",
-        "seal_output",
-    ]
-    actual_ids = [s["stage_id"] for s in dag["stages"]]
-    assert actual_ids == expected_ids, (
-        f"Stage order mismatch. Expected {expected_ids}, got {actual_ids}."
-    )
-    # Verify order field matches position
-    for i, stage in enumerate(dag["stages"], start=1):
-        assert stage["order"] == i, (
-            f"Stage {stage['stage_id']} has order={stage['order']}; expected {i}."
-        )
+def test_hop_pipeline_stage_order():
+    """P6: HOP stages follow canonical outreach order."""
+    from apps_lic.config.hop_pipeline import REGISTRY
+
+    names = [s.stage_name for s in REGISTRY.ordered()]
+    assert names[0] == "profile_analysis"
+    assert "generation" in names
+    assert names[-1] == "integration"
 
 
-def test_static_dag_forbidden_send_modes_referenced():
-    """P6: Static DAG must reference the forbidden send_mode values in compose_draft."""
-    with STATIC_DAG.open(encoding="utf-8") as fh:
-        content = fh.read()
-    # The DAG must document that forbidden modes cause fail-closed
-    assert "send_now" in content or "forbidden_send_mode" in content, (
-        "apps_lic_static_dag.yaml must reference forbidden send_mode handling."
-    )
+def test_hop_pipeline_generation_stage_present():
+    """P6: Generation stage exists (draft generation seam)."""
+    from apps_lic.config.hop_pipeline import REGISTRY
+
+    assert any(s.stage_name == "generation" for s in REGISTRY.ordered())
 
 
-def test_static_dag_route_family():
-    """P6: Static DAG must declare route_family=R4_SINGLE_ACTION."""
-    with STATIC_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    assert dag.get("route_family") == "R4_SINGLE_ACTION", (
-        f"route_family={dag.get('route_family')!r}; expected 'R4_SINGLE_ACTION'."
-    )
+def test_static_dag_route_family_placeholder():
+    """P6: Route family R4 is L0-owned, not YAML DAG."""
+    from apps_lic.runtime.bindings.l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
 
-
-def test_static_dag_no_provider_calls_declared():
-    """P6: No stage in the static DAG may declare calls to external providers."""
-    with STATIC_DAG.open(encoding="utf-8") as fh:
-        content = fh.read()
-    provider_keywords = ["openai", "anthropic", "gemini", "llm_call", "provider_call"]
-    found = [kw for kw in provider_keywords if kw in content.lower()]
-    assert not found, (
-        f"Provider references in static DAG: {found}. "
-        "L2 static DAG is composition-only; no provider calls allowed."
-    )
+    assert ROUTE_FAMILY_R4_MANAGED_DRAFT == "R4_MANAGED_DRAFT"

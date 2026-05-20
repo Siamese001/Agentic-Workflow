@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DELETED_LEGACY_OPS = (
     REPO_ROOT / "ops_scripts" / "ci" / "prove_apps_rg_e2e_runtime.py",
     REPO_ROOT / "ops_scripts" / "apps_rg" / "narrative_pass.py",
+    REPO_ROOT / "ops_scripts" / "apps_rg" / "rg_live_fire.py",
 )
 
 
@@ -25,6 +26,7 @@ def test_legacy_ops_script_file_absent(script_path: Path) -> None:
     (
         ["ops_scripts/ci/prove_apps_rg_e2e_runtime.py"],
         ["ops_scripts/apps_rg/narrative_pass.py"],
+        ["ops_scripts/apps_rg/rg_live_fire.py"],
     ),
 )
 def test_direct_python_execution_file_not_found(argv_tail: list[str]) -> None:

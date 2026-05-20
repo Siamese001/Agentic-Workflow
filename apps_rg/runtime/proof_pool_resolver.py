@@ -867,7 +867,9 @@ def resolve_section_proof_pool(
 
     if section == "competencies":
         if not srfs_path:
-            return _resolve_competencies_graph_skills_proof_pool(
+            from apps_rg.runtime.native_c03_skills_graph import enrich_proof_pool_with_native_c03
+
+            pool = _resolve_competencies_graph_skills_proof_pool(
                 root=root,
                 target_company=company_eff,
                 target_role=role_eff,
@@ -877,6 +879,9 @@ def resolve_section_proof_pool(
                 base_hash=base_hash,
                 override_used=override_used,
                 targeting=targeting,
+            )
+            return enrich_proof_pool_with_native_c03(
+                pool, front_spine=front_spine, repo_root=root
             )
 
     if section == "executive_summary" and not srfs_path:
@@ -935,7 +940,7 @@ def resolve_section_proof_pool(
                 substrate_ref=cand_ledger_ref,
             ),
         )
-        return SectionProofPool(
+        pool = SectionProofPool(
             section=section,
             proof_source=PROOF_SOURCE_SRFS,
             proof_pool_ref=srfs_path,
@@ -957,6 +962,13 @@ def resolve_section_proof_pool(
             base_resume_override_used=override_used,
             targeting_inputs_used=targeting,
         )
+        if section == "executive_summary" and front_spine is not None:
+            from apps_rg.runtime.native_c03_skills_graph import enrich_proof_pool_with_native_c03
+
+            pool = enrich_proof_pool_with_native_c03(
+                pool, front_spine=front_spine, repo_root=root
+            )
+        return pool
 
     if section in SECTION_KEYS:
         raise ValueError(

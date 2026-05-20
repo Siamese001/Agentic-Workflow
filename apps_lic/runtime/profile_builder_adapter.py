@@ -15,12 +15,12 @@ from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
 )
 from agentic_core.runtime.entry.app_ingress_runner import AppRuntimeProfile
-from agentic_core.L1_cognition.apps_lic_l1_binding import l1_plan_apps_lic
-from agentic_core.L0_routing.apps_lic_l0_binding import l0_route_apps_lic
-from agentic_core.runtime.c0.apps_lic_c0_binding import c0_retrieve_apps_lic
-from agentic_core.prompt_governance.apps_lic_pa_binding import pa_compose_apps_lic
-from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
-from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+from apps_lic.runtime.bindings.l1_binding import l1_plan_apps_lic
+from apps_lic.runtime.bindings.l0_binding import l0_route_apps_lic
+from apps_lic.runtime.bindings.c0_binding import c0_retrieve_apps_lic
+from apps_lic.runtime.bindings.pa_binding import pa_compose_apps_lic
+from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
+from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 from apps_lic.runtime.u0.shim import u0_lic_shim as u0_validate_apps_lic
 
 APPS_LIC_REQUIRED_FIELDS: tuple[str, ...] = (

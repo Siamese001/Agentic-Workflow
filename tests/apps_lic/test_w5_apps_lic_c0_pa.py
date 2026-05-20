@@ -59,14 +59,14 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledProm
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.contracts.origin import Origin
-from agentic_core.runtime.u0.apps_lic_u0_adapter import apps_lic_u0_adapt
-from agentic_core.L1_cognition.apps_lic_l1_binding import l1_plan_apps_lic
-from agentic_core.L0_routing.apps_lic_l0_binding import l0_route_apps_lic
-from agentic_core.runtime.c0.apps_lic_c0_binding import (
+from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
+from apps_lic.runtime.bindings.l1_binding import l1_plan_apps_lic
+from apps_lic.runtime.bindings.l0_binding import l0_route_apps_lic
+from apps_lic.runtime.bindings.c0_binding import (
     APPS_LIC_C0_CERT_REF,
     c0_retrieve_apps_lic,
 )
-from agentic_core.prompt_governance.apps_lic_pa_binding import (
+from apps_lic.runtime.bindings.pa_binding import (
     APPS_LIC_PA_CERT_REF,
     APPS_LIC_TARGET_MODEL,
     pa_compose_apps_lic,
@@ -530,14 +530,14 @@ class TestTC09_ContradictionReport:
 
 class TestTC10_C0NoChromaDB:
     def test_c0_binding_does_not_import_chromadb(self):
-        lines = _import_lines("agentic_core.runtime.c0.apps_lic_c0_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.c0_binding")
         for line in lines:
             assert "chromadb" not in line.lower(), (
                 f"C0 binding imports chromadb: {line!r}"
             )
 
     def test_c0_binding_does_not_import_chroma_client(self):
-        lines = _import_lines("agentic_core.runtime.c0.apps_lic_c0_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.c0_binding")
         for line in lines:
             assert "chroma" not in line.lower(), (
                 f"C0 binding imports chroma-related: {line!r}"
@@ -546,14 +546,14 @@ class TestTC10_C0NoChromaDB:
 
 class TestTC11_C0NoEmbeddings:
     def test_c0_binding_does_not_import_sentence_transformers(self):
-        lines = _import_lines("agentic_core.runtime.c0.apps_lic_c0_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.c0_binding")
         for line in lines:
             assert "sentence_transformers" not in line.lower(), (
                 f"C0 binding imports sentence_transformers: {line!r}"
             )
 
     def test_c0_binding_does_not_import_embedding(self):
-        lines = _import_lines("agentic_core.runtime.c0.apps_lic_c0_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.c0_binding")
         for line in lines:
             assert "embedding" not in line.lower(), (
                 f"C0 binding imports embedding module: {line!r}"
@@ -562,14 +562,14 @@ class TestTC11_C0NoEmbeddings:
 
 class TestTC12_C0NoL4Write:
     def test_c0_binding_does_not_import_l4_state(self):
-        lines = _import_lines("agentic_core.runtime.c0.apps_lic_c0_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.c0_binding")
         for line in lines:
             assert "L4_state" not in line and "l4_state" not in line.lower(), (
                 f"C0 binding imports L4 state: {line!r}"
             )
 
     def test_c0_binding_does_not_import_database_write(self):
-        lines = _import_lines("agentic_core.runtime.c0.apps_lic_c0_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.c0_binding")
         write_keywords = ["sqlite3", "sqlalchemy", "psycopg2", "pymongo"]
         for line in lines:
             for kw in write_keywords:
@@ -780,7 +780,7 @@ class TestTPA06_NoLowerAuthorityPromotion:
 
 class TestTPA07_NoLegacyEnvelopePayload:
     def test_pa_binding_does_not_import_apps_lic_ingress(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         for line in lines:
             assert "AppsLicIngressPayload" not in line, (
                 f"PA binding imports AppsLicIngressPayload: {line!r}"
@@ -790,7 +790,7 @@ class TestTPA07_NoLegacyEnvelopePayload:
             )
 
     def test_pa_binding_does_not_import_apps_lic_ingress_module(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         for line in lines:
             assert "apps_lic.ingress" not in line.lower(), (
                 f"PA binding imports apps_lic.ingress: {line!r}"
@@ -837,7 +837,7 @@ class TestTPA09_SystemBlockOrigin:
 
 class TestTPA10_PANoChromaDB:
     def test_pa_binding_does_not_import_chromadb(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         for line in lines:
             assert "chromadb" not in line.lower(), (
                 f"PA binding imports chromadb: {line!r}"
@@ -846,14 +846,14 @@ class TestTPA10_PANoChromaDB:
 
 class TestTPA11_PANoEmbeddings:
     def test_pa_binding_does_not_import_sentence_transformers(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         for line in lines:
             assert "sentence_transformers" not in line.lower(), (
                 f"PA binding imports sentence_transformers: {line!r}"
             )
 
     def test_pa_binding_does_not_import_embedding(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         for line in lines:
             assert "embedding" not in line.lower(), (
                 f"PA binding imports embedding module: {line!r}"
@@ -862,14 +862,14 @@ class TestTPA11_PANoEmbeddings:
 
 class TestTPA12_PANoL4Write:
     def test_pa_binding_does_not_import_l4_state(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         for line in lines:
             assert "L4_state" not in line and "l4_state" not in line.lower(), (
                 f"PA binding imports L4 state: {line!r}"
             )
 
     def test_pa_binding_does_not_import_database_write(self):
-        lines = _import_lines("agentic_core.prompt_governance.apps_lic_pa_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.pa_binding")
         write_keywords = ["sqlite3", "sqlalchemy", "psycopg2", "pymongo"]
         for line in lines:
             for kw in write_keywords:

@@ -4,18 +4,26 @@ from __future__ import annotations
 from typing import Any, Mapping
 
 # Orchestrator / offline lane rollup (SP-001)
-ORCHESTRATOR_PROOF_CLASSIFICATION = "OFFLINE_LANE_ROLLUP_NOT_PRODUCT_SPINE"
+ORCHESTRATOR_PROOF_CLASSIFICATION = "LANE_DEV_HARNESS"
+ORCHESTRATOR_PROOF_CLASSIFICATION_LEGACY = "OFFLINE_LANE_ROLLUP_NOT_PRODUCT_SPINE"
 ORCHESTRATOR_EXPLICIT_NON_CLAIMS: tuple[str, ...] = (
+    "not PRODUCT_RUNTIME_PROOF",
+    "not FORT_KNOX_PROOF",
+    "not LIVE_RUNTIME_PROOF",
     "not product runtime",
     "not L7 proof",
     "not Fort Knox proof",
     "not integrated R4",
-    "not Exit X3",
+    "not agentic_core Exit X3",
 )
 
 # Package rollup X3 (SP-003)
 PACKAGE_DISPOSITION_CLASSIFICATION = "OFFLINE_PACKAGE_ROLLUP"
 PACKAGE_EXPLICIT_NON_CLAIMS: tuple[str, ...] = (
+    "package X3 is not integrated R4 X3",
+    "package X3 is not agentic_core Exit X3",
+    "package rollup is not 99 RuntimeProofBundle",
+    "package rollup is not product certification",
     "package_x3_allow is not exit_x3_allow",
     "package_x3_allow is not spine_x3_allow",
     "package_x3_allow is not product_x3_allow",
@@ -25,8 +33,21 @@ PACKAGE_EXPLICIT_NON_CLAIMS: tuple[str, ...] = (
 )
 
 # Demo harness (SP-002)
-DEMO_HARNESS_PROOF_CLASSIFICATION = "DEMO_HARNESS_NOT_RUNTIME_PROOF"
+DEMO_HARNESS_PROOF_CLASSIFICATION = "DEMO_HARNESS_NON_PRODUCT"
+DEMO_HARNESS_PROOF_CLASSIFICATION_LEGACY = "DEMO_HARNESS_NOT_RUNTIME_PROOF"
 DEMO_HARNESS_ENV = "APPS_RG_ALLOW_DEMO_HARNESS"
+
+# Must never be assigned to shadow/offline paths (W7A boundary).
+FORBIDDEN_PRODUCT_PROOF_CLASSIFICATIONS: frozenset[str] = frozenset(
+    {
+        "PRODUCT_RUNTIME_PROOF",
+        "FORT_KNOX_PROOF",
+        "LIVE_RUNTIME_PROOF",
+        "RELEASE_ELIGIBLE_PROOF",
+    }
+)
+
+CONTRACT_TEST_PROOF_CLASSIFICATION = "CONTRACT_TEST_PROOF"
 
 # CI harness (SP-005)
 CI_LANE_DEV_HARNESS_CLASSIFICATION = "LANE_DEV_HARNESS"
@@ -48,8 +69,11 @@ PRODUCT_PROOF_CLASSIFICATIONS: frozenset[str] = frozenset(
 NON_PRODUCT_PROOF_CLASSIFICATIONS: frozenset[str] = frozenset(
     {
         ORCHESTRATOR_PROOF_CLASSIFICATION,
+        ORCHESTRATOR_PROOF_CLASSIFICATION_LEGACY,
         PACKAGE_DISPOSITION_CLASSIFICATION,
         DEMO_HARNESS_PROOF_CLASSIFICATION,
+        DEMO_HARNESS_PROOF_CLASSIFICATION_LEGACY,
+        CONTRACT_TEST_PROOF_CLASSIFICATION,
         CI_LANE_DEV_HARNESS_CLASSIFICATION,
         SECTION_L7_CORRELATION_CLASSIFICATION,
         SECTION_L7_CORRELATION_CLASSIFICATION_LEGACY,
@@ -64,10 +88,13 @@ NON_PRODUCT_PROOF_CLASSIFICATIONS: frozenset[str] = frozenset(
 def orchestrator_non_product_stamp() -> dict[str, Any]:
     return {
         "proof_classification": ORCHESTRATOR_PROOF_CLASSIFICATION,
+        "offline_package_rollup_alternate": "OFFLINE_PACKAGE_ROLLUP",
         "product_certification": "NOT_CLAIMED",
         "l7_certification": "NOT_CLAIMED",
         "fort_knox_certification": "NOT_CLAIMED",
         "integrated_r4_invoked": False,
+        "proof_eligible": False,
+        "forbidden_proof_classifications": sorted(FORBIDDEN_PRODUCT_PROOF_CLASSIFICATIONS),
         "explicit_non_claims": list(ORCHESTRATOR_EXPLICIT_NON_CLAIMS),
     }
 
@@ -171,8 +198,12 @@ def assert_not_product_spine_proof(payload: Mapping[str, Any], *, context: str =
 
 __all__ = [
     "CI_LANE_DEV_HARNESS_CLASSIFICATION",
+    "CONTRACT_TEST_PROOF_CLASSIFICATION",
     "DEMO_HARNESS_ENV",
     "DEMO_HARNESS_PROOF_CLASSIFICATION",
+    "DEMO_HARNESS_PROOF_CLASSIFICATION_LEGACY",
+    "FORBIDDEN_PRODUCT_PROOF_CLASSIFICATIONS",
+    "ORCHESTRATOR_PROOF_CLASSIFICATION_LEGACY",
     "NON_PRODUCT_PROOF_CLASSIFICATIONS",
     "ORCHESTRATOR_PROOF_CLASSIFICATION",
     "PACKAGE_DISPOSITION_CLASSIFICATION",

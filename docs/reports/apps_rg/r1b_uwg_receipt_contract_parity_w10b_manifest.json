@@ -8,7 +8,7 @@
     "blocked_missing_l5": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/blocked_missing_l5.json",
     "blocked_missing_gate_verdict": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/blocked_missing_gate_verdict.json",
     "receipt_field_parity_matrix": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/receipt_field_parity_matrix.json",
-    "shim_vs_core_gap": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/shim_vs_core_gap.json"
+    "r1b_uwg_core_receipt_gap": "artifacts/apps_rg/r1b_semantic_cache/w10b_fixtures/r1b_uwg_core_receipt_gap.json"
   },
   "proof_claims": {
     "governance_refs_preserved_apps_rg_sidecar": true,
@@ -16,14 +16,14 @@
     "admitted_l5_proof": true,
     "blocked_missing_l5_proof": true,
     "blocked_missing_gate_proof": true,
-    "shim_core_gap_documented": true,
+    "core_receipt_gap_documented": true,
     "w10_regression_pass": true,
     "agentic_core_diff_empty": true
   },
   "files_changed": [
     "apps_rg/cache/r1b_uwg_receipt_contract.py",
     "apps_rg/cache/r1b_uwg_promotion.py",
-    "apps_rg/cache/r1b_uwg_gateway_shim.py",
+    "apps_rg/cache/r1b_uwg_promotion.py",
     "apps_rg/cache/__init__.py",
     "tools/apps_rg/emit_r1b_w10b_fixtures.py",
     "tests/unit/apps_rg/test_r1b_uwg_receipt_contract_parity_w10b.py",

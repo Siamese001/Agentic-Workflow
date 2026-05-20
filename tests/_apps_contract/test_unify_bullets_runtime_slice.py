@@ -293,7 +293,7 @@ def test_normalize_parsed_output_cycle_metric_qualifier_passes_x2_gate():
 
 def test_unify_overlay_files_exist():
     overlay = [
-        "apps_rg/runtime/sections/unify_bullets_lane_api.py",
+        "apps_rg/runtime/sections/unify_bullets_lane.py",
         "apps_rg/runtime/validators/unify_bullets_x2.py",
         "apps_rg/runtime/judges/unify_bullets_x1d.py",
         "apps_rg/runtime/exit/unify_bullets_x3.py",

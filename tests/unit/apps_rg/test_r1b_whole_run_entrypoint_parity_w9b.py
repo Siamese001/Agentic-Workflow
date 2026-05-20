@@ -12,7 +12,7 @@ from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChu
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.whole_run_entrypoint_preflight import (
     ENTRYPOINT_CANONICAL_DISPATCH,
-    ENTRYPOINT_CLI_SHIM,
+    ENTRYPOINT_TEST_WHOLE_RUN_HARNESS,
     PREFLIGHT_ORDER,
     build_cache_hit_dispatch_result,
     build_entrypoint_audit_matrix,
@@ -44,7 +44,7 @@ def _req() -> dict:
 def test_audit_matrix_canonical_paths_wired() -> None:
     matrix = {row["entrypoint"]: row for row in build_entrypoint_audit_matrix()}
     assert matrix[ENTRYPOINT_CANONICAL_DISPATCH]["status"] == "wired_w9b"
-    assert matrix[ENTRYPOINT_CLI_SHIM]["status"] == "wired_w9"
+    assert matrix[ENTRYPOINT_TEST_WHOLE_RUN_HARNESS]["status"] == "test_harness_only"
     assert matrix[ENTRYPOINT_CANONICAL_DISPATCH]["uses_r1a"] is True
     assert matrix[ENTRYPOINT_CANONICAL_DISPATCH]["uses_r1b"] is True
 

@@ -1,4 +1,4 @@
-"""Section graph binding shim (legacy name: c03_graphrag_bound).
+"""Section C0.3 graph binding (module path: c03_graphrag_bound).
 
 Lane-local static JSON graph neighbor binding for ``python -m apps_rg --section *``.
 **Not** full canonical C0.3 GraphRAG traverse and **not** spine FinalEvidenceContract.
@@ -111,7 +111,7 @@ def build_section_c03_graphrag_bound(
     attach_sqlite_context: bool = True,
     repo_root: Any = None,
 ) -> dict[str, Any]:
-    """Lane-local section graph binding shim for any apps_rg section."""
+    """Lane-local section graph context binding for any apps_rg section (not spine C0.3)."""
     doc = build_executive_summary_c03_graphrag_bound(
         graph=graph,
         graph_ref=graph_ref,
@@ -148,7 +148,7 @@ def build_executive_summary_c03_graphrag_bound(
     selected_fact_ids: Iterable[str],
     evidence_items: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Build lane-local section graph binding shim (+ FEC-shaped snapshot, not spine FEC)."""
+    """Build lane-local section graph binding (+ FEC-shaped snapshot only, not spine FEC)."""
     fact_set = {str(x).strip() for x in selected_fact_ids if str(x).strip()}
     graph_expansion_refs = _collect_graph_expansion_refs(graph, selected_fact_ids=fact_set)
     graph_lineage_refs = _collect_graph_lineage_refs(graph, selected_fact_ids=fact_set)

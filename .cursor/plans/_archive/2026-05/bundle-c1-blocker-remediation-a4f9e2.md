@@ -191,7 +191,7 @@ a plain `ValidatedRequest` back.
 - Returns only `ValidatedRequest`
 
 **GAP-NOTE**: The `AppsLicU0ReflectionReceipt` is discarded by the shim. Verify
-`apps_lic` L1 binding (`agentic_core.L1_cognition.apps_lic_l1_binding`) does NOT
+`apps_lic` L1 binding (`apps_lic.runtime.bindings.l1_binding`) does NOT
 consume the receipt before implementing. If it does, the shim must attach it to
 `ValidatedRequest.app_payload` under a known key.
 

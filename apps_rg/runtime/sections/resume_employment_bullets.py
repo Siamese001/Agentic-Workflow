@@ -1,7 +1,7 @@
 """Shared resume employment bullet extraction for section lanes (W11-M4A).
 
 Canonical home for ``collect_employment_bullets`` — used by proof-pool and multi-lane
-compile paths. ``apps_rg.runtime.sections.competencies_lane_api`` re-exports for
+compile paths. ``apps_rg.runtime.sections.competencies_lane_runtime`` re-exports for
 compatibility only.
 """
 

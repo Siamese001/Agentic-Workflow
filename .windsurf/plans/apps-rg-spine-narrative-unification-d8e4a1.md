@@ -38,7 +38,7 @@ L2 hops execute correctly; the spine never seals their output as `terminal_ret_p
 | P1 | Thread artifact_dir into raw_request | `apps_rg/__main__.py` | Must not break R1A cache key (artifact_dir is NOT part of replay key) | ~1k | Pending |
 | P2 | `generate_resume.main(out_dir)` accepts override | `apps_rg/scripts/generate_resume.py` | Backward-compat for direct CLI invocation | ~2k | Pending |
 | P3 | `GenerateResumeStep` reads context['artifact_dir'], returns sealed envelope | `apps_rg/l2_recipe/steps.py` | Step adapter shape change | ~2k | Pending |
-| P4 | R4 entrypoint writes terminal_ret_packet.json | `agentic_core/.../integrated_r4_deterministic_pipeline_run.py` | Don't break R5 terminal path | ~2k | Pending |
+| P4 | R4 entrypoint writes terminal_ret_packet.json | `agentic_core/.../integrated_single_action_spine_run.py` | Don't break R5 terminal path | ~2k | Pending |
 | P5 | R4 entrypoint writes exit_review_packet, x3_disposition, exhaust, trace_snapshot | same | Schema fields per existing canonical contracts | ~2k | Pending |
 | P6 | Verification re-run | none (verify only) | None | ~1k | Pending |
 
@@ -48,7 +48,7 @@ L2 hops execute correctly; the spine never seals their output as `terminal_ret_p
 - `apps_rg/scripts/generate_resume.py`
 - `apps_rg/l2_recipe/steps.py`
 - `agentic_core/runtime/l2_recipe_resolver.py`
-- `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py`
+- `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py`
 
 ## ADG_HOTSPOT_REPORT
 
@@ -56,7 +56,7 @@ L2 hops execute correctly; the spine never seals their output as `terminal_ret_p
 |---|---|---|---|---|---|
 | `_composite_l2_callable` | L_RUNTIME | 1 (R4 entrypoint) | ORCHESTRATOR | Execution | Medium |
 | `GenerateResumeStep` | L_APP | 1 (recipe registry) | ORCHESTRATOR | Execution | Medium |
-| `run_integrated_r4_deterministic_pipeline` | L_RUNTIME | 1 (apps_rg `__main__`) | CENTRAL_DEPENDENCY | Execution+Observability | High |
+| `run_integrated_single_action_spine` | L_RUNTIME | 1 (apps_rg `__main__`) | CENTRAL_DEPENDENCY | Execution+Observability | High |
 | `generate_resume.main` | L_APP | 1 (L2 step) | ORCHESTRATOR | Execution | Medium |
 
 ## ADG_GRAPH_LAYER_EVIDENCE

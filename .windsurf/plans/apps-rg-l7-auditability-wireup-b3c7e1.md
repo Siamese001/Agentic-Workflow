@@ -1,7 +1,7 @@
 # apps_rg L7 Auditability Wire-up
 
 **Slug**: `apps-rg-l7-auditability-wireup-b3c7e1`
-**Tier**: T2 (single-file edit in shared L4 entrypoint; behavior change propagates to every consumer of `run_integrated_r4_deterministic_pipeline`)
+**Tier**: T2 (single-file edit in shared L4 entrypoint; behavior change propagates to every consumer of `run_integrated_single_action_spine`)
 **Status**: Not Started
 **Created**: 2026-05-06
 **Authors**: Cursor Agent
@@ -31,7 +31,7 @@ L7 emission is wired into TWO L4 entrypoints:
 
 A THIRD entrypoint exists that omits the L7 emit block:
 
-- `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` (declares `CHAIN_KIND = "R4_SINGLE_ACTION"` at line 92, never imports `build_how_trace`)
+- `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` (declares `CHAIN_KIND = "R4_SINGLE_ACTION"` at line 92, never imports `build_how_trace`)
 
 `apps_rg/__main__.py:349` is the only known caller of this third entrypoint. Result: every apps_rg run silently bypasses the auditability plane.
 
@@ -39,7 +39,7 @@ A THIRD entrypoint exists that omits the L7 emit block:
 
 ## 3. Goal & Non-Goals
 
-**Goal**: Make L7 emission mandatory for every governed apps_rg run by adding the canonical emit block to `integrated_r4_deterministic_pipeline_run.py`. After this plan, an `apps_rg` run produces the four canonical L7 artifacts plus the Fort Knox L7 evidence wrapper directory.
+**Goal**: Make L7 emission mandatory for every governed apps_rg run by adding the canonical emit block to `integrated_single_action_spine_run.py`. After this plan, an `apps_rg` run produces the four canonical L7 artifacts plus the Fort Knox L7 evidence wrapper directory.
 
 **Non-Goals**:
 - Migrate apps_rg from R4 deterministic pipeline to safe-reuse entrypoint (out-of-scope refactor).
@@ -54,7 +54,7 @@ A THIRD entrypoint exists that omits the L7 emit block:
 
 | File | Change Type | Justification |
 |---|---|---|
-| `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | EDIT | Add L7 emit block (HOW trace + coverage matrix + manifest cross-ref). |
+| `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | EDIT | Add L7 emit block (HOW trace + coverage matrix + manifest cross-ref). |
 | `tests/unit/agentic_core/runtime/entrypoints/test_integrated_r4_l7_emit.py` | NEW | Regression test that an R4 run produces all 4 L7 artifacts. |
 
 Out of scope (read-only context): `agentic_core/L7_auditability/**`, `apps_rg/__main__.py`, `agentic_core/runtime/entrypoints/integrated_managed_workflow_run.py`, `agentic_core/runtime/entrypoints/integrated_safe_reuse_run.py`.
@@ -63,7 +63,7 @@ Out of scope (read-only context): `agentic_core/L7_auditability/**`, `apps_rg/__
 
 | Node | Layer | Archetype | Fan-in | Fan-out | Surface | Justification |
 |---|---|---|---|---|---|---|
-| `integrated_r4_deterministic_pipeline_run` | L4 (state) | ORCHESTRATOR | apps_rg (1 known); other apps may follow | calls L0/L1/L2/L3 emitters, writes artifact dir | Observability + Write | Fan-in expected to grow as additional apps adopt R4 single-action chain. Missing L7 emit silently breaks downstream Fort Knox proofs (RTC-REQ-130..139). Layer multiplier ×1.75 (L4 state). Impact = 1 violation × (1 + log10(2)) × 1.75 ≈ 2.3 — modest, but the Observability surface intersection raises the priority because silent skip of the evidence plane is by definition unobservable from runtime telemetry. |
+| `integrated_single_action_spine_run` | L4 (state) | ORCHESTRATOR | apps_rg (1 known); other apps may follow | calls L0/L1/L2/L3 emitters, writes artifact dir | Observability + Write | Fan-in expected to grow as additional apps adopt R4 single-action chain. Missing L7 emit silently breaks downstream Fort Knox proofs (RTC-REQ-130..139). Layer multiplier ×1.75 (L4 state). Impact = 1 violation × (1 + log10(2)) × 1.75 ≈ 2.3 — modest, but the Observability surface intersection raises the priority because silent skip of the evidence plane is by definition unobservable from runtime telemetry. |
 
 Hotspot is the entrypoint itself. The fix removes one P-class concern (`mandatory L7 emit absent`) from one node.
 
@@ -71,11 +71,11 @@ Hotspot is the entrypoint itself. The fix removes one P-class concern (`mandator
 
 Querying ADG MCP at plan-write time (snapshot `artifacts/adg/adg_indexed_<latest>.sqlite`):
 
-- `mv_graph_chokepoint_bridges` — `integrated_r4_deterministic_pipeline_run` is the bridge between apps_rg's transport layer and the L0–L3 governed substrate. Adding L7 emit at the bridge propagates to every consumer without per-app code change.
+- `mv_graph_chokepoint_bridges` — `integrated_single_action_spine_run` is the bridge between apps_rg's transport layer and the L0–L3 governed substrate. Adding L7 emit at the bridge propagates to every consumer without per-app code change.
 - `mv_dependency_cone_risk` — apps_rg is the documented consumer; ADG shows zero downstream Fort Knox bindings for this entrypoint, confirming the gap.
 - `mv_hotspot_centrality` — degree centrality of the three R4 entrypoints is comparable; the two safe-reuse and managed-workflow entrypoints show edges to `agentic_core.L7_auditability.how_trace.how_trace_builder.build_how_trace`; the deterministic-pipeline entrypoint does not.
 - Semantic edges (`emits_side_effect`): the two wired entrypoints have `emits_side_effect → agentic_core_how_trace.json`; the deterministic-pipeline entrypoint has none.
-- `v_p1_evidence_plane_gaps` (P1 view) — confirms `integrated_r4_deterministic_pipeline_run` as the only L4 entrypoint missing the canonical L7 emit pair.
+- `v_p1_evidence_plane_gaps` (P1 view) — confirms `integrated_single_action_spine_run` as the only L4 entrypoint missing the canonical L7 emit pair.
 
 ADG Provenance: backend=sqlite, snapshot=adg_indexed_<latest>.sqlite. Live ADG queries to be re-confirmed at execution time before edits.
 
@@ -91,7 +91,7 @@ Single-wave plan — scope is one targeted edit plus a regression test plus one 
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P1.1 | Add L7 emit block to R4 entrypoint | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | (a) Locate the existing `_emit(...)` helper and the post-chain seal point; (b) replicate the 30-line block from `integrated_safe_reuse_run.py:1184-1219` verbatim with `chain_kind="R4_SINGLE_ACTION"`; (c) ensure the block runs AFTER all chain artifacts are written (HOW trace is a projection over them); (d) preserve fail-loud semantics — if `build_how_trace` raises `ValueError("required artifacts missing")`, surface it, do not swallow. | ~3k | Not Started |
+| P1.1 | Add L7 emit block to R4 entrypoint | `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | (a) Locate the existing `_emit(...)` helper and the post-chain seal point; (b) replicate the 30-line block from `integrated_safe_reuse_run.py:1184-1219` verbatim with `chain_kind="R4_SINGLE_ACTION"`; (c) ensure the block runs AFTER all chain artifacts are written (HOW trace is a projection over them); (d) preserve fail-loud semantics — if `build_how_trace` raises `ValueError("required artifacts missing")`, surface it, do not swallow. | ~3k | Not Started |
 | P1.2 | Regression test | `tests/unit/agentic_core/runtime/entrypoints/test_integrated_r4_l7_emit.py` (new) | Build a minimal fake artifact_dir with the chain artifacts `build_how_trace` requires (identity, route, manifest), invoke the R4 entrypoint or just the L7 emit branch in isolation, assert `agentic_core_how_trace.json` and the three siblings exist with non-empty JSON. Mirror the test pattern in `tests/unit/agentic_core/runtime/entrypoints/test_integrated_safe_reuse_l7_emit.py` if it exists; otherwise mirror the assertion shape used by `ops_scripts/ci/verify_agentic_core_how_trace.py`. | ~2k | Not Started |
 | P1.3 | Live verification | `python -m apps_rg --target-company <test> --target-role <test> --jd <fixture> --manual-brief <fixture>` | Re-run apps_rg end-to-end against a fixture brief/JD; confirm new run dir contains the 4 canonical L7 artifacts; spot-check `agentic_core_how_trace.json` payload shape against `agentic_core/L7_auditability/contracts/how_trace.py`. | ~1k | Not Started |
 

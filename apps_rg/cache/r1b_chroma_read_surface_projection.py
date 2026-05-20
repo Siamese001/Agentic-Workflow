@@ -1,0 +1,427 @@
+"""W6C — governed Chroma read-surface projection after UWG-admitted R1B commit (apps_rg only).
+
+Upserts only into an apps_rg-owned Chroma collection under the run or R1B cache root.
+Core D2 ``l2_semantic_cache`` / ``promote_to_long_term`` paths are never used here.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Mapping
+
+from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM, R1B_UWG_TARGET_SURFACE
+from apps_rg.cache.r1b_intent_vector import (
+    intent_text_from_request,
+    normalized_intent_digest,
+    pseudo_vector_from_digest,
+    vector_payload,
+)
+from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
+
+READ_SURFACE_NAME = "r1b_semantic_cache_projection"
+CHROMA_COLLECTION_NAME = "apps_rg_r1b_semantic_cache_projection"
+SCHEMA_READ_SURFACE_REFRESH = "read_surface_refresh_receipt_v1"
+SCHEMA_CHROMA_COLLECTION_INDEX = "chroma_collection_index_ref_v1"
+SCHEMA_CHROMA_READ_AFTER_WRITE = "chroma_read_after_write_receipt_v1"
+SCHEMA_EMBEDDING_MAPPING = "request_intent_embedding_ref_mapping_receipt_v1"
+PRODUCER_MODULE = "apps_rg.cache.r1b_chroma_read_surface_projection"
+
+READ_SURFACE_REFRESH_ARTIFACT = "read_surface_refresh_receipt.json"
+CHROMA_COLLECTION_INDEX_ARTIFACT = "chroma_collection_index_ref.json"
+CHROMA_READ_AFTER_WRITE_ARTIFACT = "chroma_read_after_write_receipt.json"
+REQUEST_INTENT_EMBEDDING_REF_ARTIFACT = "request_intent_embedding_ref.json"
+EMBEDDING_MAPPING_RECEIPT_ARTIFACT = "request_intent_embedding_ref_mapping_receipt.json"
+COMPATIBILITY_PROOF_ARTIFACT = "r1b_compatibility_proof.json"
+UWG_ADMITTED_BUNDLE_ARTIFACT = "r1b_uwg_admitted_projection_bundle.json"
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _sha256_file(path: Path) -> str:
+    if not path.is_file():
+        return ""
+    h = hashlib.sha256()
+    try:
+        h.update(path.read_bytes())
+    except OSError:
+        return ""
+    return h.hexdigest()
+
+
+def _chroma_projection_enabled() -> bool:
+    return os.environ.get("APPS_RG_R1B_SKIP_CHROMA_PROJECTION", "").strip().lower() not in (
+        "1",
+        "true",
+        "yes",
+    )
+
+
+def _resolve_chroma_persist_dir(artifact_dir: Path) -> Path:
+    env = os.environ.get("APPS_RG_R1B_CHROMA_READ_SURFACE_ROOT", "").strip()
+    if env:
+        root = Path(env)
+        if not root.is_absolute():
+            root = (Path.cwd() / root).resolve()
+        return root / artifact_dir.name
+    return artifact_dir / "r1b_chroma_read_surface"
+
+
+@dataclass
+class GovernedChromaProjectionOutcome:
+    refresh_status: str
+    read_surface_refresh_status: str
+    chroma_projection_status: str
+    read_surface_refresh_complete: bool = False
+    chroma_projection_complete: bool = False
+    reason: str = ""
+    artifacts_written: list[str] = field(default_factory=list)
+    collection_name: str = CHROMA_COLLECTION_NAME
+    chroma_persist_path: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "refresh_status": self.refresh_status,
+            "read_surface_refresh_status": self.read_surface_refresh_status,
+            "chroma_projection_status": self.chroma_projection_status,
+            "read_surface_refresh_complete": self.read_surface_refresh_complete,
+            "chroma_projection_complete": self.chroma_projection_complete,
+            "reason": self.reason,
+            "artifacts_written": list(self.artifacts_written),
+            "collection_name": self.collection_name,
+            "chroma_persist_path": self.chroma_persist_path,
+            "read_surface": READ_SURFACE_NAME,
+            "governed_uwg_admitted_projection": True,
+            "explicit_non_claims": [
+                "not core D2 l2_semantic_cache shadow promote",
+                "Chroma upsert on this path counts only with full UWG receipt chain",
+            ],
+        }
+
+
+def _write_envelope(
+    path: Path,
+    payload: Mapping[str, Any],
+    *,
+    artifact_name: str,
+    section_id: str,
+    run_id: str,
+) -> None:
+    doc = {
+        "schema_version": "apps_rg_r1b_governed_receipt_envelope_v1",
+        "generated_at_utc": _utc_now(),
+        "producer": PRODUCER_MODULE,
+        "artifact_name": artifact_name,
+        "section_id": section_id,
+        "run_id": run_id,
+        "payload": dict(payload),
+    }
+    path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def _chain_artifact_refs(artifact_dir: Path) -> dict[str, str]:
+    refs: dict[str, str] = {}
+    for name in (
+        "commit_request.json",
+        "state_diff_validation_result.json",
+        "uwg_commit_receipt.json",
+        "l4_namespace_object_ref.json",
+        "proposed_state_diff_ref.json",
+    ):
+        if (artifact_dir / name).is_file():
+            refs[name.replace(".json", "_ref")] = name
+    return refs
+
+
+def _refresh_digest(artifact_dir: Path, record_id: str, commit_request_id: str) -> str:
+    parts = [
+        record_id,
+        commit_request_id,
+        _sha256_file(artifact_dir / "commit_request.json"),
+        _sha256_file(artifact_dir / "uwg_commit_receipt.json"),
+        _sha256_file(artifact_dir / "l4_namespace_object_ref.json"),
+    ]
+    return hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()
+
+
+def _upsert_governed_chroma(
+    *,
+    persist_dir: Path,
+    record: HistoricalIntentRecord,
+    raw_request: dict[str, Any],
+    commit_request_id: str,
+    uwg_commit_receipt_id: str,
+) -> dict[str, Any]:
+    from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb
+
+    persist_dir.mkdir(parents=True, exist_ok=True)
+    client = chromadb.PersistentClient(path=str(persist_dir))
+    collection = client.get_or_create_collection(
+        name=CHROMA_COLLECTION_NAME,
+        metadata={
+            "subsystem": R1B_STORAGE_SUBSYSTEM,
+            "read_surface": READ_SURFACE_NAME,
+            "governed_projection": "true",
+            "not_core_d2_l2_semantic_cache": "true",
+        },
+    )
+    digest = record.normalized_intent_digest or normalized_intent_digest(
+        intent_text_from_request(raw_request)
+    )
+    embedding = pseudo_vector_from_digest(digest)
+    intent_text = record.request_intent_text or intent_text_from_request(raw_request)
+    collection.upsert(
+        ids=[record.record_id],
+        embeddings=[embedding],
+        documents=[intent_text],
+        metadatas=[
+            {
+                "record_id": record.record_id,
+                "normalized_intent_digest": digest,
+                "commit_request_id": commit_request_id,
+                "uwg_commit_receipt_id": uwg_commit_receipt_id,
+                "cache_grain": record.cache_grain,
+                "source_run_id": record.source_run_id,
+                "governed_read_surface": READ_SURFACE_NAME,
+            }
+        ],
+    )
+    result = collection.query(
+        query_embeddings=[embedding],
+        n_results=1,
+        include=["metadatas", "distances"],
+    )
+    ids = (result.get("ids") or [[]])[0]
+    return {
+        "collection_name": CHROMA_COLLECTION_NAME,
+        "chroma_persist_path": str(persist_dir),
+        "upserted_id": record.record_id,
+        "query_ids": list(ids),
+        "read_after_write_ok": record.record_id in ids,
+    }
+
+
+def project_governed_chroma_read_surface(
+    *,
+    artifact_dir: Path,
+    section_id: str,
+    run_id: str,
+    record: HistoricalIntentRecord,
+    chunks: list[HistoricalOutputChunk],
+    commit_request_id: str,
+    uwg_commit_receipt_id: str,
+    raw_request: dict[str, Any] | None = None,
+) -> GovernedChromaProjectionOutcome:
+    """Emit canonical read-surface + Chroma index refs after UWG admission."""
+    req = dict(raw_request or {})
+    l4_path = artifact_dir / "l4_namespace_object_ref.json"
+    if not l4_path.is_file():
+        return GovernedChromaProjectionOutcome(
+            refresh_status="SKIPPED",
+            read_surface_refresh_status="MISSING",
+            chroma_projection_status="MISSING",
+            reason="missing_l4_namespace_object_ref",
+        )
+    if not (artifact_dir / "commit_request.json").is_file():
+        return GovernedChromaProjectionOutcome(
+            refresh_status="SKIPPED",
+            read_surface_refresh_status="MISSING",
+            chroma_projection_status="MISSING",
+            reason="missing_commit_request",
+        )
+
+    bundle = {
+        "schema_version": "r1b_uwg_admitted_projection_bundle_v1",
+        "storage_subsystem": R1B_STORAGE_SUBSYSTEM,
+        "read_surface": READ_SURFACE_NAME,
+        "parent_intent_record": record.to_dict(),
+        "child_chunks": [c.to_dict() for c in chunks],
+        "commit_request_id": commit_request_id,
+        "uwg_commit_receipt_id": uwg_commit_receipt_id,
+        "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
+    }
+    (artifact_dir / UWG_ADMITTED_BUNDLE_ARTIFACT).write_text(
+        json.dumps(bundle, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    written: list[str] = [UWG_ADMITTED_BUNDLE_ARTIFACT]
+
+    digest = record.normalized_intent_digest or normalized_intent_digest(
+        intent_text_from_request(req)
+    )
+    _write_envelope(
+        artifact_dir / REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
+        {
+            "record_id": record.record_id,
+            "request_intent_embedding_ref": f"embeddings/{record.record_id}.json",
+            "embedding": vector_payload(digest),
+            "not_c0_fact_vectors": True,
+        },
+        artifact_name=REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
+        section_id=section_id,
+        run_id=run_id,
+    )
+    written.append(REQUEST_INTENT_EMBEDDING_REF_ARTIFACT)
+
+    _write_envelope(
+        artifact_dir / EMBEDDING_MAPPING_RECEIPT_ARTIFACT,
+        {
+            "source_field": "request_intent_vector_ref",
+            "canonical_field": "request_intent_embedding_ref",
+            "source_ref": record.request_intent_vector_ref,
+            "canonical_ref": f"embeddings/{record.record_id}.json",
+            "mapping_policy": "pseudo_vector_digest_equivalent",
+            "record_id": record.record_id,
+        },
+        artifact_name=EMBEDDING_MAPPING_RECEIPT_ARTIFACT,
+        section_id=section_id,
+        run_id=run_id,
+    )
+    written.append(EMBEDDING_MAPPING_RECEIPT_ARTIFACT)
+
+    from apps_rg.cache.r1b_compatibility import assess_intent_record_admissibility
+
+    compat = assess_intent_record_admissibility(record, chunks=chunks)
+    (artifact_dir / COMPATIBILITY_PROOF_ARTIFACT).write_text(
+        json.dumps(
+            {
+                "schema_version": "r1b_compatibility_proof_v1",
+                "admissible": compat.admissible,
+                "reason": compat.reason,
+                "checks": compat.checks,
+                "record_id": record.record_id,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    written.append(COMPATIBILITY_PROOF_ARTIFACT)
+
+    refresh_digest = _refresh_digest(artifact_dir, record.record_id, commit_request_id)
+    refreshed_at = _utc_now()
+    chain_refs = _chain_artifact_refs(artifact_dir)
+
+    chroma_meta: dict[str, Any] = {}
+    if _chroma_projection_enabled():
+        try:
+            chroma_meta = _upsert_governed_chroma(
+                persist_dir=_resolve_chroma_persist_dir(artifact_dir),
+                record=record,
+                raw_request=req,
+                commit_request_id=commit_request_id,
+                uwg_commit_receipt_id=uwg_commit_receipt_id,
+            )
+        except Exception as exc:  # guardian: allow-default-fallback -- Chroma optional in CI; receipts record failure
+            return GovernedChromaProjectionOutcome(
+                refresh_status="FAILED",
+                read_surface_refresh_status="MISSING",
+                chroma_projection_status="MISSING",
+                reason=f"chroma_upsert_failed:{exc}",
+                artifacts_written=written,
+            )
+    else:
+        return GovernedChromaProjectionOutcome(
+            refresh_status="SKIPPED",
+            read_surface_refresh_status="NOT_APPLICABLE",
+            chroma_projection_status="NOT_APPLICABLE",
+            reason="APPS_RG_R1B_SKIP_CHROMA_PROJECTION",
+            artifacts_written=written,
+        )
+
+    _write_envelope(
+        artifact_dir / READ_SURFACE_REFRESH_ARTIFACT,
+        {
+            "schema_version": SCHEMA_READ_SURFACE_REFRESH,
+            "read_surface": READ_SURFACE_NAME,
+            "refresh_status": "COMPLETE",
+            "refresh_digest": refresh_digest,
+            "refreshed_at": refreshed_at,
+            "commit_request_ref": chain_refs.get("commit_request_ref", "commit_request.json"),
+            "state_diff_validation_result_ref": chain_refs.get(
+                "state_diff_validation_result_ref", "state_diff_validation_result.json"
+            ),
+            "uwg_commit_receipt_ref": chain_refs.get(
+                "uwg_commit_receipt_ref", "uwg_commit_receipt.json"
+            ),
+            "l4_namespace_object_ref": chain_refs.get(
+                "l4_namespace_object_ref_ref", "l4_namespace_object_ref.json"
+            ),
+            "proposed_state_diff_ref": chain_refs.get(
+                "proposed_state_diff_ref_ref", "proposed_state_diff_ref.json"
+            ),
+            "uwg_commit_receipt_id": uwg_commit_receipt_id,
+            "commit_request_id": commit_request_id,
+            "governed_projection": True,
+            "non_durable_shadow_path": False,
+        },
+        artifact_name=READ_SURFACE_REFRESH_ARTIFACT,
+        section_id=section_id,
+        run_id=run_id,
+    )
+    written.append(READ_SURFACE_REFRESH_ARTIFACT)
+
+    _write_envelope(
+        artifact_dir / CHROMA_COLLECTION_INDEX_ARTIFACT,
+        {
+            "schema_version": SCHEMA_CHROMA_COLLECTION_INDEX,
+            "collection_name": chroma_meta["collection_name"],
+            "chroma_persist_path": chroma_meta["chroma_persist_path"],
+            "read_surface": READ_SURFACE_NAME,
+            "record_id": record.record_id,
+            "commit_request_ref": "commit_request.json",
+            "uwg_commit_receipt_ref": "uwg_commit_receipt.json",
+            "indexed_id": chroma_meta["upserted_id"],
+            "not_core_d2_collection": True,
+            "core_d2_collection_name": "l2_semantic_cache",
+        },
+        artifact_name=CHROMA_COLLECTION_INDEX_ARTIFACT,
+        section_id=section_id,
+        run_id=run_id,
+    )
+    written.append(CHROMA_COLLECTION_INDEX_ARTIFACT)
+
+    _write_envelope(
+        artifact_dir / CHROMA_READ_AFTER_WRITE_ARTIFACT,
+        {
+            "schema_version": SCHEMA_CHROMA_READ_AFTER_WRITE,
+            "read_after_write_status": "PASS" if chroma_meta.get("read_after_write_ok") else "FAIL",
+            "queried_record_id": record.record_id,
+            "ids_returned": chroma_meta.get("query_ids") or [],
+            "collection_ref": CHROMA_COLLECTION_INDEX_ARTIFACT,
+            "read_surface_refresh_ref": READ_SURFACE_REFRESH_ARTIFACT,
+            "commit_request_id": commit_request_id,
+            "governed_read_surface_only": True,
+        },
+        artifact_name=CHROMA_READ_AFTER_WRITE_ARTIFACT,
+        section_id=section_id,
+        run_id=run_id,
+    )
+    written.append(CHROMA_READ_AFTER_WRITE_ARTIFACT)
+
+    return GovernedChromaProjectionOutcome(
+        refresh_status="COMPLETE",
+        read_surface_refresh_status="COMPLETE",
+        chroma_projection_status="COMPLETE",
+        read_surface_refresh_complete=True,
+        chroma_projection_complete=chroma_meta.get("read_after_write_ok", False),
+        artifacts_written=written,
+        chroma_persist_path=str(chroma_meta.get("chroma_persist_path") or ""),
+    )
+
+
+__all__ = [
+    "CHROMA_COLLECTION_INDEX_ARTIFACT",
+    "CHROMA_READ_AFTER_WRITE_ARTIFACT",
+    "GovernedChromaProjectionOutcome",
+    "READ_SURFACE_NAME",
+    "READ_SURFACE_REFRESH_ARTIFACT",
+    "project_governed_chroma_read_surface",
+]

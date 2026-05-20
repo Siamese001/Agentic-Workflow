@@ -29,12 +29,12 @@ INTERNAL_MODULES = (
 )
 
 LANE_API_MODULES = (
-    "apps_rg.runtime.sections.executive_summary_lane_api",
-    "apps_rg.runtime.sections.competencies_lane_api",
-    "apps_rg.runtime.sections.unify_bullets_lane_api",
-    "apps_rg.runtime.sections.unify_narrative_lane_api",
-    "apps_rg.runtime.sections.ibm_bullets_lane_api",
-    "apps_rg.runtime.sections.ibm_narrative_lane_api",
+    "apps_rg.runtime.sections.executive_summary_lane",
+    "apps_rg.runtime.sections.competencies_lane_runtime",
+    "apps_rg.runtime.sections.unify_bullets_lane",
+    "apps_rg.runtime.sections.unify_narrative_lane",
+    "apps_rg.runtime.sections.ibm_bullets_lane",
+    "apps_rg.runtime.sections.ibm_narrative_lane_runtime",
 )
 
 

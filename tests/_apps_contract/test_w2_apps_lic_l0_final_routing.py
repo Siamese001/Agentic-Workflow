@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.apps_lic_l0_binding import (
+from apps_lic.runtime.bindings.l0_binding import (
     ROUTE_FAMILY_R4_MANAGED_DRAFT,
     ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT,
     ROUTE_FAMILY_R5_FALLBACK,
@@ -125,7 +125,7 @@ class TestW2R4FreshContextPath:
     def test_r4_has_managed_workflow_execution_form(self):
         """R4 produces MANAGED_WORKFLOW execution form."""
         execution_form = _derive_execution_form(ROUTE_FAMILY_R4_MANAGED_DRAFT)
-        assert execution_form == "MANAGED_WORKFLOW"
+        assert execution_form == "managed_workflow"
 
     def test_r4_requires_l3(self):
         """R4 requires L3 orchestration."""
@@ -195,7 +195,7 @@ class TestW2R3R4ResearchThenDraftPath:
     def test_r3r4_has_managed_workflow_execution_form(self):
         """R3R4 produces MANAGED_WORKFLOW execution form."""
         execution_form = _derive_execution_form(ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT)
-        assert execution_form == "MANAGED_WORKFLOW"
+        assert execution_form == "managed_workflow"
 
     def test_r3r4_requires_l3(self):
         """R3R4 requires L3 orchestration."""
@@ -261,7 +261,7 @@ class TestW2R5FallbackPath:
     def test_r5_has_terminal_fallback_execution_form(self):
         """R5 produces TERMINAL_FALLBACK execution form."""
         execution_form = _derive_execution_form(ROUTE_FAMILY_R5_FALLBACK)
-        assert execution_form == "TERMINAL_FALLBACK"
+        assert execution_form == "terminal_fallback"
 
     def test_r5_does_not_require_l3(self):
         """R5 does not require L3 orchestration."""
@@ -358,7 +358,7 @@ class TestW2BriefingOnlyFailClosed:
         """Briefing-only produces TERMINAL_FALLBACK (no L3)."""
         execution_form = _derive_execution_form(ROUTE_FAMILY_R5_FALLBACK)
         l3_required = _derive_l3_required(ROUTE_FAMILY_R5_FALLBACK)
-        assert execution_form == "TERMINAL_FALLBACK"
+        assert execution_form == "terminal_fallback"
         assert l3_required is False
 
 
@@ -389,7 +389,7 @@ class TestW2EndToEndRouting:
 
         assert route.route_family == ROUTE_FAMILY_R4_MANAGED_DRAFT
         assert route.route_id == ROUTE_ID_R4_DEFAULT
-        assert route.execution_form == "MANAGED_WORKFLOW"
+        assert route.execution_form == "managed_workflow"
         assert route.l3_required is True
         assert route.cache_eligibility["final_draft_r1a_bypass"] is True
         assert route.cache_eligibility["final_draft_r1b_bypass"] is True
@@ -419,7 +419,7 @@ class TestW2EndToEndRouting:
 
         assert route.route_family == ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT
         assert route.route_id == ROUTE_ID_R3R4_WITH_RESEARCH
-        assert route.execution_form == "MANAGED_WORKFLOW"
+        assert route.execution_form == "managed_workflow"
         assert route.l3_required is True
 
     def test_end_to_end_r5_path(self):
@@ -447,7 +447,7 @@ class TestW2EndToEndRouting:
 
         assert route.route_family == ROUTE_FAMILY_R5_FALLBACK
         assert route.route_id == ROUTE_ID_R5_FALLBACK
-        assert route.execution_form == "TERMINAL_FALLBACK"
+        assert route.execution_form == "terminal_fallback"
         assert route.l3_required is False
         # No draft should be generated (execution_form is TERMINAL_FALLBACK)
 
@@ -470,7 +470,7 @@ class TestW2EndToEndRouting:
 
         # Should fail closed to R5
         assert route.route_family == ROUTE_FAMILY_R5_FALLBACK
-        assert route.execution_form == "TERMINAL_FALLBACK"
+        assert route.execution_form == "terminal_fallback"
         assert route.l3_required is False
 
 

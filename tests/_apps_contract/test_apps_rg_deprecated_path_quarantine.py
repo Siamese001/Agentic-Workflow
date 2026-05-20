@@ -1,4 +1,4 @@
-"""W7 — Non-product / quarantine paths for apps_rg (no deletes; classification only)."""
+"""W7 — Non-product / quarantine paths for apps_rg (classification only)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.l2_recipe.r4_generation_mode import MODE_LEGACY_FULL_RESUME, MODE_MODULAR_SECTION_LANES
+from apps_rg.l2_recipe.r4_generation_mode import (
+    MODE_MODULAR_SECTION_LANES,
+    RETIRED_MODE_LEGACY_FULL_RESUME,
+    resolve_apps_rg_r4_generation_mode,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -25,7 +29,7 @@ QUARANTINE_REGISTRY: dict[str, str] = {
 }
 
 NON_PRODUCT_PROOF_ENV: dict[str, str] = {
-    "APPS_RG_R4_GENERATION_MODE": MODE_LEGACY_FULL_RESUME,
+    "APPS_RG_R4_GENERATION_MODE": MODE_MODULAR_SECTION_LANES,
     "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1",
     "APPS_RG_L2_PROVIDER_MODE": "stub_only",
     "APPS_RG_L2_FORCE_STUB": "1",
@@ -58,8 +62,6 @@ def test_quarantine_registry_paths_exist(rel_path: str, classification: str) -> 
 
 
 def test_default_generation_mode_is_modular_not_legacy() -> None:
-    from apps_rg.l2_recipe.r4_generation_mode import resolve_apps_rg_r4_generation_mode
-
     prev = os.environ.pop("APPS_RG_R4_GENERATION_MODE", None)
     try:
         assert resolve_apps_rg_r4_generation_mode() == MODE_MODULAR_SECTION_LANES
@@ -68,9 +70,10 @@ def test_default_generation_mode_is_modular_not_legacy() -> None:
             os.environ["APPS_RG_R4_GENERATION_MODE"] = prev
 
 
-def test_legacy_full_resume_is_explicit_rollback_classification() -> None:
-    assert MODE_LEGACY_FULL_RESUME == "legacy_full_resume"
-    assert MODE_LEGACY_FULL_RESUME != MODE_MODULAR_SECTION_LANES
+def test_legacy_full_resume_env_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_R4_GENERATION_MODE", RETIRED_MODE_LEGACY_FULL_RESUME)
+    with pytest.raises(RuntimeError, match="RETIRED_APPS_RG_R4_GENERATION_MODE"):
+        resolve_apps_rg_r4_generation_mode()
 
 
 @pytest.mark.parametrize("module_tail", RETIRED_DISPATCH_TAILS)

@@ -16,7 +16,7 @@ NOTE: The spine-shared ValidatedRequest lives in apps_rg_ingress_payload.py
 because apps_rg was the golden-path pioneer. apps_lic U0 ALSO produces a
 ValidatedRequest of that same type. This file defines the apps_lic *ingress*
 shape only (the CLI-emitted payload and its envelope). The adapter
-(agentic_core/runtime/u0/apps_lic_u0_adapter.py) is responsible for
+(apps_lic/runtime/u0/adapter.py) is responsible for
 synthesizing the shared ValidatedRequest from the apps_lic-specific contract.
 
 Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)

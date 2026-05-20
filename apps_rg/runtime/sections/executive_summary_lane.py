@@ -8,6 +8,12 @@ Lane-scoped modular runtime (proof pool → section graph binding shim → PA �
 """
 from __future__ import annotations
 
+if __name__ == "__main__":
+    raise ImportError(
+        "This module is not an operator CLI entrypoint. "
+        "Use: python -m apps_rg --section executive_summary"
+    )
+
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_DECLARED_TEMPORARY_SLICE,
     PLAN_SLUG,
@@ -1178,6 +1184,9 @@ def run_executive_summary_execution(
     c03_doc = pp_c03.get("c03_graphrag_bound")
     if isinstance(c03_doc, dict):
         write_json(artifact_dir / "c03_graphrag_bound.json", c03_doc)
+    native_c03 = pp_c03.get("native_c03_final_evidence")
+    if isinstance(native_c03, dict):
+        write_json(artifact_dir / "native_c03_final_evidence.json", native_c03)
     fec_snap = pp_c03.get("final_evidence_contract_snapshot")
     if isinstance(fec_snap, dict):
         write_json(artifact_dir / "final_evidence_contract_snapshot.json", fec_snap)

@@ -10,7 +10,7 @@ import pytest
 from apps_rg.cache.r1b_derived_index import derived_index_available
 from apps_rg.cache.r1b_index_lifecycle import prove_r1b_index_lifecycle
 from apps_rg.cache.r1b_models import HistoricalOutputChunk
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_uwg_promotion import promote_and_project_r1b_cache
 from apps_rg.cache.r1b_whole_run_preflight import execute_whole_run_r1b_preflight

@@ -1,8 +1,7 @@
 """apps_lic HOP pipeline topology.
 
 Declares the 9-stage inner DAG that runs inside the L2 authorize_and_execute
-step of ``GovernedLicRun.run_governed_e2e`` (the outer substrate chain is
-owned by ``apps_shared.integrations.governed_app_runner``).
+step of ``l2_execute_apps_lic`` (product path via canonical_dispatch).
 
 Per Author-Gate 2026-05-01 (`architecture_choice`, selected=
 `shared_substrate_hop_pipeline`) this file is the SSOT for apps_lic stage

@@ -3,7 +3,7 @@
 Product and section runtime must enter through [apps_rg/__main__.py](../__main__.py).
 Legacy shadow dotted paths (``dispatch.*_dispatch``, ``_offline.*``, moved orchestrate/package paths)
 are deleted — ``python -m`` must raise ``ModuleNotFoundError``.
-Internal helpers live under ``apps_rg.runtime.internal`` and ``apps_rg.runtime.sections.*_lane_api``;
+Internal helpers live under ``apps_rg.runtime.internal`` and ``apps_rg.runtime.sections.*_lane``;
 they are library-only (``ImportError`` if executed as ``__main__``).
 """
 from __future__ import annotations
@@ -27,7 +27,6 @@ ALLOWED_OUTSIDE_MAIN_MODULE_PREFIXES: tuple[str, ...] = (
 DELETED_RUNTIME_MODULE_CLI: frozenset[str] = frozenset(
     {
         "apps_rg.runtime.orchestrate_full_resume",
-        "apps_rg.runtime.dry_run.executive_summary_demo",
         "apps_rg.runtime.package.resume_package_x3",
         "apps_rg.runtime.reports.generated_lane_rollup",
         "apps_rg.runtime.assembly.final_resume_assembler",

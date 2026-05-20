@@ -1,7 +1,7 @@
 """AppsLicIngressContractV1 — canonical apps_lic JSON ingress contract, version 1.
 
 This is the SSOT shape apps_lic emits at U0 ingress. The U0 reflection adapter
-(``agentic_core/runtime/u0/apps_lic_u0_adapter.py``) validates raw JSON against
+(``apps_lic/runtime/u0/adapter.py``) validates raw JSON against
 this contract, enumerates every JSON Pointer, and proves each pointer maps to
 a downstream consumer (MAPPED, DERIVED, REJECTED, or DEFERRED).
 

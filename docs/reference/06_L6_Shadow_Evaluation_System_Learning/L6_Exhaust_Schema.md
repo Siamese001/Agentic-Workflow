@@ -42,6 +42,6 @@ completion. It contains:
 
 ## Integration
 
-- Emitted by: `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py`
+- Emitted by: `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py`
 - Consumed by: L6/promo router, L6/regret router, L7 HowTrace builder
 - Stored at: `artifacts/<app_name>/runs/<ts>/runtime_exhaust_bundle.json`

@@ -48,8 +48,8 @@ Make these 11 spine invariants true and test-backed in apps_rg:
 
 | Rank | Node | adg_name | Layer | Fan-In | Fan-Out | Archetype | 5-Surface | Impact |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 3157 | `apps_rg/__main__.py` | L_APP | TBD-W1 | 11 (imports) | **ORCHESTRATOR** | Execution + Write | CRITICAL — entrypoint dispatching whole pipeline; line 45 imports `agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run` (the real PA chokepoint) |
-| 2 | 33121 | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | L_RUNTIME | TBD-W1 | TBD-W1 | **CENTRAL_DEPENDENCY** | Execution + State + Observability | CRITICAL — actual PA hot path; imported by `apps_rg/__main__.py:45` |
+| 1 | 3157 | `apps_rg/__main__.py` | L_APP | TBD-W1 | 11 (imports) | **ORCHESTRATOR** | Execution + Write | CRITICAL — entrypoint dispatching whole pipeline; line 45 imports `agentic_core.runtime.entrypoints.integrated_single_action_spine_run` (the real PA chokepoint) |
+| 2 | 33121 | `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | L_RUNTIME | TBD-W1 | TBD-W1 | **CENTRAL_DEPENDENCY** | Execution + State + Observability | CRITICAL — actual PA hot path; imported by `apps_rg/__main__.py:45` |
 | 3 | 3275 | `apps_rg/prompt_assembly/compiler.py` | L_APP | **0** | TBD-W1 | **CENTRAL_DEPENDENCY** (claimed) | Execution | ⚠️ **AMBIGUOUS** — `mv_graph_reverse_dependency_hotspots` shows zero `imports` fan-in. AGENTIC_SPINE.md claims this is CANONICAL_PA; either dead code or dynamically loaded. **W1 MUST resolve.** |
 | 4 | apps_rg/integrations/* | (40 items) | L_APP | TBD-W1 | TBD-W1 | **CENTRAL_DEPENDENCY** | Execution + Egress | HIGH — provider bridges; primary suspect for `VIOLATION_DIRECT_PROVIDER_CALL_BYPASS` |
 | 5 | apps_rg/engines/* | (57 items) | L_APP | TBD-W1 | TBD-W1 | **ORCHESTRATOR** (HOP-level) | Execution | HIGH — bullet/narrative engines; primary suspect for `VIOLATION_PROVIDER_READY_PROMPT_OUTSIDE_PA` |
@@ -71,7 +71,7 @@ Make these 11 spine invariants true and test-backed in apps_rg:
 | `mv_hotspot_centrality` | ✅ Queried — top 20 contains zero apps_rg files (leaf-app, expected); top hotspot is `agentic_core/runtime/contracts/lifecycle_trace_contract.py` (fan_in=106726) — used universally by mixin instrumentation | Re-query scoped to `resolved_path LIKE 'apps_rg/%'` |
 | `mv_graph_chokepoint_bridges` | ⏳ W1 | Identify the actual PA chokepoint between `apps_rg/__main__.py` and the runtime pipeline runner |
 | `mv_graph_reverse_dependency_hotspots` | ✅ Indirectly — `apps_rg/prompt_assembly/compiler.py` has zero `imports` fan-in (suspicious) | Confirm whether it is dynamically loaded |
-| `mv_graph_critical_path_blast_radius` | ✅ Queried — `prompt_assembly/compiler.py` blast_radius=0 (corroborates suspect-dead status) | Re-query for `__main__.py` and `integrated_r4_deterministic_pipeline_run.py` |
+| `mv_graph_critical_path_blast_radius` | ✅ Queried — `prompt_assembly/compiler.py` blast_radius=0 (corroborates suspect-dead status) | Re-query for `__main__.py` and `integrated_single_action_spine_run.py` |
 | `mv_dependency_cone_risk` | ⏳ W1 | Compute cone risk for the runtime pipeline runner (real PA path) |
 
 ### 4.2 Semantic edges to inspect in W1
@@ -81,7 +81,7 @@ Make these 11 spine invariants true and test-backed in apps_rg:
 | `flows_to` | `apps_rg/__main__.py` → ? | Trace data flow from CLI args (untrusted) into prompt slots — proves U0 airlock placement |
 | `emits_side_effect` | `apps_rg/integrations/*` | Identify provider call sites (LLM egress) — must consume CompiledPromptArtifact, not raw strings |
 | `controls_flow` | `apps_rg/reasoning/RgResumeOrchestrator.py` | Confirm orchestrator does not assemble — only dispatches HOPs |
-| `resolves_callsite` | `apps_rg/__main__.py:45` → `run_integrated_r4_deterministic_pipeline` | Resolve where PA actually runs at runtime |
+| `resolves_callsite` | `apps_rg/__main__.py:45` → `run_integrated_single_action_spine` | Resolve where PA actually runs at runtime |
 | `reads_from`/`writes_to` | `apps_rg/cache/r1a_adapter.py` | Confirm cache adapter does NOT reconstruct prompts on hit |
 
 ### 4.3 P-view cross-references
@@ -201,7 +201,7 @@ Authority order, S0 highest:
 18. `agentic_core/L0_routing/reasoning/assembly_stage.py` — add PA-ownership contract comment + receipt
 19. `agentic_core/L1_cognition/reasoning/prompt_envelope.py` — clarify PA-territory consumed via L1
 20. `agentic_core/mixins/instructional_injection_mixin.py` — verify mixin pre-PA guard
-21. `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` — **the real PA hot path** per W0 ADG
+21. `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` — **the real PA hot path** per W0 ADG
 
 ## 10. Likely Boundary Risks (pre-W1 hypothesis)
 

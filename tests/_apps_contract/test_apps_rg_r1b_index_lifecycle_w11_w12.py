@@ -49,7 +49,11 @@ def test_w10b_gap_carry_forward(w11_w12_fixtures: Path) -> None:
     data = json.loads(
         (w11_w12_fixtures / "w10b_sidecar_gap_carry_forward.json").read_text(encoding="utf-8")
     )
-    assert "core_uwg_commit_receipt_fields" in data or "shim_patches" in data or "carry_forward_wave" in data
+    assert (
+        "core_uwg_commit_receipt_fields" in data
+        or "fields_promotion_gateway_enriches" in data
+        or "carry_forward_wave" in data
+    )
 
 
 def test_lifecycle_accepted_hit(w11_w12_fixtures: Path) -> None:

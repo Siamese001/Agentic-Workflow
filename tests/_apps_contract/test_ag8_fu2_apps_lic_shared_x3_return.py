@@ -29,7 +29,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import (
     build_x3_packet,
 )
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
-from agentic_core.runtime.exit.apps_lic_exit_binding import (
+from apps_lic.runtime.bindings.exit_binding import (
     _build_exit_review_packet,
     exit_finalize_apps_lic,
 )
@@ -87,13 +87,13 @@ def _code_only(src: str) -> str:
 
 class TestFU2UsesSharedBuilder:
     def test_build_x3_packet_is_imported(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert "from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3_packet" in src, (
             "build_x3_packet must be imported from shared x3_dispositions (AG-8-FU2)"
         )
 
     def test_build_x3_packet_is_called(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         code = _code_only(src)
         assert "build_x3_packet(" in code, (
             "build_x3_packet() must be called in apps_lic exit_finalize_apps_lic (AG-8-FU2)"
@@ -102,7 +102,7 @@ class TestFU2UsesSharedBuilder:
     def test_local_x3disposition_construction_removed(self) -> None:
         """The direct X3Disposition(...) construction was the old workaround.
         It should no longer appear in the main execution path — only in the bridge helper."""
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         code = _code_only(src)
         # The bridge helper _x3_packet_to_disposition is allowed to have X3Disposition(...)
         # but exit_finalize_apps_lic itself must not construct X3Disposition directly.
@@ -113,7 +113,7 @@ class TestFU2UsesSharedBuilder:
         )
 
     def test_bridge_helper_exists(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _x3_packet_to_disposition
+        from apps_lic.runtime.bindings.exit_binding import _x3_packet_to_disposition
         assert callable(_x3_packet_to_disposition)
 
 
@@ -295,7 +295,7 @@ class TestFU2MaterialFailBlocks:
 class TestFU2MaterialUnknownCannotPass:
     def test_unknown_disposition_does_not_allow(self) -> None:
         from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import AggregateDecision
-        from agentic_core.runtime.exit.apps_lic_exit_binding import (
+        from apps_lic.runtime.bindings.exit_binding import (
             _build_exit_review_packet,
             _x3_packet_to_disposition,
         )
@@ -347,7 +347,7 @@ class TestFU2NotApplicableReason:
 
 class TestFU2NoL4Write:
     def test_no_direct_l4_write_in_source(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         forbidden = ["chromadb", "chroma_client", ".upsert(", ".delete(", "L4_state"]
         for pattern in forbidden:
             assert pattern not in src, f"Forbidden L4 write pattern {pattern!r} found"
@@ -365,12 +365,12 @@ class TestFU2NoL4Write:
 
 class TestFU2NoChromaDBMutation:
     def test_no_chromadb_import(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert "import chromadb" not in src
         assert "from chromadb" not in src
 
     def test_no_chroma_upsert(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         assert ".upsert(" not in src
         assert "collection.add(" not in src
 
@@ -381,7 +381,7 @@ class TestFU2NoChromaDBMutation:
 
 class TestFU2NoEmbedding:
     def test_no_embedding_api_calls_in_source(self) -> None:
-        src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source_of("apps_lic.runtime.bindings.exit_binding")
         # Check for actual API call patterns (not docstring mentions)
         forbidden_calls = ["embed(", "sentence_transformers", "openai.Embedding", "embeddings.create"]
         for pattern in forbidden_calls:

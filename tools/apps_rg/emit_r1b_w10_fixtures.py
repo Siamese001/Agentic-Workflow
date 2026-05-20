@@ -10,7 +10,7 @@ _REPO = Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_durable_write_guard import record_blocked_direct_r1b_write
 from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore

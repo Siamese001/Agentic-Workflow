@@ -117,24 +117,12 @@ class TestEntrypointC0BypassReasons:
 class TestSpecificEntrypoints:
     """Verify specific entrypoint files use correct bypass reasons."""
 
-    def test_r4_lic_uses_preloaded_context(self):
-        """integrated_r4_lic_pipeline_run uses BYPASS_PRELOADED_CONTEXT."""
+    def test_r4_lic_integrated_entrypoint_deleted(self):
+        """integrated_r4_lic_pipeline_run removed from agentic_core (canonical_dispatch only)."""
         entrypoints_dir = Path(__file__).parent.parent.parent.parent / "agentic_core" / "runtime" / "entrypoints"
         file_path = entrypoints_dir / "integrated_r4_lic_pipeline_run.py"
-
-        if not file_path.exists():
-            pytest.skip("integrated_r4_lic_pipeline_run.py not found")
-
-        content = file_path.read_text()
-
-        # Should have BYPASS_PRELOADED_CONTEXT
-        assert 'c0_bypass_reason="BYPASS_PRELOADED_CONTEXT"' in content, (
-            "integrated_r4_lic_pipeline_run should use BYPASS_PRELOADED_CONTEXT"
-        )
-
-        # Should NOT have legacy GROUNDING_NOT_REQUIRED
-        assert 'c0_bypass_reason="GROUNDING_NOT_REQUIRED"' not in content, (
-            "integrated_r4_lic_pipeline_run should not use legacy GROUNDING_NOT_REQUIRED"
+        assert not file_path.exists(), (
+            f"Retired apps_lic runner must be deleted: {file_path}"
         )
 
     def test_safe_reuse_uses_cache_return(self):

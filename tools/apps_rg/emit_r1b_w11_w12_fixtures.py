@@ -22,7 +22,7 @@ from apps_rg.cache.r1b_index_lifecycle import (
     write_w10b_gap_carry_forward,
 )
 from apps_rg.cache.r1b_models import HistoricalOutputChunk
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_uwg_promotion import promote_and_project_r1b_cache
 from tools.apps_rg.emit_r1b_w10_fixtures import _candidate as _w10_candidate

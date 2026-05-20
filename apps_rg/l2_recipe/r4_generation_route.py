@@ -5,30 +5,20 @@ the canonical **product** entry. **GenerateResumeStep** obtains structured JSON 
 
 - **Canonical proven path (modular):** seven section-scoped provider lanes +
   deterministic merge into full ``rg_output`` (no ``run_apps_rg_l2_envelope`` for body
-  generation when ``APPS_RG_R4_GENERATION_MODE=modular_section_lanes``).
-- **Explicit rollback path:** ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` keeps
-  the historic **monolithic** tailor-existing CPA + single
-  ``run_apps_rg_l2_envelope`` invocation.
+  generation). ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` is **retired**.
 
 This module declares the **recipe SSOT** after a guarded proof bundle
 (``R4_MODULAR_PROOF_RUN_ID``). Runtime default mode is ``modular_section_lanes`` when
 ``APPS_RG_R4_GENERATION_MODE`` is unset (see ``resolve_apps_rg_r4_generation_mode``).
-Set ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for explicit monolithic rollback;
-there is **no** silent downgrade from modular to legacy.
 
-Offline modular orchestration library: ``apps_rg.runtime.internal.lane_batch.run_orchestration`` (no module CLI)
-remains a **distinct** entry surface from integrated R4 dispatch; see
-``MODULAR_SECTION_ORCHESTRATOR_MODULE``.
+Offline lane orchestration for tests only: ``tests.helpers.offline_lane_orchestration``.
 """
 
 from __future__ import annotations
 
 from typing import Final, Literal
 
-from apps_rg.l2_recipe.r4_generation_mode import (
-    MODE_LEGACY_FULL_RESUME,
-    MODE_MODULAR_SECTION_LANES,
-)
+from apps_rg.l2_recipe.r4_generation_mode import MODE_MODULAR_SECTION_LANES
 from apps_rg.l2_recipe.r4_modular_proof_verification import R4_RECORDED_MODULAR_PROOF_RUN_ID
 
 R4_RECIPE_GENERATION_EXECUTION_STYLE: Literal["modular_section_lanes"] = "modular_section_lanes"
@@ -55,7 +45,7 @@ CANONICAL_INTEGRATED_PRODUCT_ENTRY_IMPORT = (
 CANONICAL_CLI_MODULE = "apps_rg.__main__:main"
 
 # Offline / lane-based orchestration (no agentic_core R4); modular Qwen by lane.
-MODULAR_SECTION_ORCHESTRATOR_MODULE = "apps_rg.runtime.internal.lane_batch"
+MODULAR_SECTION_ORCHESTRATOR_MODULE = "tests.helpers.offline_lane_orchestration"
 
 __all__ = [
     "CANONICAL_CLI_MODULE",

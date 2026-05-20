@@ -31,11 +31,11 @@ from agentic_core.runtime.contracts.apps_lic_ingress_payload import (
     AppsLicRequestEnvelope,
 )
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
-from agentic_core.runtime.entry.u0_apps_lic_binding import (
+from apps_lic.runtime.bindings.u0_binding import (
     APPS_LIC_U0_CERT_REF,
     u0_validate_apps_lic,
 )
-from agentic_core.runtime.u0.apps_lic_u0_adapter import (
+from apps_lic.runtime.u0.adapter import (
     AppsLicForbiddenSendModeError,
     AppsLicGovernanceFieldError,
     AppsLicGroundingError,

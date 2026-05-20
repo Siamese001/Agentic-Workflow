@@ -296,43 +296,11 @@ class TestGovernedAppRunRecordBackwardCompat:
 
 
 class TestAppRecordThreading:
-    def test_lic_record_has_hitl_fields(self) -> None:
-        from apps_lic.integrations.governed_lic_run import (  # noqa: PLC0415
-            GovernedLicE2ERunRecord,
-            GovernedLicRun,
-        )
-
-        # Class flag enabled per P5.1
-        assert GovernedLicRun.HITL_ENABLED is True
-
-        rec = GovernedLicE2ERunRecord(
-            run_id="r",
-            app_name="apps_lic",
-            query="q",
-            l1_sub_queries=(),
-            l1_fallback=False,
-            l0_intent="",
-            l0_target="",
-            l0_confidence=0.0,
-            l0_fallback=False,
-            c0_raw_count=0,
-            c0_shaped_count=0,
-            c0_collection="c",
-            disposition="d",
-            gate_disposition="g",
-            grounded=False,
-            citation_count=0,
-            support_coverage=0.0,
-            l6_ingested=False,
-            l2_executed=False,
-            error="",
-            campaign_id="camp-1",
-            target_audience="aud",
-            compliance_level="standard",
-        )
-        # Defaults
-        assert rec.hitl_action == "none"
-        assert rec.hitl_enabled is False
+    def test_lic_governed_runner_deleted(self) -> None:
+        """GovernedLicRun removed — apps_lic uses canonical_dispatch spine."""
+        import importlib
+        with pytest.raises((ModuleNotFoundError, ImportError)):
+            importlib.import_module("apps_lic.integrations.governed_lic_run")
 
     def test_exec_record_has_hitl_fields(self) -> None:
         from apps_exec.integrations.governed_exec_run import (  # noqa: PLC0415

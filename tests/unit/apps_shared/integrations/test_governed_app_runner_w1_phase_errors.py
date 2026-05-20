@@ -105,7 +105,6 @@ def test_substrate_phase_outputs_carry_error() -> None:
     [
         ("apps_research.integrations.governed_research_run", "GovernedE2ERunRecord"),
         ("apps_exec.integrations.governed_exec_run", "GovernedExecE2ERunRecord"),
-        ("apps_lic.integrations.governed_lic_run", "GovernedLicE2ERunRecord"),
         ("apps_rfp.integrations.governed_rfp_run", "GovernedRfpE2ERunRecord"),
     ],
 )

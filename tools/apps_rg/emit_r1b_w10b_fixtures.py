@@ -12,7 +12,7 @@ _REPO = Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_uwg_promotion import (
     build_r1b_commit_bundle,
@@ -22,7 +22,7 @@ from apps_rg.cache.r1b_uwg_promotion import (
 )
 from apps_rg.cache.r1b_uwg_receipt_contract import (
     build_receipt_field_parity_matrix,
-    document_shim_core_gaps,
+    document_r1b_uwg_core_receipt_gaps,
 )
 from tools.apps_rg.emit_r1b_w10_fixtures import _candidate as _w10_candidate
 
@@ -88,8 +88,8 @@ def main() -> int:
         json.dumps(build_receipt_field_parity_matrix(), indent=2) + "\n",
         encoding="utf-8",
     )
-    (out / "shim_vs_core_gap.json").write_text(
-        json.dumps(document_shim_core_gaps(), indent=2) + "\n",
+    (out / "r1b_uwg_core_receipt_gap.json").write_text(
+        json.dumps(document_r1b_uwg_core_receipt_gaps(), indent=2) + "\n",
         encoding="utf-8",
     )
     (out / "file_backed_non_durable_manifest.json").write_text(

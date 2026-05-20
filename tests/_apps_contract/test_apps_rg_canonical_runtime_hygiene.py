@@ -31,7 +31,7 @@ NON_PRODUCT_PROOF_MARKERS: frozenset[str] = frozenset(
         "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
         "APPS_RG_L2_PROVIDER_MODE=stub_only",
         "APPS_RG_L2_FORCE_STUB",
-        "APPS_RG_R4_GENERATION_MODE=legacy_full_resume",
+        "RETIRED_APPS_RG_R4_GENERATION_MODE",
         "--mock-judges",
         "apps_rg/runtime/dry_run/",
         "contract_harness/",
@@ -47,8 +47,9 @@ def test_canonical_modules_and_symbols_exist() -> None:
 
 def test_main_integrated_path_calls_dispatch_apps_rg_run() -> None:
     main = importlib.import_module("apps_rg.__main__")
-    src = inspect.getsource(main._run_with_args) if hasattr(main, "_run_with_args") else Path(main.__file__).read_text(encoding="utf-8")
+    src = inspect.getsource(main.main)
     assert "dispatch_apps_rg_run" in src
+    assert "run_whole_run_spine_harness" not in src
 
 
 def test_dispatch_apps_rg_run_delegates_to_canonical_dispatch() -> None:

@@ -12,7 +12,7 @@ from apps_rg.cache.r1b_derived_index import (
     lookup_r1b_via_derived_index,
     project_durable_to_derived_index,
 )
-from apps_rg.cache.r1b_uwg_receipt_contract import document_shim_core_gaps
+from apps_rg.cache.r1b_uwg_receipt_contract import document_r1b_uwg_core_receipt_gaps
 from apps_rg.cache.r1b_whole_run_preflight import execute_whole_run_r1b_preflight
 from apps_rg.cache.whole_run_entrypoint_preflight import PREFLIGHT_ORDER as ENTRY_PREFLIGHT_ORDER
 
@@ -121,7 +121,7 @@ def prove_r1b_index_lifecycle(
 def write_w10b_gap_carry_forward(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        **document_shim_core_gaps(),
+        **document_r1b_uwg_core_receipt_gaps(),
         "carry_forward_wave": "W11-W12",
         "apps_rg_sidecar_preserves_governance_refs": True,
         "derived_index_does_not_replace_sidecar": True,

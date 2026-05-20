@@ -31,7 +31,7 @@
     "apps_rg/cache/r1b_adapter.py",
     "apps_rg/cache/r1b_durable_write_guard.py",
     "apps_rg/cache/r1b_uwg_promotion.py",
-    "apps_rg/cache/r1b_uwg_gateway_shim.py",
+    "apps_rg/cache/r1b_uwg_promotion.py",
     "apps_rg/cache/__init__.py",
     "apps_rg/config/domain_contract/cache_profiles.yaml",
     "tools/apps_rg/emit_r1b_w7_fixtures.py",
@@ -68,5 +68,5 @@
     },
     {"cmd": "git diff HEAD -- agentic_core", "exit_code": 0, "output": "empty"}
   ],
-  "uwg_gateway_shim_note": "AppsRgR1BUwgGateway patches UWGCommitReceipt l5_certification_ref until core propagates field"
+  "uwg_promotion_gateway_note": "R1bUwgPromotionGateway enriches UWGCommitReceipt l5_certification_ref until core propagates field"
 }

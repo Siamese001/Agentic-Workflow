@@ -30,7 +30,7 @@ def test_w10b_fixtures_present() -> None:
         "blocked_missing_l5",
         "blocked_missing_gate_verdict",
         "receipt_field_parity_matrix",
-        "shim_vs_core_gap",
+        "r1b_uwg_core_receipt_gap",
         "file_backed_non_durable_manifest",
     ):
         assert (FIXTURES / f"{name}.json").is_file(), name
@@ -56,7 +56,7 @@ def test_blocked_missing_gate_fixture() -> None:
     assert "gate_verdict_refs" in payload["missing_contract_fields"]
 
 
-def test_shim_core_gap_fixture() -> None:
-    payload = json.loads((FIXTURES / "shim_vs_core_gap.json").read_text(encoding="utf-8"))
+def test_core_receipt_gap_fixture() -> None:
+    payload = json.loads((FIXTURES / "r1b_uwg_core_receipt_gap.json").read_text(encoding="utf-8"))
     assert "gate_verdict_refs" in payload["fields_core_cannot_carry"]
-    assert "l5_certification_ref" in payload["fields_shim_patches"]
+    assert "l5_certification_ref" in payload["fields_promotion_gateway_enriches"]

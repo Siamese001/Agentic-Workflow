@@ -40,7 +40,7 @@ from typing import Any
 
 _BYPASS = os.environ.get("APPS_LIC_EXIT_W7_BYPASS", "").strip() == "1"
 _FAIL_CLOSED = os.environ.get("APPS_LIC_EXIT_W7_FAIL_CLOSED", "").strip() == "1"
-_EXIT_MODULE = "agentic_core.runtime.exit.apps_lic_exit_binding"
+_EXIT_MODULE = "apps_lic.runtime.bindings.exit_binding"
 
 _REPORT_PATH = Path("artifacts/ci/apps_lic_exit_w7_gate.json")
 
@@ -103,7 +103,7 @@ def _check_returns_x3disposition() -> list[str]:
     violations: list[str] = []
     try:
         from agentic_core.runtime.contracts.x3_disposition import X3Disposition
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -119,7 +119,7 @@ def _check_returns_x3disposition() -> list[str]:
 def _check_eval_score_is_none() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -135,7 +135,7 @@ def _check_eval_score_is_none() -> list[str]:
 def _check_completed_l2_succeeds() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="completed")
         result = exit_finalize_apps_lic(l2)
@@ -153,7 +153,7 @@ def _check_completed_l2_succeeds() -> list[str]:
 def _check_failed_l2_denied() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="failed", generated_content="")
         result = exit_finalize_apps_lic(l2)
@@ -169,7 +169,7 @@ def _check_failed_l2_denied() -> list[str]:
 def _check_cert_ref() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -183,7 +183,7 @@ def _check_cert_ref() -> list[str]:
 def _check_gate_verdict_refs() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -203,7 +203,7 @@ def _check_gate_verdict_refs() -> list[str]:
 def _check_sealed_l2_digest() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(compilation_hash="deadbeef1234")
         result = exit_finalize_apps_lic(l2)
@@ -243,7 +243,7 @@ def _check_source_forbidden_patterns() -> list[str]:
 def _check_app_id() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -259,7 +259,7 @@ def _check_app_id() -> list[str]:
 def _check_proposed_state_diff_inert() -> list[str]:
     violations: list[str] = []
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         exit_finalize_apps_lic(l2)

@@ -64,6 +64,7 @@ _CORRELATION_METHOD_RUN_LINKS = "integrated_RUN_LINKS_lane_bundle_refs"
 _CORRELATION_METHOD_BUNDLE_INDEX = "integrated_RUN_BUNDLE_INDEX_entry"
 _CORRELATION_METHOD_CORPUS = "integrated_top_level_json_corpus"
 _CORRELATION_METHOD_PAYLOAD = "section_runtime_payload_correlation_id"
+_CORRELATION_METHOD_ANCESTOR_CLI = "modular_r4_ancestor_cli_run_dir"
 
 _L7_PRODUCER_HINTS: dict[str, str] = {
     "agentic_core_how_trace.json": "agentic_core.L7_auditability.how_trace.how_trace_builder",
@@ -399,6 +400,14 @@ def discover_integrated_correlation(
     raw_env = os.environ.get(CORRELATED_CLI_RUN_ENV, "").strip()
     if raw_env:
         env_invalid = f"{CORRELATED_CLI_RUN_ENV}={raw_env!r} did not resolve to cli_* directory"
+
+    from apps_rg.runtime.integrated_lane_evidence_packaging import (
+        discover_integrated_cli_run_by_ancestor,
+    )
+
+    hit, method = discover_integrated_cli_run_by_ancestor(repo_root, artifact_dir)
+    if hit is not None:
+        return IntegratedCorrelationResult(hit, method, None)
 
     if section_root:
         hit, method = _discover_by_section_manifest(repo_root, artifact_dir)
@@ -1005,8 +1014,26 @@ def build_evidence_package_index(
         ),
         "durable_semantic_cache_proof_present": bool(
             (semantic_cache_quarantine or {}).get("uwg_assessment", {}).get(
-                "durable_proof_chain_complete"
+                "governed_chroma_refresh_proven"
             )
+        ),
+        "read_surface_refresh_complete": bool(
+            (semantic_cache_quarantine or {}).get("uwg_assessment", {}).get(
+                "read_surface_refresh_complete"
+            )
+            or (r1b_governed_receipt_chain or {}).get("read_surface_refresh_complete")
+        ),
+        "chroma_projection_complete": bool(
+            (semantic_cache_quarantine or {}).get("uwg_assessment", {}).get(
+                "chroma_projection_complete"
+            )
+            or (r1b_governed_receipt_chain or {}).get("chroma_projection_complete")
+        ),
+        "durable_vector_persistence_proven": bool(
+            (semantic_cache_quarantine or {}).get("uwg_assessment", {}).get(
+                "durable_vector_persistence_proven"
+            )
+            or (r1b_governed_receipt_chain or {}).get("durable_vector_persistence_proven")
         ),
         "r1b_uwg_chain_core_complete": bool(
             (semantic_cache_quarantine or {}).get("uwg_assessment", {}).get(
@@ -1018,6 +1045,8 @@ def build_evidence_package_index(
         "imported_core_evidence_snapshots": imported_snapshots,
         "missing_core_surfaces": sorted(set(missing_core)),
         "proof_classification": binding_manifest.get("proof_classification"),
+        "shadow_path_quarantine": binding_manifest.get("shadow_path_quarantine") or {},
+        "shadow_paths_present": bool(binding_manifest.get("shadow_paths_present")),
         "product_certification_impact": binding_manifest.get("product_certification_impact"),
         "explicit_non_claims": list(
             dict.fromkeys(
@@ -1028,6 +1057,12 @@ def build_evidence_package_index(
                     "no semantic cache persistence claimed",
                     "no Chroma persistence claimed",
                     "no 99 RuntimeProofBundle claimed",
+                    *(
+                        (binding_manifest.get("shadow_path_quarantine") or {}).get(
+                            "explicit_non_claims"
+                        )
+                        or []
+                    ),
                     *(
                         sc_slots_doc.get("explicit_non_claims") or []
                     ),

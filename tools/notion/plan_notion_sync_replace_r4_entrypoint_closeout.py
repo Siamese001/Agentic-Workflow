@@ -24,7 +24,7 @@ SUMMARY = (
 AI_SUMMARY = """- STATUS: PASS (2026-05-20)
 - Waves W1-W5 DONE: shadow hard-delete, ops surfaces, audit, spine+cache evidence, repoint+delete
 - NEW: integrated_single_action_spine_run.py, cache_preflight_evidence.py
-- DELETED: integrated_r4_deterministic_pipeline_run.py
+- DELETED: integrated_single_action_spine_run.py
 - Tests: 121 passed (spine, cache, product proof, outside-main, L7)
 - Receipt: docs/reports/apps_rg/replace_r4_entrypoint_delete_old_path_closeout_receipt.md
 - NON-CLAIM: live whole-run Fort Knox / product certification"""

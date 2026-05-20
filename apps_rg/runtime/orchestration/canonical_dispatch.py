@@ -263,37 +263,32 @@ def _run_executive_summary_lane_from_cli(
             "terminal_r5": False,
         }
 
-    jd_legacy = str(jd).strip()
-    jd_ref = str(job_description_ref).strip()
-    jd_txt = str(job_description_text).strip()
-    if jd_legacy and not jd_ref and not jd_txt:
-        p = Path(jd_legacy)
-        if p.is_file():
-            jd_ref = jd_legacy
-        else:
-            jd_txt = jd_legacy
-
-    from apps_rg.runtime.briefing_resolution import BriefingResolutionError, resolve_briefing_for_lanes
-    from apps_rg.runtime.jd_resolution import JdResolutionError, resolve_jd_for_lanes
-
-    try:
-        jd_resolved = resolve_jd_for_lanes(
-            job_description_ref=jd_ref or None,
-            job_description_text=jd_txt or None,
-            target_company=tc,
-            target_role=tr,
-            require_run_specific=True,
-        )
-        brief_resolved = resolve_briefing_for_lanes(
-            briefing_artifact_ref=str(manual_brief).strip() or None,
-            require_run_specific=True,
-        )
-    except (JdResolutionError, BriefingResolutionError) as exc:
+    raw_request = build_raw_request_for_r4(
+        target_company=tc,
+        target_role=tr,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    if not jd_text:
+        jd_text = lane.JD_TEXT_DEFAULT
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
         return {
             "exit_status": "error",
             "execution_status": "failed",
             "outcome_authorized": False,
-            "error": str(exc),
+            "error": (
+                "executive_summary requires run-specific briefing material "
+                "(--manual-brief path/URI or inline text)"
+            ),
             "x3_disposition": "",
             "fault": "missing_targeting_inputs",
             "artifact_dir": "",
@@ -302,9 +297,6 @@ def _run_executive_summary_lane_from_cli(
             "l7_how_trace_emitted": False,
             "terminal_r5": False,
         }
-
-    jd_text = jd_resolved.description
-    briefing = brief_resolved.text
 
     import os
 
@@ -345,19 +337,6 @@ def _run_executive_summary_lane_from_cli(
             "l7_how_trace_emitted": False,
             "terminal_r5": False,
         }
-
-    raw_request = build_raw_request_for_r4(
-        target_company=tc,
-        target_role=tr,
-        target_level=target_level,
-        jd=jd,
-        job_description_ref=job_description_ref,
-        job_description_text=job_description_text,
-        manual_brief=manual_brief,
-        resume_path=resume_path,
-        source_resume_text=source_resume_text,
-        generation_mode=generation_mode,
-    )
 
     eff_prov = _effective_lane_provider(lane_provider)
     from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source

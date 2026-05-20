@@ -51,18 +51,18 @@ from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, 
 # apps_rg.runtime.sections.competencies_lane (selected-section entry via python -m apps_rg --section competencies).
 LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
     "apps_rg.runtime.sections.headline_lane",
-    "apps_rg.runtime.sections.executive_summary_lane_api",
-    "apps_rg.runtime.sections.unify_bullets_lane_api",
-    "apps_rg.runtime.sections.unify_narrative_lane_api",
+    "apps_rg.runtime.sections.executive_summary_lane",
+    "apps_rg.runtime.sections.unify_bullets_lane",
+    "apps_rg.runtime.sections.unify_narrative_lane",
     "apps_rg.runtime.sections.ibm_bullets_lane",
-    "apps_rg.runtime.sections.ibm_narrative_lane_api",
-    "apps_rg.runtime.sections.competencies_lane_api",
+    "apps_rg.runtime.sections.ibm_narrative_lane",
+    "apps_rg.runtime.sections.competencies_lane",
 )
 
 
 PHASE0_PATH_INVENTORY_NOTES: dict[str, Any] = {
     "subprocess_cwd": (
-        "orchestrate_full_resume.run_orchestration invokes run_canonical_apps_rg_from_cli_primitives per section; "
+        "modular Phase1 invokes python -m apps_rg --section per lane; offline batch is tests.helpers.offline_lane_orchestration only; "
         "lane order matches GENERATED_LANES."
     ),
     "runtime_proofs_strings": [
@@ -121,7 +121,15 @@ def _phase0_stub_lane_record(lane: str, i: int) -> dict[str, Any]:
     }
 
 
-def _phase1_missing_lane_record(lane: str, i: int, sc_req: int, sc_exe: int, prof: str) -> dict[str, Any]:
+def _phase1_missing_lane_record(
+    lane: str,
+    i: int,
+    sc_req: int,
+    sc_exe: int,
+    prof: str,
+    *,
+    decisive_reason_code: str = "PHASE1_NO_RUN_DIR",
+) -> dict[str, Any]:
     return {
         "section_lane": lane,
         "provider_call_attempted": False,
@@ -139,10 +147,26 @@ def _phase1_missing_lane_record(lane: str, i: int, sc_req: int, sc_exe: int, pro
         "generation_status": "MISSING_LANE_RUN",
         "parsed_output_shape": "none",
         "section_schema_validation_status": "missing",
-        "decisive_reason_code": "PHASE1_NO_RUN_DIR",
+        "decisive_reason_code": str(decisive_reason_code or "PHASE1_NO_RUN_DIR"),
         "output_ref": "",
         "reasoning_execution_receipt_ref": None,
     }
+
+
+def _phase1_lane_dispatch_status(result: dict[str, Any] | None) -> str:
+    """Summarize in-process lane dispatch for ``phase1_lane_inventory``."""
+    res = result if isinstance(result, dict) else {}
+    fault = str(res.get("fault") or "").strip()
+    exit_st = str(res.get("exit_status") or "").strip().lower()
+    if fault == "temperature_range":
+        return "exit_2"
+    if fault:
+        return f"dispatch_error:{fault}"
+    if exit_st == "error":
+        return "dispatch_error:lane_exit_error"
+    if exit_st == "success":
+        return "ok"
+    return f"dispatch_status:{exit_st or 'unknown'}"
 
 
 def _minimal_judge_blob() -> dict[str, Any]:
@@ -401,6 +425,7 @@ def run_modular_resume_generation(
             targeting=lane_targeting,
         )
         lane_run_dirs: dict[str, Path] = {}
+        lane_dispatch_results: dict[str, dict[str, Any]] = {}
         _ = lane_argv  # argv shape retained for phase1_lane_inventory metadata
         lane_mock_j_for_phase1 = False
         tc = str(lane_targeting.target_company or "") if lane_targeting is not None else ""
@@ -408,7 +433,15 @@ def run_modular_resume_generation(
         jd_txt = str(lane_targeting.jd_text or "") if lane_targeting is not None else ""
         br_txt = str(lane_targeting.briefing_text or "") if lane_targeting is not None else ""
         x1d_eff = resolve_cli_x1d_judges(None)
+        prev_whole_run_env = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE")
+        prev_corr_env = os.environ.get("APPS_RG_CORRELATED_CLI_RUN")
+        os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
+        os.environ["APPS_RG_CORRELATED_CLI_RUN"] = _rel_under_repo(art, repo)
         try:
+            from apps_rg.runtime.integrated_lane_evidence_packaging import (
+                emit_integrated_lane_pre_run_failure,
+            )
+
             for lane in GENERATED_LANES:
                 try:
                     result = run_canonical_apps_rg_from_cli_primitives(
@@ -429,12 +462,11 @@ def run_modular_resume_generation(
                         lane_x1d_judges=x1d_eff,
                         lane_mock_judges=lane_mock_j_for_phase1,
                     )
-                    if (result or {}).get("fault") == "temperature_range":
-                        lane_exec_status[lane] = "exit_2"
-                    else:
-                        lane_exec_status[lane] = "ok"
+                    lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
+                    lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
                 except Exception as exc:
                     lane_exec_status[lane] = f"error:{exc!s}"
+                    lane_dispatch_results[lane] = {"fault": "exception", "error": str(exc)}
             for lane in GENERATED_LANES:
                 try:
                     lane_run_dirs[lane] = resolve_latest_lane_run_dir(
@@ -445,6 +477,20 @@ def run_modular_resume_generation(
                     )
                 except FileNotFoundError as exc:
                     lane_exec_status[lane] = lane_exec_status.get(lane, "") + f"|missing_pointer:{exc}"
+                    dispatch = lane_dispatch_results.get(lane) or {}
+                    fault = str(dispatch.get("fault") or "").strip()
+                    blocker = fault or "PHASE1_NO_RUN_DIR"
+                    if not fault and str(dispatch.get("exit_status") or "").lower() == "error":
+                        blocker = "LANE_DISPATCH_EXIT_ERROR"
+                    emit_integrated_lane_pre_run_failure(
+                        sections_root=sections_root,
+                        integrated_dir=art,
+                        repo_root=repo,
+                        lane_id=lane,
+                        blocker=blocker,
+                        dispatch_result=dispatch,
+                        lane_exec_status=str(lane_exec_status.get(lane) or ""),
+                    )
 
             inv_extra: dict[str, Any] = {
                 "run_id": run_id,
@@ -502,8 +548,25 @@ def run_modular_resume_generation(
             for i, lane in enumerate(GENERATED_LANES):
                 rd = lane_run_dirs.get(lane)
                 if rd is None or not rd.is_dir():
+                    pre_run = None
+                    try:
+                        from apps_rg.runtime.integrated_lane_evidence_packaging import (
+                            load_integrated_lane_pre_run_failure,
+                        )
+
+                        pre_run = load_integrated_lane_pre_run_failure(art, lane)
+                    except ImportError:
+                        pre_run = None
+                    decisive = str((pre_run or {}).get("blocker") or "PHASE1_NO_RUN_DIR")
                     section_call_records.append(
-                        _phase1_missing_lane_record(lane, i, sc_req, sc_exe, prof),
+                        _phase1_missing_lane_record(
+                            lane,
+                            i,
+                            sc_req,
+                            sc_exe,
+                            prof,
+                            decisive_reason_code=decisive,
+                        ),
                     )
                     continue
                 section_call_records.append(
@@ -519,6 +582,14 @@ def run_modular_resume_generation(
                 )
             provider_call_total = sum(1 for r in section_call_records if r.get("provider_call_attempted") is True)
         finally:
+            if prev_whole_run_env is None:
+                os.environ.pop("APPS_RG_WHOLE_RUN_ENVELOPE", None)
+            else:
+                os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = prev_whole_run_env
+            if prev_corr_env is None:
+                os.environ.pop("APPS_RG_CORRELATED_CLI_RUN", None)
+            else:
+                os.environ["APPS_RG_CORRELATED_CLI_RUN"] = prev_corr_env
             if prev_env is None:
                 os.environ.pop(MODULAR_R4_SECTIONS_ROOT_ENV, None)
             else:
@@ -706,6 +777,18 @@ def run_modular_resume_generation(
         section_call_records,
         enforce_product_lane_requirements=bool(profile.phase1_invoke_real_lanes),
     )
+    if profile.phase1_invoke_real_lanes:
+        from apps_rg.runtime.integrated_lane_evidence_packaging import (
+            finalize_integrated_run_lane_evidence,
+        )
+
+        finalize_integrated_run_lane_evidence(
+            repo,
+            art,
+            correlation_id=run_id,
+            section_call_records=section_call_records,
+            recipe_lane_policy=recipe_lane_policy,
+        )
     if profile.phase1_invoke_real_lanes and recipe_lane_policy.get("fatal_lane_failures"):
         decisive = "FAIL"
         failure = "fatal_lane_recipe_policy:" + "; ".join(

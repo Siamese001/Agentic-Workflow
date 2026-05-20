@@ -859,9 +859,8 @@ def main():
             "WAVE-MARKER Wave marker emission completeness (advisory)",
             "ops_scripts/ci/check_wave_marker_emission.py",
         ),
-        # RG-W3 — R1B semantic cache warm-up smoke gate.
-        # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
-        # and CLI --dry-run --top 3 exits 0 in < 30 s.
+        # RG-W3 — Retired warm_r1b_cache shadow runner must stay absent.
+        # Canonical cache proof is via python -m apps_rg + contract tests only.
         # Advisory by default; flip fail-closed via R1B_WARMUP_SMOKE_FAIL_CLOSED=1.
         # Plan: apps-rg-cache-followon-deferred-c7d3a1 W1.
         (

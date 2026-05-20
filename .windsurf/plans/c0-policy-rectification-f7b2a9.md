@@ -144,7 +144,7 @@ if route.c0_policy.c0_mode in ("BYPASS_CACHE_RETURN", "BYPASS_FALLBACK"):
 
 ## 7. Fix R4 Entrypoint Hardcoded Bypass
 
-**File**: `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py`
+**File**: `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py`
 
 **Current Issue**:
 ```python
@@ -266,7 +266,7 @@ Search for and remove/quarantine:
 | `agentic_core/L0_routing/c0_retrieval/route_contract.py` | Add `C0Policy` dataclass and `c0_policy` field to `RouteContract` |
 | `agentic_core/L0_routing/c0_retrieval/preflight.py` | Remove route-prefix checks, obey `RouteContract.c0_policy` |
 | `agentic_core/L1_cognition/c0_context/preflight.py` | Remove runtime decisions, emit advisory fields only |
-| `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | Remove hardcoded bypass, use `c0_policy` |
+| `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | Remove hardcoded bypass, use `c0_policy` |
 | `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | Review and apply same pattern |
 | `agentic_core/runtime/contracts/c0_bypass_receipt.py` | Ensure typed bypass reasons |
 | `agentic_core/prompt_governance/prompt_assembly/pa4_validation.py` | Enforce evidence/bypass receipt requirement |

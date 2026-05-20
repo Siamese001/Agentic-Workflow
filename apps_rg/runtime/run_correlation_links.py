@@ -284,6 +284,7 @@ def build_run_links_document(
     integrated_run_id: str,
     correlation_id: str | None,
     notes: str | None = None,
+    lane_bundle_refs_override: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build RUN_LINKS payload (repo-relative POSIX only)."""
     corpus = _gather_integrated_corpus(integrated_dir)
@@ -293,6 +294,18 @@ def build_run_links_document(
 
     bundle_ref = integrated_dir / RUN_BUNDLE_INDEX_FILENAME
     integrated_bundle_index_ref = repo_relative_posix(repo_root, bundle_ref)
+
+    modular_root = integrated_dir / "modular_r4" / "sections"
+    if lane_bundle_refs_override is not None:
+        lane_refs = lane_bundle_refs_override
+    elif modular_root.is_dir():
+        from apps_rg.runtime.integrated_lane_evidence_packaging import (
+            discover_integrated_modular_lane_bundle_refs,
+        )
+
+        lane_refs = discover_integrated_modular_lane_bundle_refs(repo_root, integrated_dir)
+    else:
+        lane_refs = discover_lane_bundle_refs(repo_root, corpus, correlation_id=cid)
 
     doc: dict[str, Any] = {
         "schema_version": _SCHEMA_VERSION,
@@ -304,12 +317,18 @@ def build_run_links_document(
         "log_namespace": log_ns,
         "log_discovery": build_log_discovery_metadata(repo_root),
         "integrated_bundle_index_ref": integrated_bundle_index_ref,
-        "lane_bundle_refs": discover_lane_bundle_refs(repo_root, corpus, correlation_id=cid),
+        "lane_bundle_refs": lane_refs,
         "aggregate_refs": discover_aggregate_refs(repo_root, corpus),
         "modular_sections_root": build_modular_sections_root_attachment(repo_root),
     }
     if notes:
         doc["notes"] = notes
+    if modular_root.is_dir():
+        doc["lane_bundle_refs_source"] = (
+            "modular_r4_sections_tree_v1"
+            if lane_bundle_refs_override is not None
+            else "modular_r4_sections_tree_auto"
+        )
     return doc
 
 
@@ -413,7 +432,13 @@ def assert_run_links_document_shape(doc: Mapping[str, Any]) -> None:
     for i, row in enumerate(lanes):
         if not isinstance(row, Mapping):
             raise ValueError(f"lane_bundle_refs[{i}] invalid")
-        for fk in ("lane", "proof_mode", "run_id", "bundle_index_ref", "root_path", "exists", "producer"):
+        status = str(row.get("status") or "EXECUTED")
+        if status == "NOT_RUN":
+            for fk in ("lane", "status", "missing_reason", "producer"):
+                if fk not in row:
+                    raise ValueError(f"lane_bundle_refs[{i}] NOT_RUN missing {fk}")
+            continue
+        for fk in ("lane", "proof_mode", "run_id", "root_path", "exists", "producer"):
             if fk not in row:
                 raise ValueError(f"lane_bundle_refs[{i}] missing {fk}")
         if row["proof_mode"] not in ("real", "mock", "unknown"):

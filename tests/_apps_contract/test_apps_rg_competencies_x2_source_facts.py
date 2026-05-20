@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.runtime.sections.competencies_lane_api import (
+from apps_rg.runtime.sections.competencies_lane_runtime import (
     build_mock_output,
     build_resume_support_blob,
     build_selected_fact_plan,

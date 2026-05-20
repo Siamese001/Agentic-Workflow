@@ -16,7 +16,7 @@ from apps_rg.cache.r1b_derived_index import (
     load_derived_index_entry,
     project_durable_to_derived_index,
 )
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_uwg_promotion import promote_and_project_r1b_cache
 from tests.unit.apps_rg.test_r1b_uwg_durable_persistence_w10 import _candidate

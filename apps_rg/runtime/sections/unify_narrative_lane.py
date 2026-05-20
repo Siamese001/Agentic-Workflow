@@ -9,6 +9,12 @@ under ``artifacts/apps_rg/runtime_proofs/unify_narrative`` (same artifact patter
 """
 from __future__ import annotations
 
+if __name__ == "__main__":
+    raise ImportError(
+        "This module is not an operator CLI entrypoint. "
+        "Use: python -m apps_rg --section unify_narrative"
+    )
+
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_DECLARED_TEMPORARY_SLICE,
     PLAN_SLUG,

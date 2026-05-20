@@ -27,7 +27,7 @@ Retire the following six legacy entrypoints effective 90 days from ADR acceptanc
 1. `integrated_exact_cache_run.py` → Successor: `integrated_r3_grounded_read_run.py` (L7-compliant)
 2. `integrated_fallback_run.py` → Successor: `integrated_safe_reuse_run.py` (L7-compliant)
 3. `integrated_managed_workflow_real_run.py` → Successor: `integrated_managed_workflow_run.py` (L7-compliant)
-4. `integrated_single_action_run.py` → Successor: `integrated_r4_deterministic_pipeline_run.py` (L7-compliant)
+4. `integrated_single_action_run.py` → Successor: `integrated_single_action_spine_run.py` (L7-compliant)
 5. `integrated_uwg_block_run.py` → Successor: Use UWG validation pipeline directly (L7-compliant)
 6. `integrated_uwg_commit_run.py` → Successor: Use UWG commit pipeline directly (L7-compliant)
 

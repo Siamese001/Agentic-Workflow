@@ -1,9 +1,6 @@
-"""Contract: ``GenerateResumeStep`` modular vs legacy (``APPS_RG_R4_GENERATION_MODE``).
+"""Contract: ``GenerateResumeStep`` modular-only (``APPS_RG_R4_GENERATION_MODE``).
 
-Default when env is **unset** is ``modular_section_lanes``. ``legacy_full_resume`` is explicit rollback.
-
-Contract suite autouse pins ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for envelope stubs;
-tests below call ``delenv`` when asserting default modular resolution.
+Default when env is **unset** is ``modular_section_lanes``. ``legacy_full_resume`` is retired.
 """
 
 from __future__ import annotations
@@ -19,8 +16,8 @@ import pytest
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 from apps_rg.l2_recipe.r4_generation_mode import (
     ENV_APPS_RG_R4_GENERATION_MODE,
-    MODE_LEGACY_FULL_RESUME,
     MODE_MODULAR_SECTION_LANES,
+    RETIRED_MODE_LEGACY_FULL_RESUME,
     resolve_apps_rg_r4_generation_mode,
 )
 from apps_rg.l2_recipe.r4_generation_route import R4_RECIPE_GENERATION_EXECUTION_STYLE
@@ -128,24 +125,11 @@ def test_default_mode_calls_modular_not_envelope(mock_modular, mock_env, tmp_pat
     assert "generated_resume" in out
 
 
-@mock.patch(
-    "apps_rg.runtime.bindings.l2_envelope_adapter.run_apps_rg_l2_envelope",
-    autospec=True,
-)
-@mock.patch(
-    "apps_rg.l2_recipe.modular_resume_generation.run_modular_resume_generation",
-    autospec=True,
-)
-def test_legacy_explicit_calls_envelope(mock_modular, mock_env, tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv(ENV_APPS_RG_R4_GENERATION_MODE, MODE_LEGACY_FULL_RESUME)
-    mock_env.return_value = SimpleNamespace(
-        proposed_state_diff={"generated_resume": _valid_rg_output(find_repo_root())},
-        execution_status="completed",
-    )
+def test_legacy_env_raises_before_step(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(ENV_APPS_RG_R4_GENERATION_MODE, RETIRED_MODE_LEGACY_FULL_RESUME)
     step = GenerateResumeStep()
-    step(_pa_context(artifact_dir=str(tmp_path)))
-    mock_env.assert_called_once()
-    mock_modular.assert_not_called()
+    with pytest.raises(RuntimeError, match="RETIRED_APPS_RG_R4_GENERATION_MODE"):
+        step(_pa_context(artifact_dir=str(find_repo_root())))
 
 
 @mock.patch(

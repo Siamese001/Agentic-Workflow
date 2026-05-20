@@ -32,7 +32,6 @@ from apps_rg.l2_recipe.resume_artifact_gate import (
     verify_full_resume_artifact_bundle,
 )
 from apps_rg.l2_recipe.r4_generation_mode import (
-    MODE_LEGACY_FULL_RESUME,
     MODE_MODULAR_SECTION_LANES,
     resolve_apps_rg_modular_lane_provider,
     resolve_apps_rg_r4_generation_mode,
@@ -153,90 +152,6 @@ class GenerateResumeStep(BaseRecipeStep):
     REQUIRES_PA: bool = True
     STEP_NAME: str = "generate_resume"
 
-    def _legacy_envelope_generation(self, context: dict[str, Any]) -> dict[str, Any]:
-        """Monolithic full-résumé path (``run_apps_rg_l2_envelope``)."""
-        from apps_rg.runtime.bindings.l2_envelope_adapter import run_apps_rg_l2_envelope
-
-        pa = (
-            context.get("compiled_prompt_artifact")
-            or context.get("pa_artifact")
-            or context.get("prompt_artifact")
-        )
-        route = context.get("route_contract") or context.get("route")
-        validated = context.get("validated_request") or context
-        pa_effective = pa
-        if pa is not None and not str(getattr(pa, "request_id", "") or "").strip():
-            from apps_rg.l2_recipe.pa_to_core_cpa import adapt_apps_rg_cpa_for_l2_envelope
-
-            pa_effective = adapt_apps_rg_cpa_for_l2_envelope(pa, context)
-        art_dir = str(context.get("artifact_dir") or "").strip() or None
-        result = run_apps_rg_l2_envelope(
-            pa_effective,
-            route,
-            validated,
-            resume_artifact_contract_mode=context.get("resume_artifact_contract_mode"),
-            artifact_dir=art_dir,
-        )
-        exec_st = str(getattr(result, "execution_status", "") or "").strip().lower()
-        diff = getattr(result, "proposed_state_diff", None) or {}
-        if isinstance(diff, dict) and diff.get("provider_resolution_error"):
-            raise RuntimeError(
-                f"BLOCKED_PROVIDER_LANE: {diff.get('decisive_reason', 'provider profile unresolved')}"
-            )
-        if isinstance(diff, dict) and diff.get("provider_authenticity_block"):
-            raise RuntimeError(
-                f"BLOCKED_STUB_PROVIDER: {diff.get('decisive_reason', 'stub provider forbidden')}"
-            )
-        gr = generated_resume_from_sealed_l2(result)
-        shape_rep = classify_resume_payload(gr)
-        mode_contract = normalize_resume_artifact_contract_mode(
-            context.get("resume_artifact_contract_mode")
-        )
-
-        if mode_contract in (MODE_STUB_RECEIPT, MODE_DIAGNOSTIC):
-            _write_stub_or_diagnostic_snapshot(context, gr, shape_rep, mode_contract)
-            raise RuntimeError(
-                "STUB_RECEIPT: diagnostic/stub contract mode — snapshot emitted under "
-                "outputs/stub_receipt_diagnostic.json; not eligible for full résumé "
-                "authorization (full_resume_generated remains false)."
-            )
-
-        if exec_st != "completed":
-            if isinstance(diff, dict) and diff.get("prompt_budget_block"):
-                code = str(diff.get("e3_decisive_reason_code") or "E3_PROMPT_BUDGET")
-                msg = str(diff.get("e3_error_summary") or "")
-                raise RuntimeError(f"FAILED_PROVIDER: {code}: {msg}".strip())
-            if isinstance(diff, dict) and diff.get("generation_status") == FAILED_PROVIDER:
-                pe = diff.get("provider_error")
-                msg = ""
-                if isinstance(pe, dict):
-                    msg = str(pe.get("message") or "")
-                raise RuntimeError(
-                    f"FAILED_PROVIDER: {msg or f'L2 envelope execution_status={exec_st!r}'}"
-                )
-            raise RuntimeError(
-                f"FAILED_PROVIDER: L2 envelope execution_status={exec_st!r} "
-                "(expected 'completed' for full résumé generation)"
-            )
-        if shape_rep.generation_status != STRUCTURED_RESUME_OK:
-            raise RuntimeError(
-                f"{shape_rep.generation_status}: full résumé artifact contract requires "
-                f"{STRUCTURED_RESUME_OK}; resume_shape={shape_rep.resume_shape!r}"
-            )
-
-        out: dict[str, Any] = {
-            "generated": result,
-            "status": "ok",
-            "step": self.STEP_NAME,
-            "generation_status": shape_rep.generation_status,
-            "full_resume_generated": shape_rep.full_resume_generated,
-            "resume_shape": shape_rep.resume_shape,
-            "apps_rg_r4_generation_mode": MODE_LEGACY_FULL_RESUME,
-        }
-        if gr is not None:
-            out["generated_resume"] = gr
-        return out
-
     def _modular_section_lanes_generation(self, context: dict[str, Any]) -> dict[str, Any]:
         """Seven-lane modular path (no ``run_apps_rg_l2_envelope``)."""
         from apps_rg.l2_recipe.modular_lane_adapter import modular_lane_targeting_from_recipe_context
@@ -356,20 +271,16 @@ class GenerateResumeStep(BaseRecipeStep):
         # PA guard check after attempting compilation
         self._check_pa_guard(context)
 
-        gen_mode = resolve_apps_rg_r4_generation_mode()
+        _ = resolve_apps_rg_r4_generation_mode()
         contract_mode = normalize_resume_artifact_contract_mode(
             context.get("resume_artifact_contract_mode"),
         )
-        if gen_mode == MODE_MODULAR_SECTION_LANES:
-            if contract_mode in (MODE_STUB_RECEIPT, MODE_DIAGNOSTIC):
-                raise RuntimeError(
-                    "MODULAR_MODE_INCOMPATIBLE: APPS_RG_R4_GENERATION_MODE=modular_section_lanes "
-                    "cannot be used with resume_artifact_contract_mode stub_receipt/diagnostic; "
-                    "use legacy_full_resume for diagnostic runs."
-                )
-            return self._modular_section_lanes_generation(context)
-
-        return self._legacy_envelope_generation(context)
+        if contract_mode in (MODE_STUB_RECEIPT, MODE_DIAGNOSTIC):
+            raise RuntimeError(
+                "MODULAR_MODE_INCOMPATIBLE: modular_section_lanes generation cannot be used "
+                "with resume_artifact_contract_mode stub_receipt/diagnostic."
+            )
+        return self._modular_section_lanes_generation(context)
 
 
 class NarrativePassStep(BaseRecipeStep):

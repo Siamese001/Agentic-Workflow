@@ -9,7 +9,8 @@ import pytest
 from apps_rg.runtime.c03_graphrag_bound import build_executive_summary_c03_graphrag_bound
 from apps_rg.runtime.one_spine_inventory import build_one_spine_section_path_inventory
 from apps_rg.runtime.section_spine_terminology import (
-    BINDING_KIND_SECTION_GRAPH_SHIM,
+    BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT,
+    BINDING_KIND_SECTION_C03_GRAPH_BINDING,
     CANONICAL_SPINE_CHAIN,
     enrich_section_graph_binding_doc,
     is_section_graph_binding_doc,
@@ -30,7 +31,7 @@ def test_inventory_two_paths_and_canonical_target():
     assert inv["path_b_canonical_r4"]["dispatch"].endswith("run_integrated_single_action_spine")
 
 
-def test_section_graph_binding_shim_not_spine_fec():
+def test_section_c03_graph_binding_not_spine_fec():
     doc = build_executive_summary_c03_graphrag_bound(
         graph={"graph_edges": [], "graph_metadata": {}},
         graph_ref="apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
@@ -38,7 +39,11 @@ def test_section_graph_binding_shim_not_spine_fec():
         selected_fact_ids=["fact_a"],
     )
     assert is_section_graph_binding_doc(doc)
-    assert doc["binding_kind"] == BINDING_KIND_SECTION_GRAPH_SHIM
+    assert doc["binding_kind"] == BINDING_KIND_SECTION_C03_GRAPH_BINDING
+    assert doc["binding_classification"] == BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT
+    assert doc["is_full_c0_3_graphrag"] is False
+    assert doc["has_route_bounds"] is False
+    assert doc["has_acl_bounds"] is False
     assert doc["canonical_contract_claims"]["FinalEvidenceContract"] is False
     snap = doc["final_evidence_contract_snapshot"]
     assert snap.get("fec_shape_only") is True
@@ -92,7 +97,7 @@ def test_enrich_idempotent():
     base = {"schema_version": "c03_graphrag_bound_v1"}
     once = enrich_section_graph_binding_doc(base)
     twice = enrich_section_graph_binding_doc(once)
-    assert twice["binding_kind"] == BINDING_KIND_SECTION_GRAPH_SHIM
+    assert twice["binding_kind"] == BINDING_KIND_SECTION_C03_GRAPH_BINDING
 
 
 def test_section_lane_classification_explicit_non_claims():

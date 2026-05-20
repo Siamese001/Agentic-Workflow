@@ -170,7 +170,7 @@ def ingest_post_exit_from_run_dir(
         run_dir=run_dir,
     )
     if gateway is None:
-        from apps_rg.cache.r1b_uwg_gateway_shim import default_r1b_promotion_gateway
+        from apps_rg.cache.r1b_uwg_promotion import default_r1b_promotion_gateway
 
         gateway = default_r1b_promotion_gateway()
     outcome = promote_and_project_r1b_cache(

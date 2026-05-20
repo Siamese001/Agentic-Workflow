@@ -29,12 +29,12 @@ import pytest
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
-from agentic_core.runtime.u0.apps_lic_u0_adapter import apps_lic_u0_adapt
-from agentic_core.L1_cognition.apps_lic_l1_binding import (
+from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
+from apps_lic.runtime.bindings.l1_binding import (
     APPS_LIC_L1_CERT_REF,
     l1_plan_apps_lic,
 )
-from agentic_core.L0_routing.apps_lic_l0_binding import (
+from apps_lic.runtime.bindings.l0_binding import (
     APPS_LIC_L0_CERT_REF,
     APPS_LIC_DEFAULT_ROUTE_ID,
     APPS_LIC_COLD_ROUTE_ID,
@@ -336,7 +336,7 @@ class TestT3L1DoesNotReadEnvelopePayload:
 
     def test_l1_does_not_import_legacy_ingress_payload(self) -> None:
         """L1 binding must not import AppsLicIngressPayload from apps_lic.types."""
-        import agentic_core.L1_cognition.apps_lic_l1_binding as mod
+        import apps_lic.runtime.bindings.l1_binding as mod
         import inspect
         import_lines = _import_lines(inspect.getsource(mod))
         # L1 must not import the legacy apps_lic ingress payload contract
@@ -352,7 +352,7 @@ class TestT3L1DoesNotReadEnvelopePayload:
 class TestT4L0RouteChangesOnGrounding:
     def test_grounded_route_family(self) -> None:
         # FINAL L0 MODEL: grounded + fresh context signals -> R4_MANAGED_DRAFT
-        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
+        from apps_lic.runtime.bindings.l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
         # Inject freshness signals directly via task_spec override (bypasses U0 Pydantic)
         task_fresh = {
             **_make_l1().task_spec,
@@ -366,7 +366,7 @@ class TestT4L0RouteChangesOnGrounding:
 
     def test_ungrounded_route_family(self) -> None:
         # Ungrounded, no fresh context, no research -> R5_FALLBACK
-        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_FAMILY_R5_FALLBACK
+        from apps_lic.runtime.bindings.l0_binding import ROUTE_FAMILY_R5_FALLBACK
         # Default _make_route() has no freshness signals -> R5
         route = _make_route_from_l1_override(grounding_required=False)
         assert route.route_family == ROUTE_FAMILY_R5_FALLBACK
@@ -374,7 +374,7 @@ class TestT4L0RouteChangesOnGrounding:
 
     def test_grounded_cache_r3_eligible(self) -> None:
         # R4 path (fresh context) -> r3_grounded=True
-        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
+        from apps_lic.runtime.bindings.l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
         task_fresh = {
             **_make_l1().task_spec,
             "briefing_fresh": True,
@@ -425,7 +425,7 @@ class TestT5L0RouteChangesOnAction:
 
 class TestT6L0RouteChangesOnWorkflow:
     def test_workflow_required_produces_managed_workflow(self) -> None:
-        # FINAL L0 MODEL: R4_MANAGED_DRAFT (fresh context) -> execution_form=MANAGED_WORKFLOW
+        # FINAL L0 MODEL: R4_MANAGED_DRAFT (fresh context) -> execution_form=managed_workflow
         task_fresh = {
             **_make_l1().task_spec,
             "briefing_fresh": True,
@@ -433,18 +433,18 @@ class TestT6L0RouteChangesOnWorkflow:
             "context_grounded": True,
         }
         route = _make_route_from_l1_override(task_spec=task_fresh)
-        assert route.execution_form == "MANAGED_WORKFLOW"
+        assert route.execution_form == "managed_workflow"
         assert route.l3_required is True
 
     def test_no_context_produces_terminal_fallback(self) -> None:
-        # Without fresh context or research auth -> R5 -> TERMINAL_FALLBACK
+        # Without fresh context or research auth -> R5 -> terminal_fallback
         # Default _make_route() has no freshness signals -> R5
         route = _make_route()
-        assert route.execution_form == "TERMINAL_FALLBACK"
+        assert route.execution_form == "terminal_fallback"
         assert route.l3_required is False
 
     def test_execution_form_in_reason_codes(self) -> None:
-        # R4 path -> reason_codes should contain execution_form=MANAGED_WORKFLOW
+        # R4 path -> reason_codes should contain execution_form=managed_workflow
         task_fresh = {
             **_make_l1().task_spec,
             "briefing_fresh": True,
@@ -453,7 +453,7 @@ class TestT6L0RouteChangesOnWorkflow:
         }
         route = _make_route_from_l1_override(task_spec=task_fresh)
         reason_str = " ".join(route.reason_codes)
-        assert "execution_form=MANAGED_WORKFLOW" in reason_str
+        assert "execution_form=managed_workflow" in reason_str
 
     def test_l3_required_in_reason_codes_for_r4(self) -> None:
         # R4 path -> reason_codes contains l3_required=True (via workflow_required in task_spec)
@@ -560,7 +560,7 @@ class TestT8ExactlyOneRoute:
         # However with no fresh signals, the actual route is R5_FALLBACK.
         # Align assertion to the real behavior of _make_route() with no signals.
         route = _make_route()
-        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_ID_R5_FALLBACK
+        from apps_lic.runtime.bindings.l0_binding import ROUTE_ID_R5_FALLBACK
         assert route.route_id == ROUTE_ID_R5_FALLBACK
 
     def test_follow_up_request_type_produces_follow_up_route(self) -> None:
@@ -593,34 +593,34 @@ class TestT8ExactlyOneRoute:
 
 class TestT9L0NoRetrievalOrExecution:
     def test_l0_does_not_import_c0_modules(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         src = inspect.getsource(mod)
         assert "c0_" not in src
         assert "retrieval" not in src.lower().split("retrieval.company_kb")[0][:50]
 
     def test_l0_does_not_import_pa_modules(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         src = inspect.getsource(mod)
         assert "prompt_governance" not in src
         assert "pa_binding" not in src
 
     def test_l0_does_not_import_l2_modules(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         src = inspect.getsource(mod)
         assert "L2_execution" not in src
         assert "l2_binding" not in src
 
     def test_l0_does_not_import_l4_state(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         src = inspect.getsource(mod)
         assert "L4_state" not in src
 
     def test_l0_does_not_read_validated_request_directly(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         import_lines = _import_lines(inspect.getsource(mod))
         assert "ValidatedRequest" not in import_lines
@@ -633,14 +633,14 @@ class TestT9L0NoRetrievalOrExecution:
 
 class TestT10NoChromaDbMutation:
     def test_l1_does_not_import_chromadb(self) -> None:
-        import agentic_core.L1_cognition.apps_lic_l1_binding as mod
+        import apps_lic.runtime.bindings.l1_binding as mod
         import inspect
         import_lines = _import_lines(inspect.getsource(mod))
         assert "chromadb" not in import_lines.lower()
         assert "chroma" not in import_lines.lower()
 
     def test_l0_does_not_import_chromadb(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         import_lines = _import_lines(inspect.getsource(mod))
         assert "chromadb" not in import_lines.lower()
@@ -662,7 +662,7 @@ class TestT10NoChromaDbMutation:
 
 class TestT11NoEmbeddingGeneration:
     def test_l1_does_not_import_sentence_transformers(self) -> None:
-        import agentic_core.L1_cognition.apps_lic_l1_binding as mod
+        import apps_lic.runtime.bindings.l1_binding as mod
         import inspect
         import_lines = _import_lines(inspect.getsource(mod))
         assert "sentence_transformers" not in import_lines
@@ -670,7 +670,7 @@ class TestT11NoEmbeddingGeneration:
         assert "torch.nn" not in import_lines
 
     def test_l0_does_not_import_sentence_transformers(self) -> None:
-        import agentic_core.L0_routing.apps_lic_l0_binding as mod
+        import apps_lic.runtime.bindings.l0_binding as mod
         import inspect
         import_lines = _import_lines(inspect.getsource(mod))
         assert "sentence_transformers" not in import_lines

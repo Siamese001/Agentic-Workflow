@@ -1,0 +1,12 @@
+{
+  "_comment": "apps_lic interactive setup \u2014 mandatory inputs\n======================================================================\nCascade discipline: recipient_class / channel / outreach_mode / briefing were not supplied on the command line.",
+  "_instructions": "Fill in all fields, then save and re-run the command",
+  "recipient_class": "",
+  "channel": "",
+  "outreach_mode": "",
+  "briefing": {
+    "text": "",
+    "source": null,
+    "mode": "paste"
+  }
+}

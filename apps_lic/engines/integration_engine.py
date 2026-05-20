@@ -1,6 +1,6 @@
 """HOP9 integration — assemble fields for the final run record.
 
-Emits ``lic_run_record_fields`` — a dict the outer ``GovernedLicRun``
+Emits ``lic_run_record_fields`` — a dict for L2/Exit receipt assembly (canonical spine)
 reads when building the terminal ``GovernedLicE2ERunRecord``. Keeping
 the record-assembly logic here (instead of inside the orchestrator)
 isolates the final-shape concern from the walk plumbing.

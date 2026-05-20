@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_uwg_promotion import (
     build_r1b_commit_bundle,
@@ -16,7 +16,7 @@ from apps_rg.cache.r1b_uwg_promotion import (
 )
 from apps_rg.cache.r1b_uwg_receipt_contract import (
     build_receipt_field_parity_matrix,
-    document_shim_core_gaps,
+    document_r1b_uwg_core_receipt_gaps,
     validate_commit_request_governance,
 )
 from tests.unit.apps_rg.test_r1b_uwg_durable_persistence_w10 import (
@@ -99,12 +99,12 @@ def test_admitted_preserves_governance_receipt(tmp_path: Path, monkeypatch: pyte
     assert "l4.apps_rg.r1b_semantic_cache" in (gov.get("affected_state_surfaces") or [])
 
 
-def test_parity_matrix_and_shim_gap_documented() -> None:
+def test_parity_matrix_and_core_receipt_gap_documented() -> None:
     matrix = build_receipt_field_parity_matrix()
     assert any(r["field"] == "l5_certification_ref" for r in matrix)
-    gaps = document_shim_core_gaps()
+    gaps = document_r1b_uwg_core_receipt_gaps()
     assert "gate_verdict_refs" in gaps["fields_core_cannot_carry"]
-    assert "l5_certification_ref" in gaps["fields_shim_patches"]
+    assert "l5_certification_ref" in gaps["fields_promotion_gateway_enriches"]
 
 
 def test_admitted_projection_includes_governance_receipt(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

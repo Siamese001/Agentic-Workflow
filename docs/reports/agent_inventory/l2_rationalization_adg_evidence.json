@@ -8659,7 +8659,7 @@
         },
         {
           "id": "30449",
-          "adg_name": "ADG::Symbol::agentic_core.L2_execution.apps_lic_l2_binding",
+          "adg_name": "ADG::Symbol::apps_lic.runtime.bindings.l2_binding",
           "entity_type": "symbol",
           "layer": "L2",
           "resolved_path": "agentic_core/L2_execution/apps_lic_l2_binding.py",
@@ -8680,7 +8680,7 @@
         },
         {
           "id": "30450",
-          "adg_name": "ADG::Symbol::agentic_core.L2_execution.apps_lic_l2_binding.*",
+          "adg_name": "ADG::Symbol::apps_lic.runtime.bindings.l2_binding.*",
           "entity_type": "symbol",
           "layer": "L2",
           "resolved_path": "agentic_core/L2_execution/apps_lic_l2_binding.py",
@@ -8701,7 +8701,7 @@
         },
         {
           "id": "30451",
-          "adg_name": "ADG::Symbol::agentic_core.L2_execution.apps_lic_l2_binding.APPS_LIC_L2_CERT_REF",
+          "adg_name": "ADG::Symbol::apps_lic.runtime.bindings.l2_binding.APPS_LIC_L2_CERT_REF",
           "entity_type": "symbol",
           "layer": "L2",
           "resolved_path": "agentic_core/L2_execution/apps_lic_l2_binding.py",
@@ -8722,7 +8722,7 @@
         },
         {
           "id": "30452",
-          "adg_name": "ADG::Symbol::agentic_core.L2_execution.apps_lic_l2_binding.l2_execute_apps_lic",
+          "adg_name": "ADG::Symbol::apps_lic.runtime.bindings.l2_binding.l2_execute_apps_lic",
           "entity_type": "symbol",
           "layer": "L2",
           "resolved_path": "agentic_core/L2_execution/apps_lic_l2_binding.py",

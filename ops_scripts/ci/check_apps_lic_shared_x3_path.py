@@ -73,8 +73,8 @@ def check_fu2_3_no_direct_x3disposition_in_finalize(src: str) -> list[str]:
     # Extract the exit_finalize_apps_lic function source
     import importlib
     try:
-        mod = importlib.import_module("agentic_core.runtime.exit.apps_lic_exit_binding")
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        mod = importlib.import_module("apps_lic.runtime.bindings.exit_binding")
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         func_src = inspect.getsource(exit_finalize_apps_lic)
         if "X3Disposition(" in func_src:
             violations.append(
@@ -129,8 +129,8 @@ def check_fu2_8_cert_ref_from_x3_pkt(src: str) -> list[str]:
     violations = []
     try:
         import importlib
-        mod = importlib.import_module("agentic_core.runtime.exit.apps_lic_exit_binding")
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _x3_packet_to_disposition
+        mod = importlib.import_module("apps_lic.runtime.bindings.exit_binding")
+        from apps_lic.runtime.bindings.exit_binding import _x3_packet_to_disposition
         bridge_src = inspect.getsource(_x3_packet_to_disposition)
         if "x3_pkt.l5_certification_ref" not in bridge_src:
             violations.append(
@@ -145,7 +145,7 @@ def check_fu2_8_cert_ref_from_x3_pkt(src: str) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def run_all_checks() -> list[str]:
-    src = _load_source("agentic_core/runtime/exit/apps_lic_exit_binding.py")
+    src = _load_source("apps_lic/runtime/bindings/exit_binding.py")
     all_violations: list[str] = []
     all_violations.extend(check_fu2_1_build_x3_packet_imported(src))
     all_violations.extend(check_fu2_2_build_x3_packet_called(src))

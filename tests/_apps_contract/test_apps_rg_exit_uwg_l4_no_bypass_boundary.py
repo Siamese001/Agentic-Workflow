@@ -32,7 +32,7 @@ NON_PRODUCT_ENV_MARKERS: frozenset[str] = frozenset(
     {
         "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
         "APPS_RG_L2_PROVIDER_MODE=stub_only",
-        "APPS_RG_R4_GENERATION_MODE=legacy_full_resume",
+        "RETIRED_APPS_RG_R4_GENERATION_MODE",
     }
 )
 

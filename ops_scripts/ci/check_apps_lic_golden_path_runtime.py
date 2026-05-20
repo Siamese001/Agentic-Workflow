@@ -9,7 +9,7 @@ Checks:
  3.  Functionality preservation matrix has no MISSING rows.
  4.  L1 reads app_payload, not legacy envelope.payload.
  5.  L0 reads L1PlanContract, not legacy payload.
- 6.  L3 participates for MANAGED_WORKFLOW (source assertion + execution_form check).
+ 6.  L3 participates for MANAGED_WORKFLOW (R4/R3R4 route families, L3 receipt + step handoff).
  7.  C0 populates FinalEvidenceContract (not thin/default-only).
  8.  PA places evidence in C0_EVIDENCE_DATA_ONLY slot; does not promote to instruction.
  9.  L2 preserves prompt_artifact_digest + evidence_refs in SealedL2Artifact.
@@ -51,14 +51,14 @@ GATE_NAME = "AG-8 apps_lic Golden Path Runtime Proof"
 GATE_VERSION = "1.0.0"
 
 GOLDEN_PATH_MODULES = [
-    "agentic_core/runtime/entry/u0_apps_lic_binding.py",
-    "agentic_core/L1_cognition/apps_lic_l1_binding.py",
-    "agentic_core/L0_routing/apps_lic_l0_binding.py",
-    "agentic_core/L3_orchestration/apps_lic_l3_binding.py",
-    "agentic_core/runtime/c0/apps_lic_c0_binding.py",
-    "agentic_core/prompt_governance/apps_lic_pa_binding.py",
-    "agentic_core/L2_execution/apps_lic_l2_binding.py",
-    "agentic_core/runtime/exit/apps_lic_exit_binding.py",
+    "apps_lic/runtime/bindings/u0_binding.py",
+    "apps_lic/runtime/bindings/l1_binding.py",
+    "apps_lic/runtime/bindings/l0_binding.py",
+    "apps_lic/runtime/bindings/l3_binding.py",
+    "apps_lic/runtime/bindings/c0_binding.py",
+    "apps_lic/runtime/bindings/pa_binding.py",
+    "apps_lic/runtime/bindings/l2_binding.py",
+    "apps_lic/runtime/bindings/exit_binding.py",
 ]
 
 FORBIDDEN_CHROMADB_PATTERNS = ["chromadb"]
@@ -143,7 +143,7 @@ def _make_sealed_l2(execution_status: str = "completed") -> Any:
 # ---------------------------------------------------------------------------
 
 def check_u0_wires_reflection_receipt() -> tuple[bool, str]:
-    src = _read_source("agentic_core/runtime/entry/u0_apps_lic_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/u0_binding.py")
     if src is None:
         return False, "U0 binding not found"
     if "reflection_receipt" not in src:
@@ -154,7 +154,7 @@ def check_u0_wires_reflection_receipt() -> tuple[bool, str]:
 
 
 def check_payload_maps_to_app_payload() -> tuple[bool, str]:
-    src = _read_source("agentic_core/runtime/entry/u0_apps_lic_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/u0_binding.py")
     if src is None:
         return False, "U0 binding not found"
     if "app_payload" not in src:
@@ -187,7 +187,7 @@ def check_preservation_matrix_no_missing() -> tuple[bool, str]:
 
 
 def check_l1_reads_app_payload() -> tuple[bool, str]:
-    src = _read_source("agentic_core/L1_cognition/apps_lic_l1_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/l1_binding.py")
     if src is None:
         return False, "L1 binding not found"
     if "app_payload" not in src:
@@ -212,7 +212,7 @@ def check_l1_reads_app_payload() -> tuple[bool, str]:
 
 
 def check_l0_reads_l1_plan_contract() -> tuple[bool, str]:
-    src = _read_source("agentic_core/L0_routing/apps_lic_l0_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/l0_binding.py")
     if src is None:
         return False, "L0 binding not found"
     code = _code_only(src)
@@ -223,8 +223,71 @@ def check_l0_reads_l1_plan_contract() -> tuple[bool, str]:
     return True, "L0 reads L1PlanContract and does not reference legacy payload"
 
 
+def _managed_workflow_route_contract(
+    *,
+    context_signals: dict[str, bool],
+    research_requirements: dict[str, Any] | None = None,
+    authorize_research: bool = False,
+) -> tuple[Any, Any, Any]:
+    """U0 -> L1 -> L0 with explicit L0 routing inputs (matches AG-8 golden-path fixtures)."""
+    import dataclasses
+
+    from agentic_core.runtime.contracts.apps_lic_ingress_payload import (
+        AppsLicIngressPayload,
+        AppsLicRequestEnvelope,
+    )
+    from apps_lic.runtime.bindings.l0_binding import l0_route_apps_lic
+    from apps_lic.runtime.bindings.l1_binding import l1_plan_apps_lic
+    from apps_lic.runtime.bindings.u0_binding import u0_validate_apps_lic
+
+    payload = AppsLicIngressPayload(
+        app_id="apps_lic",
+        task_class="outreach_message",
+        request_type="outreach_draft",
+        channel="email",
+        lead_profile={
+            "verified_name": "CI Gate Lead",
+            "title": "VP Technology",
+            "seniority_class": "VP",
+            "company_name": "Acme Corp",
+            "industry": "Technology",
+            "consent_attested": True,
+        },
+        sender_profile={
+            "sender_id": "rep-gate",
+            "name": "CI Rep",
+            "title": "SVP",
+        },
+        research_requirements=research_requirements
+        or {"required_evidence_types": ["company_brief", "lead_profile"]},
+    )
+    envelope = AppsLicRequestEnvelope(
+        request_id=uuid.uuid4().hex[:16],
+        run_id=uuid.uuid4().hex[:16],
+        trace_id=uuid.uuid4().hex[:16],
+        tenant_id="apps_lic",
+        payload=payload,
+    )
+    vr = u0_validate_apps_lic(envelope)
+    merged = dict(vr.app_payload)
+    merged["context_signals"] = dict(context_signals)
+    if authorize_research:
+        research = dict(merged.get("research_requirements", {}))
+        research["allow_research"] = True
+        research["research_evidence_types"] = list(
+            research.get("research_evidence_types")
+            or research.get("required_evidence_types")
+            or ["company_brief", "lead_profile"]
+        )
+        merged["research_requirements"] = research
+    vr = dataclasses.replace(vr, app_payload=merged)
+    l1 = l1_plan_apps_lic(vr)
+    rc = l0_route_apps_lic(l1)
+    return vr, l1, rc
+
+
 def check_l3_participates_for_managed_workflow() -> tuple[bool, str]:
-    src = _read_source("agentic_core/L3_orchestration/apps_lic_l3_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/l3_binding.py")
     if src is None:
         return False, "L3 binding not found"
     if "managed_workflow" not in src.lower():
@@ -234,55 +297,86 @@ def check_l3_participates_for_managed_workflow() -> tuple[bool, str]:
     if "l3_no_retrieve_assertion" not in src:
         return False, "L3 missing l3_no_retrieve_assertion"
 
-    # Runtime check: route_contract must have execution_form=managed_workflow
     try:
-        from agentic_core.runtime.entry.u0_apps_lic_binding import u0_validate_apps_lic
-        from agentic_core.L1_cognition.apps_lic_l1_binding import l1_plan_apps_lic
-        from agentic_core.L0_routing.apps_lic_l0_binding import l0_route_apps_lic
-        from agentic_core.runtime.contracts.apps_lic_ingress_payload import (
-            AppsLicIngressPayload,
-            AppsLicRequestEnvelope,
+        from apps_lic.runtime.bindings.l0_binding import (
+            ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT,
+            ROUTE_FAMILY_R4_MANAGED_DRAFT,
+        )
+        from apps_lic.runtime.bindings.c0_binding import c0_retrieve_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.pa_binding import pa_compose_apps_lic
+
+        managed_families = (
+            ROUTE_FAMILY_R4_MANAGED_DRAFT,
+            ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT,
         )
 
-        payload = AppsLicIngressPayload(
-            app_id="apps_lic",
-            task_class="outreach_message",
-            request_type="outreach_draft",
-            channel="email",
-            lead_profile={
-                "verified_name": "CI Gate Lead",
-                "title": "VP Technology",
-                "seniority_class": "VP",
-                "company_name": "Acme Corp",
-                "industry": "Technology",
-                "consent_attested": True,
-            },
-            sender_profile={
-                "sender_id": "rep-gate",
-                "name": "CI Rep",
-                "title": "SVP",
+        # R4: fresh valid context -> managed_workflow -> L3 orchestration receipt + step
+        vr_r4, l1_r4, rc_r4 = _managed_workflow_route_contract(
+            context_signals={
+                "briefing_fresh": True,
+                "lead_profile_valid": True,
+                "context_grounded": True,
             },
         )
-        envelope = AppsLicRequestEnvelope(
-            request_id=uuid.uuid4().hex[:16],
-            run_id=uuid.uuid4().hex[:16],
-            trace_id=uuid.uuid4().hex[:16],
-            tenant_id="apps_lic",
-            payload=payload,
+        if rc_r4.route_family != ROUTE_FAMILY_R4_MANAGED_DRAFT:
+            return False, (
+                f"R4 path: expected route_family={ROUTE_FAMILY_R4_MANAGED_DRAFT!r}, "
+                f"got {rc_r4.route_family!r}"
+            )
+        if rc_r4.execution_form != "managed_workflow":
+            return False, (
+                f"R4 path: execution_form={rc_r4.execution_form!r}, expected managed_workflow"
+            )
+        if not rc_r4.l3_required:
+            return False, "R4 path: RouteContract.l3_required must be True"
+
+        fec_r4 = c0_retrieve_apps_lic(rc_r4, vr_r4)
+        prompt_r4 = pa_compose_apps_lic(rc_r4, l1_r4, fec_r4, vr_r4)
+        receipt_r4, step_r4, _bus_r4 = l3_orchestrate_apps_lic(rc_r4, fec_r4, prompt_r4)
+        if receipt_r4 is None or step_r4 is None:
+            return False, "R4 path: L3 did not emit orchestration receipt + step contract"
+
+        # R3R4: research-authorized when context stale -> managed_workflow -> L3 handoff
+        vr_r3, l1_r3, rc_r3 = _managed_workflow_route_contract(
+            context_signals={
+                "briefing_fresh": False,
+                "lead_profile_valid": True,
+                "context_grounded": False,
+            },
+            authorize_research=True,
         )
-        vr = u0_validate_apps_lic(envelope)
-        l1 = l1_plan_apps_lic(vr)
-        rc = l0_route_apps_lic(l1)
-        if rc.execution_form != "managed_workflow":
-            return False, f"L0 route has execution_form={rc.execution_form!r}, expected managed_workflow"
+        if rc_r3.route_family != ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT:
+            return False, (
+                f"R3R4 path: expected route_family="
+                f"{ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT!r}, got {rc_r3.route_family!r}"
+            )
+        if rc_r3.execution_form != "managed_workflow":
+            return False, (
+                f"R3R4 path: execution_form={rc_r3.execution_form!r}, expected managed_workflow"
+            )
+        if not rc_r3.l3_required:
+            return False, "R3R4 path: RouteContract.l3_required must be True"
+
+        fec_r3 = c0_retrieve_apps_lic(rc_r3, vr_r3)
+        prompt_r3 = pa_compose_apps_lic(rc_r3, l1_r3, fec_r3, vr_r3)
+        receipt_r3, step_r3, _bus_r3 = l3_orchestrate_apps_lic(rc_r3, fec_r3, prompt_r3)
+        if receipt_r3 is None or step_r3 is None:
+            return False, "R3R4 path: L3 did not emit orchestration receipt + step contract"
+
+        if rc_r4.route_family not in managed_families or rc_r3.route_family not in managed_families:
+            return False, "Managed route families must be R4 or R3R4 only"
     except Exception as e:
         return False, f"Runtime L3 participation check failed: {e}"
 
-    return True, "L3 participates for managed_workflow; source assertions present"
+    return True, (
+        "L3 participates for R4 and R3R4 managed_workflow; "
+        "orchestration receipt + step contract emitted for canonical L2/HOP handoff"
+    )
 
 
 def check_c0_populates_evidence_contract() -> tuple[bool, str]:
-    src = _read_source("agentic_core/runtime/c0/apps_lic_c0_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/c0_binding.py")
     if src is None:
         return False, "C0 binding not found"
     if "FinalEvidenceContract" not in src:
@@ -296,7 +390,7 @@ def check_c0_populates_evidence_contract() -> tuple[bool, str]:
 
 
 def check_pa_evidence_data_only() -> tuple[bool, str]:
-    src = _read_source("agentic_core/prompt_governance/apps_lic_pa_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/pa_binding.py")
     if src is None:
         return False, "PA binding not found"
     if "C0_EVIDENCE_DATA_ONLY" not in src and "evidence_data_only" not in src.lower():
@@ -311,7 +405,7 @@ def check_pa_evidence_data_only() -> tuple[bool, str]:
 
 
 def check_l2_preserves_refs() -> tuple[bool, str]:
-    src = _read_source("agentic_core/L2_execution/apps_lic_l2_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/l2_binding.py")
     if src is None:
         return False, "L2 binding not found"
     missing = []
@@ -326,7 +420,7 @@ def check_l2_preserves_refs() -> tuple[bool, str]:
 
 
 def check_l2_no_direct_l4_write() -> tuple[bool, str]:
-    src = _read_source("agentic_core/L2_execution/apps_lic_l2_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/l2_binding.py")
     if src is None:
         return False, "L2 binding not found"
     code = _code_only(src)
@@ -337,7 +431,7 @@ def check_l2_no_direct_l4_write() -> tuple[bool, str]:
 
 
 def check_exit_uses_x1_checkout() -> tuple[bool, str]:
-    src = _read_source("agentic_core/runtime/exit/apps_lic_exit_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/exit_binding.py")
     if src is None:
         return False, "Exit binding not found"
     if "build_x1_checkout_result" not in src:
@@ -350,7 +444,7 @@ def check_exit_uses_x1_checkout() -> tuple[bool, str]:
 
 
 def check_x2_called_with_x1_checkout() -> tuple[bool, str]:
-    src = _read_source("agentic_core/runtime/exit/apps_lic_exit_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/exit_binding.py")
     if src is None:
         return False, "Exit binding not found"
     if "aggregate_decision" not in src:
@@ -361,7 +455,7 @@ def check_x2_called_with_x1_checkout() -> tuple[bool, str]:
 
 
 def check_eval_score_not_authoritative() -> tuple[bool, str]:
-    src = _read_source("agentic_core/runtime/exit/apps_lic_exit_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/exit_binding.py")
     if src is None:
         return False, "Exit binding not found"
     if "eval_score=None" not in src:
@@ -371,7 +465,7 @@ def check_eval_score_not_authoritative() -> tuple[bool, str]:
 
 def check_material_fail_cannot_allow(execution_status: str = "failed") -> tuple[bool, str]:
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         l2 = _make_sealed_l2(execution_status=execution_status)
         result = exit_finalize_apps_lic(l2)
         if result.outcome_authorized:
@@ -394,7 +488,7 @@ def check_na_verdicts_have_rationale() -> tuple[bool, str]:
     if gate_id is present.
     """
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         from agentic_core.L3_orchestration.exit_eval.v6.types import GateResult
         l2 = _make_sealed_l2()
@@ -417,7 +511,7 @@ def check_na_verdicts_have_rationale() -> tuple[bool, str]:
 
 
 def check_proposed_state_diff_inert() -> tuple[bool, str]:
-    src = _read_source("agentic_core/L2_execution/apps_lic_l2_binding.py")
+    src = _read_source("apps_lic/runtime/bindings/l2_binding.py")
     if src is None:
         return False, "L2 binding not found"
     # proposed_state_diff must always be {} — check it's referenced but not assigned a real value

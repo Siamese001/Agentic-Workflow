@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-05-20
 
 ## Context (SCQA)
 
-- **Situation** — `integrated_r4_deterministic_pipeline_run.py` was the sole composer for U0→L1→L0→C0 bypass→L2→Exit→exhaust→L7; apps_rg retained shadow `dispatch/*_dispatch`, `_offline/`, and legacy ops entrypoints.
+- **Situation** — `integrated_single_action_spine_run.py` was the sole composer for U0→L1→L0→C0 bypass→L2→Exit→exhaust→L7; apps_rg retained shadow `dispatch/*_dispatch`, `_offline/`, and legacy ops entrypoints.
 - **Complication** — Entrypoint identity was coupled to `R4_SINGLE_ACTION`; cache hits could be bypassed by direct spine import; product proof did not require preflight receipts.
 - **Question** — How do we hard-delete shadow paths and replace the R4-named entrypoint without shims while enforcing cache preflight on whole-run generation?
 - **Answer** — `integrated_single_action_spine_run` + `cache_preflight_evidence` + canonical_dispatch ordering + product proof gate BLOCK; delete old module with no stub.
@@ -62,7 +62,7 @@ LAST_UPDATED: 2026-05-20
 | W4.2 | `cache_preflight_evidence.py` hit/miss receipts | ✅ DONE |
 | W5.1 | Repoint `canonical_dispatch`, `apps_rg/__main__` | ✅ DONE |
 | W5.2 | Product proof gate cache evidence requirement | ✅ DONE |
-| W5.3 | Delete `integrated_r4_deterministic_pipeline_run.py` | ✅ DONE |
+| W5.3 | Delete `integrated_single_action_spine_run.py` | ✅ DONE |
 | W5.4 | `test_single_action_spine_entrypoint.py` + regression bundle | ✅ DONE |
 
 ---
@@ -142,7 +142,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: E
 
 **Acceptance** (met):
-- `integrated_r4_deterministic_pipeline_run.py` deleted (no shim)
+- `integrated_single_action_spine_run.py` deleted (no shim)
 - `python -m apps_rg --help` exit 0
 - Import old module → `ModuleNotFoundError`
 - R1A/R1B hit skips spine; miss invokes spine once with evidence

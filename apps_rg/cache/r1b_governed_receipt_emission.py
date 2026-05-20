@@ -1,8 +1,7 @@
-"""W6B — governed R1B semantic-cache receipt chain in section run folders (apps_rg only).
+"""W6B/W6C — governed R1B semantic-cache receipt chain in section run folders (apps_rg only).
 
-Emits Exit-sourced CommitRequest → UWG validation → commit/blocked receipts and L4
-namespace refs into the section ``artifact_dir``. Does not upsert Chroma; read-surface
-refresh remains deferred until W6C.
+Emits Exit-sourced CommitRequest → UWG validation → commit/blocked receipts, L4 namespace
+refs, and (W6C) governed Chroma read-surface projection after UWG admission only.
 """
 
 from __future__ import annotations
@@ -129,8 +128,11 @@ class R1BGovernedReceiptChainOutcome:
     uwg_validation_status: str  # NOT_RUN | PASS | FAIL
     uwg_commit_or_block_status: str  # NOT_RUN | ADMITTED | BLOCKED
     l4_object_ref_status: str  # NOT_RUN | PRESENT | MISSING
-    read_surface_refresh_status: str  # NOT_APPLICABLE | MISSING
-    chroma_projection_status: str  # MISSING | NOT_APPLICABLE
+    read_surface_refresh_status: str  # NOT_APPLICABLE | MISSING | COMPLETE
+    chroma_projection_status: str  # MISSING | NOT_APPLICABLE | COMPLETE
+    read_surface_refresh_complete: bool = False
+    chroma_projection_complete: bool = False
+    durable_vector_persistence_proven: bool = False
     reason: str = ""
     x3_code: str = ""
     section_id: str = ""
@@ -158,16 +160,43 @@ class R1BGovernedReceiptChainOutcome:
             "l4_object_ref_status": self.l4_object_ref_status,
             "read_surface_refresh_status": self.read_surface_refresh_status,
             "chroma_projection_status": self.chroma_projection_status,
+            "read_surface_refresh_complete": self.read_surface_refresh_complete,
+            "chroma_projection_complete": self.chroma_projection_complete,
+            "durable_vector_persistence_proven": self.durable_vector_persistence_proven,
             "reason": self.reason,
             "promotion_outcome": self.promotion_outcome.to_dict() if self.promotion_outcome else None,
             "artifacts_written": list(self.artifacts_written),
             "explicit_non_claims": [
-                "no Chroma upsert on W6B path",
-                "read_surface_refresh canonical receipt deferred until W6C",
-                "chroma_collection_index_ref deferred until W6C",
-                "vector persistence not claimed without full governed refresh chain",
+                "core D2 Chroma promote path is not durable persistence proof",
+                "vector persistence not claimed unless durable_vector_persistence_proven is true",
             ],
         }
+
+
+def _write_l4_namespace_ref(
+    artifact_dir: Path,
+    *,
+    cr: Any,
+    sd: Any,
+    outcome: R1BPromotionOutcome,
+    section_id: str,
+    run_id: str,
+) -> None:
+    _write_envelope(
+        artifact_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT,
+        {
+            "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
+            "target_state_object": str(sd.after_candidate) if sd else "",
+            "affected_state_surfaces": list(cr.affected_state_surfaces),
+            "state_diff_refs": list(cr.state_diff_refs),
+            "commit_request_ref": cr.commit_request_id,
+            "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id or None,
+            "blocked_commit_receipt_id": outcome.blocked_commit_receipt_id or None,
+        },
+        artifact_name=L4_NAMESPACE_OBJECT_REF_ARTIFACT,
+        section_id=section_id,
+        run_id=run_id,
+    )
 
 
 def _write_deferred_surface_status(
@@ -219,7 +248,7 @@ def _materialize_uwg_receipts(
     manifest: Mapping[str, Any],
     gateway: Any | None,
 ) -> R1BGovernedReceiptChainOutcome:
-    from apps_rg.cache.r1b_uwg_gateway_shim import default_r1b_promotion_gateway
+    from apps_rg.cache.r1b_uwg_promotion import default_r1b_promotion_gateway
     from apps_rg.cache.r1b_uwg_receipt_contract import validate_commit_request_governance
 
     gw = gateway or default_r1b_promotion_gateway()
@@ -394,7 +423,39 @@ def _materialize_uwg_receipts(
         )
         chain.artifacts_written.append(UWG_COMMIT_RECEIPT_ARTIFACT)
         chain.l4_object_ref_status = "PRESENT"
+        _write_l4_namespace_ref(
+            artifact_dir,
+            cr=cr,
+            sd=sd,
+            outcome=outcome,
+            section_id=section_id,
+            run_id=run_id,
+        )
+        chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)
         chain.semantic_cache_persistence_status = "PROVEN_UWG_CHAIN_ONLY"
+        from apps_rg.cache.r1b_chroma_read_surface_projection import (
+            project_governed_chroma_read_surface,
+        )
+
+        chroma_out = project_governed_chroma_read_surface(
+            artifact_dir=artifact_dir,
+            section_id=section_id,
+            run_id=run_id,
+            record=candidate.record,
+            chunks=candidate.chunks,
+            commit_request_id=cr.commit_request_id,
+            uwg_commit_receipt_id=commit_receipt.commit_receipt_id,
+            raw_request=_raw_request_from_run_dir(artifact_dir),
+        )
+        chain.artifacts_written.extend(chroma_out.artifacts_written)
+        chain.read_surface_refresh_status = chroma_out.read_surface_refresh_status
+        chain.chroma_projection_status = chroma_out.chroma_projection_status
+        chain.read_surface_refresh_complete = chroma_out.read_surface_refresh_complete
+        chain.chroma_projection_complete = chroma_out.chroma_projection_complete
+        if chroma_out.read_surface_refresh_complete and chroma_out.chroma_projection_complete:
+            chain.semantic_cache_persistence_status = "PROVEN_GOVERNED_VECTOR_CHAIN"
+        elif chroma_out.refresh_status == "COMPLETE":
+            chain.semantic_cache_persistence_status = "PARTIAL_READ_SURFACE_ONLY"
     else:
         blocked_codes: tuple[str, ...] = ()
         blocked_id = ""
@@ -442,28 +503,19 @@ def _materialize_uwg_receipts(
         chain.artifacts_written.append(BLOCKED_WRITE_RECEIPT_ARTIFACT)
         chain.semantic_cache_persistence_status = "PARTIAL_UWG_ARTIFACTS_ONLY"
 
-    _write_envelope(
-        artifact_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT,
-        {
-            "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
-            "target_state_object": str(sd.after_candidate) if sd else "",
-            "affected_state_surfaces": list(cr.affected_state_surfaces),
-            "state_diff_refs": list(cr.state_diff_refs),
-            "commit_request_ref": cr.commit_request_id,
-            "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id or None,
-            "blocked_commit_receipt_id": outcome.blocked_commit_receipt_id or None,
-        },
-        artifact_name=L4_NAMESPACE_OBJECT_REF_ARTIFACT,
-        section_id=section_id,
-        run_id=run_id,
-    )
-    chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)
-    if outcome.status == "ADMITTED":
-        chain.l4_object_ref_status = "PRESENT"
-
-    _write_deferred_surface_status(
-        artifact_dir, section_id=section_id, run_id=run_id, chain=chain
-    )
+    if outcome.status != "ADMITTED":
+        _write_l4_namespace_ref(
+            artifact_dir,
+            cr=cr,
+            sd=sd,
+            outcome=outcome,
+            section_id=section_id,
+            run_id=run_id,
+        )
+        chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)
+        _write_deferred_surface_status(
+            artifact_dir, section_id=section_id, run_id=run_id, chain=chain
+        )
     return chain
 
 
@@ -476,7 +528,7 @@ def emit_section_r1b_governed_receipt_chain(
     gateway: Any | None = None,
     attempt_uwg_promotion: bool = True,
 ) -> R1BGovernedReceiptChainOutcome:
-    """Emit governed R1B receipt chain into ``artifact_dir`` (no Chroma, no store projection)."""
+    """Emit governed R1B receipt chain into ``artifact_dir`` (W6C Chroma only after UWG admit)."""
     x3_code = _load_x3_code(artifact_dir)
     manifest = _read_json(artifact_dir / "run_manifest.json")
     req = dict(raw_request or _raw_request_from_run_dir(artifact_dir))
@@ -490,7 +542,7 @@ def emit_section_r1b_governed_receipt_chain(
             uwg_commit_or_block_status="NOT_RUN",
             l4_object_ref_status="NOT_RUN",
             read_surface_refresh_status="NOT_APPLICABLE",
-            chroma_projection_status="MISSING",
+            chroma_projection_status="NOT_APPLICABLE",
             reason=REASON_X3_NOT_X3C,
             x3_code=x3_code,
             section_id=section_id,
@@ -517,7 +569,7 @@ def emit_section_r1b_governed_receipt_chain(
             uwg_commit_or_block_status="NOT_RUN",
             l4_object_ref_status="NOT_RUN",
             read_surface_refresh_status="NOT_APPLICABLE",
-            chroma_projection_status="MISSING",
+            chroma_projection_status="NOT_APPLICABLE",
             reason=reason,
             x3_code=x3_code,
             section_id=section_id,

@@ -55,7 +55,7 @@ def _code_only(module_name: str) -> str:
     return cleaned
 
 
-_EXIT_MODULE = "agentic_core.runtime.exit.apps_lic_exit_binding"
+_EXIT_MODULE = "apps_lic.runtime.bindings.exit_binding"
 
 
 # ---------------------------------------------------------------- fixtures --
@@ -102,7 +102,7 @@ class TestTC01_Importable:
         assert hasattr(mod, "exit_finalize_apps_lic")
 
     def test_function_callable(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         assert callable(exit_finalize_apps_lic)
 
@@ -112,7 +112,7 @@ class TestTC01_Importable:
 
 class TestTC02_ReturnsX3Disposition:
     def test_returns_x3disposition(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 
         l2 = _make_sealed_l2()
@@ -120,7 +120,7 @@ class TestTC02_ReturnsX3Disposition:
         assert isinstance(result, X3Disposition)
 
     def test_exactly_one_disposition(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 
         l2 = _make_sealed_l2()
@@ -134,7 +134,7 @@ class TestTC02_ReturnsX3Disposition:
 
 class TestTC03_AppId:
     def test_app_id_is_apps_lic(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -146,7 +146,7 @@ class TestTC03_AppId:
 
 class TestTC04_CertRef:
     def test_l5_certification_ref_nonempty(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -154,7 +154,7 @@ class TestTC04_CertRef:
         assert len(result.l5_certification_ref) > 4
 
     def test_cert_ref_contains_ag8_w7(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -166,7 +166,7 @@ class TestTC04_CertRef:
 
 class TestTC05_EvalScoreNotAuthoritative:
     def test_eval_score_is_none(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -181,7 +181,7 @@ class TestTC05_EvalScoreNotAuthoritative:
 
 class TestTC06_CompletedL2Succeeds:
     def test_completed_l2_produces_success(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="completed")
         result = exit_finalize_apps_lic(l2)
@@ -189,7 +189,7 @@ class TestTC06_CompletedL2Succeeds:
         assert result.outcome_authorized is True
 
     def test_eval_threshold_met_when_success(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="completed")
         result = exit_finalize_apps_lic(l2)
@@ -201,7 +201,7 @@ class TestTC06_CompletedL2Succeeds:
 
 class TestTC07_FailedL2Denied:
     def test_failed_l2_exit_status_is_failure(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="failed", generated_content="")
         result = exit_finalize_apps_lic(l2)
@@ -214,7 +214,7 @@ class TestTC07_FailedL2Denied:
 
 class TestTC08_SealedL2Digest:
     def test_sealed_l2_digest_matches_compilation_hash(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(compilation_hash="deaa9912beef")
         result = exit_finalize_apps_lic(l2)
@@ -230,7 +230,7 @@ class TestTC09_X1AllGatesPopulated:
             build_x1_checkout_result,
         )
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.runtime.contracts.x1_checkout_result import X1CheckoutResult
 
         l2 = _make_sealed_l2()
@@ -248,7 +248,7 @@ class TestTC09_X1AllGatesPopulated:
             build_x1_checkout_result,
         )
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
 
         req_id = uuid.uuid4().hex[:16]
         l2 = _make_sealed_l2(request_id=req_id)
@@ -343,7 +343,7 @@ class TestTC12_X1J_NotApplicable:
         assert verdict.result is GateResult.NOT_APPLICABLE
 
     def test_exit_binding_x1j_not_applicable(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(proposed_state_diff={})
         result = exit_finalize_apps_lic(l2)
@@ -437,7 +437,7 @@ class TestTC14_MaterialUnknownNotPass:
 
 class TestTC15_ProposedStateDiffInert:
     def test_proposed_state_diff_unchanged(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         original_diff: dict = {}
         l2 = _make_sealed_l2(proposed_state_diff=original_diff)
@@ -445,7 +445,7 @@ class TestTC15_ProposedStateDiffInert:
         assert dict(l2.proposed_state_diff) == {}
 
     def test_final_output_has_no_state_diff(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -591,7 +591,7 @@ class TestTC21_NoToolModelExecution:
 
 class TestTC22_GateVerdictRefs:
     def test_gate_verdict_refs_populated(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -600,7 +600,7 @@ class TestTC22_GateVerdictRefs:
         )
 
     def test_gate_verdict_refs_cover_all_10_gates(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -614,7 +614,7 @@ class TestTC22_GateVerdictRefs:
 
 class TestTC23_HitlRequired:
     def test_hitl_required_false_for_success(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="completed")
         result = exit_finalize_apps_lic(l2)
@@ -622,7 +622,7 @@ class TestTC23_HitlRequired:
             assert result.hitl_required is False
 
     def test_hitl_required_true_for_escalated(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2(execution_status="completed")
         result = exit_finalize_apps_lic(l2)
@@ -635,7 +635,7 @@ class TestTC23_HitlRequired:
 
 class TestTC24_IdentityFields:
     def test_request_id_carried_through(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         req_id = uuid.uuid4().hex[:16]
         l2 = _make_sealed_l2(request_id=req_id)
@@ -643,7 +643,7 @@ class TestTC24_IdentityFields:
         assert result.request_id == req_id
 
     def test_run_id_carried_through(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         run_id = uuid.uuid4().hex[:16]
         l2 = _make_sealed_l2(run_id=run_id)
@@ -651,7 +651,7 @@ class TestTC24_IdentityFields:
         assert result.run_id == run_id
 
     def test_trace_id_carried_through(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         trace_id = uuid.uuid4().hex[:16]
         l2 = _make_sealed_l2(trace_id=trace_id)
@@ -659,7 +659,7 @@ class TestTC24_IdentityFields:
         assert result.trace_id == trace_id
 
     def test_tenant_id_carried_through(self) -> None:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 
         l2 = _make_sealed_l2()
         result = exit_finalize_apps_lic(l2)
@@ -671,27 +671,27 @@ class TestTC24_IdentityFields:
 
 class TestTC25_PriorWaveRegression:
     def test_w3_u0_module_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.runtime.entry.u0_apps_lic_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.u0_binding")
         assert mod is not None
 
     def test_w4_l1_module_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L1_cognition.apps_lic_l1_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l1_binding")
         assert mod is not None
 
     def test_w4_l0_module_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L0_routing.apps_lic_l0_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l0_binding")
         assert mod is not None
 
     def test_w5_c0_pa_module_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.prompt_governance.apps_lic_pa_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.pa_binding")
         assert mod is not None
 
     def test_w6_l3_module_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l3_binding")
         assert mod is not None
 
     def test_w6_l2_module_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L2_execution.apps_lic_l2_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l2_binding")
         assert mod is not None
 
     def test_w7_exit_module_importable(self) -> None:

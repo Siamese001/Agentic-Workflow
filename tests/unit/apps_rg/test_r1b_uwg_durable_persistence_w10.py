@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_constants import (
     C0_FACT_VECTORS_COLLECTION,
     FILE_BACKED_SSOT_NOTE,

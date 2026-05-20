@@ -125,19 +125,19 @@ def test_r1b_not_c0_fact_vectors(tmp_path: Path) -> None:
 
 
 def test_main_r1a_before_r1b_order(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from apps_rg import __main__ as m
+    from tests.helpers import whole_run_spine_harness as harness
 
     order: list[str] = []
 
     monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
     monkeypatch.setattr(
-        m,
+        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
         "run_integrated_single_action_spine",
         lambda **k: order.append("PIPELINE") or _fake_outcome(tmp_path),
     )
-    monkeypatch.setattr(m, "stamp_r1a_cache", lambda *a, **k: None)
-    monkeypatch.setattr(m, "emit_integrated_run_bundle_index", lambda *a, **k: None)
-    monkeypatch.setattr(m, "find_repo_root", lambda: tmp_path)
+    monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", lambda *a, **k: None)
+    monkeypatch.setattr("apps_rg.runtime.run_bundle_index", "emit_integrated_run_bundle_index", lambda *a, **k: None)
+    monkeypatch.setattr("apps_rg.runtime.runtime_proof_layout", "find_repo_root", lambda: tmp_path)
 
     def fake_r1b(**kwargs):
         order.append("R1B")
@@ -169,7 +169,7 @@ def test_main_r1a_before_r1b_order(tmp_path: Path, monkeypatch: pytest.MonkeyPat
                 ):
                     args = type("A", (), {"target_company": "Synthetic Enterprise Corp.", "target_role": "SVP Engineering", "target_level": "", "jd": "", "manual_brief": "", "resume": "", "generation_mode": "strategic_tailor", "tenant_id": "t"})()
                     with pytest.raises(SystemExit):
-                        m._run_with_args(args, runs_dir=tmp_path, artifact_dir_override=tmp_path / "art")
+                        harness.run_whole_run_spine_harness(args, runs_dir=tmp_path, artifact_dir_override=tmp_path / "art")
 
     assert order.index("R1A") < order.index("R1B")
     assert order.index("R1B") < order.index("PIPELINE")
@@ -189,7 +189,7 @@ def _fake_outcome(tmp_path: Path):
 
 
 def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from apps_rg import __main__ as m
+    from tests.helpers import whole_run_spine_harness as harness
 
     monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
     pipeline_called: list[bool] = []
@@ -198,7 +198,11 @@ def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyP
         pipeline_called.append(True)
         return _fake_outcome(tmp_path)
 
-    monkeypatch.setattr(m, "run_integrated_single_action_spine", fake_pipeline)
+    monkeypatch.setattr(
+        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
+        "run_integrated_single_action_spine",
+        fake_pipeline,
+    )
 
     def fake_r1b(**kwargs):
         from apps_rg.cache.r1b_whole_run_preflight import WholeRunR1BPreflightResult
@@ -239,6 +243,6 @@ def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyP
                 ):
                     args = type("A", (), {"target_company": "Synthetic Enterprise Corp.", "target_role": "SVP Engineering", "target_level": "", "jd": "", "manual_brief": "", "resume": "", "generation_mode": "strategic_tailor", "tenant_id": "t"})()
                     with pytest.raises(SystemExit) as exc:
-                        m._run_with_args(args, runs_dir=tmp_path)
+                        harness.run_whole_run_spine_harness(args, runs_dir=tmp_path)
     assert exc.value.code == 0
     assert not pipeline_called

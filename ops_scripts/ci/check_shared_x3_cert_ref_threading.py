@@ -273,7 +273,7 @@ def check_material_unknown_cannot_pass() -> None:
 
 def check_apps_lic_packet_has_cert_refs() -> None:
     try:
-        from agentic_core.runtime.exit.apps_lic_exit_binding import (
+        from apps_lic.runtime.bindings.exit_binding import (
             _CERT_REF,
             _build_exit_review_packet,
         )

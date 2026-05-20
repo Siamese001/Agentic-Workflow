@@ -7,7 +7,7 @@ import importlib
 import pytest
 
 from apps_rg.runtime.dispatch import prompt_trace_reasoning as dispatch_ptr
-from apps_rg.runtime.sections.competencies_lane_api import (
+from apps_rg.runtime.sections.competencies_lane_runtime import (
     collect_employment_bullets as dispatch_collect,
 )
 from apps_rg.runtime.sections import prompt_trace_reasoning as sections_ptr

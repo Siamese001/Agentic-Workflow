@@ -544,14 +544,6 @@ _GOV3_BASELINE: dict[str, dict] = {
         "rationale": "W9 managed-workflow E2E harness in core entry tree",
         "issue": "GOV-3-BASELINE-060",
     },
-    "agentic_core/runtime/exit/apps_lic_exit_binding.py": {
-        "expiry": "2026-11-30",
-        "classification": "TEMPORARY_THIN_ADAPTER",
-        "migration_plan": "apps-lic-exit-binding-migration",
-        "target_module": "apps_lic.runtime.bindings.exit_binding",
-        "migration_receipt": "artifacts/governance/migration_receipts/apps_lic_exit_binding_receipt.json",
-        "issue": "GOV-3-BASELINE-061",
-    },
 }
 
 # Canonical GENERIC route enums — must NOT trigger false positives.

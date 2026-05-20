@@ -19,8 +19,8 @@ When ``--resume`` is omitted (or empty), the CLI uses the canonical base resume 
 (``dispatch_apps_rg_run`` → governed spine). **Default** résumé body generation is
 **modular** (seven section lanes + deterministic merge) when
 ``APPS_RG_R4_GENERATION_MODE`` is unset — see ``apps_rg.l2_recipe.r4_generation_route``.
-Set ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` for explicit **rollback** to one
-``run_apps_rg_l2_envelope`` call with a full tailor-existing CPA. Offline batch orchestration is library-only (``apps_rg.runtime.internal.lane_batch.run_orchestration``);
+Résumé body generation is **modular section lanes only** (``APPS_RG_R4_GENERATION_MODE`` unset or ``modular_section_lanes``).
+Offline batch orchestration is library-only under ``tests.helpers.offline_lane_orchestration`` (not product proof);
 there is no separate offline orchestrate module CLI.
 
 **L2 model execution (résumé body):** by default ``APPS_RG_L2_PROVIDER_MODE`` is unset
@@ -72,11 +72,9 @@ __all__ = [
     "_assert_artifact_matches_company",
     "_build_raw_request",
     "_prompt_jd_interactive",
-    "_run_with_args",
     "check_r1a_cache",
     "compute_r1a_key",
     "main",
-    "run_integrated_single_action_spine",
     "stamp_r1a_cache",
 ]
 
@@ -438,139 +436,6 @@ def _semantic_cache_r1b_enabled() -> bool:
         "true",
         "yes",
     )
-
-
-def _run_with_args(
-    args: Any,
-    *,
-    runs_dir: Path,
-    artifact_dir_override: Path | None = None,
-) -> None:
-    """Exercise R4 + R1 cache wiring (canonical unit tests monkeypatch internals).
-
-    CLI production path uses ``dispatch_apps_rg_run``. This shim mirrors the legacy
-    L0 remediation tests that assert pre/post-flight cache bookkeeping.
-    """
-    from apps_rg.enforcement.cli_prerequisite_gate import (
-        check_apps_rg_cli_prerequisites,
-    )
-    from apps_rg.cache import r1b_adapter as _r1b_mod
-    from apps_rg.runtime.orchestration.canonical_dispatch import build_raw_request_for_r4
-
-    check_apps_rg_cli_prerequisites(
-        target_company=str(getattr(args, "target_company", "") or ""),
-        target_role=str(getattr(args, "target_role", "") or ""),
-        policy_hash=os.environ.get("APPS_RG_POLICY_HASH", ""),
-        blueprint_hash=os.environ.get("APPS_RG_BLUEPRINT_HASH", ""),
-        trace_id=str(getattr(args, "tenant_id", "") or "default_cli"),
-        manual_brief_path=str(getattr(args, "manual_brief", "") or ""),
-    )
-
-    raw_request = build_raw_request_for_r4(
-        target_company=str(getattr(args, "target_company", "") or ""),
-        target_role=str(getattr(args, "target_role", "") or ""),
-        target_level=str(getattr(args, "target_level", "") or ""),
-        jd=str(getattr(args, "jd", "") or ""),
-        manual_brief=str(getattr(args, "manual_brief", "") or ""),
-        resume_path=str(getattr(args, "resume", "") or ""),
-        generation_mode=str(
-            getattr(args, "generation_mode", None) or "strategic_tailor",
-        ),
-    )
-
-    env_policy = os.environ.get("APPS_RG_POLICY_HASH")
-    env_bp = os.environ.get("APPS_RG_BLUEPRINT_HASH")
-
-    from apps_rg.cache.whole_run_entrypoint_preflight import (
-        ENTRYPOINT_CLI_SHIM,
-        maybe_ingest_r1b_post_exit,
-        run_whole_run_cache_preflight,
-    )
-
-    preflight = run_whole_run_cache_preflight(
-        entrypoint=ENTRYPOINT_CLI_SHIM,
-        raw_request=raw_request,
-        target_company=str(getattr(args, "target_company", "") or ""),
-        target_role=str(getattr(args, "target_role", "") or ""),
-        artifact_dir=artifact_dir_override,
-        runs_dir=runs_dir,
-        policy_hash=env_policy,
-        blueprint_hash=env_bp,
-    )
-    from apps_rg.cache.cache_preflight_evidence import (
-        build_cache_preflight_evidence,
-        write_cache_miss_receipt,
-        write_whole_run_cache_preflight_artifact,
-    )
-
-    evidence = build_cache_preflight_evidence(preflight, artifact_dir=artifact_dir_override)
-    if artifact_dir_override is not None:
-        write_whole_run_cache_preflight_artifact(Path(artifact_dir_override), preflight, evidence)
-
-    if not preflight.generation_required:
-        raise SystemExit(0)
-
-    resume_hash = str(raw_request.get("resume_hash") or "")
-    r1a_key = compute_r1a_key(
-        source_resume_hash=resume_hash,
-        target_company=str(getattr(args, "target_company", "") or ""),
-        target_role=str(getattr(args, "target_role", "") or ""),
-    )
-
-    artifact_root = (
-        artifact_dir_override
-        if artifact_dir_override is not None
-        else (runs_dir / "_r4_artifact_scratch")
-    )
-    if artifact_dir_override is None:
-        artifact_root.mkdir(parents=True, exist_ok=True)
-
-    if artifact_dir_override is not None:
-        write_cache_miss_receipt(Path(artifact_root), preflight, evidence)
-
-    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
-        run_integrated_single_action_spine,
-    )
-
-    outcome = run_integrated_single_action_spine(
-        raw_request=raw_request,
-        app_name="apps_rg",
-        artifact_dir=artifact_root,
-        route_family="R4_SINGLE_ACTION",
-        cache_preflight_evidence=evidence,
-    )
-
-    rid = str(getattr(outcome, "run_id", "") or "").strip()
-    emit_integrated_run_bundle_index(
-        find_repo_root(),
-        Path(outcome.artifact_dir),
-        run_id=rid or None,
-        correlation_id=rid or None,
-    )
-
-    fault_txt = str(getattr(outcome, "fault", "") or "").strip()
-    if fault_txt:
-        raise SystemExit(1)
-    if bool(getattr(outcome, "terminal_r5", False)):
-        raise SystemExit(0)
-
-    stamp_r1a_cache(
-        r1a_key,
-        Path(outcome.artifact_dir),
-        policy_hash=env_policy,
-        blueprint_hash=env_bp,
-    )
-
-    try:
-        maybe_ingest_r1b_post_exit(
-            raw_request=dict(raw_request),
-            artifact_dir=Path(outcome.artifact_dir),
-            runs_dir=runs_dir,
-        )
-    except (OSError, TypeError, ValueError):
-        pass
-
-    raise SystemExit(0)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -975,6 +840,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         else:
             from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
 
+            os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
             result = dispatch_apps_rg_run(
                 target_company=args.target_company,
                 target_role=args.target_role,

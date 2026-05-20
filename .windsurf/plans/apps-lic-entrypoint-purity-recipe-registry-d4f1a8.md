@@ -31,7 +31,7 @@ Prevent the apps_rg intermediate wiring pattern by ensuring apps_lic/__main__.py
 | `apps_lic/config/apps_lic_static_dag.yaml` | Target R4 recipe definition | ✅ |
 | `apps_lic/config/apps_lic_managed_dag.yaml` | Target R3R4 recipe definition | ✅ |
 | `apps_rg/__main__.py` | Pattern to avoid (intermediate state) | ✅ |
-| `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | Target R4 runner API | ✅ |
+| `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | Target R4 runner API | ✅ |
 | `agentic_core/L1_cognition/prompt_assembly/` | Canonical Prompt Assembly reference | 🔲 |
 | ADG hotspot report | Structural centrality for L0/L1/L2 | 🔲 (generate during W1) |
 
@@ -983,7 +983,7 @@ hash_fields:
 **W1.1 __main__.py pure shim**:
 - Remove import of `apps_lic.tools.run_workflow_lic`
 - Remove orchestrator creation and execution
-- Add import of `run_integrated_r4_deterministic_pipeline` from agentic_core
+- Add import of `run_integrated_single_action_spine` from agentic_core
 - Parse args, build raw_request, call runner with `app_name="apps_lic"`
 - Fail closed (exit 1) if runner unavailable — no fallback
 

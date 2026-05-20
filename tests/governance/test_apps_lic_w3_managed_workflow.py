@@ -385,77 +385,41 @@ def test_bridge_never_raises():
 
 
 # ---------------------------------------------------------------------------
-# P8 — apps_lic_managed_dag.yaml (8 stages)
+# P8 — managed workflow: dispatcher + hop_pipeline (replaces managed YAML DAG)
 # ---------------------------------------------------------------------------
 
-def test_managed_dag_exists():
-    """P8: apps_lic_managed_dag.yaml must exist."""
-    assert MANAGED_DAG.exists(), f"Missing: {MANAGED_DAG}"
+def test_managed_yaml_dag_deleted():
+    """P4: Legacy managed YAML L2 DAG removed."""
+    assert not MANAGED_DAG.exists(), f"Retired: {MANAGED_DAG}"
 
 
-def test_managed_dag_has_8_stages():
-    """P8: Managed DAG must have exactly 8 stages."""
-    with MANAGED_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    stages = dag.get("stages", [])
-    assert len(stages) == 8, (
-        f"apps_lic_managed_dag.yaml has {len(stages)} stages; expected 8. "
-        "Plan spec: 4 R3 stages + 4 R4 stages."
+def test_managed_workflow_dispatcher_importable():
+    """P8: R3R4 research is L3 orchestration via ManagedWorkflowDispatcher."""
+    from apps_lic.integrations.managed_workflow_dispatcher import dispatch_managed_briefing
+
+    assert callable(dispatch_managed_briefing)
+
+
+def test_managed_route_family_in_l0_binding():
+    """P8: R3R4 route family is L0-owned."""
+    from apps_lic.runtime.bindings.l0_binding import (
+        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT,
     )
 
+    assert ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT == "R3R4_MANAGED_RESEARCH_THEN_DRAFT"
 
-def test_managed_dag_stage_order():
-    """P8: Stages must be in canonical order."""
-    with MANAGED_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    expected_ids = [
-        "validate_request_for_briefing",
-        "authorize_research",
-        "call_apps_research",
-        "validate_research_and_build_manifest",
-        "plan_message",
-        "compose_draft",
-        "seal_output",
-        "emit_managed_workflow_receipt",
-    ]
-    actual_ids = [s["stage_id"] for s in dag["stages"]]
-    assert actual_ids == expected_ids, (
-        f"Stage order mismatch. Expected {expected_ids}, got {actual_ids}."
+
+def test_managed_research_failure_codes_in_dispatcher():
+    """P8: Research failure → R5 codes live in managed_workflow_dispatcher."""
+    from apps_lic.integrations.managed_workflow_dispatcher import (
+        RESEARCH_FAILURE_REASON_CODES,
     )
 
-
-def test_managed_dag_route_family():
-    """P8: Managed DAG must declare route_family=R3R4_MANAGED_WORKFLOW."""
-    with MANAGED_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    assert dag.get("route_family") == "R3R4_MANAGED_WORKFLOW"
-
-
-def test_managed_dag_r3_r4_phases_present():
-    """P8: DAG must have R3 research stages and R4 outreach stages."""
-    with MANAGED_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    phases = [s.get("phase", "") for s in dag["stages"]]
-    r3_stages = [p for p in phases if "R3" in p]
-    r4_stages = [p for p in phases if "R4" in p]
-    assert len(r3_stages) >= 3, f"Expected ≥3 R3 stages, got: {r3_stages}"
-    assert len(r4_stages) >= 4, f"Expected ≥4 R4 stages, got: {r4_stages}"
-
-
-def test_managed_dag_research_failure_codes_matrix():
-    """P8: Managed DAG must document all 5 research failure → R5 reason code mappings."""
-    with MANAGED_DAG.open(encoding="utf-8") as fh:
-        dag = yaml.safe_load(fh)
-    failure_codes = dag.get("research_failure_codes", {})
-    expected_values = {
+    expected = {
         "APPS_RESEARCH_FAILED",
         "APPS_RESEARCH_EMPTY",
         "APPS_RESEARCH_BLOCKED",
         "APPS_RESEARCH_STALE",
         "APPS_RESEARCH_WEAK_SUPPORT",
     }
-    present_values = set(failure_codes.values())
-    missing = expected_values - present_values
-    assert not missing, (
-        f"Managed DAG research_failure_codes missing reason codes: {missing}"
-    )
+    assert expected <= RESEARCH_FAILURE_REASON_CODES

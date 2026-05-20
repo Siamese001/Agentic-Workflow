@@ -74,7 +74,7 @@ The legacy `preflight()` function in `L1_cognition/c0_context/preflight.py` is c
 **Parent Plan Reference**: Section 10 "Anti-pattern scan"
 
 **Description**:  
-The parent plan fixed `integrated_r4_deterministic_pipeline_run.py`. Other R4-like entrypoints may have similar hardcoded bypass issues.
+The parent plan fixed `integrated_single_action_spine_run.py`. Other R4-like entrypoints may have similar hardcoded bypass issues.
 
 **Files to Audit**:
 - `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py`

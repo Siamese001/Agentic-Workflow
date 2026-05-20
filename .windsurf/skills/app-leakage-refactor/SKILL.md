@@ -101,7 +101,7 @@ Replace old binding with generic call:
 **Before:**
 ```python
 # Old temporary adapter
-from agentic_core.L0_routing.apps_lic_l0_binding import select_route
+from apps_lic.runtime.bindings.l0_binding import select_route
 route = select_route(app_id, payload)
 ```
 

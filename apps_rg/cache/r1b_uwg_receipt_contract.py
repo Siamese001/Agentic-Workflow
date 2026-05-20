@@ -186,9 +186,9 @@ def build_receipt_field_parity_matrix() -> list[dict[str, Any]]:
             "field": "l5_certification_ref",
             "commit_request": True,
             "state_diff": False,
-            "uwg_commit_receipt_core": "shim_patched",
+            "uwg_commit_receipt_core": "promotion_gateway_enriched",
             "apps_rg_governance_sidecar": True,
-            "notes": "Core gateway omits l5 on receipt; AppsRgR1BUwgGateway patches construction",
+            "notes": "Core gateway omits l5 on receipt; R1bUwgPromotionGateway enriches at construction",
         },
         {
             "field": "gate_verdict_refs",
@@ -236,14 +236,14 @@ def build_receipt_field_parity_matrix() -> list[dict[str, Any]]:
     ]
 
 
-def document_shim_core_gaps() -> dict[str, Any]:
+def document_r1b_uwg_core_receipt_gaps() -> dict[str, Any]:
     return {
-        "shim_module": "apps_rg.cache.r1b_uwg_gateway_shim.AppsRgR1BUwgGateway",
+        "promotion_gateway_module": "apps_rg.cache.r1b_uwg_promotion.R1bUwgPromotionGateway",
         "core_gap_summary": (
             "Stock DurableWriteGateway.commit constructs UWGCommitReceipt without "
-            "l5_certification_ref; apps_rg shim patches receipt __new__ to inject l5 from "
-            "CommitRequest. gate_verdict_refs, replay_key, policy_hash, blueprint_hash, and "
-            "source_surface are NOT fields on UWGCommitReceipt — apps_rg durable projection "
+            "l5_certification_ref; R1bUwgPromotionGateway injects l5 from CommitRequest at "
+            "receipt construction. gate_verdict_refs, replay_key, policy_hash, blueprint_hash, "
+            "and source_surface are NOT fields on UWGCommitReceipt — apps_rg durable projection "
             "stores them in governance_receipt sidecar."
         ),
         "fields_core_cannot_carry": [
@@ -254,7 +254,7 @@ def document_shim_core_gaps() -> dict[str, Any]:
             "source_surface",
             "cleared_exit_review_packet_ref",
         ],
-        "fields_shim_patches": ["l5_certification_ref"],
+        "fields_promotion_gateway_enriches": ["l5_certification_ref"],
         "fields_core_carries": ["affected_state_surfaces", "state_diff_refs", "audit_refs"],
         "apps_rg_sidecar_path": "durable/uwg_admitted/intents/<record_id>.json#governance_receipt",
         "agentic_core_edit_required_for_full_parity": False,
@@ -268,6 +268,6 @@ __all__ = [
     "REQUIRED_SOURCE_SURFACE",
     "build_governance_receipt_bundle",
     "build_receipt_field_parity_matrix",
-    "document_shim_core_gaps",
+    "document_r1b_uwg_core_receipt_gaps",
     "validate_commit_request_governance",
 ]

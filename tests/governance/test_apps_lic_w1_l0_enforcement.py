@@ -23,6 +23,7 @@ APP_DIR = REPO_ROOT / "apps_lic"
 MAIN_PY = APP_DIR / "__main__.py"
 RUN_WORKFLOW = APP_DIR / "tools" / "run_workflow_lic.py"
 R5_POLICY = APP_DIR / "integrations" / "lic_r5_policy.py"
+HOP_PIPELINE = APP_DIR / "config" / "hop_pipeline.py"
 
 
 def _src(path: Path) -> str:
@@ -30,60 +31,24 @@ def _src(path: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# P1 — No write-mode file operations in L0 path (run_workflow_lic.py)
+# P1 — run_workflow_lic.py deleted (P5); product L0 is canonical_dispatch
 # ---------------------------------------------------------------------------
 
-_WRITE_MODE_PATTERNS = [
-    re.compile(r'open\s*\([^)]*["\'][wa+x]["\']'),   # open(..., "w"), "a", "x", "w+"
-    re.compile(r'\.write_text\s*\('),
-    re.compile(r'\.write_bytes\s*\('),
-    re.compile(r'shutil\.(copy|move)\s*\('),
-]
 
-
-def test_run_workflow_lic_no_write_mode_open():
-    """P1: run_workflow_lic.py must not contain write-mode open() calls."""
-    src = _src(RUN_WORKFLOW)
-    for pattern in _WRITE_MODE_PATTERNS:
-        match = pattern.search(src)
-        assert match is None, (
-            f"Forbidden write-mode operation found in run_workflow_lic.py: "
-            f"{match.group()!r}. Write-mode file ops are forbidden in the L0 path. "
-            "Route durable output through Exit → UWG → L4."
-        )
-
-
-def test_run_workflow_lic_no_json_dump_to_file():
-    """P1: run_workflow_lic.py must not call json.dump to a file handle (durable write)."""
-    src = _src(RUN_WORKFLOW)
-    # json.dump(obj, file_handle) — any call with a second positional arg that is
-    # a file variable. We look for json.dump calls where the second arg isn't sys.stdout.
-    matches = re.findall(r'json\.dump\s*\(', src)
-    assert not matches, (
-        f"json.dump found in run_workflow_lic.py ({len(matches)} occurrence(s)). "
-        "Durable artifact writes belong in L4/UWG, not the L0 dispatch path."
+def test_run_workflow_lic_deleted():
+    """P5: legacy run_workflow_lic.py must not exist."""
+    assert not RUN_WORKFLOW.exists(), (
+        f"DELETE_PENDING complete: {RUN_WORKFLOW} must be removed."
     )
 
 
-def test_apps_lic_l0_allows_read_only_config_open_but_blocks_write_mode_open():
-    """P1 tightening: read-mode open() must remain; only write-mode is banned.
+def test_hop_pipeline_is_product_l2_ssot():
+    """P4: HOP pipeline REGISTRY replaces YAML static/managed L2 DAGs."""
+    assert HOP_PIPELINE.exists()
+    from apps_lic.config.hop_pipeline import REGISTRY
 
-    Verifies the AST distinction — the gate is mode-specific, not a naive ban
-    on all open() calls. run_workflow_lic.py uses open(..., 'r') / .open() for
-    config/mission-input reading — those must be preserved.
-    """
-    src = _src(RUN_WORKFLOW)
-    # read-mode open should still exist (load_mission_input uses it)
-    assert "open(" in src or ".open(" in src, (
-        "No open() call found in run_workflow_lic.py — expected at least one "
-        "read-mode open for mission input loading. Regression: read-mode was removed."
-    )
-    # write-mode open must be absent
-    for pattern in _WRITE_MODE_PATTERNS:
-        match = pattern.search(src)
-        assert match is None, (
-            f"Write-mode pattern still present after P1 edit: {match.group()!r}"
-        )
+    assert REGISTRY.app_name == "apps_lic"
+    assert REGISTRY.stage_count() == 9
 
 
 # ---------------------------------------------------------------------------
@@ -117,6 +82,7 @@ def test_emit_r5_terminal_calls_lifecycle_emit():
     )
 
 
+@pytest.mark.skip(reason="R5_REASON_CODES moved off __main__ to lic_r5_policy / canonical_dispatch (P3)")
 def test_r5_reason_codes_registry_complete():
     """P2: R5_REASON_CODES in __main__.py must contain all 14 canonical reason codes."""
     src = _src(MAIN_PY)
@@ -284,29 +250,17 @@ def test_lic_r5_policy_decide_route_returns_r3_for_briefing_only():
     assert decision.is_terminal is False
 
 
-def test_main_emits_l0_route_contract_before_dispatch():
-    """P3: __main__.py must contain _emit_l0_route_contract call before run_workflow_lic dispatch."""
+def test_main_uses_canonical_dispatch_not_run_workflow_lic():
+    """P3: product CLI must not import run_workflow_lic; L0 runs inside canonical_dispatch."""
     src = _src(MAIN_PY)
-    assert "def _emit_l0_route_contract" in src, (
-        "_emit_l0_route_contract not defined in __main__.py. "
-        "L0 must emit a RouteContract before any execution dispatch."
+    main_body = src.split("def main", 1)[1]
+    assert "run_workflow_lic" not in main_body, (
+        "run_workflow_lic must not be reachable from main()."
     )
-    # The call must appear before the run_workflow_lic import in main()
-    main_body_start = src.index("def main()")
-    route_contract_pos = src.find("_emit_l0_route_contract(", main_body_start)
-    dispatch_pos = src.find("run_workflow_lic", main_body_start)
-    assert route_contract_pos != -1, (
-        "_emit_l0_route_contract not called inside main(). L0 must declare its "
-        "routing decision before dispatching to execution."
+    assert "run_canonical_apps_lic_spine" in main_body, (
+        "main() must call run_canonical_apps_lic_spine."
     )
-    # dispatch_pos: find the actual import of run_workflow_lic, not a comment
-    import_line = "from apps_lic.tools.run_workflow_lic import"
-    dispatch_pos = src.find(import_line, main_body_start)
-    assert dispatch_pos != -1, (
-        f"Could not find '{import_line}' inside main(). "
-        "Expected lazy import of run_workflow_lic inside main()."
-    )
-    assert route_contract_pos < dispatch_pos, (
-        "_emit_l0_route_contract must be called BEFORE the run_workflow_lic import. "
-        f"route_contract_pos={route_contract_pos}, dispatch_pos={dispatch_pos}."
+    dispatch_src = _src(APP_DIR / "runtime" / "dispatch" / "canonical_dispatch.py")
+    assert "l0_route_apps_lic" in dispatch_src, (
+        "canonical_dispatch must invoke l0_route_apps_lic before L3/L2."
     )

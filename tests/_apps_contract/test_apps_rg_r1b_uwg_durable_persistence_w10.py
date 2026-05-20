@@ -64,7 +64,7 @@ def test_governed_receipt_chain_materializes_to_run_dir(tmp_path: Path) -> None:
         COMMIT_REQUEST_ARTIFACT,
         emit_section_r1b_governed_receipt_chain,
     )
-    from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+    from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 
     run_dir = tmp_path / "w10_run"
     run_dir.mkdir()
@@ -91,8 +91,11 @@ def test_governed_receipt_chain_materializes_to_run_dir(tmp_path: Path) -> None:
         gateway=AppsRgR1BUwgGateway(),
     )
     assert outcome.commit_request_status == "EMITTED"
+    assert outcome.uwg_commit_or_block_status == "ADMITTED"
     assert (run_dir / COMMIT_REQUEST_ARTIFACT).is_file()
-    assert not (run_dir / "read_surface_refresh_receipt.json").is_file()
+    assert (run_dir / "read_surface_refresh_receipt.json").is_file()
+    assert (run_dir / "chroma_collection_index_ref.json").is_file()
+    assert (run_dir / "chroma_read_after_write_receipt.json").is_file()
 
 
 def test_file_backed_non_durable_fixture() -> None:

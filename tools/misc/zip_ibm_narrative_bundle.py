@@ -16,7 +16,7 @@ SOURCE_REL = [
     "apps_rg/prompt_assembly/prompt_registry.yaml",
     "apps_rg/prompt_assembly/prompt_bom.yaml",
     "apps_rg/rg_output_schema.json",
-    "apps_rg/runtime/sections/ibm_narrative_lane_api.py",
+    "apps_rg/runtime/sections/ibm_narrative_lane_runtime.py",
     "apps_rg/runtime/dispatch/ibm_narrative_pa.py",
     "apps_rg/runtime/dispatch/unify_ibm_pa_common.py",
     "apps_rg/runtime/dispatch/input_authority_prompt_block.py",

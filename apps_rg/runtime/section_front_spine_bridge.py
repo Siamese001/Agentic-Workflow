@@ -44,7 +44,7 @@ OBSERVED_CHAIN_WITH_FRONT_BRIDGE: tuple[str, ...] = (
     "L1",
     "L0",
     "proof_pool_resolver",
-    "section_graph_binding_shim",
+    "section_c03_graph_binding",
     "section_PA",
     "section_L2",
     "section_X2",
@@ -73,6 +73,7 @@ class SectionFrontSpineBridge:
     missing_downstream_contracts: tuple[str, ...] = DOWNSTREAM_MISSING_CANONICAL_CONTRACTS
     spine_lane_mode: str = "section_lane_modular"
     is_canonical_c0_path: bool = False
+    whole_run_envelope: bool = False
 
     def contracts_emitted(self) -> dict[str, bool]:
         return {
@@ -83,7 +84,12 @@ class SectionFrontSpineBridge:
 
 
 def activate_fixture_dev_bypass(*, non_product_certified: bool = True) -> None:
-    """Mark current context as fixture/dev-only (not product-certified)."""
+    """Mark current context as fixture/dev-only (not product-certified). Test-only."""
+    if os.environ.get("PYTEST_CURRENT_TEST") is None:
+        raise RuntimeError(
+            "fixture_dev_bypass is test-only; activate only under pytest "
+            "(PYTEST_CURRENT_TEST) or from tests.helpers."
+        )
     if not non_product_certified:
         raise ValueError(
             "activate_fixture_dev_bypass requires non_product_certified=True"
@@ -206,6 +212,11 @@ def build_section_front_spine_from_args(
     validated_request = u0_validate_apps_rg(envelope, allow_missing_profiles=False)
     l1_plan = l1_plan_apps_rg(validated_request)
     route = l0_route_apps_rg(l1_plan)
+    whole_run = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
     return SectionFrontSpineBridge(
         section_id=section_id,
         validated_request=validated_request,
@@ -214,6 +225,7 @@ def build_section_front_spine_from_args(
         product_visible=True,
         fixture_dev_only_bypass=False,
         non_product_certified=False,
+        whole_run_envelope=whole_run,
     )
 
 

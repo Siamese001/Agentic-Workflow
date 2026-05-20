@@ -404,12 +404,12 @@ class TestNotApplicableRequiresReason:
 class TestGoldenPathRegressionGuard:
     def test_apps_lic_exit_binding_importable(self) -> None:
         """Test 11: apps_lic exit binding still importable after patch."""
-        from agentic_core.runtime.exit.apps_lic_exit_binding import exit_finalize_apps_lic
+        from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
         assert callable(exit_finalize_apps_lic)
 
     def test_apps_lic_exit_binding_populates_l5_cert_refs(self) -> None:
         """Test 11: _build_exit_review_packet populates l5_certification_refs."""
-        from agentic_core.runtime.exit.apps_lic_exit_binding import (
+        from apps_lic.runtime.bindings.exit_binding import (
             _build_exit_review_packet,
             _CERT_REF as LIC_CERT_REF,
         )
@@ -431,10 +431,10 @@ class TestGoldenPathRegressionGuard:
 
     def test_apps_lic_build_exit_review_packet_cert_ref_extractable(self) -> None:
         """Test 11: _extract_cert_ref can derive cert ref from apps_lic ExitReviewPacket."""
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
+        from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
         from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
-        from agentic_core.runtime.exit.apps_lic_exit_binding import _CERT_REF as LIC_CERT_REF2
+        from apps_lic.runtime.bindings.exit_binding import _CERT_REF as LIC_CERT_REF2
         l2 = SealedL2Artifact(
             request_id="r1",
             run_id="run1",

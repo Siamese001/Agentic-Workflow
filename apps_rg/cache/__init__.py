@@ -16,7 +16,7 @@ from apps_rg.cache.r1b_uwg_promotion import (
 )
 from apps_rg.cache.r1b_uwg_receipt_contract import (
     build_receipt_field_parity_matrix,
-    document_shim_core_gaps,
+    document_r1b_uwg_core_receipt_gaps,
     validate_commit_request_governance,
 )
 
@@ -32,6 +32,6 @@ __all__ = [
     "promote_and_project_r1b_cache",
     "promote_r1b_cache_via_uwg",
     "build_receipt_field_parity_matrix",
-    "document_shim_core_gaps",
+    "document_r1b_uwg_core_receipt_gaps",
     "validate_commit_request_governance",
 ]

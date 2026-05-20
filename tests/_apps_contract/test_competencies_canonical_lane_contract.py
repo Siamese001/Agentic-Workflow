@@ -164,7 +164,7 @@ def test_canonical_lane_mock_judge_x3_review_code(competencies_lane_args) -> Non
 
 def test_duplicate_variants_collapsed_regression_fixture():
     """Historical REAL_LLM run duplicated 'high availability' across categories."""
-    from apps_rg.runtime.sections.competencies_lane_api import (
+    from apps_rg.runtime.sections.competencies_lane_runtime import (
         JD_TEXT_DEFAULT,
         build_resume_support_blob,
         collect_employment_bullets,
@@ -292,7 +292,7 @@ def test_x3_soft_fail_unit():
 
 def test_competencies_overlay_files_exist():
     expected = [
-        "apps_rg/runtime/sections/competencies_lane_api.py",
+        "apps_rg/runtime/sections/competencies_lane_runtime.py",
         "apps_rg/runtime/validators/competencies_x2.py",
         "apps_rg/runtime/judges/competencies_x1d.py",
         "apps_rg/runtime/exit/competencies_x3.py",
@@ -304,7 +304,7 @@ def test_competencies_overlay_files_exist():
 
 def test_no_agentic_core_in_overlay_files():
     overlay = [
-        REPO_ROOT / "apps_rg/runtime/sections/competencies_lane_api.py",
+        REPO_ROOT / "apps_rg/runtime/sections/competencies_lane_runtime.py",
         REPO_ROOT / "apps_rg/runtime/validators/competencies_x2.py",
         REPO_ROOT / "apps_rg/runtime/judges/competencies_x1d.py",
         REPO_ROOT / "apps_rg/runtime/exit/competencies_x3.py",

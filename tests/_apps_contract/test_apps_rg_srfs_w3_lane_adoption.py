@@ -99,7 +99,7 @@ def test_proof_pool_metadata_for_section_offline_stub(
         run_headline_execution(args, artifact_dir_override=run_dir, print_output=False)
     elif section == "executive_summary":
         from apps_rg.runtime.sections.executive_summary_lane import run_executive_summary_execution
-        from apps_rg.runtime.sections.executive_summary_lane_api import build_parser
+        from apps_rg.runtime.sections.executive_summary_lane import build_parser
         from tests._apps_contract.test_exec_summary_section_pipeline import _tag_exec_summary_provider_resolution
 
         args = build_parser().parse_args(

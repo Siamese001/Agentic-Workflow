@@ -1,4 +1,4 @@
-"""Contract tests for `apps_rg.runtime.internal.lane_batch` (step order + JSON shape).
+"""Contract tests for `tests.helpers.offline_lane_orchestration` (step order + JSON shape).
 
 Full real-LLM E2E is exercised manually via the module CLI; these tests stub subprocess + package emit.
 """
@@ -12,7 +12,8 @@ from unittest import mock
 
 import pytest
 
-from apps_rg.runtime.internal import lane_batch as ofr
+import tests.helpers.offline_lane_orchestration as ofr
+from apps_rg.runtime.internal import lane_batch as lb
 from apps_rg.runtime.locked_copy.locked_copy_manifest import sha256_hex
 
 
@@ -44,7 +45,7 @@ def _stub_canonical_base_resume(repo: Path, *, text: str) -> Path:
 
 
 def test_lane_modules_canonical_sequence() -> None:
-    tails = [_lane_tail(m) for m in ofr.LANE_MODULES]
+    tails = [_lane_tail(m) for m in lb.LANE_MODULES]
     assert tails == [
         "headline",
         "executive_summary",
@@ -121,7 +122,7 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     with (
         mock.patch("subprocess.run", side_effect=fake_run),
         mock.patch(
-            "apps_rg.runtime.internal.lane_batch._run_docx_emit",
+            "tests.helpers.offline_lane_orchestration._run_docx_emit",
             return_value={
                 "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
                 "render": {"gates_all_pass": True, "failed_gate_ids": []},
@@ -226,7 +227,7 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     with (
         mock.patch("subprocess.run", return_value=_FakeProc()),
         mock.patch(
-            "apps_rg.runtime.internal.lane_batch._run_docx_emit",
+            "tests.helpers.offline_lane_orchestration._run_docx_emit",
             return_value={
                 "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
                 "render": {"gates_all_pass": True, "failed_gate_ids": []},
@@ -335,4 +336,6 @@ def test_missing_default_base_resume_fails_before_subprocess(tmp_path: Path) -> 
 
 
 def test_lane_batch_has_no_cli_main() -> None:
-    assert not hasattr(ofr, "main")
+    import apps_rg.runtime.internal.lane_batch as lb
+
+    assert not hasattr(lb, "main")

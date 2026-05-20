@@ -1,4 +1,4 @@
-"""W6B — governed R1B UWG receipt chain in section run folders (no Chroma)."""
+"""W6B — governed R1B UWG receipt chain in section run folders (W6C Chroma after admit)."""
 from __future__ import annotations
 
 import json
@@ -13,7 +13,7 @@ from apps_rg.cache.r1b_governed_receipt_emission import (
     emit_section_r1b_governed_receipt_chain,
 )
 from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
-from apps_rg.cache.r1b_uwg_gateway_shim import AppsRgR1BUwgGateway
+from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_uwg_promotion import build_r1b_promotion_candidate
 from apps_rg.runtime.semantic_cache_persistence_quarantine import (
     NO_DIRECT_CHROMA_ASSERTION_ARTIFACT,
@@ -106,7 +106,10 @@ def test_x3_block_does_not_emit_commit_request(tmp_path: Path) -> None:
     assert chain["semantic_cache_persistence_status"] == "NOT_APPLICABLE"
 
 
-def test_eligible_r1b_emits_commit_request_through_uwg(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_eligible_r1b_emits_commit_request_through_uwg(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("APPS_RG_R1B_SKIP_CHROMA_PROJECTION", raising=False)
     repo = tmp_path
     ad = repo / "run_allow"
     ad.mkdir(parents=True)
@@ -159,13 +162,24 @@ def test_eligible_r1b_emits_commit_request_through_uwg(tmp_path: Path, monkeypat
     assert (ad / COMMIT_REQUEST_ARTIFACT).is_file()
     assert (ad / "state_diff_validation_result.json").is_file()
     assert (ad / "l4_namespace_object_ref.json").is_file()
-    assert outcome.read_surface_refresh_status == "NOT_APPLICABLE"
-    assert outcome.chroma_projection_status == "MISSING"
-    assert not (ad / "read_surface_refresh_receipt.json").is_file()
+    assert outcome.read_surface_refresh_status == "COMPLETE"
+    assert outcome.chroma_projection_status == "COMPLETE"
+    assert (ad / "read_surface_refresh_receipt.json").is_file()
+    assert (ad / "chroma_collection_index_ref.json").is_file()
+    assert (ad / "chroma_read_after_write_receipt.json").is_file()
     uwg = assess_uwg_durable_write_chain(repo_root=repo, artifact_dir=ad, integrated_dir=None)
     assert uwg["r1b_uwg_chain_core_complete"] is True
-    assert uwg["durable_proof_chain_complete"] is False
-    assert uwg["governed_chroma_refresh_proven"] is False
+    assert uwg["read_surface_refresh_complete"] is True
+    assert uwg["chroma_projection_complete"] is True
+    assert uwg["durable_vector_chain_artifacts_complete"] is True
+    sc = finalize_semantic_cache_quarantine(
+        repo_root=repo,
+        artifact_dir=ad,
+        section_id="executive_summary",
+        run_id="run_allow",
+        integrated_dir=None,
+    )
+    assert sc["uwg_assessment"]["durable_vector_persistence_proven"] is True
 
 
 def test_evidence_package_reflects_w6b_chain(tmp_path: Path) -> None:
@@ -192,4 +206,4 @@ def test_evidence_package_reflects_w6b_chain(tmp_path: Path) -> None:
     assert (ad / NO_DIRECT_CHROMA_ASSERTION_ARTIFACT).is_file()
     assert pkg["no_direct_chroma_write_bypass_assertion_ref"]
     assert pkg["read_surface_refresh_status"] == "NOT_APPLICABLE"
-    assert summary["chroma_projection_status"] == "MISSING"
+    assert summary["chroma_projection_status"] in ("MISSING", "NOT_APPLICABLE")

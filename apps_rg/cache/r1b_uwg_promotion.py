@@ -5,10 +5,12 @@ from __future__ import annotations
 import json
 import os
 import uuid
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator, List, Tuple
+from unittest.mock import patch
 
 from apps_rg.cache.r1b_constants import (
     CACHE_GRAIN_ROLE_TARGET_RUN,
@@ -236,8 +238,6 @@ def promote_r1b_cache_via_uwg(
             missing_contract_fields=("uwg_promotion_disabled_by_env",),
         )
 
-    from apps_rg.cache.r1b_uwg_gateway_shim import default_r1b_promotion_gateway
-
     from apps_rg.cache.r1b_uwg_receipt_contract import (
         build_governance_receipt_bundle,
         validate_commit_request_governance,
@@ -431,11 +431,90 @@ def _write_fixture_mirror(store: Any, candidate: R1BCachePromotionCandidate) -> 
         store.write_chunk(ch)
 
 
+@contextmanager
+def _inject_uwg_commit_receipt_l5_fields(
+    *,
+    l5_ref: str,
+    affected_surfaces: tuple[str, ...],
+    audit_refs: tuple[str, ...],
+) -> Iterator[None]:
+    """Inject CommitRequest governance fields into UWGCommitReceipt construction.
+
+    Stock ``DurableWriteGateway.commit`` omits ``l5_certification_ref`` on receipt
+    construction (AG-W0-5). R1B promotion uses a scoped construction hook — not a
+    separate compatibility module.
+    """
+    from agentic_core.L4_state.contracts import records as records_mod
+
+    real_cls = records_mod.UWGCommitReceipt
+
+    class _R1bReceiptConstructor(real_cls):  # type: ignore[misc,valid-type]
+        def __new__(cls, *args, **kwargs):
+            if not kwargs.get("l5_certification_ref"):
+                kwargs = {**kwargs, "l5_certification_ref": l5_ref}
+            if affected_surfaces and not kwargs.get("affected_state_surfaces"):
+                kwargs = {**kwargs, "affected_state_surfaces": affected_surfaces}
+            if audit_refs and not kwargs.get("audit_refs"):
+                kwargs = {**kwargs, "audit_refs": audit_refs}
+            return real_cls(*args, **kwargs)
+
+    with patch(
+        "agentic_core.L4_state.uwg.durable_write_gateway.UWGCommitReceipt",
+        _R1bReceiptConstructor,
+    ):
+        yield
+
+
+def _durable_write_gateway_base() -> type:
+    from agentic_core.L4_state.uwg.durable_write_gateway import DurableWriteGateway
+
+    return DurableWriteGateway
+
+
+class R1bUwgPromotionGateway(_durable_write_gateway_base()):  # type: ignore[misc,valid-type]
+    """Canonical apps_rg UWG gateway — propagates l5_certification_ref to UWGCommitReceipt."""
+
+    def commit(
+        self,
+        *,
+        commit_request: Any,
+        state_diffs: List[Any],
+        rollback_plan: Any,
+        refresh_plan: Any,
+    ) -> Tuple[Any | None, Any | None, list]:
+        l5 = commit_request.l5_certification_ref or f"l5:r1b:{commit_request.run_id}"
+        surfaces = tuple(commit_request.affected_state_surfaces)
+        audit = tuple(commit_request.audit_refs)
+        with _inject_uwg_commit_receipt_l5_fields(
+            l5_ref=l5,
+            affected_surfaces=surfaces,
+            audit_refs=audit,
+        ):
+            return super().commit(
+                commit_request=commit_request,
+                state_diffs=state_diffs,
+                rollback_plan=rollback_plan,
+                refresh_plan=refresh_plan,
+            )
+
+
+# Historical import name retained for tests/fixture emitters (same canonical class).
+AppsRgR1BUwgGateway = R1bUwgPromotionGateway
+
+
+def default_r1b_promotion_gateway() -> R1bUwgPromotionGateway:
+    """Default UWG gateway for R1B post-Exit promotion (Exit-sourced CommitRequest only)."""
+    return R1bUwgPromotionGateway()
+
+
 __all__ = [
+    "AppsRgR1BUwgGateway",
     "R1BCachePromotionCandidate",
     "R1BPromotionOutcome",
+    "R1bUwgPromotionGateway",
     "build_r1b_commit_bundle",
     "build_r1b_promotion_candidate",
+    "default_r1b_promotion_gateway",
     "promote_and_project_r1b_cache",
     "promote_r1b_cache_via_uwg",
     "write_blocked_promotion_receipt",

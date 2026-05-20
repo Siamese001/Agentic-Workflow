@@ -87,7 +87,7 @@ def _make_route(
     run_id: str | None = None,
 ) -> Any:
     """Build a minimal RouteContract for apps_lic."""
-    from tests._apps_contract.test_w5_apps_lic_c0_pa import _canonical_pipeline
+    from tests.apps_lic.test_w5_apps_lic_c0_pa import _canonical_pipeline
 
     _vr, _l1, route, _fec = _canonical_pipeline()
     return dataclasses.replace(
@@ -100,7 +100,7 @@ def _make_route(
 
 def _make_fec(route: Any | None = None) -> Any:
     """Build a FinalEvidenceContract via the canonical C0 pipeline."""
-    from tests._apps_contract.test_w5_apps_lic_c0_pa import _canonical_pipeline
+    from tests.apps_lic.test_w5_apps_lic_c0_pa import _canonical_pipeline
 
     _vr, _l1, _route, fec = _canonical_pipeline()
     return fec
@@ -108,8 +108,8 @@ def _make_fec(route: Any | None = None) -> Any:
 
 def _make_prompt(route: Any) -> Any:
     """Build a CompiledPromptArtifact via the canonical PA pipeline."""
-    from tests._apps_contract.test_w5_apps_lic_c0_pa import _canonical_pipeline
-    from agentic_core.prompt_governance.apps_lic_pa_binding import pa_compose_apps_lic
+    from tests.apps_lic.test_w5_apps_lic_c0_pa import _canonical_pipeline
+    from apps_lic.runtime.bindings.pa_binding import pa_compose_apps_lic
 
     vr, l1, _route, fec = _canonical_pipeline()
     return pa_compose_apps_lic(
@@ -122,7 +122,7 @@ def _make_prompt(route: Any) -> Any:
 
 def _make_step_contract(route: Any, fec: Any, prompt: Any | None = None) -> Any:
     """Build L3StepContract via l3_orchestrate_apps_lic."""
-    from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+    from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
     _receipt, step, _bus = l3_orchestrate_apps_lic(route, fec, prompt)
     return step
@@ -133,7 +133,7 @@ def _make_step_contract(route: Any, fec: Any, prompt: Any | None = None) -> Any:
 
 class TestTC01_L3Participates:
     def test_l3_orchestrate_returns_three_tuple(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -142,7 +142,7 @@ class TestTC01_L3Participates:
         assert len(result) == 3
 
     def test_l3_required_is_true_in_receipt(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
         from agentic_core.runtime.contracts.l3_runtime_orchestration_receipt import (
             L3RuntimeOrchestrationReceipt,
         )
@@ -154,7 +154,7 @@ class TestTC01_L3Participates:
         assert receipt.l3_required is True
 
     def test_only_fires_for_managed_workflow(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route_mw = _make_route(execution_form="managed_workflow")
         fec = _make_fec()
@@ -164,7 +164,7 @@ class TestTC01_L3Participates:
 
 class TestTC02_L3EmitsReceipt:
     def test_receipt_has_correct_run_id(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         run_id = uuid.uuid4().hex[:16]
         route = _make_route(run_id=run_id)
@@ -173,7 +173,7 @@ class TestTC02_L3EmitsReceipt:
         assert receipt.run_id == run_id
 
     def test_receipt_has_dag_id(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import (
+        from apps_lic.runtime.bindings.l3_binding import (
             l3_orchestrate_apps_lic,
             APPS_LIC_DAG_ID,
         )
@@ -184,7 +184,7 @@ class TestTC02_L3EmitsReceipt:
         assert receipt.dag_id == APPS_LIC_DAG_ID
 
     def test_receipt_has_sha256_dag_sha(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -192,7 +192,7 @@ class TestTC02_L3EmitsReceipt:
         assert receipt.dag_sha256.startswith("sha256:")
 
     def test_receipt_has_selected_node_ids(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import (
+        from apps_lic.runtime.bindings.l3_binding import (
             l3_orchestrate_apps_lic,
             APPS_LIC_NODE_ID,
         )
@@ -203,7 +203,7 @@ class TestTC02_L3EmitsReceipt:
         assert APPS_LIC_NODE_ID in receipt.selected_node_ids
 
     def test_receipt_step_contracts_not_empty(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -211,7 +211,7 @@ class TestTC02_L3EmitsReceipt:
         assert len(receipt.step_contracts) >= 1
 
     def test_receipt_deterministic_digest_present(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -219,7 +219,7 @@ class TestTC02_L3EmitsReceipt:
         assert receipt.deterministic_digest.startswith("sha256:")
 
     def test_receipt_l5_cert_ref_non_empty(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import (
+        from apps_lic.runtime.bindings.l3_binding import (
             l3_orchestrate_apps_lic,
             APPS_LIC_L3_CERT_REF,
         )
@@ -232,7 +232,7 @@ class TestTC02_L3EmitsReceipt:
 
 class TestTC03_L3EmitsStepContract:
     def test_step_contract_type(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
         from agentic_core.L3_orchestration.doctrine.contracts_l3_7 import L3StepContract
 
         route = _make_route()
@@ -241,7 +241,7 @@ class TestTC03_L3EmitsStepContract:
         assert isinstance(step, L3StepContract)
 
     def test_step_contract_id_non_empty(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -249,7 +249,7 @@ class TestTC03_L3EmitsStepContract:
         assert step.step_contract_id
 
     def test_step_expected_output_is_sealed_l2(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -257,7 +257,7 @@ class TestTC03_L3EmitsStepContract:
         assert step.expected_output_contract == "SealedL2Artifact"
 
     def test_step_no_durable_commit_authority_true(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -265,7 +265,7 @@ class TestTC03_L3EmitsStepContract:
         assert step.no_durable_commit_authority is True
 
     def test_step_timeout_positive(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -275,7 +275,7 @@ class TestTC03_L3EmitsStepContract:
 
 class TestTC04_L3PreservesFields:
     def test_workflow_id_stable_for_same_run(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -284,7 +284,7 @@ class TestTC04_L3PreservesFields:
         assert step1.workflow_id == step2.workflow_id
 
     def test_node_id_is_canonical(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import (
+        from apps_lic.runtime.bindings.l3_binding import (
             l3_orchestrate_apps_lic,
             APPS_LIC_NODE_ID,
         )
@@ -295,7 +295,7 @@ class TestTC04_L3PreservesFields:
         assert step.node_id == APPS_LIC_NODE_ID
 
     def test_capability_token_non_empty(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -303,7 +303,7 @@ class TestTC04_L3PreservesFields:
         assert step.capability_token_requirement.startswith("cap:")
 
     def test_sandbox_envelope_non_empty(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -311,7 +311,7 @@ class TestTC04_L3PreservesFields:
         assert step.sandbox_envelope_requirement.startswith("sbx:")
 
     def test_allowed_execution_lane_is_route_id(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -319,7 +319,7 @@ class TestTC04_L3PreservesFields:
         assert step.parent_route_id == route.route_id
 
     def test_replay_key_preserved(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -327,7 +327,7 @@ class TestTC04_L3PreservesFields:
         assert step.replay_key  # non-empty
 
     def test_dependency_refs_in_step_inputs(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -337,7 +337,7 @@ class TestTC04_L3PreservesFields:
         assert any(r.startswith("fec:") for r in step.inputs.evidence_refs)
 
     def test_checkpoint_refs_in_snapshot_id(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -347,7 +347,7 @@ class TestTC04_L3PreservesFields:
 
 class TestTC05_L3HardLaws:
     def test_no_execute_assertion_true(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -355,7 +355,7 @@ class TestTC05_L3HardLaws:
         assert receipt.l3_no_execute_assertion is True
 
     def test_no_retrieve_assertion_true(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -363,7 +363,7 @@ class TestTC05_L3HardLaws:
         assert receipt.l3_no_retrieve_assertion is True
 
     def test_no_prompt_assembly_assertion_true(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -371,7 +371,7 @@ class TestTC05_L3HardLaws:
         assert receipt.l3_no_prompt_assembly_assertion is True
 
     def test_no_l4_write_assertion_true(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -379,25 +379,25 @@ class TestTC05_L3HardLaws:
         assert receipt.l3_no_l4_write_assertion is True
 
     def test_no_chromadb_in_source(self) -> None:
-        lines = _import_lines("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.l3_binding")
         for line in lines:
             assert "chromadb" not in line.lower(), f"ChromaDB import found: {line!r}"
 
     def test_no_embedding_in_source(self) -> None:
-        code = _code_only("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        code = _code_only("apps_lic.runtime.bindings.l3_binding")
         forbidden = ["SentenceTransformer", "sentence_transformers", "get_embedding"]
         for pattern in forbidden:
             assert pattern not in code, f"Embedding pattern found: {pattern!r}"
 
     def test_no_hop_pipeline_call_in_source(self) -> None:
         """L3 must NOT import or instantiate HopPipelineExecutor — that is L2's job."""
-        lines = _import_lines("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.l3_binding")
         for line in lines:
             assert "HopPipelineExecutor" not in line, (
                 f"L3 must not import HopPipelineExecutor — hard law violation: {line!r}"
             )
         # Also check that it's not called/instantiated (outside of docstring/comments)
-        mod = importlib.import_module("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l3_binding")
         src = inspect.getsource(mod)
         # Strip comments and docstrings — only look at code lines
         code_lines = [
@@ -413,7 +413,7 @@ class TestTC05_L3HardLaws:
 
     def test_no_l4_write_in_source(self) -> None:
         import re
-        code = _code_only("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        code = _code_only("apps_lic.runtime.bindings.l3_binding")
         # Must not call write_l4(...) or l4_write(...) — policy descriptor strings
         # like "no_retry_on_l4_write" are permitted.
         assert not re.search(r'\bwrite_l4\s*\(', code), "write_l4() call found in L3"
@@ -422,7 +422,7 @@ class TestTC05_L3HardLaws:
 
 class TestTC06_L3RejectsNonManagedWorkflow:
     def test_raises_for_single_step(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route(execution_form="single_step")
         fec = _make_fec()
@@ -430,7 +430,7 @@ class TestTC06_L3RejectsNonManagedWorkflow:
             l3_orchestrate_apps_lic(route, fec)
 
     def test_raises_for_wrong_type(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
         from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
 
         fec = _make_fec()
@@ -440,7 +440,7 @@ class TestTC06_L3RejectsNonManagedWorkflow:
 
 class TestTC07_L3ContextBus:
     def test_context_bus_has_evidence_refs(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
         from agentic_core.L3_orchestration.doctrine.contracts_l3_7 import L3ContextBus
 
         route = _make_route()
@@ -450,7 +450,7 @@ class TestTC07_L3ContextBus:
         assert len(bus.carried_evidence_refs) >= 1
 
     def test_context_bus_with_prompt_has_prompt_refs(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -459,7 +459,7 @@ class TestTC07_L3ContextBus:
         assert len(bus.carried_prompt_artifact_refs) >= 1
 
     def test_context_bus_workflow_id_matches_step(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -472,7 +472,7 @@ class TestTC07_L3ContextBus:
 
 class TestTC08_L2ReceivesBoundedPacket:
     def _run_l2_with_stub(self, route: Any, fec: Any, step: Any, prompt: Any = None) -> Any:
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
 
         stub_record = HopRunRecord(
@@ -485,13 +485,13 @@ class TestTC08_L2ReceivesBoundedPacket:
             terminal_error="",
         )
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub_record, "Hello world"),
         ):
             return l2_execute_apps_lic(route, fec, step, prompt)
 
     def test_l2_rejects_non_managed_workflow(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 
         route_bad = _make_route(execution_form="single_step")
         fec = _make_fec()
@@ -501,7 +501,7 @@ class TestTC08_L2ReceivesBoundedPacket:
             l2_execute_apps_lic(route_bad, fec, step)
 
     def test_l2_rejects_wrong_step_type(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -518,7 +518,7 @@ class TestTC08_L2ReceivesBoundedPacket:
 
 class TestTC09_L2InvokesOnlyHopPipeline:
     def test_hop_pipeline_called_once(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
 
         route = _make_route()
@@ -540,7 +540,7 @@ class TestTC09_L2InvokesOnlyHopPipeline:
             return ("completed", stub_record, "test")
 
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             side_effect=counting_invoke,
         ):
             l2_execute_apps_lic(route, fec, step)
@@ -549,7 +549,7 @@ class TestTC09_L2InvokesOnlyHopPipeline:
 
     def test_no_other_llm_call_in_source(self) -> None:
         """L2 must delegate all LLM calls to HopPipelineExecutor only."""
-        mod = importlib.import_module("agentic_core.L2_execution.apps_lic_l2_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l2_binding")
         src = inspect.getsource(mod)
         # Must not call vllm/openai/anthropic directly
         forbidden = ["chat_completions", "_post_chat_completion", "openai.ChatCompletion"]
@@ -560,7 +560,7 @@ class TestTC09_L2InvokesOnlyHopPipeline:
 class TestTC10_L2EmitsSealedArtifact:
     def _sealed(self) -> Any:
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -573,7 +573,7 @@ class TestTC10_L2EmitsSealedArtifact:
             final_context={"draft_message": "hi"},
         )
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub_record, "hi"),
         ):
             return l2_execute_apps_lic(route, fec, step)
@@ -587,7 +587,7 @@ class TestTC10_L2EmitsSealedArtifact:
         assert self._sealed().execution_status == "completed"
 
     def test_run_id_matches_route(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
 
         run_id = uuid.uuid4().hex[:16]
@@ -596,7 +596,7 @@ class TestTC10_L2EmitsSealedArtifact:
         step = _make_step_contract(route, fec)
         stub = HopRunRecord("r2", (Checkpoint(1, "p", StageStatus.COMPLETED, {}),), {})
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub, ""),
         ):
             sealed = l2_execute_apps_lic(route, fec, step)
@@ -606,7 +606,7 @@ class TestTC10_L2EmitsSealedArtifact:
 class TestTC11_L2PreservesRefFields:
     def _sealed_with_prompt(self) -> Any:
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -618,7 +618,7 @@ class TestTC11_L2PreservesRefFields:
             {"draft_message": "x"},
         )
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub, "x"),
         ):
             return l2_execute_apps_lic(route, fec, step, prompt)
@@ -664,14 +664,14 @@ class TestTC11_L2PreservesRefFields:
 class TestTC12_ProposedStateDiffInert:
     def _sealed(self) -> Any:
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 
         route = _make_route()
         fec = _make_fec()
         step = _make_step_contract(route, fec)
         stub = HopRunRecord("r4", (Checkpoint(1, "p", StageStatus.COMPLETED, {}),), {})
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub, "msg"),
         ):
             return l2_execute_apps_lic(route, fec, step)
@@ -686,14 +686,14 @@ class TestTC12_ProposedStateDiffInert:
 class TestTC13_NoL4Write:
     def _sealed(self) -> Any:
         from apps_shared.orchestration import HopRunRecord, Checkpoint, StageStatus
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 
         route = _make_route()
         fec = _make_fec()
         step = _make_step_contract(route, fec)
         stub = HopRunRecord("r5", (Checkpoint(1, "p", StageStatus.COMPLETED, {}),), {})
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub, ""),
         ):
             return l2_execute_apps_lic(route, fec, step)
@@ -706,35 +706,35 @@ class TestTC13_NoL4Write:
 
     def test_no_l4_write_in_source(self) -> None:
         import re
-        code = _code_only("agentic_core.L2_execution.apps_lic_l2_binding")
+        code = _code_only("apps_lic.runtime.bindings.l2_binding")
         assert not re.search(r'\bwrite_l4\s*\(', code), "write_l4() call found in L2"
         assert not re.search(r'\bl4_write\s*\(', code), "l4_write() call found in L2"
 
 
 class TestTC14_NoChromaDbMutation:
     def test_no_chromadb_import_in_l3(self) -> None:
-        lines = _import_lines("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.l3_binding")
         for line in lines:
             assert "chromadb" not in line.lower()
 
     def test_no_chromadb_import_in_l2(self) -> None:
-        lines = _import_lines("agentic_core.L2_execution.apps_lic_l2_binding")
+        lines = _import_lines("apps_lic.runtime.bindings.l2_binding")
         for line in lines:
             assert "chromadb" not in line.lower()
 
     def test_no_chromadb_call_in_l2_source(self) -> None:
-        code = _code_only("agentic_core.L2_execution.apps_lic_l2_binding")
+        code = _code_only("apps_lic.runtime.bindings.l2_binding")
         assert "chromadb" not in code.lower()
 
 
 class TestTC15_NoEmbeddingGeneration:
     def test_no_embedding_in_l3_source(self) -> None:
-        code = _code_only("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        code = _code_only("apps_lic.runtime.bindings.l3_binding")
         for pattern in ["SentenceTransformer", "sentence_transformers", "get_embedding"]:
             assert pattern not in code, f"Embedding call found in L3: {pattern!r}"
 
     def test_no_embedding_in_l2_source(self) -> None:
-        code = _code_only("agentic_core.L2_execution.apps_lic_l2_binding")
+        code = _code_only("apps_lic.runtime.bindings.l2_binding")
         for pattern in ["SentenceTransformer", "sentence_transformers", "get_embedding"]:
             assert pattern not in code, f"Embedding call found in L2: {pattern!r}"
 
@@ -744,41 +744,41 @@ class TestTC15_NoEmbeddingGeneration:
 
 class TestTC16_Regression_W3_W4_W5:
     def test_w3_u0_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.runtime.entry.u0_apps_lic_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.u0_binding")
         assert mod is not None
 
     def test_w4_l1_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L1_cognition.apps_lic_l1_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l1_binding")
         assert mod is not None
 
     def test_w4_l0_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L0_routing.apps_lic_l0_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l0_binding")
         assert mod is not None
 
     def test_w5_c0_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.runtime.c0.apps_lic_c0_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.c0_binding")
         assert mod is not None
 
     def test_w5_pa_importable(self) -> None:
         mod = importlib.import_module(
-            "agentic_core.prompt_governance.apps_lic_pa_binding"
+            "apps_lic.runtime.bindings.pa_binding"
         )
         assert mod is not None
 
     def test_w6_l3_importable(self) -> None:
         mod = importlib.import_module(
-            "agentic_core.L3_orchestration.apps_lic_l3_binding"
+            "apps_lic.runtime.bindings.l3_binding"
         )
         assert mod is not None
 
     def test_w6_l2_importable(self) -> None:
-        mod = importlib.import_module("agentic_core.L2_execution.apps_lic_l2_binding")
+        mod = importlib.import_module("apps_lic.runtime.bindings.l2_binding")
         assert mod is not None
 
 
 class TestTC17_L3Determinism:
     def test_workflow_id_same_for_same_run(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         run_id = uuid.uuid4().hex[:16]
         route = _make_route(run_id=run_id)
@@ -788,7 +788,7 @@ class TestTC17_L3Determinism:
         assert step1.workflow_id == step2.workflow_id
 
     def test_dag_sha256_stable(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()
@@ -797,7 +797,7 @@ class TestTC17_L3Determinism:
         assert r1.dag_sha256 == r2.dag_sha256
 
     def test_different_run_ids_produce_different_workflow_ids(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route1 = _make_route(run_id=uuid.uuid4().hex[:16])
         route2 = _make_route(run_id=uuid.uuid4().hex[:16])
@@ -809,7 +809,7 @@ class TestTC17_L3Determinism:
 
 class TestTC18_L2FailSoft:
     def test_stub_fallback_on_hop_error(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import l2_execute_apps_lic
+        from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
         from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
         route = _make_route()
@@ -817,7 +817,7 @@ class TestTC18_L2FailSoft:
         step = _make_step_contract(route, fec)
 
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("stub_fallback", None, None),
         ):
             sealed = l2_execute_apps_lic(route, fec, step)
@@ -826,7 +826,7 @@ class TestTC18_L2FailSoft:
         assert sealed.execution_status == "stub_fallback"
 
     def test_stub_fallback_still_has_cert_ref(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import (
+        from apps_lic.runtime.bindings.l2_binding import (
             l2_execute_apps_lic,
             APPS_LIC_L2_CERT_REF,
         )
@@ -836,7 +836,7 @@ class TestTC18_L2FailSoft:
         step = _make_step_contract(route, fec)
 
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("stub_fallback", None, None),
         ):
             sealed = l2_execute_apps_lic(route, fec, step)
@@ -846,7 +846,7 @@ class TestTC18_L2FailSoft:
 
 class TestTC19_L2CertRef:
     def test_cert_ref_is_correct(self) -> None:
-        from agentic_core.L2_execution.apps_lic_l2_binding import (
+        from apps_lic.runtime.bindings.l2_binding import (
             l2_execute_apps_lic,
             APPS_LIC_L2_CERT_REF,
         )
@@ -857,7 +857,7 @@ class TestTC19_L2CertRef:
         step = _make_step_contract(route, fec)
         stub = HopRunRecord("r6", (Checkpoint(1, "p", StageStatus.COMPLETED, {}),), {})
         with patch(
-            "agentic_core.L2_execution.apps_lic_l2_binding._invoke_hop_pipeline",
+            "apps_lic.runtime.bindings.l2_binding._invoke_hop_pipeline",
             return_value=("completed", stub, "msg"),
         ):
             sealed = l2_execute_apps_lic(route, fec, step)
@@ -867,7 +867,7 @@ class TestTC19_L2CertRef:
 
 class TestTC20_L3AllHardLawAssertions:
     def test_all_four_assertions_true(self) -> None:
-        from agentic_core.L3_orchestration.apps_lic_l3_binding import l3_orchestrate_apps_lic
+        from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 
         route = _make_route()
         fec = _make_fec()

@@ -244,7 +244,7 @@ def test_apps_lic_has_no_direct_system_learning_imports() -> None:
         "apps_eval.engines.regression_detector",
         "apps_eval.integrations.meta_bus_publisher",
         "apps_lic.engines.control_plane",
-        "apps_lic.reasoning.HOPPipelineExecutor",
+        "apps_lic.config.hop_pipeline",
     ],
 )
 def test_touched_modules_still_importable(module_path: str) -> None:

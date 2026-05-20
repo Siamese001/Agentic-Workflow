@@ -18,7 +18,7 @@ from agentic_core.L5_safety.enforcement.ingress import IngressEnvelopeCheck
 from agentic_core.runtime.contracts.apps_lic_ingress_payload import AppsLicRequestEnvelope
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-from agentic_core.runtime.entry.u0_apps_lic_binding import u0_validate_apps_lic
+from apps_lic.runtime.bindings.u0_binding import u0_validate_apps_lic
 
 LIC_REQUIRED_FIELDS: tuple[str, ...] = ("channel", "audience_segment", "request_type")
 """Minimum payload keys checked by AppIngressRunner before parse is invoked.

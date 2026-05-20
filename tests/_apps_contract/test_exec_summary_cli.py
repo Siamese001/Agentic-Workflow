@@ -328,7 +328,7 @@ def test_resolve_cli_lane_provider_with_source_env(monkeypatch: pytest.MonkeyPat
 
 def test_executive_summary_dispatch_module_main_is_fail_closed() -> None:
     r = subprocess.run(
-        [sys.executable, "-m", "apps_rg.runtime.sections.executive_summary_lane_api", "--help"],
+        [sys.executable, "-m", "apps_rg.runtime.sections.executive_summary_lane", "--help"],
         cwd=REPO,
         capture_output=True,
         text=True,

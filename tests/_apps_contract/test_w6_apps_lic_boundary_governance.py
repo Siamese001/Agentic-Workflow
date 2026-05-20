@@ -33,16 +33,16 @@ import pytest
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _BINDING_MODULES = [
-    "agentic_core.runtime.u0.apps_lic_u0_adapter",
-    "agentic_core.runtime.entry.u0_apps_lic_binding",
-    "agentic_core.L0_routing.apps_lic_l0_binding",
-    "agentic_core.L1_cognition.apps_lic_l1_binding",
-    "agentic_core.L2_execution.apps_lic_l2_binding",
-    "agentic_core.L3_orchestration.apps_lic_l3_binding",
-    "agentic_core.runtime.c0.apps_lic_c0_binding",
-    "agentic_core.prompt_governance.apps_lic_pa_binding",
-    "agentic_core.runtime.exit.apps_lic_exit_binding",
-    "agentic_core.L6_observability.promotion.apps_lic_promo_binding",
+    "apps_lic.runtime.u0.adapter",
+    "apps_lic.runtime.bindings.u0_binding",
+    "apps_lic.runtime.bindings.l0_binding",
+    "apps_lic.runtime.bindings.l1_binding",
+    "apps_lic.runtime.bindings.l2_binding",
+    "apps_lic.runtime.bindings.l3_binding",
+    "apps_lic.runtime.bindings.c0_binding",
+    "apps_lic.runtime.bindings.pa_binding",
+    "apps_lic.runtime.bindings.exit_binding",
+    "apps_lic.runtime.bindings.promo_binding",
 ]
 
 _SHARED_NON_BINDING_MODULES = [
@@ -256,14 +256,14 @@ class TestPolicySourcedFromDomainContract:
 
     def test_l0_binding_reads_cache_eligibility_not_hardcoded_string(self) -> None:
         """L0 binding must derive cache eligibility via function, not a bare hardcoded string block."""
-        src = _source("agentic_core.L0_routing.apps_lic_l0_binding")
+        src = _source("apps_lic.runtime.bindings.l0_binding")
         assert "_derive_cache_eligibility" in src, (
             "L0 binding must call _derive_cache_eligibility — no inline hardcoded cache dict"
         )
 
     def test_exit_binding_reads_exit_profile_from_config_path(self) -> None:
         """Exit binding must reference _EXIT_PROFILE_PATH (sourced from domain_contract)."""
-        src = _source("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source("apps_lic.runtime.bindings.exit_binding")
         assert "_EXIT_PROFILE_PATH" in src, (
             "Exit binding must use _EXIT_PROFILE_PATH constant pointing to domain_contract"
         )
@@ -273,7 +273,7 @@ class TestPolicySourcedFromDomainContract:
 
     def test_exit_binding_reads_cache_policy_from_config_path(self) -> None:
         """Exit binding must reference _CACHE_POLICY_PATH (sourced from domain_contract)."""
-        src = _source("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source("apps_lic.runtime.bindings.exit_binding")
         assert "_CACHE_POLICY_PATH" in src, (
             "Exit binding must use _CACHE_POLICY_PATH constant pointing to domain_contract"
         )
@@ -283,7 +283,7 @@ class TestPolicySourcedFromDomainContract:
 
     def test_u0_adapter_reads_field_map_from_apps_lic_contracts(self) -> None:
         """U0 adapter field map must be sourced from apps_lic/contracts/, not hardcoded."""
-        src = _source("agentic_core.runtime.u0.apps_lic_u0_adapter")
+        src = _source("apps_lic.runtime.u0.adapter")
         assert "apps_lic_ingress_field_map.v1.yaml" in src, (
             "U0 adapter must source its field map from apps_lic/contracts/"
         )
@@ -325,14 +325,14 @@ class TestX3EmissionGating:
 
     def test_x3_emission_in_exit_binding(self) -> None:
         """Exit binding must contain build_x3_packet call (exactly one X3 emission path)."""
-        src = _source("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source("apps_lic.runtime.bindings.exit_binding")
         assert "build_x3_packet" in src, (
             "Exit binding must call build_x3_packet — exactly one X3 emission path"
         )
 
     def test_no_x3_emission_in_l6_binding(self) -> None:
         """L6 promo binding must NOT emit X3 packets."""
-        src = _source("agentic_core.L6_observability.promotion.apps_lic_promo_binding")
+        src = _source("apps_lic.runtime.bindings.promo_binding")
         assert "build_x3_packet" not in src, (
             "L6 binding must not call build_x3_packet — X3 is Exit-only"
         )
@@ -342,12 +342,12 @@ class TestX3EmissionGating:
 
     def test_no_x3_emission_in_l0_binding(self) -> None:
         """L0 binding must NOT emit X3 packets."""
-        src = _source("agentic_core.L0_routing.apps_lic_l0_binding")
+        src = _source("apps_lic.runtime.bindings.l0_binding")
         assert "build_x3_packet" not in src, "L0 must not emit X3"
 
     def test_no_x3_emission_in_l3_binding(self) -> None:
         """L3 binding must NOT emit X3 packets."""
-        src = _source("agentic_core.L3_orchestration.apps_lic_l3_binding")
+        src = _source("apps_lic.runtime.bindings.l3_binding")
         assert "build_x3_packet" not in src, "L3 must not emit X3"
 
 
@@ -361,49 +361,49 @@ class TestL4WriteAuthority:
 
     def test_l2_binding_sets_no_write_authority(self) -> None:
         """L2 binding must assert is_uwg_write_authority=False."""
-        src = _source("agentic_core.L2_execution.apps_lic_l2_binding")
+        src = _source("apps_lic.runtime.bindings.l2_binding")
         assert "is_uwg_write_authority=False" in src, (
             "L2 binding must explicitly set is_uwg_write_authority=False"
         )
 
     def test_exit_binding_sets_no_write_authority(self) -> None:
         """Exit binding must assert is_uwg_write_authority=False."""
-        src = _source("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source("apps_lic.runtime.bindings.exit_binding")
         assert "is_uwg_write_authority=False" in src, (
             "Exit binding must set is_uwg_write_authority=False"
         )
 
     def test_l6_binding_no_direct_l4_writes(self) -> None:
         """L6 promo binding must have _verify_no_direct_l4_writes function (static scan hook)."""
-        src = _source("agentic_core.L6_observability.promotion.apps_lic_promo_binding")
+        src = _source("apps_lic.runtime.bindings.promo_binding")
         assert "_verify_no_direct_l4_writes" in src, (
             "L6 binding must export _verify_no_direct_l4_writes static scan hook"
         )
 
     def test_l6_binding_calls_verify_no_direct_l4_writes(self) -> None:
         """L6 _verify_no_direct_l4_writes must return True (no direct writes)."""
-        from agentic_core.L6_observability.promotion.apps_lic_promo_binding import (
+        from apps_lic.runtime.bindings.promo_binding import (
             _verify_no_direct_l4_writes,
         )
         assert _verify_no_direct_l4_writes() is True
 
     def test_l6_binding_no_send_path(self) -> None:
         """L6 _verify_no_send_path must return True."""
-        from agentic_core.L6_observability.promotion.apps_lic_promo_binding import (
+        from apps_lic.runtime.bindings.promo_binding import (
             _verify_no_send_path,
         )
         assert _verify_no_send_path() is True
 
     def test_l6_binding_no_cache_return(self) -> None:
         """L6 _verify_no_cache_return must return True."""
-        from agentic_core.L6_observability.promotion.apps_lic_promo_binding import (
+        from apps_lic.runtime.bindings.promo_binding import (
             _verify_no_cache_return,
         )
         assert _verify_no_cache_return() is True
 
     def test_l6_binding_no_exit_x3_emission(self) -> None:
         """L6 _verify_no_exit_x3_emission must return True."""
-        from agentic_core.L6_observability.promotion.apps_lic_promo_binding import (
+        from apps_lic.runtime.bindings.promo_binding import (
             _verify_no_exit_x3_emission,
         )
         assert _verify_no_exit_x3_emission() is True
@@ -419,7 +419,7 @@ class TestFinalDraftCacheScan:
 
     def test_l0_sets_final_draft_cache_bypass_flags(self) -> None:
         """L0 _derive_cache_eligibility must set both r1a and r1b bypass flags True."""
-        from agentic_core.L0_routing.apps_lic_l0_binding import _derive_cache_eligibility
+        from apps_lic.runtime.bindings.l0_binding import _derive_cache_eligibility
         result = _derive_cache_eligibility("R4_MANAGED_DRAFT")
         assert result["final_draft_r1a_bypass"] is True, (
             "L0 must set final_draft_r1a_bypass=True for all non-fallback routes"
@@ -430,14 +430,14 @@ class TestFinalDraftCacheScan:
 
     def test_l0_sets_final_draft_cache_bypass_for_fallback(self) -> None:
         """L0 must also bypass final draft cache on R5 fallback routes."""
-        from agentic_core.L0_routing.apps_lic_l0_binding import _derive_cache_eligibility
+        from apps_lic.runtime.bindings.l0_binding import _derive_cache_eligibility
         result = _derive_cache_eligibility("R5_FALLBACK")
         assert result["final_draft_r1a_bypass"] is True
         assert result["final_draft_r1b_bypass"] is True
 
     def test_exit_binding_reads_cache_policy_from_runtime_pkg(self) -> None:
         """Exit binding cache_bypass_receipt must list policy_source as runtime pkg or config."""
-        src = _source("agentic_core.runtime.exit.apps_lic_exit_binding")
+        src = _source("apps_lic.runtime.bindings.exit_binding")
         assert "runtime_customization_package.cache_bypass_policy" in src, (
             "Exit binding must cite runtime_customization_package.cache_bypass_policy "
             "as the policy_source for cache bypass"

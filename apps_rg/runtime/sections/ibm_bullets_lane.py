@@ -2,12 +2,18 @@
 
 Wires PA → provider → X1D → X2 → X3 → L6 shadow handoff under ``artifacts/apps_rg/runtime_proofs/ibm_bullets``.
 
-``apps_rg.runtime.sections.ibm_bullets_lane_api`` is **import-only** (legacy module path for helpers).
+``apps_rg.runtime.sections.ibm_bullets_lane`` is **import-only** (legacy module path for helpers).
 Legacy dispatch module paths are not CLI entrypoints; use ``python -m apps_rg --section ibm_bullets``.
 
 **W3:** ``declared_temporary_slice`` — section runtime proof seam.
 """
 from __future__ import annotations
+
+if __name__ == "__main__":
+    raise ImportError(
+        "This module is not an operator CLI entrypoint. "
+        "Use: python -m apps_rg --section ibm_bullets"
+    )
 
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_DECLARED_TEMPORARY_SLICE,

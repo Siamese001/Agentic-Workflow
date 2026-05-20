@@ -288,12 +288,12 @@ def _extra_file_entries(
 
 # Integrated run — known roles (flat + outputs/). required=T = spine contract expectation.
 _INTEGRATED_KNOWN: tuple[tuple[str, str, str, bool, str], ...] = (
-    ("spine_terminal_ret_packet", "terminal_ret_packet.json", "application/json", True, "integrated_r4_deterministic_pipeline"),
-    ("spine_runtime_identity_envelope", "runtime_identity_envelope.json", "application/json", True, "integrated_r4_deterministic_pipeline"),
-    ("spine_r4_run_manifest", "r4_run_manifest.json", "application/json", True, "integrated_r4_deterministic_pipeline"),
-    ("audit_l7_route_family_coverage", "agentic_core_l7_route_family_coverage.json", "application/json", True, "integrated_r4_deterministic_pipeline"),
-    ("audit_how_trace", "agentic_core_how_trace.json", "application/json", True, "integrated_r4_deterministic_pipeline"),
-    ("audit_spine_proof", "agentic_core_spine_proof.json", "application/json", False, "integrated_r4_deterministic_pipeline"),
+    ("spine_terminal_ret_packet", "terminal_ret_packet.json", "application/json", True, "integrated_single_action_spine"),
+    ("spine_runtime_identity_envelope", "runtime_identity_envelope.json", "application/json", True, "integrated_single_action_spine"),
+    ("spine_r4_run_manifest", "r4_run_manifest.json", "application/json", True, "integrated_single_action_spine"),
+    ("audit_l7_route_family_coverage", "agentic_core_l7_route_family_coverage.json", "application/json", True, "integrated_single_action_spine"),
+    ("audit_how_trace", "agentic_core_how_trace.json", "application/json", True, "integrated_single_action_spine"),
+    ("audit_spine_proof", "agentic_core_spine_proof.json", "application/json", False, "integrated_single_action_spine"),
     ("narrative_run_report", "run_report.json", "application/json", False, "apps_rg_narrative_or_auxiliary"),
 )
 
@@ -302,9 +302,9 @@ _INTEGRATED_OPTIONAL_OUTPUTS: tuple[tuple[str, str, str, bool, str], ...] = (
     ("product_resume_docx_branded", "Amit_Ayer_Resume.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", False, "apps_rg_docx_export"),
     ("product_resume_json_outputs", "outputs/generated_resume.json", "application/json", False, "apps_rg_resume_assembly"),
     ("product_resume_docx_outputs", "outputs/resume.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", False, "apps_rg_docx_export"),
-    ("spine_integrated_manifest", "integrated_runtime_artifact_manifest.json", "application/json", False, "integrated_r4_deterministic_pipeline"),
-    ("spine_exit_review_packet", "exit_review_packet.json", "application/json", False, "integrated_r4_deterministic_pipeline"),
-    ("spine_runtime_exhaust", "runtime_exhaust_bundle.json", "application/json", False, "integrated_r4_deterministic_pipeline"),
+    ("spine_integrated_manifest", "integrated_runtime_artifact_manifest.json", "application/json", False, "integrated_single_action_spine"),
+    ("spine_exit_review_packet", "exit_review_packet.json", "application/json", False, "integrated_single_action_spine"),
+    ("spine_runtime_exhaust", "runtime_exhaust_bundle.json", "application/json", False, "integrated_single_action_spine"),
 )
 
 # Lane seam — filenames commonly emitted by section lanes (canonical ``python -m apps_rg --section`` runtime proofs).

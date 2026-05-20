@@ -11,7 +11,7 @@ Replace the hand-built `_build_l2_callable()` domain execution closure with a re
 
 ## Context (SCQA)
 
-- **Situation** — `apps_rg/__main__.py` was refactored (plan `apps-rg-canonical-wireup-c8a4f2`) to delegate all execution to the R4 pipeline via `run_integrated_r4_deterministic_pipeline`. The file currently builds a hand-crafted `_build_l2_callable()` closure that directly calls `generate_resume.main()`, `narrative_pass`, and `docx_exporter`. The static DAG YAML at `apps_rg/config/apps_rg_static_dag.yaml` already defines `hop_4_generate_resume`, `hop_5_narrative_pass`, `hop_6_docx_export` as distinct L2 executor steps. The `StaticDagRegistry` in `agentic_core/L3_orchestration/registry/static_dag_registry.py` provides the pattern for DAG registration.
+- **Situation** — `apps_rg/__main__.py` was refactored (plan `apps-rg-canonical-wireup-c8a4f2`) to delegate all execution to the R4 pipeline via `run_integrated_single_action_spine`. The file currently builds a hand-crafted `_build_l2_callable()` closure that directly calls `generate_resume.main()`, `narrative_pass`, and `docx_exporter`. The static DAG YAML at `apps_rg/config/apps_rg_static_dag.yaml` already defines `hop_4_generate_resume`, `hop_5_narrative_pass`, `hop_6_docx_export` as distinct L2 executor steps. The `StaticDagRegistry` in `agentic_core/L3_orchestration/registry/static_dag_registry.py` provides the pattern for DAG registration.
 
 - **Complication** — The l2_callable closure violates the separation goal: `__main__.py` still contains 80 lines of domain execution logic (`_build_l2_callable` + `_run_post_pipeline`). This makes `__main__.py` impossible to test in isolation from the HOP pipeline, prevents the R4 runner from validating step-level receipts, and couples the entrypoint to legacy subprocess-based invocation patterns.
 
@@ -28,7 +28,7 @@ Replace the hand-built `_build_l2_callable()` domain execution closure with a re
 | `apps_rg/__main__.py` | Current l2_callable closure to remove | 🔲 |
 | `apps_rg/config/apps_rg_static_dag.yaml` | Authoritative L2 step definitions | 🔲 |
 | `agentic_core/L3_orchestration/registry/static_dag_registry.py` | Registry pattern to extend | 🔲 |
-| `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | R4 API to adapt | 🔲 |
+| `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | R4 API to adapt | 🔲 |
 | `tests/_apps_contract/test_apps_rg_fail_closed.py` | Must preserve | 🔲 |
 
 ---
@@ -63,7 +63,7 @@ Replace the hand-built `_build_l2_callable()` domain execution closure with a re
 |----------|-------|---------------|-------------|-------------|--------|
 | 1.1 | Create L2 step adapter module | `apps_rg/l2_recipe/__init__.py`, `apps_rg/l2_recipe/steps.py` | PP-1: no adapter pattern exists | ~8K | 🔲 TODO |
 | 1.2 | Register apps_rg DAG in StaticDagRegistry | `apps_rg/l2_recipe/registry.py`, `agentic_core/L3_orchestration/registry/static_dag_registry.py` | PP-2: registry only has demo DAG | ~7K | 🔲 TODO |
-| 2.1 | Add `resolve_l2_callable` to R4 pipeline or __main__ | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` OR `apps_rg/__main__.py` | PP-3: API doesn't accept app_name yet | ~8K | 🔲 TODO |
+| 2.1 | Add `resolve_l2_callable` to R4 pipeline or __main__ | `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` OR `apps_rg/__main__.py` | PP-3: API doesn't accept app_name yet | ~8K | 🔲 TODO |
 | 2.2 | Rewrite __main__.py to use resolver | `apps_rg/__main__.py` | — | ~4K | 🔲 TODO |
 | 3.1 | Remove `_build_l2_callable` + `_run_post_pipeline` | `apps_rg/__main__.py` | — | ~5K | 🔲 TODO |
 | 4.1 | Test: __main__.py contains no domain closure | `tests/_apps_contract/test_apps_rg_no_domain_closure.py` | — | ~3K | 🔲 TODO |
@@ -77,7 +77,7 @@ Replace the hand-built `_build_l2_callable()` domain execution closure with a re
 ## Gap Register
 
 **GAP-1: R4 pipeline API does not accept `app_name` or registry lookup**
-- Current signature: `run_integrated_r4_deterministic_pipeline(*, raw_request, l2_callable, artifact_dir, ...)`
+- Current signature: `run_integrated_single_action_spine(*, raw_request, l2_callable, artifact_dir, ...)`
 - Impact: Either (a) add an optional `dag_id` param that auto-resolves the callable, or (b) move resolution to `__main__.py` which calls the resolver before passing to R4. Option (b) is simpler and preserves R4's generality.
 - Decision: **Option (b)** — `__main__.py` calls `resolve_l2_callable(dag_id, raw_request)` and passes the result to R4. The resolver is in `apps_rg.l2_recipe.registry`.
 
@@ -137,7 +137,7 @@ def main() -> None:
     l2_callable = resolve_l2_callable(raw_request)
     artifact_dir = Path(...)
 
-    result = run_integrated_r4_deterministic_pipeline(
+    result = run_integrated_single_action_spine(
         raw_request=raw_request,
         l2_callable=l2_callable,
         artifact_dir=artifact_dir,

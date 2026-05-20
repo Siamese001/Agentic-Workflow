@@ -1062,7 +1062,7 @@ G-01 + G-20 — U0 Binding
   Acceptance proof:
     (Get-Content agentic_core/runtime/entry/u0_apps_lic_binding.py).Count  → ≤30
     python -c "from apps_lic.runtime.bindings.u0_binding import u0_validate_apps_lic"  → exit 0
-    python -c "from agentic_core.runtime.entry.u0_apps_lic_binding import u0_validate_apps_lic"  → exit 0
+    python -c "from apps_lic.runtime.bindings.u0_binding import u0_validate_apps_lic"  → exit 0
     python -m pytest tests/_apps_contract/test_w3_apps_lic_u0.py -v  → all PASS
   Scanner: check_apps_lic_core_contamination.py G-01 (shim line count assertion)
 

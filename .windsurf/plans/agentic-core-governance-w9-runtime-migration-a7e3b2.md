@@ -122,7 +122,7 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 | 2 | `apps_research/runtime/entry/dispatch.py` (moved) | 10 | ✅ P5 MOVED | hardcoded_app_names |
 | 3 | `apps_rg/runtime/entry/dispatch.py` (moved) | 11 | ✅ P5 MOVED | hardcoded_app_names, app_id_branching |
 | 4 | `apps_research/runtime/u0/binding.py` (moved) | 9 | ✅ P5 MOVED | hardcoded_app_names, app_id_branching |
-| 5 | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | 2 | ✅ P4 MIGRATED | hardcoded_app_names |
+| 5 | `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | 2 | ✅ P4 MIGRATED | hardcoded_app_names |
 | 6 | `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | 1 | ✅ P4 MIGRATED | hardcoded_app_names |
 | 7 | `agentic_core/runtime/l6/apps_rg_learning_adapter.py` | 1 | ✅ P4 MIGRATED | hardcoded_app_names |
 | 8 | `agentic_core/runtime/l6/writeback_proposer.py` | 2 | ✅ P4 MIGRATED | hardcoded_app_names |
@@ -149,7 +149,7 @@ The W9 plan initially listed these 12 target files:
 7. `writeback_proposer.py` ✓
 8. `code_symbol_catalog.py` ✓
 9. `payload_synthesizer.py` ✓
-10. `integrated_r4_resume_gen.py` → **RENAMED** to `integrated_r4_deterministic_pipeline_run.py`
+10. `integrated_r4_resume_gen.py` → **RENAMED** to `integrated_single_action_spine_run.py`
 11. `integrated_r4_research_then_draft.py` → **RENAMED** to `integrated_r4_lic_pipeline_run.py`
 12. `cross_app_research_substrate_ingest.py` ✓
 
@@ -185,7 +185,7 @@ The W9 plan initially listed these 12 target files:
 | 2 | `agentic_core/runtime/entry/apps_research_dispatch.py` | 10 | **MIGRATE_TO_PROFILE** | Full dispatch orchestration for apps_research |
 | 3 | `agentic_core/runtime/entry/apps_rg_dispatch.py` | 11 | **MIGRATE_TO_PROFILE** | Full runtime orchestration with dispatch, bridge install |
 | 4 | `agentic_core/runtime/entry/u0_apps_research_binding_v2.py` | 9 | **MIGRATE_TO_PROFILE** | App-specific delegation, validation, research-only orchestration |
-| 5 | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | 2 | **MIGRATE_TO_PROFILE** | Pipeline runner with app-specific namespace defaults |
+| 5 | `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` | 2 | **MIGRATE_TO_PROFILE** | Pipeline runner with app-specific namespace defaults |
 | 6 | `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | 1 | **MIGRATE_TO_PROFILE** | Pipeline runner with hardcoded APP_NAME |
 | 7 | `agentic_core/runtime/l6/apps_rg_learning_adapter.py` | 1 | **MIGRATE_TO_PROFILE** | L6 writeback with hardcoded app_id |
 | 8 | `agentic_core/runtime/l6/writeback_proposer.py` | 2 | **MIGRATE_TO_PROFILE** | L6 writeback orchestration |
@@ -395,7 +395,7 @@ When W9 completes:
 ### Files Migrated Summary
 
 **P4 Profile-Driven (6 files modified):**
-- `integrated_r4_deterministic_pipeline_run.py` — Profile-driven identity
+- `integrated_single_action_spine_run.py` — Profile-driven identity
 - `integrated_r4_lic_pipeline_run.py` — Profile-driven identity, removed hardcoded constants
 - `apps_rg_learning_adapter.py` — Generic with app_id parameter
 - `writeback_proposer.py` — Generic required parameters

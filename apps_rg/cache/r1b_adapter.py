@@ -170,7 +170,7 @@ class AppsRgR1BCacheAdapter:
             and run_dir_path
             and (run_dir_path / "x3_disposition.json").is_file()
         ):
-            from apps_rg.cache.r1b_uwg_gateway_shim import default_r1b_promotion_gateway
+            from apps_rg.cache.r1b_uwg_promotion import default_r1b_promotion_gateway
             from apps_rg.cache.r1b_uwg_promotion import (
                 build_r1b_promotion_candidate,
                 promote_and_project_r1b_cache,

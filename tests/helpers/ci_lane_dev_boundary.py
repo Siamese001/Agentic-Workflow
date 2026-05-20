@@ -9,7 +9,10 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.non_product_proof_stamp import CI_LANE_DEV_HARNESS_CLASSIFICATION
+from apps_rg.runtime.non_product_proof_stamp import (
+    CI_LANE_DEV_HARNESS_CLASSIFICATION,
+    CONTRACT_TEST_PROOF_CLASSIFICATION,
+)
 
 _AGENTIC_CORE_UNTRACKED_ONLY = "PRE_EXISTING_UNTRACKED_AGENTIC_CORE_PATH"
 _AGENTIC_CORE_TRACKED_ONLY = "TRACKED_AGENTIC_CORE_WORKING_TREE_CHANGES"
@@ -80,6 +83,7 @@ def persist_ci_lane_dev_proof_artifact(
     repo: Path,
     *,
     artifact_path: Path,
+    proof_classification: str | None = None,
 ) -> None:
     """Stamp non-product CI lane-dev classification and write proof JSON (test/fixture use)."""
     finalize_boundary_no_bypass(artifact, repo)
@@ -91,7 +95,9 @@ def persist_ci_lane_dev_proof_artifact(
         if ln.strip()
     }
     artifact["files_changed"] = sorted(names)
-    artifact["proof_classification"] = CI_LANE_DEV_HARNESS_CLASSIFICATION
+    artifact["proof_classification"] = proof_classification or CI_LANE_DEV_HARNESS_CLASSIFICATION
+    if artifact["proof_classification"] == CONTRACT_TEST_PROOF_CLASSIFICATION:
+        artifact.setdefault("explicit_non_claims", []).append("contract test proof only")
     artifact["product_certification"] = "NOT_CLAIMED"
     artifact["l7_certification"] = "NOT_CLAIMED"
     artifact["fort_knox_certification"] = "NOT_CLAIMED"

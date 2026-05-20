@@ -158,7 +158,7 @@ Update call sites to use generic engine:
 **Before:**
 ```python
 # Direct binding call
-from agentic_core.L0_routing.apps_lic_l0_binding import select_route
+from apps_lic.runtime.bindings.l0_binding import select_route
 route = select_route(app_id='apps_lic', payload=payload)
 ```
 

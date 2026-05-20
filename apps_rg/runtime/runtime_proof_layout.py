@@ -346,6 +346,20 @@ def finalize_runtime_proof_run(
         document_metadata=run_bundle_index_document_metadata,
     )
 
+    if os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip() in ("1", "true", "yes"):
+        from apps_rg.runtime.integrated_lane_evidence_packaging import (
+            maybe_finalize_lane_evidence_package,
+        )
+
+        cid = os.environ.get("APPS_RG_CORRELATED_CLI_RUN", "").strip() or None
+        maybe_finalize_lane_evidence_package(
+            repo,
+            artifact_dir,
+            section_id=section_id,
+            run_id=run_id,
+            correlation_id=cid,
+        )
+
 
 def load_latest_pointer(repo: Path, lane: str, bucket: Bucket) -> dict[str, Any] | None:
     ptr = lane_root(repo, lane) / ("latest_real_run.json" if bucket == "real" else "latest_mock_run.json")
