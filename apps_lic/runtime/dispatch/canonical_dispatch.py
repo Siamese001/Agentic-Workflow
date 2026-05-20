@@ -29,7 +29,12 @@ from agentic_core.runtime.contracts.route_contract import RouteContract
 from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
 
-from apps_lic.runtime.dispatch.spine_run_result import SpineRunResult
+from apps_lic.runtime.dispatch.spine_run_result import SpineRunResult, x3_manifest_fields
+from apps_lic.runtime.dispatch import stage_receipts as _sr
+from apps_lic.runtime.dispatch.runtime_proof_bundle import (
+    FILENAME_RUNTIME_PROOF_BUNDLE,
+    write_runtime_proof_bundle,
+)
 
 ROUTE_FAMILY_R4 = ROUTE_FAMILY_R4_MANAGED_DRAFT
 ROUTE_FAMILY_R3R4 = ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT
@@ -37,6 +42,17 @@ ROUTE_FAMILY_R5 = ROUTE_FAMILY_R5_FALLBACK
 
 _EXECUTION_MANAGED = "managed_workflow"
 _EXECUTION_TERMINAL = "terminal_fallback"
+
+
+def _assert_runtime_proof_bundle_pass(artifact_dir: Path) -> None:
+    path = artifact_dir / FILENAME_RUNTIME_PROOF_BUNDLE
+    if not path.is_file():
+        raise RuntimeError(f"runtime_proof_bundle_missing:{path}")
+    bundle = json.loads(path.read_text(encoding="utf-8"))
+    if bundle.get("status") != "PASS":
+        raise RuntimeError(
+            f"runtime_proof_bundle_failed:{bundle.get('violations')}"
+        )
 
 
 def build_cli_ingress_raw(
@@ -67,7 +83,7 @@ def build_cli_ingress_raw(
     if allow_research and not has_brief:
         research_req = {
             "allow_research": True,
-            "research_evidence_types": ["company_brief", "lead_context"],
+            "required_evidence_types": ["company_brief", "lead_context"],
         }
     personalization_inputs: dict[str, Any] = {}
     if has_brief:
@@ -242,10 +258,49 @@ def _research_bridge() -> Any:
     return AppsResearchBridge(capability_ref="apps_research.v1")
 
 
+def _write_mock_elimination_proof(artifact_dir: Path, bridge: Any) -> str:
+    """Record that live research path did not use mock bridge env or class."""
+    payload = {
+        "APPS_LIC_MOCK_RESEARCH": os.environ.get("APPS_LIC_MOCK_RESEARCH", ""),
+        "bridge_class": type(bridge).__name__,
+        "bridge_module": type(bridge).__module__,
+        "mock_env_active": os.environ.get("APPS_LIC_MOCK_RESEARCH", "").strip().lower()
+        in ("1", "true", "yes"),
+        "mock_bridge_class": "MockAppsResearchBridge",
+    }
+    path = artifact_dir / _sr.FILENAME_MOCK_ELIMINATION_PROOF
+    _sr.write_stage_receipt(path, payload)
+    return str(path)
+
+
+def _serialize_research_outcome(outcome: Any) -> dict[str, Any]:
+    from apps_lic.integrations.managed_workflow_dispatcher import (
+        BriefingReady,
+        DispatchFailurePacket,
+    )
+
+    if isinstance(outcome, BriefingReady):
+        return {
+            "outcome": "BriefingReady",
+            "research_run_id": outcome.research_run_id,
+            "research_evidence_count": outcome.research_evidence_count,
+            "confidence_score": outcome.confidence_score,
+            "manifest_freshness": getattr(outcome.manifest, "freshness_status", None),
+        }
+    if isinstance(outcome, DispatchFailurePacket):
+        return {
+            "outcome": "DispatchFailurePacket",
+            "r5_reason_code": outcome.r5_reason_code,
+            "detail": outcome.detail,
+        }
+    return {"outcome": type(outcome).__name__}
+
+
 def _run_r3r4_research(
     *,
     route: RouteContract,
     validated_request: Any,
+    artifact_dir: Path | None = None,
 ) -> tuple[bool, str, Any | None]:
     """Dispatch apps_research via ``dispatch_managed_briefing`` when R3R4 is selected."""
     from apps_lic.integrations.managed_workflow_dispatcher import (
@@ -255,7 +310,41 @@ def _run_r3r4_research(
     )
 
     req = _build_request_for_briefing(route, validated_request)
-    outcome = dispatch_managed_briefing(req, bridge=_research_bridge())
+    bridge = _research_bridge()
+
+    if artifact_dir is not None:
+        _write_mock_elimination_proof(artifact_dir, bridge)
+        pre_route = {
+            "route_id": route.route_id,
+            "route_family": route.route_family,
+            "execution_form": route.execution_form,
+            "l3_required": route.l3_required,
+        }
+        _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_ROUTE_PRE_RESEARCH,
+            pre_route,
+        )
+        _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_RESEARCH_BRIDGE_REQUEST,
+            dataclasses.asdict(req),
+        )
+
+    outcome = dispatch_managed_briefing(req, bridge=bridge)
+
+    if artifact_dir is not None:
+        response_payload: dict[str, Any] = {
+            "dispatch_outcome": _serialize_research_outcome(outcome),
+        }
+        if isinstance(outcome, BriefingReady):
+            response_payload["audit_refs"] = list(getattr(outcome, "audit_refs", ()) or ())
+            response_payload["research_run_id"] = outcome.research_run_id
+            response_payload["research_evidence_count"] = outcome.research_evidence_count
+            response_payload["confidence_score"] = outcome.confidence_score
+        _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
+            response_payload,
+        )
+
     if isinstance(outcome, BriefingReady):
         return True, "BriefingReady", outcome.manifest
     if isinstance(outcome, DispatchFailurePacket):
@@ -270,7 +359,7 @@ def run_canonical_apps_lic_spine(
     skip_r3r4_research: bool = False,
 ) -> SpineRunResult:
     """Execute the canonical AG-8 spine for one apps_lic ingress payload."""
-    validated_request, _reflection = apps_lic_u0_adapt(raw_ingress)
+    validated_request, reflection = apps_lic_u0_adapt(raw_ingress)
     validated_request = _inject_context_signals(validated_request, raw_ingress)
     l1 = l1_plan_apps_lic(validated_request)
     route = l0_route_apps_lic(l1)
@@ -281,17 +370,38 @@ def run_canonical_apps_lic_spine(
     )
     artifacts: list[str] = []
 
-    _write_json(
-        artifact_dir / "ingress_raw.json",
-        {"ingress": raw_ingress, "reflection_keys": list(_reflection.keys()) if isinstance(_reflection, dict) else []},
+    ingress_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_INGRESS_RAW,
+        {
+            "schema_version": _sr.STAGE_RECEIPT_SCHEMA_VERSION,
+            "stage": "INGRESS",
+            "request_id": validated_request.request_id,
+            "run_id": validated_request.run_id,
+            "trace_id": validated_request.trace_id,
+            "digest": _sr._sha256_digest(raw_ingress),
+            "artifact_ref": _sr.FILENAME_INGRESS_RAW,
+            "upstream_receipt_refs": [],
+            "downstream_receipt_refs": [_sr.FILENAME_U0_RECEIPT],
+            "payload": {
+                "ingress": raw_ingress,
+                "reflection_keys": list(reflection.keys()) if isinstance(reflection, dict) else [],
+            },
+        },
     )
-    artifacts.append(str(artifact_dir / "ingress_raw.json"))
+    artifacts.append(ingress_path)
+
+    u0_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_U0_RECEIPT,
+        _sr.build_u0_receipt(validated_request, reflection),
+    )
+    artifacts.append(u0_path)
 
     research_note = ""
     if route.route_family == ROUTE_FAMILY_R3R4 and not skip_r3r4_research:
         ok, research_note, manifest = _run_r3r4_research(
             route=route,
             validated_request=validated_request,
+            artifact_dir=artifact_dir,
         )
         if ok and manifest is not None:
             merged_payload = _merge_research_manifest(
@@ -305,6 +415,12 @@ def run_canonical_apps_lic_spine(
             l1 = l1_plan_apps_lic(validated_request)
             route = l0_route_apps_lic(l1)
 
+    l1_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_L1_PLAN,
+        _sr.build_l1_receipt(l1),
+    )
+    artifacts.append(l1_path)
+
     route_payload = {
         "route_id": route.route_id,
         "route_family": route.route_family,
@@ -312,19 +428,53 @@ def run_canonical_apps_lic_spine(
         "l3_required": route.l3_required,
         "reason_codes": list(route.reason_codes),
     }
-    _write_json(artifact_dir / "route_contract.json", route_payload)
-    artifacts.append(str(artifact_dir / "route_contract.json"))
+    will_c0 = bool(l1.grounding_required)
+    will_pa = bool(l1.model_generation_required and will_c0)
+    route_downstream = (
+        _sr.managed_workflow_downstream_refs(c0_invoked=will_c0, pa_invoked=will_pa)
+        if route.execution_form == _EXECUTION_MANAGED
+        else ()
+    )
+    route_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_ROUTE_CONTRACT,
+        _sr.build_route_receipt(
+            route,
+            route_payload,
+            downstream_receipt_refs=route_downstream,
+        ),
+    )
+    artifacts.append(route_path)
 
     if route.execution_form == _EXECUTION_TERMINAL or route.route_family == ROUTE_FAMILY_R5:
+        stage_refs = _sr.standard_stage_receipt_refs(
+            terminal_r5=True,
+            c0_invoked=False,
+            pa_invoked=False,
+            l3_participated=False,
+        )
         manifest = {
             **route_payload,
+            "request_id": route.request_id,
+            "run_id": route.run_id,
+            "trace_id": route.trace_id,
             "terminal_r5": True,
             "terminal_r5_reason": research_note or "route_family=R5_FALLBACK",
             "x3_disposition": "DENY",
+            "exit_status": "failure",
+            "outcome_authorized": False,
+            "exit_stage_policy": "terminal_r5_short_circuit_no_exit_receipt",
             "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
+            "stage_receipt_refs": list(stage_refs),
         }
-        _write_json(artifact_dir / "spine_run_manifest.json", manifest)
-        artifacts.append(str(artifact_dir / "spine_run_manifest.json"))
+        manifest_path = _sr.write_stage_receipt(artifact_dir / _sr.FILENAME_SPINE_MANIFEST, manifest)
+        artifacts.append(manifest_path)
+        proof_path = write_runtime_proof_bundle(
+            artifact_dir,
+            manifest,
+            terminal_r5=True,
+        )
+        artifacts.append(proof_path)
+        _assert_runtime_proof_bundle_pass(artifact_dir)
         return SpineRunResult(
             run_id=run_id,
             request_id=route.request_id,
@@ -347,14 +497,16 @@ def run_canonical_apps_lic_spine(
     if l1.grounding_required:
         fec = c0_retrieve_apps_lic(route, validated_request)
         c0_invoked = True
-        _write_json(
-            artifact_dir / "fec_summary.json",
-            {
-                "compilation_hash": fec.compilation_hash,
-                "item_count": len(fec.evidence_items),
-            },
+        c0_path = _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_C0_FEC,
+            _sr.build_c0_receipt(fec),
         )
-        artifacts.append(str(artifact_dir / "fec_summary.json"))
+        artifacts.append(c0_path)
+        fec_summary_path = _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_FEC_SUMMARY,
+            _sr.build_c0_summary(fec),
+        )
+        artifacts.append(fec_summary_path)
 
     if l1.model_generation_required and fec is not None:
         prompt = pa_compose_apps_lic(
@@ -364,6 +516,11 @@ def run_canonical_apps_lic_spine(
             validated_request=validated_request,
         )
         pa_invoked = True
+        pa_path = _sr.write_stage_receipt(
+            artifact_dir / _sr.FILENAME_PA_RECEIPT,
+            _sr.build_pa_receipt(prompt),
+        )
+        artifacts.append(pa_path)
 
     if route.execution_form != _EXECUTION_MANAGED:
         raise ValueError(
@@ -372,27 +529,68 @@ def run_canonical_apps_lic_spine(
         )
 
     l3_receipt, step, _bus = l3_orchestrate_apps_lic(route, fec, prompt)
+    l3_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_L3_WORKFLOW,
+        _sr.build_l3_receipt(l3_receipt, step),
+    )
+    artifacts.append(l3_path)
+
     l2_artifact = l2_execute_apps_lic(route, fec, step, prompt)
+    l2_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_L2_EXECUTION,
+        _sr.build_l2_receipt(l2_artifact),
+    )
+    artifacts.append(l2_path)
+
     x3 = exit_finalize_apps_lic(l2_artifact)
 
     l2_status = getattr(l2_artifact, "execution_status", "") or ""
-    x3_disp = getattr(x3, "disposition", None) or getattr(x3, "final_disposition", "UNKNOWN")
-    x3_str = str(x3_disp)
+    x3_str, x3_exit_status, x3_outcome_authorized = x3_manifest_fields(x3)
 
+    exit_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_EXIT_DISPOSITION,
+        _sr.build_exit_receipt(
+            x3,
+            x3_disposition=x3_str,
+            exit_status=x3_exit_status,
+            outcome_authorized=x3_outcome_authorized,
+        ),
+    )
+    artifacts.append(exit_path)
+
+    stage_refs = _sr.standard_stage_receipt_refs(
+        terminal_r5=False,
+        c0_invoked=c0_invoked,
+        pa_invoked=pa_invoked,
+        l3_participated=True,
+    )
     manifest = {
         **route_payload,
+        "request_id": route.request_id,
+        "run_id": route.run_id,
+        "trace_id": route.trace_id,
         "terminal_r5": False,
         "x3_disposition": x3_str,
+        "exit_status": x3_exit_status,
+        "outcome_authorized": x3_outcome_authorized,
         "l3_participated": True,
         "c0_invoked": c0_invoked,
         "pa_invoked": pa_invoked,
         "l2_execution_status": l2_status,
-        "l3_receipt_id": getattr(l3_receipt, "receipt_id", ""),
+        "l3_receipt_id": getattr(l3_receipt, "deterministic_digest", "")[:32],
         "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
         "research_note": research_note,
+        "stage_receipt_refs": list(stage_refs),
     }
-    _write_json(artifact_dir / "spine_run_manifest.json", manifest)
-    artifacts.append(str(artifact_dir / "spine_run_manifest.json"))
+    manifest_path = _sr.write_stage_receipt(artifact_dir / _sr.FILENAME_SPINE_MANIFEST, manifest)
+    artifacts.append(manifest_path)
+    proof_path = write_runtime_proof_bundle(
+        artifact_dir,
+        manifest,
+        terminal_r5=False,
+    )
+    artifacts.append(proof_path)
+    _assert_runtime_proof_bundle_pass(artifact_dir)
 
     return SpineRunResult(
         run_id=run_id,
@@ -409,6 +607,7 @@ def run_canonical_apps_lic_spine(
         c0_invoked=c0_invoked,
         pa_invoked=pa_invoked,
         l2_execution_status=l2_status,
-        exit_status=x3_str,
+        exit_status=x3_exit_status,
+        outcome_authorized=x3_outcome_authorized,
         artifacts=tuple(artifacts),
     )

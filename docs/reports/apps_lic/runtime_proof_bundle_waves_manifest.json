@@ -1,0 +1,61 @@
+{
+  "schema_version": "apps_lic.chat_waves_manifest.v1",
+  "session_date": "2026-05-20",
+  "plan_slug": "apps-lic-runtime-proof-bundle-c9e2f1",
+  "parent_plan_slug": "apps-lic-spine-product-convergence-b7e4a2",
+  "overall_status": "COMPLETED",
+  "proof_status": "PASS",
+  "waves": [
+    {
+      "wave_id": "W1",
+      "title": "Runtime proof bundle module",
+      "status": "COMPLETED",
+      "files": [
+        "apps_lic/runtime/dispatch/runtime_proof_bundle.py"
+      ],
+      "evidence": "R4 required files, stage order, receipt chain, no-bypass assertions"
+    },
+    {
+      "wave_id": "W2",
+      "title": "Canonical dispatch wiring",
+      "status": "COMPLETED",
+      "files": [
+        "apps_lic/runtime/dispatch/canonical_dispatch.py"
+      ],
+      "evidence": "write_runtime_proof_bundle + fail-closed assert; R5 exit_stage_policy"
+    },
+    {
+      "wave_id": "W3",
+      "title": "Tests and CI proof",
+      "status": "COMPLETED",
+      "files": [
+        "tests/apps_lic/test_runtime_proof_bundle.py"
+      ],
+      "commands": [
+        "pytest tests/apps_lic/test_runtime_proof_bundle.py tests/apps_lic/test_canonical_dispatch_smoke.py tests/apps_lic/test_canonical_dispatch_manifest_x3.py -q -> 12 passed",
+        "pytest tests/_apps_contract/test_ag8_apps_lic_golden_path.py -q -> 109 passed",
+        "python ops_scripts/ci/check_apps_lic_golden_path_runtime.py --fail-closed -> 18/18 PASS"
+      ]
+    },
+    {
+      "wave_id": "W4",
+      "title": "Closeout + CLI runtime proof",
+      "status": "COMPLETED",
+      "files": [
+        "docs/reports/apps_lic/runtime_proof_bundle_closeout_receipt.md"
+      ],
+      "artifacts": [
+        "artifacts/apps_lic/spine_convergence/runs/cli_runtime_proof_bundle_cert/runtime_proof_bundle.json"
+      ],
+      "cli_note": "Requires --recipient-class --channel --outreach-mode to skip interactive wizard"
+    }
+  ],
+  "git_scope_files": [
+    "apps_lic/runtime/dispatch/runtime_proof_bundle.py",
+    "apps_lic/runtime/dispatch/canonical_dispatch.py",
+    "tests/apps_lic/test_runtime_proof_bundle.py",
+    "docs/reports/apps_lic/runtime_proof_bundle_closeout_receipt.md",
+    "docs/reports/apps_lic/runtime_proof_bundle_waves_manifest.json",
+    ".cursor/plans/apps-lic-runtime-proof-bundle-c9e2f1.md"
+  ]
+}
