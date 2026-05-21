@@ -385,7 +385,7 @@ def build_section_c0_metrics_x2_gates(
         {
             "gate_id": "x2_c0_metrics_artifact_present",
             "pass": artifact_ok,
-            "reason": struct_reason if artifact_ok else struct_reason,
+            "reason": "c0_metrics artifact structurally valid" if artifact_ok else struct_reason,
             "observed_value": {
                 "schema_version": metrics.get("schema_version"),
                 "required_keys_present": sorted(_C0_METRICS_REQUIRED_KEYS & set(metrics.keys())),

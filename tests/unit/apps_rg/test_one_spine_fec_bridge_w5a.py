@@ -104,7 +104,7 @@ def test_fec_bridge_builds_per_section(section_id: str):
     assert doc["canonical_c0_5_claimed"] is False
 
 
-@pytest.mark.parametrize("section_id", ("headline", "competencies", "unify_bullets"))
+@pytest.mark.parametrize("section_id", W5A_SECTIONS)
 def test_wire_emits_artifacts(tmp_path: Path, section_id: str):
     spine = build_section_front_spine_from_args(
         section_id=section_id,
@@ -123,7 +123,10 @@ def test_wire_emits_artifacts(tmp_path: Path, section_id: str):
     assert (tmp_path / "final_evidence_contract_bridge.json").is_file()
     assert (tmp_path / "c0_fec_bridge_receipt.json").is_file()
     assert (tmp_path / "route_contract.json").is_file()
+    assert (tmp_path / "c0_metrics.json").is_file()
     assert payload.get("section_fec_bridge")
+    assert payload.get("c0_metrics_ref") == "c0_metrics.json"
+    assert payload.get("support_status")
 
 
 def test_finalize_section_compile_blocked_without_fec_bridge():

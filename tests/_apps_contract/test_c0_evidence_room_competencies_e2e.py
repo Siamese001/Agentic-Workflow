@@ -93,6 +93,9 @@ def test_competencies_c0_evidence_room_e2e_real_proof_pool_and_fec(tmp_path: Pat
     assert fec_path.is_file()
     assert room_path.is_file()
     assert (artifact_dir / FEC_BRIDGE_RECEIPT).is_file()
+    assert (artifact_dir / "c0_metrics.json").is_file()
+    assert runtime_payload.get("c0_metrics_ref") == "c0_metrics.json"
+    assert runtime_payload.get("support_status")
 
     fec_on_disk = json.loads(fec_path.read_text(encoding="utf-8"))
     assert fec_on_disk.get("allowed_fact_ids")

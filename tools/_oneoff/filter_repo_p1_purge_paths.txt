@@ -1,0 +1,35 @@
+# P1 historical purge (git-filter-repo --invert-paths)
+# KEEP: artifacts/requirements/proof_bundles/, artifacts/apps_rg/prompt_authority/
+.venv
+artifacts/plan_lifecycle
+artifacts/adg
+artifacts/agent_deprecation
+artifacts/apps_embedding_gap_analysis
+artifacts/apps_lic
+artifacts/certification
+artifacts/eval
+artifacts/governance
+artifacts/gptcache_bge_test
+artifacts/plan_lifecycle
+artifacts/proof
+artifacts/rfp
+artifacts/_top15_v2.py
+artifacts/adg
+artifacts/agent_deprecation
+artifacts/apps_embedding_gap_analysis
+artifacts/apps_lic
+artifacts/certification
+artifacts/current_skip_analysis.json
+artifacts/eval
+artifacts/governance
+artifacts/gptcache_bge_test
+artifacts/plan_lifecycle
+artifacts/proof
+artifacts/rfp
+artifacts/test_inventory
+artifacts/requirements/10c_otel_sweep_report.json
+artifacts/requirements/10c_otel_sweep_report.md
+artifacts/requirements/10c_pilot_merkle_root.json
+artifacts/requirements/10c_pilot_merkle_root.md
+artifacts/requirements/INVENTORY.md
+artifacts/requirements/requirements_crosswalk.json

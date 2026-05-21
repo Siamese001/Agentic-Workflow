@@ -1,0 +1,11 @@
+{
+  "_comment": "EVAL_ONLY — mock research fixture; NOT release proof. Requires APPS_LIC_MOCK_RESEARCH=1.",
+  "recipient_class": "executive",
+  "channel": "email",
+  "outreach_mode": "cold",
+  "briefing": {
+    "mode": "auto",
+    "text": "",
+    "source": null
+  }
+}

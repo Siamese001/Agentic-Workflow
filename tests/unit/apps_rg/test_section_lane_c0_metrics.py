@@ -16,8 +16,12 @@ from apps_rg.runtime.bindings.section_lane_c0_metrics import (
     emit_section_lane_c0_metrics,
     fec_from_section_bridge,
     load_section_lane_c0_metrics,
+    materialize_section_lane_c0_metrics,
     merge_c0_metrics_into_section_metric_receipt,
+    resolve_section_lane_c0_metrics,
+    validate_c0_metrics_document,
 )
+from apps_rg.runtime.sections.section_x2_gate_outputs import write_section_x2_gate_outputs
 from apps_rg.runtime.section_fec_bridge import FEC_BRIDGE_MODE_SECTION
 
 
@@ -106,8 +110,22 @@ def test_x2_gates_require_metrics_for_grounded_lane(tmp_path: Path) -> None:
         json.dumps(
             {
                 "schema_version": SCHEMA_VERSION,
+                "run_id": "r1",
+                "route_id": "R0",
+                "retrieval_mode": "NONE",
+                "briefing_source_type": "NONE",
+                "company_brief_provenance": None,
+                "source_class_coverage": {},
                 "support_status": "PASS",
                 "support_target_met": True,
+                "evidence_counts": {"total": 1, "excluded": 0, "blocked": 0},
+                "retrieval_sources": ["proof_pool"],
+                "excluded_evidence_refs": [],
+                "blocked_source_refs": [],
+                "freshness_receipts": [],
+                "citation_map": [],
+                "support_score_profile": {},
+                "final_evidence_digest": "abc123",
             }
         ),
         encoding="utf-8",
@@ -117,3 +135,106 @@ def test_x2_gates_require_metrics_for_grounded_lane(tmp_path: Path) -> None:
         section_id="headline",
     )
     assert all(g["pass"] for g in ok_gates)
+
+
+def test_validate_c0_metrics_document_rejects_missing_keys() -> None:
+    ok, reason = validate_c0_metrics_document({"schema_version": SCHEMA_VERSION})
+    assert not ok
+    assert "missing keys" in reason
+
+
+def test_resolve_metrics_materializes_from_runtime_payload(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "lane"
+    artifact_dir.mkdir()
+    metrics = {
+        "schema_version": SCHEMA_VERSION,
+        "run_id": "r1",
+        "route_id": "R0",
+        "retrieval_mode": "NONE",
+        "briefing_source_type": "NONE",
+        "company_brief_provenance": None,
+        "source_class_coverage": {},
+        "support_status": "PASS",
+        "support_target_met": True,
+        "evidence_counts": {"total": 1, "excluded": 0, "blocked": 0},
+        "retrieval_sources": ["proof_pool"],
+        "excluded_evidence_refs": [],
+        "blocked_source_refs": [],
+        "freshness_receipts": [],
+        "citation_map": [],
+        "support_score_profile": {},
+        "final_evidence_digest": "abc",
+    }
+    payload = {"c0_metrics": metrics}
+    resolved = resolve_section_lane_c0_metrics(artifact_dir, payload)
+    assert resolved is not None
+    assert (artifact_dir / C0_METRICS_FILENAME).is_file()
+
+
+def test_write_section_x2_gate_outputs_appends_c0_gates(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "headline_run"
+    artifact_dir.mkdir()
+    metrics = {
+        "schema_version": SCHEMA_VERSION,
+        "run_id": "r1",
+        "route_id": "R0",
+        "retrieval_mode": "NONE",
+        "briefing_source_type": "NONE",
+        "company_brief_provenance": None,
+        "source_class_coverage": {},
+        "support_status": "PASS",
+        "support_target_met": True,
+        "evidence_counts": {"total": 2, "excluded": 0, "blocked": 0},
+        "retrieval_sources": ["proof_pool"],
+        "excluded_evidence_refs": [],
+        "blocked_source_refs": [],
+        "freshness_receipts": [],
+        "citation_map": [],
+        "support_score_profile": {},
+        "final_evidence_digest": "deadbeef",
+    }
+    materialize_section_lane_c0_metrics(artifact_dir, metrics)
+    write_section_x2_gate_outputs(
+        artifact_dir,
+        "headline",
+        [{"gate_id": "x2_json_parse_valid", "pass": True}],
+    )
+    doc = json.loads((artifact_dir / "x2_gate_outputs.json").read_text(encoding="utf-8"))
+    gate_ids = {g["gate_id"] for g in doc["gates"]}
+    assert "x2_c0_metrics_artifact_present" in gate_ids
+    assert "x2_c0_support_status_gate" in gate_ids
+
+
+def test_support_status_gate_fails_on_empty_status(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "lane"
+    artifact_dir.mkdir()
+    (artifact_dir / C0_METRICS_FILENAME).write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "run_id": "r",
+                "route_id": "R0",
+                "retrieval_mode": "NONE",
+                "briefing_source_type": "NONE",
+                "company_brief_provenance": None,
+                "source_class_coverage": {},
+                "support_status": "EMPTY",
+                "support_target_met": False,
+                "evidence_counts": {"total": 0, "excluded": 0, "blocked": 0},
+                "retrieval_sources": [],
+                "excluded_evidence_refs": [],
+                "blocked_source_refs": [],
+                "freshness_receipts": [],
+                "citation_map": [],
+                "support_score_profile": {},
+                "final_evidence_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            }
+        ),
+        encoding="utf-8",
+    )
+    gates = build_section_c0_metrics_x2_gates(
+        load_section_lane_c0_metrics(artifact_dir),
+        section_id="headline",
+    )
+    support_gate = next(g for g in gates if g["gate_id"] == "x2_c0_support_status_gate")
+    assert support_gate["pass"] is False
