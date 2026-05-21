@@ -586,10 +586,20 @@ def evaluate_resume_package(
     structural_x2_pass = bool(asm.get("structural_x2_all_pass") and ok_fr)
     cross_structural_pass = bool(asm.get("cross_section_x2_structural_only") or asm.get("cross_section_x2_all_pass"))
 
+    aggregate_coherence_pass = False
+    coherence_rel = str(asm.get("full_resume_llm_coherence_review_json") or "").strip()
+    if coherence_rel:
+        coh_path = _resolve_repo_path(rr, coherence_rel)
+        coh_blob = _load_optional_json(coh_path) if coh_path is not None else None
+        aggregate_coherence_pass = bool(
+            coh_blob and coh_blob.get("full_resume_coherence_pass") is True
+        )
+
     package_product_allow_claimed = (
         assembly_product_allow
         and structural_x2_pass
         and cross_product_pass
+        and aggregate_coherence_pass
         and not deterministic_blocked
         and final_code == X3_ALLOW_CODE
     )
@@ -605,6 +615,7 @@ def evaluate_resume_package(
         "cross_section_x2_structural_pass": cross_structural_pass,
         "cross_section_x2_product_pass": cross_product_pass,
         "aggregation_receipt_v2_complete": bool(asm.get("receipt_id") == "final_resume_assembly_receipt_v2"),
+        "aggregate_full_resume_coherence_pass": aggregate_coherence_pass,
         "product_review_required": product_review_required,
         "product_allow_claimed": False,
         "package_rollup_product_allow_claimed": package_product_allow_claimed,

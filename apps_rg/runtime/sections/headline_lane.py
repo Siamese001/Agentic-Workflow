@@ -792,7 +792,19 @@ def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[st
     )
 
 
-def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
+def write_x2_gate_outputs(
+    path: Path,
+    gates: list[dict[str, Any]],
+    *,
+    section_id: str | None = "headline",
+) -> None:
+    if section_id:
+        from apps_rg.runtime.sections.section_x2_gate_outputs import (
+            write_section_x2_gate_outputs,
+        )
+
+        write_section_x2_gate_outputs(path.parent, section_id, gates)
+        return
     failed = [g["gate_id"] for g in gates if not g["pass"]]
     write_json(
         path,
@@ -954,11 +966,7 @@ def run_headline_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
-    if effective_offline_contract_stub_enabled():
-        stub_raw = json.dumps(build_mock_output(runtime_payload), sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=stub_raw, requested_model=req_model)
-    else:
-        result = call_qwen_vllm(tagged)
+    result = call_qwen_vllm(tagged)
     provider_result_data = result.to_dict()
     raw_output = result.raw_model_output
     provider_raw_output = raw_output

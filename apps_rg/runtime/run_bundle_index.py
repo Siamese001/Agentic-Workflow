@@ -324,6 +324,7 @@ _LANE_CORE: tuple[tuple[str, str, str, bool, str], ...] = (
     ("fact_check_result", "fact_check_result.json", "application/json", False, "apps_rg_canonical_section_runtime"),
     ("repair_receipt", "repair_receipt.json", "application/json", False, "apps_rg_canonical_section_runtime"),
     ("section_metric_receipt", "section_metric_receipt.json", "application/json", False, "apps_rg_canonical_section_runtime"),
+    ("lane_c0_metrics", "c0_metrics.json", "application/json", False, "apps_rg.runtime.bindings.section_lane_c0_metrics"),
     ("claim_ledger", "claim_ledger.json", "application/json", False, "apps_rg_canonical_section_runtime"),
     ("text_claim_coverage", "text_claim_coverage.json", "application/json", False, "apps_rg_canonical_section_runtime"),
     ("selected_fact_plan", "selected_fact_plan.json", "application/json", False, "apps_rg_canonical_section_runtime"),

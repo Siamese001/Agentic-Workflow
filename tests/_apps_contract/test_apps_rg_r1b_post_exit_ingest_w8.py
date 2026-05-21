@@ -47,7 +47,7 @@ def test_rejected_fixtures_not_admissible() -> None:
     cases = {
         "rejected_mock_runtime_ingestion": "not_mock_runtime",
         "rejected_missing_x3_ingestion": "missing_exit_x3_disposition",
-        "rejected_missing_proof_chunks_ingestion": "final_resume_chunk_present",
+        "rejected_missing_proof_chunks_ingestion": "section_display_text_present",
         "rejected_missing_required_digest_ingestion": "jd_digest_present",
     }
     for fixture_name, reason_fragment in cases.items():

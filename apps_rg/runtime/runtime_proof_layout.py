@@ -184,7 +184,7 @@ def run_dir(repo: Path, lane: str, bucket: Bucket, run_id: str) -> Path:
 
 
 def rel_posix(path: Path, repo: Path) -> str:
-    return path.relative_to(repo).as_posix()
+    return path.resolve().relative_to(repo.resolve()).as_posix()
 
 
 def prepare_runtime_proof_run_dir(
@@ -276,6 +276,7 @@ _RUNTIME_PROOF_LINK_FILENAMES: tuple[str, ...] = (
     "selected_fact_plan.json",
     "runtime_payload.json",
     "provider_response.json",
+    "c0_metrics.json",
 )
 
 
@@ -345,6 +346,9 @@ def finalize_runtime_proof_run(
         "artifact_links": artifact_links,
     }
     manifest.update({k: v for k, v in manifest_extras.items()})
+    from apps_rg.runtime.bindings.section_lane_c0_metrics import c0_metrics_run_manifest_fields
+
+    manifest.update(c0_metrics_run_manifest_fields(artifact_dir))
     if "l2_output.json" in artifact_links:
         manifest["l2_output_repo_relative"] = artifact_links["l2_output.json"]
     if "l6_shadow_eval_package.json" in artifact_links:

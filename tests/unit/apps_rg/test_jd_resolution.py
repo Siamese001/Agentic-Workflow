@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.runtime.dispatch import competencies_dispatch
+from apps_rg.runtime.sections import competencies_lane_defaults as competencies_dispatch
 from apps_rg.runtime.jd_resolution import (
     JdResolutionError,
     JdSource,
@@ -111,13 +111,15 @@ def test_dispatch_default_hint_matches_ssot() -> None:
     assert competencies_dispatch.JD_TEXT_DEFAULT == default_jd_targeting_text()
 
 
-def test_no_legacy_jd_hint_literal_in_dispatch_modules() -> None:
+def test_no_legacy_jd_hint_literal_in_competencies_defaults() -> None:
+    """Competencies lane must resolve JD via jd_resolution SSOT, not embedded hint prose."""
     needle = (
         "LLMOps, retrieval, production reliability, engineering leadership"
     )
-    root = Path(competencies_dispatch.__file__).resolve().parent
-    offenders = [p for p in root.glob("*.py") if needle in p.read_text(encoding="utf-8")]
-    assert not offenders, f"legacy embedded JD hint found in: {offenders}"
+    defaults_py = Path(competencies_dispatch.__file__).resolve()
+    assert needle not in defaults_py.read_text(encoding="utf-8"), (
+        f"legacy embedded JD hint must not live in {defaults_py}"
+    )
 
 
 def _expected_digest(title: str, description: str, company: str) -> str:

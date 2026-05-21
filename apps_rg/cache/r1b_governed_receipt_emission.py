@@ -181,18 +181,33 @@ def _write_l4_namespace_ref(
     outcome: R1BPromotionOutcome,
     section_id: str,
     run_id: str,
+    candidate: R1BCachePromotionCandidate | None = None,
 ) -> None:
+    l4_payload: dict[str, Any] = {
+        "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
+        "target_state_object": str(sd.after_candidate) if sd else "",
+        "affected_state_surfaces": list(cr.affected_state_surfaces),
+        "state_diff_refs": list(cr.state_diff_refs),
+        "commit_request_ref": cr.commit_request_id,
+        "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id or None,
+        "blocked_commit_receipt_id": outcome.blocked_commit_receipt_id or None,
+    }
+    if candidate is not None:
+        from apps_rg.cache.r1b_bge_embedding import intent_vector_payload
+
+        intent_text = candidate.record.request_intent_text
+        digest = candidate.record.normalized_intent_digest
+        l4_payload["parent_intent_record"] = candidate.record.to_dict()
+        l4_payload["child_output_chunks"] = [c.to_dict() for c in candidate.chunks]
+        l4_payload["request_intent_embedding_ref"] = intent_vector_payload(
+            intent_text=intent_text,
+            digest=digest,
+        )
+        l4_payload["chroma_collection"] = "apps_rg_r1b_semantic_cache_projection"
+        l4_payload["chroma_persist_dir_env"] = "CHROMA_PERSIST_DIR"
     _write_envelope(
         artifact_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT,
-        {
-            "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
-            "target_state_object": str(sd.after_candidate) if sd else "",
-            "affected_state_surfaces": list(cr.affected_state_surfaces),
-            "state_diff_refs": list(cr.state_diff_refs),
-            "commit_request_ref": cr.commit_request_id,
-            "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id or None,
-            "blocked_commit_receipt_id": outcome.blocked_commit_receipt_id or None,
-        },
+        l4_payload,
         artifact_name=L4_NAMESPACE_OBJECT_REF_ARTIFACT,
         section_id=section_id,
         run_id=run_id,
@@ -430,6 +445,7 @@ def _materialize_uwg_receipts(
             outcome=outcome,
             section_id=section_id,
             run_id=run_id,
+            candidate=candidate,
         )
         chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)
         chain.semantic_cache_persistence_status = "PROVEN_UWG_CHAIN_ONLY"
@@ -511,6 +527,7 @@ def _materialize_uwg_receipts(
             outcome=outcome,
             section_id=section_id,
             run_id=run_id,
+            candidate=candidate,
         )
         chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)
         _write_deferred_surface_status(

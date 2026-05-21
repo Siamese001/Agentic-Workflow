@@ -95,9 +95,9 @@ def _load_json(path: Path) -> Any:
 
 def _rel(p: Path) -> str:
     try:
-        return str(p.relative_to(REPO_ROOT)).replace("\\", "/")
+        return str(p.resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
     except ValueError:
-        return str(p).replace("\\", "/")
+        return str(p.resolve()).replace("\\", "/")
 
 
 def _normalize_x1d_judges(raw: Any) -> list[dict[str, Any]]:

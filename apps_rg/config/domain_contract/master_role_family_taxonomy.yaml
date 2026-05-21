@@ -30,6 +30,13 @@ role_families:
       - microservices
       - kubernetes
       - agentic
+      - agentic ai
+      - multi-agent orchestration
+      - rag-enhanced
+      - tool-use
+      - lifecycle management
+      - global head
+      - operating model
 
   - id: AI_SOLUTIONS_ARCHITECTURE
     summary: >-
@@ -97,6 +104,12 @@ role_families:
       - model risk management
       - compliance
       - CCAR
+      - ai governance
+      - post-deployment
+      - model monitoring
+      - auditing
+      - safety guardrails
+      - performance telemetry
 
   - id: DATA_ANALYTICS_LEADERSHIP
     summary: >-
@@ -107,6 +120,9 @@ role_families:
       - BI
       - data latency
       - risk metrics
+      - data platforms
+      - data engineering
+      - data-driven capabilities
 
   - id: STRATEGIC_FINANCE
     summary: >-
@@ -142,6 +158,15 @@ role_families:
       - customer onboarding
       - post-sales
       - services delivery
+      - systems integrator
+      - technical consulting
+      - time to value
+      - hands-on prototype
+      - gsi
+      - rsi
+      - solutions leader
+      - technical lead
+      - technical enablement
 
   - id: EXECUTIVE_LEADERSHIP
     summary: >-
@@ -151,6 +176,10 @@ role_families:
       - board
       - C-suite alignment
       - organizational scaling
+      - global head
+      - chief data officer
+      - c-level executives
+      - enterprise-wide
 
   # --- Senior-role traversal families (W0.5b — JD targeting only; not proof) ---
   - id: INSURANCE_CARRIER_TRANSFORMATION
@@ -163,8 +192,18 @@ role_families:
       - insurance operations
       - underwriting
       - claims
+      - agentic ai transformation
       - agentic AI transformation
       - insurance industry
+      - global head of agentic
+      - agentic ai solutions
+      - process re-engineering
+      - policy administration
+      - companion agent
+      - automation agent
+      - lean
+      - six sigma
+      - operational excellence
     proposed_pillar_ids:
       - pillar_insurance_carrier_transformation
       - pillar_underwriting_claims_ops_ai
@@ -178,6 +217,7 @@ role_families:
       portfolio governance — forward-project actuarial foundation beyond early-career only.
     jd_signal_keywords:
       - IT strategy
+      - it strategy & innovation
       - AI enablement
       - enterprise architecture
       - insurer
@@ -185,6 +225,14 @@ role_families:
       - DevSecOps
       - data governance
       - portfolio management
+      - technology strategy
+      - innovation incubation
+      - data platforms
+      - CITO
+      - architectural standards
+      - modernization
+      - innovation programs
+      - innovation labs
     proposed_pillar_ids:
       - pillar_insurer_it_strategy_ai_enablement
       - pillar_enterprise_portfolio_governance
@@ -199,10 +247,19 @@ role_families:
     jd_signal_keywords:
       - insurance brokerage
       - brokerage
+      - brown & brown
       - distribution technology
       - interoperability
       - innovation incubation
       - broker
+      - it strategy & innovation
+      - technology strategy
+      - enterprise innovation
+      - data-driven capabilities
+      - integration ecosystems
+      - innovation programs
+      - innovation labs
+      - pilots
     proposed_pillar_ids:
       - pillar_insurance_brokerage_distribution
       - pillar_interoperability_integration_ecosystem
@@ -257,6 +314,17 @@ role_families:
       - reference architecture
       - partner-led
       - alliances architecture
+      - deployment engineering
+      - ai deployment
+      - partner ade
+      - genai
+      - openai api
+      - systems integrator
+      - solutions architect
+      - prototype to production
+      - technical enablement
+      - architectural patterns
+      - solutions engineering
     proposed_pillar_ids:
       - pillar_applied_ai_partner_architecture
       - pillar_partner_gtm_alliances

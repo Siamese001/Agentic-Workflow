@@ -66,7 +66,14 @@ def _write_exit_bundle(
     if include_final_resume:
         (run_dir / "generated_resume.json").write_text('{"sections": []}', encoding="utf-8")
     if include_section_output:
-        (run_dir / "l2_output.json").write_text('{"text": "summary"}', encoding="utf-8")
+        (run_dir / "resume_display_text.txt").write_text(
+            "Executive summary display text for R1B semantic cache ingest.\n",
+            encoding="utf-8",
+        )
+        (run_dir / "l2_output.json").write_text(
+            '{"display_text": "Executive summary display text for R1B semantic cache ingest."}',
+            encoding="utf-8",
+        )
         (run_dir / "x2_gate_outputs.json").write_text('{"x2_failed": 0}', encoding="utf-8")
 
 

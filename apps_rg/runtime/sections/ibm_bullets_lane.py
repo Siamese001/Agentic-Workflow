@@ -601,11 +601,10 @@ def run_ibm_bullets_execution(
         briefing=args.briefing,
     )
     runtime_payload["proof_pool_metadata"] = proof_pool_metadata
-    offline_stub_used = effective_offline_contract_stub_enabled()
     placement_bucket = resolve_lane_placement_bucket(
         args.provider,
         mock_judges=bool(getattr(args, "mock_judges", False)),
-        offline_stub_env=offline_stub_used,
+        offline_stub_env=False,
     )
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
@@ -698,14 +697,7 @@ def run_ibm_bullets_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
     req_model = str(tagged.get("model", DEFAULT_QWEN_MODEL))
-    if effective_offline_contract_stub_enabled():
-        from apps_rg.runtime.qwen_offline_contract_stub import synthetic_qwen_provider_result
-
-        parsed_stub = normalize_parsed_output(build_mock_output(runtime_payload), runtime_payload)
-        raw_body = json.dumps(parsed_stub or {}, sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=raw_body, requested_model=req_model)
-    else:
-        result = call_qwen_vllm(tagged)
+    result = call_qwen_vllm(tagged)
     provider_result_data = result.to_dict()
     raw_output = result.raw_model_output
     runtime_generation_status = result.runtime_generation_status
@@ -904,7 +896,7 @@ def run_ibm_bullets_execution(
         if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="ibm_bullets")
     write_json(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
@@ -937,7 +929,7 @@ def run_ibm_bullets_execution(
         x1d_judges=x1d,
         x2_gates=x2,
         x3=x3,
-        offline_contract_stub_used=offline_stub_used,
+        offline_contract_stub_used=False,
     )
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
@@ -1075,7 +1067,7 @@ def run_ibm_bullets_execution(
         artifact_namespace_class=bundle["artifact_namespace_class"],
         runtime_generation_status_class=bundle["runtime_generation_status_class"],
         offline_contract_stub_used=bundle["offline_contract_stub_used"],
-        offline_contract_stub_reason="APPS_RG_QWEN_OFFLINE_CONTRACT_STUB" if offline_stub_used else None,
+        offline_contract_stub_reason=None,
         authorization_scope=bundle["authorization_scope"],
         mocked_judges=list(x3.mocked_judges),
         test_only_mock_provider=bundle["test_only_mock_provider"],

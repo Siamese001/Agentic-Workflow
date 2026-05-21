@@ -376,11 +376,25 @@ def wire_section_fec_bridge_for_lane(
     from apps_rg.runtime.section_front_spine_bridge import emit_section_front_spine_receipts
 
     emit_section_front_spine_receipts(artifact_dir, front_spine)
-    bridge = build_section_fec_bridge(
-        section_id=section_id,
-        front_spine=front_spine,
-        pool=pool,
+    from apps_rg.runtime.c0.evidence_room import (
+        run_section_c0_evidence_room,
+        section_c0_evidence_room_enabled,
     )
+
+    if section_c0_evidence_room_enabled(section_id):
+        bridge = run_section_c0_evidence_room(
+            artifact_dir=artifact_dir,
+            section_id=section_id,
+            front_spine=front_spine,
+            pool=pool,
+            runtime_payload=runtime_payload,
+        )
+    else:
+        bridge = build_section_fec_bridge(
+            section_id=section_id,
+            front_spine=front_spine,
+            pool=pool,
+        )
     emit_section_fec_bridge_artifacts(artifact_dir, bridge)
     runtime_payload["section_fec_bridge"] = bridge.bridge_doc
     runtime_payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
@@ -388,6 +402,14 @@ def wire_section_fec_bridge_for_lane(
     runtime_payload["c0_fec_bridge_receipt_ref"] = FEC_BRIDGE_RECEIPT
     runtime_payload["raw_proof_pool_direct_to_pa"] = False
     runtime_payload["product_visible"] = bridge.product_visible
+    from apps_rg.runtime.bindings.section_lane_c0_metrics import emit_section_lane_c0_metrics
+
+    emit_section_lane_c0_metrics(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+        front_spine=front_spine,
+    )
     return bridge
 
 
@@ -412,7 +434,8 @@ def pa_consumption_receipt_fields(runtime_payload: dict[str, Any]) -> dict[str, 
         "c0_fec_bridge_receipt_ref": runtime_payload.get("c0_fec_bridge_receipt_ref")
         or FEC_BRIDGE_RECEIPT,
         "evidence_contract_consumed": via_fec
-        or bool(runtime_payload.get("canonical_final_evidence_contract")),
+        or bool(runtime_payload.get("canonical_final_evidence_contract"))
+        or bool(runtime_payload.get("canonical_final_evidence_contract_snapshot")),
         "raw_proof_pool_direct_to_pa": False if via_fec else bool(
             runtime_payload.get("raw_proof_pool_direct_to_pa")
         ),
@@ -421,7 +444,26 @@ def pa_consumption_receipt_fields(runtime_payload: dict[str, Any]) -> dict[str, 
             if isinstance(bridge, dict)
             else ""
         ),
-        "canonical_c0_5_claimed": False,
+        "canonical_c0_5_claimed": (
+            bool(bridge.get("canonical_c0_5_claimed"))
+            if isinstance(bridge, dict)
+            else False
+        ),
+        "canonical_c0_2_claimed": (
+            bool(bridge.get("canonical_c0_2_claimed"))
+            if isinstance(bridge, dict)
+            else False
+        ),
+        "canonical_c0_3_claimed": (
+            bool(bridge.get("canonical_c0_3_claimed"))
+            if isinstance(bridge, dict)
+            else False
+        ),
+        "c07_handoff_safe": (
+            bool((bridge.get("c0_evidence_room") or {}).get("c07", {}).get("handoff_safe"))
+            if isinstance(bridge, dict)
+            else None
+        ),
     }
 
 

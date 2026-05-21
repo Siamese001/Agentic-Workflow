@@ -1,6 +1,6 @@
 {
   "schema": "career_track_p1_w5_track_balanced_sections_receipt_v1",
-  "generated_at": "2026-05-19T18:16:18Z",
+  "generated_at": "2026-05-21T20:50:54Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W5",
   "selected_tracks": [
@@ -45,28 +45,28 @@
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "track_label": "Data / tech / Cloud / ML (2010-2022)",
       "track_available": true,
-      "sentence": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
+      "sentence": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
       "source_fact_ids": [
-        "fact_partnerships_gtm_003"
+        "fact_revenue_ops_001"
       ],
-      "source_skill_id": "skill_partner_co_selling",
+      "source_skill_id": "skill_p2_gtm_discovery_qualification",
       "graph_hop_path": [
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_cosell_partner_engineering",
+          "to": "pillar_gtm_presales_motion",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_cosell_partner_engineering",
-          "to": "skill_partner_co_selling",
+          "from": "pillar_gtm_presales_motion",
+          "to": "skill_p2_gtm_discovery_qualification",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_partner_co_selling",
-          "to": "fact_partnerships_gtm_003",
+          "from": "skill_p2_gtm_discovery_qualification",
+          "to": "fact_revenue_ops_001",
           "note": "graph edge skill_supported_by_fact"
         }
       ]
@@ -266,28 +266,28 @@
           "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
         },
         {
-          "skill_id": "skill_partner_cloud_vendor_joint_gtm",
-          "label": "cloud and AI vendors",
+          "skill_id": "skill_p2_gtm_discovery_qualification",
+          "label": "prioritize high-potential deals",
           "fact_id_links": [
-            "fact_partnerships_gtm_004"
+            "fact_revenue_ops_001"
           ],
           "graph_hop_path": [
             {
               "edge_type": "career_track_contains_pillar",
               "from": "track_data_tech_cloud_ml",
-              "to": "pillar_partner_gtm_alliances",
+              "to": "pillar_gtm_presales_motion",
               "note": "track-weighted pillar scope"
             },
             {
               "edge_type": "skill_row_pillar_projection",
-              "from": "pillar_partner_gtm_alliances",
-              "to": "skill_partner_cloud_vendor_joint_gtm",
+              "from": "pillar_gtm_presales_motion",
+              "to": "skill_p2_gtm_discovery_qualification",
               "note": "ACTIVE skill_row pillar match (not causal)"
             },
             {
               "edge_type": "skill_supported_by_fact",
-              "from": "skill_partner_cloud_vendor_joint_gtm",
-              "to": "fact_partnerships_gtm_004",
+              "from": "skill_p2_gtm_discovery_qualification",
+              "to": "fact_revenue_ops_001",
               "note": "graph edge skill_supported_by_fact"
             }
           ],
@@ -295,36 +295,7 @@
           "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
         },
         {
-          "skill_id": "skill_partner_co_selling",
-          "label": "co-selling",
-          "fact_id_links": [
-            "fact_partnerships_gtm_003"
-          ],
-          "graph_hop_path": [
-            {
-              "edge_type": "career_track_contains_pillar",
-              "from": "track_data_tech_cloud_ml",
-              "to": "pillar_cosell_partner_engineering",
-              "note": "track-weighted pillar scope"
-            },
-            {
-              "edge_type": "skill_row_pillar_projection",
-              "from": "pillar_cosell_partner_engineering",
-              "to": "skill_partner_co_selling",
-              "note": "ACTIVE skill_row pillar match (not causal)"
-            },
-            {
-              "edge_type": "skill_supported_by_fact",
-              "from": "skill_partner_co_selling",
-              "to": "fact_partnerships_gtm_003",
-              "note": "graph edge skill_supported_by_fact"
-            }
-          ],
-          "career_track": "track_data_tech_cloud_ml",
-          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
-        },
-        {
-          "skill_id": "skill_partner_customer_deal_support",
+          "skill_id": "skill_p2_gtm_enterprise_deal_support",
           "label": "Annual Contract Value",
           "fact_id_links": [
             "fact_sales_accounts_001"
@@ -333,18 +304,47 @@
             {
               "edge_type": "career_track_contains_pillar",
               "from": "track_data_tech_cloud_ml",
-              "to": "pillar_customer_stakeholder",
+              "to": "pillar_gtm_presales_motion",
               "note": "track-weighted pillar scope"
             },
             {
               "edge_type": "skill_row_pillar_projection",
-              "from": "pillar_customer_stakeholder",
-              "to": "skill_partner_customer_deal_support",
+              "from": "pillar_gtm_presales_motion",
+              "to": "skill_p2_gtm_enterprise_deal_support",
               "note": "ACTIVE skill_row pillar match (not causal)"
             },
             {
               "edge_type": "skill_supported_by_fact",
-              "from": "skill_partner_customer_deal_support",
+              "from": "skill_p2_gtm_enterprise_deal_support",
+              "to": "fact_sales_accounts_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
+          "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+          "label": "CFO priorities",
+          "fact_id_links": [
+            "fact_sales_accounts_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_gtm_presales_motion",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_gtm_presales_motion",
+              "to": "skill_p2_gtm_executive_buyer_alignment",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_p2_gtm_executive_buyer_alignment",
               "to": "fact_sales_accounts_001",
               "note": "graph edge skill_supported_by_fact"
             }
@@ -420,7 +420,7 @@
           "skill_id": "skill_agentic_platform_productization",
           "label": "agentic platform productization",
           "fact_id_links": [
-            "fact_engineering_platform_004"
+            "fact_engineering_platform_006"
           ],
           "graph_hop_path": [
             {
@@ -438,7 +438,7 @@
             {
               "edge_type": "skill_supported_by_fact",
               "from": "skill_agentic_platform_productization",
-              "to": "fact_engineering_platform_004",
+              "to": "fact_engineering_platform_006",
               "note": "graph edge skill_supported_by_fact"
             }
           ],
@@ -478,36 +478,7 @@
           "skill_id": "skill_ai_platform_commercialization",
           "label": "ai platform commercialization",
           "fact_id_links": [
-            "fact_exec_002"
-          ],
-          "graph_hop_path": [
-            {
-              "edge_type": "career_track_contains_pillar",
-              "from": "track_genai_agentic",
-              "to": "pillar_revenue_commercialization",
-              "note": "track-weighted pillar scope"
-            },
-            {
-              "edge_type": "skill_row_pillar_projection",
-              "from": "pillar_revenue_commercialization",
-              "to": "skill_ai_platform_commercialization",
-              "note": "ACTIVE skill_row pillar match (not causal)"
-            },
-            {
-              "edge_type": "skill_supported_by_fact",
-              "from": "skill_ai_platform_commercialization",
-              "to": "fact_exec_002",
-              "note": "graph edge skill_supported_by_fact"
-            }
-          ],
-          "career_track": "track_genai_agentic",
-          "career_track_id": "TRACK_GENAI_AGENTIC"
-        },
-        {
-          "skill_id": "skill_ai_platform_commercialization",
-          "label": "ai platform commercialization",
-          "fact_id_links": [
-            "fact_exec_002"
+            "fact_engineering_platform_004"
           ],
           "graph_hop_path": [
             {
@@ -526,6 +497,35 @@
               "edge_type": "skill_supported_by_fact",
               "from": "skill_ai_platform_commercialization",
               "to": "fact_engineering_platform_004",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
+          "skill_id": "skill_ai_platform_commercialization",
+          "label": "ai platform commercialization",
+          "fact_id_links": [
+            "fact_engineering_platform_004"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_revenue_commercialization",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_revenue_commercialization",
+              "to": "skill_ai_platform_commercialization",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_ai_platform_commercialization",
+              "to": "fact_exec_002",
               "note": "graph edge skill_supported_by_fact"
             }
           ],
@@ -649,6 +649,35 @@
           "career_track_id": "TRACK_GENAI_AGENTIC"
         },
         {
+          "skill_id": "skill_audit_grade_observability",
+          "label": "audit grade observability",
+          "fact_id_links": [
+            "fact_engineering_platform_003"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_genai_agentic",
+              "to": "pillar_regulatory_governance",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_regulatory_governance",
+              "to": "skill_audit_grade_observability",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_audit_grade_observability",
+              "to": "fact_engineering_platform_004",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_genai_agentic",
+          "career_track_id": "TRACK_GENAI_AGENTIC"
+        },
+        {
           "skill_id": "skill_authority_and_registry_binding",
           "label": "authority and registry binding",
           "fact_id_links": [
@@ -741,7 +770,7 @@
   "skill_count_by_track": {
     "track_actuarial_risk_derivatives": 3,
     "track_data_tech_cloud_ml": 5,
-    "track_genai_agentic": 13
+    "track_genai_agentic": 14
   },
   "every_skill_has_fact_id_links": true,
   "every_skill_has_graph_hop_path": true,
@@ -751,32 +780,11 @@
   "p1_w4_c03_graph_bound_status": "BOUND",
   "p1_w4_closeout_receipt_ref": "docs/reports/apps_rg/career_track_p1_w4_closeout_receipt.json",
   "p1_w4_non_graph_evidence_items_count": 0,
-  "p1_w4_graph_hop_paths_count": 21,
+  "p1_w4_graph_hop_paths_count": 22,
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [
-      "agentic_core/L0_routing/logs/guardian_report.json",
-      "agentic_core/L0_routing/reasoning/execution_orchestrator.py",
-      "agentic_core/L0_routing/reasoning/route_gates.py",
-      "agentic_core/L2_execution/apps_rg_l2_binding.py",
-      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
-      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
-    ],
-    "git_status_short_agentic_core": [
-      "M agentic_core/L0_routing/logs/guardian_report.json",
-      "M agentic_core/L0_routing/reasoning/execution_orchestrator.py",
-      "M agentic_core/L0_routing/reasoning/route_gates.py",
-      "D agentic_core/L2_execution/apps_rg_l2_binding.py",
-      "M agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
-      "M agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
-    ],
-    "dirty_files": [
-      "agentic_core/L0_routing/logs/guardian_report.json",
-      "agentic_core/L0_routing/reasoning/execution_orchestrator.py",
-      "agentic_core/L0_routing/reasoning/route_gates.py",
-      "agentic_core/L2_execution/apps_rg_l2_binding.py",
-      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
-      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
-    ],
+    "git_diff_name_only_agentic_core": [],
+    "git_status_short_agentic_core": [],
+    "dirty_files": [],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -788,8 +796,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".cursor/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": false,
-    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
+    "workspace_guard_clean": true,
+    "isolation_verdict": "CLEAN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope.",
     "p1_w5_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_balanced_section_projection.py",

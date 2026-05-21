@@ -78,7 +78,14 @@ def _write_exit_bundle(
     if include_final_resume:
         (run_dir / "generated_resume.json").write_text('{"sections": []}', encoding="utf-8")
     if include_section_output:
-        (run_dir / "l2_output.json").write_text('{"text": "summary"}', encoding="utf-8")
+        (run_dir / "resume_display_text.txt").write_text(
+            "Executive summary display text for R1B semantic cache ingest.\n",
+            encoding="utf-8",
+        )
+        (run_dir / "l2_output.json").write_text(
+            '{"display_text": "Executive summary display text for R1B semantic cache ingest."}',
+            encoding="utf-8",
+        )
         (run_dir / "x2_gate_outputs.json").write_text('{"x2_failed": 0}', encoding="utf-8")
     if include_proof_chunk:
         pass  # proof chunk synthesized by build_chunk_rows_from_run_dir
@@ -161,7 +168,7 @@ def test_adapter_allows_post_exit_with_artifact_dir(tmp_path: Path) -> None:
             {
                 "chunk_type": CHUNK_TYPE_EXEC_SUMMARY,
                 "section_id": "executive_summary",
-                "chunk_text": "x",
+                "chunk_text": "Executive summary display text for adapter post-exit ingest.",
                 "x2_status": "PASS",
             },
             {"chunk_type": CHUNK_TYPE_SECTION_PROOF, "section_id": "executive_summary", "chunk_text": "{}"},

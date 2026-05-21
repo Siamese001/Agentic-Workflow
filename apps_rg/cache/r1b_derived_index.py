@@ -132,7 +132,8 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
         if not record.cache_admissible:
             continue
         digest = record.normalized_intent_digest
-        vec = pseudo_vector_from_digest(digest)
+        vec_payload = vector_payload(digest, intent_text=str(record.request_intent_text or ""))
+        vec = [float(x) for x in vec_payload.get("values") or []]
         entry = {
             "record_id": record.record_id,
             "normalized_intent_digest": digest,
@@ -147,7 +148,7 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
             "child_chunks_independent_index_identities": False,
             "c0_fact_vectors_consulted": False,
             "c0_collection_excluded": C0_FACT_VECTORS_COLLECTION,
-            "vector": vector_payload(digest),
+            "vector": vec_payload,
             "governance_receipt": bundle.get("governance_receipt"),
             "uwg_commit_receipt_id": bundle.get("uwg_commit_receipt_id", ""),
         }
@@ -265,7 +266,9 @@ def lookup_r1b_via_derived_index(
 
     intent_text = intent_text_from_request(raw_request)
     query_digest = normalized_intent_digest(intent_text)
-    query_vec = pseudo_vector_from_digest(query_digest)
+    from apps_rg.cache.r1b_bge_embedding import resolve_query_vector
+
+    query_vec, _kind = resolve_query_vector(intent_text, query_digest)
     report: list[dict[str, Any]] = []
     best: R1BLookupHit | None = None
 

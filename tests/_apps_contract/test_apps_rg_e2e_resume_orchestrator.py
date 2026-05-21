@@ -101,8 +101,11 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     (fr_dir / "final_resume_x2_gate_outputs.json").write_text(json.dumps(fr_x2), encoding="utf-8")
 
     recorded: list[list[str]] = []
-    def fake_run(argv, cwd=None, **_kwargs):  # type: ignore[no-untyped-def]
+    recorded_envs: list[dict[str, str] | None] = []
+
+    def fake_run(argv, cwd=None, env=None, **_kwargs):  # type: ignore[no-untyped-def]
         recorded.append(list(argv))
+        recorded_envs.append(dict(env) if env is not None else None)
         return _FakeProc()
 
     disposition = {
@@ -173,8 +176,11 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
             if av[i + 1] == "apps_rg" and "--section" in av:
                 lane_sections.append(av[av.index("--section") + 1])
     assert lane_sections == list(ofr.SECTION_ORDER)
-    assert any("--mock-judges" in av for av in recorded)
-    assert any("--allow-test-mock-judges" in av for av in recorded)
+    assert not any("--mock-judges" in av for av in recorded)
+    lane_envs = [e for e in recorded_envs if e is not None]
+    assert lane_envs
+    assert all(e.get("APPS_RG_TEST_HARNESS") == "1" for e in lane_envs)
+    assert all(e.get("APPS_RG_MOCK_JUDGES") == "1" for e in lane_envs)
     assert out["orchestrator_status"] == "PASS"
     assert out["package_x3_code"] == "X3_ALLOW"
     assert "paths" in out and out["paths"]["final_docx"].endswith("amit_ayer_resume_v1.docx")
@@ -299,7 +305,7 @@ def test_orchestrator_rejects_mock_judges_without_allow_test_hatch(tmp_path: Pat
     repo = tmp_path.resolve()
     canon_text = '{"stub":true}\n'
     _stub_canonical_base_resume(repo, text=canon_text)
-    with pytest.raises(ValueError, match="allow-test-mock-judges"):
+    with pytest.raises(ValueError, match="allow_test_mock_judges"):
         ofr.run_orchestration(
             repo=repo,
             provider="qwen_vllm",

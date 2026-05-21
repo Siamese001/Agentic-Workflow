@@ -1,6 +1,6 @@
 # P1-W5 — Track-balanced section projections
 
-**Generated:** 2026-05-19T18:16:18Z
+**Generated:** 2026-05-21T20:50:54Z
 
 ## Executive summary (by track)
 
@@ -18,7 +18,7 @@
 
 - `track_actuarial_risk_derivatives`: 3 skills
 - `track_data_tech_cloud_ml`: 5 skills
-- `track_genai_agentic`: 13 skills
+- `track_genai_agentic`: 14 skills
 
 ## P1-W4 closeout preserved
 

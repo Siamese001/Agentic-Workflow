@@ -73,16 +73,31 @@ C0_QUERY_VEC_REF_BGE = "c0:bge-m3:query_embedding_bundle:v1"
 _logger = logging.getLogger(__name__)
 
 _embedding_singleton: Any | None = None
+_embedding_singleton_path: str | None = None
 
 
 def _get_embedding_model() -> Any:
-    """Lazy SentenceTransformer(BAAI/bge-m3) — patchable in tests."""
-    global _embedding_singleton
-    if _embedding_singleton is None:
-        from tools.ingestion.chroma_ingest_pipeline import _load_embedding_model
+    """Lazy explicit local BGE — patchable in tests; never HF hub slug lookup."""
+    global _embedding_singleton, _embedding_singleton_path
+    from apps_rg.runtime.embedding_settings import (
+        assert_dense_retrieval_allowed,
+        load_bge_sentence_transformer,
+        resolve_apps_rg_embedding_settings,
+    )
 
-        _embedding_singleton = _load_embedding_model()
+    settings = resolve_apps_rg_embedding_settings(chroma_persist_dir=_chroma_persist_dir_active())
+    assert_dense_retrieval_allowed(settings)
+    path = settings.embedding_model_path or ""
+    if _embedding_singleton is not None and _embedding_singleton_path == path:
+        return _embedding_singleton
+    _embedding_singleton = load_bge_sentence_transformer(settings)
+    _embedding_singleton_path = path
     return _embedding_singleton
+
+
+def _chroma_persist_dir_active() -> str | None:
+    p = os.environ.get("CHROMA_PERSIST_DIR", "").strip()
+    return p or None
 
 
 def _payload_dotget(root: dict[str, Any], dotted: str) -> Any:
@@ -286,14 +301,38 @@ def c0_retrieve_apps_rg(
 
     effective_chroma = _norm_path(chromadb_path) or _norm_path(os.environ.get("CHROMA_PERSIST_DIR"))
 
+    from apps_rg.runtime.c0_mandatory_policy import apps_rg_c0_dense_sparse_mandatory
+
+    if apps_rg_c0_dense_sparse_mandatory() and not effective_chroma:
+        raise C0EvidenceGapError(
+            "C0.2 dense+sparse mandatory for apps_rg: CHROMA_PERSIST_DIR required "
+            "(set via bootstrap or env) with EMBEDDING_ENABLED=true and local BGE path"
+        )
+
     if effective_chroma:
-        emb = os.environ.get("EMBEDDING_ENABLED", "").strip().lower()
-        if emb not in ("1", "true"):
+        from apps_rg.runtime.embedding_settings import (
+            resolve_apps_rg_embedding_settings,
+            write_embedding_settings_receipt,
+        )
+
+        emb_settings = resolve_apps_rg_embedding_settings(chroma_persist_dir=effective_chroma)
+        if emb_settings.route_result == "FAIL_CLOSED":
+            raise C0EvidenceGapError(emb_settings.decisive_reason)
+        _art_hint = os.environ.get("APPS_RG_ARTIFACT_DIR", "").strip()
+        if _art_hint:
+            try:
+                write_embedding_settings_receipt(_art_hint, emb_settings)
+            except OSError:
+                pass  # guardian: allow-silent-swallow -- receipt write is best-effort on C0 preflight
+        if not emb_settings.embeddings_enabled:
             raise C0EvidenceGapError(
                 "Chroma path is configured (parameter or CHROMA_PERSIST_DIR) but "
-                "EMBEDDING_ENABLED is not true. Set EMBEDDING_ENABLED=true for dense retrieval, "
+                "EMBEDDING_ENABLED is not true. Set EMBEDDING_ENABLED=true and "
+                "APPS_RG_EMBEDDING_MODEL_PATH to a local BGE directory for dense retrieval, "
                 "or unset CHROMA_PERSIST_DIR for file-only C0."
             )
+        if emb_settings.embedding_required and not emb_settings.embedding_model_resolved:
+            raise C0EvidenceGapError(emb_settings.decisive_reason)
 
     if not merged_items and validated_request is not None:
         app_payload = getattr(validated_request, "app_payload", None) or {}
@@ -495,6 +534,42 @@ def c0_retrieve_apps_rg(
         section_profile,
         sparse_receipt_refs,
     )
+    from apps_rg.runtime.c0_mandatory_policy import apps_rg_c0_dense_sparse_mandatory as _c02_mandatory
+
+    if _c02_mandatory():
+        if not chroma_dense_lane_completed:
+            raise C0EvidenceGapError(
+                "C0.2 dense lane mandatory but fact_vectors dense retrieval did not complete"
+            )
+        if section_profile.any_sparse_enabled():
+            if C0_SPARSE_LANE_NA_REF in sparse_search_refs:
+                raise C0EvidenceGapError("C0.2 sparse lane mandatory but sparse profile disabled")
+            if any("UNAVAILABLE" in ref for ref in sparse_search_refs):
+                raise C0EvidenceGapError(
+                    "C0.2 sparse lane mandatory but BM25/sparse index unavailable: "
+                    + ",".join(sparse_search_refs[:3])
+                )
+        gate_verdicts.append(
+            _build_gate_verdict(
+                gate_id="G_C02_DENSE",
+                support_status=SUPPORT_STATUS_PASS if chroma_dense_lane_completed else SUPPORT_STATUS_BLOCKED,
+                evidence_digest=digest,
+                timestamp_iso=ts,
+                result_mapping=result_mapping,
+            )
+        )
+        sparse_pass = section_profile.any_sparse_enabled() and not any(
+            "UNAVAILABLE" in ref or "EMPTY" in ref for ref in sparse_search_refs
+        )
+        gate_verdicts.append(
+            _build_gate_verdict(
+                gate_id="G_C02_SPARSE",
+                support_status=SUPPORT_STATUS_PASS if sparse_pass else SUPPORT_STATUS_BLOCKED,
+                evidence_digest=digest,
+                timestamp_iso=ts,
+                result_mapping=result_mapping,
+            )
+        )
     graph_expansion_refs: tuple[str, ...] = (C0_GRAPH_LANE_NA_REF,)
     support_score_profile: tuple[tuple[str, float], ...] = tuple(support_score_profile_rows)
 
@@ -771,10 +846,11 @@ class SectionRetrievalProfile:
         return dict(self._config.get("sparse_lane_defaults") or {})
 
     def any_sparse_enabled(self) -> bool:
-        defaults = self.get_sparse_defaults()
-        if defaults.get("sparse_enabled"):
-            return True
-        return any(bool(s.get("sparse_enabled")) for s in self._sections)
+        """True when any section's effective sparse config is enabled (respects mandatory policy env)."""
+        for section in self._sections:
+            if self.section_sparse_config(section).get("sparse_enabled"):
+                return True
+        return False
 
     _SPARSE_CONFIG_KEYS: tuple[str, ...] = (
         "sparse_enabled",
@@ -790,12 +866,21 @@ class SectionRetrievalProfile:
     )
 
     def section_sparse_config(self, section: dict[str, Any]) -> dict[str, Any]:
+        from apps_rg.runtime.c0_mandatory_policy import (
+            apps_rg_c0_dense_sparse_mandatory,
+            apps_rg_c0_sparse_profile_enabled,
+        )
+
         merged: dict[str, Any] = {}
         for key in self._SPARSE_CONFIG_KEYS:
             if key in self.get_sparse_defaults():
                 merged[key] = self.get_sparse_defaults()[key]
             if key in section:
                 merged[key] = section[key]
+        if not apps_rg_c0_sparse_profile_enabled():
+            merged["sparse_enabled"] = False
+        elif apps_rg_c0_dense_sparse_mandatory():
+            merged["sparse_enabled"] = True
         coll = merged.get("sparse_collection_ref") or merged.get("sparse_index_ref")
         if coll:
             merged["sparse_collection_ref"] = str(coll)
@@ -1069,8 +1154,14 @@ def _perform_bounded_section_retrieval(
             )
             return [], [verdict], "UNKNOWN", [], [], []
 
+    from apps_rg.runtime.embedding_settings import (
+        assert_dense_retrieval_allowed,
+        resolve_apps_rg_embedding_settings,
+    )
     from tools.ingestion.chroma_ingest_pipeline import embed_text
 
+    _sec_emb = resolve_apps_rg_embedding_settings(chroma_persist_dir=chromadb_path)
+    assert_dense_retrieval_allowed(_sec_emb)
     model = _get_embedding_model()
 
     for section in profile.get_sections():

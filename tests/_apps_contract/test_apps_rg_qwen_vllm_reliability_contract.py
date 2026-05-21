@@ -17,25 +17,18 @@ from apps_rg.runtime import qwen_transport_diag as qtd
 from apps_rg.runtime.judges import executive_summary_x1d as es_x1d
 
 
-def test_live_qwen_is_not_proven_by_offline_stub_runtime_status() -> None:
-    """OFFLINE_CONTRACT_STUB is distinct from REAL_LLM — never treat as live Qwen proof."""
+def test_offline_contract_stub_disabled_at_runtime() -> None:
+    """Product runs must not synthesize Qwen responses without vLLM HTTP."""
     from apps_rg.runtime.qwen_offline_contract_stub import (
-        OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,
+        effective_offline_contract_stub_enabled,
+        offline_contract_stub_enabled,
         synthetic_qwen_provider_result,
     )
 
-    r = synthetic_qwen_provider_result(raw_model_output="{}", requested_model="Qwen/Qwen2.5-32B-Instruct-AWQ")
-    assert r.runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
-    assert r.runtime_generation_status != "REAL_LLM"
-    assert r.stub is True
-
-
-def test_disable_offline_stub_forces_effective_false(monkeypatch: pytest.MonkeyPatch) -> None:
-    from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
-
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
-    monkeypatch.setenv("APPS_RG_QWEN_DISABLE_OFFLINE_STUB", "1")
+    assert offline_contract_stub_enabled() is False
     assert effective_offline_contract_stub_enabled() is False
+    with pytest.raises(RuntimeError, match="disabled"):
+        synthetic_qwen_provider_result(raw_model_output="{}", requested_model="Qwen/Qwen2.5-32B-Instruct-AWQ")
 
 
 def test_probe_failure_writes_diagnostic_with_base_url_and_category(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

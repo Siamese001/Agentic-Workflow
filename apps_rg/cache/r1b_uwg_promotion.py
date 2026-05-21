@@ -336,6 +336,23 @@ def write_uwg_admitted_projection(
     for d in (intents, chunks, receipts):
         d.mkdir(parents=True, exist_ok=True)
 
+    from apps_rg.cache.r1b_bge_embedding import chunk_vector_payload, intent_vector_payload
+
+    intent_emb = intent_vector_payload(
+        intent_text=candidate.record.request_intent_text,
+        digest=candidate.record.normalized_intent_digest,
+    )
+    chunk_embeddings = [
+        {
+            "chunk_id": ch.chunk_id,
+            "chunk_type": ch.chunk_type,
+            "embedding": chunk_vector_payload(
+                chunk_text=ch.chunk_text or ch.chunk_type,
+                chunk_id=ch.chunk_id,
+            ),
+        }
+        for ch in candidate.chunks
+    ]
     bundle = {
         "schema_version": candidate.record.schema_version,
         "storage_subsystem": R1B_STORAGE_SUBSYSTEM,
@@ -346,6 +363,9 @@ def write_uwg_admitted_projection(
         "governance_receipt": outcome.governance_receipt,
         "parent_intent_record": candidate.record.to_dict(),
         "child_chunks": [c.to_dict() for c in candidate.chunks],
+        "child_chunk_embedding_metadata": chunk_embeddings,
+        "request_intent_embedding": intent_emb,
+        "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
         "post_exit_eligibility_receipt": candidate.post_exit_eligibility,
         "source_run_id": candidate.source_run_id,
         "x3_disposition_ref": candidate.x3_disposition_ref,
@@ -353,6 +373,9 @@ def write_uwg_admitted_projection(
         "c0_fact_vectors_consulted": False,
         "admitted_at_utc": _utc_now(),
     }
+    emb_dir = root / "embeddings" / candidate.record.record_id
+    emb_dir.mkdir(parents=True, exist_ok=True)
+    (emb_dir / "intent.json").write_text(json.dumps(intent_emb, indent=2) + "\n", encoding="utf-8")
     intent_path = intents / f"{candidate.record.record_id}.json"
     intent_path.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     receipt_path = receipts / f"{candidate.record.record_id}_uwg_commit.json"

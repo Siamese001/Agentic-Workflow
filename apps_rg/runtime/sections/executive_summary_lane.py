@@ -968,7 +968,19 @@ def resolve_provider_model_name(
     return None
 
 
-def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
+def write_x2_gate_outputs(
+    path: Path,
+    gates: list[dict[str, Any]],
+    *,
+    section_id: str | None = None,
+) -> None:
+    if section_id:
+        from apps_rg.runtime.sections.section_x2_gate_outputs import (
+            write_section_x2_gate_outputs,
+        )
+
+        write_section_x2_gate_outputs(path.parent, section_id, gates)
+        return
     failed = [g["gate_id"] for g in gates if not g["pass"]]
     passed_count = sum(1 for g in gates if g["pass"])
     failed_count = len(failed)
@@ -1322,12 +1334,6 @@ def run_executive_summary_execution(
         req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
     if evidence_capsule_block_reason or token_budget_block_reason:
         pass
-    elif effective_offline_contract_stub_enabled():
-        from apps_rg.runtime.qwen_offline_contract_stub import synthetic_qwen_provider_result
-
-        stub_doc = build_mock_output(runtime_payload)
-        raw_body = json.dumps(stub_doc, sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=raw_body, requested_model=req_model)
     else:
         result = call_qwen_vllm(
             provider_payload,
@@ -1635,7 +1641,7 @@ def run_executive_summary_execution(
     )
     write_json(artifact_dir / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="executive_summary")
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or proof_pool_metadata or {}
     proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
@@ -1679,7 +1685,7 @@ def run_executive_summary_execution(
         if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary")
     write_json(
         artifact_dir / "fact_check_result.json",
         {

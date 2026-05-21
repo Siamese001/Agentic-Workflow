@@ -773,17 +773,7 @@ def run_unify_bullets_execution(
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
-    if effective_offline_contract_stub_enabled():
-        from apps_rg.runtime.qwen_offline_contract_stub import synthetic_qwen_provider_result
-
-        stub_doc = normalize_unify_parsed_without_ledger_synthesis(
-            build_mock_output(runtime_payload),
-            runtime_payload,
-        )
-        raw_body = json.dumps(stub_doc or {}, sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=raw_body, requested_model=req_model)
-    else:
-        result = call_qwen_vllm(provider_payload)
+    result = call_qwen_vllm(provider_payload)
     provider_result_data = result.to_dict()
     raw_output = result.raw_model_output
     runtime_generation_status = result.runtime_generation_status
@@ -961,7 +951,7 @@ def run_unify_bullets_execution(
     )
     write_json(artifact_dir / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="unify_bullets")
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
     proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
@@ -997,7 +987,7 @@ def run_unify_bullets_execution(
         if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="unify_bullets")
     write_json(
         artifact_dir / "fact_check_result.json",
         {

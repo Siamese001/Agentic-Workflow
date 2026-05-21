@@ -237,10 +237,62 @@ def resolve_career_track_weights(
         bumps: dict[str, float] = {}
         if any(k in jd for k in ("actuarial", "derivatives", "greeks", "basel", "ccar", "capital modeling")):
             bumps["track_actuarial_risk_derivatives"] = 0.05
+        if any(
+            k in jd
+            for k in (
+                "underwriting",
+                "claims",
+                "policy administration",
+                "insurance industry",
+                "insurance carrier",
+            )
+        ):
+            bumps["track_actuarial_risk_derivatives"] = max(
+                bumps.get("track_actuarial_risk_derivatives", 0.0), 0.08
+            )
         if any(k in jd for k in ("aws", "cloud", "partner", "gtm", "co-sell", "hyperscaler", "revenue")):
             bumps["track_data_tech_cloud_ml"] = 0.05
-        if any(k in jd for k in ("agentic", "graphrag", "orchestration", "routing", "llm governance")):
+        if any(
+            k in jd
+            for k in (
+                "agentic",
+                "graphrag",
+                "orchestration",
+                "routing",
+                "llm governance",
+                "rag-enhanced",
+                "multi-agent",
+                "companion agent",
+                "automation agent",
+            )
+        ):
             bumps["track_genai_agentic"] = 0.05
+        if any(
+            k in jd
+            for k in (
+                "it strategy",
+                "enterprise architecture",
+                "innovation incubation",
+                "data platforms",
+                "technology strategy",
+            )
+        ):
+            bumps["track_data_tech_cloud_ml"] = max(
+                bumps.get("track_data_tech_cloud_ml", 0.0), 0.08
+            )
+            bumps["track_genai_agentic"] = max(bumps.get("track_genai_agentic", 0.0), 0.06)
+        if role_family_key == "INSURANCE_CARRIER_TRANSFORMATION" and any(
+            k in jd for k in ("agentic ai", "agentic ai transformation", "global head")
+        ):
+            bumps["track_genai_agentic"] = max(bumps.get("track_genai_agentic", 0.0), 0.12)
+        if role_family_key in (
+            "INSURER_IT_AI_ENABLEMENT",
+            "INSURANCE_BROKERAGE_IT_INNOVATION",
+        ) and any(k in jd for k in ("innovation", "enterprise architecture", "ai/ml")):
+            bumps["track_data_tech_cloud_ml"] = max(
+                bumps.get("track_data_tech_cloud_ml", 0.0), 0.10
+            )
+            bumps["track_genai_agentic"] = max(bumps.get("track_genai_agentic", 0.0), 0.08)
         for track, bump in bumps.items():
             base[track] = base.get(track, 0.0) + bump
     return _normalize_weights(base)
@@ -267,6 +319,80 @@ def infer_projection_role_family_key(
         briefing_text=briefing_text,
         taxonomy=taxonomy,
     )
+    corp = f"{target_role}\n{jd_text}\n{briefing_text}".lower()
+    ade_signals = (
+        "deployment engineering",
+        "partner ade",
+        "systems integrator",
+        "genai",
+        "openai api",
+        "ai deployment",
+        "prototype to production",
+    )
+    ade_hits = sum(1 for sig in ade_signals if sig in corp)
+    if priorities and ade_hits >= 3:
+        partner = next(
+            (p for p in priorities if p.role_family == "PARTNER_APPLIED_AI_ARCHITECTURE"),
+            None,
+        )
+        if partner and partner.score > 0:
+            top = priorities[0]
+            if top.role_family != "PARTNER_APPLIED_AI_ARCHITECTURE" and partner.score >= top.score - 1:
+                priorities = (partner,) + tuple(
+                    p for p in priorities if p.role_family != partner.role_family
+                )
+    carrier_signals = (
+        "insurance",
+        "underwriting",
+        "claims",
+        "agentic ai",
+        "policy administration",
+        "carrier transformation",
+    )
+    carrier_hits = sum(1 for sig in carrier_signals if sig in corp)
+    if priorities and carrier_hits >= 4:
+        carrier = next(
+            (p for p in priorities if p.role_family == "INSURANCE_CARRIER_TRANSFORMATION"),
+            None,
+        )
+        if carrier and carrier.score > 0:
+            top = priorities[0]
+            if (
+                top.role_family != "INSURANCE_CARRIER_TRANSFORMATION"
+                and carrier.score >= top.score - 1
+            ):
+                priorities = (carrier,) + tuple(
+                    p for p in priorities if p.role_family != carrier.role_family
+                )
+    broker_it_signals = (
+        "brown & brown",
+        "insurance brokerage",
+        "it strategy & innovation",
+        "it strategy",
+        "enterprise architecture",
+        "innovation incubation",
+        "interoperability",
+        "CITO",
+    )
+    broker_hits = sum(1 for sig in broker_it_signals if sig in corp)
+    if priorities and broker_hits >= 4:
+        broker = next(
+            (p for p in priorities if p.role_family == "INSURANCE_BROKERAGE_IT_INNOVATION"),
+            None,
+        )
+        insurer_it = next(
+            (p for p in priorities if p.role_family == "INSURER_IT_AI_ENABLEMENT"),
+            None,
+        )
+        pick = broker
+        if broker and insurer_it and insurer_it.score > broker.score:
+            pick = insurer_it
+        if pick and pick.score > 0:
+            top = priorities[0]
+            if pick.role_family != top.role_family and pick.score >= top.score - 1:
+                priorities = (pick,) + tuple(
+                    p for p in priorities if p.role_family != pick.role_family
+                )
     if priorities:
         top = priorities[0]
         banking = next((p for p in priorities if p.role_family == "BANKING_PLATFORM_AI"), None)
@@ -293,10 +419,10 @@ def infer_projection_role_family_key(
                 if mapped:
                     return mapped
             tie_order = (
-                "PARTNER_APPLIED_AI_ARCHITECTURE",
                 "INSURANCE_CARRIER_TRANSFORMATION",
-                "INSURER_IT_AI_ENABLEMENT",
                 "INSURANCE_BROKERAGE_IT_INNOVATION",
+                "INSURER_IT_AI_ENABLEMENT",
+                "PARTNER_APPLIED_AI_ARCHITECTURE",
                 "BANKING_PLATFORM_AI",
                 "CONSULTING_DELIVERY_LEADERSHIP",
                 "HYPERSCALER_MARKETPLACE_GTM",
@@ -617,6 +743,7 @@ def build_track_weighted_expansion(
         "cross_track_causal_claims": False,
         "career_sequence_semantics": "chronological_only_non_causal",
         "role_family_key": role_family_key,
+        "projection_role_family_key": role_family_key,
         "tracks_selected": list(TRACK_NODE_IDS),
         "track_weights": weights,
         "selected_skill_count_by_track": {k: len(v) for k, v in skills_by_track.items()},

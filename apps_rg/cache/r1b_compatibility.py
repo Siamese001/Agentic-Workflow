@@ -26,11 +26,21 @@ def _has_digest(val: str) -> bool:
     return bool(str(val or "").strip())
 
 
+def _section_display_text_present(chunks: list[HistoricalOutputChunk]) -> bool:
+    for ch in chunks:
+        if ch.chunk_type not in SECTION_CHUNK_TYPES:
+            continue
+        if len(str(ch.chunk_text or "").strip()) >= 8:
+            return True
+    return False
+
+
 def assess_intent_record_admissibility(
     record: HistoricalIntentRecord,
     *,
     chunks: list[HistoricalOutputChunk],
     runtime_generation_status: str = "",
+    require_final_resume: bool = True,
 ) -> CompatibilityVerdict:
     checks: dict[str, bool] = {}
     x3 = str(record.x3_disposition or "").strip().upper()
@@ -42,7 +52,14 @@ def assess_intent_record_admissibility(
     checks["prompt_profile_hash_present"] = _has_digest(record.prompt_profile_hash)
     checks["gate_profile_hash_present"] = _has_digest(record.gate_profile_hash)
     checks["intent_vector_ref_present"] = _has_digest(record.request_intent_vector_ref)
-    checks["final_resume_chunk_present"] = any(c.chunk_type == CHUNK_TYPE_FINAL_RESUME for c in chunks)
+    if require_final_resume:
+        checks["final_resume_chunk_present"] = any(
+            c.chunk_type == CHUNK_TYPE_FINAL_RESUME for c in chunks
+        )
+        checks["section_display_text_present"] = True
+    else:
+        checks["final_resume_chunk_present"] = True
+        checks["section_display_text_present"] = _section_display_text_present(chunks)
     checks["section_proof_summary_present"] = any(
         c.chunk_type == CHUNK_TYPE_SECTION_PROOF for c in chunks
     )

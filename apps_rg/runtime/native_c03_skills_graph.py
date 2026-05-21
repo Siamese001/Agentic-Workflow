@@ -34,9 +34,9 @@ CONTRACT_TYPE_NATIVE_C03 = "AppsRgC03FinalEvidenceContract"
 CONTRACT_VERSION_NATIVE_C03 = "apps_rg_native_c03_v1"
 ARTIFACT_BASENAME_NATIVE_C03 = "native_c03_final_evidence.json"
 
-NATIVE_C03_FIRST_WAVE_SECTIONS: frozenset[str] = frozenset(
-    {"executive_summary", "competencies"}
-)
+from apps_rg.runtime.c0_mandatory_policy import C03_MANDATORY_SECTIONS
+
+NATIVE_C03_FIRST_WAVE_SECTIONS: frozenset[str] = C03_MANDATORY_SECTIONS
 
 ALL_CANONICAL_SECTIONS: tuple[str, ...] = (
     "headline",
@@ -61,11 +61,36 @@ SECTION_NATIVE_C03_EXPANSION_MATRIX: dict[str, dict[str, Any]] = {
         "default_proof_source": "augmented_skills_graph",
         "tests_required": True,
     },
-    "headline": {"wave": "W5", "native_c03_enabled": False, "tests_required": False},
-    "unify_bullets": {"wave": "W5", "native_c03_enabled": False, "tests_required": False},
-    "unify_narrative": {"wave": "W5", "native_c03_enabled": False, "tests_required": False},
-    "ibm_bullets": {"wave": "W5", "native_c03_enabled": False, "tests_required": False},
-    "ibm_narrative": {"wave": "W5", "native_c03_enabled": False, "tests_required": False},
+    "headline": {
+        "wave": "W5",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "unify_bullets": {
+        "wave": "W5",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "unify_narrative": {
+        "wave": "W5",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "ibm_bullets": {
+        "wave": "W5",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "ibm_narrative": {
+        "wave": "W5",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
 }
 
 
@@ -465,6 +490,14 @@ def merge_native_c03_into_proof_pool_metadata(
         local = dict(out["c03_graphrag_bound"])
         local["paired_native_c03_ref"] = ARTIFACT_BASENAME_NATIVE_C03
         out["c03_graphrag_bound"] = local
+    from apps_rg.runtime.c0_mandatory_policy import apps_rg_c03_graph_mandatory, is_c03_mandatory_section
+
+    if apps_rg_c03_graph_mandatory() and is_c03_mandatory_section(section_id):
+        if out.get("native_c03_status") != "EMITTED":
+            raise RuntimeError(
+                f"C0.3 skills graph mandatory for {section_id}: "
+                f"status={out.get('native_c03_status')}"
+            )
     return out
 
 
@@ -503,6 +536,14 @@ def enrich_proof_pool_with_native_c03(
         product_visible=bool(getattr(front_spine, "product_visible", True)),
         whole_run_envelope=bool(envelope),
     )
+    from apps_rg.runtime.c0_mandatory_policy import apps_rg_c03_graph_mandatory, is_c03_mandatory_section
+
+    if apps_rg_c03_graph_mandatory() and is_c03_mandatory_section(section):
+        if merged.get("native_c03_status") != "EMITTED":
+            raise RuntimeError(
+                f"C0.3 skills graph mandatory for {section}: "
+                f"status={merged.get('native_c03_status')}"
+            )
     return replace(pool, proof_pool_metadata=merged)
 
 

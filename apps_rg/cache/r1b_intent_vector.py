@@ -65,7 +65,11 @@ def vector_ref_relative(record_id: str) -> str:
     return f"vectors/{record_id}.json"
 
 
-def vector_payload(digest: str) -> dict[str, Any]:
+def vector_payload(digest: str, *, intent_text: str = "") -> dict[str, Any]:
+    if intent_text.strip():
+        from apps_rg.cache.r1b_bge_embedding import intent_vector_payload
+
+        return intent_vector_payload(intent_text=intent_text, digest=digest)
     return {
         "subsystem": "apps_rg_r1b_semantic_cache",
         "not_c0_fact_vectors": True,

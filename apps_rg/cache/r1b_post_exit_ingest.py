@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -11,72 +10,15 @@ from apps_rg.cache.r1b_ingest import (
     chunks_from_output_list,
 )
 from apps_rg.cache.r1b_post_exit_eligibility import (
-    POST_EXIT_INGESTION_PHASE,
     apply_post_exit_verdict_to_record,
     assess_post_exit_ingestion_eligibility,
     load_post_exit_metadata,
 )
+from apps_rg.cache.r1b_semantic_chunk_builder import (
+    build_chunk_rows_from_run_dir,
+    detect_ingest_profile,
+)
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
-
-
-def build_chunk_rows_from_run_dir(run_dir: Path, *, manifest: dict[str, Any]) -> list[dict[str, Any]]:
-    from apps_rg.cache.r1b_constants import (
-        CHUNK_TYPE_CLAIM_LEDGER,
-        CHUNK_TYPE_FINAL_RESUME,
-        CHUNK_TYPE_SECTION_PROOF,
-    )
-    from apps_rg.cache.r1b_ingest import _read_json, _section_chunk_type
-
-    chunk_rows: list[dict[str, Any]] = []
-    section_id = str(manifest.get("section_id") or "")
-    if (run_dir / "generated_resume.json").is_file():
-        text = (run_dir / "generated_resume.json").read_text(encoding="utf-8")[:8000]
-        chunk_rows.append(
-            {
-                "chunk_type": CHUNK_TYPE_FINAL_RESUME,
-                "chunk_text": text,
-                "artifact_ref": str(run_dir / "generated_resume.json"),
-            }
-        )
-    if (run_dir / "l2_output.json").is_file():
-        chunk_rows.append(
-            {
-                "chunk_type": _section_chunk_type(section_id) if section_id else CHUNK_TYPE_SECTION_PROOF,
-                "section_id": section_id,
-                "artifact_ref": str(run_dir / "l2_output.json"),
-                "x2_status": "PASS"
-                if (_read_json(run_dir / "x2_gate_outputs.json") or {}).get("x2_failed", 1) == 0
-                else "FAIL",
-            }
-        )
-    if (run_dir / "canonical_claim_ledger_v2.json").is_file():
-        chunk_rows.append(
-            {
-                "chunk_type": CHUNK_TYPE_CLAIM_LEDGER,
-                "section_id": section_id,
-                "artifact_ref": str(run_dir / "canonical_claim_ledger_v2.json"),
-            }
-        )
-    proof_eligible = bool(manifest.get("proof_eligible", False))
-    runtime_status = str(manifest.get("runtime_generation_status") or "")
-    if chunk_rows:
-        chunk_rows.append(
-            {
-                "chunk_type": CHUNK_TYPE_SECTION_PROOF,
-                "section_id": section_id,
-                "artifact_ref": str(run_dir),
-                "chunk_text": json.dumps(
-                    {
-                        "run_id": manifest.get("run_id"),
-                        "proof_eligible": proof_eligible,
-                        "runtime_generation_status": runtime_status,
-                        "ingestion_phase": POST_EXIT_INGESTION_PHASE,
-                    },
-                    sort_keys=True,
-                ),
-            }
-        )
-    return chunk_rows
 
 
 def evaluate_post_exit_ingestion(
@@ -152,10 +94,8 @@ def ingest_post_exit_from_run_dir(
     st = store or R1BSemanticCacheStore(default_store_root())
     record_dict = assessment["record"]
     from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
-    from apps_rg.cache.r1b_uwg_promotion import (
-        build_r1b_promotion_candidate,
-        promote_and_project_r1b_cache,
-    )
+    from apps_rg.cache.r1b_ingest import _read_json
+    from apps_rg.cache.r1b_uwg_promotion import build_r1b_promotion_candidate
 
     record = HistoricalIntentRecord.from_dict(record_dict)
     chunks = [HistoricalOutputChunk.from_dict(c) for c in assessment.get("chunks") or []]
@@ -163,26 +103,41 @@ def ingest_post_exit_from_run_dir(
         st.write_intent(record)
         return None
 
-    candidate = build_r1b_promotion_candidate(
-        record=record,
-        chunks=chunks,
-        post_exit_eligibility=assessment,
-        run_dir=run_dir,
-    )
-    if gateway is None:
-        from apps_rg.cache.r1b_uwg_promotion import default_r1b_promotion_gateway
+    manifest = _read_json(run_dir / "run_manifest.json") or {}
+    section_id = str(manifest.get("section_id") or "integrated_whole_run")
+    run_id = str(manifest.get("run_id") or run_dir.name)
 
-        gateway = default_r1b_promotion_gateway()
-    outcome = promote_and_project_r1b_cache(
-        candidate=candidate,
-        projection_root=st.root,
-        fixture_store=st,
+    from apps_rg.cache.r1b_governed_receipt_emission import emit_section_r1b_governed_receipt_chain
+
+    chain = emit_section_r1b_governed_receipt_chain(
+        artifact_dir=run_dir,
+        section_id=section_id,
+        run_id=run_id,
+        raw_request=raw_request,
         gateway=gateway,
-        mirror_fixture_on_blocked=True,
     )
-    if outcome.status == "ADMITTED":
+    if chain.promotion_outcome and chain.promotion_outcome.status == "ADMITTED":
+        from apps_rg.cache.r1b_derived_index import project_durable_to_derived_index
+        from apps_rg.cache.r1b_uwg_promotion import write_uwg_admitted_projection
+
+        candidate = build_r1b_promotion_candidate(
+            record=record,
+            chunks=chunks,
+            post_exit_eligibility=assessment,
+            run_dir=run_dir,
+        )
+        write_uwg_admitted_projection(
+            projection_root=st.root,
+            candidate=candidate,
+            outcome=chain.promotion_outcome,
+        )
+        project_durable_to_derived_index(st.root)
+        st.write_intent(record)
+        for ch in chunks:
+            st.write_chunk(ch)
         return record.record_id
-    return record.record_id if outcome.fixture_mirror_written else None
+    st.write_intent(record)
+    return record.record_id
 
 
 def ingest_post_exit_after_run(
@@ -203,6 +158,8 @@ def ingest_post_exit_after_run(
 
 
 __all__ = [
+    "build_chunk_rows_from_run_dir",
+    "detect_ingest_profile",
     "evaluate_post_exit_ingestion",
     "ingest_post_exit_after_run",
     "ingest_post_exit_from_run_dir",

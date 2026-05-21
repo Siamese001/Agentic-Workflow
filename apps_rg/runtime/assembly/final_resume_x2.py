@@ -1,4 +1,4 @@
-"""Deterministic X2 gates for final resume assembly evidence (no provider/judge/registry)."""
+"""Deterministic X2 gates for final resume assembly evidence."""
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.assembly.final_resume_manifest import FinalResumePaths, resolve_default_paths
+from apps_rg.runtime.assembly.full_resume_llm_coherence import assembly_product_release_mode
 
 CANONICAL_ASSEMBLED_SECTION_ORDER: tuple[str, ...] = (
     "headline",
@@ -102,6 +103,8 @@ def run_final_resume_x2_gates(
     final_resume_blob: dict[str, Any],
     rollup_blob: dict[str, Any],
     locked_manifest_blob: dict[str, Any],
+    coherence_review: dict[str, Any] | None = None,
+    product_release_mode: bool | None = None,
 ) -> list[GateResult]:
     gates: list[GateResult] = []
     paths = paths or resolve_default_paths(repo)
@@ -405,6 +408,16 @@ def run_final_resume_x2_gates(
             "final_resume_manifest.json",
             "final_resume_x2_gate_outputs.json",
             "final_resume_receipt.json",
+            "full_resume_llm_coherence_review.json",
+            "x1d_full_resume_judge_outputs.json",
+            "cross_section_x2_gate_outputs.json",
+            "aggregation_preflight.json",
+            "coherent_rollup_policy.json",
+            "review_lane_policy.json",
+            "kept_removed_claims.json",
+            "overlap_decisions.json",
+            "cross_section_warn_resolution.json",
+            "orchestration_fingerprint.json",
         },
     )
     prov_hits: list[str] = []
@@ -429,8 +442,71 @@ def run_final_resume_x2_gates(
 
     _add(gates, "x2_no_provider_calls", len(prov_hits) == 0, prov_hits, [])
     _add(gates, "x2_no_qwen_calls", len(qwen_hits) == 0, qwen_hits, [])
-    _add(gates, "x2_no_judge_calls", len(judge_hits) == 0, judge_hits, [])
     _add(gates, "x2_no_docx_render", len(docx_hits) == 0, docx_hits, [])
+
+    product_mode = (
+        assembly_product_release_mode()
+        if product_release_mode is None
+        else bool(product_release_mode)
+    )
+    calls = final_resume_blob.get("calls") if isinstance(final_resume_blob.get("calls"), dict) else {}
+    judge_calls_made = calls.get("judge_calls_made") is True
+    coherence_path = out_dir / "full_resume_llm_coherence_review.json"
+    x1d_full_path = out_dir / "x1d_full_resume_judge_outputs.json"
+    has_coherence_artifact = coherence_path.is_file()
+    has_x1d_full_artifact = x1d_full_path.is_file()
+
+    if product_mode:
+        _add(
+            gates,
+            "x2_structural_assembly_no_inline_lane_judges",
+            len(judge_hits) == 0,
+            judge_hits,
+            [],
+            None if len(judge_hits) == 0 else "lane-level judge artifacts must not be re-invoked in assembly dir",
+        )
+        _add(
+            gates,
+            "x2_final_resume_aggregate_judge_executed",
+            judge_calls_made,
+            judge_calls_made,
+            True,
+            None if judge_calls_made else "final_resume.calls.judge_calls_made must be true after aggregate review",
+        )
+        _add(
+            gates,
+            "x2_final_resume_aggregate_judge_artifact_present",
+            has_coherence_artifact and has_x1d_full_artifact,
+            {
+                "full_resume_llm_coherence_review.json": has_coherence_artifact,
+                "x1d_full_resume_judge_outputs.json": has_x1d_full_artifact,
+            },
+            "both aggregate judge artifacts required",
+            None
+            if (has_coherence_artifact and has_x1d_full_artifact)
+            else "missing full-resume aggregate judge artifact(s)",
+        )
+        gates.append(
+            gate_x2_full_resume_llm_coherence_aggregation(
+                coherence_review,
+                required=True,
+            )
+        )
+    else:
+        _add(
+            gates,
+            "x2_no_judge_calls",
+            len(judge_hits) == 0,
+            judge_hits,
+            [],
+            None if len(judge_hits) == 0 else "structural assembly must not invoke judges",
+        )
+        gates.append(
+            gate_x2_full_resume_llm_coherence_aggregation(
+                coherence_review,
+                required=False,
+            )
+        )
 
     return gates
 
@@ -441,3 +517,44 @@ def gates_all_pass(results: list[GateResult]) -> bool:
 
 def failures(results: list[GateResult]) -> list[str]:
     return [r.gate_id for r in results if not r.pass_]
+
+
+def gate_x2_full_resume_llm_coherence_aggregation(
+    review: dict[str, Any] | None,
+    *,
+    required: bool,
+) -> GateResult:
+    gate_id = "x2_full_resume_llm_coherence_aggregation"
+    if not required:
+        return GateResult(
+            gate_id=gate_id,
+            gate_type="deterministic",
+            pass_=True,
+            observed_value="skipped_review_disabled",
+            threshold="enabled_required_for_release",
+            failure_reason=None,
+        )
+    if review is None:
+        return GateResult(
+            gate_id=gate_id,
+            gate_type="deterministic",
+            pass_=False,
+            observed_value=None,
+            threshold="artifact_required",
+            failure_reason="full_resume_llm_coherence_review.json missing",
+        )
+    ok = review.get("full_resume_coherence_pass") is True
+    return GateResult(
+        gate_id=gate_id,
+        gate_type="deterministic",
+        pass_=ok,
+        observed_value={
+            "full_resume_coherence_pass": review.get("full_resume_coherence_pass"),
+            "decisive_reason": review.get("decisive_reason"),
+            "blockers": review.get("blockers"),
+            "model_backed_pass_count": review.get("model_backed_pass_count"),
+            "quorum_required": review.get("quorum_required"),
+        },
+        threshold="full_resume_coherence_pass=true",
+        failure_reason=None if ok else str(review.get("decisive_reason") or "coherence_review_failed"),
+    )

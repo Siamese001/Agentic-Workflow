@@ -180,6 +180,8 @@ def build_srfs_five_sentence_finalizer(
         gov_tail = gov_claim.rstrip(".")
         if gov_tail.lower().startswith("implemented "):
             gov_tail = gov_tail[12:].strip()
+        if gov_tail.lower().startswith("basel"):
+            gov_tail = "Basel" + gov_tail[5:]
         if gov_tail:
             gov_tail = gov_tail[0].lower() + gov_tail[1:] if len(gov_tail) > 1 else gov_tail
             s5 = _cap_sentence(

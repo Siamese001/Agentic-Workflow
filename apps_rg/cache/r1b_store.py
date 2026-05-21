@@ -63,7 +63,11 @@ class R1BSemanticCacheStore:
         vec_path = self.root / record.request_intent_vector_ref.replace("\\", "/")
         vec_path.parent.mkdir(parents=True, exist_ok=True)
         vec_path.write_text(
-            json.dumps(vector_payload(record.normalized_intent_digest), indent=2) + "\n",
+            json.dumps(
+                vector_payload(record.normalized_intent_digest, intent_text=record.request_intent_text),
+                indent=2,
+            )
+            + "\n",
             encoding="utf-8",
         )
         idx = self.index_dir / f"{record.normalized_intent_digest}.json"

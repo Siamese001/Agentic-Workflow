@@ -1,0 +1,107 @@
+"""C0.1 — section retrieval plan (targets only, no retrieval)."""
+
+from __future__ import annotations
+
+from typing import Any
+
+_ROLE_FAMILY_PLAN_EXTRAS: dict[str, dict[str, list[str]]] = {
+    "INSURANCE_CARRIER_TRANSFORMATION": {
+        "primary_targets": [
+            "underwriting_claims_ops_facts",
+            "agentic_platform_governance_facts",
+            "insurance_carrier_transformation",
+        ],
+        "secondary_targets": ["actuarial_risk_lineage", "process_reengineering_metrics"],
+    },
+    "PARTNER_APPLIED_AI_ARCHITECTURE": {
+        "primary_targets": ["partner_solution_architecture", "systems_integrator_enablement"],
+        "secondary_targets": ["reference_architecture", "prototype_to_production"],
+    },
+    "SVP_ENGINEERING_AI_PLATFORM": {
+        "primary_targets": ["platform_engineering", "governed_agentic_runtime"],
+        "secondary_targets": ["cloud_ml_delivery"],
+    },
+    "INSURER_IT_AI_ENABLEMENT": {
+        "primary_targets": [
+            "enterprise_architecture_standards",
+            "it_strategy_innovation_facts",
+            "data_ai_enablement",
+        ],
+        "secondary_targets": ["portfolio_governance", "modernization_roadmap"],
+    },
+    "INSURANCE_BROKERAGE_IT_INNOVATION": {
+        "primary_targets": [
+            "brokerage_distribution_innovation",
+            "interoperability_integration_facts",
+            "it_strategy_innovation_facts",
+        ],
+        "secondary_targets": ["innovation_labs_pilots", "enterprise_architecture_alignment"],
+    },
+}
+
+_SECTION_PLAN: dict[str, dict[str, Any]] = {
+    "headline": {
+        "primary_targets": ["strongest_positioning_facts", "role_family_fit"],
+        "secondary_targets": ["metric_highlights"],
+    },
+    "executive_summary": {
+        "primary_targets": [
+            "commercial_outcomes",
+            "platform_governance",
+            "executive_scope",
+        ],
+        "secondary_targets": ["career_capstone", "cross_domain_leadership"],
+    },
+    "competencies": {
+        "primary_targets": ["skill_clusters", "capability_tags", "pillar_alignment"],
+        "secondary_targets": ["metric_backed_capabilities"],
+    },
+    "bullets": {
+        "primary_targets": ["employer_role_facts", "quantified_outcomes"],
+        "secondary_targets": ["technology_delivery"],
+    },
+    "narrative": {
+        "primary_targets": ["career_phase_facts", "capstone_narrative_atoms"],
+        "secondary_targets": ["lineage_support"],
+    },
+}
+
+
+def build_c01_retrieval_plan(
+    *,
+    section_id: str,
+    target_role: str = "",
+    jd_constraints: dict[str, Any] | None = None,
+    route_ref: str = "",
+    role_family_key: str = "",
+    jd_text: str = "",
+) -> dict[str, Any]:
+    """C0.1 output: what to retrieve for this section (not proof)."""
+    base = dict(_SECTION_PLAN.get(section_id) or _SECTION_PLAN["executive_summary"])
+    targets = {
+        "primary_targets": list(base.get("primary_targets") or []),
+        "secondary_targets": list(base.get("secondary_targets") or []),
+    }
+    extras = _ROLE_FAMILY_PLAN_EXTRAS.get(role_family_key) or {}
+    for key in ("primary_targets", "secondary_targets"):
+        merged = list(targets.get(key) or [])
+        for item in extras.get(key) or []:
+            if item not in merged:
+                merged.append(item)
+        targets[key] = merged
+    jd_excerpt = (jd_text or "").strip()[:240]
+    return {
+        "schema_version": "c01_retrieval_plan_v1",
+        "section_id": section_id,
+        "target_role": target_role,
+        "role_family_key": role_family_key,
+        "jd_constraints_present": bool(jd_constraints),
+        "jd_text_excerpt": jd_excerpt,
+        "route_ref": route_ref,
+        "retrieval_targets": targets,
+        "jd_as_proof": False,
+        "generic_docs_as_truth": False,
+    }
+
+
+__all__ = ["build_c01_retrieval_plan"]

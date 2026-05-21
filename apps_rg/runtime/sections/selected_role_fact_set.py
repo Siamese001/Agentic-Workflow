@@ -544,6 +544,11 @@ def merge_normalized_srfs_reporting_into_dict(
             claim_ledger=claim_ledger,
         )
     )
+    from apps_rg.runtime.bindings.section_lane_c0_metrics import (
+        merge_c0_metrics_into_section_metric_receipt,
+    )
+
+    merge_c0_metrics_into_section_metric_receipt(receipt, runtime_payload)
 
 
 def resolve_srfs_section_proof_bundle(

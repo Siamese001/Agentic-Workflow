@@ -1,0 +1,70 @@
+VP, Global Head of Agentic AI Solutions — AIG (JR2601998)
+
+locations: NY-New York, NC-Charlotte, GA-Atlanta
+time type: Full time
+
+About the Role
+
+The Global Head of Agentic AI Transformation will lead the enterprise-wide strategy, development, and implementation of agentic AI solutions and associated end-to-end process re-engineering across AIG's businesses and functions globally. This executive will be accountable for partnering in transforming underwriting, claims, operations, finance, and corporate functions by combining advanced autonomous AI agents, modern workflow design, and rigorous process-improvement disciplines such as Lean and Six Sigma.
+
+This role will report to the Global Chief Data Officer and will partner with executive leadership to define the company's agentic AI vision, drive platform and architecture decisions, design and scale enterprise-wide AI-powered operating models, and ensure that all deployments deliver measurable improvements in productivity, accuracy, service levels, and cost efficiency.
+
+Responsibilities
+
+Enterprise Strategy & AI Vision
+- Define the multi-year strategy for agentic AI adoption, including architecture, platforms, operating models, and global rollout
+- Drive the company's evolution toward an agent-augmented workforce, combining AI autonomy with human oversight
+- Establish enterprise-level standards for agent behavior, safety guardrails, performance telemetry, and lifecycle management
+
+Process Re-Engineering & Operational Excellence
+- Partner with Operations, Technology, and Business Unit leaders to redesign processes to be automation-ready, agent-compatible, and data-driven
+- Enable end-to-end process redesign across underwriting, claims, operations, and applicable functions
+- Establish measurable operational KPIs and drive continuous improvement programs
+
+Product, Technology & Delivery Leadership
+- Build and lead cross-functional AI Companion/Agent development pods
+- Deliver and scale flagship agentic AI solutions including Companion Agents and Automation Agents
+- Ensure seamless integration with enterprise systems and alignment with target-state business processes
+
+Architecture, Platform Decisioning & Governance
+- Co-lead AI platform evaluations across vendors such as Anthropic, AWS, Palantir, and internal AI environments
+- Direct the services layer that enables agents to read/write into core systems safely and efficiently
+- Partner with AI Governance on lifecycle management, post-deployment model monitoring, risk and compliance controls, auditing and evaluation frameworks
+
+Change Leadership & Enterprise Adoption
+- Lead organizational change through education, upskilling, and partnership with HR on future-of-work transition
+- Develop and maintain an Agentic AI Inventory / System of Record for use cases, maturity, adoption, performance, and ROI
+
+Business Impact & Financial Accountability
+- Drive quantifiable improvements in process throughput, underwriting and claims accuracy, customer servicing speed, cost reduction, and workforce productivity
+- Oversee benefit realization modeling, investment governance, and AI program financial performance
+
+Requirements
+
+Experience
+- 15+ years progressive leadership in AI, analytics, digital transformation, intelligent automation, or enterprise technology
+- 10+ years leading process-improvement, Lean/Six Sigma, operational excellence, or large-scale transformation in a complex global organization
+- Insurance industry expertise strongly preferred; familiarity with underwriting, claims, or policy administration
+- Proven track record delivering AI or automation solutions at production scale
+- Experience managing cross-functional global teams and working with C-level executives
+
+Technical & Process Skills
+- Agentic AI frameworks (tool-use, planning, orchestration, RAG-enhanced agents)
+- Enterprise AI architecture and services layers
+- LLM and multimodal model ecosystems
+- Document intelligence, ingestion pipelines, classification/extraction, automation patterns
+- Lean, Six Sigma (Black Belt preferred), Kaizen, root cause analysis, value stream mapping
+- Core insurance platforms (policy admin, workflow, claims, underwriting, billing) and data ecosystems
+
+Leadership Competencies
+- Strategic enterprise-level thinker with executive presence
+- Influence global senior leaders across technology, business, and operations
+- Build and scale high-performing multidisciplinary teams
+
+Success Measures
+- Scaled deployment of agentic AI across underwriting, claims, operations, and corporate functions
+- Measurable process improvements: cycle time, rework elimination, accuracy, productivity
+- Sustainable governed scalable Agentic Workforce Operating Model
+- Cost-reduction, performance, and service-quality goals
+
+Location: New York, Atlanta, or Charlotte. Travel up to 50%.

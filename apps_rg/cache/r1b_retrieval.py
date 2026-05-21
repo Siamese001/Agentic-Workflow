@@ -37,7 +37,9 @@ def lookup_r1b_role_target_run(
     st = store or R1BSemanticCacheStore(default_store_root())
     intent_text = intent_text_from_request(raw_request)
     query_digest = normalized_intent_digest(intent_text)
-    query_vec = pseudo_vector_from_digest(query_digest)
+    from apps_rg.cache.r1b_bge_embedding import resolve_query_vector
+
+    query_vec, _kind = resolve_query_vector(intent_text, query_digest)
 
     best: R1BLookupHit | None = None
     for rid in st.list_intent_record_ids():
@@ -77,7 +79,9 @@ def lookup_r1b_with_compatibility_report(
     st = store or R1BSemanticCacheStore(default_store_root())
     intent_text = intent_text_from_request(raw_request)
     query_digest = normalized_intent_digest(intent_text)
-    query_vec = pseudo_vector_from_digest(query_digest)
+    from apps_rg.cache.r1b_bge_embedding import resolve_query_vector
+
+    query_vec, _kind = resolve_query_vector(intent_text, query_digest)
     report: list[dict[str, Any]] = []
     best: R1BLookupHit | None = None
 
@@ -106,6 +110,41 @@ def lookup_r1b_with_compatibility_report(
     return best, report
 
 
+def filter_chunks_by_section(
+    chunks: list[HistoricalOutputChunk],
+    *,
+    section_id: str,
+    chunk_type: str | None = None,
+) -> list[HistoricalOutputChunk]:
+    """P5 — section drawer filter for governed Chroma / file store reads."""
+    sid = str(section_id or "").strip()
+    want_type = chunk_type or (f"{sid}_output" if sid else "")
+    out: list[HistoricalOutputChunk] = []
+    for ch in chunks:
+        if sid and ch.section_id != sid:
+            continue
+        if want_type and ch.chunk_type != want_type:
+            continue
+        out.append(ch)
+    return out
+
+
+def lookup_section_output_chunk(
+    hit: R1BLookupHit,
+    section_id: str,
+) -> HistoricalOutputChunk | None:
+    """Best section display chunk for reuse preflight (P5)."""
+    rows = filter_chunks_by_section(
+        hit.chunks,
+        section_id=section_id,
+        chunk_type=f"{section_id}_output",
+    )
+    for ch in rows:
+        if len(str(ch.chunk_text or "").strip()) >= 8:
+            return ch
+    return rows[0] if rows else None
+
+
 def hit_to_probe_dict(hit: R1BLookupHit) -> dict[str, Any]:
     return {
         "cached": True,
@@ -127,7 +166,9 @@ def hit_to_probe_dict(hit: R1BLookupHit) -> dict[str, Any]:
 
 __all__ = [
     "R1BLookupHit",
+    "filter_chunks_by_section",
     "hit_to_probe_dict",
     "lookup_r1b_role_target_run",
     "lookup_r1b_with_compatibility_report",
+    "lookup_section_output_chunk",
 ]

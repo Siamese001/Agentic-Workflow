@@ -1,6 +1,6 @@
 {
   "schema": "competencies_graph_proof_pool_p2_w1_receipt_v1",
-  "generated_at": "2026-05-19T18:16:28Z",
+  "generated_at": "2026-05-21T20:50:52Z",
   "proof_pool_type": "augmented_skills_graph",
   "section_id": "competencies",
   "graph_source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
@@ -18,8 +18,8 @@
   },
   "selected_fact_count_by_track": {
     "track_actuarial_risk_derivatives": 3,
-    "track_data_tech_cloud_ml": 5,
-    "track_genai_agentic": 7
+    "track_data_tech_cloud_ml": 4,
+    "track_genai_agentic": 8
   },
   "selected_skill_rows_sample": [
     {

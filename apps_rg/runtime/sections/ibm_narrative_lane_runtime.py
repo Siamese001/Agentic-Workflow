@@ -517,7 +517,20 @@ def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[st
     )
 
 
-def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
+def write_x2_gate_outputs(
+    path: Path,
+    gates: list[dict[str, Any]],
+    *,
+    section_id: str | None = "ibm_narrative",
+) -> None:
+    if section_id:
+        from apps_rg.runtime.sections.section_x2_gate_outputs import (
+            write_section_x2_gate_outputs,
+        )
+
+        write_section_x2_gate_outputs(path.parent, section_id, gates)
+        return
+
     failed = [g["gate_id"] for g in gates if not g["pass"]]
     write_json(
         path,

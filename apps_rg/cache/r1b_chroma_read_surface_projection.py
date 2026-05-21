@@ -15,12 +15,8 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM, R1B_UWG_TARGET_SURFACE
-from apps_rg.cache.r1b_intent_vector import (
-    intent_text_from_request,
-    normalized_intent_digest,
-    pseudo_vector_from_digest,
-    vector_payload,
-)
+from apps_rg.cache.r1b_bge_embedding import chunk_vector_payload, intent_vector_payload
+from apps_rg.cache.r1b_intent_vector import intent_text_from_request, normalized_intent_digest
 from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
 
 READ_SURFACE_NAME = "r1b_semantic_cache_projection"
@@ -69,7 +65,10 @@ def _resolve_chroma_persist_dir(artifact_dir: Path) -> Path:
         root = Path(env)
         if not root.is_absolute():
             root = (Path.cwd() / root).resolve()
-        return root / artifact_dir.name
+        return root
+    chroma = os.environ.get("CHROMA_PERSIST_DIR", "").strip()
+    if chroma:
+        return Path(chroma) / "r1b_semantic_cache_projection"
     return artifact_dir / "r1b_chroma_read_surface"
 
 
@@ -154,6 +153,7 @@ def _upsert_governed_chroma(
     *,
     persist_dir: Path,
     record: HistoricalIntentRecord,
+    chunks: list[HistoricalOutputChunk],
     raw_request: dict[str, Any],
     commit_request_id: str,
     uwg_commit_receipt_id: str,
@@ -169,41 +169,77 @@ def _upsert_governed_chroma(
             "read_surface": READ_SURFACE_NAME,
             "governed_projection": "true",
             "not_core_d2_l2_semantic_cache": "true",
+            "embedding_model": "BAAI/bge-m3",
+            "chroma_default_ef_forbidden": "true",
         },
     )
     digest = record.normalized_intent_digest or normalized_intent_digest(
         intent_text_from_request(raw_request)
     )
-    embedding = pseudo_vector_from_digest(digest)
     intent_text = record.request_intent_text or intent_text_from_request(raw_request)
-    collection.upsert(
-        ids=[record.record_id],
-        embeddings=[embedding],
-        documents=[intent_text],
-        metadatas=[
+    intent_payload = intent_vector_payload(intent_text=intent_text, digest=digest)
+    embedding = [float(x) for x in intent_payload["values"]]
+    ids = [record.record_id]
+    embeddings = [embedding]
+    documents = [intent_text]
+    metadatas = [
+        {
+            "record_id": record.record_id,
+            "chunk_role": "parent_intent",
+            "normalized_intent_digest": digest,
+            "commit_request_id": commit_request_id,
+            "uwg_commit_receipt_id": uwg_commit_receipt_id,
+            "cache_grain": record.cache_grain,
+            "source_run_id": record.source_run_id,
+            "governed_read_surface": READ_SURFACE_NAME,
+            "embedding_model": str(intent_payload.get("embedding_model") or ""),
+            "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
+        }
+    ]
+    for ch in chunks:
+        chunk_text = (ch.chunk_text or ch.chunk_type or ch.chunk_id).strip()
+        if not chunk_text:
+            continue
+        cp = chunk_vector_payload(chunk_text=chunk_text, chunk_id=ch.chunk_id)
+        cid = f"{record.record_id}:{ch.chunk_id}"
+        ids.append(cid)
+        embeddings.append([float(x) for x in cp["values"]])
+        documents.append(chunk_text[:8000])
+        metadatas.append(
             {
                 "record_id": record.record_id,
-                "normalized_intent_digest": digest,
+                "chunk_id": ch.chunk_id,
+                "chunk_role": "output_chunk",
+                "chunk_type": ch.chunk_type,
+                "section_id": ch.section_id,
+                "parent_intent_record_id": ch.parent_intent_record_id,
                 "commit_request_id": commit_request_id,
                 "uwg_commit_receipt_id": uwg_commit_receipt_id,
-                "cache_grain": record.cache_grain,
-                "source_run_id": record.source_run_id,
                 "governed_read_surface": READ_SURFACE_NAME,
+                "embedding_model": str(cp.get("embedding_model") or ""),
             }
-        ],
+        )
+    collection.upsert(
+        ids=ids,
+        embeddings=embeddings,
+        documents=documents,
+        metadatas=metadatas,
     )
     result = collection.query(
         query_embeddings=[embedding],
-        n_results=1,
+        n_results=min(3, len(ids)),
         include=["metadatas", "distances"],
     )
-    ids = (result.get("ids") or [[]])[0]
+    hit_ids = (result.get("ids") or [[]])[0]
     return {
         "collection_name": CHROMA_COLLECTION_NAME,
         "chroma_persist_path": str(persist_dir),
-        "upserted_id": record.record_id,
-        "query_ids": list(ids),
-        "read_after_write_ok": record.record_id in ids,
+        "upserted_parent_id": record.record_id,
+        "upserted_chunk_count": max(0, len(ids) - 1),
+        "query_ids": list(hit_ids),
+        "read_after_write_ok": record.record_id in hit_ids,
+        "embedding_model": intent_payload.get("embedding_model"),
+        "embedding_dimensions": intent_payload.get("dimensions"),
     }
 
 
@@ -252,15 +288,14 @@ def project_governed_chroma_read_surface(
     )
     written: list[str] = [UWG_ADMITTED_BUNDLE_ARTIFACT]
 
-    digest = record.normalized_intent_digest or normalized_intent_digest(
-        intent_text_from_request(req)
-    )
+    intent_text = record.request_intent_text or intent_text_from_request(req)
+    digest = record.normalized_intent_digest or normalized_intent_digest(intent_text)
     _write_envelope(
         artifact_dir / REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
         {
             "record_id": record.record_id,
             "request_intent_embedding_ref": f"embeddings/{record.record_id}.json",
-            "embedding": vector_payload(digest),
+            "embedding": intent_vector_payload(intent_text=intent_text, digest=digest),
             "not_c0_fact_vectors": True,
         },
         artifact_name=REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
@@ -276,7 +311,7 @@ def project_governed_chroma_read_surface(
             "canonical_field": "request_intent_embedding_ref",
             "source_ref": record.request_intent_vector_ref,
             "canonical_ref": f"embeddings/{record.record_id}.json",
-            "mapping_policy": "pseudo_vector_digest_equivalent",
+            "mapping_policy": "bge_m3_when_embeddings_enabled_else_pseudo_digest",
             "record_id": record.record_id,
         },
         artifact_name=EMBEDDING_MAPPING_RECEIPT_ARTIFACT,
@@ -315,6 +350,7 @@ def project_governed_chroma_read_surface(
             chroma_meta = _upsert_governed_chroma(
                 persist_dir=_resolve_chroma_persist_dir(artifact_dir),
                 record=record,
+                chunks=chunks,
                 raw_request=req,
                 commit_request_id=commit_request_id,
                 uwg_commit_receipt_id=uwg_commit_receipt_id,
@@ -378,7 +414,7 @@ def project_governed_chroma_read_surface(
             "record_id": record.record_id,
             "commit_request_ref": "commit_request.json",
             "uwg_commit_receipt_ref": "uwg_commit_receipt.json",
-            "indexed_id": chroma_meta["upserted_id"],
+            "indexed_id": chroma_meta.get("upserted_parent_id") or chroma_meta.get("upserted_id"),
             "not_core_d2_collection": True,
             "core_d2_collection_name": "l2_semantic_cache",
         },

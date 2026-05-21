@@ -337,6 +337,16 @@ def run_whole_run_with_route_governance(
     art = _default_artifact_dir(artifact_dir)
     repo = find_repo_root()
 
+    from apps_rg.runtime.embedding_settings import (
+        apply_apps_rg_embedding_env_guards,
+        bootstrap_apps_rg_embedding_env,
+        write_embedding_settings_receipt,
+    )
+
+    bootstrap_apps_rg_embedding_env(repo_root=repo)
+    emb = apply_apps_rg_embedding_env_guards(chroma_persist_dir=os.environ.get("CHROMA_PERSIST_DIR"))
+    write_embedding_settings_receipt(art, emb)
+
     envelope = _build_cli_ingress_envelope(
         target_company=target_company,
         target_role=target_role,
@@ -552,7 +562,15 @@ def run_whole_run_with_route_governance(
     maybe_ingest_r1b_post_exit(raw_request=raw_request, artifact_dir=art, runs_dir=art.parent)
 
     review_zip = None
+    section_status_md: str | None = None
     if is_integrated_whole_run_dir_name(art.name):
+        try:
+            from apps_rg.runtime.full_run_section_status import emit_full_run_section_status
+
+            status_emit = emit_full_run_section_status(art, repo_root=repo, print_stdout=False)
+            section_status_md = str(status_emit["markdown_path"])
+        except OSError:
+            section_status_md = None
         try:
             review_zip = emit_full_resume_review_bundle(art)
         except OSError:
@@ -582,6 +600,8 @@ def run_whole_run_with_route_governance(
     if review_zip is not None:
         payload["review_bundle_zip"] = str(review_zip)
         payload["review_bundle_relpath"] = REVIEW_BUNDLE_FILENAME
+    if section_status_md is not None:
+        payload["full_run_section_status_md"] = section_status_md
     return payload
 
 

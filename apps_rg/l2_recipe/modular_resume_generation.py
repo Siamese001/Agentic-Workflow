@@ -360,6 +360,38 @@ class ModularResumeProfile:
     self_consistency_requested: int = 0
 
 
+_PLUMBING_ASSEMBLY_PROVIDERS = frozenset({"mock", "mocked", "stub"})
+
+
+def _assembly_plumbing_mode(profile: ModularResumeProfile, *, use_phase0_synthetic: bool) -> bool:
+    if use_phase0_synthetic:
+        return True
+    prov = str(profile.phase1_lane_provider or "").strip().lower()
+    return prov in _PLUMBING_ASSEMBLY_PROVIDERS or prov.startswith("mock")
+
+
+def _assemble_modular_final_resume(
+    paths: FinalResumePaths,
+    *,
+    plumbing_mode: bool,
+) -> dict[str, Any]:
+    """Phase 0 / mock Phase 1: structural assembly only. Real Phase 1: aggregate full-resume judge."""
+    saved: dict[str, str | None] = {}
+    if plumbing_mode:
+        for key in ("APPS_RG_ASSEMBLY_STRUCTURAL_ONLY", "APPS_RG_FULL_RESUME_LLM_COHERENCE_REVIEW"):
+            saved[key] = os.environ.get(key)
+        os.environ["APPS_RG_ASSEMBLY_STRUCTURAL_ONLY"] = "1"
+        os.environ["APPS_RG_FULL_RESUME_LLM_COHERENCE_REVIEW"] = "0"
+    try:
+        return assemble_final_resume(paths, skip_preflight=plumbing_mode)
+    finally:
+        for key, val in saved.items():
+            if val is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = val
+
+
 def run_modular_resume_generation(
     input_package: ModularResumeInputPackage,
     artifact_dir: Path | str,
@@ -538,8 +570,13 @@ def run_modular_resume_generation(
                     base_resume=canonical_base_resume_path,
                     output_dir=modular_root / "final_resume_assembly",
                 )
-                asm = assemble_final_resume(paths)
-                assembly_gates_ok = bool(asm.get("gates_all_pass"))
+                plumbing = _assembly_plumbing_mode(profile, use_phase0_synthetic=False)
+                asm = _assemble_modular_final_resume(paths, plumbing_mode=plumbing)
+                assembly_gates_ok = bool(
+                    asm.get("structural_x2_all_pass")
+                    if plumbing
+                    else asm.get("gates_all_pass")
+                )
                 receipt_path = asm["paths"]["receipt"]
                 try:
                     merge_receipt_rel = receipt_path.relative_to(art).as_posix()
@@ -632,8 +669,9 @@ def run_modular_resume_generation(
             base_resume=canonical_base_resume_path,
             output_dir=modular_root / "final_resume_assembly",
         )
-        asm = assemble_final_resume(paths)
-        assembly_gates_ok = bool(asm.get("gates_all_pass"))
+        plumbing = _assembly_plumbing_mode(profile, use_phase0_synthetic=True)
+        asm = _assemble_modular_final_resume(paths, plumbing_mode=plumbing)
+        assembly_gates_ok = bool(asm.get("structural_x2_all_pass"))
         receipt_path = asm["paths"]["receipt"]
         try:
             merge_receipt_rel = receipt_path.relative_to(art).as_posix()

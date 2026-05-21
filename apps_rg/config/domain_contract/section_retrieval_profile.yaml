@@ -28,9 +28,9 @@ global_constraints:
   max_sections_to_query: 8
   max_query_budget_ms: 12000
 
-# Phase 2 sparse/exact lane — profile-driven; default off preserves dense Phase 1.
+# Phase 2 sparse/exact lane — mandatory for apps_rg when APPS_RG_C0_DENSE_SPARSE_MANDATORY=1 (default).
 sparse_lane_defaults:
-  sparse_enabled: false
+  sparse_enabled: true
   sparse_top_k: 5
   sparse_lane_id: ""
   sparse_collection_ref: fact_vectors
@@ -38,13 +38,21 @@ sparse_lane_defaults:
   lexical_query_fields: []
   exact_match_fields: []
   dense_sparse_merge_policy: rrf
-  sparse_unavailable_behavior: receipt_unavailable
+  sparse_unavailable_behavior: fail_closed
   sparse_empty_behavior: receipt_empty
 
 sections:
   - retrieval_profile_id: apps_rg.headline.c0_profile
     section_id: headline
     display_name: Headline
+    sparse_enabled: true
+    sparse_lane_id: apps_rg.headline.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.headline
+      - jd_payload.jd_text
+    exact_match_fields:
+      - jd_payload.jd_text
     dense_top_k: 3
     max_k: 3
     support_target: high
@@ -67,6 +75,15 @@ sections:
   - retrieval_profile_id: apps_rg.executive_summary.c0_profile
     section_id: executive_summary
     display_name: Executive summary
+    sparse_enabled: true
+    sparse_lane_id: apps_rg.executive_summary.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.executive_summary
+      - resume_payload.summary
+      - jd_payload.jd_text
+    exact_match_fields:
+      - jd_payload.jd_text
     dense_top_k: 3
     max_k: 3
     support_target: high
@@ -90,7 +107,7 @@ sections:
   - retrieval_profile_id: apps_rg.competencies.c0_profile
     section_id: competencies
     display_name: "ENGINEERING & PLATFORM COMPETENCIES"
-    sparse_enabled: false
+    sparse_enabled: true
     sparse_lane_id: apps_rg.competencies.sparse
     sparse_collection_ref: fact_vectors
     lexical_query_fields:
@@ -122,7 +139,7 @@ sections:
   - retrieval_profile_id: apps_rg.unify_bullets.c0_profile
     section_id: unify_bullets
     display_name: Unify bullets
-    sparse_enabled: false
+    sparse_enabled: true
     sparse_lane_id: apps_rg.unify_bullets.sparse
     sparse_collection_ref: fact_vectors
     lexical_query_fields:
@@ -152,6 +169,15 @@ sections:
   - retrieval_profile_id: apps_rg.unify_narrative.c0_profile
     section_id: unify_narrative
     display_name: Unify narrative
+    sparse_enabled: true
+    sparse_lane_id: apps_rg.unify_narrative.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.unify_narrative
+      - resume_payload.summary
+      - jd_payload.jd_text
+    exact_match_fields:
+      - jd_payload.jd_text
     dense_top_k: 3
     max_k: 3
     support_target: high
@@ -175,7 +201,7 @@ sections:
   - retrieval_profile_id: apps_rg.ibm_bullets.c0_profile
     section_id: ibm_bullets
     display_name: IBM bullets
-    sparse_enabled: false
+    sparse_enabled: true
     sparse_lane_id: apps_rg.ibm_bullets.sparse
     sparse_collection_ref: fact_vectors
     lexical_query_fields:
@@ -205,6 +231,15 @@ sections:
   - retrieval_profile_id: apps_rg.ibm_narrative.c0_profile
     section_id: ibm_narrative
     display_name: IBM narrative
+    sparse_enabled: true
+    sparse_lane_id: apps_rg.ibm_narrative.sparse
+    sparse_collection_ref: fact_vectors
+    lexical_query_fields:
+      - resume_payload.ibm_narrative
+      - resume_payload.summary
+      - jd_payload.jd_text
+    exact_match_fields:
+      - jd_payload.jd_text
     dense_top_k: 3
     max_k: 3
     support_target: high

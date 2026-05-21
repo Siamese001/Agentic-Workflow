@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.runtime.section_proof.mock_runtime_proof_policy import MOCK_JUDGES_REJECT_EXIT_CODE
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
 
@@ -54,7 +53,7 @@ def test_invalid_provider_rejected(lane: str) -> None:
 
 
 @pytest.mark.parametrize("lane", GENERATED_LANES)
-def test_mock_judges_rejected_without_test_hatch_before_run(lane: str) -> None:
+def test_mock_judges_cli_flag_rejected_on_product_entry(lane: str) -> None:
     r = subprocess.run(
         [
             sys.executable,
@@ -72,14 +71,14 @@ def test_mock_judges_rejected_without_test_hatch_before_run(lane: str) -> None:
         timeout=120,
         env=_env(),
     )
-    assert r.returncode == MOCK_JUDGES_REJECT_EXIT_CODE
+    assert r.returncode == 2, (r.stdout, r.stderr)
     err = (r.stderr or "").lower()
-    assert "cannot produce runtime certification evidence" in err or "mock judges cannot certify" in err
-    assert "mock judges" in err
+    assert "mock judges" in err or "mock-judges" in err
+    assert "always live" in err or "production cli" in err
 
 
 @pytest.mark.parametrize("lane", GENERATED_LANES)
-def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_block(lane: str) -> None:
+def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_cli_block(lane: str) -> None:
     r = subprocess.run(
         [
             sys.executable,
@@ -98,44 +97,9 @@ def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_block(lane: str) -
         timeout=120,
         env=_env(),
     )
-    assert r.returncode == MOCK_JUDGES_REJECT_EXIT_CODE
-
-
-@pytest.mark.parametrize("lane", GENERATED_LANES)
-def test_offline_qwen_stub_with_mock_judges_hatch_writes_real_bucket_manifest(lane: str) -> None:
-    cmd = [
-        sys.executable,
-        "-m",
-        "apps_rg",
-        "--section",
-        lane,
-        "--provider",
-        "qwen_vllm",
-        "--mock-judges",
-        "--allow-test-mock-judges",
-        "--allow-non-allow-exit-zero",
-    ]
-    r = subprocess.run(
-        cmd,
-        cwd=REPO_ROOT,
-        text=True,
-        capture_output=True,
-        timeout=300,
-        env=_env({"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"}),
-    )
-    assert r.returncode == 0, r.stderr
-    rd = resolve_run_dir_from_pointer(REPO_ROOT, lane, "real")
-    assert rd is not None, f"expected real-bucket run dir for {lane}"
-    manifest = rd / "run_manifest.json"
-    assert manifest.is_file()
-    mf = json.loads(manifest.read_text(encoding="utf-8"))
-    assert mf.get("runtime_generation_status") == "REAL_LLM"
-    assert mf.get("proof_eligible") is not True
-    l2_path = rd / "l2_output.json"
-    assert l2_path.is_file()
-    l2 = json.loads(l2_path.read_text(encoding="utf-8"))
-    assert l2.get("runtime_generation_status") == "REAL_LLM"
-    assert l2.get("proof_eligible") is not True
+    assert r.returncode == 2, (r.stdout, r.stderr)
+    combined = ((r.stderr or "") + (r.stdout or "")).lower()
+    assert "mock-judges" in combined
 
 
 def test_lane_dispatch_build_parser_default_provider_is_qwen_vllm() -> None:

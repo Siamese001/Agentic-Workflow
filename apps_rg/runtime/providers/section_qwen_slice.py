@@ -114,7 +114,7 @@ def call_qwen_vllm(
         base_url=base_url,
         timeout_seconds=pre_timeout,
     )
-    if not ok_pre and not effective_offline_contract_stub_enabled():
+    if not ok_pre:
         msg = (
             f"{STATUS_BLOCKED_LIVE_PROVIDER}: {REASON_PROVIDER_UNAVAILABLE} — "
             f"HTTP /v1/models preflight failed for {base_url!r} ({pre_code}). "

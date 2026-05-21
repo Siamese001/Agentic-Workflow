@@ -317,11 +317,11 @@ def test_final_resume_snapshot_structured_ids_parity_with_lane() -> None:
     assert snap["competencies"][0]["terms"] == lane_terms
 
 
-def test_x1d_judges_all_pass_do_not_bypass_exactly_eight_categories() -> None:
+def test_x1d_judges_all_pass_do_not_bypass_category_count_rigor() -> None:
     rows, allowed, bullet_lowers, blob = _base_context()
     plan = build_selected_fact_plan(rows, sorted(allowed))
     mo = dict(build_mock_output({"selected_fact_plan": plan}))
-    comps = list(mo["competencies"][:7])
+    comps = list(mo["competencies"][:5])
     mo["competencies"] = comps
     rebuild_claim_ledger_from_competencies(mo, allowed)
     gates = run_competencies_x2_gates(
@@ -337,8 +337,8 @@ def test_x1d_judges_all_pass_do_not_bypass_exactly_eight_categories() -> None:
         provider_attempted="qwen_vllm",
         x1d_judges=_three_pass_judges(),
     )
-    g8 = next(g for g in gates if g.gate_id == "x2_competency_exactly_8_categories")
-    assert g8.pass_ is False
+    g_cat = next(g for g in gates if g.gate_id == "x2_competencies_min_category_count")
+    assert g_cat.pass_ is False
 
 
 def test_near_duplicate_structured_terms_then_expand_minimum_two_terms() -> None:

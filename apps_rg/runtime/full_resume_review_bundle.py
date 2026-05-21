@@ -56,9 +56,25 @@ def write_review_index(run_root: Path) -> Path:
         "## Per-lane outputs (flat)",
         "",
     ]
+    status_md = run_root / "FULL_RUN_SECTION_STATUS.md"
+    if status_md.is_file():
+        lines.extend(
+            [
+                "## Per-section status (mandatory)",
+                "",
+                f"See **[FULL_RUN_SECTION_STATUS.md](FULL_RUN_SECTION_STATUS.md)** — X3/X2 table with display `.txt` links.",
+                "",
+            ]
+        )
     for lane in lane_names:
         base = f"lanes/{lane}/"
         lines.append(f"### {lane}")
+        from apps_rg.runtime.full_run_section_status import LANE_DISPLAY_TXT_CANDIDATES
+
+        for txt_name in LANE_DISPLAY_TXT_CANDIDATES.get(lane, ("command_output.txt",)):
+            if (lanes / lane / txt_name).is_file():
+                lines.append(f"- `[{base}{txt_name}]({base}{txt_name})` — human-readable output")
+                break
         lines.append(f"- `{base}l2_output.json` — generated content")
         lines.append(f"- `{base}x2_gate_outputs.json` — deterministic gates")
         lines.append(f"- `{base}x1d_llm_judge_outputs.json` — judge scores")

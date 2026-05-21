@@ -180,53 +180,43 @@ def run_competencies_lane_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
     _run_id = str(runtime_payload.get("run_id") or "")
-    if effective_offline_contract_stub_enabled():
-        stub_raw = json.dumps(build_mock_output(runtime_payload), sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=stub_raw, requested_model=req_model)
-    elif str(args.provider).strip().lower() == "qwen_vllm":
-        base_url = str(provider_request_data.get("provider_url") or "")
-        pre_timeout = competencies_vllm_preflight_timeout_s()
+    base_url = str(provider_request_data.get("provider_url") or "")
+    pre_timeout = competencies_vllm_preflight_timeout_s()
+    print(
+        f"[competencies] live qwen_vllm: shared HTTP /v1/models preflight base_url={base_url!r} "
+        f"model={req_model!r} timeout_s={pre_timeout}",
+        file=sys.stderr,
+        flush=True,
+    )
+    if competencies_vllm_preflight_disabled():
         print(
-            f"[competencies] live qwen_vllm: shared HTTP /v1/models preflight base_url={base_url!r} "
-            f"model={req_model!r} timeout_s={pre_timeout}",
+            "[competencies] WARNING: APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE is set — "
+            "skipping HTTP models preflight in slice (not recommended for unattended runs).",
             file=sys.stderr,
             flush=True,
         )
-        if competencies_vllm_preflight_disabled():
-            print(
-                "[competencies] WARNING: APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE is set — "
-                "skipping HTTP models preflight in slice (not recommended for unattended runs).",
-                file=sys.stderr,
-                flush=True,
-            )
-        result = call_qwen_vllm(
-            tag_reasoning_lane(provider_payload, LANE_KEY),
-            artifact_dir=artifact_dir,
-            run_id=_run_id or None,
+    result = call_qwen_vllm(
+        tag_reasoning_lane(provider_payload, LANE_KEY),
+        artifact_dir=artifact_dir,
+        run_id=_run_id or None,
+    )
+    if getattr(result, "apps_rg_qwen_preflight_blocked", False):
+        live_preflight_blocked = True
+        snap = getattr(result, "apps_rg_last_probe_snapshot", None)
+        write_json(
+            artifact_dir / "competencies_live_provider_gate.json",
+            live_provider_gate_audit_payload_failure(
+                provider_base_url=base_url,
+                preflight_detail=str(result.exact_provider_error or "http_models_preflight_failed"),
+                timeout_s=pre_timeout,
+                probe_snapshot=dict(snap) if isinstance(snap, dict) else None,
+            ),
         )
-        if getattr(result, "apps_rg_qwen_preflight_blocked", False):
-            live_preflight_blocked = True
-            snap = getattr(result, "apps_rg_last_probe_snapshot", None)
-            write_json(
-                artifact_dir / "competencies_live_provider_gate.json",
-                live_provider_gate_audit_payload_failure(
-                    provider_base_url=base_url,
-                    preflight_detail=str(result.exact_provider_error or "http_models_preflight_failed"),
-                    timeout_s=pre_timeout,
-                    probe_snapshot=dict(snap) if isinstance(snap, dict) else None,
-                ),
-            )
-            print(
-                f"{STATUS_BLOCKED_LIVE_PROVIDER}: {REASON_PROVIDER_UNAVAILABLE} — "
-                f"HTTP /v1/models preflight blocked for {base_url!r}",
-                file=sys.stderr,
-                flush=True,
-            )
-    else:
-        result = call_qwen_vllm(
-            tag_reasoning_lane(provider_payload, LANE_KEY),
-            artifact_dir=artifact_dir,
-            run_id=_run_id or None,
+        print(
+            f"{STATUS_BLOCKED_LIVE_PROVIDER}: {REASON_PROVIDER_UNAVAILABLE} — "
+            f"HTTP /v1/models preflight blocked for {base_url!r}",
+            file=sys.stderr,
+            flush=True,
         )
     provider_result_data = result.to_dict()
     if live_preflight_blocked:
@@ -722,6 +712,7 @@ def run_competencies_lane_execution(
     )
     output_text = "\n".join(lines)
     (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+    (artifact_dir / "competencies_display.txt").write_text(display_text + "\n", encoding="utf-8")
     if print_output:
         print(output_text)
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))

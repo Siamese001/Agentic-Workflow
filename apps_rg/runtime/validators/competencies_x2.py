@@ -418,17 +418,111 @@ def run_competencies_x2_gates(
         )
 
     n_cats = len(competencies) if isinstance(competencies, list) else 0
+    from apps_rg.runtime.sections.competencies_certification_contract import (
+        check_competencies_no_reserved_certification_category,
+    )
+
+    cert_cat_ok, cert_cat_reason = check_competencies_no_reserved_certification_category(competencies)
     add(
-        "x2_competency_exactly_8_categories",
-        n_cats == 8,
+        "x2_competencies_no_reserved_certification_category",
+        cert_cat_ok,
+        cert_cat_reason or "ok",
+        "no_cert_credentials_category_or_terms",
+        None if cert_cat_ok else cert_cat_reason,
+    )
+
+    from apps_rg.runtime.sections.competencies_rigor import (
+        MAX_CATEGORY_COUNT,
+        MAX_ITEMS_PER_CATEGORY,
+        MIN_CATEGORY_COUNT,
+        MIN_ITEMS_PER_CATEGORY,
+        check_competencies_category_count,
+        check_competencies_min_items_per_category,
+        check_competencies_no_credential_relisting,
+        check_competencies_no_low_rigor_two_word_items,
+        check_competencies_no_metrics_as_skills_without_capability_context,
+        check_competencies_no_all_generic_skill_phrase,
+        check_competencies_keyword_repetition_limit,
+        check_competencies_role_alignment_terms,
+    )
+
+    cat_ok, cat_reason = check_competencies_category_count(competencies)
+    add(
+        "x2_competencies_min_category_count",
+        cat_ok,
         n_cats,
-        8,
-        None if n_cats == 8 else "Must have exactly 8 competency categories.",
+        f"{MIN_CATEGORY_COUNT}-{MAX_CATEGORY_COUNT}",
+        None if cat_ok else cat_reason,
+    )
+
+    items_ok, items_reason = check_competencies_min_items_per_category(competencies)
+    add(
+        "x2_competencies_min_items_per_category",
+        items_ok,
+        items_reason or "ok",
+        f"{MIN_ITEMS_PER_CATEGORY}-{MAX_ITEMS_PER_CATEGORY}",
+        None if items_ok else items_reason,
+    )
+
+    cred_ok, cred_reason = check_competencies_no_credential_relisting(competencies)
+    add(
+        "x2_competencies_no_credential_relisting",
+        cred_ok,
+        cred_reason or "ok",
+        "no_credential_names_in_competencies",
+        None if cred_ok else cred_reason,
+    )
+
+    rigor_ok, rigor_reason = check_competencies_no_low_rigor_two_word_items(competencies)
+    add(
+        "x2_competencies_no_low_rigor_two_word_items",
+        rigor_ok,
+        rigor_reason or "ok",
+        "no_generic_two_word_scraps",
+        None if rigor_ok else rigor_reason,
+    )
+
+    role_ok, role_reason = check_competencies_role_alignment_terms(competencies)
+    add(
+        "x2_competencies_role_alignment_terms",
+        role_ok,
+        role_reason or "ok",
+        "min_distinct_executive_platform_terms",
+        None if role_ok else role_reason,
+    )
+
+    metrics_ok, metrics_reason = check_competencies_no_metrics_as_skills_without_capability_context(
+        competencies
+    )
+    add(
+        "x2_competencies_no_metrics_as_skills_without_capability_context",
+        metrics_ok,
+        metrics_reason or "ok",
+        "metrics_need_capability_context",
+        None if metrics_ok else metrics_reason,
+    )
+
+    generic_ok, generic_reason = check_competencies_no_all_generic_skill_phrase(competencies)
+    add(
+        "x2_competencies_no_all_generic_skill_phrase",
+        generic_ok,
+        generic_reason or "ok",
+        "no_all_generic_token_phrases",
+        None if generic_ok else generic_reason,
+    )
+
+    repeat_ok, repeat_reason = check_competencies_keyword_repetition_limit(competencies, max_token_repeat=3)
+    add(
+        "x2_competencies_keyword_repetition_limit",
+        repeat_ok,
+        repeat_reason or "ok",
+        "<=3 repeat per substantive token",
+        None if repeat_ok else repeat_reason,
     )
 
     format_ok = True
     fmt_reason = None
-    if n_cats != 8:
+    if not cat_ok:
         format_ok = False
         fmt_reason = "wrong category count"
     else:
@@ -444,7 +538,11 @@ def run_competencies_x2_gates(
                 format_ok = False
                 fmt_reason = f"bad category_label idx {i}"
                 break
-            if not isinstance(terms, list) or len(terms) < 2 or len(terms) > 6:
+            if (
+                not isinstance(terms, list)
+                or len(terms) < MIN_ITEMS_PER_CATEGORY
+                or len(terms) > MAX_ITEMS_PER_CATEGORY
+            ):
                 format_ok = False
                 fmt_reason = f"terms count idx {i}"
                 break
@@ -660,7 +758,7 @@ def run_competencies_x2_gates(
     jd_only = False
     jd_hit = None
     for t in _flatten_terms(competencies):
-        copied, phrase = has_jd_phrase_copy(t, jd_text, max_words=4)
+        copied, phrase = has_jd_phrase_copy(t, jd_text, max_words=3)
         if copied and phrase and phrase not in proof_blob:
             jd_only = True
             jd_hit = phrase
@@ -685,7 +783,7 @@ def run_competencies_x2_gates(
     br = str(briefing_text or "").strip()
     if br:
         for t in _flatten_terms(competencies):
-            copied, phrase = has_jd_phrase_copy(t, br, max_words=4)
+            copied, phrase = has_jd_phrase_copy(t, br, max_words=3)
             if copied and phrase and phrase not in proof_blob:
                 briefing_only = True
                 br_hit = phrase
@@ -777,12 +875,12 @@ def run_competencies_x2_gates(
     for w in words:
         freq[w] = freq.get(w, 0) + 1
     over = max(freq.values()) if freq else 0
-    stuffing_ok = over <= 5
+    stuffing_ok = over <= 3
     add(
         "x2_no_keyword_stuffing",
         stuffing_ok,
         over,
-        "<=5 repeat non-stopword",
+        "<=3 repeat non-stopword",
         None if stuffing_ok else "Keyword repetition across terms.",
     )
 

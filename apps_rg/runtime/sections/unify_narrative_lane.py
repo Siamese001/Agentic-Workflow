@@ -793,21 +793,9 @@ def run_unify_narrative_execution(
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
-    use_contract_stub = effective_offline_contract_stub_enabled() or str(
-        getattr(args, "provider", "") or ""
-    ).strip().lower() == "mock"
-    if use_contract_stub:
-        from apps_rg.runtime.qwen_offline_contract_stub import synthetic_qwen_provider_result
-
-        stub_doc = normalize_unify_narrative_parsed(build_mock_output(runtime_payload), runtime_payload)
-        raw_body = json.dumps(stub_doc or {}, sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=raw_body, requested_model=req_model)
-    else:
-        result = call_qwen_vllm(provider_payload)
+    result = call_qwen_vllm(provider_payload)
     raw_output = result.raw_model_output
     runtime_generation_status = result.runtime_generation_status
-    if str(getattr(args, "provider", "") or "").strip().lower() == "mock":
-        runtime_generation_status = "MOCKED"
     provider_result_data = dict(result.to_dict())
     provider_result_data["runtime_generation_status"] = runtime_generation_status
     write_json(artifact_dir / "provider_response.json", provider_result_data)
@@ -968,7 +956,7 @@ def run_unify_narrative_execution(
     )
     write_json(artifact_dir / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [])
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="unify_narrative")
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
     proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
@@ -1008,7 +996,7 @@ def run_unify_narrative_execution(
         if isinstance(obs, dict) and obs.get("x2_source_fact_pool_status"):
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="unify_narrative")
     write_json(
         artifact_dir / "fact_check_result.json",
         {
@@ -1040,7 +1028,7 @@ def run_unify_narrative_execution(
         x1d_judges=x1d,
         x2_gates=x2,
         x3=x3,
-        offline_contract_stub_used=effective_offline_contract_stub_enabled(),
+        offline_contract_stub_used=False,
     )
     attach_lane_proof_bundle_fields(
         l2_output,

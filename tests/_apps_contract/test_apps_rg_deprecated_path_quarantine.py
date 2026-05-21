@@ -91,7 +91,8 @@ def test_non_product_proof_env_keys_documented() -> None:
         assert val
 
 
-def test_mock_judges_require_explicit_test_hatch_in_main() -> None:
+def test_product_cli_rejects_mock_judge_flags() -> None:
     main_src = (REPO_ROOT / "apps_rg" / "__main__.py").read_text(encoding="utf-8")
-    assert "--mock-judges" in main_src
-    assert "allow_test_mock_judges" in main_src or "allow-test-mock-judges" in main_src
+    assert "assert_production_runtime" in main_src or "assert_production_cli_no_mock_judge_flags" in main_src
+    assert "argparse.SUPPRESS" in main_src
+    assert "resolve_cli_mock_judges" in main_src

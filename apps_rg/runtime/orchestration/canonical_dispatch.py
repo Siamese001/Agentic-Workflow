@@ -382,6 +382,14 @@ def _run_executive_summary_lane_from_cli(
     override = Path(artifact_dir) if str(artifact_dir).strip() else None
     ctx = lane.run_executive_summary_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
+    from apps_rg.runtime.embedding_settings import (
+        resolve_apps_rg_embedding_settings,
+        write_embedding_settings_receipt,
+    )
+
+    _emb_settings = resolve_apps_rg_embedding_settings(route_section="executive_summary")
+    write_embedding_settings_receipt(artifact_path, _emb_settings)
+    os.environ["APPS_RG_ARTIFACT_DIR"] = str(artifact_path)
 
     x3 = ctx["x3"]
     outcome_authorized = bool(getattr(x3, "pass_", False))

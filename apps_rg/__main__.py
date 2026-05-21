@@ -25,8 +25,10 @@ there is no separate offline orchestrate module CLI.
 
 **L2 model execution (résumé body):** by default ``APPS_RG_L2_PROVIDER_MODE`` is unset
 and the v4 envelope uses **local vLLM** (``ProviderGateway`` ``local_only``).
-Set ``APPS_RG_L2_PROVIDER_MODE=stub_only`` or ``APPS_RG_L2_FORCE_STUB=1`` for deterministic
-stub JSON (CI / dry runs). Use ``APPS_RG_L2_PROVIDER_MODE=live_allowed`` when the compiled
+Section lanes and integrated runs require **live** ``qwen_vllm`` (no offline contract stub)
+and **live X1D judges** (no ``--mock-judges`` on this CLI; pytest uses
+``APPS_RG_TEST_HARNESS=1`` + ``APPS_RG_MOCK_JUDGES=1`` only).
+Set ``APPS_RG_L2_PROVIDER_MODE=live_allowed`` when the compiled
 CPA targets an external API lane (``anthropic``, ``openai``, ``google_gemini``) and keys
 are present.
 
@@ -431,11 +433,9 @@ def _build_raw_request(args: Any) -> dict[str, Any]:
 
 
 def _semantic_cache_r1b_enabled() -> bool:
-    return os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-    )
+    from apps_rg.runtime.embedding_settings import semantic_cache_r1b_eligible
+
+    return semantic_cache_r1b_eligible()
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -538,16 +538,8 @@ def _build_parser() -> argparse.ArgumentParser:
             "APPS_RG_E2E_X1D_JUDGES or the apps_rg default judge list."
         ),
     )
-    p.add_argument(
-        "--mock-judges",
-        action="store_true",
-        help="Use mocked judge rows (section-lane plumbing tests only; never runtime certification).",
-    )
-    p.add_argument(
-        "--allow-test-mock-judges",
-        action="store_true",
-        help="Test-only hatch: required together with `--mock-judges`.",
-    )
+    p.add_argument("--mock-judges", action="store_true", help=argparse.SUPPRESS)
+    p.add_argument("--allow-test-mock-judges", action="store_true", help=argparse.SUPPRESS)
     p.add_argument(
         "--temperature",
         type=float,
@@ -606,6 +598,34 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         "competencies",
     )
     section_eff = str(getattr(args, "section", "") or "").strip().lower()
+
+    from apps_rg.runtime.qwen_live_only_guard import assert_production_runtime
+
+    if section_eff in section_lane_ids or not section_eff:
+        assert_production_runtime(context="python -m apps_rg", args=args)
+
+    from apps_rg.runtime.embedding_settings import (
+        apply_apps_rg_embedding_env_guards,
+        bootstrap_apps_rg_embedding_env,
+        write_embedding_settings_receipt,
+    )
+
+    _emb_boot = bootstrap_apps_rg_embedding_env()
+    if _emb_boot:
+        print(f"embedding_bootstrap: {_emb_boot}", flush=True)
+    _emb_settings = apply_apps_rg_embedding_env_guards(route_section=section_eff)
+    _emb_ad = str(getattr(args, "artifact_dir", "") or "").strip()
+    _emb_receipt = write_embedding_settings_receipt(_emb_ad, _emb_settings)
+    print(
+        f"embedding_settings: enabled={_emb_settings.embeddings_enabled} "
+        f"required={_emb_settings.embedding_required} "
+        f"route_result={_emb_settings.route_result} "
+        f"semantic_cache_ineligible={_emb_settings.semantic_cache_ineligible} "
+        f"chroma_default_ef_used={_emb_settings.chroma_default_ef_used}",
+        flush=True,
+    )
+    if _emb_receipt is not None:
+        print(f"embedding_settings_receipt={_emb_receipt.as_posix()}", flush=True)
 
     if args.interactive:
         _gather_interactive_fields(args)
@@ -778,10 +798,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             from apps_rg.runtime.orchestration.canonical_dispatch import (
                 run_canonical_apps_rg_from_cli_primitives,
             )
-            from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
-                MOCK_JUDGES_REJECT_EXIT_CODE,
-                emit_mock_judges_blocked_stderr,
-            )
+            from apps_rg.runtime.qwen_live_only_guard import resolve_cli_mock_judges
             from apps_rg.runtime.section_cli_defaults import (
                 resolve_allow_non_allow_exit_zero,
                 resolve_cli_lane_provider_with_source,
@@ -800,17 +817,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                     print(f"ERROR: {exc}", file=sys.stderr, flush=True)
                     return 2
 
-            plumbing_waiver = bool(getattr(args, "allow_non_allow_exit_zero", False))
-            if (
-                bool(args.mock_judges)
-                and not bool(getattr(args, "allow_test_mock_judges", False))
-                and not plumbing_waiver
-            ):
-                emit_mock_judges_blocked_stderr(dispatcher_label="apps_rg.__main__")
-                return MOCK_JUDGES_REJECT_EXIT_CODE
-
             lane_judges_eff = resolve_cli_x1d_judges(getattr(args, "x1d_judges", None))
-            lane_mock_eff = bool(args.mock_judges)
+            lane_mock_eff, lane_allow_test_mock_eff = resolve_cli_mock_judges()
             section_allow_exit = resolve_allow_non_allow_exit_zero(
                 bool(getattr(args, "allow_non_allow_exit_zero", False))
             )
@@ -831,10 +839,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 lane_x1d_judges=lane_judges_eff,
                 lane_mock_judges=lane_mock_eff,
                 lane_allow_non_allow_exit_zero=bool(getattr(args, "allow_non_allow_exit_zero", False)),
-                lane_allow_test_mock_judges=(
-                    bool(getattr(args, "allow_test_mock_judges", False))
-                    or (plumbing_waiver and bool(args.mock_judges))
-                ),
+                lane_allow_test_mock_judges=lane_allow_test_mock_eff,
                 selected_role_fact_set=str(getattr(args, "selected_role_fact_set", "") or ""),
             )
         else:
@@ -870,6 +875,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             rbz = str((result or {}).get("review_bundle_zip") or "").strip()
             if rbz:
                 print(f"review_bundle_zip={rbz}", flush=True)
+            if not section_eff and isinstance(result, dict) and result.get("artifact_dir"):
+                from apps_rg.runtime.full_run_section_status import emit_full_run_section_status
+                from apps_rg.runtime.runtime_proof_layout import is_integrated_whole_run_dir_name
+
+                ad = Path(str(result["artifact_dir"]))
+                if is_integrated_whole_run_dir_name(ad.name) or result.get("full_run_section_status_md"):
+                    emit_full_run_section_status(ad, print_stdout=True)
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}
             allow_exit_flag = bool(getattr(args, "allow_non_allow_exit_zero", False))

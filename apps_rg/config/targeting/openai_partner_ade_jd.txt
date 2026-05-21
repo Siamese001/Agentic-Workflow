@@ -1,0 +1,27 @@
+Partner ADE — AI Deployment Engineering (OpenAI)
+
+About The Team
+The AI Deployment Engineering (ADE) team ensures the safe and effective deployment of Generative AI applications for developers and enterprises. We act as trusted advisors and technical partners to our customers, helping them build and execute their AI adoption strategy post-sale. Our mission is to develop a strong backlog of GenAI use cases tailored to each customer's industry and to drive these initiatives from prototype to production through hands-on technical guidance and partnership.
+
+As a Partner ADE, you'll support systems integrators and their most strategic customers transform their business through solutions such as customer service, automated content generation, and novel applications that make use of our newest, most exciting models.
+
+About The Role
+We are looking for a driven solutions leader with a product mindset as the founding Partner ADE to own the technical engagement with our systems integrators (including GSIs, RSIs, and boutique SIs) and ensure their customers achieve tangible business value with GenAI. You will help partners identify high-value use cases and provide technical enablement through the implementation of AI solutions. Your efforts will accelerate partners' time to unlock distribution and adoption, ensuring they deliver exceptional results for our joint customers while maintaining high-quality standards. You will collaborate closely with Sales, Solutions Engineering, Applied Research, and Product teams.
+
+In This Role, You Will
+- Deeply embed with GSIs, RSIs, and boutique SIs as the technical lead, serving as their technical thought partner to ideate and build novel applications on our API for their customers.
+- Work with senior SI and customer stakeholders to identify the best applications of GenAI in their industry and to build/qualify a comprehensive backlog to support their AI roadmap.
+- Intervene directly to accelerate customer time to value through building hands-on prototypes and/or by delivering impactful strategic guidance.
+- Forge and manage relationships with SI and customer stakeholders to ensure the successful deployment and scale of their applications.
+- Codify solution packages and architectural patterns to accelerate time to deployment for customers and partners.
+- Lead technical support during partners' initial projects to ensure successful implementations and mentor their technical teams towards self-sufficiency in delivering OpenAI-powered solutions.
+- Scale the Partner Solutions Architect function by sharing knowledge, codifying best practices, contributing resources to our open-source repositories, and publishing resources to internal and external knowledge bases.
+- Validate, synthesize, and deliver high-signal feedback to the Product and Research teams.
+
+You'll Thrive In This Role If You
+- Have 8+ years of technical consulting (or equivalent) experience, managing C-level technical and business relationships with complex global organizations.
+- Have led complex technical projects and programs with many stakeholders, ideally within or through an SI.
+- Have industry experience in programming languages like Python or Javascript.
+- Have led complex implementations of Generative AI and/or traditional ML solutions.
+- Have built and/or delivered prototypes using the OpenAI API.
+- Are an effective presenter and communicator who can translate business and technical topics to all audiences, including senior leaders.

@@ -134,6 +134,8 @@ def chroma_dir(tmp_path: Path) -> Path:
 
 
 def test_sparse_disabled_keeps_not_applicable_receipt(chroma_dir: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "0")
+    monkeypatch.setenv("APPS_RG_C0_SPARSE_ENABLED", "0")
     monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
     monkeypatch.setenv("EMBEDDING_ENABLED", "true")
     c0_binding._embedding_singleton = None
@@ -148,6 +150,7 @@ def test_sparse_enabled_unavailable_emits_unavailable_receipt_not_pass(
     chroma_dir: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "0")
     monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
     monkeypatch.setenv("EMBEDDING_ENABLED", "true")
     c0_binding._embedding_singleton = None
@@ -165,6 +168,7 @@ def test_sparse_enabled_unavailable_emits_unavailable_receipt_not_pass(
 
 
 def test_sparse_enabled_empty_emits_empty_receipt(chroma_dir: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "0")
     monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
     monkeypatch.setenv("EMBEDDING_ENABLED", "true")
     c0_binding._embedding_singleton = None
@@ -304,3 +308,25 @@ def test_resolve_fec_sparse_refs_na_when_disabled() -> None:
     profile.any_sparse_enabled.return_value = False
     refs = _resolve_fec_sparse_search_refs(profile, [])
     assert refs == (C0_SPARSE_LANE_NA_REF,)
+
+
+def test_sparse_mandatory_fail_closed_when_bm25_unavailable(
+    chroma_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from apps_rg.runtime.bindings.c0_binding import C0EvidenceGapError
+
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "1")
+    monkeypatch.setenv("APPS_RG_C0_SPARSE_ENABLED", "1")
+    monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+    monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+    c0_binding._embedding_singleton = None
+    _enable_sparse_on_profile(monkeypatch)
+    monkeypatch.setattr(
+        "agentic_core.L4_state.utils.memory.bm25_store.get_sparse_index",
+        lambda _n: None,
+    )
+    docs = load_documents(SMOKE_FIXTURE)
+    run_ingestion(docs, chromadb_path=str(chroma_dir), collection_name="fact_vectors")
+    with pytest.raises(C0EvidenceGapError, match="sparse"):
+        c0_retrieve_apps_rg(_route(), _validated(), chromadb_path=str(chroma_dir))

@@ -5,7 +5,7 @@ Requisition: R26_0000001653
 remote type: Remote
 locations: Plano, TX, USA; Virginia Beach, VA, USA; Charlotte, NC, USA
 time type: Full time
-posted: Posted 12 Days Ago (relative to listing capture)
+posted: Posted 13 Days Ago
 
 Built on meritocracy, our unique company culture rewards self-starters and those who are committed to doing what is best for our customers.
 
@@ -44,5 +44,3 @@ Skills & Experience to be Successful:
 - Strategic thinker with the ability to operate at both 30,000 feet and ground level.
 - Comfortable navigating ambiguity, driving change, and making bold decisions.
 - Entrepreneurial spirit with a bias for action and a commitment to delivering measurable outcomes.
-
-Pay Range: $300k - $325k Annual

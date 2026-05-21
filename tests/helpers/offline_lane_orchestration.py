@@ -6,10 +6,11 @@ packages cannot invoke offline batch rollup + package disposition.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from apps_rg.runtime.internal.lane_batch import (
     CANONICAL_BASE_RESUME_REPO_REL,
@@ -82,7 +83,14 @@ def validate_base_resume_for_orchestration(
     return eff, default_used, eff.relative_to(rr).as_posix(), sha256_hex(raw)
 
 
-def _run_subprocess(argv: Sequence[str], *, cwd: Path, label: str) -> None:
+def _run_subprocess(
+    argv: Sequence[str],
+    *,
+    cwd: Path,
+    label: str,
+    extra_env: Mapping[str, str] | None = None,
+) -> None:
+    env = {**os.environ, **dict(extra_env or {})}
     proc = subprocess.run(
         list(argv),
         cwd=str(cwd),
@@ -90,6 +98,7 @@ def _run_subprocess(argv: Sequence[str], *, cwd: Path, label: str) -> None:
         capture_output=True,
         shell=False,
         check=False,
+        env=env,
     )
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout or "").strip()[-4000:]
@@ -191,7 +200,7 @@ def run_orchestration(
         )
     if mock_judges and not allow_test_mock_judges:
         raise ValueError(
-            "`--mock-judges` requires `--allow-test-mock-judges` for orchestrated lane subprocesses."
+            "mock_judges=True requires allow_test_mock_judges=True for orchestrated lane subprocesses."
         )
     eff_abs, default_used, base_resume_path_posix, base_resume_hash = validate_base_resume_for_orchestration(
         repo, base_resume
@@ -229,9 +238,13 @@ def run_orchestration(
             ]
             if allow_non_allow_exit_zero:
                 lane_argv.append("--allow-non-allow-exit-zero")
-            if mock_judges:
-                lane_argv.extend(["--mock-judges", "--allow-test-mock-judges"])
-            _run_subprocess(lane_argv, cwd=repo, label=f"canonical:{section}")
+            lane_env: dict[str, str] | None = None
+            if mock_judges and allow_test_mock_judges:
+                lane_env = {
+                    "APPS_RG_TEST_HARNESS": "1",
+                    "APPS_RG_MOCK_JUDGES": "1",
+                }
+            _run_subprocess(lane_argv, cwd=repo, label=f"canonical:{section}", extra_env=lane_env)
 
         from apps_rg.runtime.internal.generated_lane_rollup import build_rollup, render_markdown
         from apps_rg.runtime.internal.locked_copy_builder import build_locked_copy

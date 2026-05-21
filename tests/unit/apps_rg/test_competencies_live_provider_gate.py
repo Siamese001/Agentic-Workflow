@@ -78,14 +78,14 @@ def test_clarify_x3_live_preflight_blocked_rewrites_copy() -> None:
         runtime_generation_status="BLOCKED",
         x1d_evaluator_mode="BLOCKED_PROVIDER_UNAVAILABLE",
         product_quality_status="PARTIAL",
-        x2_failed_gates=["x2_competency_exactly_8_categories"],
+        x2_failed_gates=["x2_competencies_min_category_count"],
         blocked_judges=[],
         mocked_judges=[],
         soft_failed_judges=[],
         decisive_judge_failures=[],
         final_summary_hash="a",
         claim_ledger_hash="b",
-        required_remediation=["Fix failed X2 gates: x2_competency_exactly_8_categories", "other"],
+        required_remediation=["Fix failed X2 gates: x2_competencies_min_category_count", "other"],
     )
     out = clarify_x3_for_competencies_live_provider_preflight(base, live_preflight_blocked=True)
     assert "BLOCKED_LIVE_PROVIDER" in out.decisive_reason
@@ -140,16 +140,6 @@ def test_provider_transport_x2_blocked_preflight_overrides_generation_status() -
     assert att == "blocked_http_models_preflight"
 
 
-def test_provider_transport_x2_cli_qwen_offline_stub_coherent() -> None:
-    ok, req, att = resolve_competencies_provider_transport_x2(
-        cli_provider="qwen_vllm",
-        runtime_generation_status=OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,
-        live_preflight_blocked=False,
-    )
-    assert ok is True
-    assert att == "offline_contract_stub"
-
-
 def test_provider_transport_x2_cli_qwen_mocked_generation_fails() -> None:
     ok, _, att = resolve_competencies_provider_transport_x2(
         cli_provider="qwen_vllm",
@@ -180,12 +170,12 @@ def test_http_models_preflight_monkeypatch(monkeypatch: pytest.MonkeyPatch) -> N
     assert isinstance(snap, dict)
 
 
-def test_competencies_lane_execution_offline_branch_uses_effective_stub() -> None:
-    """Regression: synthetic stub gate must use effective_offline (honors disable env)."""
+def test_competencies_lane_execution_has_no_offline_stub_branch() -> None:
+    """Regression: competencies lane must not branch on offline contract stub."""
     from pathlib import Path
 
     import apps_rg.runtime.sections.competencies_lane_execution as cle
 
     text = Path(cle.__file__).read_text(encoding="utf-8")
-    assert "if effective_offline_contract_stub_enabled():" in text
-    assert "\nif offline_contract_stub_enabled():" not in text
+    assert "effective_offline_contract_stub_enabled" not in text
+    assert "synthetic_qwen_provider_result" not in text

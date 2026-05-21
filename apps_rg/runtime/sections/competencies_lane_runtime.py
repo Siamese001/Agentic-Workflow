@@ -712,13 +712,15 @@ def expand_structured_competencies_min_two_terms(
     resume_support_blob_lower: str,
     bullet_texts_lower: list[str],
 ) -> None:
-    """When a structured (dict-backed) competency category emits only one nonempty term after repair/dedupe,
-    deterministically append a second short grounded phrase sourced from the same validated ``bul_*`` rows.
+    """Expand structured categories below executive rigor minimum (3 terms per category).
 
-    Addresses ``x2_competency_format_category_colon_terms`` (2≤terms≤6) without inventing canonical fact ids —
-    fragments are restricted to bullet ``technologies`` and short claim splits (see
-    :func:`_candidate_phrases_for_category`).
+    Addresses ``x2_competencies_min_items_per_category`` / ``x2_competency_format_category_colon_terms``
+    without inventing canonical fact ids — fragments are restricted to bullet ``technologies`` and short
+    claim splits (see :func:`_candidate_phrases_for_category`).
     """
+    from apps_rg.runtime.sections.competencies_rigor import MIN_ITEMS_PER_CATEGORY
+
+    min_terms = MIN_ITEMS_PER_CATEGORY
 
     comps = parsed.get("competencies")
     if not isinstance(comps, list):
@@ -758,101 +760,104 @@ def expand_structured_competencies_min_two_terms(
         terms_raw = cat.get("terms")
         if not isinstance(terms_raw, list) or not _terms_list_has_dict(terms_raw):
             continue
-        if _nonempty_terms_total(terms_raw) != 1:
-            continue
 
-        validated_set: set[str] = set()
-        for sr in cat.get("source_fact_ids") or []:
-            x = _fix_fact_id_typos(str(sr))
-            fid = x.split("_metric_")[0]
-            if fid in allowed_fact_ids:
-                validated_set.add(fid)
-        validated = sorted(validated_set)
-        if not validated:
-            continue
+        while _nonempty_terms_total(terms_raw) < min_terms:
+            need_before = _nonempty_terms_total(terms_raw)
 
-        local_seen: set[str] = set()
-        for t in terms_raw:
-            pv = term_phrase(t)
-            if pv:
-                local_seen.add(pv.lower().strip().rstrip("."))
-        combined_seen = global_seen | local_seen
+            validated_set: set[str] = set()
+            for sr in cat.get("source_fact_ids") or []:
+                x = _fix_fact_id_typos(str(sr))
+                fid = x.split("_metric_")[0]
+                if fid in allowed_fact_ids:
+                    validated_set.add(fid)
+            validated = sorted(validated_set)
+            if not validated:
+                break
 
-        cand_pool = _candidate_phrases_for_category(cat, rows_by_id)
-        eligible: list[tuple[int, str, str, str]] = []
-        for raw_cand in cand_pool:
-            cand = str(raw_cand).strip()
-            if not cand:
-                continue
-            if _sentence_like_term(cand):
-                continue
-            if _long_bullet_text_restatement(cand, bullet_texts_lower):
-                continue
-            if not _novel_term_vs_seen(cand, combined_seen):
-                continue
-            picked_fid = ""
-            for fid in validated:
-                if term_primary_support_overlap(cand, fid, resume_support_blob_lower):
-                    picked_fid = fid
-                    break
-            if not picked_fid:
-                continue
-            eligible.append((len(cand), cand.lower(), cand, picked_fid))
+            local_seen: set[str] = set()
+            for t in terms_raw:
+                pv = term_phrase(t)
+                if pv:
+                    local_seen.add(pv.lower().strip().rstrip("."))
+            combined_seen = global_seen | local_seen
 
-        if not eligible:
-            row = rows_by_id.get(validated[0]) or {}
-            for tech in row.get("technologies") or []:
-                cand = str(tech).strip()
-                if not cand or _sentence_like_term(cand):
+            cand_pool = _candidate_phrases_for_category(cat, rows_by_id)
+            eligible: list[tuple[int, str, str, str]] = []
+            for raw_cand in cand_pool:
+                cand = str(raw_cand).strip()
+                if not cand:
                     continue
-                words = cand.split()
-                if len(words) > 6:
-                    cand = " ".join(words[:4])
+                if _sentence_like_term(cand):
+                    continue
+                if _long_bullet_text_restatement(cand, bullet_texts_lower):
+                    continue
                 if not _novel_term_vs_seen(cand, combined_seen):
                     continue
-                if term_primary_support_overlap(cand, validated[0], resume_support_blob_lower):
-                    eligible.append((len(cand), cand.lower(), cand, validated[0]))
-                    break
+                picked_fid = ""
+                for fid in validated:
+                    if term_primary_support_overlap(cand, fid, resume_support_blob_lower):
+                        picked_fid = fid
+                        break
+                if not picked_fid:
+                    continue
+                eligible.append((len(cand), cand.lower(), cand, picked_fid))
+
             if not eligible:
-                claim = str(row.get("claim_text") or "").strip()
-                for chunk in re.split(r"[,;]\s*|\s+and\s+", claim):
-                    cand = chunk.strip()
+                row = rows_by_id.get(validated[0]) or {}
+                for tech in row.get("technologies") or []:
+                    cand = str(tech).strip()
                     if not cand or _sentence_like_term(cand):
                         continue
-                    wc = len(cand.split())
-                    if wc < 2 or wc > 6:
-                        continue
+                    words = cand.split()
+                    if len(words) > 6:
+                        cand = " ".join(words[:4])
                     if not _novel_term_vs_seen(cand, combined_seen):
                         continue
                     if term_primary_support_overlap(cand, validated[0], resume_support_blob_lower):
                         eligible.append((len(cand), cand.lower(), cand, validated[0]))
                         break
-        if not eligible:
-            continue
-        eligible.sort()
-        chosen = eligible[0]
-        _, _, phrase, sfid = chosen
-        append_term = {"text": phrase, "source_fact_id": sfid, "source_fact_ids": [sfid]}
-        wr = parsed.setdefault("removed_or_rewritten_terms")
-        if not isinstance(wr, list):
-            wr = []
-            parsed["removed_or_rewritten_terms"] = wr
-        changelog.append(
-            {
-                "operation": "expand_structured_competency_min_two_terms",
-                "reason": (
-                    "structured category had exactly one nonempty term — appended second phrase from "
-                    "validated category bullet technologies/fragments overlapping resume blob"
-                ),
-                "category_label": cat.get("category_label"),
-                "phrase": phrase,
-                "source_fact_id": sfid,
-            }
-        )
-        wr.append(f"expand min-two: +{phrase!r} (@{sfid}) in {cat.get('category_label', '?')}")
-        terms_raw.append(append_term)
-        cat["terms"] = terms_raw
-        global_seen.add(phrase.lower().strip().rstrip("."))
+                if not eligible:
+                    claim = str(row.get("claim_text") or "").strip()
+                    for chunk in re.split(r"[,;]\s*|\s+and\s+", claim):
+                        cand = chunk.strip()
+                        if not cand or _sentence_like_term(cand):
+                            continue
+                        wc = len(cand.split())
+                        if wc < 2 or wc > 6:
+                            continue
+                        if not _novel_term_vs_seen(cand, combined_seen):
+                            continue
+                        if term_primary_support_overlap(cand, validated[0], resume_support_blob_lower):
+                            eligible.append((len(cand), cand.lower(), cand, validated[0]))
+                            break
+            if not eligible:
+                break
+            eligible.sort()
+            chosen = eligible[0]
+            _, _, phrase, sfid = chosen
+            append_term = {"text": phrase, "source_fact_id": sfid, "source_fact_ids": [sfid]}
+            wr = parsed.setdefault("removed_or_rewritten_terms")
+            if not isinstance(wr, list):
+                wr = []
+                parsed["removed_or_rewritten_terms"] = wr
+            changelog.append(
+                {
+                    "operation": "expand_structured_competency_min_terms",
+                    "reason": (
+                        f"structured category below {min_terms} terms — appended grounded phrase from "
+                        "validated bullet technologies/fragments"
+                    ),
+                    "category_label": cat.get("category_label"),
+                    "phrase": phrase,
+                    "source_fact_id": sfid,
+                }
+            )
+            wr.append(f"expand min-terms: +{phrase!r} (@{sfid}) in {cat.get('category_label', '?')}")
+            terms_raw.append(append_term)
+            cat["terms"] = terms_raw
+            global_seen.add(phrase.lower().strip().rstrip("."))
+            if _nonempty_terms_total(terms_raw) <= need_before:
+                break
 
 
 def collapse_duplicate_competency_terms(
@@ -1131,6 +1136,17 @@ def normalize_parsed_output(parsed: dict[str, Any] | None, runtime_payload: dict
     out.setdefault("gap_notes", [])
     out.setdefault("change_log", [])
     out.setdefault("self_check", {"normalized_by_dispatch": True})
+    from apps_rg.runtime.sections.competencies_certification_contract import (
+        sanitize_competencies_no_certification_category,
+    )
+
+    sanitized, cert_log = sanitize_competencies_no_certification_category(out.get("competencies") or [])
+    out["competencies"] = sanitized
+    if cert_log:
+        cl = out.get("change_log")
+        if not isinstance(cl, list):
+            cl = []
+        out["change_log"] = [*cl, *cert_log]
     prune_claim_ledger_bullet_paste(out)
     ensure_claim_ledger_coverage(out, allowed_fact_ids)
     return out
@@ -1392,7 +1408,19 @@ def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[st
     )
 
 
-def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
+def write_x2_gate_outputs(
+    path: Path,
+    gates: list[dict[str, Any]],
+    *,
+    section_id: str | None = "competencies",
+) -> None:
+    if section_id:
+        from apps_rg.runtime.sections.section_x2_gate_outputs import (
+            write_section_x2_gate_outputs,
+        )
+
+        write_section_x2_gate_outputs(path.parent, section_id, gates)
+        return
     failed = [g["gate_id"] for g in gates if not g["pass"]]
     write_json(
         path,
@@ -1479,7 +1507,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--provider",
         choices=["qwen_vllm"],
         default="qwen_vllm",
-        help="Generation provider (qwen_vllm only). Offline tests: set APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1.",
+        help="Generation provider (qwen_vllm only). Live vLLM required; offline contract stub is disabled.",
     )
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")

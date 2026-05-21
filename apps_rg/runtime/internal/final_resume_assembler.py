@@ -538,20 +538,84 @@ def assemble_final_resume(
 
     }
 
+    from apps_rg.runtime.assembly.full_resume_llm_coherence import (
+        assembly_product_release_mode,
+        assembly_structural_only_mode,
+        emit_full_resume_llm_coherence_review,
+        full_resume_coherence_review_enabled,
+    )
 
+    import os
+
+    product_release_mode = assembly_product_release_mode()
+    coherence_required = full_resume_coherence_review_enabled()
+    coherence_review: dict[str, Any] | None = None
+
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+
+    if coherence_required:
+        target_company = os.environ.get("APPS_RG_TARGET_COMPANY", "").strip()
+        target_role = os.environ.get("APPS_RG_TARGET_ROLE", "").strip()
+        lanes_raw = rollup_blob.get("lanes")
+        lane_iter: list[Any] = []
+        if isinstance(lanes_raw, dict):
+            lane_iter = list(lanes_raw.values())
+        elif isinstance(lanes_raw, list):
+            lane_iter = lanes_raw
+        for lane in lane_iter:
+            if not isinstance(lane, dict):
+                continue
+            if not target_company:
+                target_company = str(lane.get("target_company") or "").strip()
+            if not target_role:
+                target_role = str(lane.get("target_role") or "").strip()
+        judge_mode = os.environ.get("APPS_RG_FULL_RESUME_COHERENCE_JUDGE_MODE", "blocked_if_unavailable").strip()
+        coherence_review = emit_full_resume_llm_coherence_review(
+            final_resume=final_resume,
+            final_resume_path=paths.output_dir / "final_resume.json",
+            output_dir=paths.output_dir,
+            target_company=target_company,
+            target_role=target_role,
+            mode=judge_mode or "blocked_if_unavailable",
+        )
+        final_resume["calls"]["judge_calls_made"] = True
+        final_resume["calls"]["provider_calls_made"] = True
+
+    coherence_pass = bool(
+        coherence_review and coherence_review.get("full_resume_coherence_pass") is True
+    )
+    final_resume["assembly_proof_semantics"] = {
+        "assembly_mode": (
+            "product_release_candidate" if product_release_mode else "structural_package_only"
+        ),
+        "structural_only": assembly_structural_only_mode(),
+        "aggregate_judge_required": coherence_required,
+        "aggregate_judge_executed": coherence_review is not None,
+        "aggregate_judge_artifacts": {
+            "full_resume_llm_coherence_review_json": (
+                "full_resume_llm_coherence_review.json" if coherence_review else None
+            ),
+            "x1d_full_resume_judge_outputs_json": (
+                "x1d_full_resume_judge_outputs.json" if coherence_review else None
+            ),
+        },
+        "full_resume_coherence_pass": coherence_pass if coherence_review else None,
+        "product_release_eligible": False,
+        "explicit_non_claims": [
+            "Section-level X2/X3 pass is necessary but not sufficient for product release.",
+            "structural_package_only assembly may emit final_resume.json without product authorization.",
+            "product_release_eligible is set false here and updated only when all product gates pass.",
+        ],
+    }
 
     gate_results = run_final_resume_x2_gates(
-
         repo=repo,
-
         paths=paths,
-
         final_resume_blob=final_resume,
-
         rollup_blob=rollup_blob,
-
         locked_manifest_blob=locked_blob,
-
+        coherence_review=coherence_review,
+        product_release_mode=product_release_mode,
     )
 
 
@@ -582,7 +646,13 @@ def assemble_final_resume(
 
     cross_x2_path = paths.output_dir / "cross_section_x2_gate_outputs.json"
 
-    cross_all_pass = cross_section_gates_all_pass(cross_gates)
+    from apps_rg.runtime.aggregation.cross_section_x2 import VERDICT_FAIL
+    from apps_rg.runtime.assembly.full_resume_llm_coherence import assembly_structural_only_mode
+
+    if assembly_structural_only_mode():
+        cross_all_pass = not any(g.verdict == VERDICT_FAIL for g in cross_gates)
+    else:
+        cross_all_pass = cross_section_gates_all_pass(cross_gates)
 
     cross_failed = cross_section_fail_gate_ids(cross_gates)
 
@@ -598,7 +668,10 @@ def assemble_final_resume(
         review_policy.get("summary", {}).get("product_allow_claimed")
         and gates_all_pass(gate_results)
         and cross_section_product_pass(cross_gates)
+        and (coherence_pass if coherence_required else False)
     )
+    if isinstance(final_resume.get("assembly_proof_semantics"), dict):
+        final_resume["assembly_proof_semantics"]["product_release_eligible"] = product_allow_claimed
 
     cross_x2_blob = {
 
@@ -811,6 +884,12 @@ def assemble_final_resume(
 
         "final_resume_x2_gate_outputs_json": paths.rel(x2_fp),
 
+        "full_resume_llm_coherence_review_json": (
+            paths.rel(paths.output_dir / "full_resume_llm_coherence_review.json")
+            if coherence_review is not None
+            else None
+        ),
+
         "cross_section_x2_gate_outputs_json": paths.rel(cross_x2_path),
 
         "orchestration_fingerprint_json": paths.rel(fp_path),
@@ -869,11 +948,17 @@ def assemble_final_resume(
 
             "Structural final_resume_x2 and cross_section WARN-permitted pass do not constitute product ALLOW.",
 
+            "Section-level X3 pass is necessary but not sufficient; full-resume aggregate judge quorum required for product_release_eligible.",
+
             "REVIEW and MOCK/plumbing-only lanes are labeled in review_lane_policy.json; not hidden.",
 
             "JD/briefing digests are targeting coherence only; not runtime proof.",
 
+            "final_resume.json with judge_calls_made=false is structural-only or pre-aggregate-review — not product release.",
+
         ],
+
+        "assembly_proof_semantics": final_resume.get("assembly_proof_semantics"),
 
     }
 
@@ -912,6 +997,10 @@ def assemble_final_resume(
         "final_resume_blob": final_resume,
 
         "gates_all_pass": gates_pass,
+
+        "structural_x2_all_pass": gates_all_pass(gate_results),
+
+        "cross_section_x2_all_pass": cross_all_pass,
 
         "failed_gate_ids": failed,
 

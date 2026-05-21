@@ -142,10 +142,21 @@ def assess_post_exit_ingestion_eligibility(
         checks["runtime_status_present"] = True
         checks["not_mock_runtime"] = runtime not in NON_ADMISSIBLE_RUNTIME_STATUSES
 
+    from apps_rg.cache.r1b_semantic_chunk_builder import (
+        INGEST_PROFILE_INTEGRATED_WHOLE_RUN,
+        detect_ingest_profile,
+    )
+
+    manifest_path = Path(exit_meta.run_dir) / "run_manifest.json"
+    manifest = _read_json(manifest_path) or {}
+    ingest_profile = detect_ingest_profile(Path(exit_meta.run_dir), manifest)
+    require_final_resume = ingest_profile == INGEST_PROFILE_INTEGRATED_WHOLE_RUN
+
     base = assess_intent_record_admissibility(
         record,
         chunks=chunks,
         runtime_generation_status=runtime,
+        require_final_resume=require_final_resume,
     )
     checks.update(base.checks)
     checks["chunks_not_independent_lookup_identities"] = all(

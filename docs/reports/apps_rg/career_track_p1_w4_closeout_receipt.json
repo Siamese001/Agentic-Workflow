@@ -1,13 +1,13 @@
 {
   "schema": "career_track_p1_w4_closeout_receipt_v1",
-  "generated_at": "2026-05-20T12:40:42Z",
+  "generated_at": "2026-05-21T20:50:54Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4-CLOSEOUT",
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:f07c04d6399ba244",
-    "c03_graph_hop_paths_count": 21,
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:fea41c66d2a5f15f",
+    "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
       "track_data_tech_cloud_ml",
@@ -23,30 +23,9 @@
     ]
   },
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [
-      "agentic_core/L0_routing/logs/guardian_report.json",
-      "agentic_core/L0_routing/reasoning/execution_orchestrator.py",
-      "agentic_core/L0_routing/reasoning/route_gates.py",
-      "agentic_core/L2_execution/apps_rg_l2_binding.py",
-      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
-      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
-    ],
-    "git_status_short_agentic_core": [
-      "M agentic_core/L0_routing/logs/guardian_report.json",
-      "M agentic_core/L0_routing/reasoning/execution_orchestrator.py",
-      "M agentic_core/L0_routing/reasoning/route_gates.py",
-      "D agentic_core/L2_execution/apps_rg_l2_binding.py",
-      "M agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
-      "M agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
-    ],
-    "dirty_files": [
-      "agentic_core/L0_routing/logs/guardian_report.json",
-      "agentic_core/L0_routing/reasoning/execution_orchestrator.py",
-      "agentic_core/L0_routing/reasoning/route_gates.py",
-      "agentic_core/L2_execution/apps_rg_l2_binding.py",
-      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
-      "agentic_core/runtime/contracts/tests/test_contracts_smoke.py"
-    ],
+    "git_diff_name_only_agentic_core": [],
+    "git_status_short_agentic_core": [],
+    "dirty_files": [],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -58,8 +37,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".cursor/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": false,
-    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
+    "workspace_guard_clean": true,
+    "isolation_verdict": "CLEAN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope."
   },
   "hybrid_tracks_with_facts": [

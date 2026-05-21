@@ -5,7 +5,7 @@ allowed_stage: "L2_EXEC"
 rewrite_intent: "COMPETENCY_SELECTOR"
 
 purpose: |
-  Target-aware, fact-constrained SELECTION and GROUPING of exactly 8 ENGINEERING & PLATFORM COMPETENCIES categories.
+  Target-aware, fact-constrained SELECTION and GROUPING of 6–8 executive ENGINEERING & PLATFORM COMPETENCIES categories.
   Terms come only from verified employment-bullet inventory grounded in this lane's SelectedRoleFactSet allowlist when SRFS
   is active; never derive competency proof from JD text or briefing alone.
   JD/briefing influence emphasis, labels, and ordering only.
@@ -56,15 +56,15 @@ input_contract:
       access_level: "TARGETING_CONTEXT_ONLY"
       constraint: "Company research only — not proof source"
     - name: required_category_count
-      value: 8
-      constraint: "EXACTLY 8 — no more, no less"
+      value: "6-8"
+      constraint: "6 to 8 executive capability clusters — no fewer than 6, no more than 8"
 
 output_contract:
   format: "JSON"
   required_fields:
     - name: competencies
       type: "array"
-      min_items: 8
+      min_items: 6
       max_items: 8
       item_schema:
         category_label: "string (must match one of 8 base categories or supported equivalent)"
@@ -130,7 +130,8 @@ output_contract:
     - name: self_check
       type: "object"
       schema:
-        exactly_8_categories: "boolean (must be true)"
+        category_count_in_range: "boolean (6–8 categories, must be true)"
+        min_three_terms_per_category: "boolean (must be true)"
         format_valid: "boolean (must be true) — Category Label: term, term, term"
         no_full_sentences: "boolean (must be true)"
         no_bullets: "boolean (must be true)"
@@ -163,6 +164,8 @@ base_categories:
     - "Drop below eight categories"
     - "Use full sentences or paragraphs"
     - "Use bullet format"
+    - "Emit Certifications, Credentials, Licenses, or Accreditations as a competency category (reserved for CERTIFICATIONS & CREDENTIALS section)"
+    - "Relist credential names (AWS Certified*, Databricks Lakehouse Fundamentals, FSA/Fellow of the Society of Actuaries) as competency terms"
 
 term_operations:
   allowed:
@@ -220,14 +223,14 @@ forbidden_patterns:
     check: "Output contains 9 or more categories"
     action: "REJECT"
   - pattern: "missing_category"
-    check: "Output contains fewer than 8 categories"
+    check: "Output contains fewer than 6 categories"
     action: "REJECT"
 
 validation_rules:
   pre_output:
-    - assert: "len(output.competencies) == 8"
+    - assert: "6 <= len(output.competencies) <= 8"
       error: "CATEGORY_COUNT_INVALID"
-      message: "Must emit exactly 8 categories"
+      message: "Must emit 6–8 executive categories with 3–6 capability terms each; never a Certifications category"
     - assert: "all([c.category_label for c in output.competencies])"
       error: "MISSING_CATEGORY_LABEL"
       message: "Every category must have a label"
@@ -238,7 +241,8 @@ validation_rules:
       error: "TERM_TOO_LONG"
       message: "Terms should be concise (max 5 words)"
   post_output:
-    - assert: "output.self_check.exactly_8_categories == true"
+    - assert: "output.self_check.category_count_in_range == true"
+    - assert: "output.self_check.min_three_terms_per_category == true"
     - assert: "output.self_check.format_valid == true"
     - assert: "output.self_check.no_full_sentences == true"
     - assert: "output.self_check.no_bullets == true"

@@ -159,11 +159,7 @@ def run_ibm_narrative_lane_execution(
 
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
-    offline_stub_on = effective_offline_contract_stub_enabled()
-
-    if offline_stub_on:
-        preflight_art: dict[str, Any] = {"skipped": True, "reason": "offline_contract_stub"}
-    elif judge_allowed_mock:
+    if judge_allowed_mock:
         preflight_art = {"skipped": True, "reason": "mock_judge_cli_flags"}
     else:
         preflight_art = dict(run_ibm_narrative_judge_credentials_preflight(judge_keys, os.environ))
@@ -198,7 +194,7 @@ def run_ibm_narrative_lane_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
 
-    if preflight_blocked and not offline_stub_on and not judge_allowed_mock:
+    if preflight_blocked and not judge_allowed_mock:
         result = ProviderResult(
             provider_requested=str(provider_req.provider_requested),
             provider_attempted=bool(provider_req.provider_attempted),
@@ -216,37 +212,6 @@ def run_ibm_narrative_lane_execution(
         write_json(artifact_dir / "provider_response.json", provider_result_data)
         parsed = None
         parse_error = result.exact_provider_error or "preflight_blocked"
-    elif offline_stub_on:
-        stub_raw = json.dumps(build_mock_output(runtime_payload), sort_keys=True, separators=(",", ":"))
-        result = synthetic_qwen_provider_result(raw_model_output=stub_raw, requested_model=req_model)
-        provider_result_data = result.to_dict()
-        raw_output = result.raw_model_output
-        runtime_generation_status = result.runtime_generation_status
-        write_json(artifact_dir / "provider_response.json", provider_result_data)
-        if _generation_status_allows_structure_parse(result.runtime_generation_status):
-            parsed, parse_error = parse_model_json(raw_output)
-            if parsed is None:
-                raw_output, parsed, parse_error = retry_qwen_for_parse(
-                    messages, provider_payload, raw_output, parse_error
-                )
-            if parsed is not None:
-                parsed = normalize_parsed_output(parsed, runtime_payload)
-                raw_output, parsed = retry_qwen_for_metric_budget(
-                    messages,
-                    provider_payload,
-                    raw_output,
-                    parsed,
-                    companion_text,
-                    runtime_payload,
-                )
-                apply_companion_metric_budget_trim(
-                    parsed, companion_text, runtime_payload=runtime_payload
-                )
-                parsed = normalize_parsed_output(parsed, runtime_payload)
-                remap_ibm_narrative_claim_ledger_to_fact_pool(parsed, runtime_payload)
-        else:
-            parsed = None
-            parse_error = result.exact_provider_error or "provider blocked"
     else:
         result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
         provider_result_data = result.to_dict()
@@ -287,7 +252,7 @@ def run_ibm_narrative_lane_execution(
         model_name = provider_request_data.get("model")
 
     judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
-    if preflight_blocked and not offline_stub_on and not judge_allowed_mock:
+    if preflight_blocked and not judge_allowed_mock:
         blocker_detail = "; ".join(preflight_art.get("preflight_decisive_blockers") or [])
         x1d = _preflight_blocked_synthetic_judges(
             judge_keys,
@@ -486,7 +451,7 @@ def run_ibm_narrative_lane_execution(
     if preflight_blocked:
         decisive_blockers.extend(list(preflight_art.get("preflight_decisive_blockers") or []))
     if judge_allowed_mock or bundle.get("test_only_mock_judges"):
-        recommended_next_action = "rerun without --mock-judges for clean X3 ALLOW"
+        recommended_next_action = "rerun with live X1D judges for clean X3 ALLOW"
     elif preflight_blocked:
         recommended_next_action = (
             "configure missing judge credentials; Gemini expects GOOGLE_API_KEY "
@@ -503,7 +468,7 @@ def run_ibm_narrative_lane_execution(
         )
     generation_class_label = classify_generation_class(
         runtime_generation_status=runtime_generation_status,
-        offline_contract_stub_active=offline_stub_on,
+        offline_contract_stub_active=False,
         test_only_mock_provider=bool(bundle.get("test_only_mock_provider")),
     )
     judge_class_label = classify_judge_class(x1d)
@@ -516,9 +481,7 @@ def run_ibm_narrative_lane_execution(
         section_id="ibm_narrative",
         run_id=str(runtime_payload["run_id"]),
         clean_allow_possible_at_start=bool(
-            preflight_art.get("all_required_available")
-            and not judge_allowed_mock
-            and not offline_stub_on
+            preflight_art.get("all_required_available") and not judge_allowed_mock
         ),
         required_judges=list(judge_keys),
         provider_preflight_status_by_judge=(

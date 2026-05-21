@@ -10,7 +10,6 @@ from typing import Any
 from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL
 
 from apps_rg.runtime.providers.competencies_live_provider_gate import competencies_vllm_preflight_timeout_s
-from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
 from apps_rg.runtime.qwen_transport_diag import run_http_models_preflight
 
 _ENV_SKIP_QWEN_HEALTH = "APPS_RG_SKIP_QWEN_VLLM_HEALTH"
@@ -27,11 +26,8 @@ def _truthy_env(name: str) -> bool:
 def should_skip_qwen_vllm_health_gate() -> bool:
     """True when live vLLM health is not required for section-only CLI runs.
 
-    Full-R4 ``APPS_RG_L2_PROVIDER_MODE=stub_only`` (pytest conftest) does not apply here;
-    section lanes use ``APPS_RG_QWEN_OFFLINE_CONTRACT_STUB`` or ``APPS_RG_SKIP_QWEN_VLLM_HEALTH``.
+    Offline Qwen stub and skip-health are forbidden (see ``qwen_live_only_guard``).
     """
-    if effective_offline_contract_stub_enabled():
-        return True
     return _truthy_env(_ENV_SKIP_QWEN_HEALTH)
 
 
