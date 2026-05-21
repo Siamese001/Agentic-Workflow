@@ -110,7 +110,7 @@ def _lane_index_doc(run_dir: Path) -> Mapping[str, Any] | None:
         return None
     try:
         j = json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError):
+    except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return j if isinstance(j, Mapping) else None
 

@@ -193,7 +193,7 @@ def run_competencies_judges(
             output.advisory_only = True
             output.proof_eligible_judge = False
             outputs.append(output)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             blocked = _make_blocked_output(
                 key,
                 input_hash,

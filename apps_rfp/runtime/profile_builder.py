@@ -69,7 +69,7 @@ def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
             output_preferences=payload.get("output_preferences") or {},
             idempotency_key=payload.get("idempotency_key"),
         )
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
 
     return RequestEnvelope(

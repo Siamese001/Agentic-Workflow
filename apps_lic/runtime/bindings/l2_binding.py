@@ -202,7 +202,7 @@ def _invoke_hop_pipeline(
     executor = HopPipelineExecutor(REGISTRY)
     try:
         run_record = executor.run(context)
-    except Exception as exc:  # guardian: allow-broad-exception-catch -- L2 fail-soft; HOP pipeline errors must not crash the contract chain
+    except Exception as exc:  # guardian: allow-broad-exception -- L2 fail-soft; HOP pipeline errors must not crash the contract chain
         _LOGGER.warning(
             "[apps_lic L2] HopPipelineExecutor raised: %s — emitting stub_fallback",
             exc,

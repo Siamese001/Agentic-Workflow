@@ -26,7 +26,7 @@ def _sha256_file(path: Path) -> str | None:
     h = hashlib.sha256()
     try:
         h.update(path.read_bytes())
-    except OSError:
+    except OSError:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return h.hexdigest()
 

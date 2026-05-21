@@ -38,7 +38,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass
 
 from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (

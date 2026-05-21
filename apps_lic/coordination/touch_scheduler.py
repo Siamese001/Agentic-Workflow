@@ -330,7 +330,7 @@ class TouchScheduler:
                 ),
                 None,
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return (
                 None,
                 ScheduleTouchFailure(
@@ -367,7 +367,7 @@ class TouchScheduler:
                     redis_client.zrem(self._queue_key, member)
                     return True
             return False
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return False
     
     def acquire_touch_lock(self, touch_id: str) -> bool:

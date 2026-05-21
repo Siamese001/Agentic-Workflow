@@ -141,7 +141,7 @@ def fetch_openai_compatible_model_ids(*, base_url: str, timeout_s: float) -> tup
     except urllib.error.HTTPError as exc:
         try:
             exc.read()
-        except OSError:
+        except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
         return int(exc.code), [], None
     except urllib.error.URLError as exc:

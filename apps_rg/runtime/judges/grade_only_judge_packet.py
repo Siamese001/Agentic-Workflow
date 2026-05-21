@@ -98,7 +98,7 @@ def write_judge_packet(path: Path, packet: dict[str, Any]) -> str:
         from apps_rg.runtime.runtime_proof_layout import repo_relative_path
 
         return repo_relative_path(path)
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return path.as_posix()
 
 

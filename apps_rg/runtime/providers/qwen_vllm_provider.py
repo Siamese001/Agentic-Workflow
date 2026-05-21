@@ -290,7 +290,7 @@ def call_qwen_vllm(
         except urllib.error.HTTPError as exc:
             try:
                 detail = exc.read().decode("utf-8", errors="replace")[:2000]
-            except OSError:
+            except OSError:  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
                 detail = ""
             code_i = int(exc.code)
             cat = qtd.classify_http_error(code=code_i) or qtd.ERR_UNKNOWN
@@ -475,7 +475,7 @@ def call_qwen_vllm(
                 model=req_model,
             )
             return out
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             cat = qtd.ERR_UNKNOWN
             _trace(attempt_num=attempt_num, error_category=cat, http_status=None, exception=exc, body_fragment="")
             out = ProviderResult(

@@ -38,7 +38,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass
 
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
@@ -324,7 +324,7 @@ def load_companion_unify_bullets_context() -> dict[str, Any]:
         try:
             x3 = json.loads(x3_path.read_text(encoding="utf-8"))
             x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
-        except (json.JSONDecodeError, OSError):
+        except (json.JSONDecodeError, OSError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             x3_code = "UNREADABLE"
 
     expected_ids = list(UNIFY_BULLET_IDS)

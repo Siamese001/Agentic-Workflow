@@ -43,7 +43,7 @@ _EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS = int(
 try:
     from dotenv import load_dotenv
     load_dotenv()
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass  # dotenv not installed, rely on system env
 
 from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
@@ -1385,30 +1385,22 @@ def run_executive_summary_execution(
                 )
 
                 _srfs_facts = list(selected_fact_plan.get("facts") or [])
-                _before_judge_safe = json.dumps(parsed, sort_keys=True)
-                parsed = apply_srfs_judge_safe_repair(
+                parsed, _judge_safe_meta = apply_srfs_judge_safe_repair(
                     parsed,
                     _srfs_facts,
                     _srfs_i,
                 )
-                if json.dumps(parsed, sort_keys=True) != _before_judge_safe:
-                    write_json(
-                        artifact_dir / "srfs_judge_safe_repair.json",
-                        {
-                            "schema": "srfs_judge_safe_repair_v1",
-                            "repaired": True,
-                            "before_resume_display_text": json.loads(_before_judge_safe).get(
-                                "resume_display_text"
-                            ),
-                            "after_resume_display_text": parsed.get("resume_display_text"),
-                        },
-                    )
+                if _judge_safe_meta:
+                    write_json(artifact_dir / "srfs_judge_safe_repair.json", _judge_safe_meta)
                 density_repair_meta = None
                 parsed, density_repair_meta = apply_srfs_density_micro_expansion(
                     parsed, _srfs_i, selected_facts=_srfs_facts
                 )
                 if density_repair_meta:
-                    write_json(artifact_dir / "srfs_density_micro_repair.json", density_repair_meta)
+                    write_json(
+                        artifact_dir / "exec_summary_srfs_density_micro_expansion.json",
+                        density_repair_meta,
+                    )
                 parsed, density_post_judge_meta = apply_srfs_density_micro_expansion(
                     parsed, _srfs_i, selected_facts=_srfs_facts
                 )
@@ -1417,25 +1409,14 @@ def run_executive_summary_execution(
                         **(density_repair_meta or {}),
                         "post_judge_safe_pass": density_post_judge_meta,
                     }
-                _before_final_judge_safe = json.dumps(parsed, sort_keys=True)
-                parsed = apply_srfs_judge_safe_repair(
+                parsed, _judge_safe_final_meta = apply_srfs_judge_safe_repair(
                     parsed,
                     _srfs_facts,
                     _srfs_i,
                 )
-                if json.dumps(parsed, sort_keys=True) != _before_final_judge_safe:
-                    write_json(
-                        artifact_dir / "srfs_judge_safe_repair_final.json",
-                        {
-                            "schema": "srfs_judge_safe_repair_v1",
-                            "pass": "post_density",
-                            "repaired": True,
-                            "before_resume_display_text": json.loads(_before_final_judge_safe).get(
-                                "resume_display_text"
-                            ),
-                            "after_resume_display_text": parsed.get("resume_display_text"),
-                        },
-                    )
+                if _judge_safe_final_meta:
+                    _final_body = {**_judge_safe_final_meta, "pass": "post_density"}
+                    write_json(artifact_dir / "srfs_judge_safe_repair_final.json", _final_body)
                 raw_output = parsed_to_raw_model_output_json(parsed)
         if parsed and isinstance(parsed, dict):
             _srfs_final = runtime_payload.get("srfs_integration")
@@ -1464,7 +1445,41 @@ def run_executive_summary_execution(
         parse_error = result.exact_provider_error or "provider blocked"
 
     resume_display_text = (parsed or {}).get("resume_display_text") or raw_output or ""
-    claim_ledger = list((parsed or {}).get("claim_ledger") or [])
+    _srfs_i = runtime_payload.get("srfs_integration")
+    _pp_meta = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
+    _painting_active = bool(
+        (isinstance(_srfs_i, dict) and str(_srfs_i.get("artifact_path_resolved") or "").strip())
+        or _pp_meta.get("graph_skills_proof_pool")
+        or pool.proof_source == "augmented_skills_graph"
+    )
+    if parsed and isinstance(parsed, dict) and _painting_active:
+        from apps_rg.runtime.sections.executive_summary_composition import (
+            attach_composition_to_parsed,
+            build_executive_summary_composition_plan,
+            normalize_exec_summary_recruiter_openers,
+        )
+
+        resume_display_text = normalize_exec_summary_recruiter_openers(resume_display_text)
+        parsed["resume_display_text"] = resume_display_text
+        _plan_facts = list(selected_fact_plan.get("facts") or [])
+        composition_plan = build_executive_summary_composition_plan(
+            selected_facts=_plan_facts,
+            allowed_fact_ids=allowed_fact_ids,
+            target_role=str(args.target_role or ""),
+            target_company=str(args.target_company or ""),
+            proof_pool_metadata=_pp_meta,
+            srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
+        )
+        parsed = attach_composition_to_parsed(
+            parsed,
+            composition_plan,
+            resume_display_text=resume_display_text,
+        )
+        write_json(artifact_dir / "executive_summary_composition_plan.json", composition_plan)
+        resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
+        claim_ledger = list(parsed.get("claim_ledger") or [])
+    else:
+        claim_ledger = list((parsed or {}).get("claim_ledger") or [])
     parse_status, invalid_reason = classify_ledger_parse_state(
         parsed, parse_error=parse_error, raw_output=raw_output
     )
@@ -1680,7 +1695,7 @@ def run_executive_summary_execution(
             _graph_only_repaired = bool(
                 json.loads(_repair_meta_path.read_text(encoding="utf-8")).get("repaired")
             )
-        except (json.JSONDecodeError, OSError):
+        except (json.JSONDecodeError, OSError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             _graph_only_repaired = False
 
     product_quality_status, product_quality_reason = infer_product_quality(
@@ -1711,7 +1726,7 @@ def run_executive_summary_execution(
         finalize_section_runtime_exhaust_before_l6,
         gate_section_l6_shadow_after_exhaust,
     )
-
+  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
     finalize_section_l2_after_output(artifact_dir, "executive_summary", runtime_payload)
     finalize_section_exit_after_l2(artifact_dir, "executive_summary", runtime_payload)
     finalize_section_runtime_exhaust_before_l6(

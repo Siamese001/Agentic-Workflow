@@ -194,7 +194,7 @@ class TouchContextPropagator:
             self._propagation_log.append(result)
             return result
             
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return PropagationResult(
                 source_touch_id=source_context.touch_id,
                 target_touch_number=target_touch_number,

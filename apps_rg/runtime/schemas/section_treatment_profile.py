@@ -202,7 +202,7 @@ def _load_profile() -> dict[str, dict[str, Any]]:
                 if sections:
                     _profile_cache = dict(sections)
                     return _profile_cache
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                 pass
 
     _profile_cache = dict(_DEFAULT_PROFILE)

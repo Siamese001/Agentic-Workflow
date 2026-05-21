@@ -216,7 +216,7 @@ class DecisionRouter:
                 f"ts={time.time():.3f}",
                 flush=True,
             )
-        except Exception:  # guardian: allow-log-and-swallow -- marker emission is best-effort
+        except Exception:  # guardian: allow-log-and-swallow -- marker emission is best-effort  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             LOG.debug("ROUTER_DECISION marker emission failed", exc_info=True)
 
 

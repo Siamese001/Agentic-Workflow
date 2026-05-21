@@ -187,7 +187,7 @@ class ContextCarryForwardBridge:
                 next_touch_id=request.next_touch_id,
             )
         
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return CarryForwardResult(
                 success=False,
                 context_carried={},

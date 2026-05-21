@@ -76,7 +76,7 @@ def _mock_fixture_marker_summary(
             try:
                 pdata = json.loads(pr.read_text(encoding="utf-8"))
                 blobs.append(str(pdata.get("raw_model_output") or ""))
-            except (OSError, json.JSONDecodeError, TypeError):
+            except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
         hits = scan_mock_fixture_markers("\n".join(blobs))
     classification = "n/a_not_real_llm"

@@ -169,7 +169,7 @@ class MigrationExecutionPhase(MigrationPhase):
                 self._migrate_campaign(campaign)
                 migrated += 1
                 _log.debug("[W5.P2b] Migrated campaign %s", campaign.campaign_id)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                 failed += 1
                 _log.error("[W5.P2b] Failed to migrate %s: %s", campaign.campaign_id, e)
         

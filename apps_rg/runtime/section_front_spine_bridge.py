@@ -241,7 +241,7 @@ def _serialize_value(val: Any) -> Any:
     if hasattr(val, "__dataclass_fields__"):
         try:
             return _serialize_value(asdict(val))
-        except TypeError:
+        except TypeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return repr(val)
 

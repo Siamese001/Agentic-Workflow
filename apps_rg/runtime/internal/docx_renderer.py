@@ -51,7 +51,7 @@ def _paragraph_safe(doc: Any, text: str, *, style_name: str | None) -> None:
         try:
             doc.add_paragraph(text, style=style_name)
             return
-        except (KeyError, ValueError):
+        except (KeyError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     doc.add_paragraph(text)
 

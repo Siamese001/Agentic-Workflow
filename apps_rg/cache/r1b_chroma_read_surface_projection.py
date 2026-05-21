@@ -319,7 +319,7 @@ def project_governed_chroma_read_surface(
                 commit_request_id=commit_request_id,
                 uwg_commit_receipt_id=uwg_commit_receipt_id,
             )
-        except Exception as exc:  # guardian: allow-default-fallback -- Chroma optional in CI; receipts record failure
+        except Exception as exc:  # guardian: allow-default-fallback -- Chroma optional in CI; receipts record failure  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return GovernedChromaProjectionOutcome(
                 refresh_status="FAILED",
                 read_surface_refresh_status="MISSING",

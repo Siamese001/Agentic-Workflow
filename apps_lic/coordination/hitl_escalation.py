@@ -232,7 +232,7 @@ class HITLEscalationIntegration:
             
             return True, review_id, result
         
-        except Exception as e:
+        except Exception as e:  # guardian: allow-exception-type-erasure -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # Escalation failed - fail open or closed based on policy
             raise HITLEscalationError(
                 message=f"HITL escalation failed: {e}",

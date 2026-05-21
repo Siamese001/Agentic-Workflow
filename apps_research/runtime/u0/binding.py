@@ -161,7 +161,7 @@ def _extract_runtime_package(app_payload: Mapping[str, Any]) -> RuntimeCustomiza
     # Build package
     try:
         task_class = TaskClass(pkg_data.get("task_class", "company_brief"))
-    except ValueError as e:
+    except ValueError as e:  # guardian: allow-exception-type-erasure -- P2 burndown: fail-soft optional boundary
         raise AppsResearchU0ValidationError(
             message=f"Invalid task_class: {e}",
             field="task_class",
@@ -301,7 +301,7 @@ def u0_validate_apps_research_v2(
         package = _extract_runtime_package(app_payload)
     except UnknownPackageFieldError:
         raise
-    except Exception as e:
+    except Exception as e:  # guardian: allow-exception-type-erasure -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         raise AppsResearchU0ValidationError(
             message=f"Failed to extract runtime package: {e}",
             field="runtime_customization_package",

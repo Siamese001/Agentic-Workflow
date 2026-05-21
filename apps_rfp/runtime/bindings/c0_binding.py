@@ -72,7 +72,7 @@ def rfp_c0(route: Any, validated: Any) -> dict[str, Any]:
             if r.get("text")
         ]
         shaped_count = len(chunks)
-    except (ImportError, OSError, ValueError, RuntimeError, KeyError) as exc:
+    except (ImportError, OSError, ValueError, RuntimeError, KeyError) as exc:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary
         _LOGGER.warning(
             "rfp_c0: retrieval unavailable (collection=%s): %s — proceeding with empty grounding",
             collection,

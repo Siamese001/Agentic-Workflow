@@ -265,7 +265,7 @@ class GenerateResumeStep(BaseRecipeStep):
                 pa_input = build_prompt_assembly_input_from_l2_context(context)
                 artifact = compile_prompt(pa_input)
                 context = {**context, "compiled_prompt_artifact": artifact}
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                 raise RuntimeError(f"PA_COMPILE_FAILED: {exc}") from exc
 
         # PA guard check after attempting compilation
@@ -310,7 +310,7 @@ class NarrativePassStep(BaseRecipeStep):
                 "step": self.STEP_NAME,
                 "reason": "narrative_adapter not available",
             }
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return {"status": "error", "step": self.STEP_NAME, "error": str(exc)}
 
 

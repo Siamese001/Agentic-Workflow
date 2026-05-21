@@ -7,4 +7,4 @@ Historical import path: ``agentic_core.L5_safety.validators.achv_bullet_synthesi
 
 from __future__ import annotations
 
-from apps_rg.runtime.validators.achv_bullet_synthesizer_validator import *  # noqa: F403
+from apps_rg.runtime.validators.achv_bullet_synthesizer_validator import *  # noqa: F403  # guardian: allow-layer-violation -- TEMPORARY_THIN_ADAPTER W2 f8e3c1

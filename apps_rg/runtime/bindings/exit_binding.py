@@ -544,7 +544,7 @@ def produce_structured_resume_from_docx(docx_path: str) -> dict:
     try:
         from apps_rg.resume.docx_reader import read_structured_resume_from_docx
         return read_structured_resume_from_docx(docx_path)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return {"source_path": docx_path, "sections": {}, "_parse_error": True}
 
 

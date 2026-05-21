@@ -133,10 +133,10 @@ def _invoke_apps_research(
             timeout=300,
             shell=False,
         )
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         _log.error("[research_facade] apps_research timed out after 300s")
         return None
-    except OSError as exc:
+    except OSError as exc:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         _log.error("[research_facade] apps_research subprocess failed: %s", exc)
         return None
 
@@ -197,7 +197,7 @@ def lookup_cached_brief(company: str, tenant_id: str = "default") -> Optional[di
             if brief.is_stale(now=datetime.now(timezone.utc)):
                 continue
             return data  # Return as dict for the validator
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             continue
 
     return None

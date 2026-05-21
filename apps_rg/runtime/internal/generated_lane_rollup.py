@@ -383,7 +383,7 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
                 ptr_base = (repo / rel).resolve()
                 if ptr_base.resolve() == base.resolve() and is_accepted_real_llm_qwen_bundle(base):
                     accepted_real_evidence_resolution = "latest_successful_real_run.json"
-        except (json.JSONDecodeError, OSError, ValueError, TypeError):
+        except (json.JSONDecodeError, OSError, ValueError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
 
     return {

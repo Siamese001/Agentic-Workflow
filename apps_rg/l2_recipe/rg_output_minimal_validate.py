@@ -42,7 +42,7 @@ def _required_top_level() -> tuple[str, ...]:
         req = data.get("required")
         if isinstance(req, list) and all(isinstance(x, str) for x in req):
             return tuple(str(x) for x in req)
-    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     return _TOP_LEVEL_REQUIRED
 
@@ -57,7 +57,7 @@ def _sections_required() -> tuple[str, ...]:
         req = sections.get("required")
         if isinstance(req, list) and all(isinstance(x, str) for x in req):
             return tuple(str(x) for x in req)
-    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     return _SECTIONS_REQUIRED
 

@@ -621,10 +621,10 @@ def _write_md(agg: dict[str, Any]) -> None:
 def main() -> int:
     agg = run_w4_w14_multilane_section_projection()
     try:
-        from ops_scripts.apps_rg.l6_benchmarks.receipt_links import enrich_manifest_links
+        from ops_scripts.apps_rg.l6_benchmarks.receipt_links import enrich_manifest_links  # guardian: allow-layer-violation -- optional manifest link enrichment
 
         agg = enrich_manifest_links(agg)
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     OUT_JSON.write_text(json.dumps(agg, indent=2) + "\n", encoding="utf-8")
     agg["COMMANDS_RUN"] = [

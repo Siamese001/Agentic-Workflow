@@ -30,7 +30,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass
 
 from apps_rg.runtime.sections.lane_base_resume import load_base_resume

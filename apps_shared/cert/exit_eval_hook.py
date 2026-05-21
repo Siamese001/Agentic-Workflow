@@ -93,14 +93,14 @@ def maybe_invoke_exit_eval(
         from agentic_core.L3_orchestration.exit_eval.v6.pipeline import (
             run_exit_eval,
         )
-    except ImportError as exc:
+    except ImportError as exc:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         _LOGGER.warning(
             "[apps_shared.cert] Exit pipeline unavailable for hook: %s", exc,
         )
         return None
     try:
         return run_exit_eval(receipts)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # guardian: allow-broad-except -- cert hook MUST NOT break the
         # bundle-building path; Exit failures are additional evidence only
         # (NOT a gate on the cert bundle). BLOCKER #5 closure tolerates

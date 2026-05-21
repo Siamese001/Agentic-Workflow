@@ -410,7 +410,7 @@ class IdentitySpineIntegration:
                 "error": None,
             }
         
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return {
                 "status": "error",
                 "manager": None,

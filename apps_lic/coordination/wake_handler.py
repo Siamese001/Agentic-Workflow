@@ -210,7 +210,7 @@ class WakeHandler:
                     error=f"Unknown action: {action}",
                 )
         
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return WakeResult(
                 touch_id=request.touch_id,
                 outcome=WakeOutcome.FAILED,
@@ -312,7 +312,7 @@ class WakeHandler:
                 hitl_review_id=review_id,
             )
         
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return WakeResult(
                 touch_id=request.touch_id,
                 outcome=WakeOutcome.FAILED,

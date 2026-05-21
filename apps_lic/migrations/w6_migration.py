@@ -84,7 +84,7 @@ class MigrationSteps:
                 message="Touch state schema migrated successfully",
                 details={"tables_created": ["apps_lic_touch_state", "apps_lic_touch_state_transitions"]},
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return MigrationResult(
                 step_id=step_id,
                 status="failed",
@@ -99,7 +99,7 @@ class MigrationSteps:
             from agentic_core.cache.core.redis_coordination_fabric import get_fabric
             fabric = get_fabric()
             return True, "Coordination fabric available"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return False, f"Coordination fabric unavailable: {e}"
     
     @staticmethod
@@ -126,7 +126,7 @@ class MigrationSteps:
                 message="Coordination fabric configured for apps_lic",
                 details={"queue_key": "coordination:apps_lic:wake_queue"},
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return MigrationResult(
                 step_id=step_id,
                 status="failed",
@@ -143,7 +143,7 @@ class MigrationSteps:
             if policy:
                 return True, f"HITL policy registered with {len(policy.rules)} rules"
             return False, "HITL policy not registered"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return False, f"HITL policy check failed: {e}"
     
     @staticmethod
@@ -174,7 +174,7 @@ class MigrationSteps:
                 message="HITL policy registered successfully",
                 details={"policy_id": policy.policy_id, "rules_count": len(policy.rules)},
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return MigrationResult(
                 step_id=step_id,
                 status="failed",
@@ -191,7 +191,7 @@ class MigrationSteps:
             if producer:
                 return True, "FEC producer registered"
             return False, "FEC producer not registered"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return False, f"FEC producer check failed: {e}"
     
     @staticmethod
@@ -217,7 +217,7 @@ class MigrationSteps:
                 message="FEC producer registered successfully",
                 details={"producer_id": "apps_lic.research_bridge"},
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return MigrationResult(
                 step_id=step_id,
                 status="failed",
@@ -232,7 +232,7 @@ class MigrationSteps:
             from apps_lic.identity.propagation import get_identity_propagation_service
             service = get_identity_propagation_service()
             return True, "Identity propagation service available"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return False, f"Identity service check failed: {e}"
     
     @staticmethod
@@ -258,7 +258,7 @@ class MigrationSteps:
                 message="Identity service initialized successfully",
                 details={"service": type(service).__name__},
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return MigrationResult(
                 step_id=step_id,
                 status="failed",

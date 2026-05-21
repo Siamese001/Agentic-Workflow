@@ -123,7 +123,7 @@ def _run_exit_cert_hook_soft(receipts: dict) -> None:
             "invoke_exit_eval": False,
         }
         maybe_invoke_exit_eval(receipts, cert_route_entry)
-    except (ImportError, OSError, ValueError, TypeError, AttributeError, RuntimeError) as exc:
+    except (ImportError, OSError, ValueError, TypeError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary
         _LOGGER.debug("rfp_exit: cert hook unavailable or skipped: %s", exc)
 
 

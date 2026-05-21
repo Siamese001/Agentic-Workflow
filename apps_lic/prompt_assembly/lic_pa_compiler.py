@@ -490,5 +490,5 @@ if __name__ == "__main__":
         
     except PromptAssemblyError as e:
         print(f"Expected error (files may not exist yet): {e}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         print(f"Error: {e}")

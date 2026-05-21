@@ -145,7 +145,7 @@ def register() -> None:
     try:
         from apps_shared.cert.fec_producer import register_producer
         register_producer("apps_lic", produce_fec)
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
 
 

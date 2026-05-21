@@ -40,7 +40,10 @@ from apps_rg.runtime.internal.generated_lane_rollup import (
 )
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.run_bundle_index import repo_relative_posix
-from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+from apps_rg.runtime.runtime_proof_layout import (
+    MODULAR_R4_SECTIONS_ROOT_ENV,
+    resolve_phase1_sections_root,
+)
 from apps_rg.runtime.section_cli_defaults import (
     CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
     resolve_cli_x1d_judges,
@@ -406,8 +409,7 @@ def run_modular_resume_generation(
     rg_output_merge_receipt_rel: str | None = None
 
     if profile.phase1_invoke_real_lanes:
-        sections_root = modular_root / "sections"
-        sections_root.mkdir(parents=True, exist_ok=True)
+        sections_root = resolve_phase1_sections_root(art, modular_root)
         try:
             emit_sections_root_manifest(
                 repo_root=repo,
@@ -468,7 +470,7 @@ def run_modular_resume_generation(
                     )
                     lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
                     lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
-                except Exception as exc:
+                except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     lane_exec_status[lane] = f"error:{exc!s}"
                     lane_dispatch_results[lane] = {"fault": "exception", "error": str(exc)}
             for lane in GENERATED_LANES:

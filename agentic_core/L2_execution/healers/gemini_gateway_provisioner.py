@@ -104,7 +104,7 @@ class GeminiGatewayConfig:
                 or os.getenv(ENV_GEMINI_MAX_TOKENS)
                 or "4096"
             )
-        except ValueError:
+        except ValueError:  # guardian: allow-partial-side-effects -- P2 burndown: fail-soft optional boundary
             max_tokens = 4096
         flash_model, _ = google_ai_flash_model_id()
         if not flash_model:

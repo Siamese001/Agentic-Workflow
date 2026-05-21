@@ -95,7 +95,7 @@ def _resolve_jsonpath(path: str, data: Any) -> Any | None:
             try:
                 i = int(idx)
                 cursor = cursor[i]
-            except (TypeError, IndexError, KeyError, ValueError):
+            except (TypeError, IndexError, KeyError, ValueError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
                 return None
     return cursor
 
@@ -167,7 +167,7 @@ def _extract_score(spec: Mapping[str, Any] | None, receipt: Mapping[str, Any]) -
                 return _clamp(default, clamp)
             ok = all(_is_nonempty(_resolve_jsonpath(p, receipt)) for p in paths)
             return _clamp(1.0 if ok else 0.0, clamp)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # guardian: allow-broad-except -- mapper MUST be fail-soft;
         # any extraction error yields default (fail-closed downstream)
         _LOGGER.warning(
@@ -207,7 +207,7 @@ def _extract_evidence(
                     out.append(f"{prefix}{val}")
             elif "template" in spec:
                 out.append(_render_template(str(spec["template"]), receipt))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # guardian: allow-broad-except -- evidence extraction is fail-soft;
             # empty evidence on a required dim still triggers fail-closed per
             # evidence_required=true in the rubric
@@ -252,7 +252,7 @@ def map_l2_receipt_to_dim_scores(
         return {"dim_scores": {}, "dim_evidence": {}}
     try:
         doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # guardian: allow-broad-except -- YAML load failure MUST NOT break
         # the cert path; evaluator will see empty dim_scores and fail-close
         _LOGGER.warning(

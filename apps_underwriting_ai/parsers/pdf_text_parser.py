@@ -52,7 +52,7 @@ class PdfTextParser(DocumentParser):
         for page in reader.pages:
             try:
                 pages_text.append(page.extract_text() or "")
-            except Exception as exc:  # guardian: allow-log-and-swallow -- per-page pypdf failure must not abort multi-page parse; empty string recorded for the failed page so downstream retains page alignment
+            except Exception as exc:  # guardian: allow-log-and-swallow -- per-page pypdf failure must not abort multi-page parse; empty string recorded for the failed page so downstream retains page alignment  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                 pages_text.append("")
                 _ = exc  # swallowed intentionally — see notes below
         text = "\n".join(pages_text).strip()

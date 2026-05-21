@@ -313,7 +313,7 @@ def _evaluate_archetype(
             bind_c03=False,
             repo_root=repo_root,
         )
-    except Exception as exc:  # guardian: bounded offline eval
+    except Exception as exc:  # guardian: bounded offline eval  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         default_error = str(exc)
 
     expansion = build_track_weighted_expansion(

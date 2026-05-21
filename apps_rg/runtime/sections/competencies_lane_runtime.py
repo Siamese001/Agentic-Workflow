@@ -40,7 +40,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass
 
 from apps_rg.runtime.competencies_proof_boundary import merge_jd_alignment

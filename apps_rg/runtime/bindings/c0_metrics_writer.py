@@ -284,7 +284,7 @@ def write_c0_metrics(
             encoding="utf-8",
         )
         return artifact_path
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         _logger.warning("write_c0_metrics failed (fail-soft): %s", exc)
         return None
 

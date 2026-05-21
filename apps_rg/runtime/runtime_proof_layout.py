@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
@@ -24,6 +25,7 @@ Bucket = Literal["real", "mock", "plumbing"]
 
 LATEST_SUCCESSFUL_REAL_FILENAME = "latest_successful_real_run.json"
 LATEST_PLUMBING_RUN_FILENAME = "latest_plumbing_run.json"
+FULL_RESUME_DIR_PREFIX = "full_resume_"
 
 # When set (absolute or repo-relative), lane prepare/finalize and optional dependency
 # resolution use ``<root>/<lane>/{mock|real}/<run_id>/`` instead of runtime_proofs.
@@ -107,6 +109,49 @@ def find_repo_root(start: Path | None = None) -> Path:
     return Path.cwd()
 
 
+def is_integrated_whole_run_dir_name(name: str) -> bool:
+    """True for ``full_resume_<id>`` integrated CLI run folders under ``runtime_proofs``."""
+    return str(name or "").strip().startswith(FULL_RESUME_DIR_PREFIX)
+
+
+def _whole_run_envelope_active() -> bool:
+    return os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+
+
+def _modular_root_uses_flat_lane_dirs(msr: Path) -> bool:
+    """``APPS_RG_MODULAR_R4_SECTIONS_ROOT`` points at ``<full_resume_*>/lanes``."""
+    if not _whole_run_envelope_active():
+        return False
+    resolved = msr.resolve()
+    return resolved.name == "lanes" and is_integrated_whole_run_dir_name(resolved.parent.name)
+
+
+def allocate_full_resume_artifact_dir(repo: Path, explicit: str = "") -> Path:
+    """Default whole-run artifact root: ``artifacts/apps_rg/runtime_proofs/full_resume_<id>``."""
+    if str(explicit).strip():
+        return Path(explicit).expanduser().resolve()
+    rid = uuid.uuid4().hex[:12]
+    out = repo / "artifacts" / "apps_rg" / "runtime_proofs" / f"{FULL_RESUME_DIR_PREFIX}{rid}"
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
+def resolve_phase1_sections_root(artifact_dir: Path, modular_root: Path) -> Path:
+    """Phase-1 lane proofs: flat ``lanes/<lane>/`` for integrated runs; else ``modular_r4/sections``."""
+    art = Path(artifact_dir).resolve()
+    if is_integrated_whole_run_dir_name(art.name):
+        lanes = art / "lanes"
+        lanes.mkdir(parents=True, exist_ok=True)
+        return lanes
+    sections = modular_root / "sections"
+    sections.mkdir(parents=True, exist_ok=True)
+    return sections
+
+
 def lane_root(repo: Path, lane: str) -> Path:
     return repo / "artifacts" / "apps_rg" / "runtime_proofs" / lane
 
@@ -154,6 +199,10 @@ def prepare_runtime_proof_run_dir(
     msr = modular_sections_root_from_env(repo)
     if msr is not None:
         require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
+        if _modular_root_uses_flat_lane_dirs(msr):
+            rd = msr / lane
+            rd.mkdir(parents=True, exist_ok=True)
+            return rd
         rd = msr / lane / bucket / run_id
         rd.mkdir(parents=True, exist_ok=True)
         return rd
@@ -172,7 +221,7 @@ def _read_json_dict(path: Path) -> dict[str, Any] | None:
         return None
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return raw if isinstance(raw, dict) else None
 
@@ -367,7 +416,7 @@ def load_latest_pointer(repo: Path, lane: str, bucket: Bucket) -> dict[str, Any]
         return None
     try:
         data = json.loads(ptr.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return data if isinstance(data, dict) else None
 
@@ -378,7 +427,7 @@ def load_latest_successful_real_pointer(repo: Path, lane: str) -> dict[str, Any]
         return None
     try:
         data = json.loads(ptr.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return data if isinstance(data, dict) else None
 
@@ -479,7 +528,7 @@ def resolve_rollup_run_dir(
                 l2 = json.loads(legacy.read_text(encoding="utf-8"))
                 if l2.get("runtime_generation_status") == "MOCKED":
                     return lane_root(repo, lane)
-            except (json.JSONDecodeError, OSError):
+            except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
                 return None
         return None
     if artifact_mode == "real":

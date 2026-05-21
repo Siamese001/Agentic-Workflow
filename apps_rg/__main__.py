@@ -838,10 +838,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 selected_role_fact_set=str(getattr(args, "selected_role_fact_set", "") or ""),
             )
         else:
-            from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
+            from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
+                run_whole_run_with_route_governance,
+            )
 
             os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
-            result = dispatch_apps_rg_run(
+            result = run_whole_run_with_route_governance(
                 target_company=args.target_company,
                 target_role=args.target_role,
                 target_level=args.target_level,
@@ -865,6 +867,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             ad_str = str(result["artifact_dir"])
             print(f"artifact_dir={ad_str}", flush=True)
             _print_paths_for_cursor_workspace(ad_str)
+            rbz = str((result or {}).get("review_bundle_zip") or "").strip()
+            if rbz:
+                print(f"review_bundle_zip={rbz}", flush=True)
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}
             allow_exit_flag = bool(getattr(args, "allow_non_allow_exit_zero", False))

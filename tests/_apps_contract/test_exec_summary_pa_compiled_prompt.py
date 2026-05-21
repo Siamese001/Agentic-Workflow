@@ -529,7 +529,7 @@ def test_srfs_judge_safe_repair_tightens_s2_s5_and_canonical_ids():
             "fact_certs_001",
         ],
     }
-    out = apply_srfs_judge_safe_repair(parsed, facts, srfs)
+    out, _meta = apply_srfs_judge_safe_repair(parsed, facts, srfs)
     text = out["resume_display_text"].lower()
     assert "deterministic routing" not in text
     assert "multi-agent orchestration" not in text

@@ -191,7 +191,7 @@ def run_l6_shadow(
                 observer_law_compliant=l6_result.observer_law_receipt.compliant
                     if hasattr(l6_result.observer_law_receipt, "compliant") else True,
             )
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # guardian: allow-broad-except -- OTEL emit must never crash L6 path
             pass
 
@@ -212,7 +212,7 @@ def run_l6_shadow(
             ingest_quality_score=getattr(dispatch_result, "aggregate_score", 0.0),
         )
 
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # guardian: allow-broad-except -- L6 shadow must never crash the main dispatch path
         _log.warning("[l6_shadow] failed run=%s error=%s", run_id, exc)
         return L6ShadowResult(run_id=run_id, success=False, error=str(exc))

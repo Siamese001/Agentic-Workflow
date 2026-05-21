@@ -504,7 +504,7 @@ class ProfilePlanner:
                     "confidence": plan.confidence_score,
                     "signal_count": len(plan.signals)
                 })
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             logger.debug(f"Failed to record telemetry: {e}")
 
     def get_profile_summary(self, plan: ProfilePlan) -> Dict[str, object]:

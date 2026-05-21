@@ -981,6 +981,7 @@
     "apps_research/engines/research_retrieval_engine.py",
     "apps_research/engines/role_profile_engine.py",
     "apps_research/integrations/c0_graph_adapter.py",
+    "apps_research/integrations/evidence_lineage.py",
     "apps_research/integrations/execution_adapter.py",
     "apps_research/integrations/governed_research_run.py",
     "apps_research/integrations/llm_client.py",
@@ -992,7 +993,6 @@
     "apps_research/integrations/research_c0_adapter.py",
     "apps_research/integrations/research_capability_registry.py",
     "apps_research/integrations/research_exit_fec_producer.py",
-    "apps_research/integrations/research_ingress_runner.py",
     "apps_research/integrations/research_l2_step_adapters.py",
     "apps_research/integrations/spine_handoff.py",
     "apps_research/integrations/tavily_retrieval.py",
@@ -1009,6 +1009,8 @@
     "apps_rfp/integrations/rfp_ingress_runner.py",
     "apps_rfp/integrations/spine_handoff.py",
     "apps_rfp/integrations/u0_intake_adapter.py",
+    "apps_rg/integrations/apps_research_bridge.py",
+    "apps_rg/integrations/managed_research_delegation.py",
     "apps_shared/enforcement/AdaptiveretrievalgateStrategy.py",
     "apps_shared/enforcement/CircuitbreakerStrategy.py",
     "apps_shared/enforcement/DecomposedqueryagentStrategy.py",
@@ -1034,5 +1036,5 @@
     "apps_underwriting_ai/engines/rubric_output_mapper.py",
     "apps_underwriting_ai/engines/underwriting_engine.py"
   ],
-  "count": 1032
+  "count": 1034
 }

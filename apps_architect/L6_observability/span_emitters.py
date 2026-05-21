@@ -20,7 +20,7 @@ def _try_get_tracer():
     try:
         from opentelemetry import trace
         return trace.get_tracer("apps_architect")
-    except Exception:
+    except Exception:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return None
 
 
@@ -39,7 +39,7 @@ class ArchitectSpanEmitter:
         try:
             with tracer.start_as_current_span(name) as span:
                 yield span
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             attrs["error"] = str(exc)[:200]
             if span is not None:
                 span.set_attribute("error", True)

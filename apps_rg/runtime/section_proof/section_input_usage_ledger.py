@@ -211,14 +211,14 @@ def build_section_input_usage_ledger_v1(
     if not jd_eff:
         try:
             jd_eff = default_jd_targeting_text()
-        except OSError:
+        except OSError:  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             jd_eff = ""
 
     br_eff = str(briefing_text or "").strip()
     if not br_eff:
         try:
             br_eff = default_targeting_briefing_text()
-        except SectionCliConfigError:
+        except SectionCliConfigError:  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             br_eff = ""
 
     jd_hash = sha256_hex64(jd_eff)

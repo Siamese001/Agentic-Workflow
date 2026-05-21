@@ -1,9 +1,18 @@
 {
   "gate_id": "L2_lpg_drift_ratchet",
-  "count": 29,
+  "count": 28,
   "seeded_at": "2026-05-17T11:54:29.726145+00:00",
-  "snapshot": "adg_indexed_05172026_0651.sqlite",
+  "snapshot": "adg_indexed_05212026_0440.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-19T13:37:00.919649+00:00",
-  "last_run_snapshot": "adg_indexed_05192026_0920.sqlite"
+  "last_run_at": "2026-05-21T10:01:46.891527+00:00",
+  "last_run_snapshot": "adg_indexed_05212026_0548.sqlite",
+  "tightened_at": "2026-05-21T08:53:38.456939+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-05-21T08:53:38.456939+00:00",
+      "snapshot": "adg_indexed_05212026_0440.sqlite",
+      "from": 29,
+      "to": 28
+    }
+  ]
 }

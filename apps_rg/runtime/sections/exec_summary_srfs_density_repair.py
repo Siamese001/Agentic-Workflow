@@ -109,15 +109,21 @@ def apply_srfs_density_micro_expansion(
     *,
     selected_facts: list[dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None]:
-    """Deterministic expansion when SRFS density is below target (95 gate; aim 100–110).
-
-    Preserves sentence count and claim_ledger source_fact_ids verbatim.
-    Rewrites inventory/meta S5 before phrase expansion.
-    """
+    """Deterministic SRFS lift: emergency five-sentence finalizer, then legacy micro-expansion."""
     if not isinstance(parsed, dict) or not srfs_x2_mode_active(srfs_integration):
         return parsed, None
 
     facts = list(selected_facts or [])
+    from apps_rg.runtime.sections.exec_summary_srfs_emergency_finalizer import (
+        apply_srfs_emergency_finalizer,
+    )
+
+    finalized, finalizer_receipt = apply_srfs_emergency_finalizer(
+        parsed, srfs_integration, selected_facts=facts
+    )
+    if finalizer_receipt:
+        return finalized, finalizer_receipt
+
     out = copy.deepcopy(parsed)
     before_ids = _collect_source_fact_ids(list(out.get("claim_ledger") or []))
     text = normalize_srfs_credibility_wording(str(out.get("resume_display_text") or ""))

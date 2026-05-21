@@ -462,7 +462,7 @@ class SpineWiringVerifier:
                 try:
                     seq_def = get_sequence_definition(seq_type)
                     found.append((seq_type.value, len(seq_def.touches)))
-                except ValueError:
+                except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                     pass
             
             if len(found) != 3:

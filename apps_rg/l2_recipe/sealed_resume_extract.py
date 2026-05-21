@@ -22,7 +22,7 @@ def generated_resume_from_sealed_l2(sealed: Any) -> dict[str, Any] | None:
     if isinstance(gc, str) and gc.strip():
         try:
             obj = json.loads(gc)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
             return None
         if isinstance(obj, dict):
             return obj

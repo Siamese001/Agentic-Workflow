@@ -84,7 +84,7 @@ class R1BSemanticCacheStore:
             return None
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
+        except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
             return None
         if not isinstance(data, dict):
             return None
@@ -116,7 +116,7 @@ class R1BSemanticCacheStore:
             vals = data.get("values")
             if isinstance(vals, list) and vals:
                 return [float(x) for x in vals]
-        except (json.JSONDecodeError, OSError, TypeError, ValueError):
+        except (json.JSONDecodeError, OSError, TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
         from apps_rg.cache.r1b_intent_vector import pseudo_vector_from_digest
 

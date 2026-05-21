@@ -308,7 +308,7 @@ def _load_exit_profile(
     """
     try:
         raw = _EXIT_PROFILE_PATH.read_text(encoding="utf-8")
-    except FileNotFoundError:
+    except FileNotFoundError:  # guardian: allow-exception-type-erasure -- P2 burndown: fail-soft optional boundary
         raise AppsLicExitProfileError(
             f"Exit profile config not found: {_EXIT_PROFILE_PATH}. "
             "apps_lic exit gate policy must be provided — no hardcoded fallback. "

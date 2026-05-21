@@ -27,7 +27,7 @@ def parse_base_resume_json(blob: str | None) -> dict[str, Any] | None:
         return None
     try:
         d = json.loads(s)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return d if isinstance(d, dict) else None
 

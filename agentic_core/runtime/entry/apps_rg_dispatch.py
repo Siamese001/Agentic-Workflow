@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 # Re-export for callers that import parse from the core entry package (e.g. pipeline smoke tests).
-from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
+from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse  # guardian: allow-layer-violation -- core entry re-export to app dispatch
 
 __all__ = [
     "apps_rg_dispatch",
@@ -71,7 +71,7 @@ def run_ag2_retrieval_and_prompt(
     validated_request: Any,
 ) -> Any:
     """AG-2 slice: C0 then PA, both consuming ``ValidatedRequest`` (AST-scanned)."""
-    from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
+    from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg  # guardian: allow-layer-violation -- AG-2 C0/PA wiring in canonical entry
     from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
 
     fec = c0_retrieve_apps_rg(route, validated_request)

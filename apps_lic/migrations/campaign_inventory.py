@@ -217,7 +217,7 @@ class CampaignInventoryScanner:
                     campaign = self._parse_campaign_file(campaign_file)
                     if campaign:
                         campaigns.append(campaign)
-                except Exception:
+                except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     # Skip corrupted files
                     pass
         
@@ -248,7 +248,7 @@ class CampaignInventoryScanner:
                 has_automation_rules=data.get("has_automation_rules", False),
                 data_size_bytes=path.stat().st_size,
             )
-        except (json.JSONDecodeError, ValueError, KeyError):
+        except (json.JSONDecodeError, ValueError, KeyError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
             return None
 
 

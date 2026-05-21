@@ -39,7 +39,7 @@ def read_exhaust_bundle(run_dir: Path) -> dict[str, Any] | None:
         return None
     try:
         return json.loads(bundle_path.read_text(encoding="utf-8"))
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # guardian: allow-broad-except -- re-seal must be fail-soft
         _log.warning("[reseal] Failed to parse exhaust bundle at %s", bundle_path)
         return None

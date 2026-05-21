@@ -178,7 +178,7 @@ def _load_wizard_input_from_file(input_path: Path) -> dict[str, Any] | None:
         data = json.loads(input_path.read_text(encoding="utf-8"))
         if isinstance(data, dict):
             return data
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     return None
 
@@ -292,13 +292,13 @@ def run_wizard(
             # Clear the file after reading to prevent stale reuse
             try:
                 _input_path.unlink()
-            except OSError:
+            except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
             return file_results
         # Stale/unfilled template — discard and fall through to write+poll.
         try:
             _input_path.unlink()
-        except OSError:
+        except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
         print(f"[wizard] discarded stale/unfilled {_input_path} — re-templating")
 
@@ -349,6 +349,6 @@ def run_wizard(
                 file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
     try:
         _input_path.unlink()
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     return file_results

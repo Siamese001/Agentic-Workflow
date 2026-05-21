@@ -90,7 +90,7 @@ def _call_llm_for_rationale(compiled_prompt: dict[str, Any]) -> tuple[str, str]:
             body = _json.loads(resp.read().decode())
         text = body["choices"][0]["message"]["content"]
         return text, "LLM"
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # guardian: allow-broad-except -- LLM call must never crash the pipeline;
         # verdict + reason codes are already sealed by deterministic L2 stages
         return "", "STUB_LLM_ERROR"

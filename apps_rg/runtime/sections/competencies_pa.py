@@ -138,7 +138,7 @@ def build_competencies_assembly_input(
                 + json.dumps(proj.get("verified_skill_inventory_projection") or {}, ensure_ascii=False)[:4500]
                 + "\nprojection_from_graph=true; source_authority=augmented_skills_graph\n"
             )
-        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             skill_projection_block = (
                 "\nVERIFIED_SKILL_INVENTORY_PROJECTION: BLOCKED — augmented skills graph unavailable\n"
             )

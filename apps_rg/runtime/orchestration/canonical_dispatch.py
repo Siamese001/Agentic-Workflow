@@ -975,19 +975,12 @@ def build_raw_request_for_r4(
 
 
 def _default_artifact_dir(explicit: str) -> Path:
-    if str(explicit).strip():
-        return Path(explicit)
-    here = Path(__file__).resolve()
-    for parent in [here, *here.parents]:
-        if (parent / "pyproject.toml").exists() or (parent / ".git").exists():
-            root = parent
-            break
-    else:
-        root = Path.cwd()
-    rid = uuid.uuid4().hex[:12]
-    out = root / "artifacts" / "apps_rg" / "runs" / f"cli_{rid}"
-    out.mkdir(parents=True, exist_ok=True)
-    return out
+    from apps_rg.runtime.runtime_proof_layout import (
+        allocate_full_resume_artifact_dir,
+        find_repo_root,
+    )
+
+    return allocate_full_resume_artifact_dir(find_repo_root(), explicit)
 
 
 def _augment_integrated_manifest_with_apps_rg_docx(artifact_dir: Path) -> None:
@@ -1008,7 +1001,7 @@ def _augment_integrated_manifest_with_apps_rg_docx(artifact_dir: Path) -> None:
             json.dumps(data, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-    except (OSError, json.JSONDecodeError, TypeError):
+    except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return
 
 
@@ -1031,7 +1024,7 @@ def _augment_r4_run_manifest_for_apps_rg_l2_fault(
         return
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError):
+    except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return
 
     gen_status = "L2_EXECUTION_FAILED"
@@ -1058,7 +1051,7 @@ def _augment_r4_run_manifest_for_apps_rg_l2_fault(
             json.dumps(data, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-    except OSError:
+    except OSError:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return
 
 

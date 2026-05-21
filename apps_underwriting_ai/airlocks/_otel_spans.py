@@ -54,7 +54,7 @@ def emit_airlock_event(span: Any, event_name: str, **attributes: Any) -> None:
     string_attrs = {k: str(v) for k, v in attributes.items()}
     try:
         span.add_event(event_name, attributes=string_attrs)
-    except (AttributeError, TypeError):  # guardian: allow-otel-optional -- span API drift
+    except (AttributeError, TypeError):  # guardian: allow-otel-optional -- span API drift  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
 
 

@@ -6,7 +6,8 @@
     "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py::open_file::539",
     "agentic_core/L2_execution/utils/batch_processor.py::open_file::256",
     "agentic_core/L3_orchestration/exit_eval/v6/sqlite_ledger.py::sqlite3_connect::65",
-    "agentic_core/L3_orchestration/reasoning/engines/hybrid_search_engine.py::chroma_persistent_client::1101",
+    "agentic_core/L3_orchestration/reasoning/engines/hybrid_search_engine.py::chroma_persistent_client::1132",
+    "agentic_core/L3_orchestration/reasoning/engines/hybrid_search_engine.py::chroma_persistent_client::1146",
     "agentic_core/L3_orchestration/reasoning/engines/hybrid_search_engine.py::sqlite3_connect::72",
     "agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py::redis_client::255",
     "agentic_core/L4_state/cache/gptcache_client.py::sqlite3_connect::167",
@@ -24,6 +25,8 @@
     "agentic_core/evaluation/judges/verdict_store.py::sqlite3_connect::96",
     "agentic_core/knowledge/research_cache/cache_store_util.py::open_file::275",
     "agentic_core/runtime/prove_requirements/requirement_extractor.py::open_file::119",
+    "apps_rg/cache/r1b_chroma_read_surface_projection.py::chroma_persistent_client::164",
+    "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py::sqlite3_connect::1609",
     "apps_rg/runtime/bindings/c0_binding.py::chroma_persistent_client::1055",
     "apps_rg/runtime/bindings/c0_binding.py::chroma_persistent_client::1090",
     "apps_rg/runtime/bindings/c0_binding.py::chroma_persistent_client::337",
@@ -294,5 +297,5 @@
     "tools/validate/validate_authority_enforcement.py::chroma_persistent_client::112",
     "tools/validate/validate_authority_enforcement.py::chroma_persistent_client::155"
   ],
-  "count": 292
+  "count": 295
 }

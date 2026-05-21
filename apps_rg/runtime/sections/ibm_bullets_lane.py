@@ -38,7 +38,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass
 
 from apps_rg.runtime.sections.ibm_bullets_pa import compile_ibm_bullets_prompt

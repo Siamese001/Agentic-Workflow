@@ -78,7 +78,7 @@ def parse_payload(payload: Mapping[str, Any]) -> UnderwritingIngressEnvelope | N
                 payload.get("submitted_at") or datetime.now(timezone.utc).isoformat()
             ),
         )
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
 
 

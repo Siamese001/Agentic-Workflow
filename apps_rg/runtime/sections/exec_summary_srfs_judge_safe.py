@@ -7,6 +7,7 @@ without weakening X2/X3 or invoking a second Qwen pass.
 from __future__ import annotations
 
 import copy
+import json
 import re
 from typing import Any
 
@@ -879,12 +880,321 @@ def _sync_claim_row_for_sentence(
             claim_ledger[sentence_index]["source_fact_ids"] = list(source_fact_ids)
 
 
+_SRFS_DENSITY_GATE_MIN = 95
+_CREDENTIAL_MARKERS = (
+    "aws",
+    "certified",
+    "databricks",
+    "fellow",
+    "credentials",
+    "fsa",
+    "society of actuaries",
+)
+
+
+def _resume_word_count(resume_display_text: str) -> int:
+    from apps_rg.runtime.validators.executive_summary_x2 import _resume_word_count as _wc
+
+    return _wc(resume_display_text)
+
+
+def _resume_sentence_count(resume_display_text: str) -> int:
+    return len([s for s in split_sentences(resume_display_text) if str(s).strip()])
+
+
+def _normalize_sentence_for_dup(sentence: str) -> str:
+    return re.sub(r"\s+", " ", str(sentence or "").lower().strip().rstrip("."))
+
+
+def _sentences_substantially_duplicate(a: str, b: str) -> bool:
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    if "regulatory reporting errors by 40" in a and "regulatory reporting errors by 40" in b:
+        return True
+    shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+    if len(shorter) >= 40 and shorter in longer:
+        return True
+    wa = set(re.findall(r"[a-z0-9]+", a))
+    wb = set(re.findall(r"[a-z0-9]+", b))
+    if not wa or not wb:
+        return False
+    inter = len(wa & wb)
+    union = len(wa | wb)
+    return inter / union >= 0.72
+
+
+def duplicate_sentence_or_claim_count(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]] | None,
+) -> int:
+    """Count duplicate sentence pairs and duplicate claim_text rows."""
+    sentences = [
+        _normalize_sentence_for_dup(s) for s in split_sentences(resume_display_text) if str(s).strip()
+    ]
+    dup = 0
+    for i in range(len(sentences)):
+        for j in range(i + 1, len(sentences)):
+            if _sentences_substantially_duplicate(sentences[i], sentences[j]):
+                dup += 1
+    claims: list[str] = []
+    for row in claim_ledger or []:
+        if not isinstance(row, dict):
+            continue
+        ct = _normalize_sentence_for_dup(str(row.get("claim_text") or ""))
+        if ct:
+            claims.append(ct)
+    for i in range(len(claims)):
+        for j in range(i + 1, len(claims)):
+            if _sentences_substantially_duplicate(claims[i], claims[j]):
+                dup += 1
+    return dup
+
+
+def _has_s5_credentials(resume_display_text: str) -> bool:
+    sentences = [s for s in split_sentences(resume_display_text) if str(s).strip()]
+    if not sentences:
+        return False
+    for sent in (sentences[-1], *sentences):
+        sl = sent.lower()
+        if any(marker in sl for marker in _CREDENTIAL_MARKERS):
+            return True
+    return False
+
+
+def _s5_credentials_required(
+    pre_parsed: dict[str, Any],
+    slice_ids: frozenset[str],
+) -> bool:
+    if "fact_certs_001" not in slice_ids:
+        return False
+    if _has_s5_credentials(str(pre_parsed.get("resume_display_text") or "")):
+        return True
+    plan = pre_parsed.get("executive_summary_composition_plan")
+    if not isinstance(plan, dict):
+        return False
+    for bs in plan.get("brushstrokes") or []:
+        if not isinstance(bs, dict):
+            continue
+        if bs.get("brushstroke_id") == "B4_business_role_fit":
+            req = [str(x).strip() for x in (bs.get("required_fact_ids") or []) if str(x).strip()]
+            if "fact_certs_001" in req:
+                return True
+    return False
+
+
+def _brushstroke_coverage(
+    parsed: dict[str, Any],
+    slice_ids: frozenset[str],
+) -> tuple[int, int]:
+    from apps_rg.runtime.sections.executive_summary_composition import _fact_id_base
+
+    plan = parsed.get("executive_summary_composition_plan")
+    if not isinstance(plan, dict):
+        return 0, 0
+    allowed = {_fact_id_base(x) for x in slice_ids}
+    cited: set[str] = set()
+    for row in parsed.get("claim_ledger") or []:
+        if not isinstance(row, dict):
+            continue
+        for fid in row.get("source_fact_ids") or []:
+            cited.add(_fact_id_base(str(fid)))
+    total = 0
+    supported = 0
+    for bs in plan.get("brushstrokes") or []:
+        if not isinstance(bs, dict) or bs.get("support_status") == "SKIPPED":
+            continue
+        total += 1
+        req = [_fact_id_base(str(x)) for x in (bs.get("required_fact_ids") or []) if str(x).strip()]
+        if any(r in cited or r in allowed for r in req):
+            supported += 1
+    return supported, total
+
+
+def collect_monotonic_x2_failed_gates(
+    parsed: dict[str, Any],
+    selected_facts: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None,
+) -> list[str]:
+    """Subset of SRFS X2 gates used for judge-safe repair monotonic acceptance."""
+    from apps_rg.runtime.sections.executive_summary_composition import (
+        check_brushstroke_fact_support,
+        check_dominant_brushstroke_coherence,
+        check_mechanism_inventory_control,
+    )
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        check_srfs_density_word_count,
+        check_srfs_sentence_count_4_5,
+        check_srfs_sentence_responsibility_shape,
+    )
+
+    if not isinstance(parsed, dict) or not srfs_x2_mode_active(srfs_integration):
+        return []
+
+    text = str(parsed.get("resume_display_text") or "")
+    slice_ids = frozenset(
+        str(x).strip()
+        for x in (srfs_integration or {}).get("executive_summary_selected_fact_ids") or []
+        if str(x).strip()
+    )
+    plan = parsed.get("executive_summary_composition_plan")
+    ledger = list(parsed.get("claim_ledger") or [])
+    failed: list[str] = []
+
+    checks: list[tuple[str, tuple[bool, str | None]]] = [
+        (
+            "x2_exec_summary_srfs_density_word_count",
+            check_srfs_density_word_count(text, parsed, srfs_integration),
+        ),
+        (
+            "x2_exec_summary_srfs_sentence_count_4_5",
+            check_srfs_sentence_count_4_5(text, srfs_integration),
+        ),
+        (
+            "x2_exec_summary_srfs_sentence_responsibility_shape",
+            check_srfs_sentence_responsibility_shape(text, srfs_integration),
+        ),
+    ]
+    if isinstance(plan, dict):
+        checks.extend(
+            [
+                (
+                    "x2_exec_summary_dominant_brushstroke_coherence",
+                    check_dominant_brushstroke_coherence(text, plan),
+                ),
+                (
+                    "x2_exec_summary_mechanism_inventory_control",
+                    check_mechanism_inventory_control(text),
+                ),
+                (
+                    "x2_exec_summary_brushstroke_fact_support",
+                    check_brushstroke_fact_support(plan, ledger, slice_ids),
+                ),
+            ]
+        )
+
+    for gate_id, (ok, _reason) in checks:
+        if not ok:
+            failed.append(gate_id)
+    return failed
+
+
+def evaluate_judge_safe_repair_monotonicity(
+    pre_parsed: dict[str, Any],
+    post_parsed: dict[str, Any],
+    selected_facts: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Compare pre/post repair for monotonic X2 and prose-quality constraints."""
+    slice_ids = frozenset(
+        str(x).strip()
+        for x in (srfs_integration or {}).get("executive_summary_selected_fact_ids") or []
+        if str(x).strip()
+    )
+    pre_text = str(pre_parsed.get("resume_display_text") or "")
+    post_text = str(post_parsed.get("resume_display_text") or "")
+    pre_wc = _resume_word_count(pre_text)
+    post_wc = _resume_word_count(post_text)
+    pre_sc = _resume_sentence_count(pre_text)
+    post_sc = _resume_sentence_count(post_text)
+    pre_failed = collect_monotonic_x2_failed_gates(pre_parsed, selected_facts, srfs_integration)
+    post_failed = collect_monotonic_x2_failed_gates(post_parsed, selected_facts, srfs_integration)
+    pre_dup = duplicate_sentence_or_claim_count(pre_text, list(pre_parsed.get("claim_ledger") or []))
+    post_dup = duplicate_sentence_or_claim_count(post_text, list(post_parsed.get("claim_ledger") or []))
+    pre_cov = _brushstroke_coverage(pre_parsed, slice_ids)
+    post_cov = _brushstroke_coverage(post_parsed, slice_ids)
+    s5_required = _s5_credentials_required(pre_parsed, slice_ids)
+    pre_s5 = _has_s5_credentials(pre_text)
+    post_s5 = _has_s5_credentials(post_text)
+
+    rejection_reasons: list[str] = []
+    if pre_wc >= _SRFS_DENSITY_GATE_MIN and post_wc < _SRFS_DENSITY_GATE_MIN:
+        rejection_reasons.append("post_repair_word_count_below_density_gate_min")
+    if post_wc < pre_wc:
+        rejection_reasons.append("word_count_regression")
+    if pre_sc in (4, 5) and post_sc not in (4, 5):
+        rejection_reasons.append("sentence_count_arc_regression")
+    if post_sc < pre_sc:
+        rejection_reasons.append("sentence_count_decreased")
+    if post_dup > pre_dup:
+        rejection_reasons.append("duplicate_sentence_or_claim_introduced")
+    if s5_required and pre_s5 and not post_s5:
+        rejection_reasons.append("s5_credentials_dropped")
+    if post_cov[0] < pre_cov[0]:
+        rejection_reasons.append("brushstroke_coverage_regression")
+    new_failures = sorted(set(post_failed) - set(pre_failed))
+    if new_failures:
+        rejection_reasons.append(f"new_x2_failures:{','.join(new_failures)}")
+
+    unchanged = (
+        pre_text.strip() == post_text.strip()
+        and json.dumps(pre_parsed.get("claim_ledger"), sort_keys=True)
+        == json.dumps(post_parsed.get("claim_ledger"), sort_keys=True)
+    )
+    accepted = not rejection_reasons
+
+    return {
+        "repair_candidate_accepted": accepted,
+        "rejection_reason": "; ".join(rejection_reasons) if rejection_reasons else None,
+        "monotonic_x2_check": {
+            "pre_repair_failed_gates": pre_failed,
+            "post_repair_failed_gates": post_failed,
+            "new_failures": new_failures,
+            "post_failed_subset_of_pre": set(post_failed) <= set(pre_failed),
+        },
+        "pre_repair_word_count": pre_wc,
+        "post_repair_word_count": post_wc,
+        "pre_repair_sentence_count": pre_sc,
+        "post_repair_sentence_count": post_sc,
+        "pre_repair_failed_gates": pre_failed,
+        "post_repair_failed_gates": post_failed,
+        "duplicate_detection_result": {"pre": pre_dup, "post": post_dup},
+        "brushstroke_coverage_before": {"supported": pre_cov[0], "total": pre_cov[1]},
+        "brushstroke_coverage_after": {"supported": post_cov[0], "total": post_cov[1]},
+        "brushstroke_coverage_delta": post_cov[0] - pre_cov[0],
+        "s5_required": s5_required,
+        "pre_had_s5_credentials": pre_s5,
+        "post_had_s5_credentials": post_s5,
+        "chosen_text_source": "repair_candidate" if accepted else "pre_repair",
+        "repair_unchanged": unchanged,
+    }
+
+
 def apply_srfs_judge_safe_repair(
     parsed: dict[str, Any],
     selected_facts: list[dict[str, Any]],
     srfs_integration: dict[str, Any] | None,
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """Tighten resume_display_text and claim_ledger for X1D factual-support alignment.
+
+    Returns (parsed, receipt_meta). Rejects repair candidates that regress monotonic X2 constraints.
+    """
+    if not isinstance(parsed, dict) or not srfs_x2_mode_active(srfs_integration):
+        return parsed, None
+
+    pre = copy.deepcopy(parsed)
+    candidate = _apply_srfs_judge_safe_repair_core(parsed, selected_facts, srfs_integration)
+    meta = evaluate_judge_safe_repair_monotonicity(pre, candidate, selected_facts, srfs_integration)
+    meta["schema"] = "srfs_judge_safe_repair_v2"
+    meta["repaired"] = bool(meta.get("repair_candidate_accepted")) and not meta.get("repair_unchanged")
+    meta["before_resume_display_text"] = pre.get("resume_display_text")
+    meta["after_resume_display_text"] = (
+        candidate.get("resume_display_text")
+        if meta.get("repair_candidate_accepted")
+        else pre.get("resume_display_text")
+    )
+    if meta.get("repair_candidate_accepted"):
+        return candidate, meta
+    return pre, meta
+
+
+def _apply_srfs_judge_safe_repair_core(
+    parsed: dict[str, Any],
+    selected_facts: list[dict[str, Any]],
+    srfs_integration: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Tighten resume_display_text and claim_ledger for X1D factual-support alignment."""
+    """Apply judge-safe sentence rewrites (candidate; caller runs monotonic acceptance)."""
     if not isinstance(parsed, dict) or not srfs_x2_mode_active(srfs_integration):
         return parsed
 

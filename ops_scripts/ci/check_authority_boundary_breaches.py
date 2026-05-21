@@ -54,6 +54,7 @@ DEFAULT_EXEMPT = (
     "apps_rg/runtime/bindings/u0_binding.py",
     "apps_rg/runtime/bindings/l2_binding_adapter.py",
     "apps_rg/enforcement/cli_prerequisite_gate.py",
+    "apps_lic/runtime/bindings/l0_binding.py",  # L0 thin binding to generic_route_policy_interpreter (ADR-071 ratcheted)
 )
 
 

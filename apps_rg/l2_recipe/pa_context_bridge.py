@@ -166,7 +166,7 @@ def build_prompt_assembly_input_from_l2_context(context: dict[str, Any]) -> Prom
                             confidence=1.0,
                             source_tag="company_brief",
                         )
-                except OSError:
+                except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                     pass
 
     rid = str(context.get("request_id") or "").strip() or f"req-{uuid.uuid4().hex[:24]}"

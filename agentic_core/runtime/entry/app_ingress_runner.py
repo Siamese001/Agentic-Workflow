@@ -63,7 +63,7 @@ def _callable_digest(fn: Callable | None) -> str | None:
         name = getattr(fn, "__qualname__", repr(fn))
         try:
             src = "".join(inspect.getsourcelines(fn)[0])
-        except (OSError, TypeError):
+        except (OSError, TypeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             src = "<uninspectable>"
         try:
             ffile = inspect.getfile(fn)

@@ -73,7 +73,7 @@ def build_payload(brief_path: Path, register_path: Path | None) -> ResearchBrief
             rows = json.loads(register_path.read_text(encoding="utf-8"))
             if isinstance(rows, list):
                 source_register = _claims_from_register(rows)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
 
     return ResearchBriefPayload(

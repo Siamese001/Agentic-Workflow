@@ -75,7 +75,7 @@ def _rollup_x2_failed_int(raw: Any) -> int | None:
         return raw
     try:
         return int(str(raw))
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
 
 
@@ -163,7 +163,7 @@ def _load_optional_json(path: Path) -> dict[str, Any] | None:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         return raw if isinstance(raw, dict) else None
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
 
 

@@ -624,29 +624,30 @@ def _extract_guardian_tokens(line: str) -> set[str]:
     STRICT: Requires a non-empty ``-- <justification>`` segment after the
     token. A bare ``# guardian: allow-X`` is rejected — every guardian must
     document *why* the swallow is justified.
+
+    Multiple ``# guardian:`` comments on one physical line are all parsed
+    (common after P2 burndown adds a second token beside an existing one).
     """
     if "guardian:" not in line:
         return set()
     tokens: set[str] = set()
     marker = "guardian:"
-    idx = line.find(marker)
-    if idx < 0:
-        return tokens
-    payload = line[idx + len(marker) :]
-    parts = payload.split()
-    if not parts:
-        return tokens
-    head = parts[0].strip().strip(",;()[]{}")
-    if not (head.startswith("allow-") and head in _CANONICAL_GUARDIAN_TOKENS):
-        return tokens
-    # Require '-- <justification>' — at minimum, '--' followed by >=3 word chars
-    tail = " ".join(parts[1:])
-    if "--" not in tail:
-        return tokens
-    after_dashes = tail.split("--", 1)[1].strip()
-    if len(after_dashes) < 3:
-        return tokens
-    tokens.add(head)
+    start = 0
+    while True:
+        idx = line.find(marker, start)
+        if idx < 0:
+            break
+        payload = line[idx + len(marker) :]
+        parts = payload.split()
+        if parts:
+            head = parts[0].strip().strip(",;()[]{}")
+            if head.startswith("allow-") and head in _CANONICAL_GUARDIAN_TOKENS:
+                tail = " ".join(parts[1:])
+                if "--" in tail:
+                    after_dashes = tail.split("--", 1)[1].strip()
+                    if len(after_dashes) >= 3:
+                        tokens.add(head)
+        start = idx + len(marker)
     return tokens
 
 

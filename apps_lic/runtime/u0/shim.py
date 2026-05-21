@@ -63,7 +63,7 @@ def _envelope_to_raw_dict(envelope: Any) -> dict[str, Any]:
             parsed = json.loads(body_text)
             if isinstance(parsed, dict):
                 return parsed
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
 
     return {}

@@ -536,7 +536,7 @@ def _extract_json_from_text(text: str) -> dict[str, Any] | None:
     # Try direct JSON parse first
     try:
         return json.loads(text)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     
     # Try removing markdown code blocks
@@ -559,7 +559,7 @@ def _extract_json_from_text(text: str) -> dict[str, Any] | None:
         end = text.rfind("}")
         if start != -1 and end != -1 and end > start:
             return json.loads(text[start:end+1])
-    except json.JSONDecodeError:
+    except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     
     return None
@@ -1650,7 +1650,7 @@ def run_llm_judges(
                         output.proof_eligible_judge = False
                         output.fallback_used = True
             outputs.append(output)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # Catch any unexpected errors and mark as blocked
             outputs.append(_make_blocked_output(
                 key, input_hash, "BLOCKED_PROVIDER_UNAVAILABLE",

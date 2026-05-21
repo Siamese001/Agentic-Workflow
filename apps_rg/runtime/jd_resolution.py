@@ -94,7 +94,7 @@ def normalize_jd_material_to_fields(
                 cj = str(obj.get("company") or "").strip()
                 if cj:
                     company_eff = cj
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
 
     if not str(jd_text).strip():

@@ -5,7 +5,7 @@ from __future__ import annotations
 from apps_rg.runtime.sections.exec_summary_srfs_judge_safe import (
     _sentence_s1_s2_capability_redundant,
     _sentence_s3_has_unsupported_embellishment,
-    apply_srfs_judge_safe_repair,
+    _apply_srfs_judge_safe_repair_core,
     build_fact_tight_s2_sentence,
     build_fact_tight_s3_sentence,
     build_fact_tight_s4_sentence,
@@ -114,7 +114,7 @@ def test_repair_preserves_platform_004_cycle_metric_in_s4() -> None:
         ],
     }
 
-    out = apply_srfs_judge_safe_repair(parsed, facts, srfs)
+    out = _apply_srfs_judge_safe_repair_core(parsed, facts, srfs)
     text = out["resume_display_text"].lower()
     assert "six months" in text or "6 months" in text
     assert "three weeks" in text or "3 weeks" in text
@@ -163,7 +163,7 @@ def test_s1_s2_not_duplicate_capability_stack_after_repair() -> None:
         ),
         "claim_ledger": [{"claim_text": f"s{i}", "source_fact_ids": []} for i in range(5)],
     }
-    out = apply_srfs_judge_safe_repair(parsed, facts, srfs)
+    out = _apply_srfs_judge_safe_repair_core(parsed, facts, srfs)
     parts = [p.strip() for p in out["resume_display_text"].split(".") if p.strip()]
     assert len(parts) >= 2
     s2_out = parts[1].lower()
@@ -190,7 +190,7 @@ def test_claim_ledger_source_fact_ids_stay_in_srfs_slice() -> None:
             {"claim_text": "e", "source_fact_ids": ["fact_certs_001"]},
         ],
     }
-    out = apply_srfs_judge_safe_repair(parsed, facts, srfs)
+    out = _apply_srfs_judge_safe_repair_core(parsed, facts, srfs)
     for row in out.get("claim_ledger") or []:
         for fid in row.get("source_fact_ids") or []:
             base = str(fid).split("_metric_", 1)[0]
@@ -257,7 +257,7 @@ def test_repair_splits_combined_platform_004_across_s3_and_s4() -> None:
         ),
         "claim_ledger": [{"claim_text": f"s{i}", "source_fact_ids": []} for i in range(5)],
     }
-    out = apply_srfs_judge_safe_repair(parsed, facts, srfs)
+    out = _apply_srfs_judge_safe_repair_core(parsed, facts, srfs)
     parts = [p.strip() for p in out["resume_display_text"].split(".") if p.strip()]
     assert len(parts) >= 4
     assert "40%" in parts[1]
@@ -294,7 +294,7 @@ def test_four_sentence_srfs_s3_and_s4_use_distinct_indices() -> None:
         ),
         "claim_ledger": [{"claim_text": f"s{i}", "source_fact_ids": []} for i in range(4)],
     }
-    out = apply_srfs_judge_safe_repair(parsed, facts, srfs)
+    out = _apply_srfs_judge_safe_repair_core(parsed, facts, srfs)
     parts = [p.strip() for p in out["resume_display_text"].split(".") if p.strip()]
     assert len(parts) == 4
     s3_low, s4_low = parts[2].lower(), parts[3].lower()

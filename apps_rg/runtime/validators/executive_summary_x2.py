@@ -137,12 +137,17 @@ INDUSTRY_DOMAIN_CLAIMS = [
 # Allowed top-level fields in model output
 ALLOWED_TOP_LEVEL_FIELDS = {
     "resume_display_text",
+    "executive_summary_text",
     "selected_fact_plan",
     "claim_ledger",
     "jd_alignment",
     "gap_notes",
     "change_log",
     "self_check",
+    "sentence_map",
+    "brushstroke_map",
+    "graph_skill_refs",
+    "executive_summary_composition_plan",
     "text_claim_coverage",
     "source_sensitive_phrase_ledger",
     "input_payload_hash",
@@ -1107,67 +1112,29 @@ def check_srfs_sentence_responsibility_shape(
     resume_display_text: str,
     srfs_integration: dict[str, Any] | None,
 ) -> tuple[bool, str | None]:
-    """SRFS only: five-part structural roles (thesis / mechanism / lifecycle / outcomes / cred)."""
-    if not _srfs_mode_active(srfs_integration):
-        return True, "skipped_no_selected_role_fact_set"
-    sentences = [s.strip() for s in split_sentences(resume_display_text) if str(s).strip()]
-    n = len(sentences)
-    if n not in (4, 5):
-        return (
-            False,
-            f"x2_exec_summary_srfs_sentence_responsibility_shape requires 4 or 5 sentences; found {n}",
-        )
-    s1 = sentences[0]
-    s1l = s1.lower()
+    """SRFS five-part arc with graph-backed painting-plan S1 (dominant brushstroke, not rigid term ban)."""
+    from apps_rg.runtime.sections.executive_summary_composition import (
+        check_srfs_sentence_responsibility_shape_painting,
+    )
 
-    # Sentence 1: thesis-only (no mechanism connectors, no listed stack nouns, no digits/$/%)
-    for phrase in _SRFS_S1_CONNECTOR_PHRASES:
-        if phrase in s1l:
-            return False, f"S1 thesis-only: forbidden connector phrase {phrase!r}"
-    for w in _SRFS_S1_CONNECTOR_WORDS:
-        if re.search(rf"\b{re.escape(w)}\b", s1l):
-            return False, f"S1 thesis-only: forbidden connector token {w!r}"
-    if re.search(r"\busing\b", s1l):
-        return False, "S1 thesis-only: forbidden connector token 'using'"
-    if re.search(r"\bby\b", s1l):
-        return False, "S1 thesis-only: forbidden token 'by' (mechanism/outcome bridge)"
-    for term in _SRFS_S1_MECHANISM_TERMS:
-        if term in s1l:
-            return False, f"S1 thesis-only: forbidden mechanism term {term!r}"
-    if re.search(r"[\d$%]", s1):
-        return False, "S1 thesis-only: numeric or $/% tokens forbidden"
-
-    bad2 = _srfs_lane_no_commercial_org_cred(sentences[1], "S2 mechanism-only")
-    if bad2:
-        return False, bad2
-
-    bad3 = _srfs_lane_no_commercial_org_cred(sentences[2], "S3 lifecycle bridge")
-    if bad3:
-        return False, bad3
-
-    if n == 5:
-        bad4 = _srfs_outcomes_sentence_opener_ok(sentences[3])
-        if bad4:
-            return False, bad4
-        bad5 = _srfs_credibility_sentence_opener_ok(sentences[4])
-        if bad5:
-            return False, bad5
-    else:
-        # Four sentences: outcomes + credibility merged in final sentence.
-        bad4 = _srfs_outcomes_sentence_opener_ok(sentences[3])
-        if bad4:
-            return False, bad4
-        tl = sentences[3].strip().lower()
-        if tl.startswith("holds certifications") or tl.startswith("credentials"):
-            return False, "S4 combined must not start with Holds certifications or Credentials"
-
-    return True, "ok"
+    return check_srfs_sentence_responsibility_shape_painting(resume_display_text, srfs_integration)
 
 
 def _srfs_mode_active(srfs_integration: dict[str, Any] | None) -> bool:
     if not isinstance(srfs_integration, dict):
         return False
     return bool(str(srfs_integration.get("artifact_path_resolved") or "").strip())
+
+
+def _exec_summary_painting_mode_active(
+    srfs_integration: dict[str, Any] | None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+) -> bool:
+    if _srfs_mode_active(srfs_integration):
+        return True
+    if isinstance(proof_pool_metadata, dict) and proof_pool_metadata.get("graph_skills_proof_pool"):
+        return True
+    return False
 
 
 def _claim_row_uses_resume_fact_id(fid: str) -> bool:
@@ -1399,12 +1366,85 @@ def run_x2_gates(
         srfs_shape_ok,
         srfs_shape_reason or "ok",
         (
-            "srfs_thesis_mechanism_lifecycle_outcomes_credibility"
+            "srfs_painting_plan_five_part_arc"
             if srfs_shape_ok
             else "srfs_five_part_boundaries"
         ),
         srfs_shape_reason,
     )
+    if _exec_summary_painting_mode_active(srfs_integration, proof_pool_metadata):
+        from apps_rg.runtime.sections.executive_summary_composition import (
+            check_brushstroke_fact_support,
+            check_composition_plan_present,
+            check_dominant_brushstroke_coherence,
+            check_graph_skill_coverage,
+            check_human_exec_voice,
+            check_mechanism_inventory_control,
+            check_no_jd_keyword_stuffing_exec,
+            resolve_composition_plan,
+        )
+
+        comp_plan = resolve_composition_plan(parsed_output, artifacts_dir=artifacts_dir)
+        plan_ok, plan_reason = check_composition_plan_present(
+            parsed_output,
+            artifacts_dir=artifacts_dir,
+            srfs_integration={"artifact_path_resolved": "painting_mode"},
+        )
+        add(
+            "x2_exec_summary_composition_plan_present",
+            plan_ok,
+            plan_reason or "ok",
+            "executive_summary_composition_plan.json",
+            plan_reason,
+        )
+        bs_ok, bs_reason = check_brushstroke_fact_support(comp_plan, claim_ledger, allowed_fact_ids)
+        add(
+            "x2_exec_summary_brushstroke_fact_support",
+            bs_ok,
+            bs_reason or "ok",
+            "brushstrokes_cite_allowed_facts",
+            bs_reason,
+        )
+        gs_ok, gs_reason = check_graph_skill_coverage(comp_plan, parsed_output)
+        add(
+            "x2_exec_summary_graph_skill_coverage",
+            gs_ok,
+            gs_reason or "ok",
+            "graph_skill_refs_when_claimed",
+            gs_reason,
+        )
+        dom_ok, dom_reason = check_dominant_brushstroke_coherence(resume_display_text, comp_plan)
+        add(
+            "x2_exec_summary_dominant_brushstroke_coherence",
+            dom_ok,
+            dom_reason or "ok",
+            "thesis_led_not_mechanism_inventory",
+            dom_reason,
+        )
+        inv_ok, inv_reason = check_mechanism_inventory_control(resume_display_text)
+        add(
+            "x2_exec_summary_mechanism_inventory_control",
+            inv_ok,
+            inv_reason or "ok",
+            "no_mechanism_dump",
+            inv_reason,
+        )
+        voice_ok, voice_reason = check_human_exec_voice(resume_display_text)
+        add(
+            "x2_exec_summary_human_exec_voice",
+            voice_ok,
+            voice_reason or "ok",
+            "credible_exec_prose",
+            voice_reason,
+        )
+        jd_stuff_ok, jd_stuff_reason = check_no_jd_keyword_stuffing_exec(resume_display_text, jd_text)
+        add(
+            "x2_exec_summary_no_jd_keyword_stuffing",
+            jd_stuff_ok,
+            jd_stuff_reason or "ok",
+            "no_jd_mirror_stuffing",
+            jd_stuff_reason,
+        )
     srfs_density_ok, srfs_density_reason = check_srfs_density_word_count(
         resume_display_text, parsed_output, srfs_integration
     )

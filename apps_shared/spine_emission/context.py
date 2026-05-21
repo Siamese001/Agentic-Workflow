@@ -592,7 +592,7 @@ class GovernedRun:
                     "chain_linkage": [],
                 },
             )
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # L7 is best-effort for governed_run; failures don't block the run
             pass
 

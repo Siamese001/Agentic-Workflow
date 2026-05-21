@@ -191,7 +191,7 @@ def apps_rg_dispatch(envelope: Any) -> SimpleNamespace:
                 artifact_dir=app_payload.get("output_directory", ""),
             )
         return _as_dispatch_view(raw if isinstance(raw, dict) else {"exit_status": "error"})
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return _as_dispatch_view(
             {
                 "exit_status": "error",

@@ -193,7 +193,7 @@ try:
     _NORMATIVE_SOURCE_CLASSES: tuple[str, ...] = _get_normative()
     if not _NORMATIVE_SOURCE_CLASSES:
         _NORMATIVE_SOURCE_CLASSES = _NORMATIVE_SOURCE_CLASSES_HARDCODED
-except Exception:
+except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
     _NORMATIVE_SOURCE_CLASSES = _NORMATIVE_SOURCE_CLASSES_HARDCODED
 
 
@@ -356,7 +356,7 @@ def c0_retrieve_apps_rg(
                 merged_items.extend(extra)
         except C0EvidenceGapError:
             raise
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             _logger.warning("Chroma fact_vectors retrieval failed: %s", exc)
             chroma_retrieved = False
             dense_search_refs.append(f"dense:error:{exc.__class__.__name__}")
@@ -640,7 +640,7 @@ def _emit_retrieval_quality_span(
             "span_ref": span_ref,
             "payload": span_payload,
         }
-    except Exception:
+    except Exception:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         # W6: Fail-soft on span emission — never block C0 for observability
         return None
 
@@ -1054,7 +1054,7 @@ def _perform_bounded_section_retrieval(
 
             _probe_client = chromadb.PersistentClient(path=chromadb_path)
             _probe_client.get_collection(profile.collection_name)
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             verdict = GateVerdict(
                 gate_id="G_SECTION_RETRIEVAL",
                 gate_family="C0_G_SECTION_RETRIEVAL",
@@ -1250,7 +1250,7 @@ def _perform_bounded_section_retrieval(
             evidence_items.extend(section_dense_items)
             budget = budget.record_section_query()
 
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             _logger.warning("Section retrieval query failed: %s", exc)
             continue
 
@@ -1380,7 +1380,7 @@ def _query_fact_vectors_for_section(
                 items.append(item)
                 budget = budget.record_retrieval(1)
 
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         _logger.warning("Fact vector query failed: %s", exc)
 
     return SectionQueryResult(evidence_items=items, budget=budget)

@@ -101,7 +101,7 @@ class IndexRefreshReceipt:
 def _load_durable_bundle(path: Path) -> dict[str, Any] | None:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return data if isinstance(data, dict) else None
 
@@ -203,7 +203,7 @@ def load_derived_index_entry(
         return None
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return data if isinstance(data, dict) else None
 

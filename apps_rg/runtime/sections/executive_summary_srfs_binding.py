@@ -69,7 +69,7 @@ def _load_manifest(manifest_path: Path) -> dict[str, Any] | None:
         return None
     try:
         doc = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return doc if isinstance(doc, dict) else None
 

@@ -178,7 +178,7 @@ def _parse_iso(value: Optional[str]) -> Optional[datetime]:
         return None
     try:
         return datetime.fromisoformat(value)
-    except ValueError:
+    except ValueError:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
 
 

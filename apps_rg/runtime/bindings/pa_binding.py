@@ -97,7 +97,7 @@ def _load_pa_prompt_profile(profile_path: Optional[str] = None) -> dict[str, Any
         )
         with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         data = {}
     _PA_PROFILE_CACHE[key] = data
     return data

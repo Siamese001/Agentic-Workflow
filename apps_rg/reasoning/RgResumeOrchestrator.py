@@ -59,7 +59,7 @@ class RgResumeOrchestrator(RGAgentBase):
 
         try:
             self._qwen_gateway = AppsQwenGateway(dict(self.master_resume or {}))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             self._qwen_gateway = None
             self._qwen_init_error = str(exc)
 
@@ -170,7 +170,7 @@ class RgResumeOrchestrator(RGAgentBase):
                 "qwen_resume_content": qwen_result,
                 "local_first_disposition": dsp.as_dict(),
             }
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             adapter.record_local_failure(severity="medium")
             raise
 

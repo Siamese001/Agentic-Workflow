@@ -285,7 +285,7 @@ class CoordinationTouchIntegration:
                 touch_state="cancelled",
             )
             self._state_adapter.write_touch_state(state_request)
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             pass  # Best effort state update
         
         return unscheduled
@@ -360,7 +360,7 @@ class CoordinationTouchSpineIntegration:
                 "error": None,
             }
         
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return {
                 "status": "error",
                 "integration": None,

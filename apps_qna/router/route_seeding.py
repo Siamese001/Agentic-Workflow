@@ -277,7 +277,7 @@ def seed_likely_questions_from_research(
             if llm_pick:
                 accepted.append(llm_pick)
                 _log.info("route seeding: LLM fallback picked %s", llm_pick)
-        except (ImportError, RuntimeError, ValueError) as exc:
+        except (ImportError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary
             _log.debug("intent classifier fallback failed: %r", exc)
 
     # Fill remaining slots from the fallback order (preserving registry

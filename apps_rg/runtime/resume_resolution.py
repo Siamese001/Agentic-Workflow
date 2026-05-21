@@ -62,7 +62,7 @@ def build_canonical_resume_payload(raw: str) -> dict[str, Any]:
             obj = json.loads(s)
             if isinstance(obj, dict):
                 return {"material_kind": "json", "document": obj}
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return {"material_kind": "plain", "text": s}
 

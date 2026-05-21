@@ -175,7 +175,7 @@ def run_docx_render_x2_gates(
     if docx_output_path.is_file() and Document is not None:
         try:
             hay = _doc_plaintext(docx_output_path)
-        except (OSError, RuntimeError, ValueError):
+        except (OSError, RuntimeError, ValueError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             hay = ""
 
     id_ok, id_fail, id_obs = candidate_identity_docx_verdict(hay, final_resume_blob.get("candidate_identity"))

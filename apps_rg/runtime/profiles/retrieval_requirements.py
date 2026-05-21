@@ -43,7 +43,7 @@ def load_retrieval_requirements_profile() -> dict:
     """
     try:
         return yaml.safe_load(_PROFILE_PATH.read_text(encoding="utf-8")) or {}
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return {}
 
 
@@ -62,7 +62,7 @@ def get_normative_source_classes() -> tuple[str, ...]:
         data = yaml.safe_load(_PROFILE_PATH.read_text(encoding="utf-8"))
         classes = data.get("normative_source_classes") or data.get("required_source_classes", [])
         return tuple(str(c) for c in classes)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return _FALLBACK_SOURCE_CLASSES
 
 
@@ -72,7 +72,7 @@ def get_required_source_classes() -> tuple[str, ...]:
         data = yaml.safe_load(_PROFILE_PATH.read_text(encoding="utf-8"))
         classes = data.get("required_source_classes", [])
         return tuple(str(c) for c in classes)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return _FALLBACK_SOURCE_CLASSES
 
 
@@ -81,5 +81,5 @@ def get_briefing_modes() -> tuple[str, ...]:
     try:
         data = yaml.safe_load(_PROFILE_PATH.read_text(encoding="utf-8"))
         return tuple(str(m) for m in data.get("briefing_modes", []))
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         return ("UPLOADED_BRIEFING", "DELEGATED_APPS_RESEARCH", "NATIVE_C0", "NONE")

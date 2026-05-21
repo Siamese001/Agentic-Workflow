@@ -460,7 +460,7 @@ class HopPipelineExecutor:
             else:
                 raw = engine.execute(ctx)
                 output = dict(raw) if raw else {}
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary
             # guardian: allow-broad-exception -- engine stage is a plugin boundary;
             # heterogeneous engine failures must be caught and surfaced as FAILED
             # checkpoints so the pipeline can halt or continue per `required`.

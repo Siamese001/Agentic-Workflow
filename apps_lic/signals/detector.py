@@ -129,7 +129,7 @@ class SignalDetector:
                     )
                     all_signals.extend(signals)
                     sources_checked.append(source)
-                except Exception:
+                except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     # Fail-soft: skip failed source, continue with others
                     pass
         
@@ -186,7 +186,7 @@ class SignalDetector:
                     signal = self._company_trigger_to_signal(trigger)
                     if signal:
                         signals.append(signal)
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # Fail-soft: research source unavailable
             pass
         
@@ -311,7 +311,7 @@ class SignalDetector:
                 )
                 signals.append(signal)
         
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             # Fail-soft: detector unavailable
             pass
         

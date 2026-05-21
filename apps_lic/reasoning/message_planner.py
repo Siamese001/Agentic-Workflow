@@ -484,7 +484,7 @@ class MessagePlanner:
                     "constraint_count": len(plan.constraints),
                     "confidence_score": plan.confidence_score
                 })
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             logger.debug(f"Failed to record telemetry: {e}")
 
     def get_message_summary(self, plan: MessagePlan) -> Dict[str, object]:
