@@ -1,15 +1,15 @@
 # Sections PA Core-Law — Post-Rollout Compile Baseline (W6.2)
 
-**Generated:** 20260522_102612 (UTC)
+**Generated:** 20260522_102711 (UTC)
 
 ## W0 vs post-rollout compiled tokens (compile-only, Brown targeting)
 
-| section | static_ssot_chars | compiled_tokens | static_slots_tokens | product_shape_tokens | NO FABRICATION | claim_ledger | x2_static | x2_product_shape | priority |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| headline |  |  |  |  |  |  |  |  |  |
-| competencies |  |  |  |  |  |  |  |  |  |
-| unify_bullets |  |  |  |  |  |  |  |  |  |
-| unify_narrative |  |  |  |  |  |  |  |  |  |
-| ibm_bullets |  |  |  |  |  |  |  |  |  |
-| ibm_narrative |  |  |  |  |  |  |  |  |  |
+| section | w0_compiled_tokens | post_compiled_tokens | delta_tokens | product_shape_present |
+| --- | --- | --- | --- | --- |
+| headline | 14911 | 12248 | 2663 | True |
+| competencies | 14899 | 14729 | 170 | True |
+| unify_bullets | 11564 | 10912 | 652 | True |
+| unify_narrative | 12968 | 11868 | 1100 | True |
+| ibm_bullets | 10482 | 10368 | 114 | True |
+| ibm_narrative | 14931 | 14670 | 261 | True |
 

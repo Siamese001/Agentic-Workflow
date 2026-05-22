@@ -75,6 +75,20 @@ def _run_inner() -> int:
     out_json = _REPO / "docs/reports/apps_rg/sections_pa_core_law_rollout_w6_post_baseline.json"
     out_md = _REPO / "docs/reports/apps_rg/sections_pa_core_law_rollout_w6_post_baseline.md"
     out_json.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    def _cmp_table(data: list[dict]) -> str:
+        headers = [
+            "section",
+            "w0_compiled_tokens",
+            "post_compiled_tokens",
+            "delta_tokens",
+            "product_shape_present",
+        ]
+        out = ["| " + " | ".join(headers) + " |", "| " + " | ".join(["---"] * len(headers)) + " |"]
+        for r in data:
+            out.append("| " + " | ".join(str(r.get(h, "")) for h in headers) + " |")
+        return "\n".join(out) + "\n"
+
     lines = [
         "# Sections PA Core-Law — Post-Rollout Compile Baseline (W6.2)",
         "",
@@ -82,7 +96,7 @@ def _run_inner() -> int:
         "",
         "## W0 vs post-rollout compiled tokens (compile-only, Brown targeting)",
         "",
-        _markdown_table(rows),
+        _cmp_table(rows),
         "",
     ]
     out_md.write_text("\n".join(lines), encoding="utf-8")
