@@ -83,7 +83,8 @@ def test_native_c03_requires_route_and_acl_fields() -> None:
     assert doc["source_lineage_refs"]
     assert doc["support_status"] == "SUPPORTED"
     assert doc["binding_classification"] == BINDING_CLASSIFICATION_FULL_C03
-    assert doc["canonical_c0_3_claimed"] is True
+    assert doc["apps_rg_c03_skills_graph_used"] is True
+    assert doc["canonical_c0_3_claimed"] is False
     assert doc["fec_shape_only"] is False
     ok, missing = validate_native_c03_contract(doc)
     assert ok, missing
@@ -233,7 +234,9 @@ def test_product_proof_rejects_section_local_binding_claim(tmp_path: Path) -> No
 def test_product_proof_rejects_fec_shape_full_c03_claim(tmp_path: Path) -> None:
     snap = {
         "fec_shape_only": True,
-        "canonical_c0_3_claimed": True,
+        "apps_rg_c03_skills_graph_used": True,
+        "core_c03_graph_rag_used": False,
+        "canonical_c0_3_claimed": False,
         "binding_classification": "FEC_SHAPE_ONLY_NOT_C0_3",
     }
     (tmp_path / "final_evidence_contract_snapshot.json").write_text(
@@ -247,7 +250,9 @@ def test_product_proof_rejects_fec_shape_full_c03_claim(tmp_path: Path) -> None:
 def test_product_proof_blocks_false_full_c03_without_route_acl(tmp_path: Path) -> None:
     fake = {
         "binding_classification": BINDING_CLASSIFICATION_FULL_C03,
-        "canonical_c0_3_claimed": True,
+        "apps_rg_c03_skills_graph_used": True,
+        "core_c03_graph_rag_used": False,
+        "canonical_c0_3_claimed": False,
         "route_bound": False,
         "acl_bound": False,
     }
@@ -267,9 +272,7 @@ def test_first_wave_sections_in_matrix(section_id: str) -> None:
     assert SECTION_NATIVE_C03_EXPANSION_MATRIX[section_id]["native_c03_enabled"] is True
 
 
-def test_executive_summary_resolve_emits_native_c03_when_front_spine(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_executive_summary_merge_emits_native_c03_when_front_spine() -> None:
     from apps_rg.runtime.section_front_spine_bridge import SectionFrontSpineBridge
 
     repo = Path(__file__).resolve().parents[3]
@@ -280,38 +283,22 @@ def test_executive_summary_resolve_emits_native_c03_when_front_spine(
         route=_route_spine(),
         product_visible=True,
     )
-
-    def _fake_srfs(*args, **kwargs):
-        plan = {
-            "section_id": "executive_summary",
-            "facts": [{"fact_id": "fact_a", "claim_text": "Led platform."}],
-        }
-        meta = {"proof_pool_type": "selected_role_fact_set"}
-        return plan, ["fact_a"], {"fact_a"}, meta
-
-    monkeypatch.setattr(
-        "apps_rg.runtime.proof_pool_resolver.resolve_srfs_section_proof_bundle",
-        _fake_srfs,
-    )
-    monkeypatch.setattr(
-        "apps_rg.runtime.proof_pool_resolver.resolve_augmented_skills_graph_authority",
-        lambda **k: {
-            "skills_authority_status": "PASS",
-            "graph_ref": "apps_rg/fact_inventory/graph.json",
-            "graph_digest": "deadbeef",
-        },
-    )
+    meta_in = {"graph_ref": "apps_rg/fact_inventory/graph.json", "graph_digest": "deadbeef"}
     with patch(
         "apps_rg.fact_inventory.augmented_skills_graph.load_augmented_skills_graph",
         return_value=_minimal_graph(),
     ):
-        pool = resolve_section_proof_pool(
-            section="executive_summary",
-            selected_role_fact_set_path="artifacts/fake/srfs.json",
+        merged = merge_native_c03_into_proof_pool_metadata(
+            meta_in,
+            section_id="executive_summary",
             front_spine=front,
-            repo_root=repo,
+            graph=_minimal_graph(),
+            graph_ref="apps_rg/fact_inventory/graph.json",
+            graph_digest="deadbeef",
+            selected_fact_ids=["fact_a"],
+            product_visible=True,
         )
-    meta = pool.proof_pool_metadata or {}
+    meta = merged
     assert meta.get("native_c03_status") == "EMITTED"
     assert meta.get("c03_binding_classification") == BINDING_CLASSIFICATION_FULL_C03
     native = meta.get("native_c03_final_evidence")

@@ -39,11 +39,10 @@ _logger = logging.getLogger(__name__)
 
 SCHEMA_VERSION: str = "c0_metrics.v1"
 
-# Default apps_rg support target (driven by profile)
-_DEFAULT_SUPPORT_TARGET = SupportTarget.from_prefix_list(
-    ["jd_payload", "resume_payload"],
-    label="apps_rg_default",
-)
+from apps_rg.runtime.c0.c0_section_authority import proof_support_target
+
+# Proof-authority targets only (JD/resume/briefing are non-proof context).
+_DEFAULT_SUPPORT_TARGET = proof_support_target()
 
 # Statuses that W3 coerces to UNKNOWN before writing (PARTIAL is not canonical)
 _COERCE_TO_UNKNOWN: frozenset[str] = frozenset({"PARTIAL", "WEAK"})

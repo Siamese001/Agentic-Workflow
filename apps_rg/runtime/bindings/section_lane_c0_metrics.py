@@ -25,6 +25,7 @@ from apps_rg.runtime.bindings.c0_metrics_writer import (
     SCHEMA_VERSION,
     build_c0_metrics,
 )
+from apps_rg.runtime.c0.c0_section_authority import proof_support_target
 from apps_rg.runtime.bindings.c0_minimum_safety import is_c0_minimum_safe
 from apps_rg.runtime.c0_mandatory_policy import is_c03_mandatory_section
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
@@ -229,6 +230,7 @@ def emit_section_lane_c0_metrics(
         run_id=run_id,
         route_id=_resolve_route_id(artifact_dir),
         briefing_decision=briefing_decision,
+        support_target=proof_support_target(),
     )
     path = artifact_dir / C0_METRICS_FILENAME
     try:

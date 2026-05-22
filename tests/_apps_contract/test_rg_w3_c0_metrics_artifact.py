@@ -277,26 +277,26 @@ class TestRetrievalModes:
 class TestSupportTargetMet:
     """support_target_met computed from profile-driven prefixes, not hardcoded."""
 
-    def test_both_prefixes_present_true(self):
+    def test_proof_prefixes_present_true(self):
         fec = _make_fec(
-            sources=("jd_payload:jd_text", "resume_payload:resume_text"),
+            sources=(
+                "fact:allowed_1",
+                "ledger:candidate_fact_ledger",
+                "proof_pool:section_pool",
+                "srfs:bundle_ref",
+            ),
             support_target_met=True,
         )
         result = build_c0_metrics(fec=fec, run_id="r", route_id="R0")
         assert result["support_target_met"] is True
 
-    def test_missing_resume_false(self):
-        fec = _make_fec(
-            sources=("jd_payload:jd_text",),
-            support_target_met=False,
-            support_status="WEAK_WITH_CAVEATS",
-        )
+    def test_missing_ledger_prefix_false(self):
         fec_stripped = FinalEvidenceContract(
             request_id="r", run_id="r", app_id="apps_rg", trace_id="r",
             evidence_items=(
-                EvidenceItem(source="jd_payload:jd_text", content="JD"),
+                EvidenceItem(source="fact:allowed_1", content="proof fact"),
             ),
-            retrieval_sources=("jd_payload:jd_text",),
+            retrieval_sources=("fact:allowed_1",),
             support_target_met=False,
             support_status="WEAK_WITH_CAVEATS",
             l5_certification_ref=APPS_RG_C0_CERT_REF,

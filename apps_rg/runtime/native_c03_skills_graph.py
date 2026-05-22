@@ -240,8 +240,10 @@ def validate_native_c03_contract(doc: Mapping[str, Any] | None) -> tuple[bool, t
         missing.append("support_status")
     if str(doc.get("binding_classification") or "") != BINDING_CLASSIFICATION_FULL_C03:
         missing.append("binding_classification")
-    if not doc.get("canonical_c0_3_claimed"):
-        missing.append("canonical_c0_3_claimed")
+    if not doc.get("apps_rg_c03_skills_graph_used"):
+        missing.append("apps_rg_c03_skills_graph_used")
+    if doc.get("canonical_c0_3_claimed"):
+        missing.append("canonical_c0_3_claimed_must_be_false_without_core_graphrag")
     return (not missing, tuple(missing))
 
 
@@ -361,7 +363,9 @@ def build_native_c03_final_evidence(
         "graph_digest": graph_digest,
         "graph_sig": _sha256_hex(f"{graph_digest}:{','.join(sorted(fact_allowed))}")[:32],
         "graph_expansion_refs": graph_expansion_refs,
-        "canonical_c0_3_claimed": True,
+        "apps_rg_c03_skills_graph_used": True,
+        "core_c03_graph_rag_used": False,
+        "canonical_c0_3_claimed": False,
         "binding_classification": BINDING_CLASSIFICATION_FULL_C03,
         "binding_kind": "native_c03_skills_graph",
         "fec_shape_only": False,

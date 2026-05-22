@@ -218,12 +218,17 @@ def expand_c03_graph_bindings(
     link_direct = sum(
         1 for b in bindings if b.get("binding_source") == "skill_fact_links"
     )
+    from apps_rg.runtime.c0.c0_section_authority import c03_skills_graph_receipt_flags
+
+    flags = c03_skills_graph_receipt_flags(core_graph_rag_ran=False)
     return {
-        "schema_version": "c03_graph_expansion_v1",
+        "schema_version": "c03_skills_graph_v1",
+        "step_id": "C0.3_skills_graph",
         "section_id": section_id,
         "role_family_key": role_family_key,
         "binding_mode": binding_mode,
         "bindings": bindings,
+        **flags,
         "binding_metrics": {
             "atom_count": len(bindings),
             "direct_support_count": direct,

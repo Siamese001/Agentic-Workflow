@@ -234,17 +234,86 @@ def test_c07_flags_adjacency_as_proof_violation() -> None:
                 "claim_support_allowed": True,
             }
         ],
+        allowed_fact_ids=["f1"],
     )
     assert c07["handoff_safe"] is False
     assert any("adjacency_as_proof" in v for v in c07["violations"])
 
 
-def test_section_c0_room_enabled_for_competencies() -> None:
-    from apps_rg.runtime.c0.evidence_room import section_c0_evidence_room_enabled
+def test_resolve_spine_chroma_enrich_defaults_false() -> None:
+    from apps_rg.runtime.c0.c0_section_authority import resolve_spine_chroma_enrich
 
-    assert section_c0_evidence_room_enabled("competencies")
-    assert section_c0_evidence_room_enabled("executive_summary")
-    assert not section_c0_evidence_room_enabled("headline")
+    assert resolve_spine_chroma_enrich() is False
+    assert resolve_spine_chroma_enrich(merge_canonical_c0=None) is False
+
+
+def test_c05_default_does_not_call_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
+    from apps_rg.runtime.c0 import c05_fec_packet as c05_mod
+
+    called: list[int] = []
+
+    def _boom(*_a: object, **_k: object) -> None:
+        called.append(1)
+        raise AssertionError("c0_retrieve_apps_rg must not run without spine_chroma_enrich")
+
+    monkeypatch.setattr(c05_mod, "c0_retrieve_apps_rg", _boom)
+    build_c05_final_evidence_contract(
+        section_id="competencies",
+        atoms=[
+            {
+                "fact_id": "f1",
+                "text_to_embed": "Led platform modernization with measurable outcomes.",
+                "source_type": "proof_pool",
+                "source_span_ref": "s",
+                "proof_status": "proof_eligible",
+            }
+        ],
+        strata={},
+        graph_bindings=[],
+        front_spine=object(),
+        allowed_fact_ids=["f1"],
+    )
+    assert called == []
+
+
+def test_c03_skills_graph_receipt_flags() -> None:
+    from apps_rg.runtime.c0.c0_section_authority import c03_skills_graph_receipt_flags
+
+    flags = c03_skills_graph_receipt_flags()
+    assert flags["apps_rg_c03_skills_graph_used"] is True
+    assert flags["core_c03_graph_rag_used"] is False
+    assert flags["canonical_c0_3_claimed"] is False
+
+
+def test_section_c0_room_enabled_for_competencies() -> None:
+    from apps_rg.runtime.c0.constants import C0_SECTIONS_ENABLED
+    from apps_rg.runtime.c0.evidence_room import section_c0_evidence_room_enabled
+    from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+
+    assert C0_SECTIONS_ENABLED == frozenset(GENERATED_LANES)
+    for lane in GENERATED_LANES:
+        assert section_c0_evidence_room_enabled(lane)
+    assert not section_c0_evidence_room_enabled("not_a_lane")
+
+
+@pytest.mark.parametrize(
+    ("section_id", "primary_target"),
+    [
+        ("headline", "strongest_positioning_facts"),
+        ("unify_bullets", "employer_role_facts"),
+        ("ibm_bullets", "employer_role_facts"),
+        ("unify_narrative", "career_phase_facts"),
+        ("ibm_narrative", "career_phase_facts"),
+    ],
+)
+def test_c01_retrieval_plan_lane_aliases(section_id: str, primary_target: str) -> None:
+    from apps_rg.runtime.c0.c01_retrieval_plan import build_c01_retrieval_plan
+
+    plan = build_c01_retrieval_plan(section_id=section_id, target_role="SVP IT Strategy")
+    targets = plan["retrieval_targets"]
+    assert primary_target in targets["primary_targets"]
+    assert plan["section_id"] == section_id
+    assert plan["jd_as_proof"] is False
 
 
 def test_agentic_core_binding_import() -> None:

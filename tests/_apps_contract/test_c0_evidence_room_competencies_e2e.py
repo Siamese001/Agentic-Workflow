@@ -78,7 +78,9 @@ def test_competencies_c0_evidence_room_e2e_real_proof_pool_and_fec(tmp_path: Pat
     )
     doc = bridge.bridge_doc
     assert doc.get("canonical_c0_2_claimed") is True
-    assert doc.get("canonical_c0_3_claimed") is True
+    assert doc.get("canonical_c0_3_claimed") is False
+    assert doc.get("apps_rg_c03_skills_graph_used") is True
+    assert doc.get("core_c03_graph_rag_used") is False
     assert doc.get("canonical_c0_5_claimed") is True
     assert doc.get("fec_shape_only") is False
     assert doc.get("c07_handoff_safe") is True
@@ -214,7 +216,8 @@ def test_competencies_cli_live_through_c0_room_artifacts(tmp_path: Path) -> None
     bridge = json.loads((art / FEC_BRIDGE_ARTIFACT).read_text(encoding="utf-8"))
     assert bridge.get("producer_stage") == "section_c0_evidence_room"
     assert bridge.get("canonical_c0_2_claimed") is True
-    assert bridge.get("canonical_c0_3_claimed") is True
+    assert bridge.get("canonical_c0_3_claimed") is False
+    assert bridge.get("apps_rg_c03_skills_graph_used") is True
     assert bridge.get("canonical_c0_5_claimed") is True
     assert bridge.get("c07_handoff_safe") is True
     runtime_payload = json.loads((art / "runtime_payload.json").read_text(encoding="utf-8"))
