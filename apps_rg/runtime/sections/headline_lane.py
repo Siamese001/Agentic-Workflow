@@ -1,6 +1,7 @@
 """App-local headline runtime seam.
 
-Canonical base resume plus read-only companion artifacts -> one headline line (SVP Engineering | X | Y | Z) -> X1D -> X2 -> X3 -> L6.
+Canonical base resume plus optional read-only companion artifacts (usually empty when headline runs
+first in the lane order) -> one headline line (SVP Engineering | X | Y | Z) -> X1D -> X2 -> X3 -> L6.
 Imports read-only helpers from competencies_dispatch without modifying that seam's behavior.
 
 **W3:** ``declared_temporary_slice`` — section runtime proof seam; see ``w3_execution_path_convergence_f8e3c1.md``.
@@ -8,12 +9,12 @@ Imports read-only helpers from competencies_dispatch without modifying that seam
 from __future__ import annotations
 
 from apps_rg.runtime.w3_execution_path_labels import (
-    BUCKET_DECLARED_TEMPORARY_SLICE,
+    BUCKET_GOVERNED_PA_L2_EXIT,
     PLAN_SLUG,
     validate_bucket,
 )
 
-W3_EXECUTION_PATH_BUCKET = BUCKET_DECLARED_TEMPORARY_SLICE
+W3_EXECUTION_PATH_BUCKET = BUCKET_GOVERNED_PA_L2_EXIT
 W3_EXECUTION_PATH_PLAN_SLUG = PLAN_SLUG
 validate_bucket(W3_EXECUTION_PATH_BUCKET, context=__name__)
 
@@ -40,10 +41,11 @@ from apps_rg.runtime.sections.companion_lane_context import (
 )
 from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
 from apps_rg.runtime.sections.headline_pa import compile_headline_prompt
-from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
-    build_canonical_claim_ledger_v2_payload,
-    classify_ledger_parse_state,
-    normalize_exec_summary_claim_ledger,
+from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import classify_ledger_parse_state
+from apps_rg.runtime.claim_ledger.headline_claim_ledger import (
+    build_headline_canonical_claim_ledger_v2,
+    build_headline_text_claim_coverage,
+    normalize_headline_claim_ledger,
 )
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
@@ -73,7 +75,6 @@ from apps_rg.runtime.runtime_proof_layout import (
     prepare_runtime_proof_run_dir,
     proof_bucket_for_provider,
 )
-from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage
 from apps_rg.runtime.validators.headline_x2 import (
     headline_runtime_self_check_truth,
     headline_word_count,
@@ -364,7 +365,79 @@ def _fix_fact_id_typos(fid: str, allowed_fact_ids: set[str] | None = None) -> st
     return repair_fact_id_against_allowlist(fid, allowed_fact_ids)
 
 
-def ensure_claim_ledger(headline: str, parsed: dict[str, Any], allowed_fact_ids: set[str]) -> None:
+def _resolve_canonical_source_fact_id(fid: str, allowed_fact_ids: set[str]) -> str | None:
+    """Map a ledger token to an allowlisted ID, preserving metric derivatives when present."""
+    repaired = _fix_fact_id_typos(str(fid).strip(), allowed_fact_ids)
+    if not repaired:
+        return None
+    if repaired in allowed_fact_ids:
+        return repaired
+    base = repaired.split("_metric_")[0]
+    if base in allowed_fact_ids:
+        return base
+    metric_candidates = sorted(a for a in allowed_fact_ids if str(a).startswith(f"{base}_metric_"))
+    if len(metric_candidates) == 1:
+        return metric_candidates[0]
+    if metric_candidates and repaired.startswith(base + "_metric_"):
+        for candidate in metric_candidates:
+            if candidate == repaired or candidate.startswith(repaired):
+                return candidate
+    return None
+
+
+_HEADLINE_SEGMENT_SEP = " | "
+
+
+def _headline_positioning_segments(headline_line: str) -> tuple[str, str, str] | None:
+    """Segments 2–4 (X, Y, Z) when headline_line matches the fixed four-part pipe shape."""
+    hl = (headline_line or "").strip()
+    if hl.count(_HEADLINE_SEGMENT_SEP) != 3 or not hl.startswith("SVP Engineering | "):
+        return None
+    parts = [p.strip() for p in hl.split(_HEADLINE_SEGMENT_SEP)]
+    if len(parts) != 4 or not all(parts) or parts[0] != "SVP Engineering":
+        return None
+    return parts[1], parts[2], parts[3]
+
+
+def _segment_claim_rows_already_valid(
+    rows: list[dict[str, Any]], segments: tuple[str, str, str]
+) -> bool:
+    if len(rows) < 3:
+        return False
+    expected = {s.strip().lower() for s in segments}
+    matched: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ct = str(row.get("claim_text") or "").strip().lower()
+        if ct in expected:
+            matched.add(ct)
+    return matched == expected
+
+
+def _coerce_segment_claim_ledger_rows(
+    headline_line: str,
+    source_fact_ids: list[str],
+    existing_rows: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Bind proof IDs to X/Y/Z segment phrases (not the full headline_line blob)."""
+    segs = _headline_positioning_segments(headline_line)
+    ids = sorted({str(x) for x in source_fact_ids if str(x).strip()})
+    if not segs or not ids:
+        return list(existing_rows or [])
+    rows = [r for r in (existing_rows or []) if isinstance(r, dict)]
+    if _segment_claim_rows_already_valid(rows, segs):
+        return rows
+    return [{"claim_text": seg, "source_fact_ids": list(ids)} for seg in segs]
+
+
+def ensure_claim_ledger(
+    headline: str,
+    parsed: dict[str, Any],
+    allowed_fact_ids: set[str],
+    *,
+    retain_bullet_aliases: bool = False,
+) -> None:
     ledger_raw = parsed.get("claim_ledger")
     hl = headline.strip()
     if ledger_raw is None:
@@ -376,18 +449,36 @@ def ensure_claim_ledger(headline: str, parsed: dict[str, Any], allowed_fact_ids:
 
     dict_rows = [e for e in ledger_raw if isinstance(e, dict)]
     string_ids_raw = [str(e).strip() for e in ledger_raw if isinstance(e, str) and str(e).strip()]
+    rows_before_filter = len(dict_rows)
+
+    def _ledger_id_retained(fid: str) -> bool:
+        if _resolve_canonical_source_fact_id(str(fid), allowed_fact_ids) is not None:
+            return True
+        if retain_bullet_aliases:
+            base = _fix_fact_id_typos(str(fid), allowed_fact_ids).split("_metric_")[0]
+            if base.startswith("bul_unify_") or base.startswith("bul_ibm_") or base.startswith("bul_"):
+                return True
+        return False
 
     def _sanitize_dict_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         out_rows: list[dict[str, Any]] = []
         for entry in rows:
             raw_ids = entry.get("source_fact_ids")
             if isinstance(raw_ids, list):
-                cleaned = [
-                    _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
-                    for x in raw_ids
-                    if str(x).strip()
-                    and _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0] in allowed_fact_ids
-                ]
+                cleaned: list[str] = []
+                for x in raw_ids:
+                    raw_s = str(x).strip()
+                    if not raw_s or not _ledger_id_retained(raw_s):
+                        continue
+                    if retain_bullet_aliases:
+                        base = _fix_fact_id_typos(raw_s, allowed_fact_ids).split("_metric_")[0]
+                        if base.startswith("bul_"):
+                            if raw_s not in cleaned:
+                                cleaned.append(raw_s)
+                            continue
+                    resolved = _resolve_canonical_source_fact_id(raw_s, allowed_fact_ids)
+                    if resolved and resolved not in cleaned:
+                        cleaned.append(resolved)
                 entry["source_fact_ids"] = cleaned
             out_rows.append(entry)
         return out_rows
@@ -400,20 +491,20 @@ def ensure_claim_ledger(headline: str, parsed: dict[str, Any], allowed_fact_ids:
 
     normalized_ids = sorted(
         {
-            _fix_fact_id_typos(s).split("_metric_")[0]
+            resolved
             for s in string_ids_raw
-            if _fix_fact_id_typos(s).split("_metric_")[0] in allowed_fact_ids
+            if (resolved := _resolve_canonical_source_fact_id(s, allowed_fact_ids)) is not None
         }
     )
 
     if normalized_ids:
         merged_ids_from_dicts = sorted(
             {
-                fid
+                str(fid)
                 for entry in dict_rows
                 if isinstance(entry.get("source_fact_ids"), list)
                 for fid in (entry.get("source_fact_ids") or [])
-                if fid in allowed_fact_ids
+                if str(fid).strip()
             }
         )
         merged = sorted(set(normalized_ids) | set(merged_ids_from_dicts))
@@ -426,7 +517,7 @@ def ensure_claim_ledger(headline: str, parsed: dict[str, Any], allowed_fact_ids:
                     "normalized_source_fact_ids": merged,
                 }
             )
-        parsed["claim_ledger"] = [{"claim_text": hl, "source_fact_ids": merged}]
+        parsed["claim_ledger"] = _coerce_segment_claim_ledger_rows(hl, merged)
         return
 
     if dict_rows:
@@ -435,10 +526,39 @@ def ensure_claim_ledger(headline: str, parsed: dict[str, Any], allowed_fact_ids:
             for r in dict_rows
             if isinstance(r.get("source_fact_ids"), list) and bool(r.get("source_fact_ids"))
         ]
+        union_ids = sorted(
+            {
+                str(fid)
+                for r in kept
+                for fid in (r.get("source_fact_ids") or [])
+                if str(fid).strip()
+            }
+        )
+        if union_ids and len(kept) == 1 and str(kept[0].get("claim_text") or "").strip() == hl:
+            parsed["claim_ledger"] = _coerce_segment_claim_ledger_rows(hl, union_ids)
+            change_log = parsed.setdefault("change_log", [])
+            if isinstance(change_log, list):
+                change_log.append(
+                    {
+                        "operation": "normalize_claim_ledger_segment_decomposition",
+                        "reason": "single_row_full_headline_coerced_to_xyz_segments",
+                    }
+                )
+            return
+        segs = _headline_positioning_segments(hl)
+        if union_ids and segs and not _segment_claim_rows_already_valid(kept, segs):
+            coerced = _coerce_segment_claim_ledger_rows(hl, union_ids, kept)
+            if coerced:
+                parsed["claim_ledger"] = coerced
+                return
         parsed["claim_ledger"] = kept
+        if rows_before_filter > 0 and not kept:
+            parsed["_headline_ledger_rows_dropped"] = rows_before_filter
         return
 
     parsed["claim_ledger"] = []
+    if rows_before_filter > 0:
+        parsed["_headline_ledger_rows_dropped"] = rows_before_filter
 
 
 def sync_selected_fact_plan_required_ids(
@@ -452,9 +572,9 @@ def sync_selected_fact_plan_required_ids(
         if not isinstance(row, dict):
             continue
         for fid in row.get("source_fact_ids") or []:
-            tid = _fix_fact_id_typos(str(fid)).split("_metric_")[0]
-            if tid in allowed_fact_ids:
-                union_ids.add(tid)
+            resolved = _resolve_canonical_source_fact_id(str(fid), allowed_fact_ids)
+            if resolved:
+                union_ids.add(resolved)
     base = dict(runtime_payload["selected_fact_plan"])
     union_sorted = sorted(union_ids)
     base["required_fact_ids"] = union_sorted
@@ -501,23 +621,12 @@ def normalize_parsed_output(
     *,
     companion_nonempty: bool = False,
     employer_names_lower: list[str] | None = None,
+    proof_pool_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     if not parsed:
         return parsed
     out = dict(parsed)
-    hl = deterministic_headline_word_count_expand(
-        str(out.get("headline_line") or headline_line or "").strip()
-    )
-    if hl != str(out.get("headline_line") or headline_line or "").strip():
-        out.setdefault("change_log", [])
-        if isinstance(out["change_log"], list):
-            out["change_log"].append(
-                {
-                    "operation": "deterministic_headline_word_count_expand",
-                    "reason": "model_under_10_words",
-                    "word_count_after": headline_word_count(hl),
-                }
-            )
+    hl = str(out.get("headline_line") or headline_line or "").strip()
     out["headline_line"] = hl
     jd = dict(out.get("jd_alignment") or {})
     jd.setdefault("targeting_only", True)
@@ -526,7 +635,33 @@ def normalize_parsed_output(
     out["jd_alignment"] = jd
     out.setdefault("gap_notes", [])
     out.setdefault("change_log", [])
-    ensure_claim_ledger(hl, out, allowed_fact_ids)
+    pp_meta = proof_pool_metadata if proof_pool_metadata is not None else runtime_payload.get("proof_pool_metadata")
+    from apps_rg.runtime.sections.headline_fact_id_resolution import (
+        apply_headline_claim_ledger_fact_id_resolution,
+        proof_pool_requires_canonical_fact_namespace,
+    )
+
+    retain_aliases = proof_pool_requires_canonical_fact_namespace(
+        pp_meta if isinstance(pp_meta, dict) else None
+    )
+    ensure_claim_ledger(hl, out, allowed_fact_ids, retain_bullet_aliases=retain_aliases)
+    if retain_aliases:
+        rows_before_resolution = len(list(out.get("claim_ledger") or []))
+        out, resolution_receipt = apply_headline_claim_ledger_fact_id_resolution(
+            out,
+            srfs_allowed_fact_ids=allowed_fact_ids,
+            runtime_payload=runtime_payload,
+            proof_pool_metadata=pp_meta if isinstance(pp_meta, dict) else {},
+        )
+        if resolution_receipt is not None:
+            out["fact_id_resolution_receipt"] = resolution_receipt
+        rows_after_resolution = len(list(out.get("claim_ledger") or []))
+        if rows_before_resolution > rows_after_resolution:
+            prior = int(out.get("_headline_ledger_rows_dropped") or 0)
+            out["_headline_ledger_rows_dropped"] = prior + (
+                rows_before_resolution - rows_after_resolution
+            )
+        ensure_claim_ledger(hl, out, allowed_fact_ids, retain_bullet_aliases=False)
     sync_selected_fact_plan_required_ids(out, runtime_payload, allowed_fact_ids)
     empl = list(employer_names_lower or [])
     tc = str(runtime_payload.get("target_company") or "").strip()
@@ -688,12 +823,14 @@ def retry_headline_proof_shape(
                 "claim_ledger MUST be a JSON array of OBJECT rows only. "
                 "Forbidden invalid shape: a flat array of bul_* strings such as "
                 '["bul_unify_001","bul_unify_005"] — NEVER emit only strings.\n'
-                "Required: each element is an object with non-empty claim_text (string) and "
-                "non-empty source_fact_ids (array of strings from allowed bul_* IDs).\n"
-                "Good minimal example:\n"
+                "Required: claim_ledger is an array of OBJECT rows — one per X/Y/Z segment with "
+                "claim_text equal to that segment phrase and non-empty source_fact_ids.\n"
+                "Forbidden: one row whose claim_text is the full headline_line, or flat ID strings only.\n"
+                "Good example:\n"
                 '  "claim_ledger": [\n'
-                '    {"claim_text": "Enterprise AI platform leadership themes", '
-                '"source_fact_ids": ["bul_unify_001","bul_unify_005"]}\n'
+                '    {"claim_text": "Governed Agentic Platforms", "source_fact_ids": ["bul_unify_001"]},\n'
+                '    {"claim_text": "Runtime Infrastructure", "source_fact_ids": ["bul_unify_005"]},\n'
+                '    {"claim_text": "Regulated Delivery", "source_fact_ids": ["bul_unify_003"]}\n'
                 "  ]\n"
                 "selected_fact_plan.required_fact_ids must equal the sorted union of source_fact_ids across rows.\n\n"
                 "self_check MUST be recomputed from the FINAL headline_line before emitting JSON.\n"
@@ -736,27 +873,44 @@ def retry_headline_proof_shape(
     return json.dumps(new_parsed, sort_keys=True, separators=(",", ":")), new_parsed, raw_gate_snap
 
 
+def build_headline_allowed_fact_packet(
+    *,
+    selected_fact_plan: dict[str, Any],
+    proof_pool_ref: str,
+    proof_pool_digest: str,
+) -> list[dict[str, Any]]:
+    """Primary evidence slice for X1D judges (active proof pool facts, not JD/briefing)."""
+    packet: list[dict[str, Any]] = []
+    for row in list(selected_fact_plan.get("facts") or []):
+        if isinstance(row, dict):
+            packet.append(dict(row))
+    if proof_pool_ref:
+        packet.append(
+            {
+                "fact_id": "__proof_pool_anchor__",
+                "kind": "proof_pool_anchor",
+                "proof_pool_ref": proof_pool_ref.replace("\\", "/"),
+                "proof_pool_digest": proof_pool_digest,
+            }
+        )
+    return packet
+
+
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    hl = "SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Regulated Delivery"
     wc = headline_word_count(hl)
     allowed_sorted = list(runtime_payload.get("allowed_fact_ids") or [])
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
-    if pool_type in ("selected_role_fact_set", "broad_skills_ledger") and allowed_sorted:
-        from apps_rg.runtime.sections.selected_role_fact_set import stub_source_fact_ids_for_allowed
-
-        stub_ids = stub_source_fact_ids_for_allowed(allowed_sorted, max_ids=6)
-    else:
-        stub_ids = ["bul_unify_001", "bul_ibm_001", "bul_unify_004"]
+    facts = list(runtime_payload.get("selected_fact_plan", {}).get("facts") or [])
+    stub_ids = [str(f.get("fact_id") or "").strip() for f in facts if f.get("fact_id")]
+    if not stub_ids:
+        stub_ids = list(allowed_sorted[:6]) or ["bul_unify_001", "bul_ibm_001", "bul_unify_004"]
+    claim_ledger = _coerce_segment_claim_ledger_rows(hl, stub_ids)
+    if not claim_ledger:
+        claim_ledger = [{"claim_text": hl, "source_fact_ids": stub_ids}]
     return {
         "headline_line": hl,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
-        "claim_ledger": [
-            {
-                "claim_text": hl,
-                "source_fact_ids": stub_ids,
-            }
-        ],
+        "claim_ledger": claim_ledger,
         "jd_alignment": {
             "targeting_only": True,
             "jd_used_as_proof": False,
@@ -783,12 +937,20 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[str, Any]]) -> tuple[str, str]:
+def infer_product_quality(
+    runtime_generation_status: str,
+    x2_gates: list[dict[str, Any]],
+    *,
+    artifact_dir: Path | None = None,
+) -> tuple[str, str]:
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    return infer_product_quality_blocked_or_mock(
+    from apps_rg.runtime.section_repair_ledger import infer_product_quality_with_repair_ledger
+
+    return infer_product_quality_with_repair_ledger(
         runtime_generation_status=runtime_generation_status,
         x2_failed_gate_ids=failed,
         pass_reason="REAL_LLM output passed all deterministic headline gates.",
+        artifact_dir=artifact_dir,
     )
 
 
@@ -843,8 +1005,7 @@ def run_headline_execution(
     candidate_pool_ids = sorted(allowed_fact_ids)
     employer_names = collect_employer_names_lower(base)
     candidate_name_tokens = extract_candidate_name_tokens(base)
-    candidate_pool_ids = sorted(allowed_fact_ids)
-    selected_fact_plan = build_selected_fact_plan(bullet_rows, candidate_pool_ids)
+    selected_fact_plan = dict(pool.selected_fact_plan)
     companion_context = load_companion_context()
     companion_nonempty = bool(companion_context.strip())
     resume_blob = build_resume_support_blob(bullet_rows, companion_context)
@@ -866,6 +1027,13 @@ def run_headline_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_repair_ledger import init_ledger
+
+    init_ledger(
+        artifact_dir,
+        section_id="headline",
+        run_id=str(runtime_payload["run_id"]),
+    )
     (artifact_dir / "companion_generated_sections.txt").write_text(companion_context or "(none)\n", encoding="utf-8")
 
     from apps_rg.runtime.qwen_transport_diag import merge_transport_context
@@ -983,6 +1151,16 @@ def run_headline_execution(
             raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_model_output_original, parse_error
             )
+            if parsed is not None:
+                from apps_rg.runtime.section_repair_ledger import KIND_MECHANICAL, record_repair
+
+                record_repair(
+                    artifact_dir,
+                    kind=KIND_MECHANICAL,
+                    operation="parse_json_retry",
+                    reason=parse_error or "parse_retry",
+                    replaced_l2=False,
+                )
         if parsed is not None:
             attempt1 = json.loads(json.dumps(parsed))
             headline_proof_attempt1_pre_normalize = json.loads(json.dumps(attempt1))
@@ -1006,6 +1184,15 @@ def run_headline_execution(
                 )
                 if parsed_retry is not None and snap_retry is not None:
                     headline_proof_retry_attempted = True
+                    from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, record_repair
+
+                    record_repair(
+                        artifact_dir,
+                        kind=KIND_REGEN_LLM,
+                        operation="headline_proof_shape_retry",
+                        reason=proof_retry_reason[:240],
+                        replaced_l2=True,
+                    )
                     parsed = parsed_retry
                     raw_output = raw_output_retry
                     parsed_raw_pre_normalize = snap_retry
@@ -1050,6 +1237,14 @@ def run_headline_execution(
                     employer_names_lower=employer_names,
                 )
                 if rsnap is not None:
+                    from apps_rg.runtime.section_repair_lane_integration import record_regen_llm
+
+                    record_regen_llm(
+                        artifact_dir,
+                        operation="headline_format_repair",
+                        reason=f"word_count={wc} or pipe_format invalid",
+                        replaced_l2=True,
+                    )
                     parsed_raw_pre_normalize = rsnap
                 if parsed is not None:
                     raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
@@ -1059,8 +1254,15 @@ def run_headline_execution(
         parsed = None
         parse_error = result.exact_provider_error or "provider blocked"
 
+    fact_id_resolution_receipt: dict[str, Any] | None = None
+    if isinstance(parsed, dict):
+        _fid_rec = parsed.pop("fact_id_resolution_receipt", None)
+        if isinstance(_fid_rec, dict):
+            fact_id_resolution_receipt = _fid_rec
     headline_line = str((parsed or {}).get("headline_line") or "").strip()
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
+    if fact_id_resolution_receipt is not None:
+        write_json(artifact_dir / "headline_fact_id_resolution_receipt.json", fact_id_resolution_receipt)
     if runtime_generation_status in _HEADLINE_JSON_OUTPUT_STATUSES and parsed_raw_pre_normalize is not None:
         first_snap = headline_proof_attempt1_pre_normalize
         first_raw_ok, first_detail, first_obs = True, "", None
@@ -1149,19 +1351,23 @@ def run_headline_execution(
         raw_output=raw_output or "",
         lane_profile="headline",
     )
-    norm_rows = normalize_exec_summary_claim_ledger(claim_ledger) if parse_status == "OK" else []
-    canon_doc = build_canonical_claim_ledger_v2_payload(
+    norm_rows = normalize_headline_claim_ledger(claim_ledger) if parse_status == "OK" else []
+    canon_doc = build_headline_canonical_claim_ledger_v2(
         norm_rows,
         parse_status=parse_status,
         invalid_reason=invalid_reason if parse_status != "OK" else None,
-        claim_id_prefix="headline_claim",
     )
+    parsed_for_artifact: Any = parsed
+    if isinstance(parsed, dict):
+        parsed_for_artifact = {
+            k: v for k, v in parsed.items() if k != "_headline_ledger_rows_dropped"
+        }
     write_json(
         artifact_dir / "parsed_output.json",
-        {"parsed": parsed, "parse_error": parse_error, "parse_status": parse_status},
+        {"parsed": parsed_for_artifact, "parse_error": parse_error, "parse_status": parse_status},
     )
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
-    coverage = build_sentence_claim_coverage(headline_line or "", claim_ledger, allowed_fact_ids)
+    coverage = build_headline_text_claim_coverage(headline_line or "", claim_ledger, allowed_fact_ids)
     write_json(artifact_dir / "text_claim_coverage.json", coverage)
     effective_sfp_h = (parsed or {}).get("selected_fact_plan") if isinstance(parsed, dict) else None
     if not isinstance(effective_sfp_h, dict):
@@ -1199,6 +1405,11 @@ def run_headline_execution(
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
     judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
+    allowed_fact_packet = build_headline_allowed_fact_packet(
+        selected_fact_plan=effective_sfp_h if isinstance(effective_sfp_h, dict) else selected_fact_plan,
+        proof_pool_ref=str(pool.proof_pool_ref or ""),
+        proof_pool_digest=str(pool.proof_pool_digest or ""),
+    )
     x1d = [
         j.to_dict()
         for j in run_headline_judges(
@@ -1208,12 +1419,15 @@ def run_headline_execution(
             companion_context=companion_context,
             mode=judge_mode,
             artifact_base=artifact_dir,
+            allowed_fact_packet=allowed_fact_packet,
         )
     ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -1239,7 +1453,7 @@ def run_headline_execution(
             reasoning_execution_receipt=reasoning_receipt,
             artifacts_dir=artifact_dir,
             text_claim_coverage=coverage,
-            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
             proof_pool_digest=str(pool.proof_pool_digest or ""),
@@ -1267,6 +1481,8 @@ def run_headline_execution(
     if companion_nonempty:
         jd_fallback["companion_used_as_proof"] = False
 
+    if isinstance(parsed, dict):
+        parsed.pop("_headline_ledger_rows_dropped", None)
     l2_output = {
         "run_id": runtime_payload["run_id"],
         "section_id": "headline",
@@ -1317,13 +1533,26 @@ def run_headline_execution(
         ),
     )
 
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="headline")
+    from apps_rg.runtime.section_repair_ledger import load_ledger, record_x2_run, set_authoritative_attempt
+
+    _hl_ledger = load_ledger(artifact_dir) or {}
+    record_x2_run(
+        artifact_dir,
+        run_number=len(list(_hl_ledger.get("x2_runs") or [])) + 1,
+        after_l2_source=str(_hl_ledger.get("authoritative_l2_source") or "initial_llm"),
+        x2_gates=x2,
+    )
+    if headline_proof_retry_attempted and not [g for g in x2 if not g.get("pass")]:
+        set_authoritative_attempt(artifact_dir, 2, reason="headline_proof_shape_retry_x2_pass")
     write_json(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
     )
 
-    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
+    product_quality_status, product_quality_reason = infer_product_quality(
+        runtime_generation_status, x2, artifact_dir=artifact_dir
+    )
 
     x3 = aggregate_x3(
         resume_display_text=headline_line or raw_output,
@@ -1375,6 +1604,9 @@ def run_headline_execution(
         }
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
+    from apps_rg.runtime.section_repair_ledger import attach_ledger_summary_to_l2
+
+    attach_ledger_summary_to_l2(l2_output, artifact_dir)
     attach_lane_proof_bundle_fields(
         l2_output,
         runtime_generation_status=runtime_generation_status,
@@ -1405,6 +1637,9 @@ def run_headline_execution(
         selected_fact_plan=l2_output.get("selected_fact_plan") if isinstance(l2_output, dict) else None,
         claim_ledger=claim_ledger,
     )
+    from apps_rg.runtime.sections.headline_fact_id_resolution import headline_fact_namespace_metric_fields
+
+    _smr_h.update(headline_fact_namespace_metric_fields(parsed, fact_id_resolution_receipt))
     write_json(artifact_dir / "section_metric_receipt.json", _smr_h)
 
     l6_temp = float(args.temperature)
@@ -1588,7 +1823,6 @@ def build_headline_lane_args(
     target_company: str,
     jd_text: str,
     briefing: str,
-    selected_role_fact_set: str = "",
     base_resume_ref: str = "",
 ) -> SimpleNamespace:
     return SimpleNamespace(
@@ -1602,7 +1836,6 @@ def build_headline_lane_args(
         target_company=str(target_company).strip() or TARGET_COMPANY_DEFAULT,
         jd_text=str(jd_text).strip() or JD_TEXT_DEFAULT,
         briefing=str(briefing).strip() or BRIEFING_DEFAULT,
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(base_resume_ref or ""),
     )
 

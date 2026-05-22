@@ -45,7 +45,6 @@ def run_ibm_narrative_lane_execution(
     """Single end-to-end ibm_narrative run: artifacts + X1D/X2/X3/L6."""
     _ensure_helpers_hydrated()
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
     from apps_rg.runtime.sections import selected_role_fact_set as _srfs
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
@@ -57,27 +56,21 @@ def run_ibm_narrative_lane_execution(
     candidate_name = str(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
-    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
-        ibm_header, ibm_facts, allowed_fact_ids = extract_ibm_employment(base)
-        selected_fact_plan = build_selected_fact_plan(ibm_facts)
-    else:
-        ibm_header, ibm_facts_canon, canon_allowed = extract_ibm_employment(base)
-        ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
-        ibm_facts.sort(
-            key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
-        )
-        if pool.srfs_present:
-            selected_fact_plan = build_selected_fact_plan_ibm_narrative_srfs(ibm_facts)
-        else:
-            selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
-        allowed_fact_ids = set(pool.allowed_fact_ids) | set(canon_allowed)
+    ibm_header, _, canon_allowed = extract_ibm_employment(base)
+    ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
+    ibm_facts.sort(
+        key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
+    )
+    selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
+    allowed_fact_ids = set(pool.allowed_fact_ids) | set(canon_allowed)
     proof_pool_metadata = pool.proof_pool_metadata
-    companion_text = load_companion_ibm_bullets_text()
+    companion_context = load_companion_ibm_bullets_context()
+    companion_text = str(companion_context.get("text") or "")
     ibm_bullets_l2 = resolve_effective_lane_l2_path(REPO_ROOT, "ibm_bullets")
     companion_ref = (
         str(ibm_bullets_l2.relative_to(REPO_ROOT))
         if ibm_bullets_l2 is not None and companion_text
-        else None
+        else companion_context.get("l2_ref")
     )
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
@@ -86,6 +79,8 @@ def run_ibm_narrative_lane_execution(
         selected_fact_plan=selected_fact_plan,
         allowed_fact_ids=allowed_fact_ids,
         companion_bullets_ref=companion_ref,
+        companion_bullets_status=str(companion_context.get("status") or "UNKNOWN"),
+        companion_bullets_reason=str(companion_context.get("reason") or ""),
         target_title=args.target_title,
         target_company=args.target_company,
         jd_text=args.jd_text,
@@ -98,6 +93,14 @@ def run_ibm_narrative_lane_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_repair_ledger import init_ledger
+
+    init_ledger(
+        artifact_dir,
+        section_id="ibm_narrative",
+        run_id=str(runtime_payload["run_id"]),
+    )
+    write_json(artifact_dir / "companion_ibm_bullets_context.json", companion_context)
     (artifact_dir / "companion_ibm_bullets_context.txt").write_text(
         companion_text or "(none)\n", encoding="utf-8"
     )
@@ -194,7 +197,37 @@ def run_ibm_narrative_lane_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
 
-    if preflight_blocked and not judge_allowed_mock:
+    from apps_rg.runtime.validators.companion_bullet_finalization import (
+        UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
+        companion_blocks_narrative_llm,
+    )
+
+    upstream_companion_blocked = companion_blocks_narrative_llm(companion_context)
+    if upstream_companion_blocked:
+        preflight_blocked = False
+
+    if upstream_companion_blocked:
+        parse_error = (
+            f"upstream ibm_bullets not finalized: "
+            f"{companion_context.get('status')}; {companion_context.get('reason')}"
+        )
+        result = ProviderResult(
+            provider_requested=str(provider_req.provider_requested),
+            provider_attempted=False,
+            provider_available=False,
+            exact_provider_error=parse_error,
+            runtime_generation_status=UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
+            model=str(req_model),
+            raw_model_output="",
+            provider_response={"upstream_companion_blocked": True, "companion": companion_context},
+            reasoning_execution_receipt=None,
+        )
+        provider_result_data = result.to_dict()
+        raw_output = result.raw_model_output
+        runtime_generation_status = result.runtime_generation_status
+        write_json(artifact_dir / "provider_response.json", provider_result_data)
+        parsed = None
+    elif preflight_blocked and not judge_allowed_mock:
         result = ProviderResult(
             provider_requested=str(provider_req.provider_requested),
             provider_attempted=bool(provider_req.provider_attempted),
@@ -212,7 +245,7 @@ def run_ibm_narrative_lane_execution(
         write_json(artifact_dir / "provider_response.json", provider_result_data)
         parsed = None
         parse_error = result.exact_provider_error or "preflight_blocked"
-    else:
+    elif not upstream_companion_blocked:
         result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
         provider_result_data = result.to_dict()
         raw_output = result.raw_model_output
@@ -224,8 +257,19 @@ def run_ibm_narrative_lane_execution(
                 raw_output, parsed, parse_error = retry_qwen_for_parse(
                     messages, provider_payload, raw_output, parse_error
                 )
+                if parsed is not None:
+                    from apps_rg.runtime.section_repair_ledger import KIND_MECHANICAL, record_repair
+
+                    record_repair(
+                        artifact_dir,
+                        kind=KIND_MECHANICAL,
+                        operation="parse_json_retry",
+                        reason=parse_error or "parse_retry",
+                        replaced_l2=False,
+                    )
             if parsed is not None:
                 parsed = normalize_parsed_output(parsed, runtime_payload)
+                _pre_metric_raw = raw_output
                 raw_output, parsed = retry_qwen_for_metric_budget(
                     messages,
                     provider_payload,
@@ -234,16 +278,72 @@ def run_ibm_narrative_lane_execution(
                     companion_text,
                     runtime_payload,
                 )
+                if raw_output != _pre_metric_raw:
+                    from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, record_repair
+
+                    record_repair(
+                        artifact_dir,
+                        kind=KIND_REGEN_LLM,
+                        operation="companion_metric_budget_regen",
+                        reason="metric_budget",
+                        replaced_l2=True,
+                    )
+                _pre_trim = str(parsed.get("narrative_sentence") or "")
                 apply_companion_metric_budget_trim(
                     parsed, companion_text, runtime_payload=runtime_payload
                 )
+                if str(parsed.get("narrative_sentence") or "") != _pre_trim:
+                    from apps_rg.runtime.section_repair_ledger import KIND_MECHANICAL, record_repair
+
+                    record_repair(
+                        artifact_dir,
+                        kind=KIND_MECHANICAL,
+                        operation="companion_metric_budget_deterministic_trim",
+                        reason="deterministic_pre_x2",
+                        replaced_l2=False,
+                    )
                 parsed = normalize_parsed_output(parsed, runtime_payload)
                 remap_ibm_narrative_claim_ledger_to_fact_pool(parsed, runtime_payload)
+                from apps_rg.runtime.sections.ibm_canonical_hydration import (
+                    decompose_ibm_narrative_claim_ledger_by_clause,
+                )
+
+                decompose_ibm_narrative_claim_ledger_by_clause(
+                    parsed,
+                    narrative_sentence=str(parsed.get("narrative_sentence") or ""),
+                    allowed_fact_ids={str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])},
+                )
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"
 
     narrative = str((parsed or {}).get("narrative_sentence") or "").strip()
+    if narrative:
+        from apps_rg.runtime.sections.section_authority_repairs import (
+            sanitize_ibm_narrative_display_text,
+        )
+
+        narrative, _sanitized = sanitize_ibm_narrative_display_text(narrative)
+        if parsed is not None and isinstance(parsed, dict):
+            parsed["narrative_sentence"] = narrative
+            if _sanitized:
+                from apps_rg.runtime.section_repair_ledger import KIND_MECHANICAL, record_repair
+
+                record_repair(
+                    artifact_dir,
+                    kind=KIND_MECHANICAL,
+                    operation="sanitize_meta_disclaimer_tail",
+                    reason="x2_ibm_narrative_no_meta_disclaimer_in_display",
+                    replaced_l2=False,
+                )
+                clog = list(parsed.get("change_log") or [])
+                clog.append(
+                    {
+                        "operation": "sanitize_meta_disclaimer_tail",
+                        "reason": "x2_ibm_narrative_no_meta_disclaimer_in_display",
+                    }
+                )
+                parsed["change_log"] = clog
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
     model_name = None
     if provider_result_data:
@@ -333,8 +433,10 @@ def run_ibm_narrative_lane_execution(
     test_only_mock_provider_eff = mock_provider_cli and hatch_mp
 
     allowed_ids_list = list(runtime_payload.get("allowed_fact_ids") or [])
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
     x2 = [
         g.to_dict()
         for g in run_ibm_narrative_x2_gates(
@@ -344,6 +446,9 @@ def run_ibm_narrative_lane_execution(
             jd_text=args.jd_text,
             runtime_generation_status=runtime_generation_status,
             companion_bullet_texts=companion_text or None,
+            companion_bullets_status=str(companion_context.get("status") or "UNKNOWN"),
+            companion_bullets_reason=str(companion_context.get("reason") or ""),
+            companion_aware=not test_only_mock_provider_eff,
             candidate_name=candidate_name,
             provider_requested=args.provider,
             provider_attempted=args.provider,
@@ -354,7 +459,7 @@ def run_ibm_narrative_lane_execution(
             test_only_mock_provider=test_only_mock_provider_eff,
             artifacts_dir=artifact_dir,
             text_claim_coverage=coverage,
-            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
             proof_pool_digest=str(pool.proof_pool_digest or ""),
@@ -408,13 +513,24 @@ def run_ibm_narrative_lane_execution(
         },
     )
 
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="ibm_narrative")
+    from apps_rg.runtime.section_repair_ledger import load_ledger, record_x2_run
+
+    _ibm_ledger = load_ledger(artifact_dir) or {}
+    record_x2_run(
+        artifact_dir,
+        run_number=len(list(_ibm_ledger.get("x2_runs") or [])) + 1,
+        after_l2_source=str(_ibm_ledger.get("authoritative_l2_source") or "initial_llm"),
+        x2_gates=x2,
+    )
     write_json(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
     )
 
-    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
+    product_quality_status, product_quality_reason = infer_product_quality(
+        runtime_generation_status, x2, artifact_dir=artifact_dir
+    )
 
     x3 = aggregate_x3(
         resume_display_text=narrative or raw_output,
@@ -521,6 +637,9 @@ def run_ibm_narrative_lane_execution(
 
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
+    from apps_rg.runtime.section_repair_ledger import attach_ledger_summary_to_l2
+
+    attach_ledger_summary_to_l2(l2_output, artifact_dir)
     attach_lane_proof_bundle_fields(
         l2_output,
         runtime_generation_status=runtime_generation_status,

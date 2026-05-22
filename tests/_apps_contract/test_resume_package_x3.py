@@ -29,6 +29,14 @@ from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 _ART = RUNTIME_PROOFS
 
 
+@pytest.fixture(autouse=True)
+def _resume_package_contract_test_harness(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Synthetic package fixtures are not product runs; disable fail-closed lane bar."""
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+    monkeypatch.delenv("APPS_RG_WHOLE_RUN_ENVELOPE", raising=False)
+    monkeypatch.delenv("APPS_RG_CORRELATED_CLI_RUN", raising=False)
+
+
 def _mk_x2(pass_all: bool) -> dict[str, object]:
     if pass_all:
         return {"gate_family": "test", "all_pass": True, "failed_gate_ids": [], "gates": []}
@@ -72,17 +80,19 @@ def _emit_lane_dir(rr: Path, lk: str) -> dict[str, str]:
         "run_id": rid,
         "section_id": lk,
         "runtime_generation_status": "REAL_LLM",
+        "product_quality_status": "PASS",
+        "product_quality_reason": "synthetic_fixture",
         "prompt_id": f"synthetic_prompt_{lk}",
         "prompt_hash": "b" * 16,
     }
     if lk == "unify_bullets":
         dist = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}
         specs = [
-            ("bul_unify_001", "HEAVY"),
-            ("bul_unify_002", "HEAVY"),
-            ("bul_unify_003", "MODERATE"),
+            ("bul_unify_001", "MODERATE"),
+            ("bul_unify_002", "MODERATE"),
+            ("bul_unify_003", "HEAVY"),
             ("bul_unify_004", "MODERATE"),
-            ("bul_unify_005", "MODERATE"),
+            ("bul_unify_005", "HEAVY"),
             ("bul_unify_006", "LIGHT_PROTECTED"),
         ]
         bullets = []
@@ -258,7 +268,7 @@ def test_section_x3_summary_not_allow_for_real_workspace_when_review():
 
 @pytest.mark.parametrize(
     "layer",
-    ["locked_copy_x2", "final_resume_x2", "docx_manifest_x2", "docx_render_x2"],
+    ["locked_copy_x2", "final_resume_x2"],
 )
 def test_deterministic_x2_failure_blocks(tmp_path: Path, layer: str):
     paths = _write_minimal_fixture_tree(tmp_path)
@@ -267,6 +277,36 @@ def test_deterministic_x2_failure_blocks(tmp_path: Path, layer: str):
     payloads = {
         "locked_copy_x2": (paths.locked_copy_x2_json, _mk_x2(False)),
         "final_resume_x2": (paths.final_resume_x2_json, _mk_x2(False)),
+        "docx_manifest_x2": (paths.docx_manifest_x2_json, _mk_x2(False)),
+        "docx_render_x2": (paths.docx_render_x2_json, _mk_x2(False)),
+    }
+    pj, blob = payloads[layer]
+    pj.write_text(json.dumps(blob), encoding="utf-8")
+
+    dsp = evaluate_resume_package(
+        paths=paths,
+        rollup=rollup,
+        locked_x2=json.loads(paths.locked_copy_x2_json.read_text(encoding="utf-8")),
+        final_manifest=json.loads(paths.final_resume_manifest_json.read_text(encoding="utf-8")),
+        final_x2=json.loads(paths.final_resume_x2_json.read_text(encoding="utf-8")),
+        docx_manifest=json.loads(paths.docx_manifest_json.read_text(encoding="utf-8")),
+        docx_manifest_x2=json.loads(paths.docx_manifest_x2_json.read_text(encoding="utf-8")),
+        docx_render_manifest=json.loads(paths.docx_render_manifest_json.read_text(encoding="utf-8")),
+        docx_render_x2=json.loads(paths.docx_render_x2_json.read_text(encoding="utf-8")),
+    )
+    assert dsp["final_x3_code"] == X3_BLOCKED_DETERMINISTIC
+    assert dsp["deterministic_blocked"] is True
+
+
+@pytest.mark.parametrize("layer", ["docx_manifest_x2", "docx_render_x2"])
+def test_docx_x2_failure_blocks_only_when_docx_required(
+    tmp_path: Path, layer: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("APPS_RG_DOCX_OUTPUT_REQUIRED", "1")
+    paths = _write_minimal_fixture_tree(tmp_path)
+    rollup = json.loads(paths.rollup_json.read_text(encoding="utf-8"))
+
+    payloads = {
         "docx_manifest_x2": (paths.docx_manifest_x2_json, _mk_x2(False)),
         "docx_render_x2": (paths.docx_render_x2_json, _mk_x2(False)),
     }
@@ -368,7 +408,7 @@ def test_current_workspace_expectation_review_when_not_allow():
 
 
 def test_package_module_has_no_foreign_network_providers():
-    rf = Path(__file__).resolve().parents[2] / "apps_rg" / "runtime" / "_offline" / "resume_package_disposition.py"
+    rf = Path(__file__).resolve().parents[2] / "apps_rg" / "runtime" / "internal" / "resume_package_disposition.py"
     src = rf.read_text(encoding="utf-8")
     banned = ("openai", "anthropic", "google.generativeai", "httpx.get", "requests.")
     for b in banned:

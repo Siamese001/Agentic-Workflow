@@ -77,10 +77,7 @@ from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
-from apps_rg.runtime.sections.ibm_canonical_hydration import (
-    hydrate_parsed_ibm_bullets_from_canonical_resume,
-    should_hydrate_ibm_bullets_from_canonical,
-)
+from apps_rg.runtime.sections.ibm_canonical_hydration import should_hydrate_ibm_bullets_from_canonical
 from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
 
 PROMPT_ID = "ibm_bullet_tailor_dispatch_v1"
@@ -258,13 +255,11 @@ def normalize_parsed_output(
     if not parsed:
         return parsed
     normalized_bullets: list[dict[str, Any]] = []
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_mode = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
     for idx, bullet in enumerate((parsed.get("bullets") or [])[:5]):
         row = dict(bullet)
         bid = str(row.get("bullet_id", "")).strip()
         row["bullet_id"] = BULLET_ID_ALIASES.get(bid, bid)
-        if (not srfs_mode) and row["bullet_id"] not in IBM_BULLET_IDS and idx < len(IBM_BULLET_IDS):
+        if row["bullet_id"] not in IBM_BULLET_IDS and idx < len(IBM_BULLET_IDS):
             row["bullet_id"] = IBM_BULLET_IDS[idx]
         row["rewrite_intensity"] = str(
             row.get(
@@ -343,52 +338,6 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
-    is_srfs = pool_type == "selected_role_fact_set"
-    is_ledger = pool_type == "broad_skills_ledger"
-    if is_srfs or is_ledger:
-        facts = list(runtime_payload["selected_fact_plan"].get("facts") or [])
-        bullets: list[dict[str, Any]] = []
-        claim_ledger: list[dict[str, Any]] = []
-        limit = 5 if is_srfs else min(5, len(facts))
-        for idx, fact in enumerate(facts[:limit]):
-            bid = str(fact.get("fact_id") or "").strip()
-            if not bid:
-                continue
-            if is_ledger and bid not in IBM_BULLET_IDS and idx < len(IBM_BULLET_IDS):
-                bid = IBM_BULLET_IDS[idx]
-            intensity = DEFAULT_INTENSITY_BY_BULLET.get(bid, "MODERATE")
-            text = str(fact.get("claim_text") or "")
-            metric_ids = [bid]
-            if fact.get("metric_raw"):
-                metric_ids.append(f"{bid}_metric_{sha16(str(fact['metric_raw']))[:8]}")
-            bullets.append(
-                {
-                    "bullet_id": bid,
-                    "bullet_text": text,
-                    "rewrite_intensity": intensity,
-                    "has_metric": bool(fact.get("has_metric")),
-                    "metric_raw": fact.get("metric_raw") or None,
-                    "source_fact_ids": metric_ids,
-                }
-            )
-            claim_ledger.append({"claim_text": text, "source_fact_ids": metric_ids})
-        return {
-            "bullets": bullets,
-            "selected_fact_plan": runtime_payload["selected_fact_plan"],
-            "claim_ledger": claim_ledger,
-            "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
-            "gap_notes": [],
-            "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
-            "rewrite_distribution": dict(IBM_DEFAULT_DISTRIBUTION),
-            "self_check": {
-                "bullet_count_valid": True,
-                "distribution_valid": True,
-                "no_cross_contamination": True,
-                "metrics_preserved": True,
-            },
-        }
     by_id = {f["fact_id"]: f for f in runtime_payload["selected_fact_plan"]["facts"]}
     bullets = []
     claim_ledger = []
@@ -431,11 +380,15 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 def infer_product_quality(
     runtime_generation_status: str,
     x2_gates: list[dict[str, Any]],
+    *,
+    artifact_dir: Path | None = None,
 ) -> tuple[str, str]:
-    failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    return infer_product_quality_blocked_or_mock(
-        runtime_generation_status=runtime_generation_status,
-        x2_failed_gate_ids=failed,
+    from apps_rg.runtime.section_repair_lane_integration import infer_lane_product_quality
+
+    return infer_lane_product_quality(
+        runtime_generation_status,
+        x2_gates,
+        artifact_dir=artifact_dir,
         pass_reason="REAL_LLM output passed all deterministic IBM bullet gates.",
     )
 
@@ -444,58 +397,28 @@ def bullets_display_text(bullets: list[dict[str, Any]]) -> str:
     return "\n".join(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}" for b in bullets)
 
 
-def _ibm_plan_has_full_canonical_bullets(plan: dict[str, Any]) -> bool:
-    facts = plan.get("facts") or []
-    bul = {
-        str(f.get("fact_id"))
-        for f in facts
-        if isinstance(f, dict) and str(f.get("fact_id", "")).startswith("bul_ibm_")
-    }
-    return all(bid in bul for bid in IBM_BULLET_IDS)
-
-
-def _should_bind_ibm_bullets_to_canonical_resume(
-    *,
-    srfs_path: str,
-    pool_proof_source: str,
-    selected_fact_plan: dict[str, Any],
-) -> bool:
-    """IBM bullets use locked base-resume employment unless SRFS explicitly supplies claim evidence."""
-    if srfs_path:
-        return False
-    from apps_rg.runtime.proof_pool_resolver import (
-        PROOF_SOURCE_BASE_RESUME_FALLBACK,
-        PROOF_SOURCE_BROAD_SKILLS_LEDGER,
-    )
-
-    if pool_proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
-        return True
-    if pool_proof_source == PROOF_SOURCE_BROAD_SKILLS_LEDGER:
-        return not _ibm_plan_has_full_canonical_bullets(selected_fact_plan)
-    return False
-
-
 def align_ibm_claim_ledger_from_canonical_facts(
     parsed: dict[str, Any],
     *,
-    canon_facts: list[dict[str, Any]],
-    canon_allowed: set[str],
+    plan_facts: list[dict[str, Any]],
     allowed_fact_ids: set[str],
 ) -> None:
-    """Map claim_ledger source_fact_ids onto canonical bul_ibm_* + metric ids (judge non-circular proof)."""
-    by_bid = {str(f.get("fact_id")): f for f in canon_facts if f.get("fact_id")}
-    allowed = set(allowed_fact_ids) | {str(x) for x in canon_allowed}
+    """Map claim_ledger source_fact_ids onto graph-plan bul_ibm_* + metric ids (no base-resume paste)."""
+    by_bid = {str(f.get("fact_id")): f for f in plan_facts if f.get("fact_id")}
+    allowed = set(allowed_fact_ids)
     ledger: list[dict[str, Any]] = []
     for bullet in parsed.get("bullets") or []:
         if not isinstance(bullet, dict):
             continue
         bid = str(bullet.get("bullet_id") or "")
-        canon = by_bid.get(bid) or {}
-        text = str(bullet.get("bullet_text") or canon.get("claim_text") or "")
+        plan_row = by_bid.get(bid) or {}
+        text = str(bullet.get("bullet_text") or plan_row.get("claim_text") or "").strip()
+        if not text:
+            continue
         src = _normalize_fact_id_list(bullet.get("source_fact_ids") or [bid])
         if bid not in src:
             src.insert(0, bid)
-        metric_raw = str(canon.get("metric_raw") or bullet.get("metric_raw") or "")
+        metric_raw = str(plan_row.get("metric_raw") or bullet.get("metric_raw") or "")
         if metric_raw:
             mid = f"{bid}_metric_{sha16(metric_raw)[:8]}"
             if mid in allowed and mid not in src:
@@ -552,9 +475,7 @@ def run_ibm_bullets_execution(
     """Single end-to-end ibm_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
 
-    srfs_path = str(getattr(args, "selected_role_fact_set", "") or "").strip()
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="ibm_bullets",
         args=args,
@@ -562,33 +483,14 @@ def run_ibm_bullets_execution(
         collect_employment_bullets_fn=collect_employment_bullets,
     )
     canon_header, canon_facts, canon_allowed = extract_ibm_employment(base)
-    bind_canonical = _should_bind_ibm_bullets_to_canonical_resume(
-        srfs_path=srfs_path,
-        pool_proof_source=pool.proof_source,
-        selected_fact_plan=pool.selected_fact_plan,
+    ibm_header = canon_header
+    ibm_facts = list(pool.selected_fact_plan.get("facts") or [])
+    ibm_facts.sort(
+        key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
     )
-    if bind_canonical:
-        ibm_header, ibm_facts, allowed_fact_ids = canon_header, canon_facts, canon_allowed
-        selected_fact_plan = build_selected_fact_plan(ibm_facts)
-        proof_pool_metadata = {
-            **(pool.proof_pool_metadata or {}),
-            "ibm_canonical_employment_forced": True,
-            "proof_pool_type": "base_resume_ibm_canonical",
-            "claim_evidence_source_type": "base_resume_ibm_employment",
-        }
-    elif pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
-        ibm_header, ibm_facts, allowed_fact_ids = canon_header, canon_facts, canon_allowed
-        selected_fact_plan = build_selected_fact_plan(ibm_facts)
-        proof_pool_metadata = pool.proof_pool_metadata
-    else:
-        ibm_header = canon_header
-        ibm_facts = list(pool.selected_fact_plan.get("facts") or [])
-        ibm_facts.sort(
-            key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
-        )
-        selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
-        allowed_fact_ids = pool.allowed_fact_ids
-        proof_pool_metadata = pool.proof_pool_metadata
+    selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
+    allowed_fact_ids = pool.allowed_fact_ids
+    proof_pool_metadata = pool.proof_pool_metadata
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
         base_hash=base_hash,
@@ -617,6 +519,15 @@ def run_ibm_bullets_execution(
             runtime_payload["run_id"],
             placement_bucket=placement_bucket,
         )
+    from apps_rg.runtime.section_repair_lane_integration import (
+        record_mechanical,
+        record_parse_json_retry,
+        start_lane_repair_ledger,
+    )
+
+    start_lane_repair_ledger(
+        artifact_dir, section_id="ibm_bullets", run_id=str(runtime_payload["run_id"])
+    )
     from apps_rg.runtime.qwen_transport_diag import merge_transport_context
 
     merge_transport_context(
@@ -708,30 +619,29 @@ def run_ibm_bullets_execution(
             raw_output, parsed, parse_error = retry_qwen_for_parse(
                 messages, tagged, raw_output, parse_error
             )
+            if parsed is not None:
+                record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
         if parsed is not None:
             parsed = normalize_parsed_output(parsed, runtime_payload)
-            if should_hydrate_ibm_bullets_from_canonical(runtime_payload, parsed):
-                allowed_fact_ids = hydrate_parsed_ibm_bullets_from_canonical_resume(
-                    parsed,
-                    runtime_payload=runtime_payload,
-                    canon_facts=canon_facts,
-                    canon_allowed=canon_allowed,
-                    default_intensity_by_bullet=DEFAULT_INTENSITY_BY_BULLET,
-                )
-            elif bind_canonical and parsed is not None:
-                align_ibm_claim_ledger_from_canonical_facts(
-                    parsed,
-                    canon_facts=canon_facts,
-                    canon_allowed=canon_allowed,
-                    allowed_fact_ids=allowed_fact_ids,
-                )
-            elif parsed is not None:
-                align_ibm_claim_ledger_from_canonical_facts(
-                    parsed,
-                    canon_facts=canon_facts,
-                    canon_allowed=canon_allowed,
-                    allowed_fact_ids=allowed_fact_ids,
-                )
+            from apps_rg.runtime.sections.graph_story_authority import forbid_base_resume_bullet_hydration
+
+            forbid_base_resume_bullet_hydration(
+                section_id="ibm_bullets",
+                runtime_payload=runtime_payload,
+                parsed=parsed,
+                base_resume=base,
+                would_hydrate_fn=should_hydrate_ibm_bullets_from_canonical,
+            )
+            align_ibm_claim_ledger_from_canonical_facts(
+                parsed,
+                plan_facts=ibm_facts,
+                allowed_fact_ids=allowed_fact_ids,
+            )
+            record_mechanical(
+                artifact_dir,
+                operation="align_ibm_claim_ledger_from_canonical_facts",
+                reason="graph_plan_fact_id_alignment",
+            )
     else:
         parsed = None
         parse_error = result.exact_provider_error or "provider blocked"
@@ -823,8 +733,8 @@ def run_ibm_bullets_execution(
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
     allowed_fact_packet = build_ibm_bullets_allowed_fact_packet(
-        ibm_facts=canon_facts,
-        ibm_header=canon_header,
+        ibm_facts=ibm_facts,
+        ibm_header=ibm_header,
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
     )
@@ -862,8 +772,10 @@ def run_ibm_bullets_execution(
         },
     )
 
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -881,10 +793,12 @@ def run_ibm_bullets_execution(
             raw_output=raw_output,
             x1d_judges=x1d,
             rewrite_distribution=rewrite_distribution,
-            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
             proof_pool_digest=str(pool.proof_pool_digest or ""),
+            base_resume=base,
+            runtime_payload=runtime_payload,
         )
     ]
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
@@ -902,7 +816,15 @@ def run_ibm_bullets_execution(
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
     )
 
-    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
+    from apps_rg.runtime.section_repair_lane_integration import finalize_lane_product_quality
+
+    product_quality_status, product_quality_reason = finalize_lane_product_quality(
+        artifact_dir,
+        runtime_generation_status=runtime_generation_status,
+        x2_gates=x2,
+        pass_reason="REAL_LLM output passed all deterministic IBM bullet gates.",
+        l2_output=l2_output,
+    )
 
     display_for_x3 = bullets_display_text(bullets)
     x3 = aggregate_x3(

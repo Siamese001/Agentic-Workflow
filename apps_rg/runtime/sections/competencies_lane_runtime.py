@@ -425,6 +425,18 @@ def repair_structured_competencies_source_facts(
                     },
                 )
 
+            repaired_sids: list[str] = []
+            for x in raw_t.get("source_fact_ids") or []:
+                base = _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
+                if base in allowed_fact_ids and base not in repaired_sids:
+                    repaired_sids.append(base)
+            if not repaired_sids:
+                repaired_sids = [resolved]
+            if raw_t.get("source_fact_ids") != repaired_sids:
+                raw_t["source_fact_ids"] = repaired_sids
+            if str(raw_t.get("source_fact_id", "")).split("_metric_")[0] not in allowed_fact_ids:
+                raw_t["source_fact_id"] = repaired_sids[0]
+
 
 def _structured_terms_near_duplicate(a: str, b: str) -> bool:
     """Mirrors competencies X2 duplicate/near-duplicate detection for flattened phrases."""
@@ -1204,162 +1216,56 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     def _term_obj(phrase: str, fid: str) -> dict[str, Any]:
         return {"text": phrase, "source_fact_id": fid, "source_fact_ids": [fid]}
 
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
-    if pool_type in ("selected_role_fact_set", "broad_skills_ledger", "augmented_skills_graph"):
-        raw_allowed = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])]
-        allowed = [x for x in raw_allowed if "_metric_" not in x]
-        if not allowed and raw_allowed:
-            allowed = sorted({x.split("_metric_", 1)[0] for x in raw_allowed})
-        if not allowed:
-            allowed = ["proof_pool_placeholder"]
-        plan_facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
-        facts_by_id = {
-            str(f.get("fact_id") or "").strip(): f for f in plan_facts if str(f.get("fact_id") or "").strip()
-        }
+    raw_allowed = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])]
+    allowed = [x for x in raw_allowed if "_metric_" not in x]
+    if not allowed and raw_allowed:
+        allowed = sorted({x.split("_metric_", 1)[0] for x in raw_allowed})
+    if not allowed:
+        allowed = ["proof_pool_placeholder"]
+    plan_facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
+    facts_by_id = {
+        str(f.get("fact_id") or "").strip(): f for f in plan_facts if str(f.get("fact_id") or "").strip()
+    }
 
-        def _stub_terms_for_fact(fid: str, fallback: tuple[str, str, str]) -> list[dict[str, Any]]:
-            row = facts_by_id.get(fid) or {}
-            phrases: list[str] = []
-            for tech in row.get("technologies") or []:
-                t = str(tech).strip()
-                if not t:
-                    continue
-                words = t.split()
-                if 2 <= len(words) <= 6:
-                    phrases.append(t)
-                elif len(words) > 6:
-                    phrases.append(" ".join(words[:4]))
-            if len(phrases) < 2:
-                claim = str(row.get("claim_text") or "").strip()
-                for chunk in re.split(r"[,;]\s*|\s+and\s+", claim):
-                    c = chunk.strip()
-                    wc = len(c.split())
-                    if 2 <= wc <= 6:
-                        phrases.append(c)
-                    if len(phrases) >= 3:
-                        break
-            fb0, fb1, fb2 = fallback
-            while len(phrases) < 2:
-                phrases.append((fb0, fb1, fb2)[len(phrases) % 3])
-            return [_term_obj(p, fid) for p in phrases[:3]]
+    def _stub_terms_for_fact(fid: str, fallback: tuple[str, str, str]) -> list[dict[str, Any]]:
+        row = facts_by_id.get(fid) or {}
+        phrases: list[str] = []
+        for tech in row.get("technologies") or []:
+            t = str(tech).strip()
+            if not t:
+                continue
+            words = t.split()
+            if 2 <= len(words) <= 6:
+                phrases.append(t)
+            elif len(words) > 6:
+                phrases.append(" ".join(words[:4]))
+        if len(phrases) < 2:
+            claim = str(row.get("claim_text") or "").strip()
+            for chunk in re.split(r"[,;]\s*|\s+and\s+", claim):
+                c = chunk.strip()
+                wc = len(c.split())
+                if 2 <= wc <= 6:
+                    phrases.append(c)
+                if len(phrases) >= 3:
+                    break
+        fb0, fb1, fb2 = fallback
+        while len(phrases) < 2:
+            phrases.append((fb0, fb1, fb2)[len(phrases) % 3])
+        return [_term_obj(p, fid) for p in phrases[:3]]
 
-        competencies_srfs: list[dict[str, Any]] = []
-        for i in range(8):
-            fid = allowed[i % len(allowed)]
-            fallback = _SRFS_STUB_TERM_TRIPLES[i % len(_SRFS_STUB_TERM_TRIPLES)]
-            competencies_srfs.append(
-                {
-                    "category_label": f"SRFS Competency Area {i + 1}",
-                    "terms": _stub_terms_for_fact(fid, fallback),
-                    "source_fact_ids": [fid],
-                }
-            )
-        ledger_srfs: list[dict[str, Any]] = []
-        for cat in competencies_srfs:
-            ids = list(cat["source_fact_ids"])
-            for t in cat["terms"]:
-                ts = term_phrase(t)
-                if not ts:
-                    continue
-                if isinstance(t, dict) and t.get("source_fact_id") is not None:
-                    sid = _fix_fact_id_typos(str(t["source_fact_id"])).split("_metric_")[0]
-                    ledger_srfs.append({"claim_text": ts, "source_fact_ids": [sid]})
-                else:
-                    ledger_srfs.append({"claim_text": ts, "source_fact_ids": list(ids)})
-        return {
-            "competencies": competencies_srfs,
-            "selected_fact_plan": runtime_payload["selected_fact_plan"],
-            "claim_ledger": ledger_srfs,
-            "jd_alignment": {
-                "targeting_only": True,
-                "jd_used_as_proof": False,
-                "briefing_used_as_proof": False,
-                "companion_context_used_as_proof": False,
-            },
-            "excluded_jd_skills": ["raw LLMOps toolchain dump"],
-            "removed_or_rewritten_terms": [],
-            "gap_notes": [],
-            "change_log": [],
-            "self_check": {"eight_categories": True, "terms_are_phrases": True},
-        }
-
-    competencies: list[dict[str, Any]] = [
-        {
-            "category_label": "Agentic AI Platforms",
-            "terms": [
-                _term_obj("governed agentic systems", "bul_unify_001"),
-                _term_obj("multi-agent coordination", "bul_unify_001"),
-                _term_obj("policy-aware routing", "bul_unify_001"),
-            ],
-            "source_fact_ids": ["bul_unify_001"],
-        },
-        {
-            "category_label": "Dependency Intelligence",
-            "terms": [
-                _term_obj("graph signal extraction", "bul_unify_002"),
-                _term_obj("modernization acceleration cues", "bul_unify_002"),
-                _term_obj("dependency intelligence", "bul_unify_002"),
-            ],
-            "source_fact_ids": ["bul_unify_002"],
-        },
-        {
-            "category_label": "Retrieval and Quality Gates",
-            "terms": [
-                _term_obj("retrieval instrumentation posture", "bul_unify_003"),
-                _term_obj("quality gate patterns", "bul_unify_003"),
-                _term_obj("observability rollouts", "bul_unify_003"),
-            ],
-            "source_fact_ids": ["bul_unify_003"],
-        },
-        {
-            "category_label": "AI Lifecycle Operations",
-            "terms": [
-                _term_obj("lifecycle standardization", "bul_unify_004"),
-                _term_obj("delivery acceleration", "bul_unify_004"),
-                _term_obj("monitoring discipline", "bul_unify_004"),
-            ],
-            "source_fact_ids": ["bul_unify_004"],
-        },
-        {
-            "category_label": "Cloud Platforms and Data Planes",
-            "terms": [
-                _term_obj("distributed service tiers", "bul_unify_005"),
-                _term_obj("lakehouse-adjacent pipelines", "bul_unify_005"),
-                _term_obj("identity-aware gateways", "bul_unify_005"),
-            ],
-            "source_fact_ids": ["bul_unify_005"],
-        },
-        {
-            "category_label": "Platform Productization",
-            "terms": [
-                _term_obj("platform economics lift", "bul_unify_006"),
-                _term_obj("specialist scaling curve", "bul_unify_006"),
-                _term_obj("IP-forward packaging", "bul_unify_006"),
-            ],
-            "source_fact_ids": ["bul_unify_006"],
-        },
-        {
-            "category_label": "Enterprise AI and Analytics",
-            "terms": [
-                _term_obj("cloud posture modernization", "bul_ibm_001"),
-                _term_obj("uptime discipline", "bul_ibm_001"),
-                _term_obj("regulated delivery contexts", "bul_ibm_001"),
-            ],
-            "source_fact_ids": ["bul_ibm_001"],
-        },
-        {
-            "category_label": "Partnership and Revenue Engineering",
-            "terms": [
-                _term_obj("multi-year alliance rhythm", "bul_ibm_005"),
-                _term_obj("joint sell patterns", "bul_ibm_005"),
-                _term_obj("incremental revenue streams", "bul_ibm_005"),
-            ],
-            "source_fact_ids": ["bul_ibm_005"],
-        },
-    ]
-    ledger: list[dict[str, Any]] = []
-    for cat in competencies:
+    competencies_out: list[dict[str, Any]] = []
+    for i in range(8):
+        fid = allowed[i % len(allowed)]
+        fallback = _SRFS_STUB_TERM_TRIPLES[i % len(_SRFS_STUB_TERM_TRIPLES)]
+        competencies_out.append(
+            {
+                "category_label": f"Graph Competency Area {i + 1}",
+                "terms": _stub_terms_for_fact(fid, fallback),
+                "source_fact_ids": [fid],
+            }
+        )
+    ledger_out: list[dict[str, Any]] = []
+    for cat in competencies_out:
         ids = list(cat["source_fact_ids"])
         for t in cat["terms"]:
             ts = term_phrase(t)
@@ -1367,13 +1273,13 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
                 continue
             if isinstance(t, dict) and t.get("source_fact_id") is not None:
                 sid = _fix_fact_id_typos(str(t["source_fact_id"])).split("_metric_")[0]
-                ledger.append({"claim_text": ts, "source_fact_ids": [sid]})
+                ledger_out.append({"claim_text": ts, "source_fact_ids": [sid]})
             else:
-                ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
+                ledger_out.append({"claim_text": ts, "source_fact_ids": list(ids)})
     return {
-        "competencies": competencies,
+        "competencies": competencies_out,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
-        "claim_ledger": ledger,
+        "claim_ledger": ledger_out,
         "jd_alignment": {
             "targeting_only": True,
             "jd_used_as_proof": False,
@@ -1399,11 +1305,18 @@ def competencies_display_text(competencies: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[str, Any]]) -> tuple[str, str]:
-    failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    return infer_product_quality_blocked_or_mock(
-        runtime_generation_status=runtime_generation_status,
-        x2_failed_gate_ids=failed,
+def infer_product_quality(
+    runtime_generation_status: str,
+    x2_gates: list[dict[str, Any]],
+    *,
+    artifact_dir: Path | None = None,
+) -> tuple[str, str]:
+    from apps_rg.runtime.section_repair_lane_integration import infer_lane_product_quality
+
+    return infer_lane_product_quality(
+        runtime_generation_status,
+        x2_gates,
+        artifact_dir=artifact_dir,
         pass_reason="REAL_LLM output passed all deterministic competencies gates.",
     )
 

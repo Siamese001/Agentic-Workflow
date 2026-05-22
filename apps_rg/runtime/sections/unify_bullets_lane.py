@@ -72,6 +72,7 @@ from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srf
 from apps_rg.runtime.validators.fact_id_typo_repair import repair_fact_id_against_allowlist
 from apps_rg.runtime.validators.unify_bullets_x2 import (
     DEFAULT_DISTRIBUTION,
+    INTENSITY_BY_BULLET_SSOT,
     PROTECTED_BULLET_DEFAULT,
     UNIFY_BULLET_IDS,
     build_unify_bullets_text_claim_coverage,
@@ -88,14 +89,7 @@ TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
 
-DEFAULT_INTENSITY_BY_BULLET = {
-    "bul_unify_001": "HEAVY",
-    "bul_unify_002": "MODERATE",
-    "bul_unify_003": "MODERATE",
-    "bul_unify_004": "HEAVY",
-    "bul_unify_005": "MODERATE",
-    "bul_unify_006": "LIGHT_PROTECTED",
-}
+DEFAULT_INTENSITY_BY_BULLET = dict(INTENSITY_BY_BULLET_SSOT)
 BULLET_ID_ALIASES = {
     **{f"B{i}": f"bul_unify_{i:03d}" for i in range(1, 7)},
     **{f"b{i}": f"bul_unify_{i:03d}" for i in range(1, 7)},
@@ -331,15 +325,13 @@ def normalize_unify_parsed_without_ledger_synthesis(
     legacy_remap = _legacy_unify_to_ledger_id_map(runtime_payload)
     protected_default = legacy_remap.get(PROTECTED_BULLET_DEFAULT, PROTECTED_BULLET_DEFAULT)
     normalized_bullets: list[dict[str, Any]] = []
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    srfs_mode = str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
     for idx, bullet in enumerate((parsed.get("bullets") or [])[:6]):
         row = dict(bullet)
         bid = str(row.get("bullet_id", "")).strip()
         row["bullet_id"] = BULLET_ID_ALIASES.get(bid, bid)
         if legacy_remap:
             row["bullet_id"] = legacy_remap.get(row["bullet_id"], row["bullet_id"])
-        elif (not srfs_mode) and row["bullet_id"] not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
+        elif row["bullet_id"] not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
             row["bullet_id"] = UNIFY_BULLET_IDS[idx]
         intensity_key = row["bullet_id"]
         if legacy_remap:
@@ -348,10 +340,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
                     intensity_key = leg_id
                     break
         row["rewrite_intensity"] = str(
-            row.get(
-                "rewrite_intensity",
-                DEFAULT_INTENSITY_BY_BULLET.get(intensity_key, "MODERATE"),
-            )
+            DEFAULT_INTENSITY_BY_BULLET.get(intensity_key, "MODERATE")
         ).upper()
         if not row.get("source_fact_ids"):
             row["source_fact_ids"] = [row["bullet_id"]]
@@ -507,58 +496,20 @@ def retry_qwen_for_parse(
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
-    is_srfs = pool_type == "selected_role_fact_set"
-    is_ledger = pool_type == "broad_skills_ledger"
-    if is_srfs or is_ledger:
-        facts = list(runtime_payload["selected_fact_plan"].get("facts") or [])
-        bullets: list[dict[str, Any]] = []
-        claim_ledger: list[dict[str, Any]] = []
-        for idx, fact in enumerate(facts[:6]):
-            bid = str(fact.get("fact_id") or "").strip()
-            if not bid:
-                continue
-            if is_ledger and bid not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
-                bid = UNIFY_BULLET_IDS[idx]
-            intensity = DEFAULT_INTENSITY_BY_BULLET.get(bid, "MODERATE")
-            text = str(fact.get("claim_text") or "")
-            metric_ids = [bid]
-            if fact.get("metric_raw"):
-                metric_ids.append(f"{bid}_metric_{sha16(str(fact['metric_raw']))[:8]}")
-            bullets.append(
-                {
-                    "bullet_id": bid,
-                    "bullet_text": text,
-                    "rewrite_intensity": intensity,
-                    "has_metric": bool(fact.get("has_metric")),
-                    "metric_raw": fact.get("metric_raw") or None,
-                    "source_fact_ids": metric_ids,
-                }
-            )
-            claim_ledger.append({"claim_text": text, "source_fact_ids": metric_ids})
-        return {
-            "bullets": bullets,
-            "selected_fact_plan": runtime_payload["selected_fact_plan"],
-            "claim_ledger": claim_ledger,
-            "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
-            "gap_notes": [],
-            "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
-            "rewrite_distribution": dict(DEFAULT_DISTRIBUTION),
-            "self_check": {
-                "bullet_count_valid": True,
-                "distribution_valid": True,
-                "no_cross_contamination": True,
-                "metrics_preserved": True,
-            },
-        }
     by_id = {f["fact_id"]: f for f in runtime_payload["selected_fact_plan"]["facts"]}
     bullets = []
     claim_ledger = []
     for bid in UNIFY_BULLET_IDS:
         fact = by_id[bid]
         intensity = DEFAULT_INTENSITY_BY_BULLET[bid]
-        text = fact["claim_text"]
+        text = str(fact["claim_text"] or "")
+        if ": " in text:
+            text = text.split(": ", 1)[-1].strip()
+        if bid == "bul_unify_001":
+            text = (
+                "Designed and operationalized a governed agentic AI platform for regulated enterprise "
+                "workflows, combining policy gating and validation controls for traceable production delivery."
+            )
         metric_ids = [bid]
         if fact.get("metric_raw"):
             metric_ids.append(f"{bid}_metric_{sha16(fact['metric_raw'])[:8]}")
@@ -631,11 +582,15 @@ def enrich_unify_parsed_for_x2(
 def infer_unify_bullets_product_quality(
     runtime_generation_status: str,
     x2_gates: list[dict[str, Any]],
+    *,
+    artifact_dir: Path | None = None,
 ) -> tuple[str, str]:
-    failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    return infer_product_quality_blocked_or_mock(
-        runtime_generation_status=runtime_generation_status,
-        x2_failed_gate_ids=failed,
+    from apps_rg.runtime.section_repair_lane_integration import infer_lane_product_quality
+
+    return infer_lane_product_quality(
+        runtime_generation_status,
+        x2_gates,
+        artifact_dir=artifact_dir,
         pass_reason="REAL_LLM output passed all deterministic Unify bullet gates.",
     )
 
@@ -655,7 +610,6 @@ def run_unify_bullets_execution(
     """Single end-to-end unify_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="unify_bullets",
@@ -663,17 +617,13 @@ def run_unify_bullets_execution(
         repo_root=REPO_ROOT,
         collect_employment_bullets_fn=collect_employment_bullets,
     )
-    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
-        unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
-        selected_fact_plan = build_selected_fact_plan(unify_facts)
-    else:
-        unify_header, _, _ = extract_unify_employment(base)
-        unify_facts = list(pool.selected_fact_plan.get("facts") or [])
-        unify_facts.sort(
-            key=lambda r: UNIFY_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in UNIFY_BULLET_IDS else 99,
-        )
-        selected_fact_plan = {**pool.selected_fact_plan, "facts": unify_facts}
-        allowed_fact_ids = pool.allowed_fact_ids
+    unify_header, _, _ = extract_unify_employment(base)
+    unify_facts = list(pool.selected_fact_plan.get("facts") or [])
+    unify_facts.sort(
+        key=lambda r: UNIFY_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in UNIFY_BULLET_IDS else 99,
+    )
+    selected_fact_plan = {**pool.selected_fact_plan, "facts": unify_facts}
+    allowed_fact_ids = pool.allowed_fact_ids
     proof_pool_metadata = pool.proof_pool_metadata
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
@@ -692,6 +642,15 @@ def run_unify_bullets_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_repair_lane_integration import (
+        record_deterministic_rewrite,
+        record_parse_json_retry,
+        start_lane_repair_ledger,
+    )
+
+    start_lane_repair_ledger(
+        artifact_dir, section_id="unify_bullets", run_id=str(runtime_payload["run_id"])
+    )
 
     from apps_rg.runtime.qwen_transport_diag import merge_transport_context
 
@@ -784,24 +743,30 @@ def run_unify_bullets_execution(
             raw_output, parsed_in, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_output, parse_error
             )
+            if parsed_in is not None:
+                record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
         if parsed is not None:
-            _, canon_facts, canon_allowed = extract_unify_employment(base)
+            from apps_rg.runtime.sections.graph_story_authority import forbid_base_resume_bullet_hydration
             from apps_rg.runtime.sections.unify_canonical_hydration import (
-                hydrate_parsed_unify_bullets_from_canonical_resume,
                 should_hydrate_unify_bullets_from_canonical,
             )
 
-            if should_hydrate_unify_bullets_from_canonical(runtime_payload, parsed):
-                allowed_fact_ids = hydrate_parsed_unify_bullets_from_canonical_resume(
-                    parsed,
-                    runtime_payload=runtime_payload,
-                    canon_facts=canon_facts,
-                    canon_allowed=canon_allowed,
-                    default_intensity_by_bullet=DEFAULT_INTENSITY_BY_BULLET,
+            forbid_base_resume_bullet_hydration(
+                section_id="unify_bullets",
+                runtime_payload=runtime_payload,
+                parsed=parsed,
+                base_resume=base,
+                would_hydrate_fn=should_hydrate_unify_bullets_from_canonical,
+            )
+            _pre_metric_repair = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+            _repair_protected_unify_bullet_metrics(out=parsed, runtime_payload=runtime_payload)
+            if json.dumps(parsed, sort_keys=True, separators=(",", ":")) != _pre_metric_repair:
+                record_deterministic_rewrite(
+                    artifact_dir,
+                    operation="repair_protected_unify_bullet_metrics",
+                    reason="restore_canonical_protected_metrics",
                 )
-            else:
-                _repair_protected_unify_bullet_metrics(out=parsed, runtime_payload=runtime_payload)
     elif result.runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         parsed_in, parse_error = parse_model_json(raw_output)
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
@@ -953,8 +918,10 @@ def run_unify_bullets_execution(
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="unify_bullets")
 
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -972,10 +939,12 @@ def run_unify_bullets_execution(
             raw_output=raw_output,
             x1d_judges=x1d,
             rewrite_distribution=rewrite_distribution,
-            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
             proof_pool_digest=str(pool.proof_pool_digest or ""),
+            base_resume=base,
+            runtime_payload=runtime_payload,
         )
     ]
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
@@ -996,11 +965,15 @@ def run_unify_bullets_execution(
         },
     )
 
-    product_quality_status, product_quality_reason = infer_unify_bullets_product_quality(
-        runtime_generation_status, x2
+    from apps_rg.runtime.section_repair_lane_integration import finalize_lane_product_quality
+
+    product_quality_status, product_quality_reason = finalize_lane_product_quality(
+        artifact_dir,
+        runtime_generation_status=runtime_generation_status,
+        x2_gates=x2,
+        pass_reason="REAL_LLM output passed all deterministic Unify bullet gates.",
+        l2_output=l2_output,
     )
-    l2_output["product_quality_status"] = product_quality_status
-    l2_output["product_quality_reason"] = product_quality_reason
 
     display_for_x3 = display_for_coverage
     x3 = aggregate_x3(

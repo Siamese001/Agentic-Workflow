@@ -100,33 +100,35 @@ BRIEFING_DEFAULT = "regulated enterprise environment, platform modernization, AI
 _DEFAULT_EXEC_SUMMARY_BRIEFING_CAP_CHARS = 12000
 
 
-def truncate_briefing_for_exec_summary_vllm(briefing: str) -> tuple[str, dict[str, Any] | None]:
-    """Truncate lane briefing so prompt + ``max_tokens`` fits typical local vLLM ctx.
-
-    Override cap with ``APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS`` (min 2048).
-    """
-    raw = str(briefing or "")
-    cap_s = os.environ.get("APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS", "").strip()
-    if cap_s:
-        cap = max(2048, int(cap_s))
-    else:
-        cap = _DEFAULT_EXEC_SUMMARY_BRIEFING_CAP_CHARS
-    if len(raw) <= cap:
-        return raw, None
-    marker = (
-        "\n\n[TRUNCATED: briefing tail omitted for vLLM context budget; "
-        "set APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS or raise VLLM_MAX_MODEL_LEN]\n"
+def _args_target_title(args: argparse.Namespace) -> str:
+    return (
+        str(getattr(args, "target_title", None) or getattr(args, "target_role", None) or TARGET_TITLE_DEFAULT)
+        .strip()
+        or TARGET_TITLE_DEFAULT
     )
-    keep = cap - len(marker)
-    if keep < 1024:
-        keep = 1024
-    truncated = raw[:keep] + marker
-    return truncated, {
-        "truncated": True,
-        "original_chars": len(raw),
-        "kept_chars": keep,
-        "cap_chars": cap,
-    }
+
+
+def _args_jd_text(args: argparse.Namespace) -> str:
+    return (
+        str(getattr(args, "jd_text", None) or getattr(args, "jd", None) or JD_TEXT_DEFAULT).strip()
+        or JD_TEXT_DEFAULT
+    )
+
+
+def truncate_briefing_for_exec_summary_vllm(briefing: str) -> tuple[str, dict[str, Any] | None]:
+    """Prepare briefing via ranked section selection (see executive_summary_briefing)."""
+    from apps_rg.runtime.sections.executive_summary_briefing import (
+        prepare_briefing_for_executive_summary,
+    )
+
+    selected, receipt = prepare_briefing_for_executive_summary(briefing)
+    if receipt.get("fail_closed"):
+        return selected, receipt
+    if receipt.get("briefing_excluded_chars", 0) == 0 and receipt.get("briefing_original_chars", 0) == len(
+        str(briefing or "")
+    ):
+        return selected, None
+    return selected, receipt
 
 
 def _find_repo_root() -> Path:
@@ -331,22 +333,8 @@ def coerce_resume_display_sentence_count_band(
     resume: str,
     srfs_integration: dict[str, Any] | None,
 ) -> str:
-    """Non-SRFS mode requires 2-3 sentences; merge a fourth sentence without weakening the gate."""
-    from apps_rg.runtime.validators.executive_summary_x2 import (
-        split_sentences,
-        srfs_x2_mode_active,
-    )
-
-    if srfs_x2_mode_active(srfs_integration):
-        return resume
-    sents = [s for s in split_sentences(resume) if str(s).strip()]
-    if len(sents) <= 3:
-        return resume
-    if len(sents) == 4:
-        tail = f"{sents[2].rstrip('.!?')}; {sents[3].strip()}"
-        if not tail.endswith((".", "!", "?")):
-            tail += "."
-        return f"{sents[0]} {sents[1]} {tail}"
+    """No post-hoc sentence-band coercion — X2 enforces 4–5 sentences."""
+    _ = srfs_integration
     return resume
 
 
@@ -468,21 +456,14 @@ def _fact_body_for_mock_synthesis(claim_text: str) -> str:
 
 
 def _srfs_active_payload(runtime_payload: dict[str, Any]) -> bool:
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    if str(pp.get("proof_pool_type") or "") == "selected_role_fact_set":
-        return True
-    s = runtime_payload.get("srfs_integration")
-    return isinstance(s, dict) and bool(str(s.get("artifact_path_resolved") or "").strip())
+    return False
 
 
 def _proof_pool_mode_from_payload(runtime_payload: dict[str, Any]) -> str:
+    from apps_rg.runtime.dispatch.input_authority_prompt_block import proof_pool_mode_from_metadata
+
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
-    if pool_type == "selected_role_fact_set":
-        return "srfs"
-    if pool_type == "broad_skills_ledger":
-        return "broad_skills_ledger"
-    return "base_resume_fallback"
+    return proof_pool_mode_from_metadata(pp if isinstance(pp, dict) else None)
 
 
 def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
@@ -660,7 +641,12 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "resume_display_text": text,
         "claim_ledger": claims,
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "companion_context_used_as_proof": False,
+        },
         "gap_notes": [],
         "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB_SRFS"}],
         "self_check": self_check,
@@ -668,7 +654,7 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    """Offline-contract stub: two polished sentences (legacy) or five-sentence SRFS arc when SelectedRoleFactSet active."""
+    """Offline-contract stub: four- or five-sentence executive paragraph (same product shape as live)."""
     if _srfs_active_payload(runtime_payload):
         return _build_mock_output_srfs(runtime_payload)
     facts = list(runtime_payload["selected_fact_plan"]["facts"])
@@ -683,23 +669,33 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         claims.append({"claim_text": body, "source_fact_ids": ids})
 
     if claims:
-        claim_idx = 2 if len(claims) > 2 else min(1, len(claims) - 1)
-        s2 = _first_sentence_from_prose(claims[claim_idx]["claim_text"])
+        s2 = _first_sentence_from_prose(claims[min(1, len(claims) - 1)]["claim_text"])
+        s3 = _first_sentence_from_prose(claims[min(2, len(claims) - 1)]["claim_text"])
+        s4 = _first_sentence_from_prose(claims[-1]["claim_text"])
         text = (
             "Engineering executive accountable for governed AI platform delivery, deterministic runtime controls, "
             "and production-grade reliability across enterprise programs. "
-            f"{s2}"
+            f"{s2} "
+            f"{s3} "
+            f"{s4}"
         )
     else:
         text = (
             "Engineering executive focused on governed AI platforms and deterministic runtime controls for enterprise programs. "
-            "Traceability, policy gating, and repeatable execution remain the operational through-line."
+            "The operating model binds architecture, delivery governance, and measurable platform outcomes for regulated enterprises. "
+            "Traceability, policy gating, and repeatable execution remain the operational through-line across modernization programs. "
+            "Commercial and technical leadership stay aligned as teams scale governed agentic capabilities into production."
         )
 
     return {
         "resume_display_text": text,
         "claim_ledger": claims,
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "companion_context_used_as_proof": False,
+        },
         "gap_notes": [],
         "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
         "self_check": {"no_first_person": True, "no_inline_source_tags": True, "fit_to_evidence": True},
@@ -713,33 +709,195 @@ def infer_product_quality(
     claim_ledger: list[dict[str, Any]] | None = None,
     *,
     graph_only_fact_tight_synthesis: bool = False,
+    artifact_dir: Path | None = None,
 ) -> tuple[str, str]:
-    """Infer product quality with honest PARTIAL classification for stacked/bullet-like output."""
+    """Product quality follows X2 + repair ledger (P1 counted regen policy)."""
+    _ = (resume_display_text, claim_ledger, graph_only_fact_tight_synthesis)
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    if failed:
-        return "FAIL", f"X2 failed gates: {failed}"
-    if runtime_generation_status != "REAL_LLM":
-        return "PARTIAL", "Mocked or blocked generation can prove plumbing only."
+    from apps_rg.runtime.section_repair_ledger import infer_product_quality_with_repair_ledger
 
-    from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
-
-    voice_ok, voice_reason = check_l2_resume_voice(resume_display_text)
-    if not voice_ok:
-        return "PARTIAL", f"Resume voice below executive summary standard: {voice_reason}"
-
-    narrative_ok, narrative_reason = check_executive_summary_narrative_shape(
-        resume_display_text,
-        claim_ledger,
-        graph_only_fact_tight_synthesis=graph_only_fact_tight_synthesis,
+    return infer_product_quality_with_repair_ledger(
+        runtime_generation_status=runtime_generation_status,
+        x2_failed_gate_ids=failed,
+        pass_reason="REAL_LLM output passed all deterministic X2 gates.",
+        artifact_dir=artifact_dir,
     )
-    if not narrative_ok:
-        return "PARTIAL", f"Narrative shape below executive summary standard: {narrative_reason}"
 
-    synthesis_ok, synthesis_reason = check_synthesis_quality(resume_display_text)
-    if not synthesis_ok:
-        return "PARTIAL", f"Synthesis quality below executive summary standard: {synthesis_reason}"
 
-    return "PASS", "REAL_LLM output passed all deterministic gates and synthesis quality."
+def _synthesis_shape_reject_reason(
+    resume_display_text: str,
+    parsed: dict[str, Any] | None,
+    *,
+    selected_facts: list[dict[str, Any]] | None = None,
+) -> tuple[bool, str]:
+    """Return (all_ok, semicolon-joined failure reasons) for pre-X2 synthesis shape."""
+    from apps_rg.runtime.sections.executive_summary_composition import check_human_exec_voice
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        check_exec_summary_evidence_utilization,
+        check_exec_summary_meta_filler_patterns,
+        check_exec_summary_no_credential_dump,
+        check_exec_summary_no_mechanism_inventory,
+        check_exec_summary_paragraph_max_words,
+        check_exec_summary_sentence_count_4_5,
+        check_north_star_style_example_echo_unsupported,
+        check_resume_display_colon_space_discipline,
+        check_synthesis_quality,
+        FIRST_PERSON_PATTERN,
+    )
+
+    text = str(resume_display_text or "")
+    failures: list[str] = []
+    if FIRST_PERSON_PATTERN.search(text):
+        failures.append("First-person pronoun found")
+    syn_ok, syn_reason = check_synthesis_quality(text)
+    if not syn_ok and syn_reason:
+        failures.append(syn_reason)
+    meta_ok, meta_reason = check_exec_summary_meta_filler_patterns(text)
+    if not meta_ok and meta_reason:
+        failures.append(meta_reason)
+    colon_ok, colon_reason = check_resume_display_colon_space_discipline(text)
+    if not colon_ok and colon_reason:
+        failures.append(colon_reason)
+    sent_ok, sent_reason = check_exec_summary_sentence_count_4_5(text)
+    if not sent_ok and sent_reason:
+        failures.append(sent_reason)
+    util_ok, util_reason = check_exec_summary_evidence_utilization(
+        text, parsed, selected_facts=selected_facts
+    )
+    if not util_ok and util_reason:
+        failures.append(util_reason)
+    bounds_ok, bounds_reason = check_exec_summary_paragraph_max_words(text, parsed)
+    if not bounds_ok and bounds_reason:
+        failures.append(bounds_reason)
+    voice_exec_ok, voice_exec_reason = check_human_exec_voice(text)
+    if not voice_exec_ok and voice_exec_reason:
+        failures.append(voice_exec_reason)
+    mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(text)
+    if not mech_ok and mech_reason:
+        failures.append(mech_reason)
+    cred_ok, cred_reason = check_exec_summary_no_credential_dump(text)
+    if not cred_ok and cred_reason:
+        failures.append(cred_reason)
+    if selected_facts is not None:
+        star_ok, star_reason = check_north_star_style_example_echo_unsupported(text, selected_facts)
+        if not star_ok and star_reason:
+            failures.append(star_reason)
+    if failures:
+        return False, "; ".join(failures)
+    return True, ""
+
+
+def _shape_failure_count(
+    resume_display_text: str,
+    parsed: dict[str, Any] | None,
+    *,
+    selected_facts: list[dict[str, Any]] | None = None,
+) -> int:
+    ok, reason = _synthesis_shape_reject_reason(
+        resume_display_text, parsed, selected_facts=selected_facts
+    )
+    if ok:
+        return 0
+    return len([part for part in str(reason).split(";") if part.strip()])
+
+
+def _regen_candidate_preferred(
+    *,
+    new_fail_count: int,
+    new_ledger_rows: int,
+    new_word_count: int,
+    best_fail_count: int,
+    best_ledger_rows: int,
+    best_word_count: int,
+    monotonicity_accepted: bool,
+) -> bool:
+    """Prefer candidates that improve shape without trading away weave coverage."""
+    if monotonicity_accepted:
+        if new_fail_count < best_fail_count:
+            return True
+        if new_fail_count == best_fail_count and new_ledger_rows > best_ledger_rows:
+            return True
+        if (
+            new_fail_count == best_fail_count
+            and new_ledger_rows == best_ledger_rows
+            and new_word_count >= best_word_count
+        ):
+            return True
+        return False
+    # Monotonicity-rejected drafts may not replace a stronger accepted baseline.
+    if new_fail_count < best_fail_count:
+        return new_ledger_rows >= best_ledger_rows and new_word_count >= int(best_word_count * 0.9)
+    if new_fail_count == best_fail_count:
+        return new_ledger_rows > best_ledger_rows and new_word_count >= best_word_count
+    return False
+
+
+def _build_synthesis_repair_user(
+    reject_reason: str,
+    *,
+    attempt_index: int,
+    prior_word_count: int,
+    prior_ledger_rows: int,
+    last_monotonicity_rejected: bool = False,
+) -> str:
+    blob = str(reject_reason or "").lower()
+    attempt_note = ""
+    if attempt_index == 1:
+        attempt_note = "SECOND rewrite — prior draft still failed shape gates. "
+    elif attempt_index >= 2:
+        attempt_note = "FINAL rewrite — prior drafts still failed shape gates. "
+    length_note = ""
+    if "exceeds maximum" in blob:
+        length_note = (
+            "LENGTH: trim to one executive paragraph (4–5 sentences) without dropping supported proof; "
+            "do not remove claim_ledger rows. "
+        )
+    else:
+        length_note = (
+            f"LENGTH: keep at least {prior_word_count} words unless trimming only to fix max-word overflow; "
+            "do NOT compress or shorten to fix style — expand/restructure instead. "
+        )
+    if last_monotonicity_rejected:
+        length_note += (
+            "PRIOR REGEN SHRANK OR DROPPED CLAIM ROWS — next draft must maintain or increase word count "
+            f"and claim_ledger rows (minimum {prior_ledger_rows} rows, prefer 5+ when pool has 6+ facts). "
+        )
+    utilization_note = ""
+    if "claim_ledger_rows" in blob or "need_at_least" in blob or "sentence_" in blob:
+        utilization_note = (
+            "EVIDENCE_WEAVE: add claim_ledger OBJECT rows (one per major sentence) with distinct source_fact_ids "
+            "from selected_fact_plan; weave unused high-confidence facts into prose — no repeated sentence themes. "
+            "Prefer 5 sentences when the fact pool has 6+ facts. "
+        )
+    mechanism_note = ""
+    if "mechanism_inventory" in blob or "mechanism inventory" in blob:
+        mechanism_note = (
+            "MECHANISM_CONTROL: sentence 1 = thesis + operating domain ONLY (no routing/orchestration/GraphRAG list). "
+            "Max two mechanism terms in any later sentence, only when verbatim in facts. "
+            "Do not repeat the same platform sentence twice. "
+        )
+    meta_note = ""
+    if "meta or filler" in blob or "this individual" in blob or "additionally" in blob:
+        meta_note = (
+            "VOICE: third-person executive (Engineering executive who… / Led… / Built…); "
+            "no Additionally/Furthermore openers; no \"with extensive experience\" opener. "
+        )
+    return (
+        f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
+        f"{mechanism_note}{meta_note}"
+        "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
+        "Rewrite resume_display_text as exactly 4 or 5 period-delimited sentences (one executive paragraph), "
+        "fit_to_evidence integrated narrative — not 2-3 compressed sentences; do not pad with filler. "
+        "FORBIDDEN: \"this individual\", \"this executive\", \"the candidate\", "
+        "Additionally/Furthermore as sentence openers, "
+        "\"An experienced engineering executive with a strong background\", recruiter filler. "
+        "Do NOT use label: detail stitching; no credential/certification dump. "
+        "Do NOT end on Fellow of the Society of Actuaries, AWS Certified, Databricks, or credential inventories. "
+        "Prioritize platform, governance, commercial, and scale facts from selected_fact_plan. "
+        "Use ONLY selected facts for proof; JD and briefing are targeting-only. "
+        "THIRD PERSON ONLY. Keep jd_used_as_proof=false. "
+        "Expand claim_ledger when adding new supported claims; never emit flat fact-id strings only."
+    )
 
 
 def retry_qwen_for_synthesis(
@@ -753,171 +911,182 @@ def retry_qwen_for_synthesis(
     artifact_dir: Path | None = None,
     run_id: str | None = None,
 ) -> tuple[str, dict[str, Any], str]:
-    """One regeneration attempt when synthesis heuristics reject the first REAL_LLM draft."""
-    from apps_rg.runtime.validators.executive_summary_x2 import (
-        check_exec_summary_meta_filler_patterns,
-        check_north_star_style_example_echo_unsupported,
-        check_resume_display_colon_space_discipline,
-        check_resume_display_sentence_count_2_3,
-        check_srfs_density_word_count,
-        check_srfs_sentence_count_4_5,
-        check_synthesis_quality,
-        srfs_x2_mode_active,
+    """Bounded same-authority regeneration when pre-X2 synthesis shape checks fail."""
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        synthesis_regen_max_attempts,
+        synthesis_regeneration_enabled,
+    )
+    from apps_rg.runtime.sections.executive_summary_synthesis_monotonic import (
+        evaluate_synthesis_regen_monotonicity,
     )
 
-    resume_display_text = parsed.get("resume_display_text") or ""
-    claim_ledger = parsed.get("claim_ledger") or []
-    voice_ok, voice_reason = check_l2_resume_voice(resume_display_text)
-    narrative_ok, narrative_reason = check_executive_summary_narrative_shape(
-        resume_display_text, claim_ledger
-    )
-    syn_ok, syn_reason = check_synthesis_quality(resume_display_text)
-    meta_ok, meta_reason = check_exec_summary_meta_filler_patterns(resume_display_text)
-    colon_ok, colon_reason = check_resume_display_colon_space_discipline(resume_display_text)
-    srfs_density_ok = True
-    if srfs_x2_mode_active(srfs_integration):
-        sent_ok, sent_reason = check_srfs_sentence_count_4_5(resume_display_text, srfs_integration)
-        dens_ok, dens_reason = check_srfs_density_word_count(
-            resume_display_text, parsed, srfs_integration
-        )
-        srfs_density_ok = dens_ok
-        if not dens_ok:
-            sent_ok, sent_reason = False, dens_reason or sent_reason
-    else:
-        sent_ok, sent_reason = check_resume_display_sentence_count_2_3(resume_display_text)
-    star_ok, star_reason = True, None
-    if selected_facts is not None:
-        star_ok, star_reason = check_north_star_style_example_echo_unsupported(
-            resume_display_text, selected_facts
-        )
-    if (
-        voice_ok
-        and narrative_ok
-        and syn_ok
-        and meta_ok
-        and colon_ok
-        and sent_ok
-        and star_ok
-    ):
+    if not synthesis_regeneration_enabled():
         return raw_output, parsed, ""
 
-    reject_reason = (
-        voice_reason
-        or narrative_reason
-        or syn_reason
-        or meta_reason
-        or colon_reason
-        or sent_reason
-        or star_reason
-        or "narrative quality"
+    first_text = str(parsed.get("resume_display_text") or "")
+    shape_ok, reject_reason = _synthesis_shape_reject_reason(
+        first_text, parsed, selected_facts=selected_facts
     )
-    if srfs_x2_mode_active(srfs_integration):
-        wc0 = len(re.findall(r"\S+", str(resume_display_text or "").strip()))
-        density_under = (not srfs_density_ok) and wc0 < 95
-        density_over = (not srfs_density_ok) and wc0 > 160
-        srfs_tail = (
-            "(not bullet chains; no clause title or internal claim label followed by colon+space). "
-            "Use ONLY the selected facts already shown in the user message; do not introduce metrics absent from those facts. "
-            "THIRD PERSON ONLY - remove all I/me/my/we/our; never 'As an X, I...'. "
-            "Keep jd_used_as_proof=false when JD is targeting-only. "
-            "Forbidden meta-scaffolding: 'selected facts', 'scope described', 'active-voice delivery', 'governance discipline' as filler, "
-            "'Built on <label>:', Title Case Label clauses with colon, or writing-process narration. "
-            "Forbidden: one sentence per claim-ledger row as a thin list; Generated/Integrated/Enhanced as three parallel proofs; "
-            "'This was achieved while/through/by'; Productized/Designed/Strengthened/Standardized opener chain. "
-            "North-star / exemplar echo is forbidden unless the **exact same contiguous substring** appears in selected "
-            "fact claim_text or metric_raw (e.g. if facts say **IP-led revenue**, do not substitute **productized AI revenue** "
-            "from the style exemplar)."
+    if shape_ok:
+        return raw_output, parsed, ""
+
+    max_attempts = synthesis_regen_max_attempts()
+    regen_receipt: dict[str, Any] = {
+        "schema": "executive_summary_synthesis_regen_v2",
+        "triggered": True,
+        "reject_reason": reject_reason,
+        "first_pass_resume_word_count": len(re.findall(r"\S+", first_text)),
+        "first_pass_claim_ledger_rows": len(list(parsed.get("claim_ledger") or [])),
+        "max_attempts": max_attempts,
+        "attempts": [],
+    }
+    current_raw = raw_output
+    current_parsed = parsed
+    parse_err = ""
+    baseline_messages = list(messages)
+    last_mono_rejected = False
+
+    best_raw = raw_output
+    best_parsed = parsed
+    best_fail_count = _shape_failure_count(first_text, parsed, selected_facts=selected_facts)
+    best_ledger_rows = len(list(parsed.get("claim_ledger") or []))
+
+    for attempt in range(max_attempts):
+        resume_text = str(current_parsed.get("resume_display_text") or "")
+        prior_wc = len(re.findall(r"\S+", resume_text))
+        prior_ledger_rows = len(list(current_parsed.get("claim_ledger") or []))
+        shape_ok, reject_reason = _synthesis_shape_reject_reason(
+            resume_text, current_parsed, selected_facts=selected_facts
         )
-        if density_under:
-            repair_user = (
-                f"SYNTHESIS REJECTED: {reject_reason}. "
-                "SRFS SURGICAL DENSITY REPAIR (single Qwen rewrite pass - **no** additional broad regeneration loop). "
-                f"Prior `resume_display_text` is ~{wc0} words; land in **95-160** (stay **under 160**). "
-                "**Add only 8-18 words** total; **final `resume_display_text` must be at least 95 words** and **under 160**. "
-                "If a tight pass would land at **93-94 words**, add **2-6 additional allowed words** in Sentences 2, 3, or 5 only "
-                "(same sentence count; **at most ~22 words** added vs the pre-repair draft). "
-                "Do **not** balloon into a rewrite of the whole paragraph. "
-                "**Keep exactly the same number** of period-delimited sentences as the prior draft "
-                "(if the prior had **five**, keep **five**; **do not add a sixth sentence**). "
-                "Preserve the **five-part** S1-S5 arc: thesis / mechanism / lifecycle bridge / outcomes / credibility. "
-                "**Preserve every existing `claim_ledger` `source_fact_id`** unless you remove that claim row entirely; "
-                "do not drop proof IDs silently. "
-                "**Prefer** expanding **Sentences 2, 3, or 5** using substance already allowed under ALLOWED_SOURCE_FACT_IDS; "
-                "**do not expand Sentence 4** (outcomes/metrics) unless no other lane can honestly carry the words. "
-                "Do **not** invent facts, metrics, or credentials; do **not** copy exemplar-only lines (e.g. unsupported "
-                "$14M operating capacity). "
-                "When fixing under-minimum word count, **do not shorten** unrelated sentences; **add** only allowed words. "
-                "**Copy every `source_fact_id` from the prior claim_ledger exactly** (verbatim spelling; no double underscores, "
-                "typos, or invented hash suffixes). "
-                "Do **not** add generic filler (**operational efficiency**, **seamless integration**) without a claim_ledger "
-                "row that ties the clause to ALLOWED_SOURCE_FACT_IDS. "
-                "Sentence 5 must be an **integrated credibility clause**: weave AWS / Databricks / FSA (and FSA "
-                "actuarial rigor when the cert fact supports it) into governance and commercialization balance; "
-                "name training domains **only** when verbatim in fact_certs_001 — **never** `record above` or "
-                "credential-pointer meta. "
-                "Not a bare `Holds ...` inventory or invented training domains. Forbidden: **applied depth**, "
-                "**documented credential training**, **credentialed foundation strength**. "
-                "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
-                + srfs_tail
+        if shape_ok:
+            regen_receipt["accepted"] = True
+            regen_receipt["accepted_via"] = "shape_pass"
+            regen_receipt["final_resume_word_count"] = prior_wc
+            if artifact_dir is not None:
+                write_json(artifact_dir / "synthesis_regen_receipt.json", regen_receipt)
+            return current_raw, current_parsed, parse_err
+
+        repair_user = _build_synthesis_repair_user(
+            reject_reason,
+            attempt_index=attempt,
+            prior_word_count=prior_wc,
+            prior_ledger_rows=prior_ledger_rows,
+            last_monotonicity_rejected=last_mono_rejected,
+        )
+        repair_messages = [
+            *baseline_messages,
+            {"role": "assistant", "content": current_raw},
+            {"role": "user", "content": repair_user},
+        ]
+        repair_payload = {**provider_payload, "messages": repair_messages}
+        result = call_qwen_vllm(
+            tag_reasoning_lane(repair_payload, LANE_KEY),
+            artifact_dir=artifact_dir,
+            run_id=run_id,
+        )
+        attempt_record: dict[str, Any] = {
+            "attempt": attempt + 1,
+            "reject_reason": reject_reason,
+            "runtime_status": result.runtime_generation_status,
+        }
+        last_mono_rejected = False
+        if result.runtime_generation_status != "REAL_LLM":
+            attempt_record["skipped"] = "non_real_llm"
+            regen_receipt["attempts"].append(attempt_record)
+            break
+        new_raw = result.raw_model_output
+        new_parsed, new_err = parse_model_json(new_raw)
+        parse_err = new_err or ""
+        attempt_record["parse_ok"] = bool(new_parsed)
+        if new_parsed:
+            regen_text = str(new_parsed.get("resume_display_text") or "")
+            attempt_record["regen_resume_word_count"] = len(re.findall(r"\S+", regen_text))
+            attempt_record["regen_claim_ledger_rows"] = len(list(new_parsed.get("claim_ledger") or []))
+            new_fail_count = _shape_failure_count(
+                regen_text, new_parsed, selected_facts=selected_facts
             )
-        elif density_over:
-            repair_user = (
-                f"SYNTHESIS REJECTED: {reject_reason}. "
-                f"Prior `resume_display_text` is ~{wc0} words (hard max **160**). "
-                "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
-                "**Trim** words only; **keep the same sentence count** as the prior draft (**do not** add a sixth sentence); "
-                "preserve S1-S5 structure and claim_ledger `source_fact_id` discipline unless removing a whole claim row. "
-                + srfs_tail
+            attempt_record["shape_failure_count"] = new_fail_count
+            mono_ok, mono_detail = evaluate_synthesis_regen_monotonicity(
+                prior_parsed=current_parsed,
+                prior_reject_reason=reject_reason,
+                new_parsed=new_parsed,
             )
+            attempt_record["monotonicity"] = mono_detail
+            new_ledger_rows = len(list(new_parsed.get("claim_ledger") or []))
+            if mono_ok:
+                current_raw = new_raw
+                current_parsed = new_parsed
+                if artifact_dir is not None and attempt == 0:
+                    write_json(artifact_dir / "provider_response_synthesis_regen.json", result.to_dict())
+            else:
+                last_mono_rejected = True
+                attempt_record["skipped"] = "monotonicity_rejected"
+            if _regen_candidate_preferred(
+                new_fail_count=new_fail_count,
+                new_ledger_rows=new_ledger_rows,
+                new_word_count=attempt_record["regen_resume_word_count"],
+                best_fail_count=best_fail_count,
+                best_ledger_rows=best_ledger_rows,
+                best_word_count=len(re.findall(r"\S+", str(best_parsed.get("resume_display_text") or ""))),
+                monotonicity_accepted=mono_ok,
+            ):
+                best_fail_count = new_fail_count
+                best_ledger_rows = new_ledger_rows
+                best_raw = new_raw
+                best_parsed = new_parsed
+                attempt_record["best_candidate"] = True
         else:
-            repair_user = (
-                f"SYNTHESIS REJECTED: {reject_reason}. "
-                f"(Measured ~{wc0} words in the prior resume_display_text.) "
-                "Internally compare at least two supported repair options; choose the densest rewrite still faithful to facts. "
-                "Return a NEW complete JSON object (RAW JSON only; first char {, last char }. "
-                "Rewrite resume_display_text as **4 or 5** period-delimited sentences (prefer 5) of synthesized executive prose "
-                "with SRFS five-part separation (thesis / mechanism / lifecycle bridge / outcomes / credibility). "
-                "Target **105-145 words** (hard bounds **95-160**); if the pool cannot honestly reach 95 words, set "
-                "self_check.selected_fact_pool_too_small=true with a non-empty selected_fact_pool_too_small_reason. "
-                + srfs_tail
-            )
-    else:
-        repair_user = (
-            f"SYNTHESIS REJECTED: {reject_reason}. "
-            "Internally compare at least two supported repair options; choose the densest rewrite still faithful to facts. "
-            "Return a NEW complete JSON object (RAW JSON only; first char {, last char }. "
-            "Rewrite resume_display_text as exactly two or three polished sentences of synthesized executive prose "
-            "(not bullet chains; no clause title or internal claim label followed by colon+space). "
-            "use ONLY the selected facts already shown in the user message; do not introduce metrics or outcomes absent from those facts. "
-            "Combine roles across facts; never one sentence per source fact. "
-            "Where facts support it, cover executive identity plus commercial or scope arc, and technical governance plus delivery arc "
-            "in active voice (never passive 'cycle time was reduced'). "
-            "Collapse comma-separated capability lists. "
-            "THIRD PERSON ONLY - remove all I/me/my/we/our; never 'As an X, I...'. "
-            "Keep jd_used_as_proof=false when JD is targeting-only. "
-            "Forbidden meta-scaffolding: 'selected facts', 'scope described', 'active-voice delivery', 'governance discipline' as filler, "
-            "'Built on <label>:', Title Case Label clauses with colon, or writing-process narration. "
-            "Forbidden: one sentence per claim-ledger row; Generated/Integrated/Enhanced as three parallel proofs; "
-            "'This was achieved while/through/by'; Productized/Designed/Strengthened/Standardized opener chain."
-        )
-    repair_messages = [
-        *messages,
-        {"role": "assistant", "content": raw_output},
-        {"role": "user", "content": repair_user},
-    ]
-    repair_payload = {**provider_payload, "messages": repair_messages}
-    result = call_qwen_vllm(
-        tag_reasoning_lane(repair_payload, LANE_KEY),
-        artifact_dir=artifact_dir,
-        run_id=run_id,
+            attempt_record["parse_error"] = new_err
+        regen_receipt["attempts"].append(attempt_record)
+
+    final_text = str(current_parsed.get("resume_display_text") or "")
+    final_ok, final_reason = _synthesis_shape_reject_reason(
+        final_text, current_parsed, selected_facts=selected_facts
     )
-    if result.runtime_generation_status != "REAL_LLM":
-        return raw_output, parsed, ""
-    new_raw = result.raw_model_output
-    new_parsed, new_err = parse_model_json(new_raw)
-    if new_parsed:
-        return new_raw, new_parsed, new_err
-    return raw_output, parsed, new_err
+    final_fail_count = _shape_failure_count(
+        final_text, current_parsed, selected_facts=selected_facts
+    )
+    best_wc = len(re.findall(r"\S+", str(best_parsed.get("resume_display_text") or "")))
+    if not final_ok and _regen_candidate_preferred(
+        new_fail_count=best_fail_count,
+        new_ledger_rows=best_ledger_rows,
+        new_word_count=best_wc,
+        best_fail_count=final_fail_count,
+        best_ledger_rows=len(list(current_parsed.get("claim_ledger") or [])),
+        best_word_count=len(re.findall(r"\S+", final_text)),
+        monotonicity_accepted=True,
+    ):
+        current_raw = best_raw
+        current_parsed = best_parsed
+        regen_receipt["accepted_via"] = "best_candidate_fallback"
+        final_text = str(current_parsed.get("resume_display_text") or "")
+        final_ok, final_reason = _synthesis_shape_reject_reason(
+            final_text, current_parsed, selected_facts=selected_facts
+        )
+        regen_receipt["best_candidate_shape_failure_count"] = best_fail_count
+    elif final_ok:
+        regen_receipt["accepted_via"] = regen_receipt.get("accepted_via") or "shape_pass_after_regen"
+
+    regen_receipt["accepted"] = final_ok
+    if not final_ok:
+        regen_receipt["final_reject_reason"] = final_reason
+    regen_receipt["final_resume_word_count"] = len(re.findall(r"\S+", final_text))
+    regen_receipt["final_claim_ledger_rows"] = len(list(current_parsed.get("claim_ledger") or []))
+    if artifact_dir is not None:
+        if regen_receipt.get("triggered") and regen_receipt.get("attempts"):
+            from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, record_repair
+
+            record_repair(
+                artifact_dir,
+                kind=KIND_REGEN_LLM,
+                operation="synthesis_regen",
+                reason=str(regen_receipt.get("reject_reason") or regen_receipt.get("final_reject_reason") or "")[
+                    :240
+                ],
+                replaced_l2=bool(regen_receipt.get("accepted")),
+            )
+        write_json(artifact_dir / "synthesis_regen_receipt.json", regen_receipt)
+    return current_raw, current_parsed, parse_err
 
 
 def enrich_parsed_for_x2(
@@ -1020,38 +1189,29 @@ def run_executive_summary_execution(
     proof_pool_metadata = pool.proof_pool_metadata
 
     srfs_integration: dict[str, Any] | None = None
-    if pool.srfs_present and pool.srfs_ref:
-        from apps_rg.runtime.sections.selected_role_fact_set import (
-            build_srfs_integration_envelope,
-            load_selected_role_fact_set,
-        )
-
-        doc = load_selected_role_fact_set(Path(pool.srfs_ref))
-        plan_facts = list(selected_fact_plan.get("facts") or [])
-        srfs_integration = build_srfs_integration_envelope(
-            doc,
-            executive_summary_plan_facts=plan_facts,
-            artifact_path_resolved=pool.srfs_ref,
-        )
     provider_resolution_source = coalesce_lane_provider_resolution_source(
         explicit=getattr(args, "provider_resolution_source", None),
         resolved_provider=str(args.provider),
     )
     briefing_raw = str(getattr(args, "briefing", "") or "")
     briefing_eff, briefing_trunc_meta = truncate_briefing_for_exec_summary_vllm(briefing_raw)
+    if isinstance(briefing_trunc_meta, dict) and briefing_trunc_meta.get("fail_closed"):
+        raise RuntimeError(
+            str(briefing_trunc_meta.get("truncation_or_selection_reason") or "briefing_fail_closed")
+        )
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
         base_hash=base_hash,
         selected_fact_plan=selected_fact_plan,
-        target_title=args.target_title,
-        target_company=args.target_company,
-        jd_text=args.jd_text,
+        target_title=_args_target_title(args),
+        target_company=str(getattr(args, "target_company", None) or TARGET_COMPANY_DEFAULT),
+        jd_text=_args_jd_text(args),
         briefing=briefing_eff,
         srfs_integration=srfs_integration,
         allowed_fact_ids_ordered=allowed_fact_ids_ordered,
     )
     if briefing_trunc_meta is not None:
-        runtime_payload["briefing_truncation"] = briefing_trunc_meta
+        runtime_payload["briefing_selection"] = briefing_trunc_meta
     runtime_payload["proof_pool_metadata"] = proof_pool_metadata
     if pool.proof_source == "augmented_skills_graph":
         runtime_payload["graph_only_claim_authority"] = True
@@ -1061,6 +1221,15 @@ def run_executive_summary_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_repair_ledger import init_ledger
+
+    init_ledger(
+        artifact_dir,
+        section_id="executive_summary",
+        run_id=str(runtime_payload["run_id"]),
+    )
+    if briefing_trunc_meta is not None:
+        write_json(artifact_dir / "briefing_selection_receipt.json", briefing_trunc_meta)
     from apps_rg.runtime.section_fec_bridge import (
         merge_compiled_prompt_artifact_fec_fields,
         wire_section_fec_bridge_for_lane,
@@ -1213,8 +1382,17 @@ def run_executive_summary_execution(
         merge_compiled_prompt_artifact_fec_fields(
             {
                 "section_id": section_compiled.section_id,
+                "contract_template_ref": section_compiled.apps_rg_prompt_template_ref,
                 "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+                "pa_shell_ref": "apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml",
+                "prompt_bom_ref": "apps_rg/prompt_assembly/prompt_bom.yaml",
+                "selected_template_id": section_compiled.artifact.template_id,
                 "compiler_template_id": section_compiled.artifact.template_id,
+                "prompt_hash": prompt_hash,
+                "component_hash_map": {
+                    "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+                    "provider_prompt_hash": prompt_hash,
+                },
                 "pa_prompt_hash": section_compiled.artifact.prompt_hash,
                 "provider_prompt_hash": prompt_hash,
                 "slot_count": section_compiled.artifact.slot_count,
@@ -1367,10 +1545,16 @@ def run_executive_summary_execution(
                 srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
             )
             prune_exec_summary_claim_ledger_orphans(parsed, allowed_fact_ids)
-            if pool.proof_source == "augmented_skills_graph":
+            from apps_rg.runtime.section_repair_policy import graph_only_reformat_allowed
+
+            if pool.proof_source == "augmented_skills_graph" and graph_only_reformat_allowed():
                 from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
                     apply_graph_only_generation_quality_repair,
                     parsed_to_raw_model_output_json as _graph_quality_to_raw,
+                )
+                from apps_rg.runtime.section_repair_ledger import (
+                    KIND_DETERMINISTIC_REWRITE,
+                    record_repair,
                 )
 
                 _plan_facts = list(selected_fact_plan.get("facts") or [])
@@ -1380,50 +1564,15 @@ def run_executive_summary_execution(
                     plan_facts=_plan_facts,
                 )
                 write_json(artifact_dir / "graph_only_generation_quality_repair.json", graph_quality_meta)
-                raw_output = _graph_quality_to_raw(parsed)
-            if isinstance(_srfs_i, dict):
-                from apps_rg.runtime.sections.exec_summary_srfs_density_repair import (
-                    apply_srfs_density_micro_expansion,
-                    parsed_to_raw_model_output_json,
-                )
-                from apps_rg.runtime.sections.exec_summary_srfs_judge_safe import (
-                    apply_srfs_judge_safe_repair,
-                )
-
-                _srfs_facts = list(selected_fact_plan.get("facts") or [])
-                parsed, _judge_safe_meta = apply_srfs_judge_safe_repair(
-                    parsed,
-                    _srfs_facts,
-                    _srfs_i,
-                )
-                if _judge_safe_meta:
-                    write_json(artifact_dir / "srfs_judge_safe_repair.json", _judge_safe_meta)
-                density_repair_meta = None
-                parsed, density_repair_meta = apply_srfs_density_micro_expansion(
-                    parsed, _srfs_i, selected_facts=_srfs_facts
-                )
-                if density_repair_meta:
-                    write_json(
-                        artifact_dir / "exec_summary_srfs_density_micro_expansion.json",
-                        density_repair_meta,
+                if graph_quality_meta.get("repaired"):
+                    record_repair(
+                        artifact_dir,
+                        kind=KIND_DETERMINISTIC_REWRITE,
+                        operation="graph_only_generation_quality_repair",
+                        reason=str(graph_quality_meta.get("reason") or "repaired")[:240],
+                        replaced_l2=True,
                     )
-                parsed, density_post_judge_meta = apply_srfs_density_micro_expansion(
-                    parsed, _srfs_i, selected_facts=_srfs_facts
-                )
-                if density_post_judge_meta:
-                    density_repair_meta = {
-                        **(density_repair_meta or {}),
-                        "post_judge_safe_pass": density_post_judge_meta,
-                    }
-                parsed, _judge_safe_final_meta = apply_srfs_judge_safe_repair(
-                    parsed,
-                    _srfs_facts,
-                    _srfs_i,
-                )
-                if _judge_safe_final_meta:
-                    _final_body = {**_judge_safe_final_meta, "pass": "post_density"}
-                    write_json(artifact_dir / "srfs_judge_safe_repair_final.json", _final_body)
-                raw_output = parsed_to_raw_model_output_json(parsed)
+                raw_output = _graph_quality_to_raw(parsed)
         if parsed and isinstance(parsed, dict):
             _srfs_final = runtime_payload.get("srfs_integration")
             coerced_resume = coerce_resume_display_sentence_count_band(
@@ -1462,16 +1611,16 @@ def run_executive_summary_execution(
         from apps_rg.runtime.sections.executive_summary_composition import (
             attach_composition_to_parsed,
             build_executive_summary_composition_plan,
-            normalize_exec_summary_recruiter_openers,
         )
 
-        resume_display_text = normalize_exec_summary_recruiter_openers(resume_display_text)
         parsed["resume_display_text"] = resume_display_text
         _plan_facts = list(selected_fact_plan.get("facts") or [])
         composition_plan = build_executive_summary_composition_plan(
             selected_facts=_plan_facts,
             allowed_fact_ids=allowed_fact_ids,
-            target_role=str(args.target_role or ""),
+            target_role=str(
+                getattr(args, "target_role", None) or getattr(args, "target_title", None) or ""
+            ),
             target_company=str(args.target_company or ""),
             proof_pool_metadata=_pp_meta,
             srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
@@ -1501,6 +1650,19 @@ def run_executive_summary_execution(
         {"parsed": parsed, "parse_error": parse_error, "parse_status": parse_status},
     )
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
+    if parsed and isinstance(parsed, dict):
+        from apps_rg.runtime.sections.section_authority_repairs import (
+            apply_exec_summary_display_authority_repairs,
+        )
+
+        parsed = apply_exec_summary_display_authority_repairs(
+            parsed,
+            allowed_fact_ids=allowed_fact_ids,
+            plan_facts=list(selected_fact_plan.get("facts") or []),
+            artifact_dir=artifact_dir,
+        )
+        resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
+        claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
     coverage = build_sentence_claim_coverage(resume_display_text, claim_ledger, allowed_fact_ids)
     parsed_for_x2 = enrich_parsed_for_x2(
         parsed,
@@ -1564,8 +1726,8 @@ def run_executive_summary_execution(
         selected_fact_plan=sfp_for_usage if isinstance(sfp_for_usage, dict) else {"facts": []},
         claim_ledger=claim_ledger,
         allowed_fact_ids=allowed_fact_ids,
-        jd_text=str(args.jd_text),
-        target_title=str(args.target_title),
+        jd_text=_args_jd_text(args),
+        target_title=_args_target_title(args),
         target_company=str(args.target_company),
         briefing_text=str(args.briefing),
         jd_alignment=l2_output.get("jd_alignment"),
@@ -1581,9 +1743,9 @@ def run_executive_summary_execution(
         claim_ledger=claim_ledger,
         allowed_fact_packet=selected_facts_for_x2,
         allowed_fact_ids=allowed_fact_ids,
-        target_title=str(args.target_title),
+        target_title=_args_target_title(args),
         target_company=str(args.target_company),
-        jd_text=str(args.jd_text),
+        jd_text=_args_jd_text(args),
         briefing_text=str(args.briefing),
         parsed_output=parsed_for_x2,
         srfs_integration=srfs_integration if isinstance(srfs_integration, dict) else None,
@@ -1613,11 +1775,21 @@ def run_executive_summary_execution(
         "provider": args.provider,
         "provider_resolution_source": provider_resolution_source,
         "temperature": temperature,
-        "strategic_tailor_v1_invoked": False,
         "monolithic_prompt_invoked": False,
         "section_prompt_adapter": True,
+        "contract_template_ref": section_compiled.apps_rg_prompt_template_ref,
         "apps_rg_prompt_template_ref": section_compiled.apps_rg_prompt_template_ref,
+        "pa_shell_ref": "apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml",
+        "prompt_bom_ref": "apps_rg/prompt_assembly/prompt_bom.yaml",
+        "selected_template_id": section_compiled.artifact.template_id,
         "compiler_template_id": section_compiled.artifact.template_id,
+        "prompt_hash": prompt_hash,
+        "component_hash_map": {
+            "pa_prompt_hash": section_compiled.artifact.prompt_hash,
+            "provider_prompt_hash": prompt_hash,
+        },
+        "w3_execution_path_bucket": W3_EXECUTION_PATH_BUCKET,
+        "w3_execution_path_plan_slug": W3_EXECUTION_PATH_PLAN_SLUG,
     }
     trace = attach_reasoning_to_prompt_trace(
         trace,
@@ -1643,8 +1815,10 @@ def run_executive_summary_execution(
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="executive_summary")
 
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or proof_pool_metadata or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, _srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -1686,6 +1860,15 @@ def run_executive_summary_execution(
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary")
+    from apps_rg.runtime.section_repair_ledger import load_ledger, record_x2_run
+
+    _ledger = load_ledger(artifact_dir) or {}
+    record_x2_run(
+        artifact_dir,
+        run_number=len(list(_ledger.get("x2_runs") or [])) + 1,
+        after_l2_source=str(_ledger.get("authoritative_l2_source") or "initial_llm"),
+        x2_gates=x2,
+    )
     write_json(
         artifact_dir / "fact_check_result.json",
         {
@@ -1693,6 +1876,158 @@ def run_executive_summary_execution(
             "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
         },
     )
+
+    x2_failed_initial = [g for g in x2 if not g["pass"]]
+    if runtime_generation_status == "REAL_LLM" and not x2_failed_initial and parsed_for_x2:
+        from apps_rg.runtime.section_repair_policy import judge_remediation_regen_allowed
+        from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+            evaluate_judge_remediation_trigger,
+            rerun_soft_failed_judges,
+            rerun_x2_after_judge_remediation,
+            retry_qwen_for_judge_remediation,
+        )
+        from apps_rg.runtime.validators.executive_summary_x2 import collect_unused_allowed_fact_ids
+
+        if judge_remediation_regen_allowed():
+            trigger_ok, trigger_receipt = evaluate_judge_remediation_trigger(
+                x1d,
+                runtime_generation_status=runtime_generation_status,
+                x2_passed=True,
+            )
+            write_json(artifact_dir / "judge_remediation_trigger.json", trigger_receipt)
+            if trigger_ok:
+                _pre_raw = raw_output
+                _pre_parsed = dict(parsed_for_x2)
+                _pre_resume = resume_display_text
+                _pre_ledger = list(claim_ledger)
+                _pre_x2 = list(x2)
+                unused_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
+                raw_output, parsed_regen, _j_receipt = retry_qwen_for_judge_remediation(
+                    messages,
+                    provider_payload,
+                    raw_output,
+                    parsed_for_x2,
+                    x1d_judges=x1d,
+                    trigger_receipt=trigger_receipt,
+                    selected_fact_plan=selected_fact_plan,
+                    allowed_fact_ids=allowed_fact_ids,
+                    unused_fact_ids=unused_ids,
+                    srfs_integration=srfs_integration if isinstance(srfs_integration, dict) else None,
+                    artifact_dir=artifact_dir,
+                    run_id=str(runtime_payload.get("run_id") or "") or None,
+                )
+                if _j_receipt.get("accepted") or _j_receipt.get("prefilter_applied"):
+                    from apps_rg.runtime.section_repair_ledger import (
+                        KIND_REGEN_LLM,
+                        record_repair,
+                        set_authoritative_attempt,
+                    )
+
+                    record_repair(
+                        artifact_dir,
+                        kind=KIND_REGEN_LLM,
+                        operation="judge_remediation_regen",
+                        reason=str(_j_receipt.get("trigger_reason") or "judge_remediation")[:240],
+                        replaced_l2=True,
+                    )
+                    parsed = parsed_regen
+                    from apps_rg.runtime.sections.section_authority_repairs import (
+                        apply_exec_summary_display_authority_repairs,
+                    )
+
+                    parsed = apply_exec_summary_display_authority_repairs(
+                        parsed,
+                        allowed_fact_ids=allowed_fact_ids,
+                        plan_facts=list(selected_fact_plan.get("facts") or []),
+                        artifact_dir=artifact_dir,
+                    )
+                    resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
+                    claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
+                    coverage = build_sentence_claim_coverage(
+                        resume_display_text, claim_ledger, allowed_fact_ids
+                    )
+                    parsed_for_x2 = enrich_parsed_for_x2(
+                        parsed,
+                        coverage=coverage,
+                        input_payload_hash=input_payload_hash,
+                        allowed_fact_ids=allowed_fact_ids,
+                    )
+                    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+                    (artifact_dir / "resume_display_text.txt").write_text(
+                        resume_display_text + "\n", encoding="utf-8"
+                    )
+                    write_json(artifact_dir / "claim_ledger.json", claim_ledger)
+                    write_json(artifact_dir / "text_claim_coverage.json", coverage)
+                    x2_regen = rerun_x2_after_judge_remediation(
+                        resume_display_text=resume_display_text,
+                        parsed_for_x2=parsed_for_x2,
+                        claim_ledger=claim_ledger,
+                        text_claim_coverage=coverage,
+                        allowed_fact_ids=allowed_fact_ids,
+                        args=args,
+                        temperature=temperature,
+                        runtime_generation_status=runtime_generation_status,
+                        artifact_dir=artifact_dir,
+                        model_name=model_name,
+                        prompt_hash=prompt_hash,
+                        compiled_prompt=compiled_prompt,
+                        raw_output=raw_output,
+                        selected_facts=selected_facts_for_x2,
+                        x1d_judges=x1d,
+                        srfs_integration=srfs_integration,
+                        proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
+                        proof_pool_ref=str(pool.proof_pool_ref or ""),
+                        proof_pool_digest=str(pool.proof_pool_digest or ""),
+                    )
+                    if not [g for g in x2_regen if not g["pass"]]:
+                        x2 = x2_regen
+                        _ledger2 = load_ledger(artifact_dir) or {}
+                        record_x2_run(
+                            artifact_dir,
+                            run_number=len(list(_ledger2.get("x2_runs") or [])) + 1,
+                            after_l2_source="regen_llm",
+                            x2_gates=x2,
+                        )
+                        set_authoritative_attempt(
+                            artifact_dir,
+                            2,
+                            reason="judge_remediation_regen_x2_pass",
+                        )
+                        x1d = rerun_soft_failed_judges(
+                            resume_display_text=resume_display_text,
+                            claim_ledger=claim_ledger,
+                            judge_packet=judge_packet,
+                            judge_packet_ref=judge_packet_ref,
+                            compiled_prompt=compiled_prompt,
+                            artifact_dir=artifact_dir,
+                            judge_keys=judge_keys,
+                            judge_mode=judge_mode,
+                            prior_judges=x1d,
+                        )
+                        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+                        write_x2_gate_outputs(
+                            artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary"
+                        )
+                        write_json(
+                            artifact_dir / "fact_check_result.json",
+                            {
+                                "passed": True,
+                                "failed_gates": [],
+                                "judge_remediation_applied": True,
+                            },
+                        )
+                        l2_output["resume_display_text"] = resume_display_text
+                        l2_output["claim_ledger"] = claim_ledger
+                        l2_output["text_claim_coverage"] = coverage
+                        write_json(artifact_dir / "l2_output.json", l2_output)
+                    else:
+                        raw_output = _pre_raw
+                        parsed_for_x2 = _pre_parsed
+                        resume_display_text = _pre_resume
+                        claim_ledger = _pre_ledger
+                        x2 = _pre_x2
+                        _j_receipt["reverted"] = "post_regen_x2_failed"
+                        write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
 
     _graph_only_repaired = False
     _repair_meta_path = artifact_dir / "graph_only_generation_quality_repair.json"
@@ -1710,9 +2045,13 @@ def run_executive_summary_execution(
         resume_display_text,
         claim_ledger,
         graph_only_fact_tight_synthesis=_graph_only_repaired,
+        artifact_dir=artifact_dir,
     )
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
+    from apps_rg.runtime.section_repair_ledger import attach_ledger_summary_to_l2
+
+    attach_ledger_summary_to_l2(l2_output, artifact_dir)
     write_json(artifact_dir / "l2_output.json", l2_output)
 
     x3 = aggregate_x3(

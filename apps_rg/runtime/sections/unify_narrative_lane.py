@@ -243,119 +243,24 @@ def build_selected_fact_plan_srfs(facts: list[dict[str, Any]]) -> dict[str, Any]
 
 
 def _companion_unify_bullets_accepted(run_dir: Path) -> bool:
-    l2_path = run_dir / "l2_output.json"
-    x3_path = run_dir / "x3_disposition.json"
-    if not l2_path.is_file():
-        return False
-    try:
-        data = json.loads(l2_path.read_text(encoding="utf-8"))
-        product_quality_status = str(data.get("product_quality_status") or "")
-        bullet_ids = [str(b.get("bullet_id")) for b in (data.get("bullets") or []) if isinstance(b, dict)]
-    except (json.JSONDecodeError, OSError):
-        return False
-    x3_code = "UNKNOWN"
-    if x3_path.is_file():
-        try:
-            x3 = json.loads(x3_path.read_text(encoding="utf-8"))
-            x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
-        except (json.JSONDecodeError, OSError):
-            return False
-    return (
-        product_quality_status == "PASS"
-        and x3_code == "X3_ALLOW"
-        and bullet_ids == list(UNIFY_BULLET_IDS)
+    from apps_rg.runtime.validators.companion_bullet_finalization import companion_run_dir_accepted
+
+    return companion_run_dir_accepted(
+        run_dir,
+        upstream_section_id="unify_bullets",
+        expected_bullet_ids=UNIFY_BULLET_IDS,
     )
 
 
 def load_companion_unify_bullets_context() -> dict[str, Any]:
-    """Resolve finalized Unify bullets before narrative generation (same rules as legacy dispatch)."""
-    from apps_rg.runtime.runtime_proof_layout import (
-        LATEST_SUCCESSFUL_REAL_FILENAME,
-        lane_root,
-        _read_json_dict,
+    """Resolve finalized Unify bullets for the current run (no stale global fallback on product path)."""
+    from apps_rg.runtime.validators.companion_bullet_finalization import build_companion_bullets_context
+
+    return build_companion_bullets_context(
+        REPO_ROOT,
+        upstream_section_id="unify_bullets",
+        expected_bullet_ids=UNIFY_BULLET_IDS,
     )
-
-    path = resolve_effective_lane_l2_path(REPO_ROOT, "unify_bullets")
-    if path is None or not _companion_unify_bullets_accepted(path.parent):
-        real_lane = lane_root(REPO_ROOT, "unify_bullets") / "real"
-        if real_lane.is_dir():
-            for run_dir in sorted(
-                real_lane.glob("unify_bullets_*"),
-                key=lambda p: p.stat().st_mtime,
-                reverse=True,
-            ):
-                if _companion_unify_bullets_accepted(run_dir):
-                    path = run_dir / "l2_output.json"
-                    break
-        if (path is None or not path.is_file()) and (
-            succ_ptr := lane_root(REPO_ROOT, "unify_bullets") / LATEST_SUCCESSFUL_REAL_FILENAME
-        ):
-            succ = _read_json_dict(succ_ptr) or {}
-            rel = succ.get("l2_output_repo_relative") or succ.get("run_dir")
-            if isinstance(rel, str) and rel.strip():
-                alt = (REPO_ROOT / rel).resolve()
-                alt_l2 = alt / "l2_output.json" if alt.is_dir() else alt
-                if alt_l2.is_file() and _companion_unify_bullets_accepted(alt_l2.parent):
-                    path = alt_l2
-    base: dict[str, Any] = {
-        "status": "MISSING",
-        "reason": "unify_bullets_l2_output_not_found",
-        "text": "",
-        "l2_ref": None,
-        "x3_ref": None,
-        "bullet_ids": [],
-        "product_quality_status": "UNKNOWN",
-        "x3_code": "UNKNOWN",
-    }
-    if path is None or not path.is_file():
-        return base
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError) as exc:
-        return {**base, "status": "INVALID", "reason": f"unify_bullets_l2_unreadable:{type(exc).__name__}", "l2_ref": str(path)}
-
-    bullets = data.get("bullets") or []
-    bullet_ids = [str(b.get("bullet_id")) for b in bullets if isinstance(b, dict)]
-    text = "\n".join(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}" for b in bullets if isinstance(b, dict))
-    product_quality_status = str(data.get("product_quality_status") or "UNKNOWN")
-    x3_path = path.parent / "x3_disposition.json"
-    x3_code = "UNKNOWN"
-    if x3_path.is_file():
-        try:
-            x3 = json.loads(x3_path.read_text(encoding="utf-8"))
-            x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
-        except (json.JSONDecodeError, OSError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
-            x3_code = "UNREADABLE"
-
-    expected_ids = list(UNIFY_BULLET_IDS)
-    status = ACCEPTED_COMPANION_STATUS
-    reasons: list[str] = []
-    if data.get("section_id") != "unify_bullets":
-        reasons.append("section_id_not_unify_bullets")
-    if bullet_ids != expected_ids:
-        reasons.append("bullet_ids_not_exact_bul_unify_001_to_006")
-    if product_quality_status != "PASS":
-        reasons.append(f"product_quality_status_not_PASS:{product_quality_status}")
-    if x3_code != "X3_ALLOW":
-        reasons.append(f"x3_not_ALLOW:{x3_code}")
-    if reasons:
-        status = "NOT_FINALIZED"
-
-    rel_l2 = str(path.relative_to(REPO_ROOT)) if path.is_relative_to(REPO_ROOT) else str(path)
-    x3_ref_val: str | None = None
-    if x3_path.is_file():
-        x3_ref_val = str(x3_path.relative_to(REPO_ROOT)) if x3_path.is_relative_to(REPO_ROOT) else str(x3_path)
-
-    return {
-        "status": status,
-        "reason": ";".join(reasons) if reasons else "ok",
-        "text": text,
-        "l2_ref": rel_l2,
-        "x3_ref": x3_ref_val,
-        "bullet_ids": bullet_ids,
-        "product_quality_status": product_quality_status,
-        "x3_code": x3_code,
-    }
 
 
 def build_runtime_payload(
@@ -546,15 +451,11 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         "Solution Accelerator in a consulting firm context at Unify Consulting, serving Fortune 500 financial "
         "institutions and converting bespoke programs into reusable intellectual property deployed across enterprise lines of business."
     )
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
     allowed_sorted = list(runtime_payload.get("allowed_fact_ids") or [])
-    if pool_type in ("selected_role_fact_set", "broad_skills_ledger") and allowed_sorted:
-        from apps_rg.runtime.sections.selected_role_fact_set import stub_source_fact_ids_for_allowed
-
-        cite_ids = stub_source_fact_ids_for_allowed(allowed_sorted, max_ids=4)
-    else:
-        cite_ids = [UNIFY_NARRATIVE_BASE_FACT_ID, "bul_unify_006", "bul_unify_001"]
+    facts = list(runtime_payload.get("selected_fact_plan", {}).get("facts") or [])
+    cite_ids = [str(f.get("fact_id") or "").strip() for f in facts if f.get("fact_id")]
+    if not cite_ids:
+        cite_ids = list(allowed_sorted[:4]) or [UNIFY_NARRATIVE_BASE_FACT_ID, "bul_unify_006", "bul_unify_001"]
     return {
         "narrative_sentence": narrative,
         "selected_fact_plan": runtime_payload["selected_fact_plan"],
@@ -593,12 +494,17 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 def infer_unify_narrative_product_quality(
     runtime_generation_status: str,
     x2_gates: list[dict[str, Any]],
+    *,
+    artifact_dir: Path | None = None,
 ) -> tuple[str, str]:
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    return infer_product_quality_blocked_or_mock(
+    from apps_rg.runtime.section_repair_ledger import infer_product_quality_with_repair_ledger
+
+    return infer_product_quality_with_repair_ledger(
         runtime_generation_status=runtime_generation_status,
         x2_failed_gate_ids=failed,
         pass_reason="REAL_LLM output passed all deterministic unify_narrative gates.",
+        artifact_dir=artifact_dir,
     )
 
 
@@ -642,7 +548,6 @@ def run_unify_narrative_execution(
     """Single end-to-end unify_narrative run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-    from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BASE_RESUME_FALLBACK
     from apps_rg.runtime.sections import selected_role_fact_set as _srfs
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
@@ -654,25 +559,14 @@ def run_unify_narrative_execution(
     candidate_name = str(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
-    if pool.proof_source == PROOF_SOURCE_BASE_RESUME_FALLBACK:
-        unify_header, unify_facts, allowed_fact_ids = extract_unify_employment(base)
-        selected_fact_plan = build_selected_fact_plan(
-            unify_facts,
-            role_narrative=str(unify_header.get("role_narrative") or ""),
-            employment_fact_id=str(unify_header.get("fact_id") or "exp_unify_001"),
-        )
-    else:
-        unify_header, _, _ = extract_unify_employment(base)
-        unify_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
-        if pool.srfs_present:
-            selected_fact_plan = build_selected_fact_plan_srfs(unify_facts)
-        else:
-            selected_fact_plan = build_selected_fact_plan(
-                unify_facts,
-                role_narrative=str(unify_header.get("role_narrative") or ""),
-                employment_fact_id=str(unify_header.get("fact_id") or "exp_unify_001"),
-            )
-        allowed_fact_ids = pool.allowed_fact_ids
+    unify_header, _, _ = extract_unify_employment(base)
+    unify_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
+    selected_fact_plan = build_selected_fact_plan(
+        unify_facts,
+        role_narrative=str(unify_header.get("role_narrative") or ""),
+        employment_fact_id=str(unify_header.get("fact_id") or "exp_unify_001"),
+    )
+    allowed_fact_ids = pool.allowed_fact_ids
     proof_pool_metadata = pool.proof_pool_metadata
     companion_context = load_companion_unify_bullets_context()
     companion_text = str(companion_context.get("text") or "")
@@ -703,6 +597,13 @@ def run_unify_narrative_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_repair_ledger import init_ledger
+
+    init_ledger(
+        artifact_dir,
+        section_id="unify_narrative",
+        run_id=str(runtime_payload["run_id"]),
+    )
 
     from apps_rg.runtime.qwen_transport_diag import merge_transport_context
 
@@ -793,20 +694,57 @@ def run_unify_narrative_execution(
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
-    result = call_qwen_vllm(provider_payload)
-    raw_output = result.raw_model_output
-    runtime_generation_status = result.runtime_generation_status
-    provider_result_data = dict(result.to_dict())
-    provider_result_data["runtime_generation_status"] = runtime_generation_status
-    write_json(artifact_dir / "provider_response.json", provider_result_data)
+
+    from apps_rg.runtime.validators.companion_bullet_finalization import (
+        UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
+        companion_blocks_narrative_llm,
+    )
+
+    upstream_blocked = companion_blocks_narrative_llm(companion_context)
+    if upstream_blocked:
+        parse_error = (
+            f"upstream unify_bullets not finalized: "
+            f"{companion_context.get('status')}; {companion_context.get('reason')}"
+        )
+        runtime_generation_status = UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS
+        provider_result_data = {
+            "provider_requested": str(provider_req.provider_requested),
+            "provider_attempted": False,
+            "provider_available": False,
+            "exact_provider_error": parse_error,
+            "runtime_generation_status": runtime_generation_status,
+            "model": req_model,
+            "raw_model_output": "",
+            "upstream_companion_blocked": True,
+        }
+        write_json(artifact_dir / "provider_response.json", provider_result_data)
+        raw_output = ""
+        parsed = None
+    else:
+        result = call_qwen_vllm(provider_payload)
+        raw_output = result.raw_model_output
+        runtime_generation_status = result.runtime_generation_status
+        provider_result_data = dict(result.to_dict())
+        provider_result_data["runtime_generation_status"] = runtime_generation_status
+        write_json(artifact_dir / "provider_response.json", provider_result_data)
     if runtime_generation_status in ("REAL_LLM", "MOCKED"):
         parsed_in, parse_error = parse_model_json(raw_output)
         if parsed_in is None and runtime_generation_status == "REAL_LLM":
             raw_output, parsed_in, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_output, parse_error
             )
+            if parsed_in is not None:
+                from apps_rg.runtime.section_repair_ledger import KIND_MECHANICAL, record_repair
+
+                record_repair(
+                    artifact_dir,
+                    kind=KIND_MECHANICAL,
+                    operation="parse_json_retry",
+                    reason=parse_error or "parse_retry",
+                    replaced_l2=False,
+                )
         parsed = normalize_unify_narrative_parsed(parsed_in, runtime_payload) if parsed_in else None
-    else:
+    elif not upstream_blocked:
         parsed = None
         parse_error = result.exact_provider_error or "provider blocked"
 
@@ -958,8 +896,10 @@ def run_unify_narrative_execution(
     write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="unify_narrative")
 
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -981,7 +921,7 @@ def run_unify_narrative_execution(
             x1d_judges=x1d,
             allowed_fact_ids=allowed_fact_ids,
             artifacts_dir=artifact_dir,
-            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
             proof_pool_digest=str(pool.proof_pool_digest or ""),
@@ -997,6 +937,15 @@ def run_unify_narrative_execution(
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="unify_narrative")
+    from apps_rg.runtime.section_repair_ledger import load_ledger, record_x2_run
+
+    _un_ledger = load_ledger(artifact_dir) or {}
+    record_x2_run(
+        artifact_dir,
+        run_number=len(list(_un_ledger.get("x2_runs") or [])) + 1,
+        after_l2_source=str(_un_ledger.get("authoritative_l2_source") or "initial_llm"),
+        x2_gates=x2,
+    )
     write_json(
         artifact_dir / "fact_check_result.json",
         {
@@ -1006,10 +955,13 @@ def run_unify_narrative_execution(
     )
 
     product_quality_status, product_quality_reason = infer_unify_narrative_product_quality(
-        runtime_generation_status, x2
+        runtime_generation_status, x2, artifact_dir=artifact_dir
     )
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
+    from apps_rg.runtime.section_repair_ledger import attach_ledger_summary_to_l2
+
+    attach_ledger_summary_to_l2(l2_output, artifact_dir)
 
     x3 = aggregate_x3(
         resume_display_text=narrative or raw_output,

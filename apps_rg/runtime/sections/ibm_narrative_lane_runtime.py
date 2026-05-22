@@ -193,16 +193,30 @@ def build_selected_fact_plan_ibm_narrative_srfs(facts: list[dict[str, Any]]) -> 
     }
 
 
+def _companion_ibm_bullets_accepted(run_dir: Path) -> bool:
+    from apps_rg.runtime.validators.companion_bullet_finalization import companion_run_dir_accepted
+    from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
+
+    return companion_run_dir_accepted(
+        run_dir,
+        upstream_section_id="ibm_bullets",
+        expected_bullet_ids=IBM_BULLET_IDS,
+    )
+
+
+def load_companion_ibm_bullets_context() -> dict[str, Any]:
+    """Resolve finalized IBM bullets for the current run (no stale global fallback on product path)."""
+    from apps_rg.runtime.validators.companion_bullet_finalization import build_companion_bullets_context
+
+    return build_companion_bullets_context(
+        REPO_ROOT,
+        upstream_section_id="ibm_bullets",
+        expected_bullet_ids=IBM_BULLET_IDS,
+    )
+
+
 def load_companion_ibm_bullets_text() -> str:
-    path = resolve_effective_lane_l2_path(REPO_ROOT, "ibm_bullets")
-    if path is None or not path.is_file():
-        return ""
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return ""
-    bullets = data.get("bullets") or []
-    return "\n".join(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}" for b in bullets)
+    return str(load_companion_ibm_bullets_context().get("text") or "")
 
 
 def build_runtime_payload(
@@ -213,6 +227,8 @@ def build_runtime_payload(
     selected_fact_plan: dict[str, Any],
     allowed_fact_ids: set[str],
     companion_bullets_ref: str | None,
+    companion_bullets_status: str = "UNKNOWN",
+    companion_bullets_reason: str = "",
     target_title: str,
     target_company: str,
     jd_text: str,
@@ -228,6 +244,8 @@ def build_runtime_payload(
         "ibm_header": ibm_header,
         "candidate_name": candidate_name,
         "companion_ibm_bullets_ref": companion_bullets_ref,
+        "companion_ibm_bullets_status": companion_bullets_status,
+        "companion_ibm_bullets_reason": companion_bullets_reason,
         "target_title": target_title,
         "target_company": target_company,
         "jd_text": jd_text,
@@ -303,20 +321,15 @@ def normalize_parsed_output(
     )[:6]
     ledger = out.get("claim_ledger")
     if isinstance(ledger, list) and narrative and ibm_ids:
-        parts = re.split(r",\s+(?=establishing\b)", narrative, maxsplit=1, flags=re.I)
-        if len(parts) == 2:
-            lead = parts[0].strip().rstrip(".")
-            tail = parts[1].strip().rstrip(".")
-            out["claim_ledger"] = [
-                {
-                    "claim_text": lead,
-                    "source_fact_ids": ibm_ids[:3],
-                },
-                {
-                    "claim_text": tail,
-                    "source_fact_ids": ibm_ids[2:5] or ibm_ids[:2],
-                },
-            ]
+        from apps_rg.runtime.sections.ibm_canonical_hydration import (
+            decompose_ibm_narrative_claim_ledger_by_clause,
+        )
+
+        decompose_ibm_narrative_claim_ledger_by_clause(
+            out,
+            narrative_sentence=narrative,
+            allowed_fact_ids=allowed,
+        )
     if not isinstance(out.get("jd_alignment"), dict):
         out["jd_alignment"] = {"targeting_only": True, "jd_used_as_proof": False}
     out.setdefault("gap_notes", [])
@@ -449,36 +462,26 @@ def retry_qwen_for_metric_budget(
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     narrative = (
-        "At IBM, led enterprise-scale modernization across cloud and analytics programs for regulated financial services, "
-        "establishing lineage and observability foundations and hyperscaler partnership discipline shaping later "
-        "production AI platform leadership."
+        "At IBM, led enterprise-scale cloud, data, lineage, and observability foundations for regulated "
+        "financial services, establishing reliability and governance discipline for governed analytics delivery."
     )
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    pool_type = str(pp.get("proof_pool_type") or "")
-    is_srfs = pool_type == "selected_role_fact_set"
-    is_ledger = pool_type == "broad_skills_ledger"
     allowed_sorted = list(runtime_payload.get("allowed_fact_ids") or [])
-    if (is_srfs or is_ledger) and allowed_sorted:
-        from apps_rg.runtime.sections.selected_role_fact_set import stub_source_fact_ids_for_allowed
-
-        bases = stub_source_fact_ids_for_allowed(allowed_sorted, max_ids=6)
-        if len(bases) >= 3:
-            ledger = [
-                {
-                    "claim_text": (
-                        "At IBM, led enterprise-scale modernization across cloud and analytics programs "
-                        "for regulated financial services"
-                    ),
-                    "source_fact_ids": bases[:2],
-                },
-                {"claim_text": "establishing lineage and observability foundations", "source_fact_ids": [bases[2]]},
-                {
-                    "claim_text": "hyperscaler partnership discipline shaping later production AI platform leadership",
-                    "source_fact_ids": bases[3:6] if len(bases) > 3 else [bases[-1]],
-                },
-            ]
-        else:
-            ledger = [{"claim_text": narrative, "source_fact_ids": bases}]
+    bases = [str(x) for x in allowed_sorted if str(x).strip()][:6]
+    if len(bases) >= 3:
+        ledger = [
+            {
+                "claim_text": (
+                    "At IBM, led enterprise-scale modernization across cloud and analytics programs "
+                    "for regulated financial services"
+                ),
+                "source_fact_ids": bases[:2],
+            },
+            {"claim_text": "establishing lineage and observability foundations", "source_fact_ids": [bases[2]]},
+            {
+                "claim_text": "hyperscaler partnership discipline for platform modernization and ecosystem execution",
+                "source_fact_ids": bases[3:5] if len(bases) > 3 else [bases[-1]],
+            },
+        ]
     else:
         ledger = [
             {
@@ -493,7 +496,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
                 "source_fact_ids": ["bul_ibm_004"],
             },
             {
-                "claim_text": "hyperscaler partnership discipline shaping later production AI platform leadership",
+                "claim_text": "hyperscaler partnership discipline for platform modernization and ecosystem execution",
                 "source_fact_ids": ["bul_ibm_005"],
             },
         ]
@@ -508,12 +511,20 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[str, Any]]) -> tuple[str, str]:
+def infer_product_quality(
+    runtime_generation_status: str,
+    x2_gates: list[dict[str, Any]],
+    *,
+    artifact_dir: Path | None = None,
+) -> tuple[str, str]:
     failed = [g["gate_id"] for g in x2_gates if not g.get("pass")]
-    return infer_product_quality_blocked_or_mock(
+    from apps_rg.runtime.section_repair_ledger import infer_product_quality_with_repair_ledger
+
+    return infer_product_quality_with_repair_ledger(
         runtime_generation_status=runtime_generation_status,
         x2_failed_gate_ids=failed,
         pass_reason="REAL_LLM output passed all deterministic ibm_narrative gates.",
+        artifact_dir=artifact_dir,
     )
 
 

@@ -6,6 +6,7 @@ compat re-exports; product entry is ``python -m apps_rg --section competencies``
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any
 
@@ -79,6 +80,17 @@ def run_competencies_lane_execution(
         artifact_dir.mkdir(parents=True, exist_ok=True)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
+    from apps_rg.runtime.section_repair_lane_integration import (
+        record_deterministic_rewrite,
+        record_mechanical,
+        record_parse_json_retry,
+        record_regen_llm,
+        start_lane_repair_ledger,
+    )
+
+    start_lane_repair_ledger(
+        artifact_dir, section_id="competencies", run_id=str(runtime_payload["run_id"])
+    )
     (artifact_dir / "companion_generated_sections.txt").write_text(companion_context or "(none)\n", encoding="utf-8")
 
     from apps_rg.runtime.qwen_transport_diag import merge_transport_context
@@ -242,6 +254,8 @@ def run_competencies_lane_execution(
                 artifact_dir=artifact_dir,
                 run_id=_run_id or None,
             )
+            if parsed is not None:
+                record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
         if parsed is not None:
             parsed = normalize_parsed_output(parsed, runtime_payload, allowed_fact_ids)
             comps = parsed.get("competencies") or []
@@ -270,6 +284,12 @@ def run_competencies_lane_execution(
                     run_id=_run_id or None,
                 )
                 if parsed is not None:
+                    record_regen_llm(
+                        artifact_dir,
+                        operation="competency_restatement_regen",
+                        reason=f"bullet_restatement:{bad_term}"[:240],
+                        replaced_l2=True,
+                    )
                     raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
         else:
             raw_output = raw_model_output_original
@@ -278,6 +298,11 @@ def run_competencies_lane_execution(
         parse_error = result.exact_provider_error or "provider blocked"
 
     if parsed is not None:
+        _pre_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+        from apps_rg.runtime.sections.competencies_v3_contract import sync_categories_competencies
+
+        sync_categories_competencies(parsed)
+        record_mechanical(artifact_dir, operation="competencies_pre_x2_deterministic_pipeline", reason="sync_and_coerce")
         collapse_duplicate_competency_terms(parsed, bullet_rows, resume_blob)
         repair_structured_competencies_source_facts(
             parsed,
@@ -293,15 +318,6 @@ def run_competencies_lane_execution(
         )
         dedupe_structured_competency_terms(parsed)
         reduce_competency_keyword_stuffing(parsed)
-        expand_structured_competencies_min_two_terms(
-            parsed,
-            bullet_rows=bullet_rows,
-            allowed_fact_ids=allowed_fact_ids,
-            resume_support_blob_lower=c0_proof_blob,
-            bullet_texts_lower=bullet_lowers,
-        )
-        dedupe_structured_competency_terms(parsed)
-        reduce_competency_keyword_stuffing(parsed)
         canonicalize_competency_terms_for_proof(parsed, allowed_fact_ids=allowed_fact_ids)
         coerce_structured_competencies_resume_support(
             parsed,
@@ -313,15 +329,35 @@ def run_competencies_lane_execution(
         dedupe_structured_competency_terms(parsed)
         rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         prune_claim_ledger_bullet_paste(parsed)
-        expand_structured_competencies_min_two_terms(
-            parsed,
-            bullet_rows=bullet_rows,
-            allowed_fact_ids=allowed_fact_ids,
-            resume_support_blob_lower=c0_proof_blob,
-            bullet_texts_lower=bullet_lowers,
+        from apps_rg.runtime.sections.competencies_capability_projection import (
+            finalize_competencies_v3_output,
         )
-        dedupe_structured_competency_terms(parsed)
-        rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
+
+        skill_rows_by_id: dict[str, dict[str, Any]] = {}
+        allowed_skill_ids: set[str] = set()
+        for sid in pp_meta.get("c03_selected_skill_ids") or []:
+            if str(sid).strip():
+                allowed_skill_ids.add(str(sid).strip())
+        for row in pp_meta.get("selected_skill_rows") or []:
+            if isinstance(row, dict):
+                sk = str(row.get("skill_id") or "").strip()
+                if sk:
+                    skill_rows_by_id[sk] = row
+                    allowed_skill_ids.add(sk)
+        parsed = finalize_competencies_v3_output(
+            parsed,
+            allowed_fact_ids=allowed_fact_ids,
+            allowed_skill_ids=allowed_skill_ids,
+            skill_rows_by_id=skill_rows_by_id,
+            resume_support_blob_lower=c0_proof_blob,
+        )
+        _post_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+        if _post_finalize != _pre_finalize:
+            record_deterministic_rewrite(
+                artifact_dir,
+                operation="finalize_competencies_v3_output",
+                reason="capability_projection",
+            )
         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
 
     competencies = list((parsed or {}).get("competencies") or [])
@@ -415,8 +451,10 @@ def run_competencies_lane_execution(
     ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
+    from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
+
     pp_x2 = runtime_payload.get("proof_pool_metadata") or {}
-    proof_pool_x2_active = bool(str(pp_x2.get("proof_pool_type") or "").strip())
+    proof_pool_x2_active, srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -440,7 +478,7 @@ def run_competencies_lane_execution(
             x1d_judges=x1d,
             artifacts_dir=artifact_dir,
             text_claim_coverage=coverage,
-            srfs_source_fact_slice_gate_active=proof_pool_x2_active,
+            srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
             proof_pool_digest=str(pool.proof_pool_digest or ""),
@@ -499,13 +537,22 @@ def run_competencies_lane_execution(
         ),
     )
 
-    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2)
+    write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="competencies")
     write_json(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
     )
 
-    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2)
+    from apps_rg.runtime.section_repair_lane_integration import finalize_lane_product_quality
+
+    product_quality_status, product_quality_reason = finalize_lane_product_quality(
+        artifact_dir,
+        runtime_generation_status=runtime_generation_status,
+        x2_gates=x2,
+        pass_reason="REAL_LLM output passed all deterministic competencies gates.",
+        l2_output=l2_output,
+        regen_authoritative_on_x2_pass=True,
+    )
 
     x3 = aggregate_x3(
         resume_display_text=display_text or raw_output,
@@ -566,6 +613,7 @@ def run_competencies_lane_execution(
         },
         "display_lines": [ln for ln in (display_text or "").split("\n") if str(ln).strip()],
         "competencies": competencies,
+        "categories": (parsed or {}).get("categories") or [],
         "claim_ledger": claim_ledger,
         "selected_fact_ids": sorted(str(x) for x in allowed_fact_ids),
         "targeting_only": bool(jd_al_out.get("targeting_only")),

@@ -27,7 +27,7 @@ from apps_rg.l2_recipe.modular_lane_recipe_policy import summarize_modular_lane_
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 from apps_rg.l2_recipe.modular_rg_output_builder import (
     build_rg_output_from_modular_sections,
-    extract_lane_l2_from_assembled_final,
+    load_lane_l2_from_section_refs,
 )
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
 from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resume
@@ -364,6 +364,9 @@ _PLUMBING_ASSEMBLY_PROVIDERS = frozenset({"mock", "mocked", "stub"})
 
 
 def _assembly_plumbing_mode(profile: ModularResumeProfile, *, use_phase0_synthetic: bool) -> bool:
+    """Real integrated Phase 1 never skips whole-résumé judges (fail-closed product)."""
+    if profile.phase1_invoke_real_lanes:
+        return False
     if use_phase0_synthetic:
         return True
     prov = str(profile.phase1_lane_provider or "").strip().lower()
@@ -435,6 +438,7 @@ def run_modular_resume_generation(
     locked_provider = False
     pass_source = ""
     merged_err = ""
+    phase0_blocked_on_product_fail_closed = False
     lanes_executed = 0
     lane_outputs_valid = False
     final_merge_attempted = False
@@ -479,8 +483,70 @@ def run_modular_resume_generation(
                 emit_integrated_lane_pre_run_failure,
             )
 
+            from apps_rg.runtime.validators.companion_bullet_finalization import (
+                PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER,
+                companion_accepted_in_modular_sections_root,
+            )
+            from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
+            from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+
+            _narrative_upstream: dict[str, tuple[str, tuple[str, ...]]] = {
+                "unify_narrative": ("unify_bullets", UNIFY_BULLET_IDS),
+                "ibm_narrative": ("ibm_bullets", IBM_BULLET_IDS),
+            }
+
+            from apps_rg.runtime.product_output_policy import (
+                PHASE1_PRIOR_LANE_FAILED_BLOCKER,
+                lane_run_dir_meets_product_bar,
+                phase1_dispatch_hard_failed,
+                product_fail_closed_runtime,
+            )
+
+            phase1_aborted = False
+            phase1_abort_reason = ""
+
             for lane in GENERATED_LANES:
                 os.environ[MODULAR_R4_SECTIONS_ROOT_ENV] = str(sections_root.resolve())
+                if phase1_aborted:
+                    emit_integrated_lane_pre_run_failure(
+                        sections_root=sections_root,
+                        integrated_dir=art,
+                        repo_root=repo,
+                        lane_id=lane,
+                        blocker=PHASE1_PRIOR_LANE_FAILED_BLOCKER,
+                        dispatch_result={"prior_abort": phase1_abort_reason},
+                        lane_exec_status=f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}",
+                    )
+                    lane_exec_status[lane] = f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}"
+                    continue
+                upstream_spec = _narrative_upstream.get(lane)
+                if upstream_spec is not None:
+                    upstream_lane, expected_ids = upstream_spec
+                    if not companion_accepted_in_modular_sections_root(
+                        repo,
+                        sections_root,
+                        upstream_section_id=upstream_lane,
+                        expected_bullet_ids=expected_ids,
+                    ):
+                        emit_integrated_lane_pre_run_failure(
+                            sections_root=sections_root,
+                            integrated_dir=art,
+                            repo_root=repo,
+                            lane_id=lane,
+                            blocker=PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER,
+                            dispatch_result={
+                                "fault": "upstream_not_finalized",
+                                "upstream_lane": upstream_lane,
+                            },
+                            lane_exec_status=f"pre_run_blocked:{PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}",
+                        )
+                        lane_dispatch_results[lane] = {
+                            "fault": "upstream_not_finalized",
+                            "upstream_lane": upstream_lane,
+                            "exit_status": "error",
+                        }
+                        lane_exec_status[lane] = f"pre_run_blocked:{PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}"
+                        continue
                 try:
                     result = run_canonical_apps_rg_from_cli_primitives(
                         target_company=tc,
@@ -502,10 +568,20 @@ def run_modular_resume_generation(
                     )
                     lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
                     lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
+                    if product_fail_closed_runtime() and phase1_dispatch_hard_failed(
+                        lane_dispatch_results[lane]
+                    ):
+                        phase1_aborted = True
+                        phase1_abort_reason = f"dispatch_failed:{lane}:{lane_exec_status[lane]}"
                 except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     lane_exec_status[lane] = f"error:{exc!s}"
                     lane_dispatch_results[lane] = {"fault": "exception", "error": str(exc)}
+                    if product_fail_closed_runtime():
+                        phase1_aborted = True
+                        phase1_abort_reason = f"dispatch_exception:{lane}:{exc!s}"
             for lane in GENERATED_LANES:
+                if phase1_aborted:
+                    continue
                 try:
                     lane_run_dirs[lane] = resolve_latest_lane_run_dir(
                         repo,
@@ -513,7 +589,25 @@ def run_modular_resume_generation(
                         lane,
                         lane_provider=profile.phase1_lane_provider,
                     )
+                    if product_fail_closed_runtime():
+                        ok, bar_reason = lane_run_dir_meets_product_bar(lane_run_dirs[lane])
+                        if not ok:
+                            phase1_aborted = True
+                            phase1_abort_reason = f"lane_product_bar_failed:{lane}:{bar_reason}"
+                            emit_integrated_lane_pre_run_failure(
+                                sections_root=sections_root,
+                                integrated_dir=art,
+                                repo_root=repo,
+                                lane_id=lane,
+                                blocker=f"LANE_PRODUCT_BAR_FAILED:{bar_reason}",
+                                dispatch_result=lane_dispatch_results.get(lane) or {},
+                                lane_exec_status=lane_exec_status.get(lane, ""),
+                            )
+                            lane_run_dirs.pop(lane, None)
                 except FileNotFoundError as exc:
+                    if product_fail_closed_runtime():
+                        phase1_aborted = True
+                        phase1_abort_reason = f"no_run_dir:{lane}:{exc}"
                     lane_exec_status[lane] = lane_exec_status.get(lane, "") + f"|missing_pointer:{exc}"
                     dispatch = lane_dispatch_results.get(lane) or {}
                     fault = str(dispatch.get("fault") or "").strip()
@@ -572,11 +666,7 @@ def run_modular_resume_generation(
                 )
                 plumbing = _assembly_plumbing_mode(profile, use_phase0_synthetic=False)
                 asm = _assemble_modular_final_resume(paths, plumbing_mode=plumbing)
-                assembly_gates_ok = bool(
-                    asm.get("structural_x2_all_pass")
-                    if plumbing
-                    else asm.get("gates_all_pass")
-                )
+                assembly_gates_ok = bool(asm.get("gates_all_pass"))
                 receipt_path = asm["paths"]["receipt"]
                 try:
                     merge_receipt_rel = receipt_path.relative_to(art).as_posix()
@@ -644,42 +734,66 @@ def run_modular_resume_generation(
         lane_outputs_valid = bool(rollup_blob is not None and assembly_gates_ok is True)
 
     elif use_phase0_synthetic:
-        for i, lane in enumerate(GENERATED_LANES):
-            section_call_records.append(_phase0_stub_lane_record(lane, i))
-        rollup_blob = _build_synthetic_rollup(repo, modular_root)
-        for lane in GENERATED_LANES:
-            row = rollup_blob["lanes"].get(lane)
-            if isinstance(row, dict):
-                rel_run = str(row.get("rollup_source_run_dir") or "")
-                if rel_run:
-                    section_output_refs[lane] = f"{rel_run}/l2_output.json"
-        rollup_dir = modular_root / "generated_lane_rollup"
-        rollup_dir.mkdir(parents=True, exist_ok=True)
-        _write_json(rollup_dir / "generated_lane_rollup.json", rollup_blob)
+        from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
 
-        build_locked_copy(repo, modular_output_root=modular_root)
+        if product_fail_closed_runtime():
+            phase0_blocked_on_product_fail_closed = True
+            section_call_records = [
+                _phase0_stub_lane_record(lane, i) for i, lane in enumerate(GENERATED_LANES)
+            ]
+            rollup_blob = None
+            assembly_gates_ok = False
+            merge_receipt_rel = None
+            decisive = "FAIL"
+            failure = "phase0_synthetic_not_permitted_on_product_fail_closed_path"
+            pass_source = "none"
+            lanes_executed = 0
+            lane_outputs_valid = False
+            _write_json(
+                art / "modular_r4" / "phase0_product_fail_closed_block.json",
+                {
+                    "blocked": True,
+                    "reason": failure,
+                    "note": "Product runs require phase1_invoke_real_lanes; phase0 stubs are plumbing-only.",
+                },
+            )
+        else:
+            for i, lane in enumerate(GENERATED_LANES):
+                section_call_records.append(_phase0_stub_lane_record(lane, i))
+            rollup_blob = _build_synthetic_rollup(repo, modular_root)
+            for lane in GENERATED_LANES:
+                row = rollup_blob["lanes"].get(lane)
+                if isinstance(row, dict):
+                    rel_run = str(row.get("rollup_source_run_dir") or "")
+                    if rel_run:
+                        section_output_refs[lane] = f"{rel_run}/l2_output.json"
+            rollup_dir = modular_root / "generated_lane_rollup"
+            rollup_dir.mkdir(parents=True, exist_ok=True)
+            _write_json(rollup_dir / "generated_lane_rollup.json", rollup_blob)
 
-        locked_dir = modular_root / "locked_copy"
-        _, canonical_base_resume_path, _ = load_lane_base_resume_json(repo_root=repo)
-        paths = FinalResumePaths(
-            repo_root=repo,
-            rollup_json=rollup_dir / "generated_lane_rollup.json",
-            locked_manifest=locked_dir / "locked_copy_manifest.json",
-            locked_x2=locked_dir / "locked_copy_x2_gate_outputs.json",
-            base_resume=canonical_base_resume_path,
-            output_dir=modular_root / "final_resume_assembly",
-        )
-        plumbing = _assembly_plumbing_mode(profile, use_phase0_synthetic=True)
-        asm = _assemble_modular_final_resume(paths, plumbing_mode=plumbing)
-        assembly_gates_ok = bool(asm.get("structural_x2_all_pass"))
-        receipt_path = asm["paths"]["receipt"]
-        try:
-            merge_receipt_rel = receipt_path.relative_to(art).as_posix()
-        except ValueError:
-            merge_receipt_rel = str(receipt_path)
+            build_locked_copy(repo, modular_output_root=modular_root)
 
-        lanes_executed = len(GENERATED_LANES)
-        lane_outputs_valid = bool(assembly_gates_ok is True)
+            locked_dir = modular_root / "locked_copy"
+            _, canonical_base_resume_path, _ = load_lane_base_resume_json(repo_root=repo)
+            paths = FinalResumePaths(
+                repo_root=repo,
+                rollup_json=rollup_dir / "generated_lane_rollup.json",
+                locked_manifest=locked_dir / "locked_copy_manifest.json",
+                locked_x2=locked_dir / "locked_copy_x2_gate_outputs.json",
+                base_resume=canonical_base_resume_path,
+                output_dir=modular_root / "final_resume_assembly",
+            )
+            plumbing = _assembly_plumbing_mode(profile, use_phase0_synthetic=True)
+            asm = _assemble_modular_final_resume(paths, plumbing_mode=plumbing)
+            assembly_gates_ok = bool(asm.get("structural_x2_all_pass"))
+            receipt_path = asm["paths"]["receipt"]
+            try:
+                merge_receipt_rel = receipt_path.relative_to(art).as_posix()
+            except ValueError:
+                merge_receipt_rel = str(receipt_path)
+
+            lanes_executed = len(GENERATED_LANES)
+            lane_outputs_valid = bool(assembly_gates_ok is True)
 
     schema_receipt_path = modular_root / "rg_output_schema_validation_receipt.json"
     fixture_ok = False
@@ -697,20 +811,30 @@ def run_modular_resume_generation(
             fixture_err = "rg_output_fixture_path_missing"
 
     decisive: Any = "FAIL"
-    failure = "phase0_incomplete"
+    failure = (
+        "phase0_synthetic_not_permitted_on_product_fail_closed_path"
+        if phase0_blocked_on_product_fail_closed
+        else "phase0_incomplete"
+    )
     gen_resume: dict[str, Any] | None = None
     final_schema_valid = False
 
     if profile.phase1_invoke_real_lanes:
         assembled_path = modular_root / "final_resume_assembly" / "final_resume.json"
         build_ok = False
-        merged_err = "phase1_no_assembler_final"
+        merged_err = "phase1_merge_not_attempted"
         gen_resume = None
         final_schema_valid = False
-        if assembly_gates_ok is True and assembled_path.is_file():
+        lane_load_errors: dict[str, str] = {}
+        if assembly_gates_ok is True:
             final_merge_attempted = True
             base_resume_obj, _, _ = load_lane_base_resume_json(repo_root=repo)
-            lane_map = extract_lane_l2_from_assembled_final(assembled_path)
+            rollup_lanes = rollup_blob.get("lanes") if isinstance(rollup_blob, dict) else {}
+            lane_map, lane_load_errors = load_lane_l2_from_section_refs(
+                repo,
+                section_output_refs,
+                rollup_lanes=rollup_lanes if isinstance(rollup_lanes, dict) else None,
+            )
             build = build_rg_output_from_modular_sections(
                 lane_l2_by_id=lane_map,
                 base_resume=base_resume_obj,
@@ -731,18 +855,30 @@ def run_modular_resume_generation(
                 rg_output_merge_receipt_rel = merge_out.relative_to(art).as_posix()
             except ValueError:
                 rg_output_merge_receipt_rel = str(merge_out).replace("\\", "/")
+            if build_ok and gen_resume is not None:
+                prod_out = art / "outputs" / "generated_resume.json"
+                prod_out.parent.mkdir(parents=True, exist_ok=True)
+                prod_out.write_text(
+                    json.dumps(gen_resume, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
         if rollup_blob is None:
             decisive = "FAIL"
             failure = "phase1_incomplete_lane_artifacts"
         elif assembly_gates_ok is False:
             decisive = "FAIL"
             failure = "deterministic_assembly_gates_failed"
-        elif assembly_gates_ok is True and build_ok:
+        elif lane_load_errors:
+            decisive = "FAIL"
+            failure = "lane_l2_load_errors:" + ";".join(
+                f"{k}={v}" for k, v in sorted(lane_load_errors.items())
+            )
+        elif build_ok:
             decisive = "PASS"
             failure = ""
-            pass_source = "merged_rg_output"
+            pass_source = "merged_rg_output_direct_lanes"
         elif assembly_gates_ok is True:
-            decisive = "PARTIAL"
+            decisive = "FAIL"
             failure = merged_err or "modular_rg_output_merge_failed"
             pass_source = "none"
         else:
@@ -752,30 +888,39 @@ def run_modular_resume_generation(
         _write_json(
             schema_receipt_path,
             {
-                "receipt_id": "rg_output_schema_validation_receipt.phase1.v2",
+                "receipt_id": "rg_output_schema_validation_receipt.phase1.v3",
                 "validated_at_utc": datetime.now(timezone.utc).isoformat(),
                 "final_schema_valid": final_schema_valid,
                 "error": merged_err if not build_ok else "",
+                "lane_l2_load_errors": lane_load_errors,
                 "assembler_final_resume_relpath": (
                     assembled_path.relative_to(art).as_posix() if assembled_path.is_file() else None
                 ),
                 "rg_output_final_resume_relpath": (
                     out_fr.relative_to(art).as_posix() if out_fr.is_file() else None
                 ),
+                "generated_resume_json_relpath": (
+                    "outputs/generated_resume.json"
+                    if (art / "outputs" / "generated_resume.json").is_file()
+                    else None
+                ),
                 "rg_output_merge_receipt_relpath": rg_output_merge_receipt_rel,
+                "assembly_gates_all_pass": assembly_gates_ok,
                 "fixture_validated_ok": fixture_ok,
                 "fixture_error": fixture_err if not fixture_ok else "",
                 "fixture_path": str(input_package.rg_output_fixture_path) if input_package.rg_output_fixture_path else None,
                 "note": (
-                    "Phase 1 v2: deterministic rg_output merge from lane L2 snapshots + base resume; "
-                    "PASS requires outputs/final_resume.json validates as rg_output_schema (not assembler JSON)."
+                    "Phase 1 v3: rg_output merge from lane l2_output.json refs (not assembler bridge); "
+                    "PASS requires assembly gates_all_pass + valid outputs/generated_resume.json."
                 ),
             },
         )
     else:
         final_schema_valid = bool(fixture_ok)
         gen_resume = None
-        if not profile.run_phase0_synthetic_assembly:
+        if phase0_blocked_on_product_fail_closed:
+            decisive = "FAIL"
+        elif not profile.run_phase0_synthetic_assembly:
             decisive = "FAIL"
             failure = "phase0_synthetic_assembly_disabled"
             assembly_gates_ok = None
@@ -790,15 +935,22 @@ def run_modular_resume_generation(
                     gen_resume = fixture_candidate
                     pass_source = "fixture_rg_output"
                 else:
-                    decisive = "PARTIAL"
+                    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+                    if product_fail_closed_runtime():
+                        decisive = "FAIL"
+                    else:
+                        decisive = "PARTIAL"
                     failure = fixture_err
             else:
-                decisive = "PARTIAL"
+                from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
                 failure = (
                     "rg_output_fixture_validation_skipped"
                     if not profile.validate_rg_output_fixture
                     else "rg_output_fixture_path_missing"
                 )
+                decisive = "FAIL" if product_fail_closed_runtime() else "PARTIAL"
         else:
             decisive = "FAIL"
             failure = "deterministic_assembly_failed_unknown"
