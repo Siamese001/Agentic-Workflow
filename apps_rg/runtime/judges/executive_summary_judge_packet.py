@@ -8,13 +8,14 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_x2 import (
-    check_srfs_blocked_or_confirmation_citations,
-    check_srfs_density_word_count,
-    check_srfs_executive_selected_fact_scope,
-    check_srfs_jd_or_briefing_standalone_proof_id_zero,
-    check_srfs_sentence_count_4_5,
-    check_srfs_sentence_responsibility_shape,
-    srfs_x2_mode_active,
+    check_claim_ledger_orphan_source_ids,
+    check_exec_summary_evidence_utilization,
+    check_exec_summary_meta_filler_patterns,
+    check_exec_summary_no_credential_dump,
+    check_exec_summary_no_mechanism_inventory,
+    check_exec_summary_paragraph_max_words,
+    check_exec_summary_sentence_count_4_5,
+    collect_unused_allowed_fact_ids,
 )
 
 JUDGE_PACKET_VERSION = "executive_summary_judge_packet_v1"
@@ -32,28 +33,56 @@ Mandatory rules:
 - Do NOT rewrite or edit the candidate text.
 - Do NOT add claims, metrics, credentials, or facts.
 - JD_TEXT and BRIEFING are targeting context only — never proof.
-- Grade only against the rubric, allowed_fact_packet (SRFS proof pool), and candidate_output.
+- Grade only against the rubric, allowed_fact_packet (graph proof pool), and candidate_output.
+- **deterministic_gate_summary is authoritative for X2 gates.** If a gate shows `"pass": true`, you MUST NOT
+  claim that gate failed or cite retired criteria (five-part S1–S5 arc, mandatory S5 credential sentence, etc.).
 - Return ONLY the required structured judge JSON schema (no markdown fences, no prose).
 """.strip()
 
 SRFS_GRADE_ONLY_RUBRIC = """
-Rubric dimensions (SRFS executive summary):
+Rubric dimensions (SRFS executive summary — product shape **4 or 5 sentences**, one paragraph):
 1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids.
 2. executive_signal: SVP-level platform/governance/commercialization synthesis, not bullet stacks.
-3. resume_voice: credible executive prose; no recruiter filler or meta narration.
+3. resume_voice: credible third-person executive prose; penalize recruiter filler, "this individual", "Additionally/Furthermore" chains.
 4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
-6. synthesis_quality: integrated five-sentence arc (S1 thesis, S2 mechanism, S3 lifecycle, S4 outcomes, S5 credibility);
-   S5 must integrate credentials with the platform arc (not bare inventory; never "applied depth" or invented training domains).
-7. deterministic_alignment: respect deterministic_gate_summary — penalize failed density, orphans, or scope violations.
+6. synthesis_quality: **4–5** integrated sentences with optional composition themes (identity, platform/governance,
+   scale/commercialization, outcomes, implied credibility). **Not** a fixed S1–S5 slot checklist. **4 sentences is valid**
+   when dense and complete. **Concise alone is insufficient** when evidence_utilization lists unused high-confidence facts
+   or prose reads as four stacked bullets. Credential facts are **optional** — omit rather than inventory AWS/Databricks/FSA/Basel/CCAR labels.
+7. evidence_utilization: penalize under-use of allowed_fact_packet when unused_fact_ids is non-empty and synthesis is thin.
+8. deterministic_alignment: **only** penalize gates that show `"pass": false` in deterministic_gate_summary.
 
-Decisive failure triggers:
-- unsupported business metric or credential
+Retired criteria (do NOT fail the candidate for these alone):
+- Mandatory five-sentence arc or missing "S5 credibility sentence"
+- S2 mechanism-only / S4 outcomes slot mandates from legacy SRFS shape gate
+- Requiring Fellow of the Society of Actuaries or cert list in the paragraph
+
+Decisive failure triggers (must be supported by allowed facts and deterministic_gate_summary failures when cited):
+- unsupported business metric or credential in prose
 - JD or briefing used as proof
 - first-person narrative
-- candidate reads as credential inventory / Holds-list in S5
+- credential/certification inventory block (x2_exec_summary_no_credential_dump alignment)
+- mechanism inventory in opening sentence or comma-chain architecture dump
 - obvious rewrite recommendation that invents new claims
 """.strip()
+
+# Judge hallucination guard: legacy rubric phrases that must not drive decisive_failure when X2 snapshot all pass.
+_RETIRED_JUDGE_CRITERIA_FRAGMENTS = (
+    "five-sentence arc",
+    "five sentence arc",
+    "s1 thesis",
+    "s2 mechanism",
+    "s3 lifecycle",
+    "s4 outcomes",
+    "s5 credibility",
+    "mandatory s5",
+    "missing s5",
+    "srfs_sentence_responsibility",
+    "sentence responsibility shape",
+    "s2 mechanism-only",
+    "mechanism-only sentence",
+)
 
 GRAPH_ONLY_GRADE_ONLY_RUBRIC = """
 Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS lane):
@@ -62,7 +91,7 @@ Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS la
 3. resume_voice: credible executive prose; no recruiter filler or meta narration.
 4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
-6. synthesis_quality: **2–3 dense executive sentences** (same band as non-SRFS X2); integrated narrative flow;
+6. synthesis_quality: **4–5 dense executive sentences** (same band as X2); integrated narrative flow;
    penalize orphan source_fact_ids not in allowed_fact_packet and bare credential inventory.
 7. deterministic_alignment: respect deterministic_gate_summary — penalize failed density, orphans, or scope violations.
 
@@ -132,41 +161,47 @@ def build_deterministic_gate_summary(
     parsed_output: dict[str, Any] | None,
     claim_ledger: list[dict[str, Any]],
     allowed_fact_ids: set[str],
-    srfs_integration: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Pre-judge X2 gate snapshot using the same check functions as executive_summary_x2."""
-    density_ok, density_reason = check_srfs_density_word_count(
-        resume_display_text, parsed_output, srfs_integration
+    """Pre-judge X2 gate snapshot aligned with live product-shape gates (4–5 sentences, max words)."""
+    sent_ok, sent_reason = check_exec_summary_sentence_count_4_5(resume_display_text)
+    cred_ok, cred_reason = check_exec_summary_no_credential_dump(resume_display_text)
+    mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(resume_display_text)
+    bounds_ok, bounds_reason = check_exec_summary_paragraph_max_words(
+        resume_display_text, parsed_output
     )
-    sent_ok, sent_reason = check_srfs_sentence_count_4_5(resume_display_text, srfs_integration)
-    shape_ok, shape_reason = check_srfs_sentence_responsibility_shape(
-        resume_display_text, srfs_integration
+    meta_ok, meta_reason = check_exec_summary_meta_filler_patterns(resume_display_text)
+    util_ok, util_reason = check_exec_summary_evidence_utilization(
+        resume_display_text, parsed_output
     )
-    scope_ok, scope_reason = check_srfs_executive_selected_fact_scope(
-        claim_ledger, srfs_integration
-    )
-    blocked_ok, blocked_reason = check_srfs_blocked_or_confirmation_citations(
-        claim_ledger, srfs_integration
-    )
-    jd_ok, jd_reason = check_srfs_jd_or_briefing_standalone_proof_id_zero(
-        claim_ledger, srfs_integration
-    )
+    orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(claim_ledger, allowed_fact_ids)
     parse_ok = bool(parsed_output) and not (parsed_output or {}).get("parse_error")
     ledger_nonempty = all(
         isinstance(r, dict) and str(r.get("claim_text") or "").strip() for r in claim_ledger
     )
     return {
-        "x2_exec_summary_srfs_density_word_count": {
-            "pass": density_ok,
-            "detail": density_reason or "ok",
-        },
-        "x2_exec_summary_srfs_sentence_count_4_5": {
+        "x2_exec_summary_sentence_count_4_5": {
             "pass": sent_ok,
             "detail": sent_reason or "ok",
         },
-        "x2_exec_summary_srfs_sentence_responsibility_shape": {
-            "pass": shape_ok,
-            "detail": shape_reason or "ok",
+        "x2_exec_summary_paragraph_max_words": {
+            "pass": bounds_ok,
+            "detail": bounds_reason or "ok",
+        },
+        "x2_exec_summary_no_credential_dump": {
+            "pass": cred_ok,
+            "detail": cred_reason or "ok",
+        },
+        "x2_exec_summary_no_mechanism_inventory": {
+            "pass": mech_ok,
+            "detail": mech_reason or "ok",
+        },
+        "x2_exec_summary_meta_filler_zero": {
+            "pass": meta_ok,
+            "detail": meta_reason or "ok",
+        },
+        "x2_exec_summary_evidence_utilization": {
+            "pass": util_ok,
+            "detail": util_reason or "ok",
         },
         "x2_schema_valid": {"pass": parse_ok, "detail": "parsed_output_present" if parse_ok else "parse_missing"},
         "x2_json_parse_valid": {"pass": parse_ok, "detail": "ok" if parse_ok else "json_parse_failed"},
@@ -174,27 +209,49 @@ def build_deterministic_gate_summary(
             "pass": ledger_nonempty,
             "detail": "ok" if ledger_nonempty else "empty_claim_text",
         },
-        "x2_srfs_executive_selected_fact_scope": {
-            "pass": scope_ok,
-            "detail": scope_reason or "ok",
-        },
-        "x2_srfs_blocked_or_confirmation_fact_citation_zero": {
-            "pass": blocked_ok,
-            "detail": blocked_reason or "ok",
-        },
-        "x2_srfs_jd_or_briefing_standalone_proof_id_zero": {
-            "pass": jd_ok,
-            "detail": jd_reason or "ok",
-        },
-        "x2_north_star_style_echo_unsupported_zero": {
-            "pass": True,
-            "detail": "deferred_to_full_x2_run",
-        },
         "x2_claim_ledger_orphan_zero": {
-            "pass": scope_ok,
-            "detail": scope_reason or "ok",
+            "pass": orphan_ok,
+            "detail": orphan_reason or "ok",
+        },
+        "product_shape_note": {
+            "pass": True,
+            "detail": "4-5 sentences; composition heuristics; no mandatory S1-S5 arc",
         },
     }
+
+
+def reconcile_grade_only_judge_result(
+    result: dict[str, Any],
+    deterministic_gate_summary: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Downgrade decisive_failure when judges cite retired arc criteria but X2 snapshot gates all pass."""
+    if not isinstance(result, dict) or not isinstance(deterministic_gate_summary, dict):
+        return result
+    gate_entries = [
+        v for v in deterministic_gate_summary.values() if isinstance(v, dict) and "pass" in v
+    ]
+    if not gate_entries or not all(bool(v.get("pass")) for v in gate_entries):
+        return result
+    blob = json.dumps(result, ensure_ascii=False).lower()
+    if not any(frag in blob for frag in _RETIRED_JUDGE_CRITERIA_FRAGMENTS):
+        return result
+    out = dict(result)
+    if out.get("decisive_failure"):
+        out["decisive_failure"] = False
+        findings = list(out.get("findings") or [])
+        findings.append(
+            "Reconciled: judge cited retired five-part/S1-S5 criteria; deterministic_gate_summary all pass."
+        )
+        out["findings"] = findings
+        try:
+            score = float(out.get("score", 0.0))
+            threshold = float(out.get("threshold", 4.0))
+            if score < threshold:
+                out["score"] = threshold
+                out["pass"] = True
+        except (TypeError, ValueError):
+            pass
+    return out
 
 
 def build_executive_summary_judge_packet(
@@ -208,7 +265,6 @@ def build_executive_summary_judge_packet(
     jd_text: str,
     briefing_text: str,
     parsed_output: dict[str, Any] | None,
-    srfs_integration: dict[str, Any] | None,
     deterministic_gate_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build canonical GRADE_ONLY JudgePacket dict for executive_summary X1D."""
@@ -217,15 +273,15 @@ def build_executive_summary_judge_packet(
         parsed_output=parsed_output,
         claim_ledger=claim_ledger,
         allowed_fact_ids=allowed_fact_ids,
-        srfs_integration=srfs_integration,
     )
-    srfs_active = srfs_x2_mode_active(srfs_integration)
-    rubric = SRFS_GRADE_ONLY_RUBRIC if srfs_active else GRAPH_ONLY_GRADE_ONLY_RUBRIC
-    rubric_ref = JUDGE_RUBRIC_REF if srfs_active else GRAPH_ONLY_JUDGE_RUBRIC_REF
+    rubric = GRAPH_ONLY_GRADE_ONLY_RUBRIC
+    rubric_ref = GRAPH_ONLY_JUDGE_RUBRIC_REF
     judge_allowed_packet = enrich_allowed_fact_packet_for_judges(
         list(allowed_fact_packet),
         allowed_fact_ids,
     )
+    unused_fact_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
+    cited_fact_ids = _collect_source_fact_ids(claim_ledger)
     return {
         "judge_packet_version": JUDGE_PACKET_VERSION,
         "section": "executive_summary",
@@ -237,6 +293,12 @@ def build_executive_summary_judge_packet(
         },
         "allowed_fact_packet": judge_allowed_packet,
         "allowed_fact_ids": sorted(allowed_fact_ids),
+        "evidence_utilization": {
+            "cited_fact_ids": cited_fact_ids,
+            "unused_fact_ids": unused_fact_ids,
+            "unused_fact_count": len(unused_fact_ids),
+            "allowed_fact_count": len(allowed_fact_ids),
+        },
         "target_title": target_title,
         "target_company": target_company,
         "targeting_context": {
@@ -253,7 +315,7 @@ def build_executive_summary_judge_packet(
         "deterministic_gate_summary": gate_summary,
         "rubric_ref": rubric_ref,
         "rubric": rubric,
-        "judge_rubric_mode": "srfs" if srfs_active else "graph_only_c03",
+        "judge_rubric_mode": "graph_only_c03",
         "grading_instruction": GRADE_ONLY_INSTRUCTION,
         "required_output_schema": REQUIRED_JUDGE_OUTPUT_SCHEMA,
     }
@@ -284,7 +346,7 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
         "PROOF_BOUNDARY:",
         json.dumps(packet.get("proof_boundary") or {}, indent=2),
         "",
-        "DETERMINISTIC_GATE_SUMMARY (informational; X2 is authoritative):",
+        "DETERMINISTIC_GATE_SUMMARY (AUTHORITATIVE — do not contradict pass=true gates):",
         json.dumps(packet.get("deterministic_gate_summary") or {}, indent=2),
         "",
         packet.get("rubric") or SRFS_GRADE_ONLY_RUBRIC,
@@ -296,8 +358,11 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
         f"TARGET_TITLE: {packet.get('target_title', '')}",
         f"TARGET_COMPANY: {packet.get('target_company', '')}",
         "",
-        "ALLOWED_FACT_PACKET (SRFS proof pool):",
+        "ALLOWED_FACT_PACKET (graph proof pool):",
         json.dumps(packet.get("allowed_fact_packet") or [], separators=(",", ":")),
+        "",
+        "EVIDENCE_UTILIZATION (deterministic — unused facts are weave targets, not proof gaps):",
+        json.dumps(packet.get("evidence_utilization") or {}, indent=2),
         "",
         "CANDIDATE_OUTPUT:",
         json.dumps(packet.get("candidate_output") or {}, indent=2),

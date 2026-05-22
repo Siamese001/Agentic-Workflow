@@ -1,6 +1,6 @@
-"""Deterministic executive_summary evidence capsule — compact SRFS proof packet for PA.
+"""Deterministic executive_summary evidence capsule — compact graph proof packet for PA.
 
-Replaces verbose SRFS appendix/style-onshot prose in the compiled prompt while preserving
+Replaces verbose appendix/style-onshot prose in the compiled prompt while preserving
 source_fact_ids, HIGH fact claim text, metric anchors, and evidence rules. Not LLM compression.
 """
 from __future__ import annotations
@@ -16,9 +16,7 @@ from apps_rg.runtime.sections.executive_summary_token_budget import estimate_tok
 from apps_rg.runtime.sections.executive_summary_pa import format_allowed_source_fact_ids_contract
 from apps_rg.runtime.sections.selected_role_fact_set import (
     build_allowed_fact_ids_for_plan_facts,
-    load_selected_role_fact_set,
     metric_derivative_fact_id,
-    slice_row_to_plan_fact,
 )
 
 SECTION_ID = "executive_summary"
@@ -61,11 +59,31 @@ def _capsule_enabled(runtime_payload: dict[str, Any]) -> bool:
         return False
     if env in ("0", "false", "no"):
         return False
+    plan = runtime_payload.get("selected_fact_plan") or {}
+    facts = list(plan.get("facts") or [])
+    return bool(facts)
+
+
+def _proof_pool_context_from_payload(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    return str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
+    if not isinstance(pp, dict):
+        pp = {}
+    ss = pp.get("selection_scope")
+    if not isinstance(ss, dict):
+        ss = {}
+    allowed = list(runtime_payload.get("allowed_fact_ids") or [])
+    return {
+        "selection_id": str(ss.get("selection_id") or pp.get("selection_id") or "").strip(),
+        "executive_summary_selected_fact_ids": allowed,
+        "blocked_facts_count": int(pp.get("blocked_facts_count") or 0),
+        "facts_requiring_human_confirmation_count": int(
+            pp.get("facts_requiring_human_confirmation_count") or 0
+        ),
+        "unsupported_jd_needs_count": int(pp.get("unsupported_jd_needs_count") or 0),
+    }
 
 
-def _input_srfs_digest(
+def _input_proof_pool_digest(
     *,
     selection_id: str,
     plan_facts: list[dict[str, Any]],
@@ -96,9 +114,16 @@ def build_capsule_document(
     runtime_payload: dict[str, Any],
     plan_facts: list[dict[str, Any]],
     allowed_ids: list[str],
-    srfs_integration: dict[str, Any],
+    pool_context: dict[str, Any],
 ) -> dict[str, Any]:
     """Canonical capsule object (deterministic ordering)."""
+    pp = runtime_payload.get("proof_pool_metadata") or {}
+    if not isinstance(pp, dict):
+        pp = {}
+    ea = pp.get("evidence_authority") if isinstance(pp.get("evidence_authority"), dict) else {}
+    authority_label = str(
+        ea.get("authority") or ea.get("type") or "augmented_skills_graph"
+    ).strip() or "augmented_skills_graph"
     fact_rows: list[dict[str, Any]] = []
     for fact in sorted(plan_facts, key=lambda x: str(x.get("fact_id") or "")):
         fid = str(fact.get("fact_id") or "").strip()
@@ -113,18 +138,26 @@ def build_capsule_document(
                 "claim_text": _normalize_claim_text(str(fact.get("claim_text") or "")),
                 "metric_raw": mr or None,
                 "metric_anchor_ids": anchors,
-                "source_authority": "selected_role_fact_set",
+                "source_authority": authority_label,
                 "section_membership": SECTION_ID,
             }
         )
-    pp = runtime_payload.get("proof_pool_metadata") or {}
+    graph_used = bool(plan_facts)
+    pool_counts = {
+        "blocked_facts": int(pool_context.get("blocked_facts_count") or 0),
+        "facts_requiring_human_confirmation": int(
+            pool_context.get("facts_requiring_human_confirmation_count") or 0
+        ),
+        "unsupported_jd_needs": int(pool_context.get("unsupported_jd_needs_count") or 0),
+    }
     return {
         "capsule_version": CAPSULE_VERSION,
         "section_id": SECTION_ID,
-        "proof_pool_type": str(pp.get("proof_pool_type") or "selected_role_fact_set"),
-        "selected_role_fact_set_used": True,
-        "selection_id": str(srfs_integration.get("selection_id") or ""),
-        "artifact_path_resolved": str(srfs_integration.get("artifact_path_resolved") or ""),
+        "proof_pool_type": str(pp.get("proof_pool_type") or "augmented_skills_graph"),
+        "graph_proof_pool_used": graph_used,
+        "selected_role_fact_set_used": False,
+        "selection_id": str(pool_context.get("selection_id") or ""),
+        "evidence_authority": authority_label,
         "rules": {
             "jd_targeting_only_rule": True,
             "no_fabrication_rule": True,
@@ -134,18 +167,15 @@ def build_capsule_document(
         },
         "allowed_fact_ids": list(allowed_ids),
         "facts": fact_rows,
-        "srfs_counts": {
-            "blocked_facts": int(srfs_integration.get("blocked_facts_count") or 0),
-            "facts_requiring_human_confirmation": int(
-                srfs_integration.get("facts_requiring_human_confirmation_count") or 0
-            ),
-            "unsupported_jd_needs": int(srfs_integration.get("unsupported_jd_needs_count") or 0),
-        },
+        "proof_pool_counts": pool_counts,
+        "srfs_counts": pool_counts,
+        "product_arc_markers": [
+            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_paragraph_max_words",
+        ],
         "srfs_arc_markers": [
-            "SRFS_FIVE_PART_EXEC_ARCH_V1",
-            "SRFS_SENTENCE_RESP_SEP_V1",
-            "x2_exec_summary_srfs_sentence_count_4_5",
-            "x2_exec_summary_srfs_density_word_count",
+            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_paragraph_max_words",
         ],
     }
 
@@ -172,15 +202,15 @@ def format_evidence_capsule_c0_block(capsule: dict[str, Any], allowed_ids: list[
         if mr:
             extra = f" metric_raw={mr!r}"
         lines.append(f"- {fid}: {ct}{extra}")
-    counts = capsule.get("srfs_counts") or {}
+    counts = capsule.get("proof_pool_counts") or capsule.get("srfs_counts") or {}
     lines.extend(
         [
             "",
-            "SRFS_COUNTS (metadata only): "
+            "PROOF_POOL_COUNTS (metadata only): "
             f"blocked={counts.get('blocked_facts', 0)} "
             f"confirmation={counts.get('facts_requiring_human_confirmation', 0)} "
             f"unsupported_jd={counts.get('unsupported_jd_needs', 0)}",
-            "SRFS_ARC_CONTRACT: 4-5 sentences, 95-160 words; responsibility separation per X2 gates. "
+            "PRODUCT_ARC_CONTRACT: 4-5 sentences, fit_to_evidence, max 220 words; responsibility separation per X2 gates. "
             "Style exemplar/appendix prose omitted from capsule (proof IDs unchanged).",
             "",
         ]
@@ -190,7 +220,7 @@ def format_evidence_capsule_c0_block(capsule: dict[str, Any], allowed_ids: list[
 
 
 def format_evidence_capsule_appendix(capsule: dict[str, Any]) -> str:
-    """Minimal SRFS appendix — metadata and ID list only (no style boilerplate)."""
+    """Minimal graph proof appendix — metadata and ID list only (no style boilerplate)."""
     ids = [
         str(r.get("source_fact_id") or "")
         for r in (capsule.get("facts") or [])
@@ -199,10 +229,12 @@ def format_evidence_capsule_appendix(capsule: dict[str, Any]) -> str:
     id_tail = ", ".join(ids[:16])
     if len(ids) > 16:
         id_tail += ", …"
-    counts = capsule.get("srfs_counts") or {}
+    counts = capsule.get("proof_pool_counts") or capsule.get("srfs_counts") or {}
+    authority = str(capsule.get("evidence_authority") or "augmented_skills_graph")
     return (
-        "SELECTED_ROLE_FACT_SET_APPENDIX_CAPSULE:\n"
-        f"- Artifact: {capsule.get('artifact_path_resolved')}\n"
+        "GRAPH_PROOF_POOL_APPENDIX_CAPSULE:\n"
+        f"- proof_pool_type: {capsule.get('proof_pool_type')}\n"
+        f"- evidence_authority: {authority} (in-memory; no JSON file authority)\n"
         f"- selection_id: {capsule.get('selection_id')}\n"
         f"- HIGH proof pool source_fact_ids (executive_summary): [{id_tail}]\n"
         f"- Counts - blocked_facts: {counts.get('blocked_facts', 0)}; "
@@ -259,15 +291,15 @@ def compile_executive_summary_evidence_capsule(
     """Build capsule + receipt; attach capsule fields to runtime_payload on PASS."""
     plan = runtime_payload.get("selected_fact_plan") or {}
     facts = list(plan.get("facts") or [])
-    srfs = runtime_payload.get("srfs_integration")
-    if not isinstance(srfs, dict) or not facts:
-        raise ValueError("evidence capsule requires srfs_integration and selected_fact_plan.facts")
+    if not facts:
+        raise ValueError("evidence capsule requires selected_fact_plan.facts")
+    pool_context = _proof_pool_context_from_payload(runtime_payload)
 
     allowed_ids, _ = build_allowed_fact_ids_for_plan_facts(facts)
     required_high = [str(f.get("fact_id") or "").strip() for f in facts if str(f.get("fact_id") or "").strip()]
 
-    input_digest = _input_srfs_digest(
-        selection_id=str(srfs.get("selection_id") or ""),
+    input_digest = _input_proof_pool_digest(
+        selection_id=str(pool_context.get("selection_id") or ""),
         plan_facts=facts,
         allowed_ids=allowed_ids,
     )
@@ -275,7 +307,7 @@ def compile_executive_summary_evidence_capsule(
         runtime_payload=runtime_payload,
         plan_facts=facts,
         allowed_ids=allowed_ids,
-        srfs_integration=srfs,
+        pool_context=pool_context,
     )
     output_digest = _sha16(capsule)
 
@@ -293,10 +325,12 @@ def compile_executive_summary_evidence_capsule(
         "status": "PASS",
         "section": SECTION_ID,
         "capsule_version": CAPSULE_VERSION,
+        "input_proof_pool_digest": input_digest,
         "input_srfs_digest": input_digest,
         "output_capsule_digest": output_digest,
         "proof_pool_type": capsule.get("proof_pool_type"),
-        "selected_role_fact_set_used": True,
+        "graph_proof_pool_used": True,
+        "selected_role_fact_set_used": False,
         "allowed_fact_ids_count": len(allowed_ids),
         "required_high_fact_ids": required_high,
         "preserved_high_fact_ids": preserved,
@@ -333,6 +367,7 @@ def compile_executive_summary_evidence_capsule(
         "c0_block": c0_block,
         "appendix_capsule": appendix,
         "output_capsule_digest": output_digest,
+        "input_proof_pool_digest": input_digest,
         "input_srfs_digest": input_digest,
     }
     runtime_payload["evidence_capsule_active"] = True
@@ -343,25 +378,15 @@ def load_srfs_and_build_capsule_from_path(
     runtime_payload: dict[str, Any],
     srfs_path: str | Path,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Load SRFS JSON, rebuild plan facts, then compile capsule (integration helper)."""
-    from apps_rg.runtime.sections.selected_role_fact_set import (
-        build_srfs_integration_envelope,
-        get_section_fact_slice,
+    """Removed: SRFS JSON file authority is not permitted on the product path."""
+    _ = runtime_payload
+    raise ExecutiveSummaryEvidenceCapsuleError(
+        receipt={
+            "status": "FAIL",
+            "fail_closed_reason": "srfs_json_file_authority_removed",
+            "srfs_path": str(srfs_path),
+        }
     )
-
-    doc = load_selected_role_fact_set(srfs_path)
-    slice_rows = get_section_fact_slice(doc, SECTION_ID)
-    plan_facts = [slice_row_to_plan_fact(r, section_id=SECTION_ID) for r in slice_rows]
-    allowed, _ = build_allowed_fact_ids_for_plan_facts(plan_facts)
-    runtime_payload.setdefault("selected_fact_plan", {})["facts"] = plan_facts
-    runtime_payload["allowed_fact_ids"] = allowed
-    env = build_srfs_integration_envelope(
-        doc,
-        executive_summary_plan_facts=plan_facts,
-        artifact_path_resolved=str(srfs_path),
-    )
-    runtime_payload["srfs_integration"] = env
-    return compile_executive_summary_evidence_capsule(runtime_payload)
 
 
 def write_evidence_capsule_receipt(artifact_dir, receipt: dict[str, Any]) -> None:

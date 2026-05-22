@@ -33,11 +33,18 @@ def _brown_payload() -> dict:
         encoding="utf-8"
     )
     brief = (
-        REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt"
+        REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
     ).read_text(encoding="utf-8")
     return {
         "product_visible": False,
-        "proof_pool_metadata": {"proof_pool_type": "selected_role_fact_set"},
+        "proof_pool_metadata": {
+            "proof_pool_type": "augmented_skills_graph",
+            "graph_skills_proof_pool": True,
+            "evidence_authority": {
+                "authority": "augmented_skills_graph",
+                "skills_authority_status": "PASS",
+            },
+        },
         "run_id": "targeting_cap_contract",
         "target_title": "Senior Vice President, IT Strategy & Innovation",
         "target_company": "Brown & Brown",
@@ -52,14 +59,6 @@ def _brown_payload() -> dict:
                     "confidence": "HIGH",
                 }
             ],
-        },
-        "srfs_integration": {
-            "artifact_path_resolved": "artifacts/apps_rg/fact_inventory/selected_role_fact_set_active.json",
-            "selection_id": "sel_contract_cap",
-            "executive_summary_selected_fact_ids": ["fact_governance_003"],
-            "blocked_facts_count": 0,
-            "facts_requiring_human_confirmation_count": 0,
-            "unsupported_jd_needs_count": 0,
         },
     }
 

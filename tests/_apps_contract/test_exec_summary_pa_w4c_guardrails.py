@@ -29,7 +29,7 @@ NO_GRAPH_PARTNER_FACT = {
 }
 
 
-def _srfs_payload(*, facts: list[dict], run_id: str = "w4c_guardrail") -> dict:
+def _graph_product_payload(*, facts: list[dict], run_id: str = "w4c_guardrail") -> dict:
     return {
         "run_id": run_id,
         "target_title": "SVP Engineering",
@@ -41,14 +41,14 @@ def _srfs_payload(*, facts: list[dict], run_id: str = "w4c_guardrail") -> dict:
             "required_fact_ids": [str(f["fact_id"]) for f in facts],
         },
         "allowed_fact_ids": [str(f["fact_id"]) for f in facts],
-        "srfs_integration": {
-            "artifact_path_resolved": "artifacts/w4c/test_srfs.json",
-            "executive_summary_selected_fact_ids": [str(f["fact_id"]) for f in facts],
-            "blocked_facts_count": 0,
-            "facts_requiring_human_confirmation_count": 0,
-            "unsupported_jd_needs_count": 0,
+        "proof_pool_metadata": {
+            "proof_pool_type": "augmented_skills_graph",
+            "graph_skills_proof_pool": True,
+            "evidence_authority": {
+                "authority": "augmented_skills_graph",
+                "skills_authority_status": "PASS",
+            },
         },
-        "proof_pool_metadata": {"proof_pool_type": "selected_role_fact_set"},
     }
 
 
@@ -66,8 +66,8 @@ def test_forbidden_phrase_block_lists_all_w4c_bans() -> None:
     assert "unsupported partner engineering claims" in block
 
 
-def test_compiled_srfs_prompt_includes_w4c_forbidden_contract() -> None:
-    content = _compiled_content(_srfs_payload(facts=[GRAPH_RAG_FACT, NO_GRAPH_PARTNER_FACT]))
+def test_compiled_graph_prompt_includes_w4c_forbidden_contract() -> None:
+    content = _compiled_content(_graph_product_payload(facts=[GRAPH_RAG_FACT, NO_GRAPH_PARTNER_FACT]))
     assert "srfs_forbidden_phrase_contract" in content
     for phrase in SRFS_FORBIDDEN_PHRASES_ALWAYS:
         assert phrase.lower() in content, f"missing in compiled prompt: {phrase}"
@@ -76,23 +76,23 @@ def test_compiled_srfs_prompt_includes_w4c_forbidden_contract() -> None:
 
 
 def test_graphrag_allowed_only_when_selected_fact_supports_it() -> None:
-    with_graph = _compiled_content(_srfs_payload(facts=[GRAPH_RAG_FACT], run_id="w4c_graphrag_yes"))
+    with_graph = _compiled_content(_graph_product_payload(facts=[GRAPH_RAG_FACT], run_id="w4c_graphrag_yes"))
     without_graph = _compiled_content(
-        _srfs_payload(facts=[NO_GRAPH_PARTNER_FACT], run_id="w4c_graphrag_no")
+        _graph_product_payload(facts=[NO_GRAPH_PARTNER_FACT], run_id="w4c_graphrag_no")
     )
     assert "verbatim" in with_graph and "graphrag" in with_graph
     assert "do not introduce graphrag" in without_graph or "unsupported graphrag" in without_graph
 
 
 def test_partner_engineering_blocked_unless_fact_supports() -> None:
-    content = _compiled_content(_srfs_payload(facts=[NO_GRAPH_PARTNER_FACT], run_id="w4c_partner"))
+    content = _compiled_content(_graph_product_payload(facts=[NO_GRAPH_PARTNER_FACT], run_id="w4c_partner"))
     assert "partner engineering" in content
     assert "cannot authorize" in content or "do not introduce partner engineering" in content
     assert "jd_text" in content and "not proof" in content
 
 
 def test_jd_briefing_cannot_authorize_graphrag_or_partner_claims() -> None:
-    content = _compiled_content(_srfs_payload(facts=[NO_GRAPH_PARTNER_FACT], run_id="w4c_jd"))
+    content = _compiled_content(_graph_product_payload(facts=[NO_GRAPH_PARTNER_FACT], run_id="w4c_jd"))
     assert "targeting-only" in content
     assert "cannot authorize graphrag" in content or "cannot" in content and "graphrag" in content
     assert "partner engineering" in content

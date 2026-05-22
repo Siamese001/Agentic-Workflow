@@ -59,8 +59,8 @@ _SRFS_SHAPE_MARKERS: tuple[str, ...] = (
     "SRFS_FIVE_PART_EXEC_ARCH_V1",
     "SRFS_SENTENCE_RESP_SEP_V1",
     "SELECTED_ROLE_FACT_SET_APPENDIX:",
-    "x2_exec_summary_srfs_sentence_count_4_5",
-    "x2_exec_summary_srfs_density_word_count",
+    "x2_exec_summary_sentence_count_4_5",
+    "x2_exec_summary_paragraph_max_words",
 )
 
 _I0_SOVEREIGN_REGIONS: tuple[tuple[str, str], ...] = (
@@ -94,12 +94,24 @@ def estimate_tokens_approximate(text: str) -> int:
     return max(1, int(base * _ESTIMATE_SAFETY_MULTIPLIER))
 
 
-def srfs_mode_active(runtime_payload: dict[str, Any]) -> bool:
-    srfs = runtime_payload.get("srfs_integration")
-    if isinstance(srfs, dict) and srfs.get("artifact_path_resolved"):
+def graph_product_pool_active(runtime_payload: dict[str, Any]) -> bool:
+    """True when executive_summary uses in-memory graph/product proof (not JSON file envelope)."""
+    plan = runtime_payload.get("selected_fact_plan") or {}
+    if list(plan.get("facts") or []):
         return True
     pp = runtime_payload.get("proof_pool_metadata") or {}
-    return str(pp.get("proof_pool_type") or "") == "selected_role_fact_set"
+    if not isinstance(pp, dict):
+        return False
+    from apps_rg.runtime.product_evidence_authority import is_product_evidence_authority_active
+
+    if is_product_evidence_authority_active(pp):
+        return True
+    return bool(pp.get("graph_skills_proof_pool"))
+
+
+def srfs_mode_active(runtime_payload: dict[str, Any]) -> bool:
+    """Deprecated alias for graph_product_pool_active (SRFS JSON authority removed)."""
+    return graph_product_pool_active(runtime_payload)
 
 
 def protected_fact_ids_from_payload(runtime_payload: dict[str, Any]) -> set[str]:
@@ -119,12 +131,6 @@ def protected_fact_ids_from_payload(runtime_payload: dict[str, Any]) -> set[str]
                 from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
 
                 ids.add(metric_derivative_fact_id(fid, metric))
-    srfs = runtime_payload.get("srfs_integration")
-    if isinstance(srfs, dict):
-        for raw in srfs.get("executive_summary_selected_fact_ids") or []:
-            fid = str(raw).strip()
-            if fid:
-                ids.add(fid)
     return ids
 
 
@@ -713,6 +719,7 @@ __all__ = [
     "extract_evidence_contract_snapshot",
     "protected_fact_ids_from_payload",
     "resolve_provider_context_window",
+    "graph_product_pool_active",
     "srfs_mode_active",
     "trim_executive_summary_prompt_content",
     "verify_evidence_contract_unchanged",

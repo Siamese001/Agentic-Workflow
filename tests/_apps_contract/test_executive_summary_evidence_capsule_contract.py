@@ -24,7 +24,14 @@ def _fec_fixture_dev_bypass() -> None:
 def _payload() -> dict:
     return {
         "product_visible": False,
-        "proof_pool_metadata": {"proof_pool_type": "selected_role_fact_set"},
+        "proof_pool_metadata": {
+            "proof_pool_type": "augmented_skills_graph",
+            "graph_skills_proof_pool": True,
+            "evidence_authority": {
+                "authority": "augmented_skills_graph",
+                "skills_authority_status": "PASS",
+            },
+        },
         "run_id": "cap_contract_run",
         "target_title": "SVP",
         "target_company": "Brown & Brown",
@@ -39,14 +46,6 @@ def _payload() -> dict:
                     "confidence": "HIGH",
                 }
             ],
-        },
-        "srfs_integration": {
-            "artifact_path_resolved": "artifacts/apps_rg/fact_inventory/selected_role_fact_set_active.json",
-            "selection_id": "sel_contract",
-            "executive_summary_selected_fact_ids": ["fact_governance_003"],
-            "blocked_facts_count": 0,
-            "facts_requiring_human_confirmation_count": 0,
-            "unsupported_jd_needs_count": 0,
         },
     }
 
