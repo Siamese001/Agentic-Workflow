@@ -324,7 +324,7 @@ def test_file_classification():
     test_cases = [
         ("agentic_core/tests/test_foo.py", "TEST_ALLOWED"),
         ("agentic_core/AGENTS.md", "DOC_ALLOWED"),
-        ("agentic_core/L0_routing/apps_rg_l0_binding.py", "TEMPORARY_THIN_ADAPTER"),
+        ("apps_rg/runtime/bindings/l0_binding.py", "TEMPORARY_THIN_ADAPTER"),
         ("agentic_core/L0_routing/package_driven_selector.py", "GENERIC_READY"),  # Generic engine
         ("agentic_core/L0_routing/generic_route_resolver.py", "GENERIC_READY"),  # Generic engine
     ]

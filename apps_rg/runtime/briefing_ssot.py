@@ -1,6 +1,7 @@
 """Single source of truth for the default targeting briefing (JD/briefing lane context).
 
-Operators edit ``apps_rg/config/default_targeting_briefing.txt``; dispatch entrypoints load it via
+Role-specific briefings use ``apps_rg/config/targeting/*_briefing.md`` (GFM tables). Operators edit
+``apps_rg/config/default_targeting_briefing.txt``; dispatch entrypoints load it via
 ``default_targeting_briefing_text()`` instead of in-code string literals.
 """
 

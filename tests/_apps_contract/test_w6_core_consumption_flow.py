@@ -50,7 +50,7 @@ from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 
 # Producer imports — layer folders contain logic only, contracts imported from runtime/contracts/
 from agentic_core.L0_routing.u0_intake_validator import U0IntakeValidator
-from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
 from agentic_core.L0_routing.route_contract import L0Router
 from agentic_core.L0_routing.c0_evidence_contract import C0EvidenceCollector
 from agentic_core.L2_execution.prompt_assembly_contract import PromptAssembler

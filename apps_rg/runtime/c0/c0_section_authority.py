@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from agentic_core.runtime.c0.evidence_metrics_extractor import SupportTarget
 
-from apps_rg.runtime.c02_chroma_lifecycle import C0_AUTHORITY_LEDGER_GRAPH_PRIMARY
+from apps_rg.runtime.c0.constants import C0_AUTHORITY_LEDGER_GRAPH_PRIMARY
 
-# Re-export SSOT authority mode label for bridge/receipts.
 C0_AUTHORITY_MODE = C0_AUTHORITY_LEDGER_GRAPH_PRIMARY
 
 AUTHORITY_CLASS_LEDGER_GRAPH_PROOF = "LEDGER_GRAPH_PROOF"
@@ -34,28 +32,8 @@ NON_PROOF_CONTEXT_PREFIXES: tuple[str, ...] = (
 )
 
 
-def resolve_spine_chroma_enrich(
-    *,
-    explicit: bool | None = None,
-    merge_canonical_c0: bool | None = None,
-) -> bool:
-    """Explicit spine Chroma enrichment — off by default on section lanes."""
-    if explicit is not None:
-        return explicit
-    if merge_canonical_c0 is not None:
-        return merge_canonical_c0
-    return os.environ.get("APPS_RG_SPINE_CHROMA_ENRICH", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-        "on",
-    )
-
-
-def section_chroma_write_in_c02(spine_chroma_enrich: bool) -> bool:
-    """One Chroma policy: write in C0.2 OR query in C0.5 enrich — not both by default."""
-    if spine_chroma_enrich:
-        return False
+def section_chroma_write_in_c02() -> bool:
+    """True when same-run C0.2 lane upsert is allowed (product default: skip)."""
     from apps_rg.runtime.c02_chroma_lifecycle import product_section_skip_lane_upsert
 
     return not product_section_skip_lane_upsert()
@@ -78,10 +56,9 @@ def proof_support_target() -> SupportTarget:
     )
 
 
-def bridge_authority_fields(*, spine_chroma_enrich: bool) -> dict[str, Any]:
+def bridge_authority_fields() -> dict[str, Any]:
     return {
         "c0_authority_mode": C0_AUTHORITY_MODE,
-        "spine_chroma_enrich": spine_chroma_enrich,
         "ledger_graph_primary": True,
         "jd_targeting_only": True,
         "briefing_targeting_only": True,
@@ -101,6 +78,5 @@ __all__ = [
     "bridge_authority_fields",
     "c03_skills_graph_receipt_flags",
     "proof_support_target",
-    "resolve_spine_chroma_enrich",
     "section_chroma_write_in_c02",
 ]

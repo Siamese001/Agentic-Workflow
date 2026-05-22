@@ -172,7 +172,7 @@ class TestCategory1NoAppSpecificLiteralsInAgenticCore:
 
     # Files in agentic_core/runtime/c0/ that are known LEGACY_SHIMs
     # (re-exports only — they import from apps_rg by design; excluded from scan)
-    _SHIM_FILENAMES: set[str] = {"apps_rg_c0_binding.py"}
+    _SHIM_FILENAMES: set[str] = {"c0_binding.py"}
 
     def _scan_files(self, root: Path) -> list[str]:
         violations: list[str] = []

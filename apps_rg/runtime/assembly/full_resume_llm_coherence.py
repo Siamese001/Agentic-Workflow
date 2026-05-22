@@ -46,7 +46,10 @@ Evaluate:
 6. unsupported_claims: flag JD-only or briefing-only phrasing presented as candidate proof.
 7. readability_density: scannable, not stuffed.
 8. cross_section_consistency: titles, dates, metrics, claims consistent across sections.
-9. competencies_quality: executive capability clusters (3–6 items per category), not credential relisting or bare metrics-as-skills.
+9. competencies_quality: executive capability clusters (3–6 items per category), not credential relisting or bare metrics-as-skills; preserve high-signal C0.3 graph-skills evidence without repeating EY/IBM/summary bullets.
+10. cross_section_overlap: minimize redundancy between executive summary, experience bullets, and competencies while keeping locked verbatim blocks (EY, InsurTech, early career, education, certifications) intact.
+
+Lines marked [NOT COMPLETED: <section> — <reason>] are intentional gaps — do not score as prose; judge flow/overlap only on completed sections.
 
 Decisive failure (blockers):
 - Credential names duplicated in ENGINEERING & PLATFORM COMPETENCIES
@@ -65,6 +68,10 @@ def full_resume_coherence_review_enabled() -> bool:
 
 def assembly_structural_only_mode() -> bool:
     """Structural package: lane copy + deterministic X2 only — no aggregate LLM judge."""
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+    if product_fail_closed_runtime():
+        return False
     raw = os.environ.get("APPS_RG_ASSEMBLY_STRUCTURAL_ONLY", "0").strip().lower()
     return raw in ("1", "true", "yes", "on")
 
@@ -292,6 +299,12 @@ def aggregate_full_resume_coherence(
     quorum_met = len(passing) >= quorum_required if len(model_backed) >= quorum_required else False
 
     blockers = list(deterministic_blockers)
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+    if product_fail_closed_runtime() and len(model_backed) < quorum_required:
+        blockers.append(
+            f"judge_quorum_insufficient:model_backed={len(model_backed)} required={quorum_required}"
+        )
     warnings: list[str] = []
     for o in model_backed:
         if not o.pass_ or o.decisive_failure:

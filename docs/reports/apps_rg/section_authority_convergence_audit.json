@@ -1,0 +1,1414 @@
+{
+  "audit_id": "section_authority_convergence_audit",
+  "generated_at_utc": "2026-05-22T09:40:32.923519+00:00",
+  "proof_inventory_root": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes",
+  "sections": [
+    {
+      "section_id": "headline",
+      "status": "PARTIAL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "headline",
+          "mode": "COMPOSE_NEW",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+          "pa_template_ref": "strategic_tailor_v1",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": true,
+          "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/headline_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/headline_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "Template headline_tailor_v1 v1.5: North Star SVP Engineering | X | Y | Z with creative fact-grounded X/Y/Z; JD/briefing/target/companion are targeting-only; C0 + allowed_fact_ids are proof. W8 ledger-only citations: resume display text must not contain inline source/citation tags. Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable). jd_requirements / company_brief are targeting only, not proof. Companion context is U-tier only, not proof. Canonical CLI: python -m apps_rg --section headline. When non-empty U-tier companion context is supplied to the PA, model JSON must include jd_alignment.companion_used_as_proof=false (X2 fail-closed). Runtime freezes model jd_alignment into raw_jd_alignment before normalize for proof-boolean audit. Runtime compile via strategic_tailor_v1 + headline_tailor_v1 slot_bodies; facts in C0, JD in c0_jd_requirements, companion U-tier only.\n"
+        },
+        "declarative_section_contract": null,
+        "product_shape_ssot": {
+          "section_id": "headline",
+          "template_ref": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/headline_x2.py",
+          "display_field": "headline_line",
+          "shape_summary": "4 segments; prefix 'SVP Engineering'; 3 pipe separators; 10-13 words total; one line only",
+          "bounds_gate_ids": [
+            "x2_headline_exactly_one_line",
+            "x2_headline_pipe_four_segments",
+            "x2_headline_word_count_10_to_13"
+          ],
+          "proof_gate_ids": [
+            "x2_headline_claim_ledger_rows_present",
+            "x2_headline_claim_ledger_segment_decomposition",
+            "x2_headline_text_claim_coverage_integrity",
+            "x2_headline_source_supported"
+          ],
+          "style_gate_ids": [
+            "x2_headline_segments_quality",
+            "x2_headline_self_check_consistent",
+            "x2_headline_raw_model_schema_valid"
+          ],
+          "required_gate_ids": [
+            "x2_headline_exactly_one_line",
+            "x2_headline_pipe_four_segments",
+            "x2_headline_word_count_10_to_13",
+            "x2_headline_claim_ledger_rows_present",
+            "x2_headline_claim_ledger_segment_decomposition",
+            "x2_headline_text_claim_coverage_integrity",
+            "x2_headline_source_supported",
+            "x2_headline_segments_quality",
+            "x2_headline_self_check_consistent",
+            "x2_headline_raw_model_schema_valid"
+          ],
+          "required_any_text_patterns": [
+            "10\\s*[-\u2013]\\s*13",
+            "10 to 13"
+          ],
+          "required_all_text_patterns": [
+            "SVP Engineering",
+            "jd_used_as_proof",
+            "briefing_used_as_proof",
+            "companion_used_as_proof",
+            "targeting_only"
+          ],
+          "forbidden_text_patterns": [
+            "8\\s*[-\u2013]\\s*11",
+            "8 to 11"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof",
+            "briefing_used_as_proof",
+            "companion_context_used_as_proof",
+            "companion_used_as_proof"
+          ],
+          "compile_hints": [
+            "word_band=10-13",
+            "segments=4",
+            "pipes=3",
+            "X/Y/Z are fresh phrases not JD/briefing copy"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+        "pa_template_ref": "strategic_tailor_v1",
+        "mode": "COMPOSE_NEW",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+        "drift_violations": []
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/headline_x2.py",
+        "runtime_gate_count": 43,
+        "aggregation_status": "PASS",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [
+          "x2_headline_claim_ledger_no_silent_row_drop",
+          "x2_headline_claim_ledger_segment_decomposition",
+          "x2_headline_text_claim_coverage_integrity"
+        ],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_headline_claim_ledger_no_silent_row_drop",
+        "x2_headline_claim_ledger_rows_present",
+        "x2_headline_claim_ledger_segment_decomposition",
+        "x2_headline_exactly_one_line",
+        "x2_headline_pipe_four_segments",
+        "x2_headline_raw_model_schema_valid",
+        "x2_headline_segments_quality",
+        "x2_headline_self_check_consistent",
+        "x2_headline_source_supported",
+        "x2_headline_text_claim_coverage_integrity",
+        "x2_headline_word_count_10_to_13",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_no_first_person",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/headline",
+        "char_len": 107,
+        "preview": "SVP Engineering | Governed Agentic Platforms | Distributed Infrastructure | Production Reliability Platform",
+        "pipe_segments": 4,
+        "word_count": 10
+      },
+      "srfs_behavior": {
+        "applies": false
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": false,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Creative X/Y/Z segments must not absorb bullet metrics (headline_no_metrics)",
+        "JD mirroring vs fact-grounded segments"
+      ],
+      "repair_stack": [
+        "normalize_claim_ledger_string_fact_ids",
+        "lane_normalize_claim_ledger",
+        "headline_proof_shape_retry_llm (same-authority Qwen)",
+        "headline_format_repair LLM",
+        "fact_id_typo_repair against allowlist"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+        "compiler_template_id": "strategic_tailor_v1",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+        "compiled_compiler_template_id": "strategic_tailor_v1",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "pipe-segment split; word count includes segment text flattened"
+      ],
+      "critical_mismatches": [
+        "rigor_critical_gate_absent_in_runtime_x2: ['x2_headline_claim_ledger_no_silent_row_drop', 'x2_headline_claim_ledger_segment_decomposition', 'x2_headline_text_claim_coverage_integrity']",
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']"
+      ],
+      "recommended_fix_order": [
+        "Reconcile lane_registry vs runtime gate enumeration for headline"
+      ]
+    },
+    {
+      "section_id": "executive_summary",
+      "status": "FAIL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "executive_summary",
+          "mode": "REWRITE_FROM_FACT_POOL",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+          "pa_template_ref": "strategic_tailor_v1",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": true,
+          "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/executive_summary_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/executive_summary_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "Canonical entry: python -m apps_rg --section executive_summary. Ledger-only display text: no inline source/citation tags. Proof binds via claim_ledger / source_fact_ids; runtime writes selected_fact_plan.json. jd_requirements / company_brief are targeting context only, not proof. Companion context is U-tier only, not proof. Model JSON MUST NOT echo selected_fact_plan; runtime injects it before X2.\n"
+        },
+        "declarative_section_contract": {
+          "version": "1.0",
+          "section": "executive_summary",
+          "description": "Declarative contract for the executive_summary section. Canonical runtime: ``python -m apps_rg --section executive_summary`` via apps_rg_canonical_section_runtime (section PA + ledger + X2/X1D/X3). All fields encode prompt-level guidance for the model; hard gates live in X2/X3.\n",
+          "structure": {
+            "lead_with_seniority": "required",
+            "lead_clause_note": "Open with seniority/operating identity as first clause (engineering executive register). Do NOT open with: Seasoned, Dynamic, Proven, Passionate, Dedicated, Results-driven, Innovative, Accomplished, Visionary, Detail-oriented, Strategic, Forward-thinking.\n"
+          },
+          "proof_points": {
+            "min": 1,
+            "max": 5,
+            "source": "selected_base_resume_facts_only",
+            "note": "Every material claim in resume_display_text must be backed by claim_ledger rows whose source_fact_ids are drawn only from allowed selected facts (proof substrate). JD_TEXT, company_brief, target title, and briefing are targeting context only \u2014 never proof.\n"
+          },
+          "length": {
+            "display_text_sentence_band": {
+              "min": 4,
+              "max": 5
+            },
+            "paragraph_max_words": 220,
+            "max_words_per_sentence": 58,
+            "length_policy": "fit_to_evidence",
+            "x2_bounds_gate_ids": [
+              "x2_exec_summary_sentence_count_4_5",
+              "x2_exec_summary_paragraph_max_words"
+            ],
+            "note": "Product shape: **4\u20135 period-delimited sentences** forming one polished executive paragraph (fit_to_evidence; no paragraph word minimum). Legacy 2\u20133 sentence mode is retired. SelectedRoleFactSet controls allowed facts only \u2014 not sentence count.\n"
+          },
+          "naturalness_guidance_ref": "forbidden_ai_phrases.yaml#generic_openers",
+          "naturalness_note": "Phrases declared discouraged in the prompt are guidance for the model; deterministic blocking is via X2 where applicable.\n",
+          "discouraged_adjectives": [
+            "proven",
+            "accomplished",
+            "seasoned",
+            "dynamic",
+            "results-driven",
+            "passionate",
+            "dedicated"
+          ],
+          "pre_output_checklist_required": true,
+          "proof_authority": {
+            "canonical_binding": "claim_ledger",
+            "display_text": "clean_prose_only_no_inline_source_tags",
+            "selected_fact_plan_artifact": "runtime_owned_json",
+            "note": "Material claims must be reifiable via claim_ledger rows (source_fact_ids from selected facts only). gap_notes documents unsupported JD asks. The model must not echo selected_fact_plan in JSON output; runtime materializes that artifact.\n"
+          },
+          "jd_mirror_guidance_fraction": 0.2,
+          "jd_mirror_note": "Verbatim JD phrasing stays low; JD_TEXT and BRIEFING prioritize among **selected** base-r\u00e9sum\u00e9 facts (targeting only, not proof). Voice matches canonical base r\u00e9sum\u00e9: dense platform/runtime/governance/commercial nouns from facts \u2014 no keyword stuffing.\n",
+          "briefing_targeting_note": "Operator briefing steers emphasis (regulated context, modernization, governance) like JD_TEXT: **targeting context only**; substantive claims remain selected-fact-backed.\n",
+          "north_star_note": "Executive summary is a polished SVP / agentic-AI-platform paragraph: synthesized narrative, not bullet stacks, not label/colon stitching, not one-sentence-per-fact proof.\n"
+        },
+        "product_shape_ssot": {
+          "section_id": "executive_summary",
+          "template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/executive_summary_x2.py",
+          "display_field": "resume_display_text",
+          "shape_summary": "4-5 sentences; max 220 words; max 58 words/sentence; fit_to_evidence; claim_ledger required; no inline source tags in display text",
+          "bounds_gate_ids": [
+            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_paragraph_max_words",
+            "x2_exec_summary_evidence_utilization"
+          ],
+          "proof_gate_ids": [
+            "x2_exec_summary_jd_alignment_proof_flags",
+            "x2_claim_ledger_claim_text_non_empty",
+            "x2_claim_ledger_orphan_zero",
+            "x2_exec_summary_prompt_template_authority"
+          ],
+          "style_gate_ids": [
+            "x2_first_person_zero",
+            "x2_em_dash_count_zero",
+            "x2_exec_summary_no_mechanism_inventory",
+            "x2_exec_summary_no_credential_dump"
+          ],
+          "required_gate_ids": [
+            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_paragraph_max_words",
+            "x2_exec_summary_evidence_utilization",
+            "x2_exec_summary_jd_alignment_proof_flags",
+            "x2_claim_ledger_claim_text_non_empty",
+            "x2_claim_ledger_orphan_zero",
+            "x2_exec_summary_prompt_template_authority",
+            "x2_first_person_zero",
+            "x2_em_dash_count_zero",
+            "x2_exec_summary_no_mechanism_inventory",
+            "x2_exec_summary_no_credential_dump"
+          ],
+          "required_any_text_patterns": [
+            "4\\s*[-\u2013]\\s*5",
+            "4 or 5"
+          ],
+          "required_all_text_patterns": [
+            "fit_to_evidence",
+            "briefing_used_as_proof",
+            "jd_used_as_proof",
+            "companion_context_used_as_proof",
+            "targeting_only",
+            "executive_summary.generate_scratch_v1"
+          ],
+          "forbidden_text_patterns": [
+            "2\\s*[-\u2013]\\s*3\\s+dense\\s+sentences\\s+by\\s+default",
+            "default\\s+2\\s+or\\s+3\\s+sentences",
+            "2\\s*[-\u2013]\\s*3\\s+sentences\\s+\\(sovereign",
+            "Hold to\\s+2\\s+or\\s+3\\s+sentences",
+            "section budget explicitly allows",
+            "95-160 words",
+            "hard minimum 95"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof",
+            "briefing_used_as_proof",
+            "companion_context_used_as_proof",
+            "companion_used_as_proof"
+          ],
+          "compile_hints": [
+            "template_id=executive_summary.generate_scratch_v1",
+            "sentence_band=4-5",
+            "max_words=220",
+            "x2_exec_summary_paragraph_max_words",
+            "x2_exec_summary_evidence_utilization",
+            "legacy 2-3 sentence band retired"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+        "pa_template_ref": "strategic_tailor_v1",
+        "mode": "REWRITE_FROM_FACT_POOL",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+        "drift_violations": [
+          {
+            "kind": "missing_required_all_patterns",
+            "detail": "not all matched (AND): ['briefing_used_as_proof', 'companion_context_used_as_proof']",
+            "path": "apps_rg\\prompt_assembly\\templates\\executive_summary.generate_scratch_v1.yaml"
+          }
+        ]
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/executive_summary_x2.py",
+        "runtime_gate_count": 75,
+        "aggregation_status": "PASS",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [
+          "x2_exec_summary_evidence_utilization",
+          "x2_exec_summary_jd_alignment_proof_flags",
+          "x2_exec_summary_no_credential_dump",
+          "x2_exec_summary_no_mechanism_inventory",
+          "x2_exec_summary_paragraph_max_words",
+          "x2_exec_summary_prompt_template_authority",
+          "x2_exec_summary_sentence_count_4_5"
+        ],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_claim_ledger_orphan_zero",
+        "x2_em_dash_count_zero",
+        "x2_exec_summary_evidence_utilization",
+        "x2_exec_summary_jd_alignment_proof_flags",
+        "x2_exec_summary_no_credential_dump",
+        "x2_exec_summary_no_mechanism_inventory",
+        "x2_exec_summary_paragraph_max_words",
+        "x2_exec_summary_prompt_template_authority",
+        "x2_exec_summary_sentence_count_4_5",
+        "x2_first_person_zero",
+        "x2_json_parse_valid",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/executive_summary",
+        "char_len": 1078,
+        "preview": "Engineering executive who builds governed agentic AI platforms for regulated enterprise workflows where reliability, auditability, and delivery speed have to move together. He designs platform operating systems that bind deterministic routi",
+        "sentence_count": 5,
+        "word_count": 138
+      },
+      "srfs_behavior": {
+        "applies": true,
+        "srfs_gates_observed": [
+          "x2_exec_summary_srfs_density_word_count",
+          "x2_exec_summary_srfs_sentence_count_4_5",
+          "x2_exec_summary_srfs_sentence_responsibility_shape",
+          "x2_executive_summary_source_fact_ids_within_srfs_slice",
+          "x2_srfs_blocked_or_confirmation_fact_citation_zero",
+          "x2_srfs_claim_business_metrics_substrate",
+          "x2_srfs_display_ledger_percent_parity",
+          "x2_srfs_executive_selected_fact_scope",
+          "x2_srfs_jd_or_briefing_standalone_proof_id_zero"
+        ],
+        "retired_gate_ids_observed": [
+          "x2_exec_summary_sentence_count_2_3",
+          "x2_exec_summary_srfs_density_word_count",
+          "x2_exec_summary_srfs_sentence_count_4_5",
+          "x2_exec_summary_srfs_sentence_responsibility_shape"
+        ],
+        "legacy_2_3_gate_observed": true,
+        "product_4_5_gate_observed": false,
+        "paragraph_max_gate_observed": false,
+        "paragraph_word_bounds_observed": false,
+        "x2_exec_summary_paragraph_max_words_observed": false,
+        "x2_exec_summary_jd_alignment_proof_flags_observed": false,
+        "x2_exec_summary_prompt_template_authority_observed": false
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": true,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Credentials block competes with competencies + certifications lanes (credential_dump gate)",
+        "Mechanism stack overlaps unify_bullets vocabulary",
+        "Commercial metrics overlap unify/ibm bullet metric anchors"
+      ],
+      "repair_stack": [
+        "RELEASE: SRFS emergency finalizer DISABLED",
+        "RELEASE: SRFS judge-safe / density micro-expansion DISABLED",
+        "synthesis_regeneration_enabled (one Qwen regen)",
+        "graph_only_generation_quality_repair (deterministic reformat)",
+        "claim_ledger allowlist repair",
+        "coerce_resume_display_sentence_count_band",
+        "offline SRFS mock uses 5-sentence arc (stub only)"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+        "compiler_template_id": "strategic_tailor_v1",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+        "compiled_compiler_template_id": "strategic_tailor_v1",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "split_sentences abbreviation guards (U.S., Basel III, decimals) \u2014 comma chains still fragile",
+        "SRFS _srfs_join_fragments_as_one_sentence can mask boundary miscounts"
+      ],
+      "critical_mismatches": [
+        "prompt_drift:missing_required_all_patterns: not all matched (AND): ['briefing_used_as_proof', 'companion_context_used_as_proof'] (apps_rg\\prompt_assembly\\templates\\executive_summary.generate_scratch_v1.yaml)",
+        "rigor_critical_gate_absent_in_runtime_x2: ['x2_exec_summary_evidence_utilization', 'x2_exec_summary_jd_alignment_proof_flags', 'x2_exec_summary_no_credential_dump', 'x2_exec_summary_no_mechanism_inventory', 'x2_exec_summary_paragraph_max_words', 'x2_exec_summary_prompt_template_authority', 'x2_exec_summary_sentence_count_4_5']",
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']",
+        "display_contains_credential_dump_risk: certifications named in resume_display_text while x2_exec_summary_no_credential_dump missing or not failed"
+      ],
+      "recommended_fix_order": [
+        "Align SRFS vs default X2 gate IDs with lane_registry critical set",
+        "Emit x2_exec_summary_no_credential_dump in all runtime bundles",
+        "Enforce paragraph_max_words + jd_alignment_proof_flags in SRFS runs",
+        "Reconcile lane_registry vs runtime gate enumeration for executive_summary"
+      ]
+    },
+    {
+      "section_id": "competencies",
+      "status": "FAIL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "competencies",
+          "mode": "COMPOSE_NEW",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+          "pa_template_ref": "competency_selector_v2",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": true,
+          "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/competencies_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/competencies_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "W8 ledger-only citations: resume display text must not contain inline source/citation tags. Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable). jd_requirements / company_brief are targeting only, not proof. Companion context is U-tier only, not proof. W5: apps_rg_prompt_template_ref is narrative SSOT; PA loads slot bodies from competency_selector_v2.pa_slots.yaml. Structured competency terms in model JSON must be objects with text, source_fact_id, and non-empty source_fact_ids[] (PA R0 schema); runtime persistence canonicalizes legacy string terms to objects before X2.\n"
+        },
+        "declarative_section_contract": {
+          "version": "1.0",
+          "section": "competencies",
+          "description": "Professional Competencies is a target-aware, fact-constrained selection and grouping lane. It selects, groups, normalizes, and prioritizes supported competency terms from the allowed base-resume fact pool. JD, briefing, title, company, and companion generated sections may influence emphasis, labels, ordering, and relevance \u2014 never proof.\n",
+          "evidence": {
+            "evidence_required": "candidate_facts_only",
+            "note": "Every emitted competency term must trace to allowed source_fact_ids from the canonical base resume / C0 candidate facts. No JD-only, briefing-only, or companion-only proof.\n"
+          },
+          "gap_marking": {
+            "jd_gap_marking": "optional_notes_only",
+            "note": "Unsupported JD or briefing phrases belong in excluded_jd_skills / gap_notes \u2014 do not emit them as competency terms.\n"
+          },
+          "display_and_proof": {
+            "resume_display_text": "clean_no_inline_source_tags",
+            "proof_surfaces": "claim_ledger_and_source_fact_ids",
+            "display_pattern": "Category Label: compact phrase, compact phrase, ...",
+            "note": "Scannable executive capability index \u2014 not a narrative impact section. Terms are compact noun phrases (no full sentences, metrics, or accomplishment prose). JD/briefing/title/company/companion are targeting context only.\n"
+          },
+          "ordering": {
+            "cluster_ordering": "target_influenced_within_fact_constraints",
+            "note": "JD/briefing may influence category ordering and labels only within allowed facts.\n"
+          },
+          "forbidden": [
+            "jd_only_skills_unlabeled",
+            "keyword_stuffing",
+            "unsupported_trendy_terms"
+          ],
+          "naturalness_guidance_ref": "forbidden_ai_phrases.yaml"
+        },
+        "product_shape_ssot": {
+          "section_id": "competencies",
+          "template_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/competencies_x2.py",
+          "display_field": "competencies",
+          "shape_summary": "6-8 categories; 3-6 terms/category; compact noun phrases; ENGINEERING & PLATFORM COMPETENCIES authority",
+          "bounds_gate_ids": [
+            "x2_competencies_min_category_count",
+            "x2_competencies_min_items_per_category",
+            "x2_competencies_approved_category_labels"
+          ],
+          "proof_gate_ids": [
+            "x2_competency_companion_context_not_proof",
+            "x2_competencies_term_support_ids_present",
+            "x2_claim_ledger_claim_text_non_empty",
+            "x2_gate_rows_are_internally_consistent"
+          ],
+          "style_gate_ids": [
+            "x2_competencies_no_fragment_or_one_word_terms",
+            "x2_competencies_no_low_rigor_two_word_items",
+            "x2_competencies_no_credential_relisting",
+            "x2_competencies_no_reserved_certification_category",
+            "x2_competencies_no_metrics_as_skills_without_capability_context",
+            "x2_competencies_role_alignment_terms",
+            "x2_competencies_no_all_generic_skill_phrase",
+            "x2_competencies_keyword_repetition_limit"
+          ],
+          "required_gate_ids": [
+            "x2_competencies_min_category_count",
+            "x2_competencies_min_items_per_category",
+            "x2_competencies_approved_category_labels",
+            "x2_competency_companion_context_not_proof",
+            "x2_competencies_term_support_ids_present",
+            "x2_claim_ledger_claim_text_non_empty",
+            "x2_gate_rows_are_internally_consistent",
+            "x2_competencies_no_fragment_or_one_word_terms",
+            "x2_competencies_no_low_rigor_two_word_items",
+            "x2_competencies_no_credential_relisting",
+            "x2_competencies_no_reserved_certification_category",
+            "x2_competencies_no_metrics_as_skills_without_capability_context",
+            "x2_competencies_role_alignment_terms",
+            "x2_competencies_no_all_generic_skill_phrase",
+            "x2_competencies_keyword_repetition_limit"
+          ],
+          "required_any_text_patterns": [
+            "6\\s*[-\u2013]\\s*8",
+            "6 to 8",
+            "6-8"
+          ],
+          "required_all_text_patterns": [
+            "6",
+            "8",
+            "3",
+            "6",
+            "companion_context_used_as_proof",
+            "targeting_only",
+            "source_fact_ids"
+          ],
+          "forbidden_text_patterns": [
+            "Exactly\\s+EIGHT",
+            "\\bexactly\\s+eight\\s+categories\\b"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof",
+            "briefing_used_as_proof",
+            "companion_context_used_as_proof",
+            "companion_used_as_proof"
+          ],
+          "compile_hints": [
+            "terms are objects with text + source_fact_id + source_fact_ids[]",
+            "no_full_sentences in competency display",
+            "no inline citation tags in display text"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+        "pa_template_ref": "competency_selector_v2",
+        "mode": "COMPOSE_NEW",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+        "drift_violations": []
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/competencies_x2.py",
+        "runtime_gate_count": 48,
+        "aggregation_status": "FAIL",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [
+          "x2_competencies_approved_category_labels",
+          "x2_competencies_keyword_repetition_limit",
+          "x2_competencies_no_all_generic_skill_phrase",
+          "x2_competencies_no_fragment_or_one_word_terms",
+          "x2_competencies_term_support_ids_present"
+        ],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_competencies_approved_category_labels",
+        "x2_competencies_keyword_repetition_limit",
+        "x2_competencies_min_category_count",
+        "x2_competencies_min_items_per_category",
+        "x2_competencies_no_all_generic_skill_phrase",
+        "x2_competencies_no_credential_relisting",
+        "x2_competencies_no_fragment_or_one_word_terms",
+        "x2_competencies_no_low_rigor_two_word_items",
+        "x2_competencies_no_metrics_as_skills_without_capability_context",
+        "x2_competencies_no_reserved_certification_category",
+        "x2_competencies_role_alignment_terms",
+        "x2_competencies_term_support_ids_present",
+        "x2_competency_companion_context_not_proof",
+        "x2_gate_rows_are_internally_consistent",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_no_first_person",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/competencies",
+        "category_count": 8,
+        "display_preview": "{'schema_version': '1', 'section_id': 'competencies', 'canonical_aggregation_note': 'CANONICAL_DOWNSTREAM_AGGREGATION_INPUT \u2014 use this file as the sole bundle-shaped join surface for competencies (dis"
+      },
+      "srfs_behavior": {
+        "applies": true
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": false,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Must not relist credentials (forbidden cert category)",
+        "Must not restate bullet outcomes (bullet_restatement gate)",
+        "Metrics-as-skills without capability context"
+      ],
+      "repair_stack": [
+        "repair_structured_competencies_source_facts",
+        "bullet_restatement_repair LLM",
+        "fact_id_typo_repair",
+        "deterministic keyword-stuffing repair templates"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+        "compiler_template_id": "competency_selector_v2",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+        "compiled_compiler_template_id": "competency_selector_v2",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "term_phrase normalization; two-word low-rigor detector; category label exact match"
+      ],
+      "critical_mismatches": [
+        "rigor_critical_gate_absent_in_runtime_x2: ['x2_competencies_approved_category_labels', 'x2_competencies_keyword_repetition_limit', 'x2_competencies_no_all_generic_skill_phrase', 'x2_competencies_no_fragment_or_one_word_terms', 'x2_competencies_term_support_ids_present']",
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']",
+        "rigor_critical_gate_failed: ['x2_competencies_no_low_rigor_two_word_items', 'x2_competencies_no_metrics_as_skills_without_capability_context']"
+      ],
+      "recommended_fix_order": [
+        "Repair low-rigor two-word terms and metric-without-context terms before X3",
+        "Reconcile lane_registry vs runtime gate enumeration for competencies"
+      ]
+    },
+    {
+      "section_id": "unify_bullets",
+      "status": "PARTIAL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "unify_bullets",
+          "mode": "REWRITE_FROM_FACT_POOL",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+          "pa_template_ref": "strategic_tailor_v1",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": false,
+          "companion_context_authority": "NONE",
+          "emits_companion_context_for": "unify_narrative",
+          "required_generation_order": 1,
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/unify_bullets_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/unify_bullets_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "W8 ledger-only citations: resume display text must not contain inline source/citation tags. Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable). jd_requirements / company_brief are targeting only, not proof. W7 mechanical migration hardened for SVP Engineering targeting. This lane must complete before unify_narrative. JD, target title, target company, and briefing may guide emphasis but never proof.\n"
+        },
+        "declarative_section_contract": {
+          "version": "1.0",
+          "section": "unify",
+          "description": "Declarative contract for the unify pass. Encodes consistency and de-duplication rules as prompt-level guidance.\n",
+          "integrity_rules": {
+            "no_new_claims": "required",
+            "remove_contradictions": "required",
+            "contradiction_types": [
+              "date_overlap",
+              "title_inflation",
+              "metric_inconsistency",
+              "scope_inflation"
+            ],
+            "summary_claims_must_appear_in_experience": "required",
+            "no_filler_for_removed_content": "required"
+          },
+          "de_duplication": {
+            "collapse_repeated_achievements": true,
+            "preserve_highest_specificity_instance": true,
+            "merge_strategy": "keep_most_specific_with_ledger_binding"
+          },
+          "consistency_checks": {
+            "date_integrity": "required",
+            "title_consistency": "required",
+            "metric_consistency": "required",
+            "scope_consistency": "required"
+          },
+          "proof_authority": {
+            "display_text": "clean_prose_only_no_inline_source_tags",
+            "canonical_binding": "claim_ledger",
+            "note": "Unify adjusts resume display text for consistency; proof stays in claim_ledger / source_fact_ids / evidence_ids. JD and companion context are never proof surfaces.\n"
+          }
+        },
+        "product_shape_ssot": {
+          "section_id": "unify_bullets",
+          "template_ref": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/unify_bullets_x2.py",
+          "display_field": "bullets",
+          "shape_summary": "6 bullets; HEAVY=2 MODERATE=3 LIGHT_PROTECTED=1; bul_unify_* fact ids only",
+          "bounds_gate_ids": [
+            "x2_unify_bullet_count_6",
+            "x2_unify_rewrite_distribution_valid",
+            "x2_unify_at_most_one_mechanism_dense_bullet"
+          ],
+          "proof_gate_ids": [
+            "x2_text_claim_coverage_integrity",
+            "x2_unify_metric_anchor_bullet_ownership",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "style_gate_ids": [],
+          "required_gate_ids": [
+            "x2_unify_bullet_count_6",
+            "x2_unify_rewrite_distribution_valid",
+            "x2_unify_at_most_one_mechanism_dense_bullet",
+            "x2_text_claim_coverage_integrity",
+            "x2_unify_metric_anchor_bullet_ownership",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "required_any_text_patterns": [
+            "exactly\\s+6",
+            "HEAVY \\+ MODERATE \\+ LIGHT_PROTECTED == 6"
+          ],
+          "required_all_text_patterns": [
+            "HEAVY:\\s*2",
+            "MODERATE:\\s*3",
+            "LIGHT_PROTECTED:\\s*1",
+            "rewrite_distribution",
+            "bul_unify_"
+          ],
+          "forbidden_text_patterns": [
+            "exactly\\s+5\\s+bullets",
+            "7\\s+bullets",
+            "bul_ibm_"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof"
+          ],
+          "compile_hints": [
+            "distribution HEAVY=2 MODERATE=3 LIGHT_PROTECTED=1",
+            "companion_context_allowed=false"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+        "pa_template_ref": "strategic_tailor_v1",
+        "mode": "REWRITE_FROM_FACT_POOL",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "NONE",
+        "drift_violations": []
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/unify_bullets_x2.py",
+        "runtime_gate_count": 35,
+        "aggregation_status": "PASS",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [
+          "x2_unify_at_most_one_mechanism_dense_bullet",
+          "x2_unify_metric_anchor_bullet_ownership"
+        ],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_no_first_person",
+        "x2_text_claim_coverage_integrity",
+        "x2_unify_at_most_one_mechanism_dense_bullet",
+        "x2_unify_bullet_count_6",
+        "x2_unify_metric_anchor_bullet_ownership",
+        "x2_unify_rewrite_distribution_valid",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/unify_bullets",
+        "char_len": 1411,
+        "preview": "- bul_unify_001: Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, incorporating deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gati",
+        "bullet_count": 6
+      },
+      "srfs_behavior": {
+        "applies": false
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": false,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Owns unify metric anchors; narrative must not duplicate",
+        "Mechanism-dense bullet cap (max 1)"
+      ],
+      "repair_stack": [
+        "repair_protected_unify_bullet_metrics",
+        "distribution / proof-shape Qwen repair",
+        "fact_id_typo_repair"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+        "compiler_template_id": "strategic_tailor_v1",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+        "compiled_compiler_template_id": "strategic_tailor_v1",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "bullet lines parsed by prefix; metric anchor ownership is regex/heuristic"
+      ],
+      "critical_mismatches": [
+        "rigor_critical_gate_absent_in_runtime_x2: ['x2_unify_at_most_one_mechanism_dense_bullet', 'x2_unify_metric_anchor_bullet_ownership']",
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']"
+      ],
+      "recommended_fix_order": [
+        "Reconcile lane_registry vs runtime gate enumeration for unify_bullets"
+      ]
+    },
+    {
+      "section_id": "unify_narrative",
+      "status": "PARTIAL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "unify_narrative",
+          "mode": "SUMMARIZE_ROLE_SCOPE",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+          "pa_template_ref": "strategic_tailor_v1",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": true,
+          "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+          "required_generation_order": 2,
+          "requires_finalized_companion_context": {
+            "section_id": "unify_bullets",
+            "required_status": "ACCEPTED_FINALIZED",
+            "fail_closed_if_missing": true
+          },
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/unify_narrative_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/unify_narrative_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "W8 ledger-only citations: resume display text must not contain inline source/citation tags. Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable). jd_requirements / company_brief are targeting only, not proof. North-star role capstone: platform roadmap, architecture, commercialization, reusable IP, enterprise deployment; base anchor fact unify_narrative_base_* when role_narrative exists in canonical JSON. Companion context is U-tier only, not proof. Production narrative must run only after unify_bullets has X2/X1D/X3 evidence and product_quality_status PASS. W7 mechanical migration hardened with bullet-first dependency enforcement.\n"
+        },
+        "declarative_section_contract": {
+          "version": "1.0",
+          "section": "unify",
+          "description": "Declarative contract for the unify pass. Encodes consistency and de-duplication rules as prompt-level guidance.\n",
+          "integrity_rules": {
+            "no_new_claims": "required",
+            "remove_contradictions": "required",
+            "contradiction_types": [
+              "date_overlap",
+              "title_inflation",
+              "metric_inconsistency",
+              "scope_inflation"
+            ],
+            "summary_claims_must_appear_in_experience": "required",
+            "no_filler_for_removed_content": "required"
+          },
+          "de_duplication": {
+            "collapse_repeated_achievements": true,
+            "preserve_highest_specificity_instance": true,
+            "merge_strategy": "keep_most_specific_with_ledger_binding"
+          },
+          "consistency_checks": {
+            "date_integrity": "required",
+            "title_consistency": "required",
+            "metric_consistency": "required",
+            "scope_consistency": "required"
+          },
+          "proof_authority": {
+            "display_text": "clean_prose_only_no_inline_source_tags",
+            "canonical_binding": "claim_ledger",
+            "note": "Unify adjusts resume display text for consistency; proof stays in claim_ledger / source_fact_ids / evidence_ids. JD and companion context are never proof surfaces.\n"
+          }
+        },
+        "product_shape_ssot": {
+          "section_id": "unify_narrative",
+          "template_ref": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/unify_narrative_x2.py",
+          "display_field": "narrative_sentence",
+          "shape_summary": "exactly 1 sentence; <= 58 words; <= 360 chars; preferred 34-48 words; requires finalized unify bullets",
+          "bounds_gate_ids": [
+            "x2_unify_narrative_exactly_one_sentence",
+            "x2_unify_narrative_word_budget"
+          ],
+          "proof_gate_ids": [
+            "x2_unify_narrative_requires_finalized_bullets",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "style_gate_ids": [],
+          "required_gate_ids": [
+            "x2_unify_narrative_exactly_one_sentence",
+            "x2_unify_narrative_word_budget",
+            "x2_unify_narrative_requires_finalized_bullets",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "required_any_text_patterns": [
+            "Exactly\\s+one\\s+sentence",
+            "exactly one sentence"
+          ],
+          "required_all_text_patterns": [
+            "58\\s+words",
+            "360",
+            "bul_unify_",
+            "targeting only"
+          ],
+          "forbidden_text_patterns": [
+            "250-character",
+            "max 250",
+            "two\\s+sentences",
+            "bul_ibm_",
+            "bul_insurtech_",
+            "bul_ey_"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof"
+          ],
+          "compile_hints": [
+            "word_max=58",
+            "char_max=360",
+            "no bullet characters in narrative_sentence"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+        "pa_template_ref": "strategic_tailor_v1",
+        "mode": "SUMMARIZE_ROLE_SCOPE",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+        "drift_violations": []
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/unify_narrative_x2.py",
+        "runtime_gate_count": 36,
+        "aggregation_status": "PASS",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_no_first_person",
+        "x2_unify_narrative_exactly_one_sentence",
+        "x2_unify_narrative_requires_finalized_bullets",
+        "x2_unify_narrative_word_budget",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/unify_narrative",
+        "char_len": 250,
+        "preview": "Led the platform roadmap, core systems architecture, and commercialization of a production-grade generative AI Solution Accelerator at Unify Consulting, converting bespoke client delivery into reusable IP deployed across enterprise lines of",
+        "sentence_count": 1,
+        "word_count": 32
+      },
+      "srfs_behavior": {
+        "applies": false
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": false,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Depends on unify_bullets ACCEPTED_FINALIZED companion",
+        "Metric repetition gate defers to bullets"
+      ],
+      "repair_stack": [
+        "companion metric bundle Qwen repair",
+        "fact_id_typo_repair"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+        "compiler_template_id": "strategic_tailor_v1",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+        "compiled_compiler_template_id": "strategic_tailor_v1",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "single-sentence display; word/char caps \u2014 template still mentions legacy 250-char band"
+      ],
+      "critical_mismatches": [
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']"
+      ],
+      "recommended_fix_order": [
+        "Reconcile lane_registry vs runtime gate enumeration for unify_narrative"
+      ]
+    },
+    {
+      "section_id": "ibm_bullets",
+      "status": "PARTIAL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "ibm_bullets",
+          "mode": "REWRITE_FROM_FACT_POOL_CONSTRAINED",
+          "foundation_proof_model_id": "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+          "pa_template_ref": "strategic_tailor_v1",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": false,
+          "companion_context_authority": "NONE",
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/ibm_bullets_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/ibm_bullets_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "W8 ledger-only citations: resume display text must not contain inline source/citation tags. Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable). jd_requirements / company_brief are targeting only, not proof. IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1: enterprise AI/data platform architecture, cloud/data modernization, reusable platform patterns, lineage/observability/regulatory response, hyperscaler leverage \u2014 not Unify agentic-platform vocabulary and not taxonomy-prefixed bullet_text. W7 mechanical migration.\n"
+        },
+        "declarative_section_contract": null,
+        "product_shape_ssot": {
+          "section_id": "ibm_bullets",
+          "template_ref": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/ibm_bullets_x2.py",
+          "display_field": "bullets",
+          "shape_summary": "5 bullets; HEAVY=0 (forbidden); MODERATE=3 LIGHT_PROTECTED=2; bul_ibm_* only",
+          "bounds_gate_ids": [
+            "x2_ibm_bullet_count_5",
+            "x2_ibm_rewrite_distribution_valid"
+          ],
+          "proof_gate_ids": [
+            "x2_text_claim_coverage_integrity",
+            "x2_ibm_metric_anchor_bullet_ownership",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "style_gate_ids": [],
+          "required_gate_ids": [
+            "x2_ibm_bullet_count_5",
+            "x2_ibm_rewrite_distribution_valid",
+            "x2_text_claim_coverage_integrity",
+            "x2_ibm_metric_anchor_bullet_ownership",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "required_any_text_patterns": [
+            "exactly\\s+5",
+            "zero\\s+HEAVY",
+            "HEAVY == 0",
+            "HEAVY forbidden"
+          ],
+          "required_all_text_patterns": [
+            "MODERATE:\\s*3",
+            "LIGHT_PROTECTED:\\s*2",
+            "bul_ibm_",
+            "rewrite_distribution"
+          ],
+          "forbidden_text_patterns": [
+            "exactly\\s+6",
+            "HEAVY:\\s*2",
+            "bul_unify_"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof"
+          ],
+          "compile_hints": [
+            "distribution HEAVY=0 MODERATE=3 LIGHT_PROTECTED=2",
+            "IBM_BULLETS_FOUNDATION slice"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+        "pa_template_ref": "strategic_tailor_v1",
+        "mode": "REWRITE_FROM_FACT_POOL_CONSTRAINED",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "NONE",
+        "drift_violations": []
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/ibm_bullets_x2.py",
+        "runtime_gate_count": 32,
+        "aggregation_status": "PASS",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [
+          "x2_ibm_metric_anchor_bullet_ownership",
+          "x2_text_claim_coverage_integrity"
+        ],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_ibm_bullet_count_5",
+        "x2_ibm_metric_anchor_bullet_ownership",
+        "x2_ibm_rewrite_distribution_valid",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_no_first_person",
+        "x2_text_claim_coverage_integrity",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/ibm_bullets",
+        "char_len": 1034,
+        "preview": "- bul_ibm_001: Architected cloud-native AI and analytics platforms that enabled governed enterprise decision systems operating at 99.9% uptime across regulated financial environments.\n- bul_ibm_002: Led migration from legacy on-prem environ",
+        "bullet_count": 5
+      },
+      "srfs_behavior": {
+        "applies": false
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": false,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Zero HEAVY distribution; IBM foundation vocabulary vs unify agentic vocabulary"
+      ],
+      "repair_stack": [
+        "foundation proof model constrained rewrite",
+        "distribution / proof-shape Qwen repair",
+        "fact_id_typo_repair"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+        "compiler_template_id": "strategic_tailor_v1",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+        "compiled_compiler_template_id": "strategic_tailor_v1",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "bullet lines parsed by prefix; metric anchor ownership is regex/heuristic"
+      ],
+      "critical_mismatches": [
+        "rigor_critical_gate_absent_in_runtime_x2: ['x2_ibm_metric_anchor_bullet_ownership', 'x2_text_claim_coverage_integrity']",
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']"
+      ],
+      "recommended_fix_order": [
+        "Reconcile lane_registry vs runtime gate enumeration for ibm_bullets"
+      ]
+    },
+    {
+      "section_id": "ibm_narrative",
+      "status": "FAIL",
+      "product_shape_contract": {
+        "section_prompt_contract": {
+          "section_id": "ibm_narrative",
+          "mode": "REWRITE_FROM_FACT_POOL",
+          "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+          "pa_template_ref": "strategic_tailor_v1",
+          "output_schema_ref": "apps_rg/rg_output_schema.json",
+          "claim_ledger_required": true,
+          "display_text_source_tags_allowed": false,
+          "jd_as_proof_allowed": false,
+          "companion_context_allowed": true,
+          "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+          "required_generation_order": 2,
+          "requires_finalized_companion_context": {
+            "section_id": "ibm_bullets",
+            "required_status": "ACCEPTED_FINALIZED",
+            "fail_closed_if_missing": true
+          },
+          "x2_gate_profile_ref": "apps_rg/runtime/validators/ibm_narrative_x2.py",
+          "product_shape_ssot_ref": "apps_rg/runtime/sections/section_product_shape_ssot.py",
+          "x1d_judge_profile_ref": "apps_rg/runtime/judges/ibm_narrative_x1d.py",
+          "locked_fields": [],
+          "llm_generation_allowed": true,
+          "notes": "W8 ledger-only citations: resume display text must not contain inline source/citation tags. Proof binds via claim_ledger / source_fact_ids / evidence_ids (and gap_notes when applicable). jd_requirements / company_brief are targeting only, not proof. Companion IBM bullets are U_TIER_CONTEXT_ONLY when present \u2014 context only, not proof. W7: PA compile via strategic_tailor_v1.\n"
+        },
+        "declarative_section_contract": null,
+        "product_shape_ssot": {
+          "section_id": "ibm_narrative",
+          "template_ref": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+          "x2_module_ref": "apps_rg/runtime/validators/ibm_narrative_x2.py",
+          "display_field": "narrative_sentence",
+          "shape_summary": "exactly 1 sentence; <= 58 words; <= 360 chars; requires finalized ibm bullets; no meta disclaimer in display",
+          "bounds_gate_ids": [
+            "x2_ibm_narrative_exactly_one_sentence"
+          ],
+          "proof_gate_ids": [
+            "x2_ibm_narrative_requires_finalized_bullets",
+            "x2_ibm_narrative_claim_ledger_clause_decomposition",
+            "x2_claim_ledger_claim_text_non_empty"
+          ],
+          "style_gate_ids": [
+            "x2_ibm_narrative_no_meta_disclaimer_in_display"
+          ],
+          "required_gate_ids": [
+            "x2_ibm_narrative_exactly_one_sentence",
+            "x2_ibm_narrative_requires_finalized_bullets",
+            "x2_ibm_narrative_claim_ledger_clause_decomposition",
+            "x2_claim_ledger_claim_text_non_empty",
+            "x2_ibm_narrative_no_meta_disclaimer_in_display"
+          ],
+          "required_any_text_patterns": [
+            "Exactly\\s+one\\s+sentence",
+            "exactly one sentence"
+          ],
+          "required_all_text_patterns": [
+            "58\\s+words",
+            "360",
+            "bul_ibm_"
+          ],
+          "forbidden_text_patterns": [
+            "250-character",
+            "max 250",
+            "two\\s+sentences",
+            "bul_unify_",
+            "bul_insurtech_",
+            "bul_ey_"
+          ],
+          "jd_alignment_proof_fields": [
+            "targeting_only",
+            "jd_used_as_proof"
+          ],
+          "compile_hints": [
+            "word_max=58",
+            "char_max=360",
+            "companion optional; never proof"
+          ]
+        }
+      },
+      "prompt_shape": {
+        "template_ref": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+        "pa_template_ref": "strategic_tailor_v1",
+        "mode": "REWRITE_FROM_FACT_POOL",
+        "jd_as_proof_allowed": false,
+        "companion_context_authority": "U_TIER_CONTEXT_ONLY",
+        "drift_violations": []
+      },
+      "x2_shape": {
+        "x2_gate_profile_ref": "apps_rg/runtime/validators/ibm_narrative_x2.py",
+        "runtime_gate_count": 36,
+        "aggregation_status": "PASS",
+        "failed_gate_ids": null,
+        "missing_section_critical_in_x2": [
+          "x2_ibm_narrative_claim_ledger_clause_decomposition",
+          "x2_ibm_narrative_no_meta_disclaimer_in_display",
+          "x2_ibm_narrative_requires_finalized_bullets"
+        ],
+        "missing_c0_critical_in_x2": [
+          "x2_c0_metrics_artifact_present",
+          "x2_c0_support_status_gate"
+        ]
+      },
+      "rigor_critical_gates": [
+        "x2_c0_metrics_artifact_present",
+        "x2_c0_support_status_gate",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_ibm_narrative_claim_ledger_clause_decomposition",
+        "x2_ibm_narrative_exactly_one_sentence",
+        "x2_ibm_narrative_no_meta_disclaimer_in_display",
+        "x2_ibm_narrative_requires_finalized_bullets",
+        "x2_json_parse_valid",
+        "x2_no_em_dash",
+        "x2_no_first_person",
+        "x2_x1d_required_judges_present",
+        "x2_x1d_schema_valid"
+      ],
+      "runtime_observed_shape": {
+        "proof_dir": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes/ibm_narrative",
+        "char_len": 288,
+        "preview": "At IBM, led enterprise-scale cloud, data, lineage and observability foundations for regulated financial services, establishing the reliability and governance discipline that supported later production AI platform leadership without claiming",
+        "sentence_count": 1,
+        "word_count": 35
+      },
+      "srfs_behavior": {
+        "applies": true
+      },
+      "briefing_behavior": {
+        "jd_as_proof_allowed": false,
+        "rigor_uses_exec_briefing_variant": false,
+        "manual_brief_path": null
+      },
+      "ownership_conflicts": [
+        "Meta-disclaimer anti-pattern vs model compliance phrasing",
+        "Career-bridge phrasing vs executive_summary arc"
+      ],
+      "repair_stack": [
+        "companion metric bundle Qwen repair",
+        "fact_id_typo_repair"
+      ],
+      "prompt_trace_status": {
+        "prompt_selection_trace_present": true,
+        "apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+        "compiler_template_id": "strategic_tailor_v1",
+        "pa_shell": true,
+        "compiled_prompt_artifact_present": true,
+        "compiled_apps_rg_prompt_template_ref": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+        "compiled_compiler_template_id": "strategic_tailor_v1",
+        "slot_count": 8
+      },
+      "text_primitive_risks": [
+        "single-sentence display; word/char caps \u2014 template still mentions legacy 250-char band"
+      ],
+      "critical_mismatches": [
+        "rigor_critical_gate_absent_in_runtime_x2: ['x2_ibm_narrative_claim_ledger_clause_decomposition', 'x2_ibm_narrative_no_meta_disclaimer_in_display', 'x2_ibm_narrative_requires_finalized_bullets']",
+        "rigor_c0_gate_not_in_x2_bundle (expected c0_metrics.json sidecar): ['x2_c0_metrics_artifact_present', 'x2_c0_support_status_gate']",
+        "display_meta_disclaimer_present_but_gate_absent: 'without claiming' in narrative while x2_ibm_narrative_no_meta_disclaimer_in_display not emitted in x2_gate_outputs.json"
+      ],
+      "recommended_fix_order": [
+        "Emit and fail-closed x2_ibm_narrative_no_meta_disclaimer_in_display in production X2",
+        "Reconcile lane_registry vs runtime gate enumeration for ibm_narrative"
+      ]
+    }
+  ],
+  "high_severity_gaps": [
+    "headline: rigor_critical_gate_absent_in_runtime_x2: ['x2_headline_claim_ledger_no_silent_row_drop', 'x2_headline_claim_ledger_segment_decomposition', 'x2_headline_text_claim_coverage_integrity']",
+    "executive_summary: rigor_critical_gate_absent_in_runtime_x2: ['x2_exec_summary_evidence_utilization', 'x2_exec_summary_jd_alignment_proof_flags', 'x2_exec_summary_no_credential_dump', 'x2_exec_summary_no_mechanism_inventory', 'x2_exec_summary_paragraph_max_words', 'x2_exec_summary_prompt_template_authority', 'x2_exec_summary_sentence_count_4_5']",
+    "executive_summary: display_contains_credential_dump_risk: certifications named in resume_display_text while x2_exec_summary_no_credential_dump missing or not failed",
+    "competencies: rigor_critical_gate_absent_in_runtime_x2: ['x2_competencies_approved_category_labels', 'x2_competencies_keyword_repetition_limit', 'x2_competencies_no_all_generic_skill_phrase', 'x2_competencies_no_fragment_or_one_word_terms', 'x2_competencies_term_support_ids_present']",
+    "competencies: rigor_critical_gate_failed: ['x2_competencies_no_low_rigor_two_word_items', 'x2_competencies_no_metrics_as_skills_without_capability_context']",
+    "unify_bullets: rigor_critical_gate_absent_in_runtime_x2: ['x2_unify_at_most_one_mechanism_dense_bullet', 'x2_unify_metric_anchor_bullet_ownership']",
+    "ibm_bullets: rigor_critical_gate_absent_in_runtime_x2: ['x2_ibm_metric_anchor_bullet_ownership', 'x2_text_claim_coverage_integrity']",
+    "ibm_narrative: rigor_critical_gate_absent_in_runtime_x2: ['x2_ibm_narrative_claim_ledger_clause_decomposition', 'x2_ibm_narrative_no_meta_disclaimer_in_display', 'x2_ibm_narrative_requires_finalized_bullets']",
+    "ibm_narrative: display_meta_disclaimer_present_but_gate_absent: 'without claiming' in narrative while x2_ibm_narrative_no_meta_disclaimer_in_display not emitted in x2_gate_outputs.json"
+  ],
+  "cross_section_patterns": [
+    "lane_registry critical gates are not all enumerated in production x2_gate_outputs.json",
+    "C0 critical gates are rigor-critical but absent from lane x2_gate_outputs sidecar",
+    "executive_summary proof bundle contains RETIRED_EXEC_SUMMARY_X2_GATE_IDS \u2014 refresh runtime proof"
+  ],
+  "recommended_fix_order_global": [
+    "Reconcile lane_registry vs runtime gate enumeration for headline",
+    "Align SRFS vs default X2 gate IDs with lane_registry critical set",
+    "Emit x2_exec_summary_no_credential_dump in all runtime bundles",
+    "Enforce paragraph_max_words + jd_alignment_proof_flags in SRFS runs",
+    "Reconcile lane_registry vs runtime gate enumeration for executive_summary",
+    "Repair low-rigor two-word terms and metric-without-context terms before X3",
+    "Reconcile lane_registry vs runtime gate enumeration for competencies",
+    "Reconcile lane_registry vs runtime gate enumeration for unify_bullets",
+    "Reconcile lane_registry vs runtime gate enumeration for unify_narrative",
+    "Reconcile lane_registry vs runtime gate enumeration for ibm_bullets",
+    "Emit and fail-closed x2_ibm_narrative_no_meta_disclaimer_in_display in production X2",
+    "Reconcile lane_registry vs runtime gate enumeration for ibm_narrative"
+  ],
+  "explicit_non_claims": [
+    "No release eligibility",
+    "No one-spine convergence",
+    "No agentic_core edits",
+    "No live regeneration in this audit run",
+    "Mock/stub paths not used as product proof unless labeled"
+  ]
+}

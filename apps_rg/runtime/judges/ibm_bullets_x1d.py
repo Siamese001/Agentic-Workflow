@@ -27,6 +27,9 @@ Rubric dimensions:
 5. ats_alignment_without_stuffing: relevant to target role without JD keyword dumping.
 6. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience.
 7. no_unify_inflation: no Unify-era agentic runtime vocabulary (agentic AI, GraphRAG, multi-agent orchestration, etc.).
+8. role_fit_targeting: JD/briefing targeting shapes emphasis without JD-as-proof.
+9. bullet_semantic_distribution: five IBM bullets cover distinct enterprise outcomes, not five restatements of the same theme.
+10. narrative_complementarity: bullets are outcome lines that complement (not preempt) the IBM narrative capstone.
 
 Decisive failure triggers:
 - unsupported metric or cross-employer fact leakage (bul_unify_*, InsurTech, EY, etc.)

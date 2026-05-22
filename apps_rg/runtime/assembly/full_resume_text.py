@@ -109,6 +109,11 @@ def render_locked(copied: str) -> list[str]:
     return block
 
 
+def _not_completed_lines(section_id: str, reason: str) -> list[str]:
+    """Explicit gap marker for whole-résumé judges (not scored as prose)."""
+    return [f"[NOT COMPLETED: {section_id} — {reason}]", ""]
+
+
 def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
     identity = final_resume.get("candidate_identity") or {}
     contact = identity.get("header_contact") or {}
@@ -130,6 +135,8 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
     if hl:
         lines.append(hl)
         lines.append("")
+    else:
+        lines.extend(_not_completed_lines("headline", "missing_or_empty_headline"))
 
     exec_snap = (by_id.get("executive_summary") or {}).get("l2_output_snapshot") or {}
     es = str(exec_snap.get("resume_display_text") or "").strip()
@@ -137,6 +144,8 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
         lines.append("EXECUTIVE SUMMARY")
         lines.append(es)
         lines.append("")
+    else:
+        lines.extend(_not_completed_lines("executive_summary", "missing_or_empty_executive_summary"))
 
     lines.append("PROFESSIONAL EXPERIENCE")
     lines.append("")
@@ -151,6 +160,8 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
             lines.append(narr)
         lines.extend(bullets_from_list(un_b.get("bullets") or []))
         lines.append("")
+    else:
+        lines.extend(_not_completed_lines("unify_narrative", "missing_unify_section"))
 
     ibm_n = (by_id.get("ibm_narrative") or {}).get("l2_output_snapshot") or {}
     ibm_b = (by_id.get("ibm_bullets") or {}).get("l2_output_snapshot") or {}
@@ -162,12 +173,16 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
             lines.append(narr)
         lines.extend(bullets_from_list(ibm_b.get("bullets") or []))
         lines.append("")
+    else:
+        lines.extend(_not_completed_lines("ibm_narrative", "missing_ibm_section"))
 
     for sid in ("insurtech", "ey", "early_career"):
         copied = (by_id.get(sid) or {}).get("copied_text_exact")
         if copied:
             lines.extend(render_locked(copied))
             lines.append("")
+        else:
+            lines.extend(_not_completed_lines(sid, "missing_locked_copy_section"))
 
     comp = (by_id.get("competencies") or {}).get("l2_output_snapshot") or {}
     cats = comp.get("competencies") or []
@@ -188,6 +203,13 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
             if terms:
                 lines.append(f"{label}: {', '.join(terms)}")
         lines.append("")
+    else:
+        lines.extend(
+            _not_completed_lines(
+                "competencies",
+                "missing_competencies_or_empty_graph_skills_signal",
+            )
+        )
 
     edu_sec = by_id.get("education") or {}
     if edu_sec.get("copied_text_exact"):
@@ -198,6 +220,8 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
                 if line:
                     lines.append(line)
         lines.append("")
+    else:
+        lines.extend(_not_completed_lines("education", "missing_locked_education"))
 
     cert_sec = by_id.get("certifications") or {}
     if cert_sec.get("copied_text_exact"):
@@ -208,5 +232,7 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
                 if line:
                     lines.append(line)
         lines.append("")
+    else:
+        lines.extend(_not_completed_lines("certifications", "missing_locked_certifications"))
 
     return "\n".join(lines).rstrip() + "\n"

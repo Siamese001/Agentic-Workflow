@@ -205,7 +205,7 @@ _AGENTIC_ROW_TEMPLATE: list[tuple[str, str, list[str], str, list[str], list[str]
     ("skill_same_authority_runtime_repair", "Same authority runtime repair", ["SameAuthorityRepair", "HealingChain"], "Same-authority runtime repair without cross-layer privilege escalation.", [], ["agentic_core/L2_execution/healers/"]),
     ("skill_retry_and_thrash_guard_design", "Retry and thrash guard design", ["RetryGuard", "ThrashPrevention"], "Retry and thrash guards on provider and gate failures.", ["fact_engineering_platform_003"], ["apps_rg/runtime/"]),
     ("skill_schema_and_output_repair", "Schema and output repair", ["OutputRepair", "SchemaRepair"], "Deterministic schema and output repair before re-judging.", [], ["apps_rg/runtime/sections/"]),
-    ("skill_deterministic_trim_and_reformat", "Deterministic trim and reformat", ["DeterministicTrim", "Reformat"], "Deterministic trim/reformat for judge-safe narrative shape.", [], ["apps_rg/runtime/sections/exec_summary_srfs_judge_safe.py"]),
+    ("skill_deterministic_trim_and_reformat", "Deterministic trim and reformat", ["DeterministicTrim", "Reformat"], "Deterministic trim/reformat for narrative shape.", [], []),
     ("skill_runtime_resilience_controls", "Runtime resilience controls", ["ResilienceControls", "FailClosed"], "Fail-closed resilience controls when providers or gates are unavailable.", ["fact_engineering_platform_003"], ["apps_rg/runtime/"]),
     # Domain 9
     ("skill_runtime_gate_mesh_design", "Runtime gate mesh design", ["GateMesh", "00CRuntimeGates"], "Runtime GateMesh with 00C gate semantics and GateVerdict contracts.", ["fact_governance_003"], ["apps_rg/runtime/validators/"]),

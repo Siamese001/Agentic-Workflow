@@ -19,7 +19,7 @@ ENTRYPOINT_MATRIX (code-derived; keep in sync with ``apps_rg.l2_recipe.r4_genera
    - Qwen full résumé in one call: **only in legacy envelope mode** (single CPA)
    - Qwen sections-only: **yes** in modular mode
    - Deterministic merge: **yes** for modular path (``modular_rg_output_builder``)
-   - DOCX export: yes (``DocxExportStep`` + gate) when generation succeeds
+   - Product outputs: JSON + manifest (``ResumeArtifactGateStep``); DOCX retired
    - Status: **supported** canonical product entry
 
 2) **Offline modular lane library (tests only)**

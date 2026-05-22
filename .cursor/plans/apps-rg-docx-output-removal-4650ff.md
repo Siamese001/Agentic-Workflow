@@ -98,8 +98,8 @@ WAVE_COMPLETE: plan=apps-rg-docx-output-removal-4650ff wave=0 note="inventory, r
 ## Wave 1 — Product gates JSON-only
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 
 **Phases**:
@@ -114,8 +114,8 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 ## Wave 2 — Stop emission
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 
 **Phases**:
 - **W2.1** — Remove `DocxExportStep` from `MODULAR_RESUME_GENERATION` recipe tuple; update `ResumeArtifactGateStep` | ~8k
@@ -129,8 +129,8 @@ WAVE_COMPLETE: NO
 ## Wave 3 — Delete DOCX modules and config
 
 WAVE_ID: W3
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 
 **Phases**:
 - **W3.1** — Delete `apps_rg/runtime/internal/docx_renderer.py`, `docx_manifest_builder.py`, `render/docx_render_x2.py`, `render/docx_manifest_x2.py`; keep or delete `json_resume_docx.py` if unused | ~10k
@@ -142,8 +142,8 @@ WAVE_COMPLETE: NO
 ## Wave 4 — Tests, CI, artifacts
 
 WAVE_ID: W4
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 
 **Phases**:
 - **W4.1** — Delete or rewrite `test_docx_*`, `test_docx_export_recipe`, package x3 fixtures | ~10k
@@ -173,15 +173,15 @@ DoD-1: W0 plan + receipt on disk and Notion Plans row exists with `Status=Comple
 
 DoD-2: W1 — JSON-only full-success eligibility (unit tests).
 - Evidence: `pytest tests/unit/apps_rg/test_resume_artifact_gate.py tests/unit/apps_rg/test_resume_package_x3_generation_status.py -q`
-- Status: TODO
+- Status: DONE
 
 DoD-3: W2 — Integrated run smoke without DOCX.
 - Evidence: `python -m apps_rg` (fixture/smoke profile) exits 0; no `outputs/resume.docx`
-- Status: TODO
+- Status: PARTIAL (module deletion proven; integrated smoke not re-run)
 
 DoD-4: W3 — No imports of deleted docx modules in `apps_rg/`.
 - Evidence: `rg "docx_renderer|docx_manifest_builder|DocxExportStep" apps_rg/` empty
-- Status: TODO
+- Status: DONE
 
 DoD-5: W4 — Contract gates green.
 - Evidence: `pytest tests/_apps_contract/test_resume_package_x3.py -q` (updated); `python ops_scripts/ci/check_apps_rg_runtime_gate_hardening.py`

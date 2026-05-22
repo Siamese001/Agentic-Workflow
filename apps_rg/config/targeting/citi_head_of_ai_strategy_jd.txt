@@ -1,0 +1,38 @@
+Head of AI Strategy, Firmwide AI — Citi
+
+About the job
+
+Citi is establishing a new, unified firmwide AI organization under a newly created Group Head of Artificial Intelligence — merging the firm's Head of AI and CTO responsibilities into a single executive accountable for AI-led transformation across every business and function. This post-merger structure is intentionally distinct from prior models and will be the engine through which Citi competes in the AI era.
+
+The Head of AI Strategy leads the Office of AI Strategy — the function responsible for setting the firm's holistic AI strategy and ensuring it is coherently connected to every business and function across Citi. As principal strategist to the Group Head of AI, this leader will define what Citi's AI ambition is, where the firm invests, which partners it bets on, and how cross-franchise AI value gets unlocked. This is a rare C-16 mandate to architect — and own — the strategic agenda for one of the most consequential transformations in global financial services.
+
+Key Responsibilities
+
+Firm-Wide AI Strategy
+- Own the development, articulation, and continuous evolution of Citi's holistic, firm-wide AI strategy — connected to every business and function and aligned to the firm's broader strategic and digital transformation agenda.
+- Translate business-line AI ambitions and P&L objectives into a single, coherent cross-franchise AI strategy and investment thesis that the Group Head of AI can take to the EMT, Board, and regulators.
+- Define the firm's strategic point of view on the AI market — including model and infrastructure choices, "build vs. buy vs. partner" frameworks, and the implications of frontier AI on Citi's competitive positioning.
+- Develop the executive narrative and supporting metrics for Citi's AI agenda — used with the Board, regulators, investors, employees, clients, and the market.
+- Serve as a senior strategic partner to business-line CEOs and their leadership teams on AI — translating their P&L priorities into the firm's AI agenda and ensuring their voice shapes the cross-franchise strategy.
+
+AI Roadmaps & Product Prioritisation
+- Lead the firm-wide AI roadmap and product prioritization process, ensuring capital and engineering capacity are directed to the initiatives that move the firm's needle.
+- Partner with Finance to establish the analytical frameworks, business cases, and prioritisation criteria used to evaluate AI investments across the firm.
+
+Strategic Partnerships
+- Curate and manage Citi's strategic AI partnerships — including hyperscalers, frontier-model providers, enterprise AI vendors, and high-potential AI startups.
+- Maintain a continuous market-scanning capability to identify emerging partners, technologies, and disruptive plays relevant to financial services.
+
+What Success Looks Like (First 12 Months)
+- A single, agreed firm-wide AI strategy and multi-year roadmap, endorsed by the Operating Committee and grounded in business-line P&L commitments.
+- A clear, prioritised AI investment thesis that resolves the most material trade-offs across businesses and pillars.
+- A strong external narrative with supporting metrics for Citi's AI ambition with the Board, regulators, and the market.
+
+Qualifications
+- 15+ years of progressive leadership experience, including senior roles in strategy, AI/technology product leadership, or top-tier strategy consulting, with material exposure to Financial Services.
+- Structured thinking — proven ability to take ambiguous, firm-wide problems and produce clear strategy, prioritised roadmaps, and measurable execution plans.
+- Deep AI and Financial Services fluency — credible technical understanding of modern AI (LLMs, agentic systems, AI infrastructure, data) combined with genuine understanding of how a global bank makes money, manages risk, and is regulated.
+- Strong executive presence — credible at Board, regulator, and Operating Committee level; able to be a peer to individual business CEOs and to the Group Head of AI.
+- Cross-franchise influencer — proven ability to drive alignment across multiple business lines without direct authority, and to broker trade-offs at scale.
+- Strong financial acumen — fluent in business cases, ROI, capital allocation, and the commercial drivers of a complex global firm.
+- Excellent communication — able to author and deliver the firm's AI narrative to highly diverse audiences, from engineers to regulators to the Board.

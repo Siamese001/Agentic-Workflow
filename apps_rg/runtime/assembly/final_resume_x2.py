@@ -186,6 +186,11 @@ def run_final_resume_x2_gates(
             continue
         if sid not in GENERATED_LANE_IDS:
             continue
+        snap = sec.get("l2_output_snapshot")
+        if isinstance(snap, dict) and snap.get("assembly_gap"):
+            l2_snap_ok = False
+            sr = f"{sid} assembly_gap:{snap.get('assembly_gap_reason') or 'unknown'}"
+            break
         lane = lanes.get(sid)
         if not isinstance(lane, dict):
             l2_snap_ok = False
@@ -203,7 +208,6 @@ def run_final_resume_x2_gates(
             l2_snap_ok = False
             sr = f"{sid} l2 read failed: {exc}"
             break
-        snap = sec.get("l2_output_snapshot")
         if from_disk != snap:
             l2_snap_ok = False
             sr = f"{sid} snapshot mismatch vs {paths.rel(l2p)}"
@@ -353,6 +357,11 @@ def run_final_resume_x2_gates(
             break
         if s.get("section_kind") == "generated_lane":
             gl = disp.get("generated_lane")
+            snap = s.get("l2_output_snapshot") or {}
+            if isinstance(snap, dict) and snap.get("assembly_gap"):
+                if not isinstance(gl, dict) or not gl.get("assembly_gap"):
+                    disp_ok_all = False
+                continue
             if (
                 not isinstance(gl, dict)
                 or not gl.get("x3_disposition_json")

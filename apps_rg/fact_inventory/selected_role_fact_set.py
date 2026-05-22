@@ -605,6 +605,9 @@ def rendered_markdown_summary(srfs: SelectedRoleFactSet) -> str:
     return "\n".join(lines) + "\n"
 
 
+_OFFLINE_SRFS_JSON_WRITE_ENV = "APPS_RG_OFFLINE_SRFS_JSON_WRITE"
+
+
 def write_selected_role_fact_set_artifacts(
     srfs: SelectedRoleFactSet,
     *,
@@ -612,6 +615,14 @@ def write_selected_role_fact_set_artifacts(
     timestamp_slug: str | None = None,
     fact_inventory_dir: Path | None = None,
 ) -> tuple[Path, Path]:
+    """Offline inventory CLI only — product runtime uses in-memory ``select_candidate_facts_for_role``."""
+    import os
+
+    if os.environ.get(_OFFLINE_SRFS_JSON_WRITE_ENV) != "1":
+        raise RuntimeError(
+            "write_selected_role_fact_set_artifacts removed from product path; "
+            f"set {_OFFLINE_SRFS_JSON_WRITE_ENV}=1 for apps_rg.fact_inventory.select_role_facts only"
+        )
     root = repo_root or _REPO_ROOT_DEFAULT
     slug = timestamp_slug or srfs.selected_at
     out_dir = fact_inventory_dir or (root / "artifacts" / "apps_rg" / "fact_inventory")
@@ -738,18 +749,23 @@ def select_candidate_facts_for_role(
     selected_by_section: dict[str, list[SelectedLedgerFactSlice]] = {k: [] for k in SECTION_KEYS}
     used_global: set[str] = set()
 
-    from apps_rg.fact_inventory import exec_summary_srfs_arsenal as exec_arsenal
+    from apps_rg.fact_inventory.exec_summary_graph_projection_w4b import (
+        DEFAULT_ARSENAL_ROLE_FAMILY_KEY,
+        allocate_executive_summary_with_arsenal,
+        build_executive_summary_arsenal_context,
+        compute_executive_summary_reserved_fact_ids,
+    )
 
     exec_reserved: tuple[str, ...] = ()
     try:
-        role_key, projection, arsenal_ledger, _ext_ids = exec_arsenal.build_executive_summary_arsenal_context(
+        role_key, projection, arsenal_ledger, _ext_ids = build_executive_summary_arsenal_context(
             repo_root=root,
             role_family_priorities=role_family_priorities,
             target_role=target_role,
             jd_text=jd_norm,
             briefing_text=br_norm,
         )
-        exec_reserved = exec_arsenal.compute_executive_summary_reserved_fact_ids(
+        exec_reserved = compute_executive_summary_reserved_fact_ids(
             high_sorted_global,
             projection=projection,
             role_family_key=role_key,
@@ -757,7 +773,7 @@ def select_candidate_facts_for_role(
             role_family_priorities=role_family_priorities,
         )
     except FileNotFoundError:
-        role_key = exec_arsenal.DEFAULT_ARSENAL_ROLE_FAMILY_KEY
+        role_key = DEFAULT_ARSENAL_ROLE_FAMILY_KEY
         projection = None
         arsenal_ledger = None
 
@@ -767,7 +783,7 @@ def select_candidate_facts_for_role(
     )
 
     if projection is not None and arsenal_ledger is not None:
-        exec_slices = exec_arsenal.allocate_executive_summary_with_arsenal(
+        exec_slices = allocate_executive_summary_with_arsenal(
             high_sorted_global,
             reserved_ids=exec_reserved,
             used_global=used_global,

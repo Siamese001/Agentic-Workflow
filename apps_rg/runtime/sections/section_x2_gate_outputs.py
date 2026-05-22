@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.bindings.section_lane_c0_metrics import augment_section_x2_gates
+from apps_rg.runtime.rigor.convergence_audit import apply_rigor_convergence_to_x2_payload
 
 
 def write_json(path: Path, payload: Any) -> None:
@@ -37,16 +38,20 @@ def write_section_x2_gate_outputs(
         runtime_payload=payload,
     )
     failed = [g["gate_id"] for g in augmented if not g.get("pass")]
-    write_json(
-        artifact_dir / "x2_gate_outputs.json",
-        {
-            "gates": augmented,
-            "failed_gates": failed,
-            "x2_passed": sum(1 for g in augmented if g.get("pass")),
-            "x2_failed": len(failed),
-            "total_x2_gates": len(augmented),
-        },
+    payload = {
+        "gates": augmented,
+        "failed_gates": failed,
+        "x2_passed": sum(1 for g in augmented if g.get("pass")),
+        "x2_failed": len(failed),
+        "total_x2_gates": len(augmented),
+    }
+    payload = apply_rigor_convergence_to_x2_payload(
+        payload,
+        lane=section_id,
+        gates=augmented,
+        c0_sidecar=True,
     )
+    write_json(artifact_dir / "x2_gate_outputs.json", payload)
 
 
 def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:

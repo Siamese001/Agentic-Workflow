@@ -49,6 +49,7 @@ def assemble_c03_graph_sqlite_context(
     db_path: Path | None = None,
     max_skills: int = 40,
     max_pillars: int = 20,
+    pillar_hint_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     """Query SQLite graph for C0.3-style context bundle + inline receipt fields."""
     root = repo_root or _repo_root()
@@ -72,6 +73,7 @@ def assemble_c03_graph_sqlite_context(
         ).fetchone()
 
         pillar_ids: list[str] = []
+        fallback_pillar_bridge_used = False
         if prof:
             try:
                 targeting = json.loads(prof[4] or "[]")
@@ -83,6 +85,12 @@ def assemble_c03_graph_sqlite_context(
             except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
 
+        if not pillar_ids and pillar_hint_ids:
+            pillar_ids = [str(p).strip() for p in pillar_hint_ids if str(p).strip()][:max_pillars]
+        if not pillar_ids:
+            from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
+
+            pillar_ids = list(resolve_c0_pillar_hints(rf, repo_root=root))[:max_pillars]
         if not pillar_ids:
             rows = conn.execute(
                 """
@@ -95,6 +103,9 @@ def assemble_c03_graph_sqlite_context(
                 (max_pillars,),
             ).fetchall()
             pillar_ids = [r[0] for r in rows]
+            fallback_pillar_bridge_used = True
+        else:
+            fallback_pillar_bridge_used = False
 
         pillar_args: tuple[Any, ...] = tuple(pillar_ids)
         if pillar_ids:
@@ -236,6 +247,8 @@ def assemble_c03_graph_sqlite_context(
             "section_id": sec,
             "selected_fact_ids": facts_in,
             "source_authority": SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
+            "sqlite_projection_row_found": prof is not None,
+            "fallback_pillar_bridge_used": fallback_pillar_bridge_used,
         },
         "selected_nodes": selected_nodes,
         "selected_edges": [

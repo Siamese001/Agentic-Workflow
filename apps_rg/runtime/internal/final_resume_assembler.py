@@ -121,7 +121,14 @@ def _sha256_file_digest(path: Path) -> str:
     return sha256_hex(path.read_text(encoding="utf-8"))
 
 
-
+def _generated_lane_assembly_gap_snapshot(section_id: str, reason: str) -> dict[str, Any]:
+    """Placeholder L2 for incomplete lanes — whole-résumé judges still receive explicit gaps."""
+    return {
+        "runtime_generation_status": "ASSEMBLY_GAP",
+        "assembly_gap": True,
+        "assembly_gap_reason": reason,
+        "section_id": section_id,
+    }
 
 
 def assemble_final_resume(
@@ -256,73 +263,123 @@ def assemble_final_resume(
 
             lane = lanes.get(sid)
 
+            gap_reason: str | None = None
+
+            run_dir: Path | None = None
+
+            l2_path: Path | None = None
+
             if not isinstance(lane, dict):
 
-                raise ValueError(f"rollup missing lane {sid}")
+                gap_reason = f"rollup missing lane {sid}"
 
-            rd = lane.get("latest_successful_real_artifact_path") or lane.get("rollup_source_run_dir")
+            else:
 
-            if not isinstance(rd, str) or not rd.strip():
+                rd = lane.get("latest_successful_real_artifact_path") or lane.get("rollup_source_run_dir")
 
-                raise ValueError(f"lane {sid} missing latest_successful_real_artifact_path")
+                if not isinstance(rd, str) or not rd.strip():
 
-            run_dir = _resolved_run_dir(repo, rd)
+                    gap_reason = f"lane {sid} missing latest_successful_real_artifact_path"
 
-            l2_path = run_dir / "l2_output.json"
+                else:
 
-            snapshot = json.loads(l2_path.read_text(encoding="utf-8"))
+                    run_dir = _resolved_run_dir(repo, rd)
 
-            raw_refs = lane.get("artifact_refs") or {}
+                    l2_path = run_dir / "l2_output.json"
+
+                    if not l2_path.is_file():
+
+                        gap_reason = f"lane {sid} missing l2_output.json"
+
+            if gap_reason:
+
+                snapshot = _generated_lane_assembly_gap_snapshot(sid, gap_reason)
+
+                sec_hash = sha256_utf8(canonical_json_sorted(snapshot))
+
+                section_digest = sha256_utf8(gap_reason)
+
+                source_refs = {
+
+                    "generated_lane_rollup_json": rollup_rel,
+
+                    "assembly_gap_reason": gap_reason,
+
+                }
+
+                disp_gen = {
+
+                    "rollup_lane_key": str(sid),
+
+                    "assembly_gap": True,
+
+                    "assembly_gap_reason": gap_reason,
+
+                }
+
+            else:
+
+                assert run_dir is not None and l2_path is not None and isinstance(lane, dict)
+
+                snapshot = json.loads(l2_path.read_text(encoding="utf-8"))
+
+                sec_hash = sha256_utf8(canonical_json_sorted(snapshot))
+
+                section_digest = _sha256_file_digest(l2_path)
+
+            raw_refs = (lane or {}).get("artifact_refs") or {}
 
             if not isinstance(raw_refs, dict):
 
                 raw_refs = {}
 
-            source_refs = build_extended_source_artifact_refs(
+            if not gap_reason:
 
-                repo,
+                source_refs = build_extended_source_artifact_refs(
 
-                run_dir=run_dir,
+                    repo,
 
-                rollup_refs={str(k): str(v) for k, v in raw_refs.items() if v},
+                    run_dir=run_dir,
 
-                rollup_json_rel=rollup_rel,
+                    rollup_refs={str(k): str(v) for k, v in raw_refs.items() if v},
 
-            )
+                    rollup_json_rel=rollup_rel,
 
-            sec_hash = sha256_utf8(canonical_json_sorted(snapshot))
+                )
 
-            section_digest = _sha256_file_digest(l2_path)
+                x3_disp = source_refs.get("x3_disposition.json") or paths.rel(run_dir / "x3_disposition.json")
 
-            x3_disp = source_refs.get("x3_disposition.json") or paths.rel(run_dir / "x3_disposition.json")
+                disp_gen = {
 
-            disp_gen = {
+                    "rollup_lane_key": str(sid),
 
-                "rollup_lane_key": str(sid),
+                    "accepted_real_evidence_resolution": str(
 
-                "accepted_real_evidence_resolution": str(
+                        lane.get("accepted_real_evidence_resolution") or "",
 
-                    lane.get("accepted_real_evidence_resolution") or "",
+                    ),
 
-                ),
+                    "latest_successful_real_artifact_dir": paths.rel(run_dir),
 
-                "latest_successful_real_artifact_dir": paths.rel(run_dir),
+                    "x3_disposition_json": x3_disp,
 
-                "x3_disposition_json": x3_disp,
+                    "rollup_artifact_refs": {
 
-                "rollup_artifact_refs": {k: v for k, v in source_refs.items() if k != "generated_lane_rollup_json"},
+                        k: v for k, v in source_refs.items() if k != "generated_lane_rollup_json"
 
-            }
+                    },
 
-            canon_path = run_dir / "canonical_claim_ledger_v2.json"
+                }
 
-            if canon_path.is_file():
+                canon_path = run_dir / "canonical_claim_ledger_v2.json"
 
-                per_lane_claim_ledger_digests[sid] = _sha256_file_digest(canon_path)
+                if canon_path.is_file():
 
-            elif (run_dir / "claim_ledger.json").is_file():
+                    per_lane_claim_ledger_digests[sid] = _sha256_file_digest(canon_path)
 
-                per_lane_claim_ledger_digests[sid] = _sha256_file_digest(run_dir / "claim_ledger.json")
+                elif (run_dir / "claim_ledger.json").is_file():
+
+                    per_lane_claim_ledger_digests[sid] = _sha256_file_digest(run_dir / "claim_ledger.json")
 
 
 

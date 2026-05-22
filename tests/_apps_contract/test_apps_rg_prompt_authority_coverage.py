@@ -248,7 +248,7 @@ def test_8_l0_no_raw_prompt_consumption(mat_map, cls_map):
 
 def test_9_l0_binding_no_raw_prompt_parse():
     """T9: the L0 binding source does not call any prompt text parser."""
-    l0_path = REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py"
+    l0_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py"
     content = l0_path.read_text(encoding="utf-8")
     forbidden_patterns = [
         "yaml.safe_load",
@@ -270,7 +270,7 @@ def test_9_l0_binding_no_raw_prompt_parse():
 
 def test_10_c0_no_prompt_assembly():
     """T10: the C0 binding source does not call pa_compose_apps_rg or build prompt blocks."""
-    c0_path = REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py"
+    c0_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py"
     content = c0_path.read_text(encoding="utf-8")
     forbidden = [
         "pa_compose_apps_rg",
@@ -290,17 +290,17 @@ def test_10_c0_no_prompt_assembly():
 
 def test_11_pa_sole_generation_authority():
     """T11: only apps_rg_pa_binding.py calls PromptBlock and pa_compose_apps_rg."""
-    pa_path = REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py"
+    pa_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py"
     pa_content = pa_path.read_text(encoding="utf-8")
     assert "PromptBlock(" in pa_content, "PA binding must use PromptBlock"
 
     # No other binding in agentic_core should assemble PromptBlock for apps_rg
     other_bindings = [
-        REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
-        REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
-        REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
         REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
-        REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "exit_binding.py",
     ]
     violations = []
     for path in other_bindings:
@@ -317,7 +317,7 @@ def test_11_pa_sole_generation_authority():
 
 def test_12_pa_slot_lineage_separates_u0_c0():
     """T12: pa_compose_apps_rg slot_lineage_map has distinct U0 and C0 entries."""
-    from agentic_core.prompt_governance.apps_rg_pa_binding import (
+    from apps_rg.runtime.bindings.pa_binding import (
         _build_u0_task_block,
         _build_c0_evidence_block,
     )
@@ -326,7 +326,7 @@ def test_12_pa_slot_lineage_separates_u0_c0():
     assert callable(_build_c0_evidence_block)
 
     # Verify the PA source has the correct slot keys
-    pa_path = REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py"
+    pa_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py"
     content = pa_path.read_text(encoding="utf-8")
     assert "U0_NEUTRALIZED_USER_TASK" in content, "slot_lineage_map missing U0 slot"
     assert "C0_VERIFIED_EVIDENCE_DATA" in content, "slot_lineage_map missing C0 slot"
@@ -352,7 +352,7 @@ def test_12_pa_slot_lineage_separates_u0_c0():
 
 def test_13_pa_component_hash_map_complete():
     """T13: pa_compose_apps_rg component_hash_map covers all required components."""
-    pa_path = REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py"
+    pa_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py"
     content = pa_path.read_text(encoding="utf-8")
     required_keys = [
         '"style_profile__s0_i0"',
@@ -375,7 +375,7 @@ def test_13_pa_component_hash_map_complete():
 def test_14_prompt_hash_changes_with_content():
     """T14: compilation_hash uses content hash (not length), so changing content
     changes the hash."""
-    from agentic_core.prompt_governance.apps_rg_pa_binding import _component_hash
+    from apps_rg.runtime.bindings.pa_binding import _component_hash
 
     content_a = "Resume tailoring for Company A, Senior Engineer role."
     content_b = "Resume tailoring for Company B, Director of Engineering role."
@@ -385,7 +385,7 @@ def test_14_prompt_hash_changes_with_content():
     assert hash_a != hash_b, "Same hash for different content — hash is not content-sensitive"
 
     # Verify the PA binding uses content_hash not len in compilation_hash
-    pa_path = REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py"
+    pa_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py"
     content = pa_path.read_text(encoding="utf-8")
     assert "content_hash" in content, (
         "compilation_hash must use content_hash, not len(content)"
@@ -471,7 +471,7 @@ def test_17_l2_no_raw_prompt_load():
 
 def test_18_exit_no_generation_prompt_assembly():
     """T18: the Exit binding does not assemble PromptBlock or call PA compose."""
-    exit_path = REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py"
+    exit_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "exit_binding.py"
     content = exit_path.read_text(encoding="utf-8")
     forbidden = [
         "pa_compose_apps_rg",
@@ -511,12 +511,12 @@ def test_19_no_unresolved_unknown(mat_map, cls_map):
 def test_20_no_chromadb_mutation():
     """T20: no apps_rg binding imports or calls chromadb Collection.add/upsert/delete."""
     binding_paths = [
-        REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py",
-        REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
-        REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
-        REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
         REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
-        REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "exit_binding.py",
     ]
     chroma_mutations = [".add(", ".upsert(", ".delete(", "chromadb", "Collection.add"]
     violations = []
@@ -541,12 +541,12 @@ def test_21_no_embedding_generation():
     imports and API calls (sentence_transformers, openai.Embedding, etc.).
     """
     binding_paths = [
-        REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py",
-        REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
-        REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
-        REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
         REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l2_binding_adapter.py",
-        REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
+        REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "exit_binding.py",
     ]
     # Only catch external embedding library imports/calls — NOT hashlib .encode("utf-8")
     embed_patterns = [

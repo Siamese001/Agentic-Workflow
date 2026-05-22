@@ -11,10 +11,11 @@ import pytest
 
 from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.product_evidence_authority import build_evidence_authority
 from apps_rg.runtime.sections.selected_role_fact_set import (
     SRFS_SLICE_SOURCE_FACT_GATE_BY_SECTION,
+    graph_only_proof_pool_metadata,
     normalized_srfs_section_reporting_fields,
-    resolve_srfs_section_proof_bundle,
     srfs_proof_pool_metadata,
 )
 from apps_rg.runtime.validators.competencies_x2 import run_competencies_x2_gates
@@ -72,6 +73,23 @@ def _write_srfs(path: Path, doc: dict) -> Path:
     return path
 
 
+def _graph_proof_pool_metadata(section_id: str, *, allowed_count: int = 2) -> dict:
+    meta = graph_only_proof_pool_metadata(
+        section_id=section_id,
+        candidate_fact_pool_count=1,
+        allowed_fact_ids_count=allowed_count,
+        graph_ref="artifacts/apps_rg/fact_inventory/augmented_skills_graph.json",
+        legacy_ledger_ref="artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger.json",
+    )
+    meta["evidence_authority"] = build_evidence_authority(
+        graph_ref=meta["graph_ref"],
+        ledger_ref=meta["legacy_skills_ledger_ref"],
+        skills_authority_status="PASS",
+    )
+    meta["selection_scope"] = {"is_proof_authority": False}
+    return meta
+
+
 def _stub_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
 
@@ -93,6 +111,7 @@ def srfs_all_sections(tmp_path: Path) -> Path:
     return _write_srfs(tmp_path / "srfs_w6.json", doc)
 
 
+@pytest.mark.skip(reason="SRFS JSON CLI lane entry removed (legacy purge D2/D3)")
 @pytest.mark.parametrize("section", GENERATED_LANES)
 def test_section_metric_receipt_w6_srfs_mode_all_fields(
     section: str,
@@ -237,6 +256,7 @@ def test_section_metric_receipt_w6_srfs_mode_all_fields(
     assert rec["full_resume_srfs_supported"] is False
 
 
+@pytest.mark.skip(reason="SRFS JSON CLI lane entry removed (legacy purge D2/D3)")
 @pytest.mark.parametrize("section", ("headline", "unify_bullets", "competencies"))
 def test_section_metric_receipt_w6_no_srfs_base_pool(
     section: str,
@@ -313,10 +333,9 @@ def test_section_metric_receipt_w6_no_srfs_base_pool(
     assert rec["full_resume_srfs_supported"] is False
 
 
-def test_w6_normalizer_unify_bullets_fail_out_of_slice(tmp_path: Path) -> None:
-    p = tmp_path / "srfs_ub.json"
-    p.write_text(json.dumps(_srfs_doc("w6_ub", {"unify_bullets": [_high_row("bul_unify_001")]})), encoding="utf-8")
-    _, _, allowed, pp = resolve_srfs_section_proof_bundle(p, "unify_bullets")
+def test_w6_normalizer_unify_bullets_fail_out_of_slice() -> None:
+    pp = _graph_proof_pool_metadata("unify_bullets")
+    allowed = {"bul_unify_001"}
     from tests._apps_contract.test_apps_rg_srfs_w4_x2_slice_gates import _minimal_bullets_stub
 
     bad_id = "bul_exec_cross_w6"
@@ -333,7 +352,7 @@ def test_w6_normalizer_unify_bullets_fail_out_of_slice(tmp_path: Path) -> None:
         x1d_judges=[],
         srfs_source_fact_slice_gate_active=True,
     )]
-    gid = SRFS_SLICE_SOURCE_FACT_GATE_BY_SECTION["unify_bullets"]
+    gid = "x2_unify_bullets_active_proof_pool_source_fact_ids"
     assert {g["gate_id"]: g for g in x2}[gid]["pass"] is False
     rep = normalized_srfs_section_reporting_fields(
         section_id="unify_bullets",
@@ -342,14 +361,14 @@ def test_w6_normalizer_unify_bullets_fail_out_of_slice(tmp_path: Path) -> None:
         selected_fact_plan={"required_fact_ids": [bad_id]},
         claim_ledger=ledger,
     )
-    assert rep["x2_srfs_gate_status"] == "FAIL"
+    assert rep["x2_srfs_gate_status"] == "NOT_APPLICABLE"
+    assert rep.get("x2_active_proof_pool_gate_status") == "FAIL"
     assert bad_id in rep["out_of_slice_fact_ids"]
 
 
-def test_w6_normalizer_unify_narrative_fail_out_of_slice(tmp_path: Path) -> None:
-    p = tmp_path / "srfs_un.json"
-    p.write_text(json.dumps(_srfs_doc("w6_un", {"unify_narrative": [_high_row("bul_unify_001")]})), encoding="utf-8")
-    _, _, allowed, pp = resolve_srfs_section_proof_bundle(p, "unify_narrative")
+def test_w6_normalizer_unify_narrative_fail_out_of_slice() -> None:
+    pp = _graph_proof_pool_metadata("unify_narrative")
+    allowed = {"bul_unify_001"}
     bad_id = "unify_narrative_base_001"
     x2 = [
         g.to_dict()
@@ -379,7 +398,7 @@ def test_w6_normalizer_unify_narrative_fail_out_of_slice(tmp_path: Path) -> None
             srfs_source_fact_slice_gate_active=True,
         )
     ]
-    gid = SRFS_SLICE_SOURCE_FACT_GATE_BY_SECTION["unify_narrative"]
+    gid = "x2_unify_narrative_active_proof_pool_source_fact_ids"
     assert {g["gate_id"]: g for g in x2}[gid]["pass"] is False
     rep = normalized_srfs_section_reporting_fields(
         section_id="unify_narrative",
@@ -388,14 +407,14 @@ def test_w6_normalizer_unify_narrative_fail_out_of_slice(tmp_path: Path) -> None
         selected_fact_plan={"required_fact_ids": [bad_id]},
         claim_ledger=[{"claim_text": "Led platform work.", "source_fact_ids": [bad_id]}],
     )
-    assert rep["x2_srfs_gate_status"] == "FAIL"
+    assert rep["x2_srfs_gate_status"] == "NOT_APPLICABLE"
+    assert rep.get("x2_active_proof_pool_gate_status") == "FAIL"
     assert bad_id in rep["out_of_slice_fact_ids"]
 
 
-def test_w6_normalizer_competencies_fail_out_of_slice(tmp_path: Path) -> None:
-    p = tmp_path / "srfs_co.json"
-    p.write_text(json.dumps(_srfs_doc("w6_co", {"competencies": [_high_row("bul_comp_001")]})), encoding="utf-8")
-    _, _, allowed, pp = resolve_srfs_section_proof_bundle(p, "competencies")
+def test_w6_normalizer_competencies_fail_out_of_slice() -> None:
+    pp = _graph_proof_pool_metadata("competencies")
+    allowed = {"bul_comp_001"}
     bad_id = "bul_bad_outside_w6"
     competencies = []
     for i in range(8):
@@ -444,7 +463,7 @@ def test_w6_normalizer_competencies_fail_out_of_slice(tmp_path: Path) -> None:
             srfs_source_fact_slice_gate_active=True,
         )
     ]
-    gid = SRFS_SLICE_SOURCE_FACT_GATE_BY_SECTION["competencies"]
+    gid = "x2_competencies_active_proof_pool_source_fact_ids"
     assert {g["gate_id"]: g for g in x2}[gid]["pass"] is False
     rep = normalized_srfs_section_reporting_fields(
         section_id="competencies",
@@ -453,7 +472,8 @@ def test_w6_normalizer_competencies_fail_out_of_slice(tmp_path: Path) -> None:
         selected_fact_plan={"required_fact_ids": ["bul_comp_001"]},
         claim_ledger=cl,
     )
-    assert rep["x2_srfs_gate_status"] == "FAIL"
+    assert rep["x2_srfs_gate_status"] == "NOT_APPLICABLE"
+    assert rep.get("x2_active_proof_pool_gate_status") == "FAIL"
     assert bad_id in rep["out_of_slice_fact_ids"]
 
 
@@ -461,7 +481,7 @@ def test_w6_normalizer_pass_path_matches_gate_envelope() -> None:
     pp = srfs_proof_pool_metadata(section_id="headline", candidate_fact_pool_count=1, allowed_fact_ids_count=2)
     x2 = [
         {
-            "gate_id": "x2_headline_source_fact_ids_within_srfs_slice",
+            "gate_id": "x2_headline_active_proof_pool_source_fact_ids",
             "pass": True,
             "observed_value": {"out_of_slice_fact_ids": [], "srfs_allowed_fact_ids_count": 2},
         }
@@ -473,5 +493,8 @@ def test_w6_normalizer_pass_path_matches_gate_envelope() -> None:
         selected_fact_plan={"required_fact_ids": ["a"]},
         claim_ledger=[{"claim_text": "x", "source_fact_ids": ["a"]}],
     )
-    assert r["x2_srfs_gate_status"] == "PASS"
+    assert r["x2_srfs_gate_status"] == "NOT_APPLICABLE"
+    assert r.get("x2_active_proof_pool_gate_status") == "PASS"
+    assert r["selected_role_fact_set_used"] is False
+    assert r["proof_pool_type"] == "augmented_skills_graph"
     assert r["out_of_slice_fact_ids"] == []

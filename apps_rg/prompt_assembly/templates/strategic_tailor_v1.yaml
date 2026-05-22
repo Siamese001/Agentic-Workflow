@@ -2,6 +2,8 @@
 # Purpose: Executive/senior role tailoring with deep JD alignment
 # Authority: 8-slot PA model per ADR-023
 # Ownership: apps_rg
+# Core PA law SSOT (by contract ID): apps_rg/prompt_assembly/pa_core_law_v1.yaml
+# executive_summary section uses executive_summary.generate_scratch_v1.yaml only — not these slot_bodies.
 
 schema_version: "1.0"
 template_id: strategic_tailor_v1

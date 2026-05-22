@@ -46,3 +46,15 @@ def test_inline_text_when_not_path_like() -> None:
     assert r.briefing_source == BriefingSource.RUN_SPECIFIC
     assert r.text == "plain briefing phrase"
     assert r.ref_used == "inline:text"
+
+
+def test_local_md_briefing_with_markdown_table(tmp_path: Path) -> None:
+    p = tmp_path / "role_briefing.md"
+    p.write_text(
+        "| Col A | Col B |\n| --- | --- |\n| one | two |\n",
+        encoding="utf-8",
+    )
+    r = resolve_briefing_for_lanes(briefing_artifact_ref=str(p))
+    assert r.briefing_source == BriefingSource.RUN_SPECIFIC
+    assert "| Col A | Col B |" in r.text
+    assert "| --- | --- |" in r.text

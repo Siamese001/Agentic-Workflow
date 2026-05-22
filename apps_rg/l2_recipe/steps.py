@@ -5,8 +5,7 @@ They are composed into a pipeline by the L2 recipe resolver.
 
 Step classes:
 - GenerateResumeStep  — main LLM-driven resume generation (REQUIRES_PA=True)
-- DocxExportStep      — DOCX export from structured JSON (REQUIRES_PA=False)
-- ResumeArtifactGateStep — on-disk JSON + DOCX bundle verification (REQUIRES_PA=False)
+- ResumeArtifactGateStep — on-disk JSON + manifest bundle verification (REQUIRES_PA=False)
 """
 from __future__ import annotations
 
@@ -29,6 +28,7 @@ from apps_rg.l2_recipe.resume_output_shape import (
 )
 from apps_rg.l2_recipe.resume_artifact_gate import (
     merge_manifest_after_artifact_gate,
+    persist_json_product_outputs,
     verify_full_resume_artifact_bundle,
 )
 from apps_rg.l2_recipe.r4_generation_mode import (
@@ -40,7 +40,6 @@ from apps_rg.l2_recipe.sealed_resume_extract import generated_resume_from_sealed
 
 __all__ = [
     "GenerateResumeStep",
-    "DocxExportStep",
     "ResumeArtifactGateStep",
     "BaseRecipeStep",
     "PAGuardError",
@@ -282,95 +281,8 @@ class GenerateResumeStep(BaseRecipeStep):
         return self._modular_section_lanes_generation(context)
 
 
-class DocxExportStep(BaseRecipeStep):
-    """DOCX export — writes ``outputs/resume.docx`` under the R4 ``artifact_dir``.
-
-    Consumes ``context["generated_resume"]`` populated by ``GenerateResumeStep``.
-    """
-
-    REQUIRES_PA: bool = False
-    STEP_NAME: str = "docx_export"
-
-    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
-        art = context.get("artifact_dir")
-        if art is None or not str(art).strip():
-            return {
-                "status": "error",
-                "step": self.STEP_NAME,
-                "error": "no artifact_dir in context",
-            }
-        base = Path(str(art))
-        payload = context.get("generated_resume")
-        if not isinstance(payload, dict) or not payload:
-            return {
-                "status": "skipped",
-                "step": self.STEP_NAME,
-                "reason": "no generated_resume in context",
-            }
-        try:
-            from apps_rg.runtime.render.json_resume_docx import render_resume_dict_to_docx
-            from apps_rg.runtime.render.resume_export_enrich import enrich_generated_resume_for_docx
-
-            out_dir = base / "outputs"
-            out_dir.mkdir(parents=True, exist_ok=True)
-            json_path = out_dir / "generated_resume.json"
-            enriched = enrich_generated_resume_for_docx(
-                payload,
-                str(context.get("master_resume_data") or "") or None,
-            )
-            json_path.write_text(
-                json.dumps(enriched, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-            docx_path = out_dir / "resume.docx"
-            render_resume_dict_to_docx(
-                enriched,
-                docx_path,
-                target_role=str(context.get("target_role") or ""),
-                target_company=str(context.get("target_company") or ""),
-            )
-            if not docx_path.is_file():
-                return {
-                    "status": "error",
-                    "step": self.STEP_NAME,
-                    "error": "docx render did not create file",
-                }
-            rel_docx = "outputs/resume.docx"
-            rel_json = "outputs/generated_resume.json"
-            shape_rep = classify_resume_payload(payload)
-            manifest: dict[str, Any] = {
-                "schema_version": "apps_rg_output_manifest.v1",
-                "resume_docx_relpath": rel_docx,
-                "resume_docx_abspath": str(docx_path.resolve()),
-                "generated_resume_json_relpath": rel_json,
-                "docx_verified": docx_path.is_file(),
-                "apps_rg_generation_status": shape_rep.generation_status,
-                "full_resume_generated": shape_rep.full_resume_generated,
-                "resume_shape": shape_rep.resume_shape,
-                "required_artifacts": {
-                    "generated_resume_json": "present",
-                    "resume_docx": "present",
-                    "output_manifest": "present",
-                    "docx_verified": docx_path.is_file(),
-                },
-            }
-            (base / "apps_rg_output_manifest.json").write_text(
-                json.dumps(manifest, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-            return {
-                "status": "ok",
-                "step": self.STEP_NAME,
-                "docx_path": str(docx_path),
-                "generated_resume_json_path": str(json_path),
-                "run_dir": str(base),
-            }
-        except Exception as exc:  # guardian: allow-broad-exception -- docx stack surfaces diverse failures
-            return {"status": "error", "step": self.STEP_NAME, "error": str(exc)}
-
-
 class ResumeArtifactGateStep(BaseRecipeStep):
-    """W2 — fail-closed verification of JSON + DOCX + manifest before run success."""
+    """W2 — fail-closed verification of JSON + manifest before run success."""
 
     REQUIRES_PA: bool = False
     STEP_NAME: str = "resume_artifact_gate"
@@ -380,6 +292,9 @@ class ResumeArtifactGateStep(BaseRecipeStep):
         if art is None or not str(art).strip():
             raise RuntimeError("FAILED_ARTIFACT_GATE: no artifact_dir in context")
         base = Path(str(art))
+        gr = context.get("generated_resume")
+        if isinstance(gr, dict) and gr:
+            persist_json_product_outputs(base, generated_resume=gr)
         rep = verify_full_resume_artifact_bundle(base)
         merge_manifest_after_artifact_gate(base, shape_rep=rep)
         return {

@@ -62,6 +62,37 @@ def _gate(results, gate_id: str) -> bool:
     raise AssertionError(f"missing gate {gate_id}")
 
 
+def test_companion_context_used_as_proof_fails_x2_competency_companion_context_not_proof() -> None:
+    competencies = [
+        {
+            "category_label": "Execution and Delivery",
+            "terms": [_term("agentic platform orchestration"), _term("policy-gated routing"), _term("runtime governance")],
+            "source_fact_ids": ["bul_unify_001"],
+        },
+    ]
+    for i in range(5):
+        competencies.append(
+            {
+                "category_label": f"Platform Engineering {i}",
+                "terms": [_term("cloud architecture"), _term("data platform design"), _term("delivery governance")],
+                "source_fact_ids": ["bul_unify_002"],
+            }
+        )
+    parsed = _parsed(competencies)
+    parsed["jd_alignment"]["companion_context_used_as_proof"] = True
+    gates = run_competencies_x2_gates(
+        competencies=competencies,
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        jd_text="",
+        bullet_texts_lower=[],
+        resume_support_blob="agentic platform orchestration governance",
+        allowed_fact_ids={"bul_unify_001", "bul_unify_002"},
+        runtime_generation_status="REAL_LLM",
+    )
+    assert _gate(gates, "x2_competency_companion_context_not_proof") is False
+
+
 def test_weak_two_item_category_fails_rigor_gates():
     weak = [
         {
@@ -146,67 +177,67 @@ def test_metrics_only_skill_fails():
 def test_target_quality_competencies_pass_rigor_gates():
     cats = [
         {
-            "category_label": "Agentic AI Platform Architecture",
+            "category_label": "Technology Strategy & Innovation",
             "terms": [
-                _term("deterministic routing"),
-                _term("multi-agent orchestration"),
-                _term("GraphRAG retrieval"),
+                _term("enterprise technology roadmap"),
+                _term("platform operating model"),
+                _term("innovation portfolio governance"),
             ],
             "source_fact_ids": ["bul_unify_001"],
         },
         {
-            "category_label": "AI Reliability and Evaluation",
+            "category_label": "AI Platform Leadership",
             "terms": [
-                _term("validation gates"),
-                _term("replayable execution traces"),
-                _term("telemetry instrumentation"),
+                _term("multi-agent orchestration"),
+                _term("GraphRAG retrieval"),
+                _term("policy-gated execution"),
             ],
             "source_fact_ids": ["bul_unify_002"],
         },
         {
-            "category_label": "Enterprise Data and Governance",
+            "category_label": "Data & Analytics Modernization",
             "terms": [
                 _term("Basel III lineage"),
-                _term("data catalogs"),
-                _term("regulatory reporting controls"),
+                _term("data cataloging"),
+                _term("lakehouse modernization"),
             ],
             "source_fact_ids": ["bul_ibm_001"],
         },
         {
-            "category_label": "Cloud and Distributed Infrastructure",
+            "category_label": "Governance, Risk & Compliance",
             "terms": [
-                _term("AWS"),
-                _term("Databricks Lakehouse"),
-                _term("microservices"),
+                _term("regulatory reporting controls"),
+                _term("automated validation frameworks"),
+                _term("audit traceability"),
             ],
-            "source_fact_ids": ["bul_unify_003"],
+            "source_fact_ids": ["bul_ibm_001"],
         },
         {
-            "category_label": "Platform Commercialization",
+            "category_label": "Engineering & Delivery Leadership",
             "terms": [
-                _term("reusable IP strategy"),
-                _term("managed AI services"),
-                _term("platform commercialization"),
-            ],
-            "source_fact_ids": ["bul_unify_004"],
-        },
-        {
-            "category_label": "Engineering Leadership",
-            "terms": [
-                _term("platform roadmap ownership"),
-                _term("ML engineering scale-out"),
+                _term("platform engineering scale-out"),
                 _term("cross-functional delivery governance"),
+                _term("ML engineering leadership"),
             ],
             "source_fact_ids": ["bul_unify_005"],
         },
         {
-            "category_label": "Quantitative and Risk Systems",
+            "category_label": "Commercial & Operating Impact",
             "terms": [
-                _term("deterministic modeling"),
-                _term("derivatives pricing"),
-                _term("multi-Greek hedging"),
+                _term("IP-led platform commercialization"),
+                _term("managed AI services"),
+                _term("operating margin expansion"),
             ],
-            "source_fact_ids": ["bul_ibm_002"],
+            "source_fact_ids": ["bul_unify_004"],
+        },
+        {
+            "category_label": "Cloud & Partner Ecosystems",
+            "terms": [
+                _term("AWS platform architecture"),
+                _term("Databricks Lakehouse"),
+                _term("cloud alliance GTM"),
+            ],
+            "source_fact_ids": ["bul_unify_003"],
         },
     ]
     results = _run_gates(cats)
@@ -214,6 +245,8 @@ def test_target_quality_competencies_pass_rigor_gates():
     assert _gate(results, "x2_competencies_min_items_per_category")
     assert _gate(results, "x2_competencies_no_credential_relisting")
     assert _gate(results, "x2_competencies_role_alignment_terms")
+    assert _gate(results, "x2_competencies_approved_category_labels")
+    assert _gate(results, "x2_competencies_no_fragment_or_one_word_terms")
 
 
 def test_all_generic_skill_phrase_fails():

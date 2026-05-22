@@ -16,6 +16,7 @@ from apps_rg.runtime.section_l2_spine_receipt import (
     L2_EXECUTION_PACKET_ARTIFACT,
     SEALED_L2_ARTIFACT,
 )
+from apps_rg.runtime.disposition_authority import DISPOSITION_AUTHORITY_LANE
 from apps_rg.runtime.section_spine_terminology import CANONICAL_SPINE_CHAIN
 
 EXIT_REVIEW_PACKET_ARTIFACT = "exit_review_packet.json"
@@ -142,6 +143,8 @@ def build_exit_review_packet_for_section(
         "section_x3_disposition_ref": SECTION_X3_DISPOSITION_ARTIFACT,
         "section_x3_authoritative": False,
         "section_x3_mirror_only": True,
+        "disposition_authority": DISPOSITION_AUTHORITY_LANE,
+        "spine_x3_claimed": False,
         "x3_disposition_snapshot": dict(section_x3) if section_x3 else {},
         "direct_l4_write_allowed": False,
         "canonical_exit_claimed": False,
@@ -241,6 +244,8 @@ def build_exit_disposition_receipt_for_section(
         "section_x3_disposition_ref": SECTION_X3_DISPOSITION_ARTIFACT,
         "section_x3_authoritative": False,
         "section_x3_mirror_only": True,
+        "disposition_authority": DISPOSITION_AUTHORITY_LANE,
+        "spine_x3_claimed": False,
         "x3_disposition": x3_single,
         "x3_code": str(x3_single.get("x3_code") or "UNKNOWN"),
         "canonical_exit_claimed": True,

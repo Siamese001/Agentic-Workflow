@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import sys
+import uuid
 from pathlib import Path
 
 import pytest
@@ -13,43 +12,41 @@ from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.sections.ibm_bullets_lane import build_mock_output, extract_ibm_employment
 from apps_rg.runtime.validators.executive_summary_x2 import check_claim_ledger_claim_text_non_empty
 from apps_rg.runtime.validators.ibm_bullets_x2 import run_ibm_bullets_x2_gates
+import subprocess
+import sys
 
-REPO = Path(__file__).resolve().parents[2]
+from tests._apps_contract.lane_cli_common import (
+    REPO_ROOT as REPO,
+    base_canonical_argv,
+    contract_env,
+    qwen_live_available,
+    run_lane_cli,
+)
 
-BASE_CANONICAL = [
-    sys.executable,
-    "-m",
-    "apps_rg",
-    "--section",
-    "ibm_bullets",
-    "--target-company",
-    "Synthetic Enterprise Corp.",
-    "--target-role",
-    "SVP Engineering, Agentic AI Platforms",
-    "--provider",
-    "mock",
-    "--mock-judges",
-    "--allow-test-mock-judges",
-    "--allow-non-allow-exit-zero",
-]
+pytestmark = pytest.mark.skipif(
+    not qwen_live_available(),
+    reason="ibm_bullets CLI contract tests require live qwen_vllm (mock provider removed)",
+)
 
 
-def _latest_run_dir() -> Path:
-    from apps_rg.runtime.runtime_proof_layout import resolve_latest_mock_run_dir
-
-    rd = resolve_latest_mock_run_dir(REPO, "ibm_bullets")
-    assert rd is not None
-    return rd
-
-
-def _run_ibm_contract() -> None:
-    subprocess.run(BASE_CANONICAL, cwd=REPO, capture_output=True, text=True, timeout=180, check=True)
+def _run_ibm_contract() -> Path:
+    art = (
+        REPO
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / "contract_harness"
+        / f"_ibm_bullets_pipeline_{uuid.uuid4().hex[:10]}"
+    )
+    art.mkdir(parents=True, exist_ok=True)
+    rel = art.relative_to(REPO).as_posix()
+    proc = run_lane_cli("ibm_bullets", artifact_dir=rel, timeout_s=600, live_l2=False)
+    assert proc.returncode == 0, proc.stderr
+    return art
 
 
 def test_canonical_cli_emits_required_ibm_bullets_artifacts():
-    r = subprocess.run(BASE_CANONICAL, cwd=REPO, capture_output=True, text=True, timeout=180)
-    assert r.returncode == 0, r.stderr
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     required = [
         "compiled_prompt.txt",
         "compiled_prompt_artifact.json",
@@ -66,22 +63,10 @@ def test_canonical_cli_emits_required_ibm_bullets_artifacts():
 
 
 def test_ibm_section_flag_alias():
-    cmd = [
-        sys.executable,
-        "-m",
-        "apps_rg",
-        "--ibm-bullets",
-        "--target-company",
-        "Synthetic Enterprise Corp.",
-        "--target-role",
-        "SVP Engineering, Agentic AI Platforms",
-        "--provider",
-        "mock",
-        "--mock-judges",
-        "--allow-test-mock-judges",
-        "--allow-non-allow-exit-zero",
-    ]
-    r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=180)
+    cmd = base_canonical_argv("ibm_bullets")
+    sec_i = cmd.index("--section")
+    cmd[sec_i : sec_i + 2] = ["--ibm-bullets"]
+    r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=600, env=contract_env())
     assert r.returncode == 0, r.stderr
 
 
@@ -92,15 +77,13 @@ def test_canonical_dispatch_does_not_import_ibm_bullets_dispatch():
 
 
 def test_prompt_selection_trace_points_at_ibm_bullets_lane():
-    _run_ibm_contract()
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     trace = json.loads((rd / "prompt_selection_trace.json").read_text(encoding="utf-8"))
     assert trace.get("runtime_path") == "apps_rg.runtime.sections.ibm_bullets_lane"
 
 
 def test_compiled_ibm_prompt_and_artifact_surface_allowed_fact_ids():
-    _run_ibm_contract()
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     compiled_txt = (rd / "compiled_prompt.txt").read_text(encoding="utf-8").lower()
     assert "allowed_source_fact_ids" in compiled_txt
     art = json.loads((rd / "compiled_prompt_artifact.json").read_text(encoding="utf-8"))
@@ -111,8 +94,7 @@ def test_compiled_ibm_prompt_and_artifact_surface_allowed_fact_ids():
 
 
 def test_x2_contains_claim_text_gate_and_passes_on_mock():
-    _run_ibm_contract()
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_claim_ledger_claim_text_non_empty" in gate_ids
@@ -120,17 +102,25 @@ def test_x2_contains_claim_text_gate_and_passes_on_mock():
     assert g["pass"] is True
 
 
+def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
+    rd = _run_ibm_contract()
+    assert (rd / "text_claim_coverage.json").is_file()
+    x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
+    gate_ids = {g["gate_id"] for g in x2["gates"]}
+    assert "x2_text_claim_coverage_integrity" in gate_ids
+    g = next(g for g in x2["gates"] if g["gate_id"] == "x2_text_claim_coverage_integrity")
+    assert g["pass"] is True
+
+
 def test_x2_ibm_only_fact_scope_present_and_passes_on_mock():
-    _run_ibm_contract()
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     g = next(g for g in x2["gates"] if g["gate_id"] == "x2_ibm_only_fact_scope")
     assert g["pass"] is True
 
 
 def test_x2_no_taxonomy_label_prefix_gate_present_and_passes_on_mock():
-    _run_ibm_contract()
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_no_taxonomy_label_prefix_in_display_text" in gate_ids
@@ -251,8 +241,7 @@ def test_ibm_bullets_dispatch_module_has_no_argparse_cli():
 
 
 def test_l6_shadow_handoff_follows_canonical_run():
-    _run_ibm_contract()
-    rd = _latest_run_dir()
+    rd = _run_ibm_contract()
     l6 = json.loads((rd / "l6_shadow_eval_package.json").read_text(encoding="utf-8"))
     assert l6.get("section_id") == "ibm_bullets"
     assert l6.get("packet_type") == "L6_SHADOW_HANDOFF_PACKET"
@@ -262,11 +251,9 @@ def test_l6_shadow_handoff_follows_canonical_run():
     assert l6.get("claim_ledger_summary", {}).get("row_count", 0) >= 5
     cal = l6.get("foundation_proof_calibration") or {}
     assert cal.get("foundation_proof_model_id") == "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
-    assert cal.get("rewrite_intensity_distribution_observed") == {
-        "HEAVY": 0,
-        "MODERATE": 3,
-        "LIGHT_PROTECTED": 2,
-    }
+    dist = cal.get("rewrite_intensity_distribution_observed") or {}
+    assert isinstance(dist, dict)
+    assert sum(int(v) for v in dist.values()) >= 5
     summ = l6.get("allowed_fact_ids_summary") or {}
     assert isinstance(summ.get("allowed_fact_ids_sorted"), list)
     assert summ["allowed_fact_ids_sorted"]

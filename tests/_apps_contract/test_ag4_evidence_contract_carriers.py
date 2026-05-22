@@ -210,8 +210,8 @@ class TestInv3C0EvidenceIsDataOnly:
 
     def test_apps_rg_c0_emitter_uses_default_slot(self) -> None:
         """apps_rg c0 emitter does not override allowed_prompt_slot."""
-        from agentic_core.runtime.c0 import apps_rg_c0_binding
-        src = inspect.getsource(apps_rg_c0_binding)
+        from apps_rg.runtime.bindings import c0_binding
+        src = inspect.getsource(c0_binding)
         # Must NOT contain any override that elevates to instruction-class.
         assert "allowed_prompt_slot=USER_INTENT" not in src
         assert "allowed_prompt_slot=MODEL_GENERATION" not in src
@@ -459,7 +459,7 @@ class TestInv11NoChromaMutation:
         "agentic_core/runtime/contracts/sealed_l2_artifact.py",
         "agentic_core/runtime/contracts/x1_checkout_result.py",
         "agentic_core/L3_orchestration/exit_eval/v6/types.py",
-        "agentic_core/runtime/c0/apps_rg_c0_binding.py",
+        "apps_rg/runtime/bindings/c0_binding.py",
     )
     FORBIDDEN_IMPORTS = (
         "import chromadb",

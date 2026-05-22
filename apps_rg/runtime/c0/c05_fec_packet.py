@@ -3,33 +3,48 @@
 from __future__ import annotations
 
 import hashlib
-import os
 from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 
 from agentic_core.runtime.contracts.final_evidence_contract import (
-    ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
     EvidenceItem,
     FinalEvidenceContract,
     SUPPORT_STATUS_PASS,
     SUPPORT_STATUS_WEAK,
 )
 
-from apps_rg.runtime.bindings.c0_binding import (
-    APPS_RG_C0_CERT_REF,
-    C0EvidenceGapError,
-    c0_retrieve_apps_rg,
-    _provisional_digest,
-)
+from apps_rg.runtime.bindings.c0_binding import APPS_RG_C0_CERT_REF, _provisional_digest
 from apps_rg.runtime.c0.c02_evidence_fetch import c02_atom_to_evidence_item
+from apps_rg.runtime.c0.c02_hybrid_receipt_truth import normalize_c02_vector_query_receipt
 from apps_rg.runtime.c0.c0_section_authority import (
     AUTHORITY_CLASS_LEDGER_GRAPH_PROOF,
-    AUTHORITY_CLASS_SPINE_ENRICHMENT,
     C0_AUTHORITY_MODE,
-    resolve_spine_chroma_enrich,
 )
 from apps_rg.runtime.c0.constants import FORBIDDEN_PROOF_SOURCE_TYPES
+
+
+def _merge_hybrid_enrichment_items(
+    items: list[EvidenceItem],
+    *,
+    allowed_set: set[str],
+    hybrid_items: list[EvidenceItem],
+    hybrid_excluded: list[str],
+) -> tuple[list[EvidenceItem], int]:
+    """Append product hybrid hits (non-authoritative) not already in ledger proof set."""
+    seen = {getattr(i, "source_id", "") or i.source for i in items}
+    count = 0
+    for raw_it in hybrid_items:
+        it = raw_it
+        key = getattr(it, "source_id", "") or it.source
+        if key in allowed_set:
+            hybrid_excluded.append(f"product_hybrid_not_admitted_as_proof:{key}")
+            continue
+        if key not in seen:
+            items.append(it)
+            seen.add(key)
+            count += 1
+    return items, count
 
 
 def _strip_forbidden_items(items: list[EvidenceItem]) -> tuple[list[EvidenceItem], list[str]]:
@@ -48,15 +63,6 @@ def _strip_forbidden_items(items: list[EvidenceItem]) -> tuple[list[EvidenceItem
     return kept, excluded
 
 
-def _mark_spine_enrichment_item(item: EvidenceItem) -> EvidenceItem:
-    """Spine Chroma hits are enrichment by default — not proof authority."""
-    return replace(
-        item,
-        authority_class=AUTHORITY_CLASS_SPINE_ENRICHMENT,
-        source_owner_or_authority="spine_chroma_enrich_non_authoritative",
-    )
-
-
 def build_c05_final_evidence_contract(
     *,
     section_id: str,
@@ -67,15 +73,13 @@ def build_c05_final_evidence_contract(
     allowed_fact_ids: list[str],
     excluded_refs: list[str] | None = None,
     retrieval_plan: dict[str, Any] | None = None,
-    merge_canonical_c0: bool | None = None,
-    spine_chroma_enrich: bool | None = None,
+    product_hybrid: dict[str, Any] | None = None,
 ) -> tuple[FinalEvidenceContract, dict[str, Any]]:
-    """Build section FEC — apps_rg room is default authority; spine enrich is opt-in."""
+    """Build section FEC — apps_rg evidence room is default authority; hybrid via profile only."""
+    del front_spine  # reserved for future bounded context; no legacy spine merge
     ts = datetime.now(timezone.utc).isoformat()
-    enrich = resolve_spine_chroma_enrich(
-        explicit=spine_chroma_enrich,
-        merge_canonical_c0=merge_canonical_c0,
-    )
+    hybrid_doc = product_hybrid or {}
+    hybrid_items = list(hybrid_doc.get("enrichment_items") or [])
     allowed_set = set(allowed_fact_ids)
     items: list[EvidenceItem] = []
     for atom in atoms:
@@ -90,55 +94,28 @@ def build_c05_final_evidence_contract(
                 source_owner_or_authority=C0_AUTHORITY_MODE,
             )
         )
-    spine_excluded: list[str] = []
-    spine_enrichment_count = 0
-    vector_query_receipt: dict[str, Any] = {
-        "schema_version": "c02_vector_query_v1",
-        "attempted": False,
-        "reason": "spine_chroma_enrich_disabled",
-    }
-    if enrich and front_spine is not None:
-        route = getattr(front_spine, "route", None)
-        vr = getattr(front_spine, "validated_request", None)
-        if route is not None and vr is not None:
-            chroma = os.environ.get("CHROMA_PERSIST_DIR", "").strip() or None
-            vector_query_receipt["attempted"] = True
-            vector_query_receipt["reason"] = "spine_chroma_enrich_c05"
-            try:
-                spine_fec = c0_retrieve_apps_rg(
-                    route,
-                    vr,
-                    chromadb_path=chroma,
-                    timestamp_iso=ts,
-                )
-                spine_items, spine_excluded = _strip_forbidden_items(list(spine_fec.evidence_items))
-                seen = {getattr(i, "source_id", "") or i.source for i in items}
-                for raw_it in spine_items:
-                    it = _mark_spine_enrichment_item(raw_it)
-                    key = getattr(it, "source_id", "") or it.source
-                    if key in allowed_set:
-                        spine_excluded.append(f"spine_not_admitted_as_proof:{key}")
-                        continue
-                    if key not in seen:
-                        items.append(it)
-                        seen.add(key)
-                        spine_enrichment_count += 1
-                vector_query_receipt["spine_item_count"] = spine_enrichment_count
-                vector_query_receipt["status"] = "PASS"
-            except C0EvidenceGapError:
-                raise
-            except Exception as exc:
-                from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
-
-                vector_query_receipt["status"] = "FAIL"
-                vector_query_receipt["error"] = str(exc)
-                if product_fail_closed_runtime():
-                    raise C0EvidenceGapError(
-                        f"spine_chroma_enrich failed on section path: {exc}"
-                    ) from exc
-                spine_excluded.append("spine_chroma_enrich_skipped:section_path")
+    hybrid_excluded: list[str] = []
+    hybrid_enrichment_count = 0
+    raw_vq = dict(
+        hybrid_doc.get("c02_vector_query")
+        or {
+            "schema_version": "c02_vector_query_v1",
+            "section_id": section_id,
+            "product_hybrid_required": False,
+            "product_hybrid_attempted": False,
+            "failure_reason": "product_hybrid_not_run",
+        }
+    )
+    vector_query_receipt = normalize_c02_vector_query_receipt(raw_vq, section_id=section_id)
+    if hybrid_items:
+        items, hybrid_enrichment_count = _merge_hybrid_enrichment_items(
+            items,
+            allowed_set=allowed_set,
+            hybrid_items=hybrid_items,
+            hybrid_excluded=hybrid_excluded,
+        )
     items, more_ex = _strip_forbidden_items(items)
-    spine_excluded.extend(more_ex)
+    hybrid_excluded.extend(more_ex)
     digest = _provisional_digest(items)
     support = SUPPORT_STATUS_PASS if items else SUPPORT_STATUS_WEAK
     run_id = hashlib.sha256(f"{section_id}:{digest}".encode()).hexdigest()[:16]
@@ -153,12 +130,18 @@ def build_c05_final_evidence_contract(
         tenant_id="local",
         l5_certification_ref=APPS_RG_C0_CERT_REF,
         evidence_items=tuple(items),
-        support_target_met=bool([i for i in items if getattr(i, "authority_class", "") == AUTHORITY_CLASS_LEDGER_GRAPH_PROOF]),
+        support_target_met=bool(
+            [
+                i
+                for i in items
+                if getattr(i, "authority_class", "") == AUTHORITY_CLASS_LEDGER_GRAPH_PROOF
+            ]
+        ),
         support_status=support,
         evidence_strata=tuple(
             (k, tuple(v)) for k, v in (strata if isinstance(strata, dict) else {}).items()
         ),
-        excluded_evidence_refs=tuple((excluded_refs or []) + spine_excluded),
+        excluded_evidence_refs=tuple((excluded_refs or []) + hybrid_excluded),
         final_evidence_digest=digest,
         evidence_collection_timestamp=ts,
         graph_expansion_refs=tuple(
@@ -172,16 +155,17 @@ def build_c05_final_evidence_contract(
         "allowed_fact_ids": list(allowed_fact_ids),
         "evidence_item_count": len(items),
         "ledger_proof_item_count": sum(
-            1 for i in items if getattr(i, "authority_class", "") == AUTHORITY_CLASS_LEDGER_GRAPH_PROOF
+            1
+            for i in items
+            if getattr(i, "authority_class", "") == AUTHORITY_CLASS_LEDGER_GRAPH_PROOF
         ),
-        "spine_enrichment_item_count": spine_enrichment_count,
+        "product_hybrid_enrichment_item_count": hybrid_enrichment_count,
+        "product_hybrid_required": bool(hybrid_doc.get("required")),
         "graph_binding_count": len(graph_bindings),
         "final_evidence_digest": digest,
         "support_status": support,
         "c0_authority_mode": C0_AUTHORITY_MODE,
-        "spine_chroma_enrich": enrich,
-        "merge_canonical_c0": enrich,
-        "spine_excluded": spine_excluded,
+        "hybrid_excluded": hybrid_excluded,
         "c02_vector_query": vector_query_receipt,
         "data_only": True,
         "section_fec_authority": "apps_rg_c0_evidence_room",

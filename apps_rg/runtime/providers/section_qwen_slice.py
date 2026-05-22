@@ -16,7 +16,6 @@ from apps_rg.runtime.providers.competencies_live_provider_gate import (
     STATUS_BLOCKED_LIVE_PROVIDER,
     competencies_vllm_preflight_timeout_s,
 )
-from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
 from apps_rg.runtime.qwen_transport_diag import ensure_http_preflight_and_banner_for_slice
 from apps_rg.runtime.reasoning.apps_rg_http_reasoning_plan import build_apps_rg_http_reasoning_plan
 from apps_rg.runtime.reasoning.section_reasoning_intensity import (

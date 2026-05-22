@@ -28,7 +28,7 @@ from apps_rg.runtime.c0.c03_graph_expansion import (
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 
 JD_PATH = REPO / "apps_rg/config/targeting/openai_partner_ade_jd.txt"
-BRIEF_PATH = REPO / "apps_rg/config/targeting/openai_partner_ade_briefing.txt"
+BRIEF_PATH = REPO / "apps_rg/config/targeting/openai_partner_ade_briefing.md"
 OUT_DIR = REPO / "artifacts/apps_rg/c0"
 OUT_JSON = OUT_DIR / "partner_ade_c03_calibration.json"
 

@@ -221,7 +221,7 @@ def _check_dispatch_return_patterns() -> list[ExitPathViolation]:
             pass  # AST analysis will catch this
 
         # Check for proper exit_finalize_apps_rg import and usage
-        if "from agentic_core.runtime.exit.apps_rg_exit_binding import" in source:
+        if "from apps_rg.runtime.bindings.exit_binding import" in source:
             if "exit_finalize_apps_rg" not in source:
                 violations.append(ExitPathViolation(
                     "apps_rg/runtime/entry/dispatch.py", 0, "IMPORT",

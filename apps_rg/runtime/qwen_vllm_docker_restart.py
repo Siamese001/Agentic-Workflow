@@ -34,7 +34,6 @@ from typing import Any, Literal
 from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL
 from agentic_core.L2_execution.healers.vllm_health_probe import probe
 
-from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
 from apps_rg.runtime.qwen_transport_diag import (
     READINESS_MODEL_MISMATCH,
     READINESS_MODEL_MISSING,

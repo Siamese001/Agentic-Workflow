@@ -55,9 +55,15 @@ FORBIDDEN_PROOF_SOURCE_TYPES = frozenset(
     }
 )
 
-C0_SECTIONS_ENABLED = frozenset({"competencies", "executive_summary"})
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+
+# All generated lanes: phases 1–3 (headline, bullets, narratives) + competencies/executive_summary.
+C0_SECTIONS_ENABLED: frozenset[str] = frozenset(GENERATED_LANES)
+
+C0_AUTHORITY_LEDGER_GRAPH_PRIMARY = "ledger_graph_primary"
 
 __all__ = [
+    "C0_AUTHORITY_LEDGER_GRAPH_PRIMARY",
     "C0_SECTIONS_ENABLED",
     "FORBIDDEN_PROOF_SOURCE_TYPES",
     "PRIOR_RESUME_MANIFEST_REL",

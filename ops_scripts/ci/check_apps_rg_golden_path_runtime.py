@@ -42,10 +42,10 @@ GATE_VERSION = "1.0.0"
 
 # Modules in the golden path that must not import chromadb
 C0_PA_L2_EXIT_MODULES = [
-    "agentic_core/runtime/c0/apps_rg_c0_binding.py",
-    "agentic_core/prompt_governance/apps_rg_pa_binding.py",
+    "apps_rg/runtime/bindings/c0_binding.py",
+    "apps_rg/runtime/bindings/pa_binding.py",
     "apps_rg/runtime/bindings/l2_binding_adapter.py",
-    "agentic_core/runtime/exit/apps_rg_exit_binding.py",
+    "apps_rg/runtime/bindings/exit_binding.py",
 ]
 
 # Forbidden embedding patterns
@@ -177,7 +177,7 @@ def check_ag6_tests_exist() -> tuple[bool, str]:
 def check_c0_populates_ag4_fields() -> tuple[bool, str]:
     """Check that C0 binding populates all AG-4 EvidenceItem fields."""
     repo_root = _resolve_repo_root()
-    c0_path = repo_root / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py"
+    c0_path = repo_root / "apps_rg" / "runtime" / "bindings" / "c0_binding.py"
     
     if not c0_path.exists():
         return False, f"C0 binding not found: {c0_path}"
@@ -215,7 +215,7 @@ def check_c0_populates_ag4_fields() -> tuple[bool, str]:
 def check_pa_preserves_evidence_data_only() -> tuple[bool, str]:
     """Check that PA keeps evidence in C0_EVIDENCE_DATA_ONLY slots."""
     repo_root = _resolve_repo_root()
-    pa_path = repo_root / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py"
+    pa_path = repo_root / "apps_rg" / "runtime" / "bindings" / "pa_binding.py"
     
     if not pa_path.exists():
         return False, f"PA binding not found: {pa_path}"
@@ -259,7 +259,7 @@ def check_l2_preserves_evidence_refs() -> tuple[bool, str]:
 def check_exit_consumes_x1_checkout() -> tuple[bool, str]:
     """Check that Exit binding produces X3Disposition."""
     repo_root = _resolve_repo_root()
-    exit_path = repo_root / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py"
+    exit_path = repo_root / "apps_rg" / "runtime" / "bindings" / "exit_binding.py"
     
     if not exit_path.exists():
         return False, f"Exit binding not found: {exit_path}"
@@ -328,8 +328,8 @@ def check_no_payload_bypass_at_l1_l0() -> tuple[bool, str]:
     """Check that L1 and L0 consume app_payload, not legacy payload."""
     repo_root = _resolve_repo_root()
     
-    l1_path = repo_root / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py"
-    l0_path = repo_root / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py"
+    l1_path = repo_root / "apps_rg" / "runtime" / "bindings" / "l1_binding.py"
+    l0_path = repo_root / "apps_rg" / "runtime" / "bindings" / "l0_binding.py"
     
     issues = []
     

@@ -28,7 +28,7 @@ def test_should_hydrate_graph_pool_when_ledger_lacks_bul_ibm() -> None:
         "proof_pool_metadata": {"claim_evidence_source_type": "augmented_skills_graph"},
         "selected_fact_plan": {"facts": [{"fact_id": "fact_partnerships_gtm_002"}]},
     }
-    assert should_hydrate_ibm_bullets_from_canonical(runtime_payload, parsed) is True
+    assert should_hydrate_ibm_bullets_from_canonical(runtime_payload, parsed) is False
 
 
 def test_align_narrative_ledger_replaces_fact_ids_with_bul_ibm() -> None:

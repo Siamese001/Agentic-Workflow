@@ -45,7 +45,9 @@ class X3Disposition:
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["pass"] = data.pop("pass_")
-        return data
+        from apps_rg.runtime.disposition_authority import apply_lane_x3_authority_fields
+
+        return apply_lane_x3_authority_fields(data)
 
 
 def _is_blocked_judge(judge: dict[str, Any]) -> bool:

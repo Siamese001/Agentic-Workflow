@@ -164,13 +164,14 @@ def headline_runtime_self_check_truth(
 
 
 def polish_claim_text_when_headline_has_no_metrics(headline_line: str, claim_text: str) -> str:
-    """Strip %-literal uptime phrasing from ledger rows when headline_line has no metric tokens.
+    """Strip metric phrasing from ledger ``claim_text`` only when that row itself carries metric tokens.
 
-    Keeps ``source_fact_ids`` unchanged (caller owns IDs). Headline remains metric-free while claims stay sourced.
+    Headline_line stays metric-free; do not strip bare ``%`` from segment claims unless the row is metric-heavy
+    (avoids decoupling ``claim_text`` from metric-bearing ``source_fact_ids``).
     """
     h = (headline_line or "").strip()
     t = str(claim_text or "").strip()
-    if not t or _METRIC_RE.search(h) or "%" not in t:
+    if not t or _METRIC_RE.search(h) or not _METRIC_RE.search(t):
         return t
     out = re.sub(
         r"\s+operating\s+at\s+\d+(?:\.\d+)?%\s+uptime\b(?:\s+[^\.]*)?",
@@ -452,6 +453,66 @@ def run_headline_x2_gates(
         None
         if ledger_has_rows and rows_have_ids
         else "claim_ledger must contain dict rows with non-empty source_fact_ids (no fabrication).",
+    )
+
+    seg_decomp_ok = True
+    seg_decomp_obs: Any = "n/a"
+    if pipe_ok:
+        parts_xyz = [p.strip() for p in h.split(_sep)][1:4]
+        expected_seg = {p.lower() for p in parts_xyz}
+        if len(ledger_rows) < 3:
+            seg_decomp_ok = False
+            seg_decomp_obs = {"row_count": len(ledger_rows), "expected_segments": parts_xyz}
+        else:
+            matched: set[str] = set()
+            for row in ledger_rows:
+                ct = str(row.get("claim_text") or "").strip().lower()
+                if ct in expected_seg:
+                    matched.add(ct)
+            seg_decomp_ok = matched == expected_seg
+            seg_decomp_obs = {
+                "matched_segments": sorted(matched),
+                "expected_segments": parts_xyz,
+                "row_count": len(ledger_rows),
+            }
+    add(
+        "x2_headline_claim_ledger_segment_decomposition",
+        seg_decomp_ok,
+        seg_decomp_obs,
+        ">=3 rows with claim_text matching X/Y/Z segments",
+        None
+        if seg_decomp_ok
+        else "claim_ledger must include one row per positioning segment (X, Y, Z).",
+    )
+
+    dropped_rows = 0
+    if isinstance(parsed_output, dict):
+        dropped_rows = int(parsed_output.get("_headline_ledger_rows_dropped") or 0)
+    add(
+        "x2_headline_claim_ledger_no_silent_row_drop",
+        dropped_rows == 0,
+        dropped_rows,
+        0,
+        None
+        if dropped_rows == 0
+        else f"{dropped_rows} claim_ledger row(s) removed during normalize (no allowed source_fact_ids).",
+    )
+
+    tcov = text_claim_coverage if isinstance(text_claim_coverage, dict) else None
+    if tcov and tcov.get("schema") == "headline_text_claim_coverage_v1":
+        tcov_ok = bool(tcov.get("overall_pass"))
+        tcov_obs: Any = tcov.get("segments")
+        tcov_fail = None if tcov_ok else "Segment-level text_claim_coverage failed."
+    else:
+        tcov_ok = False
+        tcov_obs = "missing_or_invalid_text_claim_coverage"
+        tcov_fail = "text_claim_coverage must be headline_text_claim_coverage_v1 with overall_pass"
+    add(
+        "x2_headline_text_claim_coverage_integrity",
+        tcov_ok,
+        tcov_obs,
+        "each X/Y/Z segment has matching claim_ledger support",
+        tcov_fail,
     )
 
     ledger_ids = _ledger_fact_ids(claim_ledger)

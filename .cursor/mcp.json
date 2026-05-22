@@ -2,6 +2,7 @@
   "_note": "Cursor project MCP configuration. This .cursor/mcp.json file is the project-scoped source of truth for Cursor. Keep tool usage procedures in skills, invariants in rules, and deterministic checks in hooks/scripts. Prefer least-privilege local-first retrieval before broad semantic expansion.",
   "mcpServers": {
     "GitKraken": {
+      "_dedup": "Project SSOT for git/PR MCP. Disable GitLens duplicate: gitlens.gitkraken.mcp.autoEnabled=false (see .vscode/settings.json). Do not remove this block while GitLens is installed.",
       "command": "${env:GITKRAKEN_GK_PATH}",
       "args": [
         "mcp",

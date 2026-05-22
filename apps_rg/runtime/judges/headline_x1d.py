@@ -8,7 +8,7 @@ from typing import Any
 from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
 from apps_rg.runtime.judges.policy_backed_section_judges import run_policy_section_judges
 
-JUDGE_RUBRIC_VERSION = "headline_x1d_v3"
+JUDGE_RUBRIC_VERSION = "headline_x1d_v4"
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/headline_x1d.py#HEADLINE_GRADE_ONLY_RUBRIC"
 
 HEADLINE_RUBRIC = """
@@ -20,7 +20,7 @@ Score contract:
 - score_scale must be "0_to_1" or "0_to_5" only.
 
 Rubric dimensions:
-1. factual_support: every substantive phrase in X/Y/Z is supported by claim_ledger bul_* facts only (JD/briefing are never proof).
+1. factual_support: every substantive phrase in X/Y/Z is supported by claim_ledger source_fact_ids from the active proof pool only (bul_*, fact_*, or metric-suffixed IDs in allowed_fact_packet — never JD/briefing/target fields as proof).
 2. fixed_prefix_compliance: headline_line starts with "SVP Engineering | " and uses exactly three " | " separators.
 3. base_identity_fidelity: authentic to the base resume headline anchor; not rewritten to chase the JD.
 4. anti_keyword_stuffing: no ATS keyword bags, list-like segments, or multi-domain laundry lists.

@@ -88,11 +88,6 @@ from apps_rg.runtime.providers.competencies_live_provider_gate import (
 )
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
-from apps_rg.runtime.qwen_offline_contract_stub import (
-    OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,
-    effective_offline_contract_stub_enabled,
-    synthetic_qwen_provider_result,
-)
 from apps_rg.runtime.shadow.competencies_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage
 from apps_rg.runtime.validators.competencies_x2 import (

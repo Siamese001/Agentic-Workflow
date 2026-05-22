@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from agentic_core.runtime.exit import apps_rg_exit_binding
+from apps_rg.runtime.bindings import exit_binding as apps_rg_exit_binding
 
 
 def test_apps_rg_exit_shim_exports_finalize() -> None:

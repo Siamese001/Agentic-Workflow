@@ -59,13 +59,13 @@ try:
         X1Item,
         X1Verdict,
     )
-    from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
-    from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
+    from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+    from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
     from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
-    from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
-    from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
+    from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
+    from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
     from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
-    from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+    from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
     from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import (
         build_x1_checkout_result,
     )
@@ -451,10 +451,10 @@ BS Computer Science, UC Berkeley (2018)
         import ast
         
         modules_to_check = [
-            "agentic_core.runtime.c0.apps_rg_c0_binding",
-            "agentic_core.prompt_governance.apps_rg_pa_binding",
+            "apps_rg.runtime.bindings.c0_binding",
+            "apps_rg.runtime.bindings.pa_binding",
             "apps_rg.runtime.bindings.l2_binding",
-            "agentic_core.runtime.exit.apps_rg_exit_binding",
+            "apps_rg.runtime.bindings.exit_binding",
         ]
         
         for module_name in modules_to_check:
@@ -485,8 +485,8 @@ BS Computer Science, UC Berkeley (2018)
         import ast
         
         modules_to_check = [
-            "agentic_core.runtime.c0.apps_rg_c0_binding",
-            "agentic_core.prompt_governance.apps_rg_pa_binding",
+            "apps_rg.runtime.bindings.c0_binding",
+            "apps_rg.runtime.bindings.pa_binding",
             "apps_rg.runtime.bindings.l2_binding",
         ]
         
@@ -520,7 +520,7 @@ class TestAG6X1ExitIntegration(unittest.TestCase):
         timestamp = datetime.now(timezone.utc).isoformat()
         
         # Build minimal evidence
-        from agentic_core.runtime.c0.apps_rg_c0_binding import APPS_RG_C0_CERT_REF
+        from apps_rg.runtime.bindings.c0_binding import APPS_RG_C0_CERT_REF
         fec = FinalEvidenceContract(
             request_id="x1-test-001",
             run_id="x1-run-001",
@@ -551,7 +551,7 @@ class TestAG6X1ExitIntegration(unittest.TestCase):
         # Build minimal prompt
         from agentic_core.runtime.contracts.origin import Origin
         from agentic_core.runtime.contracts.compiled_prompt_artifact import PromptBlock
-        from agentic_core.prompt_governance.apps_rg_pa_binding import APPS_RG_PA_CERT_REF
+        from apps_rg.runtime.bindings.pa_binding import APPS_RG_PA_CERT_REF
         prompt = CompiledPromptArtifact(
             request_id="x1-test-001",
             run_id="x1-run-001",
@@ -689,7 +689,7 @@ class TestAG6NoBypass(unittest.TestCase):
         import ast
         
         source = Path(
-            "c:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\runtime\\c0\\apps_rg_c0_binding.py"
+            "c:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\runtime\\bindings\\c0_binding.py"
         ).read_text()
         tree = ast.parse(source)
         
@@ -707,7 +707,7 @@ class TestAG6NoBypass(unittest.TestCase):
         import ast
         
         source = Path(
-            "c:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\prompt_governance\\apps_rg_pa_binding.py"
+            "c:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\runtime\\bindings\\pa_binding.py"
         ).read_text()
         
         # Should read from validated_request.app_payload

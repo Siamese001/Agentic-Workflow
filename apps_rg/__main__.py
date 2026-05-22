@@ -549,15 +549,6 @@ def _build_parser() -> argparse.ArgumentParser:
             "(each lane enforces its own allowed range)."
         ),
     )
-    p.add_argument(
-        "--selected-role-fact-set",
-        default="",
-        help=(
-            "Optional SelectedRoleFactSet JSON path for generated apps_rg sections. Supplies section-specific "
-            "proof pools through selected_facts_by_section.<section_id>. In SRFS mode, each section may only "
-            "prove claims using facts assigned to that section."
-        ),
-    )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
     return p
 
@@ -599,10 +590,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     )
     section_eff = str(getattr(args, "section", "") or "").strip().lower()
 
-    from apps_rg.runtime.qwen_live_only_guard import assert_production_runtime
+    from apps_rg.runtime.qwen_live_only_guard import assert_production_runtime, is_test_harness
 
     if section_eff in section_lane_ids or not section_eff:
-        assert_production_runtime(context="python -m apps_rg", args=args)
+        if not is_test_harness():
+            assert_production_runtime(context="python -m apps_rg", args=args)
 
     from apps_rg.runtime.embedding_settings import (
         apply_apps_rg_embedding_env_guards,
@@ -610,18 +602,23 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         write_embedding_settings_receipt,
     )
 
-    _emb_boot = bootstrap_apps_rg_embedding_env()
+    _emb_boot = bootstrap_apps_rg_embedding_env(repo_root=find_repo_root())
     if _emb_boot:
         print(f"embedding_bootstrap: {_emb_boot}", flush=True)
     _emb_settings = apply_apps_rg_embedding_env_guards(route_section=section_eff)
     _emb_ad = str(getattr(args, "artifact_dir", "") or "").strip()
     _emb_receipt = write_embedding_settings_receipt(_emb_ad, _emb_settings)
+    from apps_rg.runtime.c02_chroma_lifecycle import resolve_proof_class
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
     print(
         f"embedding_settings: enabled={_emb_settings.embeddings_enabled} "
         f"required={_emb_settings.embedding_required} "
         f"route_result={_emb_settings.route_result} "
         f"semantic_cache_ineligible={_emb_settings.semantic_cache_ineligible} "
-        f"chroma_default_ef_used={_emb_settings.chroma_default_ef_used}",
+        f"chroma_default_ef_used={_emb_settings.chroma_default_ef_used} "
+        f"product_fail_closed={product_fail_closed_runtime()} "
+        f"proof_class={resolve_proof_class()}",
         flush=True,
     )
     if _emb_receipt is not None:
@@ -840,7 +837,6 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 lane_mock_judges=lane_mock_eff,
                 lane_allow_non_allow_exit_zero=bool(getattr(args, "allow_non_allow_exit_zero", False)),
                 lane_allow_test_mock_judges=lane_allow_test_mock_eff,
-                selected_role_fact_set=str(getattr(args, "selected_role_fact_set", "") or ""),
             )
         else:
             from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (

@@ -30,6 +30,8 @@ Rubric dimensions (must score each):
 6. no_metric_rehash: avoids repeating bullet metrics unless narrowly justified; prefers conceptual commercialization language.
 7. no_cross_employer_leakage: no IBM, InsurTech, EY, education, or early-career contamination.
 8. resume_voice: third person or implied subject; credible executive tone; no hype.
+9. role_fit_targeting: JD/briefing influence emphasis only — never proof of experience.
+10. why_role_mattered: narrative answers why the Unify role mattered (mandate, commercialization, IP) — companion bullets answer what was delivered.
 
 Decisive failure triggers:
 - merely summarizes the six bullets or mirrors bullet labels/metrics as the thesis

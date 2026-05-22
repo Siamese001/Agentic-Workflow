@@ -11,7 +11,7 @@ Run root: `c:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runs/cli_f40f44d8452c
 ## Inputs
 
 - [brown_brown_svp_it_strategy_innovation_jd.txt](apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt) · [open](file:///c:/Git/Agentic-Workflow-FRESH/apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt)
-- [brown_brown_svp_it_strategy_innovation_briefing.txt](apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.txt) · [open](file:///c:/Git/Agentic-Workflow-FRESH/apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.txt)
+- [brown_brown_svp_it_strategy_innovation_briefing.md](apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md) · [open](file:///c:/Git/Agentic-Workflow-FRESH/apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md)
 
 ## Run spine
 

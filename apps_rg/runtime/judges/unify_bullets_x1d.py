@@ -27,6 +27,9 @@ Rubric dimensions:
 5. ats_alignment_without_stuffing: relevant to target role without JD keyword dumping or briefing-as-proof.
 6. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience.
 7. rewrite_quality: respects rewrite distribution (2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED default); bul_unify_006 protected commercial metrics preserved.
+8. role_fit_targeting: JD/briefing targeting shapes emphasis without JD-as-proof or keyword stuffing for the target role.
+9. bullet_semantic_distribution: bullets answer distinct outcome spines (commercialization, scale, governance, delivery speed, ecosystem, team) — not six variants of the same platform stack.
+10. narrative_complementarity: bullets deliver measurable outcomes; they must not read as a comma-stacked mechanism inventory duplicated across bullets.
 
 Decisive failure triggers:
 - unsupported metric or cross-employer fact leakage (IBM/InsurTech/EY)

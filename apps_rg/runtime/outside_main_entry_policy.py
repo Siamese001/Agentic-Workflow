@@ -14,7 +14,6 @@ ALLOWED_OUTSIDE_MAIN_MODULE_CLI: frozenset[str] = frozenset(
         "apps_rg.runtime.integrated_product_proof_gate",
         "apps_rg.runtime.validators.validate_exec_summary_graph_only_generation",
         "apps_rg.runtime.prepare_orchestrator_inputs",
-        "apps_rg.audit.srfs_receipt_aggregator",
     }
 )
 
@@ -31,6 +30,11 @@ DELETED_RUNTIME_MODULE_CLI: frozenset[str] = frozenset(
         "apps_rg.runtime.reports.generated_lane_rollup",
         "apps_rg.runtime.assembly.final_resume_assembler",
         "apps_rg.runtime.render.docx_renderer",
+        "apps_rg.runtime.internal.docx_renderer",
+        "apps_rg.runtime.internal.docx_manifest_builder",
+        "apps_rg.runtime.render.docx_render_x2",
+        "apps_rg.runtime.render.docx_manifest_x2",
+        "apps_rg.runtime.render.json_resume_docx",
         "apps_rg.runtime.locked_copy.locked_copy_builder",
         "apps_rg.runtime._offline.lane_batch",
         "apps_rg.runtime._offline.resume_package_disposition",
@@ -46,6 +50,7 @@ DELETED_RUNTIME_MODULE_CLI: frozenset[str] = frozenset(
         "apps_rg.runtime.dispatch.unify_narrative_dispatch",
         "apps_rg.runtime.dispatch.ibm_bullets_dispatch",
         "apps_rg.runtime.dispatch.ibm_narrative_dispatch",
+        "apps_rg.audit.srfs_receipt_aggregator",
     }
 )
 
@@ -55,7 +60,6 @@ DISALLOWED_DOC_CI_COMMAND_SUBSTRINGS: tuple[str, ...] = (
     "python -m apps_rg.runtime.package.resume_package_x3",
     "python -m apps_rg.runtime.reports.generated_lane_rollup",
     "python -m apps_rg.runtime.assembly.final_resume_assembler",
-    "python -m apps_rg.runtime.internal.docx_renderer",
     "python -m apps_rg.runtime.locked_copy.locked_copy_builder",
     "python -m apps_rg.runtime._offline.",
     "python -m apps_rg.runtime.internal.",

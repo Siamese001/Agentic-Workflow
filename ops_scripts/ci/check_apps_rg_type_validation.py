@@ -28,13 +28,13 @@ _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "apps_rg_type_validation_gate.j
 
 # Layer bindings to validate
 _LAYER_BINDINGS: list[tuple[str, str, str]] = [
-    ("agentic_core.runtime.entry.u0_apps_rg_binding", "u0_validate_apps_rg", "U0"),
-    ("agentic_core.L1_cognition.apps_rg_l1_binding", "l1_plan_apps_rg", "L1"),
-    ("agentic_core.L0_routing.apps_rg_l0_binding", "l0_route_apps_rg", "L0"),
-    ("agentic_core.runtime.c0.apps_rg_c0_binding", "c0_retrieve_apps_rg", "C0"),
-    ("agentic_core.prompt_governance.apps_rg_pa_binding", "pa_compose_apps_rg", "PA"),
+    ("apps_rg.runtime.bindings.u0_binding", "u0_validate_apps_rg", "U0"),
+    ("apps_rg.runtime.bindings.l1_binding", "l1_plan_apps_rg", "L1"),
+    ("apps_rg.runtime.bindings.l0_binding", "l0_route_apps_rg", "L0"),
+    ("apps_rg.runtime.bindings.c0_binding", "c0_retrieve_apps_rg", "C0"),
+    ("apps_rg.runtime.bindings.pa_binding", "pa_compose_apps_rg", "PA"),
     ("apps_rg.runtime.bindings.l2_binding", "l2_execute_apps_rg", "L2"),
-    ("agentic_core.runtime.exit.apps_rg_exit_binding", "exit_finalize_apps_rg", "Exit"),
+    ("apps_rg.runtime.bindings.exit_binding", "exit_finalize_apps_rg", "Exit"),
 ]
 
 
@@ -140,7 +140,7 @@ def _check_l0_cache_eligibility_type() -> list[TypeViolation]:
 
     try:
         sys.path.insert(0, str(_REPO_ROOT))
-        from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
+        from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
         from agentic_core.runtime.contracts.route_contract import RouteContract
 
         # Check return type annotation

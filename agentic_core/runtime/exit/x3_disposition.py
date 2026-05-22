@@ -8,9 +8,10 @@ Responsibilities:
 - Emit exactly one X3Disposition
 
 Hard Constraints:
-- Core owns all exit disposition
-- Exactly one X3Disposition per request
-- apps_rg does not emit exit dispositions
+- Core owns spine Exit disposition (integrated ``ExitEvalPipeline`` / this emitter)
+- Exactly one spine X3Disposition per integrated request
+- apps_rg emits lane-level and mirror dispositions only (``x3_disposition.json``,
+  section ``exit_disposition_receipt.json``) — not authoritative spine X3
 - Contract dataclass is defined in runtime/contracts/, imported here
 - Exit is NOT L3 — this is a separate core surface
 """

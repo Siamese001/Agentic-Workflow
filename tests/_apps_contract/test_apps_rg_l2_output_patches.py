@@ -44,7 +44,7 @@ class TestPatchAHeaderInstruction:
         generation_mode: str,
         task_plan: list[str] | None = None,
     ) -> str:
-        from agentic_core.prompt_governance.apps_rg_pa_binding import _build_u0_task_block
+        from apps_rg.runtime.bindings.pa_binding import _build_u0_task_block
 
         l1_plan = SimpleNamespace(
             task_plan=task_plan or ["tailor"],

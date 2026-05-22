@@ -27,6 +27,50 @@ _SECTION_MIN_FACTS: dict[str, int] = {
 }
 
 
+def _ledger_rows_matching_company_hints(ledger: dict[str, Any], hints: tuple[str, ...]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw in ledger.get("candidate_facts") or []:
+        if not isinstance(raw, dict):
+            continue
+        if str(raw.get("confidence") or "").upper() != "HIGH":
+            continue
+        blob = " ".join(
+            str(raw.get(key) or "")
+            for key in ("company_lane", "company", "claim_text", "domain_family")
+        ).lower()
+        if any(h.lower() in blob for h in hints):
+            rows.append(raw)
+    return rows
+
+
+def _graph_substrate_company_hint_plan(
+    ledger: dict[str, Any],
+    *,
+    section_id: str,
+    hints: tuple[str, ...],
+    limit: int,
+) -> tuple[dict[str, Any], list[str], set[str]] | None:
+    """Selection-only narrowing within graph+ledger substrate (not a proof-pool authority mode)."""
+    from apps_rg.runtime.sections.selected_role_fact_set import slice_row_to_plan_fact
+
+    from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
+
+    rows = _ledger_rows_matching_company_hints(ledger, hints)
+    if not rows:
+        return None
+    rows.sort(key=lambda r: str(r.get("candidate_fact_id") or ""))
+    picked = rows[:limit]
+    facts = [slice_row_to_plan_fact(r, section_id=section_id) for r in picked]
+    plan = {
+        "section_id": section_id,
+        "selection_method": f"augmented_skills_graph_{section_id}_company_hint",
+        "facts": facts,
+        "required_fact_ids": [str(f["fact_id"]) for f in facts],
+    }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    return {k: v for k, v in plan.items() if not str(k).startswith("_")}, ordered, allowed
+
+
 def assert_graph_skills_section(section_id: str) -> None:
     if section_id not in GRAPH_SKILLS_AUTHORITY_SECTIONS:
         raise ValueError(f"not a graph-skills authority section: {section_id!r}")
@@ -46,7 +90,6 @@ def allocate_section_facts_from_graph_substrate(
 ) -> tuple[dict[str, Any], list[str], set[str]]:
     """Role-targeted fact slice for graph-skills proof (substrate ledger is not skills authority)."""
     from apps_rg.runtime.proof_pool_resolver import (
-        _ledger_company_hint_slice,
         _sanitize_plan,
         _slice_to_plan_fact,
         _stamp_unify_canonical_bullet_ids,
@@ -73,7 +116,7 @@ def allocate_section_facts_from_graph_substrate(
     def _hint_if_sufficient() -> tuple[dict[str, Any], list[str], set[str]] | None:
         if not hints:
             return None
-        hinted = _ledger_company_hint_slice(
+        hinted = _graph_substrate_company_hint_plan(
             ledger,
             section_id=section_id,
             hints=hints,
@@ -82,11 +125,12 @@ def allocate_section_facts_from_graph_substrate(
         if hinted is None:
             return None
         plan, ordered, allowed = hinted
-        plan = {
-            **plan,
-            "selection_method": f"augmented_skills_graph_{section_id}_company_hint",
-        }
-        return _sanitize_plan(plan), ordered, allowed
+        fact_count = len(plan.get("facts") or [])
+        if min_required and fact_count < min_required:
+            if fact_count > 0:
+                return plan, ordered, allowed
+            return None
+        return plan, ordered, allowed
 
     if not slice_rows:
         hinted = _hint_if_sufficient()

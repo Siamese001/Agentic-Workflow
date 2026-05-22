@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
-from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
-from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
 
 

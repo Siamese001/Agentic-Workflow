@@ -121,10 +121,9 @@ def test_prompt_input_authority_names_augmented_graph_not_ledger_ssot(section_id
     pool = resolve_section_proof_pool(section=section_id, repo_root=REPO)
     from apps_rg.runtime.dispatch.input_authority_prompt_block import proof_pool_mode_from_metadata
 
+    proof_pool_mode_from_metadata(pool.proof_pool_metadata)
     block = format_input_authority_block(
         allowed_source_fact_ids=["bul_fixture_001"],
-        selected_role_fact_set_mode=(pool.proof_source == "srfs"),
-        proof_pool_mode=proof_pool_mode_from_metadata(pool.proof_pool_metadata),
         skills_authority_metadata=pool.proof_pool_metadata,
     )
     lower = block.lower()
@@ -160,31 +159,8 @@ def test_negative_control_resolver_does_not_fallback_skills_to_candidate_ledger(
         pytest.skip(f"candidate ledger missing: {CANDIDATE_LEDGER_PATH}")
     missing_graph = tmp_path / "missing_augmented_graph.json"
     monkeypatch.setenv("APPS_RG_AUGMENTED_SKILLS_GRAPH_PATH", str(missing_graph))
-    pool = resolve_section_proof_pool(section="headline", repo_root=REPO)
-    meta = pool.proof_pool_metadata
-    assert meta.get("skills_authority_status") == "BLOCKED"
-    assert meta.get("augmented_skills_graph_present") is False
-    if pool.proof_source == "broad_skills_ledger":
-        assert meta.get("broad_skills_ledger_skills_authority") is False
-
-
-@pytest.mark.parametrize("section_id", SECTION_IDS)
-def test_srfs_path_still_carries_augmented_skills_graph_authority(
-    section_id: str,
-    tmp_path: Path,
-) -> None:
-    srfs_path = tmp_path / f"srfs_{section_id}.json"
-    srfs_path.write_text(
-        json.dumps(_srfs_doc({section_id: [_high_row(f"bul_{section_id}_001")]}), indent=2),
-        encoding="utf-8",
-    )
-    pool = resolve_section_proof_pool(
-        section=section_id,
-        selected_role_fact_set_path=str(srfs_path),
-        repo_root=REPO,
-    )
-    assert pool.proof_source == "srfs"
-    _assert_augmented_skills_authority(pool.proof_pool_metadata)
+    with pytest.raises(ValueError, match="graph-skills proof pool BLOCKED"):
+        resolve_section_proof_pool(section="headline", repo_root=REPO)
 
 
 def test_all_seven_sections_pass_same_source_authority_contract() -> None:

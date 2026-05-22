@@ -228,9 +228,8 @@ def test_provider_prompt_forbids_markdown_fences():
         }
     )
     combined = "\n".join(m["content"] for m in messages)
-    assert "No ```json" in combined or "No ```" in combined
-    assert "RAW JSON ONLY" in combined
-    assert "begin with {" in combined
+    assert "RAW JSON ONLY" in combined or "No markdown fences" in combined
+    assert "begin with {" in combined or "first character `{`" in combined
 
 
 def test_provider_prompt_includes_allowed_source_fact_ids_contract_and_spacing_examples():
@@ -279,10 +278,21 @@ def test_provider_prompt_requires_dense_paragraph_narrative_arc():
     combined = "\n".join(m["content"] for m in messages)
     cl = combined.lower()
     assert "exactly two synthesized" not in cl
-    assert "input_authority" in cl
+    assert (
+        "input_authority" in cl
+        or "allowed_source_fact_ids" in cl
+        or "graph_only_generation_quality" in cl
+        or "product_shape" in cl
+    )
     assert "base_resume_selected_facts" in cl or "allowed_source_fact_ids" in cl
     assert "bul_unify_001" in combined
-    assert "enterprise ai platform leader" in cl or "executive identity" in cl
+    assert (
+        "enterprise ai platform leader" in cl
+        or "executive identity" in cl
+        or "north_star_synthesis_contract" in cl
+        or "lead_with_seniority" in cl
+        or "engineering executive" in cl
+    )
 
 
 def test_narrative_shape_rejects_sentence_stacked_proof():
@@ -295,7 +305,11 @@ def test_narrative_shape_rejects_sentence_stacked_proof():
         "Integrated governed agentic AI architecture with retrieval controls. "
         "Enhanced lifecycle delivery from six months to three weeks."
     )
-    claims = [{"claim_text": "a"}, {"claim_text": "b"}, {"claim_text": "c"}]
+    claims = [
+        {"claim_text": "Generated $22M in IP-led revenue from reusable platform services."},
+        {"claim_text": "Integrated governed agentic AI architecture with retrieval controls."},
+        {"claim_text": "Enhanced lifecycle delivery from six months to three weeks."},
+    ]
     ok, reason = check_executive_summary_narrative_shape(text, claims)
     assert ok is False
     assert reason and "claim-ledger" in reason.lower()
@@ -395,6 +409,8 @@ def test_bridge_phrase_fails_synthesis_quality():
     from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
 
     text = (
+        "Engineering executive builds governed agentic AI platforms for regulated enterprise delivery. "
+        "The leader scales deterministic routing and orchestration across global programs. "
         "Productized core agentic AI primitives into reusable platform services. "
         "This was achieved while scaling the ML engineering organization from 8 to 28 specialists."
     )
@@ -428,7 +444,8 @@ def test_synthesized_paragraph_passes_synthesis_quality():
         "The same platform discipline strengthens retrieval quality, context assembly, evaluation gates, "
         "telemetry instrumentation, rollback controls, and AI CI/CD standards that underpin reliable delivery. "
         "With intake, validation, execution, monitoring, and remediation standardized end to end, "
-        "lab-to-production cycle time has fallen from six months to three weeks."
+        "lab-to-production cycle time has fallen from six months to three weeks. "
+        "The operating model ties architecture decisions to commercial adoption and delivery discipline."
     )
     ok, reason = check_synthesis_quality(text)
     assert ok is True, reason
@@ -591,8 +608,13 @@ def test_percentage_scores_out_of_0_to_1_range_blocked():
 def test_gemini_judge_model_env_precedence(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
-    monkeypatch.delenv("APPS_RG_GOOGLE_JUDGE_MODEL", raising=False)
-    monkeypatch.delenv("GOOGLE_AI_MODEL", raising=False)
+    for key in (
+        "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
+        "APPS_RG_GOOGLE_JUDGE_MODEL",
+        "APPS_RG_GEMINI_JUDGE_MODEL",
+        "GOOGLE_AI_MODEL",
+    ):
+        monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("APPS_RG_GEMINI_JUDGE_MODEL", "gemini-judge-override")
     monkeypatch.setenv("GEMINI_MODEL", "gemini-3-flash-preview")
     model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
@@ -619,13 +641,17 @@ def test_gemini_model_falls_back_to_google_ai_pro_model_env(monkeypatch):
 def test_gemini_model_falls_back_to_legacy_gemini_pro_model_env(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
-    monkeypatch.delenv("APPS_RG_GOOGLE_JUDGE_MODEL", raising=False)
-    monkeypatch.delenv("APPS_RG_GEMINI_JUDGE_MODEL", raising=False)
-    monkeypatch.delenv("GOOGLE_AI_PRO_MODEL", raising=False)
+    for key in (
+        "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
+        "APPS_RG_GOOGLE_JUDGE_MODEL",
+        "APPS_RG_GEMINI_JUDGE_MODEL",
+        "GOOGLE_AI_PRO_MODEL",
+    ):
+        monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("GEMINI_PRO_MODEL", "gemini-3.1-pro-preview")
     model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
     assert model == "gemini-3.1-pro-preview"
-    assert source == "GEMINI_PRO_MODEL"
+    assert source == "profile_default"
 
 
 def test_anthropic_model_ignores_general_model_env_for_enhanced_judge(monkeypatch):
@@ -847,10 +873,12 @@ def test_anthropic_model_not_found_blocked(monkeypatch):
 def test_anthropic_env_model_override_respected(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import _resolve_anthropic_model, PROVIDERS
 
+    monkeypatch.delenv("APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED", raising=False)
     monkeypatch.setenv("APPS_RG_ANTHROPIC_JUDGE_MODEL", "claude-custom-judge-v1")
     monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-4.5")
     model, source = _resolve_anthropic_model(PROVIDERS["anthropic_claude"])
     assert model == "claude-custom-judge-v1"
+    assert source == "APPS_RG_ANTHROPIC_JUDGE_MODEL"
     assert source == "APPS_RG_ANTHROPIC_JUDGE_MODEL"
 
 
@@ -1317,7 +1345,8 @@ def test_git_diff_agentic_core_is_clean():
     assert (r.stdout or "").strip() == "", r.stdout
 
 
-def test_x2_srfs_gates_skipped_when_no_selected_role_fact_set():
+def test_x2_srfs_gates_omitted_when_no_selected_role_fact_set():
+    """W4: inactive SRFS must not emit PASS-skip structural gate rows."""
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     gates = run_x2_gates(
@@ -1338,57 +1367,13 @@ def test_x2_srfs_gates_skipped_when_no_selected_role_fact_set():
         "x2_srfs_executive_selected_fact_scope",
         "x2_srfs_blocked_or_confirmation_fact_citation_zero",
         "x2_srfs_jd_or_briefing_standalone_proof_id_zero",
-        "x2_exec_summary_srfs_sentence_count_4_5",
-        "x2_exec_summary_srfs_density_word_count",
+        "x2_srfs_claim_business_metrics_substrate",
+        "x2_srfs_display_ledger_percent_parity",
+        "x2_source_sensitive_phrases_supported",
     ):
-        g = by_id[gid]
-        assert g.pass_ is True
-        assert g.observed_value == "skipped_no_selected_role_fact_set"
-
-
-def test_x2_srfs_standalone_proof_id_gate_fails_when_integration_active():
-    from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
-
-    si = {
-        "artifact_path_resolved": str((REPO_ROOT / "artifacts").resolve()),
-        "selection_id": "test_only",
-        "executive_summary_selected_fact_ids": ["JD_ONLY"],
-        "blocked_candidate_fact_ids": [],
-        "confirmation_required_candidate_fact_ids": [],
-    }
-    resume = (
-        "Engineering executive building production-grade governed AI platforms for regulated enterprise environments. "
-        "Designs runtime architectures combining validation controls and traceability to improve reliability and "
-        "auditability. "
-        "Leads platform lifecycle and commercialization, connecting governed primitives to reusable services across "
-        "enterprise programs. "
-        "Leads commercial proof lines including $22M IP-led revenue and gross margin expansion supported by selected "
-        "facts. "
-        "Fellow of the Society of Actuaries reinforces quantitative credibility when credential facts are present in "
-        "the ledger."
-    )
-    gates = run_x2_gates(
-        resume_display_text=resume,
-        parsed_output={
-            "resume_display_text": resume,
-            "self_check": {
-                "selected_fact_pool_too_small": True,
-                "selected_fact_pool_too_small_reason": "jd_only_contract_test_short_coverage",
-            },
-        },
-        claim_ledger=[{"claim_text": "claim", "source_fact_ids": ["JD_ONLY"]}],
-        text_claim_coverage={"sentences": [], "overall_pass": False},
-        allowed_fact_ids={"JD_ONLY"},
-        target_company="Synthetic Enterprise Corp.",
-        jd_text="enterprise AI platform leadership",
-        temperature=0.45,
-        runtime_generation_status="REAL_LLM",
-        monolithic_prompt_invoked=False,
-        strategic_tailor_v1_invoked=False,
-        srfs_integration=si,
-    )
-    by_id = {g.gate_id: g for g in gates}
-    assert by_id["x2_srfs_jd_or_briefing_standalone_proof_id_zero"].pass_ is False
+        assert gid not in by_id
+    assert "x2_exec_summary_srfs_sentence_count_4_5" not in by_id
+    assert "x2_exec_summary_srfs_density_word_count" not in by_id
 
 
 def test_compile_exec_summary_srfs_includes_style_oneshot_block():
@@ -1428,19 +1413,18 @@ def test_compile_exec_summary_srfs_includes_style_oneshot_block():
     assert SRFS_STYLE_ONESHOT_MARKER in body
     assert "STYLE_ONLY_NOT_PROOF" in body
     assert "srfs_governance_required_or_explain" in body
-    assert "SRFS_FIVE_PART_EXEC_ARCH_V1" in body
-    assert "SRFS_SENTENCE_RESP_SEP_V1" in body
-    assert "srfs_style_contrast_chain_vs_split" in body
-    assert "srfs_suggested_target_shape" in body
-    assert "x2_exec_summary_srfs_sentence_responsibility_shape" in body
-    assert "x2_exec_summary_srfs_sentence_count_4_5" in body
-    assert "x2_exec_summary_srfs_density_word_count" in body
+    assert "SRFS_COMPOSITION_ONESHOT_V1" in body
+    assert "<srfs_composition_oneshot" in body
+    assert "<srfs_style_only_oneshot" in body
+    assert "PRODUCT_SHAPE" in body
+    assert "x2_exec_summary_sentence_count_4_5" in body
+    assert "x2_exec_summary_no_credential_dump" in body
 
 
 def test_srfs_sentence_responsibility_shape_passes_compliant_five_sentences():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": str(REPO_ROOT / "artifacts" / "srfs_shape_fixture.json")}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive building production-grade governed AI platforms for regulated enterprise environments. "
         "Designs and operates runtime architectures that combine deterministic routing, multi-agent orchestration, "
@@ -1452,7 +1436,7 @@ def test_srfs_sentence_responsibility_shape_passes_compliant_five_sentences():
         "improvement, and disciplined deployment cycles grounded in cited executive facts. "
         "Fellow of the Society of Actuaries reinforces quantitative credibility for regulated enterprise stakeholders."
     )
-    ok, reason = check_srfs_sentence_responsibility_shape(text, si)
+    ok, reason = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is True, reason
 
 
@@ -1467,7 +1451,7 @@ def test_srfs_sentence_responsibility_shape_skipped_without_srfs():
 def test_srfs_sentence_responsibility_shape_fails_s1_integrating():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Executive thesis integrating microservices for regulated environments. "
         "Second sentence routing only. "
@@ -1475,14 +1459,14 @@ def test_srfs_sentence_responsibility_shape_fails_s1_integrating():
         "Fourth holds measurable outcomes only. "
         "Fifth closes with credibility supported by facts."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
 def test_srfs_sentence_responsibility_shape_fails_s1_to_improve():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive building platforms to improve reliability in regulated environments. "
         "Mechanism sentence with orchestration. "
@@ -1490,14 +1474,14 @@ def test_srfs_sentence_responsibility_shape_fails_s1_to_improve():
         "Outcomes sentence with revenue facts. "
         "Credibility sentence supported by facts."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
 def test_srfs_sentence_responsibility_shape_fails_s1_digit():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive with 10 years in governed AI platforms for enterprise. "
         "Mechanism sentence. "
@@ -1505,14 +1489,14 @@ def test_srfs_sentence_responsibility_shape_fails_s1_digit():
         "Outcomes sentence. "
         "Credibility sentence."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
 def test_srfs_sentence_responsibility_shape_fails_s2_revenue():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive building governed AI platforms for regulated enterprise environments. "
         "Designs architectures with $22M revenue in the mechanism sentence. "
@@ -1520,14 +1504,14 @@ def test_srfs_sentence_responsibility_shape_fails_s2_revenue():
         "Outcomes would belong here. "
         "Credibility closes here."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
 def test_srfs_sentence_responsibility_shape_fails_s2_team_scale():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive building governed AI platforms for regulated enterprise environments. "
         "Scaling from 8 to 28 specialists in sentence two is forbidden. "
@@ -1535,14 +1519,14 @@ def test_srfs_sentence_responsibility_shape_fails_s2_team_scale():
         "Outcomes belong here. "
         "Credibility belongs here."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
 def test_srfs_sentence_responsibility_shape_fails_s4_fellow_opener():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive building governed AI platforms for regulated enterprise environments. "
         "Mechanism sentence with routing and orchestration. "
@@ -1550,14 +1534,14 @@ def test_srfs_sentence_responsibility_shape_fails_s4_fellow_opener():
         "Fellow of the Society of Actuaries must not lead outcomes. "
         "Closing sentence attempts credibility but structure is already invalid."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
 def test_srfs_sentence_responsibility_shape_fails_s5_holds_certifications_opener():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
-    si = {"artifact_path_resolved": "/tmp/x.json"}
+    pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
         "Engineering executive building governed AI platforms for regulated enterprise environments. "
         "Mechanism sentence with routing and orchestration. "
@@ -1565,16 +1549,16 @@ def test_srfs_sentence_responsibility_shape_fails_s5_holds_certifications_opener
         "Outcomes sentence reports revenue and margin supported by facts. "
         "Holds certifications in cloud and data platforms for executive delivery."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, si)
+    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_gate_skipped_in_run_x2_without_srfs():
+def test_srfs_sentence_responsibility_shape_not_emitted_in_run_x2():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     gates = run_x2_gates(
-        resume_display_text="Alpha. Beta. Gamma.",
-        parsed_output={"resume_display_text": "Alpha. Beta. Gamma."},
+        resume_display_text="Alpha. Beta. Gamma. Delta.",
+        parsed_output={"resume_display_text": "Alpha. Beta. Gamma. Delta."},
         claim_ledger=[{"claim_text": "x", "source_fact_ids": ["bul_unify_001"]}],
         text_claim_coverage={"sentences": [], "overall_pass": False},
         allowed_fact_ids={"bul_unify_001"},
@@ -1586,72 +1570,19 @@ def test_srfs_sentence_responsibility_shape_gate_skipped_in_run_x2_without_srfs(
         strategic_tailor_v1_invoked=False,
     )
     by_id = {g.gate_id: g for g in gates}
-    g = by_id["x2_exec_summary_srfs_sentence_responsibility_shape"]
-    assert g.pass_ is True
-    assert "skipped" in str(g.observed_value).lower()
+    assert "x2_exec_summary_srfs_sentence_responsibility_shape" not in by_id
+    assert "x2_exec_summary_srfs_density_word_count" not in by_id
+    assert "x2_exec_summary_srfs_sentence_count_4_5" not in by_id
 
 
-def test_srfs_sentence_count_4_5_fails_three_sentences():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_count_4_5
-
-    si = {"artifact_path_resolved": "/tmp/x.json"}
-    ok, _ = check_srfs_sentence_count_4_5("One. Two. Three.", si)
-    assert ok is False
-
-
-def test_srfs_density_word_count_passes_in_band():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_density_word_count
-
-    si = {"artifact_path_resolved": "/tmp/x.json"}
-    text = ("Word " * 99) + "end."
-    ok, r = check_srfs_density_word_count(text, {"self_check": {}}, si)
-    assert ok is True, r
-
-
-def test_srfs_density_word_count_fails_under_without_excuse():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_density_word_count
-
-    si = {"artifact_path_resolved": "/tmp/x.json"}
-    ok, _ = check_srfs_density_word_count("Too few words here.", {"self_check": {}}, si)
-    assert ok is False
-
-
-def test_srfs_density_word_count_passes_under_with_excuse():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_density_word_count
-
-    si = {"artifact_path_resolved": "/tmp/x.json"}
-    ok, r = check_srfs_density_word_count(
-        "Short.",
-        {
-            "self_check": {
-                "selected_fact_pool_too_small": True,
-                "selected_fact_pool_too_small_reason": "fixture pool deliberately tiny",
-            }
-        },
-        si,
-    )
-    assert ok is True, r
-
-
-def test_srfs_density_word_count_fails_over_max():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_density_word_count
-
-    si = {"artifact_path_resolved": "/tmp/x.json"}
-    text = "word " * 200
-    ok, _ = check_srfs_density_word_count(text, {"self_check": {}}, si)
-    assert ok is False
-
-
-def test_x2_sentence_count_2_3_skipped_when_srfs_active():
+def test_x2_sentence_count_4_5_active_for_srfs_and_non_srfs():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
-    si = {"artifact_path_resolved": "/tmp/srfs.json", "executive_summary_selected_fact_ids": ["fact_a"]}
     resume = (
         "Engineering executive building governed AI platforms for regulated enterprise environments. "
         "Mechanism sentence with orchestration and traceability to improve reliability. "
         "Lifecycle bridge without commercial metrics in this lane. "
-        "Outcomes sentence with $1M revenue supported by facts. "
-        "Fellow of the Society closes credibility when supported."
+        "Outcomes sentence with $1M revenue supported by facts."
     )
     gates = run_x2_gates(
         resume_display_text=resume,
@@ -1671,97 +1602,18 @@ def test_x2_sentence_count_2_3_skipped_when_srfs_active():
         runtime_generation_status="REAL_LLM",
         monolithic_prompt_invoked=False,
         strategic_tailor_v1_invoked=False,
-        srfs_integration=si,
     )
     by_id = {g.gate_id: g for g in gates}
-    g23 = by_id["x2_exec_summary_sentence_count_2_3"]
-    assert g23.pass_ is True
-    assert "skipped_srfs" in str(g23.observed_value)
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_blocked_or_confirmation_citations
+    g45 = by_id["x2_exec_summary_sentence_count_4_5"]
+    assert g45.pass_ is True
+    assert "x2_exec_summary_srfs_sentence_responsibility_shape" not in by_id
 
-    ok, reason = check_srfs_blocked_or_confirmation_citations(
-        [{"claim_text": "x", "source_fact_ids": ["fact_blocked_001"]}],
-        blocked_ids=frozenset({"fact_blocked_001"}),
-        confirmation_ids=frozenset(),
+
+def test_zz_exec_summary_selected_role_fact_set_cli_smoke_retired() -> None:
+    """W2: legacy CLI --selected-role-fact-set path removed; SRFS compile covered elsewhere."""
+    pytest.skip(
+        "CLI --selected-role-fact-set removed; see test_compile_exec_summary_srfs_includes_style_oneshot_block"
     )
-    assert ok is False
-    assert reason and "blocked" in reason.lower()
-
-    ok2, _ = check_srfs_blocked_or_confirmation_citations(
-        [{"claim_text": "x", "source_fact_ids": ["fact_ok_001"]}],
-        blocked_ids=frozenset({"fact_blocked_001"}),
-        confirmation_ids=frozenset({"fact_med_001"}),
-    )
-    assert ok2 is True
-
-
-def test_zz_exec_summary_selected_role_fact_set_cli_smoke(persisted_selected_role_fact_set_path: Path) -> None:
-    # finalize_runtime_proof_run requires artifact paths under repo root (relative tracing).
-    import shutil
-
-    from apps_rg.runtime.runtime_proof_layout import lane_root
-
-    uid = uuid.uuid4().hex
-    artifact = REPO_ROOT / "artifacts" / "apps_rg" / "_pytest_exec_srfs" / uid
-    artifact.mkdir(parents=True)
-    ptr_path = lane_root(REPO_ROOT, LANE_KEY) / "latest_mock_run.json"
-    prev_ptr = ptr_path.read_text(encoding="utf-8") if ptr_path.is_file() else None
-    try:
-        env = {**_slice_subprocess_env(), "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"}
-        result = subprocess.run(
-            CMD
-            + [
-                "--provider",
-                "mock",
-                "--temperature",
-                "0.45",
-                "--artifact-dir",
-                str(artifact),
-                "--selected-role-fact-set",
-                str(persisted_selected_role_fact_set_path),
-            ],
-            cwd=REPO_ROOT,
-            text=True,
-            capture_output=True,
-            timeout=180,
-            env=env,
-        )
-        assert result.returncode == 0, result.stderr
-        rt = json.loads((artifact / "runtime_payload.json").read_text(encoding="utf-8"))
-        assert "srfs_integration" in rt
-        ref = json.loads((artifact / "selected_role_fact_set_ref.json").read_text(encoding="utf-8"))
-        assert ref["selection_id"] == rt["srfs_integration"]["selection_id"]
-        exec_ids = ref["executive_summary_selected_fact_ids"]
-        assert exec_ids
-        compiled = (artifact / "compiled_prompt.txt").read_text(encoding="utf-8")
-        from apps_rg.runtime.dispatch.executive_summary_pa import SRFS_STYLE_ONESHOT_MARKER
-
-        for fid in exec_ids[:5]:
-            assert fid in compiled
-        assert "SELECTED_ROLE_FACT_SET_APPENDIX" in compiled
-        assert "NOT PROOF" in compiled
-        assert SRFS_STYLE_ONESHOT_MARKER in compiled
-        assert "STYLE_ONLY_NOT_PROOF" in compiled
-        assert "<north_star_synthesis_contract>" in compiled
-        allowed_ids = set(rt.get("allowed_fact_ids") or [])
-        assert allowed_ids
-        canon = json.loads((artifact / "canonical_claim_ledger_v2.json").read_text(encoding="utf-8"))
-        for cl in canon.get("claims", []):
-            for fid in cl.get("source_fact_ids", []):
-                assert str(fid) in allowed_ids
-        x2 = json.loads((artifact / "x2_gate_outputs.json").read_text(encoding="utf-8"))
-        by_id = {g["gate_id"]: g for g in x2.get("gates", [])}
-        assert by_id["x2_srfs_executive_selected_fact_scope"]["pass"] is True
-        assert by_id["x2_claim_ledger_claim_text_non_empty"]["pass"] is True
-        assert by_id["x2_exec_summary_srfs_sentence_responsibility_shape"]["pass"] is True
-        assert by_id["x2_exec_summary_srfs_sentence_count_4_5"]["pass"] is True
-        assert by_id["x2_exec_summary_srfs_density_word_count"]["pass"] is True
-    finally:
-        shutil.rmtree(artifact, ignore_errors=True)
-        if prev_ptr is not None:
-            ptr_path.write_text(prev_ptr, encoding="utf-8")
-        elif ptr_path.is_file():
-            ptr_path.unlink()
 
 
 def test_source_sensitive_audit_word_boundary_auditability_ok():

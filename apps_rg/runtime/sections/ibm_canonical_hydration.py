@@ -71,26 +71,8 @@ def should_hydrate_ibm_bullets_from_canonical(
     runtime_payload: dict[str, Any],
     parsed: dict[str, Any] | None = None,
 ) -> bool:
-    if parsed is not None:
-        if ibm_bullet_texts_missing_core_metrics(parsed):
-            return True
-        if _parsed_ledger_lacks_bul_ibm_roots(parsed):
-            return True
-    pp = runtime_payload.get("proof_pool_metadata") or {}
-    source_type = str(pp.get("claim_evidence_source_type") or "")
-    facts = (runtime_payload.get("selected_fact_plan") or {}).get("facts") or []
-    bul_in_plan = sum(
-        1 for f in facts if str(f.get("fact_id") or "").startswith("bul_ibm_")
-    )
-    if source_type == "candidate_fact_ledger":
-        if len(facts) < len(IBM_BULLET_IDS):
-            return True
-        if bul_in_plan < len(IBM_BULLET_IDS):
-            return True
-        return False
-    if source_type == _GRAPH_SKILLS_EVIDENCE:
-        if bul_in_plan < len(IBM_BULLET_IDS):
-            return True
+    """Deprecated: base-resume bullet hydration is forbidden (graph/ledger only)."""
+    _ = runtime_payload, parsed
     return False
 
 
@@ -102,58 +84,12 @@ def hydrate_parsed_ibm_bullets_from_canonical_resume(
     canon_allowed: set[str],
     default_intensity_by_bullet: dict[str, str],
 ) -> set[str]:
-    """In-place: five canonical IBM bullets + claim_ledger; returns expanded allowed_fact_ids."""
-    pool_allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
-    allowed_out = pool_allowed | {str(x) for x in canon_allowed}
-    by_canon = {str(f.get("fact_id")): f for f in canon_facts if f.get("fact_id")}
-
-    pool_facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
-    pool_fact_ids = [str(f.get("fact_id")) for f in pool_facts if f.get("fact_id")]
-
-    bullets: list[dict[str, Any]] = []
-    ledger: list[dict[str, Any]] = []
-    for idx, bid in enumerate(IBM_BULLET_IDS):
-        canon = by_canon.get(bid)
-        if not canon:
-            continue
-        text = strip_ibm_bullet_taxonomy_prefix(str(canon.get("claim_text") or ""))
-        metric_raw = str(canon.get("metric_raw") or "")
-        src: list[str] = [bid]
-        if metric_raw:
-            mid = f"{bid}_metric_{sha16(metric_raw)[:8]}"
-            if mid in allowed_out:
-                src.append(mid)
-        intensity = default_intensity_by_bullet.get(bid, "MODERATE")
-        bullets.append(
-            {
-                "bullet_id": bid,
-                "bullet_text": text,
-                "rewrite_intensity": intensity,
-                "has_metric": bool(canon.get("has_metric")),
-                "metric_raw": metric_raw or None,
-                "source_fact_ids": src,
-            }
-        )
-        ledger.append({"claim_text": text, "source_fact_ids": list(src)})
-
-    parsed["bullets"] = bullets
-    parsed["claim_ledger"] = ledger
-    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
-    for row in bullets:
-        key = str(row.get("rewrite_intensity", "")).upper()
-        if key in counts:
-            counts[key] += 1
-    parsed["rewrite_distribution"] = {**counts, "total": sum(counts.values())}
-    clog = list(parsed.get("change_log") or []) if isinstance(parsed.get("change_log"), list) else []
-    clog.append(
-        {
-            "operation": "hydrate_ibm_bullets_from_canonical_resume",
-            "reason": "canonical_ibm_resume_hydration",
-        }
+    """Forbidden: base-resume bullet paste removed; use graph plan + LLM rewrite."""
+    _ = parsed, runtime_payload, canon_facts, canon_allowed, default_intensity_by_bullet
+    raise ValueError(
+        "hydrate_parsed_ibm_bullets_from_canonical_resume is forbidden; "
+        "use augmented_skills_graph + LLM rewrite from ledger claim_text"
     )
-    parsed["change_log"] = clog
-    runtime_payload["allowed_fact_ids"] = sorted(allowed_out)
-    return allowed_out
 
 
 def fact_ids_for_ibm_narrative_ledger(runtime_payload: dict[str, Any]) -> list[str]:
@@ -162,6 +98,82 @@ def fact_ids_for_ibm_narrative_ledger(runtime_payload: dict[str, Any]) -> list[s
     if facts:
         return facts[:6]
     return sorted(x for x in allowed if x.startswith("bul_ibm_"))[:6]
+
+
+def decompose_ibm_narrative_claim_ledger_by_clause(
+    parsed: dict[str, Any],
+    *,
+    narrative_sentence: str,
+    allowed_fact_ids: set[str] | frozenset[str],
+) -> None:
+    """Rewrite claim_ledger into clause rows with theme-scoped bul_ibm_* roots (max 2 per row)."""
+    from apps_rg.runtime.validators.ibm_narrative_x2 import ibm_narrative_material_fact_ids_for_sentence
+
+    narrative = str(parsed.get("narrative_sentence") or narrative_sentence or "").strip()
+    if not narrative:
+        return
+    allowed_bul = sorted(x for x in allowed_fact_ids if str(x).startswith("bul_ibm_"))
+    if not allowed_bul:
+        allowed_bul = list(IBM_BULLET_IDS)
+
+    parts = re.split(r",\s+(?=establishing\b)", narrative, maxsplit=1, flags=re.I)
+    new_led: list[dict[str, Any]] = []
+    if len(parts) >= 2:
+        for part in parts:
+            clause = part.strip().rstrip(".")
+            if not clause:
+                continue
+            themes = sorted(
+                t
+                for t in ibm_narrative_material_fact_ids_for_sentence(clause)
+                if t in allowed_bul
+            )
+            if not themes:
+                themes = allowed_bul[:2]
+            new_led.append(
+                {
+                    "claim_text": clause,
+                    "source_fact_ids": themes[:2],
+                }
+            )
+    else:
+        themes = sorted(
+            t for t in ibm_narrative_material_fact_ids_for_sentence(narrative) if t in allowed_bul
+        )
+        if not themes:
+            themes = allowed_bul[:2]
+        new_led.append(
+            {
+                "claim_text": narrative.rstrip(".!?"),
+                "source_fact_ids": themes[:2],
+            }
+        )
+
+    existing = [r for r in (parsed.get("claim_ledger") or []) if isinstance(r, dict)]
+    if existing and len(existing) >= len(new_led):
+        merged: list[dict[str, Any]] = []
+        for i, row in enumerate(new_led):
+            src_row = existing[i] if i < len(existing) else row
+            ct = str(row.get("claim_text") or "").strip()
+            roots = list(row.get("source_fact_ids") or [])
+            merged.append(
+                {
+                    "claim_text": ct,
+                    "source_fact_ids": roots,
+                }
+            )
+        parsed["claim_ledger"] = merged
+    else:
+        parsed["claim_ledger"] = new_led
+
+    clog = list(parsed.get("change_log") or []) if isinstance(parsed.get("change_log"), list) else []
+    clog.append(
+        {
+            "operation": "decompose_ibm_narrative_claim_ledger_by_clause",
+            "reason": "clause_level_bul_ibm_theme_binding",
+        }
+    )
+    parsed["change_log"] = clog
 
 
 def align_ibm_narrative_claim_ledger_to_bul_ibm(

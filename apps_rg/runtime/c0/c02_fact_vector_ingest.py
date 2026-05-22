@@ -142,20 +142,26 @@ def upsert_fact_vector_chunks(
         return 0
     import chromadb
 
+    from apps_rg.runtime.chroma_precomputed_collection import (
+        get_precomputed_embeddings_collection,
+    )
     from apps_rg.runtime.embedding_settings import (
+        apply_apps_rg_embedding_env_guards,
         assert_dense_retrieval_allowed,
         load_bge_sentence_transformer,
         resolve_apps_rg_embedding_settings,
     )
     from tools.ingestion.chroma_ingest_pipeline import embed_text
 
+    apply_apps_rg_embedding_env_guards(chroma_persist_dir=chroma_path)
     settings = resolve_apps_rg_embedding_settings(chroma_persist_dir=chroma_path)
     assert_dense_retrieval_allowed(settings)
     model = load_bge_sentence_transformer(settings)
     client = chromadb.PersistentClient(path=chroma_path)
-    collection = client.get_or_create_collection(
-        name=collection_name,
-        metadata={"hnsw:space": "cosine"},
+    collection = get_precomputed_embeddings_collection(
+        client,
+        collection_name,
+        metadata={"hnsw:space": "cosine", "collection_role": "fact_vectors"},
     )
     atom_list = atoms if atoms is not None and len(atoms) == len(chunks) else [None] * len(chunks)
     docs = [
@@ -213,6 +219,7 @@ def maybe_upsert_c02_fact_vectors(
     )
 
     bootstrap_apps_rg_embedding_env(repo_root=root)
+    apply_apps_rg_embedding_env_guards(chroma_persist_dir=chroma_path or None)
     settings = resolve_apps_rg_embedding_settings(chroma_persist_dir=chroma_path)
     if not settings.embeddings_enabled or settings.route_result == "FAIL_CLOSED":
         receipt["reason"] = settings.decisive_reason or "embeddings_disabled"

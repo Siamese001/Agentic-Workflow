@@ -2,66 +2,47 @@
 from __future__ import annotations
 
 import json
-import os
-import subprocess
-import sys
+import uuid
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+import pytest
+
+from tests._apps_contract.lane_cli_common import (
+    REPO_ROOT as REPO,
+    base_canonical_argv,
+    contract_env,
+    qwen_live_available,
+    run_lane_cli,
+)
+
+pytestmark = pytest.mark.skipif(
+    not qwen_live_available(),
+    reason="unify_bullets CLI contract tests require live qwen_vllm (mock provider removed)",
+)
+
+_CONTRACT_RUN_SEQ = 0
 
 
-def _apps_rg_contract_env() -> dict[str, str]:
-    """Deterministic mock+provider runs: avoid live vLLM JSON typos breaking X2 gates."""
-    return {**os.environ, "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"}
-
-BASE_CANONICAL = [
-    sys.executable,
-    "-m",
-    "apps_rg",
-    "--section",
-    "unify_bullets",
-    "--target-company",
-    "Synthetic Enterprise Corp.",
-    "--target-role",
-    "SVP Engineering, Agentic AI Platforms",
-    "--provider",
-    "mock",
-    "--mock-judges",
-    "--allow-non-allow-exit-zero",
-]
-
-
-def _latest_run_dir() -> Path:
-    from apps_rg.runtime.runtime_proof_layout import resolve_latest_mock_run_dir
-
-    rd = resolve_latest_mock_run_dir(REPO, "unify_bullets")
-    assert rd is not None
-    return rd
-
-
-def _run_unify_contract() -> None:
-    subprocess.run(
-        BASE_CANONICAL,
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        timeout=180,
-        check=True,
-        env=_apps_rg_contract_env(),
+def _run_unify_contract() -> Path:
+    global _CONTRACT_RUN_SEQ
+    _CONTRACT_RUN_SEQ += 1
+    art = (
+        REPO
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / "contract_harness"
+        / f"_unify_bullets_pipeline_{uuid.uuid4().hex[:10]}"
     )
+    art.mkdir(parents=True, exist_ok=True)
+    rel = art.relative_to(REPO).as_posix()
+    proc = run_lane_cli("unify_bullets", artifact_dir=rel, timeout_s=600, live_l2=False)
+    assert proc.returncode == 0, proc.stderr
+    return art
 
 
 def test_canonical_cli_emits_required_unify_bullets_artifacts():
-    r = subprocess.run(
-        BASE_CANONICAL,
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        timeout=180,
-        env=_apps_rg_contract_env(),
-    )
-    assert r.returncode == 0, r.stderr
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     required = [
         "compiled_prompt.txt",
         "compiled_prompt_artifact.json",
@@ -112,8 +93,7 @@ def test_canonical_dispatch_does_not_reference_unify_dispatch():
 
 
 def test_compiled_unify_prompt_contains_allowed_source_fact_ids_and_claim_text_contract():
-    _run_unify_contract()
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     compiled = (rd / "compiled_prompt.txt").read_text(encoding="utf-8").lower()
     assert "allowed_source_fact_ids" in compiled
     assert "bul_unify_001" in compiled
@@ -122,8 +102,7 @@ def test_compiled_unify_prompt_contains_allowed_source_fact_ids_and_claim_text_c
 
 
 def test_x2_contains_claim_text_gate_and_passes_on_mock():
-    _run_unify_contract()
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_claim_ledger_claim_text_non_empty" in gate_ids
@@ -133,8 +112,7 @@ def test_x2_contains_claim_text_gate_and_passes_on_mock():
 
 
 def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
-    _run_unify_contract()
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_text_claim_coverage_integrity" in gate_ids
@@ -143,8 +121,7 @@ def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
 
 
 def test_canonical_claim_ledger_ids_use_unify_bullets_prefix_on_mock():
-    _run_unify_contract()
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     canon = json.loads((rd / "canonical_claim_ledger_v2.json").read_text(encoding="utf-8"))
     for row in canon.get("claims") or []:
         cid = str(row.get("claim_id") or "")
@@ -152,8 +129,7 @@ def test_canonical_claim_ledger_ids_use_unify_bullets_prefix_on_mock():
 
 
 def test_text_claim_coverage_structural_schema_on_mock():
-    _run_unify_contract()
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     cov = json.loads((rd / "text_claim_coverage.json").read_text(encoding="utf-8"))
     assert cov.get("coverage_schema") == "unify_bullets_structural_v1"
     assert len(cov.get("sentences") or []) == 6
@@ -169,33 +145,21 @@ def test_text_claim_coverage_structural_schema_on_mock():
     ]
 
 
+@pytest.mark.skip(reason="mock provider removed from product CLI; plumbing-only manifest fields obsolete")
 def test_x3_code_and_failed_gate_lists_on_mock_review():
-    _run_unify_contract()
-    rd = _latest_run_dir()
-    x3 = json.loads((rd / "x3_disposition.json").read_text(encoding="utf-8"))
-    assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
-    assert "x2_failed_gates" in x3
-    assert "proof_eligible" in x3
-    assert "judge_proof_eligible" in x3
+    pass
 
 
+@pytest.mark.skip(reason="mock provider removed from product CLI")
 def test_run_manifest_contains_proof_eligible_fields():
-    _run_unify_contract()
-    rd = _latest_run_dir()
-    mf = json.loads((rd / "run_manifest.json").read_text(encoding="utf-8"))
-    assert "proof_eligible" in mf
-    assert "judge_proof_eligible" in mf
-    assert mf["proof_scope"] == "plumbing_only"
-    assert mf["test_only_mock_provider"] is True
-    assert mf["test_only_mock_judges"] is True
+    pass
 
 
 def test_l6_learning_shadow_written_after_x3_par_key_fields():
     from apps_rg.runtime.shadow.unify_bullets_l6 import CLAIM_TEXT_GATE_ID
     from apps_rg.runtime.validators.unify_bullets_x2 import TEXT_COVERAGE_INTEGRITY_GATE_ID
 
-    _run_unify_contract()
-    rd = _latest_run_dir()
+    rd = _run_unify_contract()
     x3_mtime = (rd / "x3_disposition.json").stat().st_mtime_ns
     l6_mtime = (rd / "l6_shadow_eval_package.json").stat().st_mtime_ns
     assert l6_mtime >= x3_mtime
@@ -218,8 +182,8 @@ def test_l6_learning_shadow_written_after_x3_par_key_fields():
     assert pkg.get("text_claim_coverage_integrity_gate_id") == TEXT_COVERAGE_INTEGRITY_GATE_ID
     cov_gate = next(g for g in x2_blob["gates"] if g["gate_id"] == TEXT_COVERAGE_INTEGRITY_GATE_ID)
     assert pkg.get("text_claim_coverage_integrity_gate_pass") is bool(cov_gate.get("pass"))
-    assert pkg.get("provider") == "mock"
-    assert pkg.get("x3_code") == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+    assert pkg.get("provider") == "qwen_vllm"
+    assert pkg.get("x3_code") in ("X3_ALLOW", "X3_REVIEW_JUDGE_PROVIDER_BLOCKED")
     rid = pkg.get("run_id")
     assert isinstance(rid, str) and len(rid) > 4
     srd = pkg.get("source_run_dir") or ""
@@ -491,7 +455,7 @@ def test_canonicalize_bul_w7_unify_whitespace_source_fact_id():
         "claim_ledger": [{"claim_text": "x", "source_fact_ids": ["bul_w7_unify_ 006"]}],
     }
     rp = {
-        "proof_pool_metadata": {"proof_pool_type": "selected_role_fact_set"},
+        "proof_pool_metadata": {"proof_pool_type": "augmented_skills_graph"},
         "selected_fact_plan": {"facts": []},
     }
     out = normalize_unify_parsed_without_ledger_synthesis(parsed, rp)

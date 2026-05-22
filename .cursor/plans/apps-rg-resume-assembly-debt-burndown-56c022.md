@@ -49,8 +49,8 @@ PLAN_CREATED: slug=apps-rg-resume-assembly-debt-burndown-56c022 path=.cursor/pla
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W0 | W0.1 | Inventory + risk matrix (chat + receipt) | ~10k | Analysis only | ✅ DONE | Receipt + this plan on disk |
 | W1 | W1.1–W1.3 | Safe ghost / dead-step cleanup | ~8k | No behavior change on golden path | ✅ DONE | outside_main + l2 registry tests pass |
-| W2 | W2.1–W2.4 | DOCX removal (child plan W1–W4) | ~50k | See docx plan | 🔲 TODO | No product DOCX; JSON gates pass |
-| W3 | W3.1–W3.3 | JSON SSOT — drop assembler bridge on integrated | ~35k | `rg_output` authoritative | 🔲 TODO | Integrated run without `extract_lane_l2_from_assembled_final` |
+| W2 | W2.1–W2.4 | DOCX removal (child plan W1–W4) | ~50k | See docx plan | ✅ DONE | No product DOCX; JSON gates pass |
+| W3 | W3.1–W3.3 + fail-closed | JSON SSOT + live assembly/judges/BGE | ~35k | `outputs/generated_resume.json` authoritative | ✅ DONE (unit) | Lane merge; gap placeholders; product policy; live smoke still manual |
 | W4 | W4.1–W4.2 | Offline stack demotion | ~25k | Contract tests migrated | 🔲 TODO | No `build_rollup()` on product path; package optional |
 | W5 | W5.1–W5.2 | Engines/reasoning eval boundary | ~20k | `apps_eval` facade kept until migrated | 🔲 TODO | Documented ownership; no false product claims |
 
@@ -62,10 +62,10 @@ PLAN_CREATED: slug=apps-rg-resume-assembly-debt-burndown-56c022 path=.cursor/pla
 | W1.1 | Remove ghost policy targets | `outside_main_entry_policy.py`, `docx_renderer.py` metadata | Stale CLI path | ~2k | ✅ DONE |
 | W1.2 | Delete dead recipe step | `steps.py` `NarrativePassStep`; empty `runtime/reports/` | Unregistered step | ~2k | ✅ DONE |
 | W1.3 | Doc sync for deleted CLIs | `outside_main` DISALLOWED uses `internal.docx_renderer` | Ghost `narrative_pass` kept in DISALLOWED | ~2k | ✅ DONE |
-| W2.1–W2.4 | DOCX burndown | Per [apps-rg-docx-output-removal-4650ff](.cursor/plans/apps-rg-docx-output-removal-4650ff.md) | Two DOCX stacks | ~50k | 🔲 TODO |
-| W3.1 | Direct lane → rg_output merge | `modular_rg_output_builder.py`, `modular_resume_generation.py` | Assembler bridge | ~15k | 🔲 TODO |
-| W3.2 | Structural-only assembly default | `final_resume_assembler.py`, env defaults | LLM coherence optional | ~10k | 🔲 TODO |
-| W3.3 | Contract tests for integrated JSON only | `test_modular_rg_output_builder.py`, generation entrypoints | Dual truth tests | ~10k | 🔲 TODO |
+| W2.1–W2.4 | DOCX burndown | Per [apps-rg-docx-output-removal-4650ff](.cursor/plans/apps-rg-docx-output-removal-4650ff.md) | Two DOCX stacks | ~50k | ✅ DONE |
+| W3.1 | Direct lane → rg_output merge | `modular_rg_output_builder.py`, `modular_resume_generation.py` | Assembler bridge | ~15k | ✅ DONE (code) |
+| W3.2 | Fail-closed assembly + judges + BGE | `product_output_policy.py`, `final_resume_assembler.py`, `r1b_bge_embedding.py`, `full_resume_*` | Structural-only shortcut rejected | ~10k | ✅ DONE |
+| W3.3 | Contract tests + live smoke | `test_modular_*`, `test_*_gap`, `test_product_output_policy.py` | Dual truth tests | ~10k | ✅ DONE (unit); live `python -m apps_rg` manual |
 | W4.1 | Isolate `build_rollup()` to tests | `generated_lane_rollup.py`, offline helper | Mixed-run rollup | ~12k | 🔲 TODO |
 | W4.2 | Package X3 contract boundary | `resume_package_disposition.py`, package tests | Not on integrated CLI | ~13k | 🔲 TODO |
 | W5.1 | Engines folder disposition | `apps_rg/engines/*`, taxonomy refs | No runtime import | ~10k | 🔲 TODO |

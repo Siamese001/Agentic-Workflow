@@ -1,8 +1,7 @@
 """apps_rg U0 binding — cert reference, task class, and ingress validator.
 
-All symbols defined here are re-exported by the legacy shim at
-agentic_core.runtime.entry.u0_apps_rg_binding. Do NOT import from
-agentic_core here — this module must remain import-cycle free.
+Canonical U0 ingress binding for apps_rg. Import from
+``apps_rg.runtime.bindings.u0_binding`` only — not from agentic_core shims.
 """
 from __future__ import annotations
 
@@ -145,7 +144,7 @@ def u0_validate_apps_rg(
     word_max = int(quality.get("word_max", 1200))
 
     out_req = dict(app_payload.get("output_requirements") or {})
-    formats = tuple(out_req.get("formats") or ("json", "docx"))
+    formats = tuple(out_req.get("formats") or ("json",))
     prov_req = dict(app_payload.get("provenance_requirements") or {})
 
     support_expectation: dict[str, Any] = {

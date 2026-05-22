@@ -455,13 +455,13 @@ def format_graph_only_quality_guardrails_block() -> str:
 
 
 def _proof_pool_metadata_for_compile(runtime_payload: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    from apps_rg.runtime.c0.product_runtime_guards import product_fec_bridge_mandatory
     from apps_rg.runtime.section_fec_bridge import (
         assert_section_pa_fec_preconditions,
-        fec_bridge_kill_switch_enabled,
         resolve_pa_proof_authority_for_compile,
     )
 
-    if not fec_bridge_kill_switch_enabled():
+    if not product_fec_bridge_mandatory():
         return dict(runtime_payload.get("proof_pool_metadata") or {}), False
     if runtime_payload.get("section_fec_bridge") or runtime_payload.get("canonical_final_evidence_contract"):
         return resolve_pa_proof_authority_for_compile(runtime_payload)

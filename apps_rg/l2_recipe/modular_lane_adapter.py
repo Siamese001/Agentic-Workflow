@@ -153,17 +153,24 @@ def resolve_latest_lane_run_dir(
     *,
     lane_provider: str = "qwen_vllm",
 ) -> Path:
-    """Pick newest run dir from per-lane pointer files under ``sections_root/<lane>/``.
+    """Pick run dir from per-lane pointers under ``sections_root/<lane>/``.
 
-    ``qwen_vllm`` prefers ``latest_successful_real_run.json`` so rollup matches assembly gates.
-    ``latest_mock_run.json`` is only a last-resort fallback for legacy pointer files.
+    Product fail-closed: ``latest_successful_real_run.json`` only (accepted REAL_LLM bundle).
+    Legacy/test: may fall back to latest_real_run / latest_mock_run.
     """
-    _ = str(lane_provider or "qwen_vllm").strip().lower()  # reserved for future provider-specific ordering
-    ptr_order = (
-        "latest_successful_real_run.json",
-        "latest_real_run.json",
-        "latest_mock_run.json",
+    from apps_rg.runtime.product_output_policy import (
+        lane_run_dir_meets_product_bar,
+        product_fail_closed_runtime,
     )
+    _ = str(lane_provider or "qwen_vllm").strip().lower()  # reserved for future provider-specific ordering
+    if product_fail_closed_runtime():
+        ptr_order = ("latest_successful_real_run.json",)
+    else:
+        ptr_order = (
+            "latest_successful_real_run.json",
+            "latest_real_run.json",
+            "latest_mock_run.json",
+        )
     for ptr in ptr_order:
         p = sections_root / lane / ptr
         if not p.is_file():
@@ -172,8 +179,14 @@ def resolve_latest_lane_run_dir(
         rel = raw.get("run_dir") if isinstance(raw, dict) else None
         if isinstance(rel, str):
             rd = (repo / rel).resolve()
-            if rd.is_dir() and (rd / "l2_output.json").is_file():
-                return rd
+            if not rd.is_dir() or not (rd / "l2_output.json").is_file():
+                continue
+            if product_fail_closed_runtime():
+                ok, reason = lane_run_dir_meets_product_bar(rd)
+                if not ok:
+                    msg = f"lane {lane!r} run_dir failed product bar ({ptr}): {reason}"
+                    raise FileNotFoundError(msg)
+            return rd
     msg = f"no resolvable run_dir pointer for lane {lane!r} under {sections_root}"
     raise FileNotFoundError(msg)
 

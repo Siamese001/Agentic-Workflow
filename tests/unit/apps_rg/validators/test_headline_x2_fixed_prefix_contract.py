@@ -20,12 +20,23 @@ def _fake_judges() -> list[dict[str, Any]]:
         {"provider_key": "anthropic_claude", "evaluator_mode": "MOCKED", "provider_blocked": False},
     ]
 
+def _segment_claim_ledger(hl: str, source_fact_ids: list[str]) -> list[dict[str, Any]]:
+    parts = [p.strip() for p in hl.split(" | ")]
+    if len(parts) >= 4:
+        return [
+            {"claim_text": parts[1], "source_fact_ids": list(source_fact_ids)},
+            {"claim_text": parts[2], "source_fact_ids": list(source_fact_ids)},
+            {"claim_text": parts[3], "source_fact_ids": list(source_fact_ids)},
+        ]
+    return [{"claim_text": hl, "source_fact_ids": list(source_fact_ids)}]
+
+
 def _base_kwargs(headline: str, **over) -> dict[str, Any]:
     allowed = {"bul_1", "bul_2", "bul_unify_001", "bul_ibm_001", "bul_unify_004"}
     parsed = {
         "headline_line": headline,
         "selected_fact_plan": {"section_id": "headline", "required_fact_ids": ["bul_1"]},
-        "claim_ledger": [{"claim_text": headline, "source_fact_ids": ["bul_1"]}],
+        "claim_ledger": _segment_claim_ledger(headline, ["bul_1"]),
         "jd_alignment": {
             "targeting_only": True,
             "jd_used_as_proof": False,
@@ -53,6 +64,11 @@ def _base_kwargs(headline: str, **over) -> dict[str, Any]:
         "raw_output": json.dumps(parsed),
         "x1d_judges": _fake_judges(),
         "companion_context": "",
+        "text_claim_coverage": {
+            "schema": "headline_text_claim_coverage_v1",
+            "overall_pass": True,
+            "segments": [],
+        },
     }
     base.update(over)
     return base
@@ -129,7 +145,7 @@ def test_unsupported_claim_fact_ids_fail() -> None:
     parsed = {
         "headline_line": hl,
         "selected_fact_plan": {"section_id": "headline", "required_fact_ids": ["bul_1"]},
-        "claim_ledger": [{"claim_text": hl, "source_fact_ids": ["bul_nope"]}],
+        "claim_ledger": _segment_claim_ledger(hl, ["bul_nope"]),
         "jd_alignment": {
             "targeting_only": True,
             "jd_used_as_proof": False,
@@ -176,6 +192,7 @@ def test_dispatch_normalize_merges_schema_keys_for_parser() -> None:
     assert out is not None
     for k in ("headline_line", "jd_alignment", "self_check", "claim_ledger"):
         assert k in out
+    assert len(out["claim_ledger"]) == 3
     jd = out["jd_alignment"]
     assert jd.get("jd_used_as_proof") is False
     assert jd.get("briefing_used_as_proof") is False

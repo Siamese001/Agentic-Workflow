@@ -16,7 +16,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 
 JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
@@ -40,6 +40,72 @@ GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS = _resolved_apps_rg_google_judge_max_output_to
 # Back-compat alias for tests and external imports (same resolution as Google AI judge path).
 GEMINI_JUDGE_MAX_OUTPUT_TOKENS = GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
 ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS = int(os.environ.get("APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS", "1024"))
+
+
+def _resolved_openai_judge_max_completion_tokens(*, attempt: int = 1) -> int:
+    """Budget for gpt-5.x judge completions; escalates on retry (reasoning can consume the cap)."""
+    raw = os.environ.get("APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS", "4096").strip()
+    try:
+        base = max(512, int(raw))
+    except ValueError:
+        base = 4096
+    return min(8192, base * min(max(1, attempt), 2))
+
+
+def _x1d_judge_max_attempts() -> int:
+    raw = os.environ.get("APPS_RG_X1D_JUDGE_MAX_ATTEMPTS", "3").strip()
+    try:
+        return max(1, min(5, int(raw)))
+    except ValueError:
+        return 3
+
+
+def _judge_retry_backoff_seconds(attempt: int) -> float:
+    return min(4.0, 0.5 * (2 ** max(0, attempt - 1)))
+
+
+def _is_retriable_judge_output(output: JudgeOutput) -> bool:
+    """True when another bounded judge attempt may recover (parse/empty/schema)."""
+    if not output.provider_blocked:
+        return False
+    status = str(output.provider_status or "")
+    err = str(output.exact_provider_error or "").lower()
+    if status == "BLOCKED_RESPONSE_PARSE_ERROR":
+        return any(
+            needle in err
+            for needle in (
+                "extract json",
+                "parse error",
+                "no judge text",
+                "empty",
+                "finish_reason",
+                "finishreason",
+                "incomplete judge json",
+                "completion token",
+                "reasoning",
+            )
+        )
+    if status == "BLOCKED_SCHEMA_VALIDATION_ERROR":
+        return True
+    return False
+
+
+def _invoke_judge_with_bounded_retries(
+    invoke: Callable[[int], JudgeOutput],
+    *,
+    provider_key: str,
+) -> JudgeOutput:
+    max_attempts = _x1d_judge_max_attempts()
+    last: JudgeOutput | None = None
+    for attempt in range(1, max_attempts + 1):
+        last = invoke(attempt)
+        if last is None:
+            break
+        if not _is_retriable_judge_output(last) or attempt >= max_attempts:
+            return last
+        time.sleep(_judge_retry_backoff_seconds(attempt))
+    assert last is not None
+    return last
 
 JUDGE_COMPACT_OUTPUT = """
 Return ONLY one compact JSON object. No markdown fences, no prose before or after, no nested objects.
@@ -95,7 +161,7 @@ Rubric dimensions:
 6. synthesis_quality: **executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, visible process language
    (e.g. “selected facts”, “active-voice delivery”, “governance discipline” as filler), and excessive naked capability lists without narrative.
 
-**Target shape:** default **2–3 dense sentences**; commercially aware technical platform story; metrics/credentials only when ledger-backed.
+**Target shape:** **4–5 dense sentences** (one executive paragraph); commercially aware technical platform story; metrics/credentials only when ledger-backed.
 
 Decisive failure triggers:
 - unsupported business metric or credential (including pasted gold-example numbers/titles not in ledger)
@@ -654,9 +720,17 @@ def _make_model_backed_output(
     raw_response_ref: str | None = None,
     original_model: str | None = None,
     fallback_model: str | None = None,
+    *,
+    deterministic_gate_summary: dict[str, Any] | None = None,
 ) -> JudgeOutput:
     """Create a model-backed judge output from parsed result."""
     result = _normalize_judge_result(result)
+    if deterministic_gate_summary:
+        from apps_rg.runtime.judges.executive_summary_judge_packet import (
+            reconcile_grade_only_judge_result,
+        )
+
+        result = reconcile_grade_only_judge_result(result, deterministic_gate_summary)
     raw_score = float(result.get("score", 0.0))
     raw_threshold = float(result.get("threshold", DEFAULT_THRESHOLD))
     declared_scale = result.get("score_scale")
@@ -753,30 +827,36 @@ def _call_openai(
     reasoning_effort: str | None = None,
     model_requested: str | None = None,
     judge_receipt: dict[str, Any] | None = None,
+    attempt: int = 1,
 ) -> JudgeOutput:
     """Call OpenAI API with full artifact preservation."""
+    compact = attempt >= 2
+    system_content = (
+        f"{JUDGE_COMPACT_SYSTEM}\n\n{JUDGE_COMPACT_OUTPUT}\n\n{JUDGE_SCORE_SCHEMA}"
+        if compact
+        else (
+            "You are a strict executive resume judge. Return JSON only.\n\n"
+            f"{JUDGE_SCORE_SCHEMA}"
+        )
+    )
     # Build request payload
     payload: dict[str, Any] = {
         "model": model,
         "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "You are a strict executive resume judge. Return JSON only.\n\n"
-                    f"{JUDGE_SCORE_SCHEMA}"
-                ),
-            },
+            {"role": "system", "content": system_content},
             {"role": "user", "content": prompt},
         ],
     }
     # gpt-5.x: max_completion_tokens only; temperature/reasoning rejected on current chat SKUs.
     if model.startswith("gpt-5"):
-        payload["max_completion_tokens"] = 900
+        payload["max_completion_tokens"] = _resolved_openai_judge_max_completion_tokens(
+            attempt=attempt
+        )
         effort = (reasoning_effort or "").strip()
         if effort and _openai_reasoning_effort_supported(model):
             payload["reasoning"] = {"effort": effort}
     else:
-        payload["max_tokens"] = 900
+        payload["max_tokens"] = _resolved_openai_judge_max_completion_tokens(attempt=attempt)
         payload["temperature"] = 0.1
         payload["response_format"] = {"type": "json_object"}
     
@@ -789,6 +869,9 @@ def _call_openai(
         "model_requested": model_requested or model,
         "model_actual": model,
         "reasoning_effort": reasoning_effort,
+        "judge_attempt": attempt,
+        "judge_max_attempts": _x1d_judge_max_attempts(),
+        "compact_system_prompt": compact,
     }
     if judge_receipt:
         req_doc["judge_receipt"] = judge_receipt
@@ -827,47 +910,65 @@ def _call_openai(
     raw_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
     _write_artifact(raw_path, {"raw_response": raw_response, "input_hash": input_hash})
     
-    # Parse response
     try:
         data = json.loads(raw_response)
-        content = data["choices"][0]["message"]["content"]
-    except (json.JSONDecodeError, KeyError) as e:
-        # Write parse error artifact
+        choice = data["choices"][0]
+        message = choice.get("message") or {}
+        content = str(message.get("content") or "")
+        finish_reason = str(choice.get("finish_reason") or "")
+    except (json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
         parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
-        _write_artifact(parse_err_path, {"error": "response_structure", "detail": str(e), "raw_response_ref": str(raw_path)})
-        return _make_blocked_output(
-            provider_key, input_hash, "BLOCKED_RESPONSE_PARSE_ERROR",
-            "BLOCKED_RESPONSE_PARSE_ERROR", f"OpenAI response parse error: {e}",
-            raw_response_ref=str(raw_path), model_name=model
+        _write_artifact(
+            parse_err_path,
+            {"error": "response_structure", "detail": str(e), "raw_response_ref": str(raw_path)},
         )
-    
-    # Extract JSON from content
-    result = _extract_json_from_text(content)
-    
-    if result is None:
-        # Write extraction error artifact
-        extract_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
-        _write_artifact(extract_err_path, {
-            "error": "json_extraction",
-            "content_preview": content[:500],
-            "raw_response_ref": str(raw_path)
-        })
         return _make_blocked_output(
-            provider_key, input_hash, "BLOCKED_RESPONSE_PARSE_ERROR",
-            "BLOCKED_RESPONSE_PARSE_ERROR", "Failed to extract JSON from OpenAI response",
-            raw_response_ref=str(raw_path), model_name=model
+            provider_key,
+            input_hash,
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            f"OpenAI response parse error: {e}",
+            raw_response_ref=str(raw_path),
+            model_name=model,
         )
-    
-    blocked = _validate_judge_parse_result(
-        provider_key, input_hash, model, result, str(raw_path), artifact_base=artifact_base
+
+    if not content.strip() and finish_reason.lower() == "length":
+        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
+        usage = data.get("usage") or {}
+        _write_artifact(
+            parse_err_path,
+            {
+                "error": "empty_content_length",
+                "finish_reason": finish_reason,
+                "usage": usage,
+                "raw_response_ref": str(raw_path),
+                "judge_attempt": attempt,
+            },
+        )
+        return _make_blocked_output(
+            provider_key,
+            input_hash,
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            (
+                "OpenAI judge returned empty content (finish_reason=length); "
+                "completion token budget likely consumed by reasoning — retriable"
+            ),
+            raw_response_ref=str(raw_path),
+            model_name=model,
+        )
+
+    out = _finish_judge_text_parse(
+        provider_key=provider_key,
+        input_hash=input_hash,
+        model_name=model,
+        raw_path=raw_path,
+        text=content,
+        finish_reason=finish_reason if provider_key == "gemini_pro" else None,
+        artifact_base=artifact_base,
+        judge_receipt=judge_receipt,
+        model_requested=model_requested,
     )
-    if blocked is not None:
-        return blocked
-
-    parse_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
-    _write_artifact(parse_path, {"result": result, "raw_response_ref": str(raw_path)})
-
-    out = _make_model_backed_output(provider_key, input_hash, model, result, raw_response_ref=str(raw_path))
     return _attach_judge_receipt_fields(out, judge_receipt, model_requested=model_requested or model)
 
 
@@ -1212,7 +1313,11 @@ def _finish_judge_text_parse(
     model_requested: str | None = None,
 ) -> JudgeOutput:
     """Parse extracted judge text into JudgeOutput or blocked status."""
-    if finish_reason and str(finish_reason).upper() not in ("STOP",):
+    if (
+        provider_key == "gemini_pro"
+        and finish_reason
+        and str(finish_reason).upper() not in ("STOP",)
+    ):
         parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
             "error": "finish_reason",
@@ -1281,6 +1386,7 @@ def _finish_judge_text_parse(
         "fallback_model": fallback_model,
     })
 
+    gate_summary = (judge_receipt or {}).get("deterministic_gate_summary") if judge_receipt else None
     out = _make_model_backed_output(
         provider_key,
         input_hash,
@@ -1289,6 +1395,7 @@ def _finish_judge_text_parse(
         raw_response_ref=str(raw_path),
         original_model=original_model,
         fallback_model=fallback_model,
+        deterministic_gate_summary=gate_summary,
     )
     return _attach_judge_receipt_fields(out, judge_receipt, model_requested=model_requested or model_name)
 
@@ -1516,6 +1623,7 @@ def run_llm_judges(
             "candidate_output_ref": "candidate_output.resume_display_text",
             "allowed_fact_packet_ref": "allowed_fact_packet",
             "rubric_ref": judge_packet.get("rubric_ref") if judge_packet else None,
+            "deterministic_gate_summary": judge_packet.get("deterministic_gate_summary"),
         }
 
     outputs: list[JudgeOutput] = []
@@ -1597,41 +1705,51 @@ def run_llm_judges(
 
         try:
             if key == "openai_chatgpt":
-                output = _call_openai(
-                    api_key,
-                    prompt,
-                    model,
-                    input_hash,
-                    key,
-                    artifact_base=artifact_base,
-                    reasoning_effort=reasoning_effort,
-                    model_requested=model_requested,
-                    judge_receipt=receipt,
+                output = _invoke_judge_with_bounded_retries(
+                    lambda attempt, _api=api_key, _prompt=prompt, _model=model: _call_openai(
+                        _api,
+                        _prompt,
+                        _model,
+                        input_hash,
+                        key,
+                        artifact_base=artifact_base,
+                        reasoning_effort=reasoning_effort,
+                        model_requested=model_requested,
+                        judge_receipt=receipt,
+                        attempt=attempt,
+                    ),
+                    provider_key=key,
                 )
             elif key == "anthropic_claude":
-                output = _call_anthropic(
-                    api_key,
-                    prompt,
-                    model,
-                    input_hash,
-                    key,
-                    model_source=model_source,
-                    artifact_base=artifact_base,
-                    allow_model_fallback=not use_grade_only_packet,
-                    model_requested=model_requested,
-                    judge_receipt=receipt,
+                output = _invoke_judge_with_bounded_retries(
+                    lambda attempt, _api=api_key, _prompt=prompt, _model=model: _call_anthropic(
+                        _api,
+                        _prompt,
+                        _model,
+                        input_hash,
+                        key,
+                        model_source=model_source,
+                        artifact_base=artifact_base,
+                        allow_model_fallback=not use_grade_only_packet,
+                        model_requested=model_requested,
+                        judge_receipt=receipt,
+                    ),
+                    provider_key=key,
                 )
             else:
-                output = _call_gemini(
-                    api_key,
-                    prompt,
-                    model,
-                    input_hash,
-                    key,
-                    model_source=model_source,
-                    artifact_base=artifact_base,
-                    model_requested=model_requested,
-                    judge_receipt=receipt,
+                output = _invoke_judge_with_bounded_retries(
+                    lambda attempt, _api=api_key, _prompt=prompt, _model=model: _call_gemini(
+                        _api,
+                        _prompt,
+                        _model,
+                        input_hash,
+                        key,
+                        model_source=model_source,
+                        artifact_base=artifact_base,
+                        model_requested=model_requested,
+                        judge_receipt=receipt,
+                    ),
+                    provider_key=key,
                 )
             if use_grade_only_packet:
                 output.section_id = sid

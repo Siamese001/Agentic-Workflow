@@ -112,7 +112,7 @@ def test_composition_plan_present_requires_artifact_fields() -> None:
     ok, reason = check_composition_plan_present(
         {"executive_summary_composition_plan": {"composition_style": "executive_painting", "brushstrokes": []}},
         artifacts_dir=None,
-        srfs_integration=_srfs(),
+        proof_pool_metadata={"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"},
     )
     assert ok is False
     assert reason

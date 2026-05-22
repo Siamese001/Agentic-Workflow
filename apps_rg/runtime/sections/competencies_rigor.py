@@ -246,6 +246,58 @@ def check_competencies_no_all_generic_skill_phrase(
     return True, None
 
 
+def check_competencies_approved_category_labels(
+    competencies: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    from apps_rg.runtime.sections.competencies_v3_contract import (
+        approved_category_labels,
+        resolve_approved_category_label,
+    )
+
+    approved = approved_category_labels()
+    for cat in competencies:
+        if not isinstance(cat, dict):
+            continue
+        raw = str(cat.get("category_label") or "").strip()
+        resolved = resolve_approved_category_label(raw)
+        if not resolved or resolved not in approved:
+            return False, f"unapproved_category_label={raw!r}"
+    return True, None
+
+
+def check_competencies_term_support_ids_present(
+    competencies: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    for cat in competencies:
+        if not isinstance(cat, dict):
+            continue
+        for raw in cat.get("terms") or []:
+            if not isinstance(raw, dict):
+                continue
+            phrase = term_phrase(raw)
+            if not phrase:
+                continue
+            sids = [str(x) for x in (raw.get("source_fact_ids") or []) if str(x).strip()]
+            skills = [str(x) for x in (raw.get("source_skill_ids") or []) if str(x).strip()]
+            if not sids and not skills:
+                return False, f"missing_support_ids phrase={phrase!r}"
+    return True, None
+
+
+def check_competencies_no_fragment_or_one_word_terms(
+    competencies: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    from apps_rg.runtime.sections.competencies_capability_projection import is_raw_fragment_term
+
+    for label, ph in _flatten_phrases(competencies):
+        wc = len(ph.split())
+        if wc < 2 and not re.match(r"^[A-Z0-9]{2,}$", ph.strip()):
+            return False, f"one_word_or_bare label={label!r} phrase={ph!r}"
+        if is_raw_fragment_term(ph):
+            return False, f"raw_fragment label={label!r} phrase={ph!r}"
+    return True, None
+
+
 def check_competencies_keyword_repetition_limit(
     competencies: list[dict[str, Any]],
     *,
@@ -272,12 +324,15 @@ __all__ = [
     "MIN_CATEGORY_COUNT",
     "MIN_ITEMS_PER_CATEGORY",
     "ROLE_ALIGNMENT_TERMS",
+    "check_competencies_approved_category_labels",
     "check_competencies_category_count",
     "check_competencies_min_items_per_category",
     "check_competencies_no_credential_relisting",
+    "check_competencies_no_fragment_or_one_word_terms",
     "check_competencies_no_low_rigor_two_word_items",
     "check_competencies_no_metrics_as_skills_without_capability_context",
     "check_competencies_no_all_generic_skill_phrase",
     "check_competencies_keyword_repetition_limit",
     "check_competencies_role_alignment_terms",
+    "check_competencies_term_support_ids_present",
 ]

@@ -7,7 +7,6 @@ from pathlib import Path
 
 _SKIP_NAMES = frozenset(
     {
-        "apps_rg_exit_binding.py",
         "apps_research_exit_binding.py",
     },
 )

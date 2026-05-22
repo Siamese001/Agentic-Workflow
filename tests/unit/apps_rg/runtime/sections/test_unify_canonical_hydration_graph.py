@@ -23,4 +23,4 @@ def test_should_hydrate_when_metrics_missing() -> None:
         "selected_fact_plan": {"facts": [{"fact_id": "fact_platform_001"}]},
     }
     assert unify_core_metrics_missing(parsed) is True
-    assert should_hydrate_unify_bullets_from_canonical(runtime_payload, parsed) is True
+    assert should_hydrate_unify_bullets_from_canonical(runtime_payload, parsed) is False

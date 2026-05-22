@@ -1,20 +1,8 @@
 {
-  "python.defaultInterpreterPath": "C:\\Git\\Agentic-Workflow-FRESH\\.venv\\Scripts\\python.exe",
-  "python.terminal.activateEnvironment": true,
-  "python.testing.pytestEnabled": true,
+  "gitlens.gitkraken.mcp.autoEnabled": false,
   "python.testing.pytestArgs": [
     "tests"
   ],
-  "python.analysis.exclude": [
-    "**/.venv/**",
-    "**/.git/**",
-    "**/__pycache__/**",
-    "**/artifacts/**"
-  ],
-  "cursorpyright.analysis.exclude": [
-    "**/.venv/**",
-    "**/.git/**",
-    "**/__pycache__/**",
-    "**/artifacts/**"
-  ]
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

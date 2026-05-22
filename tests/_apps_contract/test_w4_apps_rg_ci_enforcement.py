@@ -63,7 +63,7 @@ class TestAppsRgTypeValidationGate:
     def test_u0_binding_signature(self):
         """U0 binding should have valid signature."""
         violations = _check_layer_binding_signature(
-            "agentic_core.runtime.entry.u0_apps_rg_binding",
+            "apps_rg.runtime.bindings.u0_binding",
             "u0_validate_apps_rg",
             "U0",
         )
@@ -73,7 +73,7 @@ class TestAppsRgTypeValidationGate:
     def test_exit_binding_signature(self):
         """Exit binding should have valid signature."""
         violations = _check_layer_binding_signature(
-            "agentic_core.runtime.exit.apps_rg_exit_binding",
+            "apps_rg.runtime.bindings.exit_binding",
             "exit_finalize_apps_rg",
             "Exit",
         )

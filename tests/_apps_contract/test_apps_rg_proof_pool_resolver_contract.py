@@ -1,4 +1,4 @@
-"""Contract tests: shared proof-pool resolver across all seven canonical section lanes."""
+"""Contract tests: shared proof-pool resolver — augmented_skills_graph only."""
 
 from __future__ import annotations
 
@@ -11,13 +11,13 @@ import pytest
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
 from apps_rg.runtime.proof_pool_resolver import (
     PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
-    PROOF_SOURCE_SRFS,
     resolve_section_proof_pool,
 )
 
 REPO = Path(__file__).resolve().parents[2]
 LEDGER_PATH = default_ledger_path(REPO)
-GRAPH_DEFAULT_SECTION_IDS = (
+SECTION_IDS = (
+    "executive_summary",
     "headline",
     "unify_bullets",
     "unify_narrative",
@@ -25,15 +25,6 @@ GRAPH_DEFAULT_SECTION_IDS = (
     "ibm_narrative",
     "competencies",
 )
-SECTION_IDS = ("executive_summary",) + GRAPH_DEFAULT_SECTION_IDS
-def _high_row(candidate_fact_id: str, *, claim_text: str = "Fixture claim.") -> dict:
-    return {
-        "candidate_fact_id": candidate_fact_id,
-        "confidence": "HIGH",
-        "claim_text": claim_text,
-        "metric_values": [],
-        "capability_tags": ["leadership", "platform"],
-    }
 
 
 def _srfs_doc(sections: dict[str, list[dict]]) -> dict:
@@ -51,13 +42,12 @@ def _srfs_doc(sections: dict[str, list[dict]]) -> dict:
     return out
 
 
-@pytest.mark.parametrize("section_id", GRAPH_DEFAULT_SECTION_IDS)
-def test_default_resolves_augmented_skills_graph_when_srfs_absent(section_id: str) -> None:
+@pytest.mark.parametrize("section_id", SECTION_IDS)
+def test_default_resolves_augmented_skills_graph(section_id: str) -> None:
     if not LEDGER_PATH.is_file():
         pytest.skip(f"ledger missing: {LEDGER_PATH}")
     pool = resolve_section_proof_pool(
         section=section_id,
-        selected_role_fact_set_path=None,
         repo_root=REPO,
         target_company="Acme",
         target_title="VP Engineering",
@@ -71,107 +61,10 @@ def test_default_resolves_augmented_skills_graph_when_srfs_absent(section_id: st
     assert pool.base_resume_fallback_used is False
     assert pool.proof_pool_digest
     meta = pool.proof_pool_metadata or {}
+    assert meta.get("proof_pool_type") == "augmented_skills_graph"
     assert meta.get("broad_skills_ledger_used_as_authority") is False
     assert pool.targeting_inputs_used.get("jd_title_company") is True
     assert pool.targeting_inputs_used.get("briefing") is True
-
-
-def test_executive_summary_default_srfs_binding_fail_closed_when_unresolved(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Default path must not fall back to graph-only claim authority when SRFS binding fails."""
-    def _srfs_binding_blocked(**_kwargs: object) -> str:
-        raise ValueError("executive_summary SRFS binding BLOCKED: test fixture")
-
-    monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_srfs_binding.resolve_executive_summary_default_srfs_path",
-        _srfs_binding_blocked,
-    )
-    with pytest.raises(ValueError, match="SRFS binding BLOCKED"):
-        resolve_section_proof_pool(
-            section="executive_summary",
-            selected_role_fact_set_path=None,
-            repo_root=REPO,
-            target_company="Unify Consulting",
-            target_role="SVP Engineering, Agentic AI Platforms",
-            jd_text="enterprise AI platform leadership.",
-            briefing_text="regulated enterprise environment.",
-            product_visible=False,
-        )
-
-
-def test_executive_summary_explicit_empty_srfs_fail_closed_not_graph_only(
-    tmp_path: Path,
-) -> None:
-    """Empty SRFS slice must fail closed; must not resolve as graph-only proof authority."""
-    srfs_path = tmp_path / "empty_exec_srfs.json"
-    srfs_path.write_text(
-        json.dumps(_srfs_doc({"executive_summary": []})),
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="SRFS section slice is empty"):
-        resolve_section_proof_pool(
-            section="executive_summary",
-            selected_role_fact_set_path=str(srfs_path),
-            repo_root=REPO,
-            target_company="Acme",
-            target_role="VP Engineering",
-            jd_text="Lead platform programs.",
-            briefing_text="Governed AI delivery.",
-            product_visible=False,
-        )
-
-
-def test_executive_summary_default_resolves_active_srfs_binding() -> None:
-    if not LEDGER_PATH.is_file():
-        pytest.skip(f"ledger missing: {LEDGER_PATH}")
-    from apps_rg.runtime.sections.executive_summary_srfs_binding import ACTIVE_SRFS_JSON_REL
-
-    pool = resolve_section_proof_pool(
-        section="executive_summary",
-        selected_role_fact_set_path=None,
-        repo_root=REPO,
-        target_company="Unify Consulting",
-        target_role="SVP Engineering, Agentic AI Platforms",
-        jd_text="enterprise AI platform leadership, agentic AI systems, runtime governance.",
-        briefing_text="regulated enterprise environment, platform modernization.",
-        product_visible=False,
-    )
-    assert pool.proof_source == PROOF_SOURCE_SRFS
-    assert pool.srfs_present is True
-    assert pool.srfs_ref
-    assert (REPO / ACTIVE_SRFS_JSON_REL).is_file()
-    assert pool.proof_pool_metadata.get("selected_role_fact_set_used") is True
-    assert pool.proof_pool_metadata.get("proof_pool_type") == "selected_role_fact_set"
-    assert pool.proof_pool_metadata.get("srfs_backed_augmented_skills_graph") is True
-    assert pool.proof_pool_metadata.get("graph_only_claim_authority") is False
-    assert (REPO / ACTIVE_SRFS_JSON_REL).is_file()
-
-
-@pytest.mark.parametrize("section_id", SECTION_IDS)
-def test_srfs_wins_over_broad_skills_ledger(section_id: str, tmp_path: Path) -> None:
-    if not LEDGER_PATH.is_file():
-        pytest.skip(f"ledger missing: {LEDGER_PATH}")
-    srfs_path = tmp_path / "srfs.json"
-    srfs_path.write_text(
-        json.dumps(
-            _srfs_doc({section_id: [_high_row(f"bul_{section_id}_srfs_001")]}),
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
-    pool = resolve_section_proof_pool(
-        section=section_id,
-        selected_role_fact_set_path=str(srfs_path),
-        repo_root=REPO,
-        target_company="Acme",
-        target_title="VP Engineering",
-        jd_text="JD targeting only.",
-        briefing_text="Briefing context only.",
-    )
-    assert pool.proof_source == PROOF_SOURCE_SRFS
-    assert pool.srfs_present is True
-    assert pool.base_resume_fallback_used is False
 
 
 def test_headline_fail_closed_when_graph_blocked(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -198,76 +91,18 @@ def test_non_proof_inputs_recorded_in_usage_extension() -> None:
     )
     ext = proof_pool_usage_ledger_extension(pool)
     assert ext["non_proof_inputs"] == ["jd_title_company", "briefing"]
-    assert "jd_title_company" not in ext["claim_support_inputs"]
-    assert "briefing" not in ext["claim_support_inputs"]
-    assert "augmented_skills_graph" in ext["claim_support_inputs"]
-
-
-def test_competencies_default_graph_skills_not_broad_ledger() -> None:
-    if not LEDGER_PATH.is_file():
-        pytest.skip(f"ledger missing: {LEDGER_PATH}")
-    pool = resolve_section_proof_pool(section="competencies", repo_root=REPO)
-    assert pool.proof_source == "augmented_skills_graph"
-    assert pool.selected_fact_plan.get("selection_method", "").startswith("augmented_skills_graph")
-    assert pool.selected_fact_plan.get("facts")
-
-
-def test_resume_override_recorded(tmp_path: Path) -> None:
-    base = {
-        "facts": {
-            "employment": [
-                {
-                    "employer": "Fixture Co",
-                    "bullets": [
-                        {
-                            "bullet_id": "bul_fixture_001",
-                            "claim_text": "Led delivery.",
-                        }
-                    ],
-                }
-            ]
-        }
-    }
-    resume_path = tmp_path / "override_resume.json"
-    resume_path.write_text(json.dumps(base), encoding="utf-8")
-    pool = resolve_section_proof_pool(
-        section="headline",
-        base_resume_ref=str(resume_path),
-        repo_root=REPO,
-        broad_skills_ledger_path=str(tmp_path / "no_ledger.json"),
+    assert ext["claim_support_inputs"] == ["augmented_skills_graph"]
+    assert ext["input_authority"]["augmented_skills_graph"] in (
+        "CLAIM_EVIDENCE_AND_SKILLS_AUTHORITY",
+        "SKILLS_COMPETENCY_AUTHORITY",
     )
-    assert pool.base_resume_override_used is True
-    assert "override_resume.json" in pool.base_resume_json_ref or pool.base_resume_json_ref.endswith("override_resume.json")
+    assert ext["input_authority"]["base_resume"] == "DEPRECATED_NON_AUTHORITY"
 
 
-def test_load_section_proof_for_lane_forwards_args_base_resume_ref(tmp_path: Path) -> None:
-    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-
-    base = {
-        "facts": {
-            "employment": [
-                {
-                    "employer": "Fixture Co",
-                    "bullets": [{"bullet_id": "bul_fixture_002", "claim_text": "Shipped platform."}],
-                }
-            ]
-        }
-    }
-    resume_path = tmp_path / "lane_resume.json"
-    resume_path.write_text(json.dumps(base), encoding="utf-8")
-    args = SimpleNamespace(
-        selected_role_fact_set="",
-        base_resume_ref=str(resume_path),
-        broad_skills_ledger_path=str(tmp_path / "missing.json"),
-        target_company="",
-        target_title="",
-        target_role=None,
-        jd_text="",
-        briefing="",
-    )
-    pool, _base, _path, _hash, _front_spine = load_section_proof_for_lane(
-        section_id="headline",
-        args=args,
-        repo_root=REPO,
-    )
-    assert pool.base_resume_override_used is True
+def test_legacy_broad_skills_ledger_flag_rejected() -> None:
+    with pytest.raises(ValueError, match="legacy_broad_skills_ledger is not permitted"):
+        resolve_section_proof_pool(
+            section="unify_bullets",
+            repo_root=REPO,
+            legacy_broad_skills_ledger=True,
+        )

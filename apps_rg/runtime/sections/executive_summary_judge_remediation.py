@@ -258,24 +258,9 @@ def try_judge_safe_prefilter(
     *,
     artifact_dir: Path | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None]:
-    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
-
-    if product_fail_closed_runtime():
-        return parsed, None
-    if not judge_safe_prefilter_enabled():
-        return parsed, None
-    from apps_rg.runtime.sections.exec_summary_srfs_judge_safe import apply_srfs_judge_safe_repair
-
-    repaired, receipt = apply_srfs_judge_safe_repair(parsed, selected_facts, srfs_integration)
-    if artifact_dir is not None and receipt and receipt.get("prefilter_applied"):
-        from apps_rg.runtime.section_repair_lane_integration import record_deterministic_rewrite
-
-        record_deterministic_rewrite(
-            artifact_dir,
-            operation="srfs_judge_safe_prefilter",
-            reason=str(receipt.get("reason") or "judge_safe")[:240],
-        )
-    return repaired, receipt
+    """SRFS judge-safe repair stack removed (D1 purge). No-op for compatibility."""
+    _ = (selected_facts, srfs_integration, artifact_dir)
+    return parsed, None
 
 
 def retry_qwen_for_judge_remediation(
@@ -289,7 +274,6 @@ def retry_qwen_for_judge_remediation(
     selected_fact_plan: dict[str, Any],
     allowed_fact_ids: set[str],
     unused_fact_ids: list[str],
-    srfs_integration: dict[str, Any] | None = None,
     artifact_dir: Path | None = None,
     run_id: str | None = None,
 ) -> tuple[str, dict[str, Any], dict[str, Any]]:
@@ -321,7 +305,7 @@ def retry_qwen_for_judge_remediation(
     pre_parsed, prefilter_meta = try_judge_safe_prefilter(
         pre_parsed,
         list(selected_fact_plan.get("facts") or []),
-        srfs_integration,
+        None,
         artifact_dir=artifact_dir,
     )
     if prefilter_meta:
@@ -369,11 +353,7 @@ def retry_qwen_for_judge_remediation(
         new_parsed, new_err = parse_model_json(new_raw)
         attempt_record["parse_ok"] = bool(new_parsed)
         if new_parsed:
-            new_parsed = normalize_executive_summary_llm_output(
-                new_parsed,
-                selected_fact_plan,
-                srfs_integration=srfs_integration,
-            )
+            new_parsed = normalize_executive_summary_llm_output(new_parsed, selected_fact_plan)
             prune_exec_summary_claim_ledger_orphans(new_parsed, allowed_fact_ids)
             regen_text = str(new_parsed.get("resume_display_text") or "")
             attempt_record["regen_resume_word_count"] = len(re.findall(r"\S+", regen_text))
@@ -408,7 +388,6 @@ def rerun_x2_after_judge_remediation(
     raw_output: str,
     selected_facts: list[dict[str, Any]],
     x1d_judges: list[dict[str, Any]],
-    srfs_integration: dict[str, Any] | None,
     proof_pool_metadata: dict[str, Any] | None,
     proof_pool_ref: str,
     proof_pool_digest: str,
@@ -435,7 +414,6 @@ def rerun_x2_after_judge_remediation(
         target_role=getattr(args, "target_role", None),
         selected_facts=selected_facts,
         x1d_judges=x1d_judges,
-        srfs_integration=srfs_integration,
         proof_pool_metadata=proof_pool_metadata,
         proof_pool_ref=proof_pool_ref,
         proof_pool_digest=proof_pool_digest,
@@ -473,7 +451,6 @@ def rerun_soft_failed_judges(
         parsed_output={"resume_display_text": resume_display_text, "claim_ledger": claim_ledger},
         claim_ledger=claim_ledger,
         allowed_fact_ids=set(packet.get("allowed_fact_ids") or []),
-        srfs_integration=None,
     )
     packet["candidate_output"] = {
         "resume_display_text": resume_display_text,

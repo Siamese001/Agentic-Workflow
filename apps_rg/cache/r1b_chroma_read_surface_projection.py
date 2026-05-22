@@ -138,6 +138,21 @@ def _chain_artifact_refs(artifact_dir: Path) -> dict[str, str]:
     return refs
 
 
+def _assert_bge_vector_for_chroma_upsert(payload: Mapping[str, Any], *, context: str) -> None:
+    """Block 32-dim pseudo_digest upserts into BGE-governed Chroma collections on product paths."""
+    from apps_rg.runtime.product_output_policy import require_live_bge_embeddings
+
+    if not require_live_bge_embeddings():
+        return
+    dims = int(payload.get("dimensions") or len(payload.get("values") or []))
+    model = str(payload.get("embedding_model") or payload.get("query_vector_source") or "")
+    if dims != 1024 or "pseudo_digest" in model:
+        raise RuntimeError(
+            f"R1B Chroma upsert forbidden ({context}): dimensions={dims} embedding_model={model!r}; "
+            "require BAAI/bge-m3 (1024d) on product path"
+        )
+
+
 def _refresh_digest(artifact_dir: Path, record_id: str, commit_request_id: str) -> str:
     parts = [
         record_id,
@@ -161,9 +176,16 @@ def _upsert_governed_chroma(
     from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb
 
     persist_dir.mkdir(parents=True, exist_ok=True)
+    from apps_rg.runtime.chroma_precomputed_collection import (
+        get_precomputed_embeddings_collection,
+    )
+    from apps_rg.runtime.embedding_settings import apply_apps_rg_embedding_env_guards
+
+    apply_apps_rg_embedding_env_guards(chroma_persist_dir=str(persist_dir))
     client = chromadb.PersistentClient(path=str(persist_dir))
-    collection = client.get_or_create_collection(
-        name=CHROMA_COLLECTION_NAME,
+    collection = get_precomputed_embeddings_collection(
+        client,
+        CHROMA_COLLECTION_NAME,
         metadata={
             "subsystem": R1B_STORAGE_SUBSYSTEM,
             "read_surface": READ_SURFACE_NAME,
@@ -179,6 +201,7 @@ def _upsert_governed_chroma(
     intent_text = record.request_intent_text or intent_text_from_request(raw_request)
     intent_payload = intent_vector_payload(intent_text=intent_text, digest=digest)
     embedding = [float(x) for x in intent_payload["values"]]
+    _assert_bge_vector_for_chroma_upsert(intent_payload, context="r1b_intent_parent")
     ids = [record.record_id]
     embeddings = [embedding]
     documents = [intent_text]
@@ -201,6 +224,7 @@ def _upsert_governed_chroma(
         if not chunk_text:
             continue
         cp = chunk_vector_payload(chunk_text=chunk_text, chunk_id=ch.chunk_id)
+        _assert_bge_vector_for_chroma_upsert(cp, context=f"r1b_chunk:{ch.chunk_id}")
         cid = f"{record.record_id}:{ch.chunk_id}"
         ids.append(cid)
         embeddings.append([float(x) for x in cp["values"]])
@@ -290,12 +314,13 @@ def project_governed_chroma_read_surface(
 
     intent_text = record.request_intent_text or intent_text_from_request(req)
     digest = record.normalized_intent_digest or normalized_intent_digest(intent_text)
+    intent_payload = intent_vector_payload(intent_text=intent_text, digest=digest)
     _write_envelope(
         artifact_dir / REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
         {
             "record_id": record.record_id,
             "request_intent_embedding_ref": f"embeddings/{record.record_id}.json",
-            "embedding": intent_vector_payload(intent_text=intent_text, digest=digest),
+            "embedding": intent_payload,
             "not_c0_fact_vectors": True,
         },
         artifact_name=REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
@@ -311,7 +336,12 @@ def project_governed_chroma_read_surface(
             "canonical_field": "request_intent_embedding_ref",
             "source_ref": record.request_intent_vector_ref,
             "canonical_ref": f"embeddings/{record.record_id}.json",
-            "mapping_policy": "bge_m3_when_embeddings_enabled_else_pseudo_digest",
+            "mapping_policy": "bge_m3_explicit_only_on_product",
+            "query_vector_source": str(
+                intent_payload.get("query_vector_source")
+                or intent_payload.get("embedding_model")
+                or "unknown"
+            ),
             "record_id": record.record_id,
         },
         artifact_name=EMBEDDING_MAPPING_RECEIPT_ARTIFACT,

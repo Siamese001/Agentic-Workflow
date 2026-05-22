@@ -25,27 +25,27 @@ class TestAllBindingsImportable:
 
     def test_u0_binding_importable(self):
         """U0 binding can be imported and is callable."""
-        from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+        from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
         assert callable(u0_validate_apps_rg)
 
     def test_l1_binding_importable(self):
         """L1 binding can be imported and is callable."""
-        from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
+        from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
         assert callable(l1_plan_apps_rg)
 
     def test_l0_binding_importable(self):
         """L0 binding can be imported and is callable."""
-        from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
+        from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
         assert callable(l0_route_apps_rg)
 
     def test_c0_binding_importable(self):
         """C0 binding can be imported and is callable."""
-        from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
+        from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
         assert callable(c0_retrieve_apps_rg)
 
     def test_pa_binding_importable(self):
         """PA binding can be imported and is callable."""
-        from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
+        from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
         assert callable(pa_compose_apps_rg)
 
     def test_l2_binding_importable(self):
@@ -55,7 +55,7 @@ class TestAllBindingsImportable:
 
     def test_exit_binding_importable(self):
         """Exit binding can be imported and is callable."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
         assert callable(exit_finalize_apps_rg)
 
 

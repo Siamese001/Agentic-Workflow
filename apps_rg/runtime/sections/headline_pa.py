@@ -260,12 +260,10 @@ def compile_headline_prompt(
     )
     ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
     pp_meta, _fec = resolve_pa_proof_authority_for_compile(runtime_payload)
-    mode = proof_pool_mode_from_metadata(pp_meta)
+    proof_pool_mode_from_metadata(pp_meta)
     return augment_section_compiled_with_input_authority(
         compiled,
         allowed_source_fact_ids=ids,
-        selected_role_fact_set_mode=(mode == "srfs"),
-        proof_pool_mode=mode,
         skills_authority_metadata=pp_meta,
     )
 

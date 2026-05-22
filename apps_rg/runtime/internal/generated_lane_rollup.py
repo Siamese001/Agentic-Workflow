@@ -15,6 +15,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal, Mapping
 
+from apps_rg.runtime.disposition_authority import (
+    EXIT_DISPOSITION_RECEIPT_ARTIFACT,
+    resolve_lane_x3_from_artifact_refs,
+)
 from apps_rg.runtime.runtime_proof_layout import (
     is_accepted_real_llm_qwen_bundle,
     load_latest_pointer,
@@ -293,12 +297,21 @@ def collect_lane(
     triple = _judge_triple(judges)
 
     artifact_refs = {n: _rel(lp.p(n)) for n in REQUIRED_RELATIVE}
+    if (base / EXIT_DISPOSITION_RECEIPT_ARTIFACT).is_file():
+        artifact_refs[EXIT_DISPOSITION_RECEIPT_ARTIFACT] = _rel(
+            base / EXIT_DISPOSITION_RECEIPT_ARTIFACT
+        )
+    x3_auth = resolve_lane_x3_from_artifact_refs(
+        artifact_refs=artifact_refs,
+        repo_root=root,
+    )
     pointers = _lane_pointer_fields(root, lane)
 
     section_id = str(l2.get("section_id") or lane)
     runtime_gen = str(
         l2.get("runtime_generation_status") or x3.get("runtime_generation_status") or "UNKNOWN"
     )
+    rollup_x3_code = str(x3_auth.get("x3_code") or x3.get("x3_code", ""))
 
     return {
         "lane_key": lane,
@@ -319,7 +332,11 @@ def collect_lane(
         "anthropic_provider_status": triple["anthropic_claude"],
         "soft_failed_judges": soft,
         "blocked_judges": blocked,
-        "x3_code": str(x3.get("x3_code", "")),
+        "x3_code": rollup_x3_code,
+        "disposition_authority": str(x3_auth.get("disposition_authority") or "lane"),
+        "x3_authoritative_artifact": x3_auth.get("authoritative_artifact"),
+        "section_x3_mirror_only": bool(x3_auth.get("section_x3_mirror_only", True)),
+        "spine_x3_claimed": bool(x3_auth.get("spine_x3_claimed", False)),
         "authorization_scope": str(x3.get("authorization_scope", "")),
         "proceed_to_runtime": bool(x3.get("proceed_to_runtime", False)),
         "l6_offline_only": bool(l6.get("offline_only", False)),
@@ -365,12 +382,21 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
     triple = _judge_triple(judges)
 
     artifact_refs = {n: _rel(lp.p(n)) for n in REQUIRED_RELATIVE}
+    if (base / EXIT_DISPOSITION_RECEIPT_ARTIFACT).is_file():
+        artifact_refs[EXIT_DISPOSITION_RECEIPT_ARTIFACT] = _rel(
+            base / EXIT_DISPOSITION_RECEIPT_ARTIFACT
+        )
+    x3_auth = resolve_lane_x3_from_artifact_refs(
+        artifact_refs=artifact_refs,
+        repo_root=repo,
+    )
     pointers = _lane_pointer_fields_modular(base, l2)
 
     section_id = str(l2.get("section_id") or lane)
     runtime_gen = str(
         l2.get("runtime_generation_status") or x3.get("runtime_generation_status") or "UNKNOWN"
     )
+    rollup_x3_code = str(x3_auth.get("x3_code") or x3.get("x3_code", ""))
 
     lane_section_root = base.parent.parent
     accepted_real_evidence_resolution = "modular_r4_explicit_run_dir"
@@ -405,7 +431,11 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
         "anthropic_provider_status": triple["anthropic_claude"],
         "soft_failed_judges": soft,
         "blocked_judges": blocked,
-        "x3_code": str(x3.get("x3_code", "")),
+        "x3_code": rollup_x3_code,
+        "disposition_authority": str(x3_auth.get("disposition_authority") or "lane"),
+        "x3_authoritative_artifact": x3_auth.get("authoritative_artifact"),
+        "section_x3_mirror_only": bool(x3_auth.get("section_x3_mirror_only", True)),
+        "spine_x3_claimed": bool(x3_auth.get("spine_x3_claimed", False)),
         "authorization_scope": str(x3.get("authorization_scope", "")),
         "proceed_to_runtime": bool(x3.get("proceed_to_runtime", False)),
         "l6_offline_only": bool(l6.get("offline_only", False)),

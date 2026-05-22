@@ -21,7 +21,7 @@ from apps_rg.l2_recipe.r4_generation_mode import (
     resolve_apps_rg_r4_generation_mode,
 )
 from apps_rg.l2_recipe.r4_generation_route import R4_RECIPE_GENERATION_EXECUTION_STYLE
-from apps_rg.l2_recipe.steps import DocxExportStep, GenerateResumeStep
+from apps_rg.l2_recipe.steps import GenerateResumeStep
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 
 
@@ -237,8 +237,4 @@ def test_docx_skipped_when_generate_step_fails(mock_modular, mock_env, monkeypat
     with pytest.raises(RuntimeError, match="FAILED_MODULAR_R4"):
         step(_pa_context(artifact_dir=str(art)))
 
-    docx = DocxExportStep()
-    d_out = docx({**_pa_context(artifact_dir=str(art)), "generated_resume": None})
-    assert d_out["status"] == "skipped"
-    assert "generated_resume" not in d_out
     mock_env.assert_not_called()

@@ -1,4 +1,8 @@
-"""Read-only companion lane L2 context for multi-lane compile/support blobs."""
+"""Read-only companion lane L2 context for multi-lane compile/support blobs.
+
+Headline runs first in ``GENERATED_LANES``; standalone ``--section headline`` typically has no
+companion artifacts yet. Full modular runs populate companion context on later lanes only.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +10,12 @@ import json
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.runtime_proof_layout import resolve_effective_lane_l2_path
+from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+from apps_rg.runtime.runtime_proof_layout import (
+    modular_sections_root_from_env,
+    resolve_effective_lane_l2_path,
+    resolve_modular_latest_l2,
+)
 
 COMPANION_LANES: tuple[tuple[str, str], ...] = (
     ("executive_summary", "executive_summary"),
@@ -28,10 +37,20 @@ def _find_repo_root() -> Path:
 _REPO_ROOT = _find_repo_root()
 
 
+def _companion_lane_l2_path(lane: str) -> Path | None:
+    if product_fail_closed_runtime():
+        hit = resolve_modular_latest_l2(_REPO_ROOT, lane)
+        if hit is not None:
+            return hit
+        if modular_sections_root_from_env(_REPO_ROOT) is not None:
+            return None
+    return resolve_effective_lane_l2_path(_REPO_ROOT, lane)
+
+
 def load_companion_context() -> str:
     parts: list[str] = []
     for label, lane in COMPANION_LANES:
-        path = resolve_effective_lane_l2_path(_REPO_ROOT, lane)
+        path = _companion_lane_l2_path(lane)
         if path is None or not path.is_file():
             continue
         try:

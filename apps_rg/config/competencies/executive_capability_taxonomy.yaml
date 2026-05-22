@@ -1,0 +1,103 @@
+schema_version: competencies_executive_taxonomy_v1
+purpose: |
+  Approved executive capability category architecture for competencies v3.
+  JD and briefing may reorder or emphasize categories only — never proof.
+
+min_categories: 6
+max_categories: 8
+default_category_count: 7
+
+categories:
+  - category_id: tech_strategy_innovation
+    category_label: Technology Strategy & Innovation
+    aliases:
+      - Agentic AI Platforms
+      - Enterprise Architecture
+  - category_id: ai_platform_leadership
+    category_label: AI Platform Leadership
+    aliases:
+      - Agentic AI Platforms
+      - AI and Machine Learning
+  - category_id: data_analytics_modernization
+    category_label: Data & Analytics Modernization
+    aliases:
+      - Data Platforms
+      - Enterprise Data and Governance
+  - category_id: governance_risk_compliance
+    category_label: Governance, Risk & Compliance
+    aliases:
+      - AI Runtime Governance
+      - Governance
+      - Quantitative Analysis
+      - Enterprise Data and Governance
+  - category_id: engineering_delivery_leadership
+    category_label: Engineering & Delivery Leadership
+    aliases:
+      - Engineering Leadership
+      - Distributed Systems Engineering
+  - category_id: commercial_operating_impact
+    category_label: Commercial & Operating Impact
+    aliases:
+      - Platform Productization
+      - Revenue Operations
+      - Sales Accounts
+      - Commercial & Operating Impact
+  - category_id: cloud_partner_ecosystems
+    category_label: Cloud & Partner Ecosystems
+    aliases:
+      - Strategic Partnerships & Ecosystem Execution
+      - Cloud and Distributed Infrastructure
+      - Partnerships & GTM
+
+# Executive capability phrases approved for deterministic backfill (never credentials/fragments).
+backfill_capabilities:
+  - term: Enterprise technology roadmap ownership
+    category_id: tech_strategy_innovation
+  - term: Innovation portfolio governance
+    category_id: tech_strategy_innovation
+  - term: Platform operating model design
+    category_id: tech_strategy_innovation
+  - term: Governed agentic AI platform architecture
+    category_id: ai_platform_leadership
+  - term: GraphRAG retrieval engineering
+    category_id: ai_platform_leadership
+  - term: Policy-aware routing controls
+    category_id: ai_platform_leadership
+  - term: Multi-agent orchestration fabric
+    category_id: ai_platform_leadership
+  - term: Lakehouse data platform modernization
+    category_id: data_analytics_modernization
+  - term: Enterprise data cataloging
+    category_id: data_analytics_modernization
+  - term: Unified analytics fabric
+    category_id: data_analytics_modernization
+  - term: Metric layer harmonization
+    category_id: data_analytics_modernization
+  - term: Basel III lineage reporting
+    category_id: data_analytics_modernization
+  - term: Regulatory data lineage controls
+    category_id: governance_risk_compliance
+  - term: Policy-gated AI governance
+    category_id: governance_risk_compliance
+  - term: Audit traceability controls
+    category_id: governance_risk_compliance
+  - term: Risk and compliance operating model
+    category_id: governance_risk_compliance
+  - term: Engineering organization scale-out
+    category_id: engineering_delivery_leadership
+  - term: Cross-functional delivery governance
+    category_id: engineering_delivery_leadership
+  - term: Platform engineering scale-out
+    category_id: engineering_delivery_leadership
+  - term: IP-led platform commercialization
+    category_id: commercial_operating_impact
+  - term: Operating model optimization
+    category_id: commercial_operating_impact
+  - term: Enterprise platform adoption
+    category_id: commercial_operating_impact
+  - term: Cloud alliance GTM execution
+    category_id: cloud_partner_ecosystems
+  - term: Hyperscaler partnership strategy
+    category_id: cloud_partner_ecosystems
+  - term: Ecosystem integration alliances
+    category_id: cloud_partner_ecosystems

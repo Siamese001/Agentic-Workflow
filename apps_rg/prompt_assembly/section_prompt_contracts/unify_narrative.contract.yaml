@@ -14,6 +14,7 @@ requires_finalized_companion_context:
   required_status: ACCEPTED_FINALIZED
   fail_closed_if_missing: true
 x2_gate_profile_ref: apps_rg/runtime/validators/unify_narrative_x2.py
+product_shape_ssot_ref: apps_rg/runtime/sections/section_product_shape_ssot.py
 x1d_judge_profile_ref: apps_rg/runtime/judges/unify_narrative_x1d.py
 locked_fields: []
 llm_generation_allowed: true

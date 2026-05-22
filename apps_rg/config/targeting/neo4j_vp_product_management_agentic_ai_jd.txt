@@ -1,0 +1,50 @@
+VP of Product Management, Agentic AI — Neo4j
+
+About Neo4j
+
+Neo4j is the graph intelligence platform that transforms data into knowledge to power the next generation of intelligent applications and AI systems. It includes enterprise-ready knowledge graphs for accurate, explainable, and governed AI; the most comprehensive, trusted, and easy-to-deploy graph capabilities across any environment and data source; and an unmatched ecosystem trusted by 84 of the Fortune 100 and supported by the world's largest graph community. Intelligence that works. Results that matter.
+
+Built to work everywhere and integrate with everything across every cloud for dynamic, personalized, and autonomous AI systems. We deliver quicker results, contextual knowledge, and solutions that impact customers and employees across the business.
+
+Our Vision
+
+At Neo4j, we have always strived to help the world make sense of data.
+
+As business, society and knowledge become increasingly connected, our technology promotes innovation by helping organizations to find and understand data relationships. We created, drive and lead the graph database category, and we're disrupting how organizations leverage their data to innovate and stay competitive.
+
+The Role
+
+This is a pivotal role, leveraging the unique strength of graph technology to solve the critical challenge in Agentic AI: providing rich, accurate, and connected context. When context is missing, LLMs "hallucinate," agents fail, and enterprise AI stalls. Neo4j's Graph Intelligence Platform is the solution, offering the contextual foundation necessary for reliable reasoning, precise retrieval, and confident action. This insight drives our AI strategy and makes this role one of the most consequential at Neo4j.
+
+As the VP of Product Management for Agentic AI, you will define and execute Neo4j's product strategy at the intersection of graphs and agentic AI. This is a rare opportunity to pioneer a category, shaping how developers, data scientists, and enterprises build AI applications & agents powered by knowledge graphs. You will lead a team of Product Managers, collaborate closely with Engineering, GTM, and Research, and serve as the foremost internal champion and external voice for Neo4j's AI product vision.
+
+Key Responsibilities
+
+- Strategic Product Ownership: Define and own the AI product strategy, clearly articulating how the Neo4j graph platform uniquely enables key enterprise AI use cases, including Retrieval-Augmented Generation (RAG), knowledge graph construction, AI agents, and LLM grounding.
+- Team Leadership: Lead and mentor a team of product managers focused on AI-related areas, providing direction, coaching for maximum impact, and ensuring tight alignment between the product roadmap and core business outcomes.
+- End-to-End Product Lifecycle: Drive the product lifecycle from initial discovery through launch and continuous iteration. This involves translating complex customer needs, market signals, and technical constraints into clear, prioritized roadmaps.
+- Cross-Functional Collaboration: Partner closely with Engineering, Field and Research to bring novel graph + AI capabilities to market, including critical integrations with leading AI frameworks (e.g., LangChain, LlamaIndex) and cloud AI platforms.
+- Go-to-Market Strategy: Collaborate with GTM, Sales, and Marketing to shape positioning, packaging, and launch motions that resonate effectively with both technical builders and enterprise buyers.
+- Customer & Community Engagement: Engage directly with customers and the developer community to gain a deep understanding of current AI building practices and identify where Neo4j can best remove friction and unlock new value.
+- Market Intelligence: Monitor the competitive and ecosystem landscape—including LLM providers, vector databases, AI orchestration frameworks, and adjacent graph players—to identify both opportunities and potential risks.
+- External Visionary: Represent Neo4j's AI product vision externally at conferences, in analyst conversations, and with strategic partners and customers.
+- Expected travel: Up to 20%
+
+Required Qualifications
+
+- Proven Product Leadership: 8+ years in product management, including at least 3 years in a senior or leadership capacity, preferably within a developer-focused or data infrastructure company.
+- Deep AI Ecosystem Knowledge: Hands-on experience building with or shipping products that incorporate LLMs, RAG pipelines, vector search, AI agents, or other related technologies.
+- Strong Technical Acumen: Comfortable engaging with engineers and architects on complex topics such as graph data modeling, embeddings, retrieval architectures, and ML pipelines. Experience with Python or a similar language is a significant plus.
+- Customer Focus: A demonstrated history of using qualitative and quantitative customer signals to drive product decisions that result in measurable business outcomes.
+- Exceptional Communication & Influence: The ability to align diverse stakeholders around a compelling vision and clearly articulate complex technical concepts to both technical and non-technical audiences.
+- Platform Experience: Understanding of developer adoption curves for new technologies and how enterprise data teams evaluate and deploy AI tooling, specifically within developer and data platforms.
+- Modern Data Ecosystem Familiarity: Experience with major cloud platforms (AWS, GCP, Azure) and modern data ecosystems, including data warehouses, ML platforms, and orchestration frameworks.
+- Education: A Bachelor's or Master's degree in Computer Science, Engineering, or a related field, or equivalent practical experience.
+
+Compensation (United States)
+
+Annual Base Salary Range: $340,000—$460,000 USD
+
+This salary range is an estimate, and the actual salary may vary based on Neo4j's compensation practices, job related skills, depth of experience, relevant certifications and trainings, in addition to geographic location. Based on the factors above, Neo4j utilizes the full width of the range.
+
+In addition to the range above, US employees are eligible for a stock option grant and certain roles are eligible for an annual bonus. Employees in this position are also eligible to participate in the Company's standard benefit programs, which currently include the following: medical, dental, and vision benefits, 401(k), paid time off, and certain leaves of absence.

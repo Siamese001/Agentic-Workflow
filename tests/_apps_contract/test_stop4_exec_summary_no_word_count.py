@@ -150,6 +150,21 @@ class TestExecutiveSummarySectionBudget:
         )
 
 
+class TestExecutiveSummaryScratchTemplateLengthPolicy:
+    """Runtime scratch template aligns with STOP 4: fit_to_evidence, max-only X2 gate."""
+
+    SCRATCH_TEMPLATE = (
+        REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "executive_summary.generate_scratch_v1.yaml"
+    )
+
+    def test_scratch_template_no_paragraph_word_minimum(self):
+        content = self.SCRATCH_TEMPLATE.read_text(encoding="utf-8")
+        assert "minimum 72" not in content.lower()
+        assert "72–220" not in content and "72-220" not in content
+        assert "x2_exec_summary_paragraph_max_words" in content
+        assert "fit_to_evidence" in content.lower() or "fit to evidence" in content.lower()
+
+
 class TestStrategicTailorV2SchemaCompliance:
     """Additional STOP 2 and STOP 4 compliance tests for strategic_tailor_v2."""
 

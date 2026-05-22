@@ -11,6 +11,7 @@ jd_as_proof_allowed: false
 companion_context_allowed: true
 companion_context_authority: U_TIER_CONTEXT_ONLY
 x2_gate_profile_ref: apps_rg/runtime/validators/headline_x2.py
+product_shape_ssot_ref: apps_rg/runtime/sections/section_product_shape_ssot.py
 x1d_judge_profile_ref: apps_rg/runtime/judges/headline_x1d.py
 locked_fields: []
 llm_generation_allowed: true

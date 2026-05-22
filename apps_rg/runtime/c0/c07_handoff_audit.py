@@ -29,7 +29,6 @@ def audit_c07_handoff(
     violations: list[str] = []
     allowed_set = set(allowed_fact_ids)
     c05 = c05_receipt or {}
-    spine_enrich = bool(c05.get("spine_chroma_enrich"))
 
     if not fec.evidence_items and not allowed_set:
         violations.append("fec_empty_no_allowed_facts")
@@ -65,8 +64,11 @@ def audit_c07_handoff(
         ):
             violations.append(f"adjacency_as_proof:{gb.get('fact_id')}")
 
-    if spine_enrich and not c05.get("c02_vector_query", {}).get("attempted"):
-        violations.append("spine_enrich_without_vector_query_receipt")
+    vq = dict(c05.get("c02_vector_query") or {})
+    if c05.get("product_hybrid_required") and not vq.get("product_hybrid_attempted"):
+        violations.append("product_hybrid_required_but_not_attempted")
+    if str(vq.get("failure_reason") or vq.get("reason") or "") == "spine_chroma_enrich_disabled":
+        violations.append("forbidden_receipt_reason_spine_chroma_enrich_disabled")
 
     ok = not violations
     return {
@@ -82,7 +84,7 @@ def audit_c07_handoff(
             "c02_c03_boundary": c02_receipt.get("graph_inference_performed") is False,
             "data_only_evidence": ok,
             "skills_graph_not_core_graphrag": c03_receipt.get("core_c03_graph_rag_used") is False,
-            "spine_gates_only_when_enrich": True,
+            "product_hybrid_truth_fields": "product_hybrid_required" in vq,
         },
     }
 

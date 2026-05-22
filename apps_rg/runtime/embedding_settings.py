@@ -133,26 +133,47 @@ def _resolve_local_bge_path(model_id: str) -> tuple[str | None, bool, EmbeddingM
     return None, False, "unavailable"
 
 
+def _resolve_bootstrap_repo_root(repo_root: Path | str | None) -> Path:
+    if repo_root is not None:
+        return Path(repo_root).resolve()
+    env_root = os.environ.get("AGENTIC_REPO_ROOT", "").strip()
+    if env_root:
+        return Path(env_root).resolve()
+    from apps_rg.runtime.runtime_proof_layout import find_repo_root
+
+    return find_repo_root()
+
+
 def bootstrap_apps_rg_embedding_env(
     repo_root: Path | str | None = None,
 ) -> dict[str, str]:
-    """Enable BGE + Chroma defaults when weights exist on disk.
+    """Apply apps_rg SSOT defaults for Chroma + BGE on every CLI invocation.
 
-    Opt-out: ``EMBEDDING_ENABLED=false`` (or ``0`` / ``no``).
+    Defaults (no manual env required):
+    - ``CHROMA_PERSIST_DIR`` → ``<repo>/data/cache/chromadb``
+    - ``EMBEDDING_ENABLED`` / ``APPS_RG_EMBEDDING_ENABLED`` → ``true`` when not explicitly disabled
+    - Local BGE path when HF cache or repo artifacts exist
+
+    Opt-out: ``EMBEDDING_ENABLED=false`` (or ``0`` / ``no``). Override paths via env if needed.
     Does not download models; uses repo artifacts or HF hub cache snapshots only.
     """
     applied: dict[str, str] = {}
-    repo = Path(repo_root or os.environ.get("AGENTIC_REPO_ROOT", Path.cwd())).resolve()
+    repo = _resolve_bootstrap_repo_root(repo_root)
     os.environ.setdefault("AGENTIC_REPO_ROOT", str(repo))
 
     if not os.environ.get("CHROMA_PERSIST_DIR", "").strip():
-        chroma = repo / "data" / "cache" / "chromadb"
-        if chroma.is_dir():
-            os.environ["CHROMA_PERSIST_DIR"] = str(chroma.resolve())
-            applied["CHROMA_PERSIST_DIR"] = os.environ["CHROMA_PERSIST_DIR"]
+        chroma = (repo / "data" / "cache" / "chromadb").resolve()
+        os.environ["CHROMA_PERSIST_DIR"] = str(chroma)
+        applied["CHROMA_PERSIST_DIR"] = os.environ["CHROMA_PERSIST_DIR"]
 
     if _embedding_explicitly_disabled():
         return applied
+
+    if _embedding_env_unset():
+        os.environ["EMBEDDING_ENABLED"] = "true"
+        os.environ["APPS_RG_EMBEDDING_ENABLED"] = "true"
+        applied["EMBEDDING_ENABLED"] = "true"
+        applied["APPS_RG_EMBEDDING_ENABLED"] = "true"
 
     model_id = (
         os.environ.get("APPS_RG_EMBEDDING_MODEL_NAME", "").strip()
@@ -165,12 +186,6 @@ def bootstrap_apps_rg_embedding_env(
     path, resolved, _source = _resolve_local_bge_path(model_id)
     if not resolved or not path:
         return applied
-
-    if _embedding_env_unset() or _env_truthy("EMBEDDING_ENABLED") or _env_truthy("APPS_RG_EMBEDDING_ENABLED"):
-        os.environ["EMBEDDING_ENABLED"] = "true"
-        os.environ["APPS_RG_EMBEDDING_ENABLED"] = "true"
-        applied["EMBEDDING_ENABLED"] = "true"
-        applied["APPS_RG_EMBEDDING_ENABLED"] = "true"
 
     if not os.environ.get("APPS_RG_EMBEDDING_MODEL_PATH", "").strip():
         os.environ["APPS_RG_EMBEDDING_MODEL_PATH"] = path
@@ -348,6 +363,7 @@ def apply_apps_rg_embedding_env_guards(
         os.environ.setdefault("EMBEDDING_MODEL_ID", resolved.embedding_model_name)
     if resolved.embedding_model_path:
         os.environ.setdefault("APPS_RG_EMBEDDING_MODEL_PATH", resolved.embedding_model_path)
+    os.environ.setdefault("APPS_RG_CHROMA_PRECOMPUTED_ONLY", "1")
     _logger.info(
         "apps_rg embedding settings: enabled=%s required=%s route=%s chroma_default_ef_used=%s",
         resolved.embeddings_enabled,
@@ -399,7 +415,12 @@ def write_embedding_settings_receipt(
     root = Path(artifact_dir)
     root.mkdir(parents=True, exist_ok=True)
     out = root / EMBEDDING_SETTINGS_RECEIPT_NAME
+    from apps_rg.runtime.c02_chroma_lifecycle import resolve_proof_class
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
     payload = settings.to_receipt_dict()
+    payload["product_fail_closed"] = product_fail_closed_runtime()
+    payload["proof_class"] = resolve_proof_class()
     out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return out
 

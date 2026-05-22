@@ -21,7 +21,10 @@ from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
     skill_row_eligible_for_external_claim,
     validate_arsenal_ledger_shape,
 )
-from apps_rg.fact_inventory.track_weighted_graph_expansion import ROLE_FAMILY_TRACK_WEIGHTS
+from apps_rg.fact_inventory.track_weighted_graph_expansion import (
+    ROLE_FAMILY_TRACK_WEIGHTS,
+    SENIOR_ROLE_TAXONOMY_IDS,
+)
 
 REPO_REL_DB = Path("artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite")
 
@@ -1461,6 +1464,26 @@ def materialize_augmented_skills_graph_sqlite(
     section_rows = list(section_by_key.values())
     projection_rows: list[dict[str, Any]] = []
     profiles = payload.get("role_family_projection_profiles") or {}
+    from apps_rg.fact_inventory.candidate_fact_ledger import load_master_role_family_taxonomy
+    from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
+
+    tax = load_master_role_family_taxonomy(repo_root=repo_root)
+    for rf_key in ROLE_FAMILY_TRACK_WEIGHTS:
+        if rf_key in profiles:
+            continue
+        if rf_key not in SENIOR_ROLE_TAXONOMY_IDS:
+            continue
+        pillar_ids = list(resolve_c0_pillar_hints(rf_key, taxonomy=tax, repo_root=repo_root))
+        weights = ROLE_FAMILY_TRACK_WEIGHTS.get(rf_key, {})
+        profiles[rf_key] = {
+            "label": rf_key.replace("_", " ").title(),
+            "taxonomy_ids": [rf_key],
+            "top_weighted_pillars": [
+                {"pillar_id": pid, "weight": round(1.0 - (i * 0.08), 2)}
+                for i, pid in enumerate(pillar_ids[:6])
+            ],
+            "synthesized_for_sqlite": True,
+        }
     for rf_key, prof in profiles.items():
         if not isinstance(prof, dict):
             continue

@@ -374,7 +374,11 @@ def c0_retrieve_apps_rg(
             import chromadb
 
             client = chromadb.PersistentClient(path=effective_chroma)
-            fv_col = client.get_collection("fact_vectors")
+            from apps_rg.runtime.chroma_precomputed_collection import (
+                get_precomputed_embeddings_collection_for_query,
+            )
+
+            fv_col = get_precomputed_embeddings_collection_for_query(client, "fact_vectors")
             app_payload = getattr(validated_request, "app_payload", None) or {}
             extra, sec_verdicts, _, sec_sparse_refs, sec_score_profile, sec_traces = _perform_bounded_section_retrieval(
                 effective_chroma,
@@ -396,6 +400,12 @@ def c0_retrieve_apps_rg(
         except C0EvidenceGapError:
             raise
         except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+            from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+            if product_fail_closed_runtime():
+                raise C0EvidenceGapError(
+                    f"C0.2 dense lane failed on product path: {exc}"
+                ) from exc
             _logger.warning("Chroma fact_vectors retrieval failed: %s", exc)
             chroma_retrieved = False
             dense_search_refs.append(f"dense:error:{exc.__class__.__name__}")
@@ -841,6 +851,21 @@ class SectionRetrievalProfile:
     def get_sections(self) -> list[dict[str, Any]]:
         """Get configured sections."""
         return self._sections
+
+    def resolve_section_id(self, section_id: str) -> str:
+        """Apply ``section_id_aliases`` (e.g. professional_summary → executive_summary)."""
+        aliases = self._config.get("section_id_aliases") or {}
+        if isinstance(aliases, dict):
+            return str(aliases.get(section_id) or section_id)
+        return section_id
+
+    def get_section_config(self, section_id: str) -> dict[str, Any] | None:
+        """Return retrieval profile row for ``section_id``, or None if unconfigured."""
+        canonical = self.resolve_section_id(section_id)
+        for row in self._sections:
+            if str(row.get("section_id") or "") in (section_id, canonical):
+                return row
+        return None
     
     def get_sparse_defaults(self) -> dict[str, Any]:
         return dict(self._config.get("sparse_lane_defaults") or {})
@@ -1094,6 +1119,8 @@ def _perform_bounded_section_retrieval(
     evidence_digest: str,
     timestamp_iso: str,
     chroma_collection: Any | None = None,
+    *,
+    section_id_filter: str | None = None,
 ) -> tuple[list[EvidenceItem], list[Any], str, list[str], list[tuple[str, float]], list[SectionEvidenceTrace]]:
     """Perform bounded section retrieval from fact_vectors.
 
@@ -1164,7 +1191,27 @@ def _perform_bounded_section_retrieval(
     assert_dense_retrieval_allowed(_sec_emb)
     model = _get_embedding_model()
 
-    for section in profile.get_sections():
+    sections = profile.get_sections()
+    if section_id_filter:
+        canonical = profile.resolve_section_id(section_id_filter)
+        sections = [
+            s
+            for s in sections
+            if str(s.get("section_id") or "") in (section_id_filter, canonical)
+        ]
+        if not sections:
+            verdict = GateVerdict(
+                gate_id="G_SECTION_RETRIEVAL",
+                gate_family="C0_G_SECTION_RETRIEVAL",
+                evaluated_stage="C0",
+                result=VERDICT_UNKNOWN,
+                unknown_reason=f"no section_retrieval_profile for {section_id_filter!r}",
+                evaluated_at=timestamp_iso,
+                evidence_digest=evidence_digest,
+            )
+            return [], [verdict], "UNKNOWN", [], [], []
+
+    for section in sections:
         if budget.sections_budget_exhausted or budget.budget_exhausted:
             break
 

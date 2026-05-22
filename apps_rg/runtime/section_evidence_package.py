@@ -230,7 +230,14 @@ def _modular_pointer_run_dir(repo_root: Path, cli_dir: Path, section_id: str) ->
     lane_base = cli_dir / "modular_r4" / "sections" / section_id
     if not lane_base.is_dir():
         return None
-    for ptr_name in ("latest_real_run.json", "latest_successful_real_run.json"):
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+    ptr_names = (
+        ("latest_successful_real_run.json",)
+        if product_fail_closed_runtime()
+        else ("latest_real_run.json", "latest_successful_real_run.json")
+    )
+    for ptr_name in ptr_names:
         ptr = lane_base / ptr_name
         if not ptr.is_file():
             continue

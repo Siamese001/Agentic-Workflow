@@ -69,6 +69,8 @@ TARGET_COLLECTIONS = [
     "traces",
     "agentic_best_practices",
     "repo_git_history",
+    # apps_rg C0.2 hybrid sparse lane (Brown & Brown product proof)
+    "fact_vectors",
 ]
 
 BATCH_SIZE = 500

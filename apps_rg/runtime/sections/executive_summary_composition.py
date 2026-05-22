@@ -51,6 +51,9 @@ GENERIC_AI_HYPE = (
 
 EXEC_VOICE_BAD_OPENERS = (
     "engineering executive with expertise in",
+    "with extensive experience",
+    "an experienced leader",
+    "an experienced engineering executive",
     "seasoned executive",
     "results-driven",
     "proven track record",
@@ -195,7 +198,7 @@ def build_executive_summary_composition_plan(
         "dominant_brushstroke_id": dominant,
         "brushstrokes": brushstrokes,
         "graph_skill_refs": graph_refs,
-        "srfs_active": bool(srfs_integration and str(srfs_integration.get("artifact_path_resolved") or "").strip()),
+        "srfs_active": False,
         "graph_backed_composition_claimed": bool(graph_refs) or bool(
             proof_pool_metadata and proof_pool_metadata.get("graph_skills_proof_pool")
         ),
@@ -308,13 +311,32 @@ def check_s1_dominant_brushstroke_thesis(s1: str) -> tuple[bool, str | None]:
     return True, "ok"
 
 
+def _graph_painting_active(proof_pool_metadata: dict[str, Any] | None) -> bool:
+    return isinstance(proof_pool_metadata, dict) and bool(
+        proof_pool_metadata.get("graph_skills_proof_pool")
+    )
+
+
+def check_graph_painting_sentence_responsibility_shape(
+    resume_display_text: str,
+    proof_pool_metadata: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    """Graph-backed painting-plan sentence arc (replaces legacy SRFS JSON envelope)."""
+    return check_srfs_sentence_responsibility_shape_painting(
+        resume_display_text, proof_pool_metadata
+    )
+
+
 def check_srfs_sentence_responsibility_shape_painting(
     resume_display_text: str,
-    srfs_integration: dict[str, Any] | None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    *,
+    srfs_integration: dict[str, Any] | None = None,
 ) -> tuple[bool, str | None]:
-    """SRFS arc with painting-plan S1 (replaces rigid S1 mechanism-term ban)."""
-    if not srfs_integration or not str(srfs_integration.get("artifact_path_resolved") or "").strip():
-        return True, "skipped_no_selected_role_fact_set"
+    """Legacy alias — graph painting only."""
+    _ = srfs_integration
+    if not _graph_painting_active(proof_pool_metadata):
+        return True, "skipped_not_graph_painting"
     from apps_rg.runtime.validators.executive_summary_x2 import (
         _srfs_credibility_sentence_opener_ok,
         _srfs_lane_no_commercial_org_cred,
@@ -391,10 +413,12 @@ def check_composition_plan_present(
     parsed_output: dict[str, Any] | None,
     *,
     artifacts_dir: Any | None,
-    srfs_integration: dict[str, Any] | None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    srfs_integration: dict[str, Any] | None = None,
 ) -> tuple[bool, str | None]:
-    if not srfs_integration or not str(srfs_integration.get("artifact_path_resolved") or "").strip():
-        return True, "skipped_no_srfs"
+    _ = srfs_integration
+    if not _graph_painting_active(proof_pool_metadata):
+        return True, "skipped_not_graph_painting"
     plan = resolve_composition_plan(parsed_output, artifacts_dir=artifacts_dir)
     if not plan:
         return False, "executive_summary_composition_plan.json missing or invalid"

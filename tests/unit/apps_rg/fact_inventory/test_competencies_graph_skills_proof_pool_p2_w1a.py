@@ -15,12 +15,12 @@ from apps_rg.fact_inventory.competencies_graph_skills_proof_pool import (
     CompetenciesGraphProofPoolError,
 )
 from apps_rg.fact_inventory.track_weighted_graph_expansion import ROOT
+from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGER
 from apps_rg.runtime.proof_pool_resolver import (
     PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
-    PROOF_SOURCE_BROAD_SKILLS_LEDGER,
-    _allocate_from_ledger,
     resolve_section_proof_pool,
 )
+import apps_rg.runtime.proof_pool_resolver as proof_pool_resolver
 
 REPO = ROOT
 HYBRID_JD = (
@@ -71,28 +71,8 @@ def test_legacy_broad_skills_flag_rejected() -> None:
         )
 
 
-def test_allocate_from_ledger_competencies_unreachable() -> None:
-    from apps_rg.fact_inventory.candidate_fact_ledger import (
-        default_ledger_path,
-        default_taxonomy_path,
-        load_master_candidate_fact_ledger,
-        load_master_role_family_taxonomy,
-    )
-
-    ledger = load_master_candidate_fact_ledger(path=default_ledger_path(REPO))
-    taxonomy = load_master_role_family_taxonomy(repo_root=REPO)
-    with pytest.raises(ValueError, match="deprecated"):
-        _allocate_from_ledger(
-            ledger=ledger,
-            taxonomy=taxonomy,
-            section_id="competencies",
-            target_company="",
-            target_role="",
-            jd_text="",
-            briefing_text="",
-            ledger_path=default_ledger_path(REPO),
-            taxonomy_path=default_taxonomy_path(REPO),
-        )
+def test_legacy_allocate_from_ledger_removed_from_product_resolver() -> None:
+    assert not hasattr(proof_pool_resolver, "_allocate_from_ledger")
 
 
 def test_graph_unavailable_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -71,10 +71,10 @@ class CheckRecorder:
 
 
 _BINDING_FILES: tuple[Path, ...] = (
-    REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
-    REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
-    REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
-    REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py",
 )
 
 _DISPATCH_FILE: Path = (
@@ -178,10 +178,10 @@ def check_c0_pa_signatures(rec: CheckRecorder) -> None:
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import (  # guardian: allow-layer-violation -- CI conformance gate introspects ValidatedRequest SSOT and binding callables; subprocess-free deterministic check per gate charter
         ValidatedRequest,
     )
-    from agentic_core.runtime.c0.apps_rg_c0_binding import (  # guardian: allow-layer-violation -- same CI gate: signature inspection of c0_retrieve_apps_rg
+    from apps_rg.runtime.bindings.c0_binding import (  # guardian: allow-layer-violation -- same CI gate: signature inspection of c0_retrieve_apps_rg
         c0_retrieve_apps_rg,
     )
-    from agentic_core.prompt_governance.apps_rg_pa_binding import (  # guardian: allow-layer-violation -- same CI gate: signature inspection of pa_compose_apps_rg
+    from apps_rg.runtime.bindings.pa_binding import (  # guardian: allow-layer-violation -- same CI gate: signature inspection of pa_compose_apps_rg
         pa_compose_apps_rg,
     )
 
@@ -221,20 +221,20 @@ def _live_thin_payload() -> dict[str, Any]:
 
 
 def check_live_path_consumption(rec: CheckRecorder) -> None:
-    from agentic_core.L0_routing.apps_rg_l0_binding import (  # guardian: allow-layer-violation -- CI live-path smoke imports shims to assert AG-2 field population; deterministic gate surface
+    from apps_rg.runtime.bindings.l0_binding import (  # guardian: allow-layer-violation -- CI live-path smoke imports shims to assert AG-2 field population; deterministic gate surface
         l0_route_apps_rg,
     )
-    from agentic_core.L1_cognition.apps_rg_l1_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+    from apps_rg.runtime.bindings.l1_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
         l1_plan_apps_rg,
     )
-    from agentic_core.prompt_governance.apps_rg_pa_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+    from apps_rg.runtime.bindings.pa_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
         pa_compose_apps_rg,
     )
-    from agentic_core.runtime.c0.apps_rg_c0_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+    from apps_rg.runtime.bindings.c0_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
         c0_retrieve_apps_rg,
     )
     from apps_rg.runtime.dispatch import apps_rg_parse
-    from agentic_core.runtime.entry.u0_apps_rg_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
+    from apps_rg.runtime.bindings.u0_binding import (  # guardian: allow-layer-violation -- same CI live-path gate
         u0_validate_apps_rg,
     )
 

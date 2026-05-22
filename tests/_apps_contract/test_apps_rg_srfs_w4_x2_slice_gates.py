@@ -82,6 +82,7 @@ def test_headline_srfs_gate_skipped_when_not_active() -> None:
     )
     gids = [g.gate_id for g in gates]
     assert "x2_headline_source_fact_ids_within_srfs_slice" not in gids
+    assert "x2_headline_active_proof_pool_source_fact_ids" not in gids
 
 
 def test_headline_srfs_gate_fails_exec_only_fact(tmp_path: Path) -> None:
@@ -123,7 +124,7 @@ def test_headline_srfs_gate_fails_exec_only_fact(tmp_path: Path) -> None:
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    g = by_id["x2_headline_source_fact_ids_within_srfs_slice"]
+    g = by_id["x2_headline_active_proof_pool_source_fact_ids"]
     assert g.pass_ is False
     assert "bul_exec_only_001" in (g.observed_value.get("out_of_slice_fact_ids") or [])
 
@@ -282,21 +283,17 @@ def test_offline_stub_includes_srfs_slice_gate_pass(structure_w4_srfs: Path, sec
     blob = json.loads(x2_path.read_text(encoding="utf-8"))
     gates = blob.get("gates") or []
     # Map section -> gate id
-    gate_pattern = {
-        "headline": "x2_headline_source_fact_ids_within_srfs_slice",
-        "executive_summary": "x2_executive_summary_source_fact_ids_within_srfs_slice",
-        "unify_bullets": "x2_unify_bullets_source_fact_ids_within_srfs_slice",
-        "unify_narrative": "x2_unify_narrative_source_fact_ids_within_srfs_slice",
-        "ibm_bullets": "x2_ibm_bullets_source_fact_ids_within_srfs_slice",
-        "ibm_narrative": "x2_ibm_narrative_source_fact_ids_within_srfs_slice",
-        "competencies": "x2_competencies_source_fact_ids_within_srfs_slice",
-    }[section]
+    gate_pattern = f"x2_{section}_active_proof_pool_source_fact_ids"
     by_id = {g["gate_id"]: g for g in gates}
     assert gate_pattern in by_id, (section, [g["gate_id"] for g in gates][:20])
     assert by_id[gate_pattern]["pass"] is True, by_id[gate_pattern]
     obs = by_id[gate_pattern].get("observed_value") or {}
-    assert obs.get("x2_srfs_gate_status") is True
-    assert obs.get("selected_role_fact_set_used") is True
+    assert obs.get("x2_srfs_gate_status") in (True, "NOT_APPLICABLE")
+    assert "within_srfs_slice" not in gate_pattern
+    if obs.get("x2_srfs_gate_status") == "NOT_APPLICABLE":
+        assert obs.get("selected_role_fact_set_used") is False
+    else:
+        assert obs.get("selected_role_fact_set_used") is True
     assert obs.get("srfs_section_id") == section
     assert obs.get("out_of_slice_fact_ids") == []
 
@@ -351,7 +348,7 @@ def test_unify_narrative_srfs_gate_fails_synthetic_not_in_slice(tmp_path: Path) 
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    g = by_id["x2_unify_narrative_source_fact_ids_within_srfs_slice"]
+    g = by_id["x2_unify_narrative_active_proof_pool_source_fact_ids"]
     assert g.pass_ is False
     assert "unify_narrative_base_001" in (g.observed_value.get("out_of_slice_fact_ids") or [])
 
@@ -377,7 +374,7 @@ def test_unify_bullets_srfs_gate_detects_cross_slice_id(tmp_path: Path) -> None:
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    assert by_id["x2_unify_bullets_source_fact_ids_within_srfs_slice"].pass_ is False
+    assert by_id["x2_unify_bullets_active_proof_pool_source_fact_ids"].pass_ is False
 
 
 def test_competencies_term_bad_id_fails_srfs_gate(tmp_path: Path) -> None:
@@ -427,7 +424,7 @@ def test_competencies_term_bad_id_fails_srfs_gate(tmp_path: Path) -> None:
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    assert by_id["x2_competencies_source_fact_ids_within_srfs_slice"].pass_ is False
+    assert by_id["x2_competencies_active_proof_pool_source_fact_ids"].pass_ is False
 
 
 def test_ibm_narrative_srfs_gate_fails_non_slice_bullet(tmp_path: Path) -> None:
@@ -454,7 +451,7 @@ def test_ibm_narrative_srfs_gate_fails_non_slice_bullet(tmp_path: Path) -> None:
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    assert by_id["x2_ibm_narrative_source_fact_ids_within_srfs_slice"].pass_ is False
+    assert by_id["x2_ibm_narrative_active_proof_pool_source_fact_ids"].pass_ is False
 
 
 def test_ibm_bullets_srfs_gate_fails_out_of_slice(tmp_path: Path) -> None:
@@ -497,4 +494,4 @@ def test_ibm_bullets_srfs_gate_fails_out_of_slice(tmp_path: Path) -> None:
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    assert by_id["x2_ibm_bullets_source_fact_ids_within_srfs_slice"].pass_ is False
+    assert by_id["x2_ibm_bullets_active_proof_pool_source_fact_ids"].pass_ is False

@@ -11,7 +11,7 @@ from apps_rg.fact_inventory.validate_commercial_medium_claim_output_containment 
     OUT_JSON,
     build_containment_payload,
 )
-from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_BROAD_SKILLS_LEDGER
+from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGER
 
 REPO = Path(__file__).resolve().parents[2]
 

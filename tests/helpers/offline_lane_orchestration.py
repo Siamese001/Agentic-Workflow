@@ -14,7 +14,6 @@ from typing import Any, Callable, Mapping, Sequence
 
 from apps_rg.runtime.internal.lane_batch import (
     CANONICAL_BASE_RESUME_REPO_REL,
-    PLANNED_DOCX_REL,
     POINTER_PATH,
     RUNTIME_PROOFS,
     SECTION_ORDER,
@@ -103,34 +102,6 @@ def _run_subprocess(
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout or "").strip()[-4000:]
         raise RuntimeError(f"{label} failed (exit {proc.returncode}): {tail}")
-
-
-def _run_docx_emit(repo: Path, planned_docx_posix: str) -> dict[str, Any]:
-    from apps_rg.runtime.internal.docx_manifest_builder import (
-        PLANNED_DOCX_POSIX,
-        build_docx_manifest,
-        resolve_docx_manifest_paths,
-    )
-    from apps_rg.runtime.internal.docx_renderer import DocxRendererPaths, build_docx_from_final_resume
-
-    _ = PLANNED_DOCX_POSIX
-    mf_paths = resolve_docx_manifest_paths(repo, planned_docx_posix=planned_docx_posix)
-    mf = build_docx_manifest(mf_paths)
-    if not mf["gates_all_pass"]:
-        raise RuntimeError(f"docx_manifest_builder X2 failed: {mf['failed_gate_ids']}")
-    norm_rel = planned_docx_posix.replace("\\", "/")
-    out_docx = (repo / norm_rel).resolve()
-    dr = DocxRendererPaths(
-        repo_root=repo,
-        final_resume_json=mf_paths.final_resume_json,
-        docx_manifest_json=mf_paths.output_dir / "docx_manifest.json",
-        output_dir=out_docx.parent,
-        output_docx=out_docx,
-    )
-    dx = build_docx_from_final_resume(dr)
-    if not dx["gates_all_pass"]:
-        raise RuntimeError(f"docx_renderer X2 failed: {dx['failed_gate_ids']}")
-    return {"manifest": mf, "render": dx}
 
 
 def _package_x3_emit(repo: Path) -> dict[str, Any]:
@@ -270,18 +241,10 @@ def run_orchestration(
         if not asm["gates_all_pass"]:
             raise RuntimeError(f"final_resume_assembler failed: {asm['failed_gate_ids']}")
 
-        planned_rel = PLANNED_DOCX_REL.replace("\\", "/")
         if output_docx is not None:
-            outp = output_docx if output_docx.is_absolute() else (repo / output_docx)
-            outp = outp.resolve()
-            if outp.name != "amit_ayer_resume_v1.docx":
-                raise ValueError(
-                    f"--output-docx basename must be amit_ayer_resume_v1.docx (got {outp.name!r})",
-                )
-            planned_rel = str(outp.relative_to(repo.resolve()).as_posix())
-        dx_bundle = _run_docx_emit(repo, planned_rel)
-        mf = dx_bundle["manifest"]
-        dx = dx_bundle["render"]
+            raise ValueError(
+                "DOCX offline emit removed; omit --output-docx (package X3 is JSON-only by default)."
+            )
 
         fr_x2_path = repo / RUNTIME_PROOFS / "final_resume_assembly" / "final_resume_x2_gate_outputs.json"
         fr_x2_blob = json.loads(fr_x2_path.read_text(encoding="utf-8"))
@@ -304,14 +267,10 @@ def run_orchestration(
                 "exists": bool(p and p.is_file()),
             }
 
-        docx_final = repo / planned_rel.replace("\\", "/")
         paths_out = {
-            "final_docx": docx_final.resolve().as_posix(),
             "final_resume_json": (repo / f"{RUNTIME_PROOFS}/final_resume_assembly/final_resume.json").resolve().as_posix(),
             "generated_lane_rollup": rollup_path.resolve().as_posix(),
             "locked_copy_manifest": (repo / f"{RUNTIME_PROOFS}/locked_copy/locked_copy_manifest.json").resolve().as_posix(),
-            "docx_manifest": (repo / f"{RUNTIME_PROOFS}/docx_manifest/docx_manifest.json").resolve().as_posix(),
-            "docx_render_manifest": (repo / f"{RUNTIME_PROOFS}/docx/docx_render_manifest.json").resolve().as_posix(),
             "resume_package_x3_disposition": emitted["resume_package_x3_disposition_path"].resolve().as_posix(),
             "package_manifest": emitted["resume_package_manifest_path"].resolve().as_posix(),
         }
@@ -350,14 +309,7 @@ def run_orchestration(
                 "all_pass": fr_x2_blob.get("all_pass"),
                 "failed_gate_ids": fr_x2_blob.get("failed_gate_ids"),
             },
-            "docx_manifest_result": {
-                "gates_all_pass": mf.get("gates_all_pass"),
-                "failed_gate_ids": mf.get("failed_gate_ids"),
-            },
-            "docx_render_result": {
-                "gates_all_pass": dx.get("gates_all_pass"),
-                "failed_gate_ids": dx.get("failed_gate_ids"),
-            },
+            "docx_emit_skipped": True,
             "non_generation_calls": disposition.get("non_generation_stage_guarantees"),
         }
         result["rollup_id"] = rollup.get("rollup_id")

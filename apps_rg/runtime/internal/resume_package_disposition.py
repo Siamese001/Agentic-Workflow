@@ -27,6 +27,12 @@ from apps_rg.runtime.package.resume_package_manifest import (
 from apps_rg.runtime.package.apps_rg_full_resume_x3_eligibility import (
     evaluate_apps_rg_full_success_eligibility,
 )
+from apps_rg.runtime.product_output_policy import docx_output_required
+from apps_rg.runtime.disposition_authority import (
+    DISPOSITION_AUTHORITY_SPINE,
+    EXIT_DISPOSITION_RECEIPT_ARTIFACT,
+    resolve_lane_x3_from_artifact_refs,
+)
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 from apps_rg.runtime.package.resume_package_l6_audit import audit_l6_shadow_packet_for_lane
@@ -157,6 +163,16 @@ def _merge_l6_package_checks(per_lane: Mapping[str, Mapping[str, Any]]) -> tuple
     return agg, fatal_bundle
 
 
+def _load_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    try:
+        raw = load_json(path)
+        return raw if isinstance(raw, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
 def _load_optional_json(path: Path) -> dict[str, Any] | None:
     if not path.is_file():
         return None
@@ -224,30 +240,44 @@ def evaluate_resume_package(
         x3_rollup = row_raw.get("x3_code")
         refs_raw = row_raw.get("artifact_refs")
         refs = refs_raw if isinstance(refs_raw, dict) else {}
-        xp = refs.get("x3_disposition.json")
-        x_path = _resolve_repo_path(rr, xp)
-        artifact_code: str | None = None
-        codes_match: bool | None = None
-        recorded = False
-        load_err: str | None = None
-        if x_path is None or not x_path.is_file():
-            load_err = "x3_disposition_missing_or_unreadable_path"
-            block_notes.append(f"{lane_key}:x3_record_missing")
+        x3_auth = resolve_lane_x3_from_artifact_refs(artifact_refs=refs, repo_root=rr)
+        authoritative_artifact = x3_auth.get("authoritative_artifact")
+        disposition_authority = str(x3_auth.get("disposition_authority") or "lane")
+        spine_x3_claimed = bool(x3_auth.get("spine_x3_claimed", False))
+        if authoritative_artifact == EXIT_DISPOSITION_RECEIPT_ARTIFACT:
+            artifact_code = x3_auth.get("x3_code")
+            recorded = artifact_code is not None
+            load_err = None if recorded else "exit_disposition_receipt_unreadable"
+            x_path = _resolve_repo_path(rr, refs.get(EXIT_DISPOSITION_RECEIPT_ARTIFACT))
         else:
-            recorded = True
-            try:
-                raw_x3 = load_json(x_path)
-                artifact_code = str(raw_x3.get("x3_code")) if isinstance(raw_x3, dict) else None
-            except OSError:
-                artifact_code = None
-                load_err = "x3_disposition_os_error"
-                block_notes.append(f"{lane_key}:x3_file_os_error")
-                recorded = False
-            except json.JSONDecodeError:
-                artifact_code = None
-                load_err = "x3_disposition_invalid_json"
-                block_notes.append(f"{lane_key}:x3_invalid_json")
-                recorded = False
+            xp = refs.get("x3_disposition.json")
+            x_path = _resolve_repo_path(rr, xp)
+            artifact_code = None
+            recorded = False
+            load_err = None
+            if x_path is None or not x_path.is_file():
+                load_err = "x3_disposition_missing_or_unreadable_path"
+                block_notes.append(f"{lane_key}:x3_record_missing")
+            else:
+                recorded = True
+                try:
+                    raw_x3 = load_json(x_path)
+                    artifact_code = str(raw_x3.get("x3_code")) if isinstance(raw_x3, dict) else None
+                    if isinstance(raw_x3, dict) and raw_x3.get("spine_x3_claimed") is True:
+                        deterministic_failed_ids["generated_lane_x2"].append(
+                            f"lane_mirror_claims_spine_x3:{lane_key}"
+                        )
+                        block_notes.append(f"{lane_key}:lane_x3_must_not_claim_spine_authority")
+                except OSError:
+                    artifact_code = None
+                    load_err = "x3_disposition_os_error"
+                    block_notes.append(f"{lane_key}:x3_file_os_error")
+                    recorded = False
+                except json.JSONDecodeError:
+                    artifact_code = None
+                    load_err = "x3_disposition_invalid_json"
+                    block_notes.append(f"{lane_key}:x3_invalid_json")
+                    recorded = False
 
         codes_match = None
         if artifact_code is not None and isinstance(x3_rollup, str):
@@ -255,12 +285,43 @@ def evaluate_resume_package(
             if codes_match is False:
                 deterministic_failed_ids["generated_lane_x2"].append(f"x3_code_mismatch:{lane_key}")
                 block_notes.append(f"{lane_key}:x3_code_mismatch_rollup_vs_artifact")
+        if spine_x3_claimed and disposition_authority != DISPOSITION_AUTHORITY_SPINE:
+            deterministic_failed_ids["generated_lane_x2"].append(
+                f"spine_x3_claimed_without_spine_authority:{lane_key}"
+            )
 
         if rg != "REAL_LLM":
             deterministic_failed_ids["generated_lane_x2"].append(
                 f"runtime_generation_not_real_llm:{lane_key}:{rg!s}"
             )
             block_notes.append(f"{lane_key}:runtime_generation_status_not_REAL_LLM")
+
+        l2_ref = refs.get("l2_output.json")
+        l2_path = _resolve_repo_path(rr, l2_ref)
+        if l2_path is not None and l2_path.is_file():
+            try:
+                l2_doc = load_json(l2_path)
+                pq = str(l2_doc.get("product_quality_status") or "") if isinstance(l2_doc, dict) else ""
+            except (json.JSONDecodeError, OSError):
+                pq = ""
+                deterministic_failed_ids["generated_lane_x2"].append(
+                    f"lane_l2_unreadable_for_product_quality:{lane_key}"
+                )
+            else:
+                from apps_rg.runtime.product_output_policy import (
+                    PRODUCT_QUALITY_PASS,
+                    product_fail_closed_runtime,
+                )
+
+                if product_fail_closed_runtime() and pq != PRODUCT_QUALITY_PASS:
+                    deterministic_failed_ids["generated_lane_x2"].append(
+                        f"product_quality_not_pass:{lane_key}:{pq or 'UNKNOWN'}"
+                    )
+                    block_notes.append(f"{lane_key}:product_quality_status_not_PASS")
+        elif _resolve_repo_path(rr, refs.get("l2_output.json")) is None:
+            deterministic_failed_ids["generated_lane_x2"].append(
+                f"missing_lane_l2_for_product_quality:{lane_key}"
+            )
         xf_int = _rollup_x2_failed_int(x2f)
         refs_x2_raw = refs.get("x2_gate_outputs.json")
         refs_x2 = _resolve_repo_path(rr, refs_x2_raw)
@@ -292,6 +353,10 @@ def evaluate_resume_package(
                 "runtime_generation_status": rg,
                 "rollup_x2_failed": xf_int,
                 "rollup_x3_code": x3_rollup,
+                "disposition_authority": disposition_authority,
+                "x3_authoritative_artifact": authoritative_artifact,
+                "section_x3_mirror_only": bool(x3_auth.get("section_x3_mirror_only", True)),
+                "spine_x3_claimed": spine_x3_claimed,
                 "x3_recorded": recorded,
                 "x3_record_path_repo_relative": _repo_rel(rr, x_path) if recorded and x_path else None,
                 "x3_code_from_artifact": artifact_code,
@@ -336,15 +401,19 @@ def evaluate_resume_package(
         deterministic_failed_ids["final_resume_x2"].extend(fid_fr)
         block_notes.append(f"final_resume_x2_fail:{','.join(fid_fr)}")
 
-    ok_dm, fid_dm = _x2_all_pass(docx_manifest_x2)
-    if not ok_dm:
-        deterministic_failed_ids["docx_manifest_x2"].extend(fid_dm)
-        block_notes.append(f"docx_manifest_x2_fail:{','.join(fid_dm)}")
+    require_docx = docx_output_required()
+    if require_docx:
+        ok_dm, fid_dm = _x2_all_pass(docx_manifest_x2)
+        if not ok_dm:
+            deterministic_failed_ids["docx_manifest_x2"].extend(fid_dm)
+            block_notes.append(f"docx_manifest_x2_fail:{','.join(fid_dm)}")
 
-    ok_dr, fid_dr = _x2_all_pass(docx_render_x2)
-    if not ok_dr:
-        deterministic_failed_ids["docx_render_x2"].extend(fid_dr)
-        block_notes.append(f"docx_render_x2_fail:{','.join(fid_dr)}")
+        ok_dr, fid_dr = _x2_all_pass(docx_render_x2)
+        if not ok_dr:
+            deterministic_failed_ids["docx_render_x2"].extend(fid_dr)
+            block_notes.append(f"docx_render_x2_fail:{','.join(fid_dr)}")
+    else:
+        ok_dm, ok_dr = True, True
 
     agg_det: list[str] = []
     for layer, items in deterministic_failed_ids.items():
@@ -354,23 +423,28 @@ def evaluate_resume_package(
             agg_det.append(f"{layer}:{item}")
     deterministic_failed_ids["deterministic_gate_failures_aggregate"] = sorted(set(agg_det))
 
-    guarantees_ok, merged_calls = _merge_non_generation_guarantees(
-        final_resume_manifest=final_manifest,
-        docx_manifest=docx_manifest,
-        docx_render_manifest=docx_render_manifest,
-    )
-    if not guarantees_ok:
-        block_notes.append("non_generation_guarantee_merge_failed_or_missing_sources")
+    out_docx_repo: str | None = None
+    if require_docx:
+        guarantees_ok, merged_calls = _merge_non_generation_guarantees(
+            final_resume_manifest=final_manifest,
+            docx_manifest=docx_manifest,
+            docx_render_manifest=docx_render_manifest,
+        )
+        if not guarantees_ok:
+            block_notes.append("non_generation_guarantee_merge_failed_or_missing_sources")
 
-    out_docx_repo = docx_render_manifest.get("output_docx")
-    if not isinstance(out_docx_repo, str) or not out_docx_repo.strip():
-        block_notes.append("docx_render_manifest_missing_output_docx")
-        docx_abs: Path | None = None
+        out_docx_repo = docx_render_manifest.get("output_docx")
+        if not isinstance(out_docx_repo, str) or not out_docx_repo.strip():
+            block_notes.append("docx_render_manifest_missing_output_docx")
+            docx_abs: Path | None = None
+        else:
+            docx_abs = (rr / out_docx_repo.strip()).resolve()
+        docx_ok = docx_abs is not None and docx_abs.is_file()
+        if not docx_ok:
+            block_notes.append("rendered_docx_absent_on_disk")
     else:
-        docx_abs = (rr / out_docx_repo.strip()).resolve()
-    docx_ok = docx_abs is not None and docx_abs.is_file()
-    if not docx_ok:
-        block_notes.append("rendered_docx_absent_on_disk")
+        guarantees_ok, merged_calls = True, {}
+        docx_ok = True
 
     apps_rg_w3_enforced = False
     apps_rg_w3_eligible = True
@@ -404,6 +478,7 @@ def evaluate_resume_package(
     extra = [f"apps_rg_l2_product_w3:{r}" for r in deterministic_failed_ids["apps_rg_l2_product_w3"]]
     deterministic_failed_ids["deterministic_gate_failures_aggregate"] = sorted(set(prev_agg + extra))
 
+    docx_layers = ("docx_manifest_x2", "docx_render_x2") if require_docx else ()
     deterministic_blocked = (
         any(
             deterministic_failed_ids[k]
@@ -411,13 +486,12 @@ def evaluate_resume_package(
                 "generated_lane_x2",
                 "locked_copy_x2",
                 "final_resume_x2",
-                "docx_manifest_x2",
-                "docx_render_x2",
+                *docx_layers,
                 "apps_rg_l2_product_w3",
             )
         )
-        or not guarantees_ok
-        or not docx_ok
+        or (require_docx and not guarantees_ok)
+        or (require_docx and not docx_ok)
     )
 
     rollup_x3_allow = []
@@ -457,8 +531,22 @@ def evaluate_resume_package(
     if product_review_required and all_sections_x3_allow:
         block_notes.append("product_review_required:review_or_mock_lanes_present")
 
+    package_spine_receipt = _resolve_repo_path(
+        rr,
+        (final_manifest.get("spine_exit_disposition_receipt_ref") if isinstance(final_manifest, Mapping) else None),
+    )
+    package_disposition_authority = "lane_rollup_aggregate"
+    if package_spine_receipt is not None and package_spine_receipt.is_file():
+        package_disposition_authority = DISPOSITION_AUTHORITY_SPINE
+    elif any(r.get("spine_x3_claimed") for r in lane_rows):
+        deterministic_failed_ids["generated_lane_x2"].append(
+            "package_lane_mirror_claims_spine_without_spine_receipt"
+        )
+        block_notes.append("integrated_package:lane_x3_spine_claim_blocked")
+
     disposition = {
         "disposition_family": "resume_package_x3",
+        "disposition_authority": package_disposition_authority,
         "evaluated_at_utc": _utc_now_iso(),
         "constructor_module": CONSTRUCTOR_MODULE,
         "final_x3_code": final_code,
@@ -663,10 +751,10 @@ def emit_resume_package_artifacts(
     lc_x2 = load_json(p.locked_copy_x2_json)
     fr_m = load_json(p.final_resume_manifest_json)
     fr_x2 = load_json(p.final_resume_x2_json)
-    dm = load_json(p.docx_manifest_json)
-    dm_x2 = load_json(p.docx_manifest_x2_json)
-    drm = load_json(p.docx_render_manifest_json)
-    dr_x2 = load_json(p.docx_render_x2_json)
+    dm = _load_json_if_exists(p.docx_manifest_json)
+    dm_x2 = _load_json_if_exists(p.docx_manifest_x2_json)
+    drm = _load_json_if_exists(p.docx_render_manifest_json)
+    dr_x2 = _load_json_if_exists(p.docx_render_x2_json)
 
     assembly_dir = p.final_resume_json.parent
     assembly_receipt = _load_optional_json(assembly_dir / "final_resume_receipt.json")

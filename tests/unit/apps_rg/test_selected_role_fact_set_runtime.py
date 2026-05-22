@@ -9,9 +9,6 @@ import pytest
 
 from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
 from apps_rg.runtime.sections import selected_role_fact_set as srfs
-from apps_rg.runtime.sections.exec_summary_srfs_integration import build_exec_summary_srfs_bundle
-
-
 def _required_top(
     selected_facts_by_section: dict,
     *,
@@ -53,7 +50,7 @@ def test_validate_and_plan_each_section_key(section_id: str, tmp_path: Path) -> 
     doc = _required_top({section_id: [_high_row(cid=f"bul_unit_{section_id[:3]}")]})
     p = tmp_path / "srfs.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     srfs.validate_section_slice_required(loaded, section_id)
     plan = srfs.build_section_fact_plan(loaded, section_id)
     assert plan["section_id"] == section_id
@@ -65,7 +62,7 @@ def test_loader_legacy_list_shape(tmp_path: Path) -> None:
     doc = _required_top({"headline": [_high_row(cid="bul_headline_001")]})
     p = tmp_path / "a.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     rows = srfs.get_section_fact_slice(loaded, "headline")
     assert len(rows) == 1
     assert rows[0]["candidate_fact_id"] == "bul_headline_001"
@@ -75,7 +72,7 @@ def test_loader_nested_facts_shape(tmp_path: Path) -> None:
     doc = _required_top({"headline": {"facts": [_high_row(cid="bul_nested_001")]}})
     p = tmp_path / "b.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     rows = srfs.get_section_fact_slice(loaded, "headline")
     assert len(rows) == 1
     assert rows[0]["candidate_fact_id"] == "bul_nested_001"
@@ -85,7 +82,7 @@ def test_missing_section_key_fails_validate(tmp_path: Path) -> None:
     doc = _required_top({"headline": [_high_row()]})
     p = tmp_path / "c.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     with pytest.raises(ValueError, match="missing required section slice"):
         srfs.validate_section_slice_required(loaded, "executive_summary")
 
@@ -94,7 +91,7 @@ def test_empty_section_slice_fails_validate(tmp_path: Path) -> None:
     doc = _required_top({"headline": []})
     p = tmp_path / "d.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     with pytest.raises(ValueError, match="empty"):
         srfs.validate_section_slice_required(loaded, "headline")
 
@@ -110,7 +107,7 @@ def test_row_missing_candidate_fact_id_fails_validate(tmp_path: Path) -> None:
     doc = _required_top({"headline": [bad]})
     p = tmp_path / "e.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     with pytest.raises(ValueError, match="missing candidate_fact_id"):
         srfs.validate_section_slice_required(loaded, "headline")
 
@@ -121,7 +118,7 @@ def test_allowed_fact_ids_namespace_and_metric_derivative(tmp_path: Path) -> Non
     )
     p = tmp_path / "m.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     ordered, allowed = srfs.build_allowed_fact_ids_for_section(loaded, "executive_summary")
     assert "bul_m_001" in allowed
     assert len(ordered) >= 2
@@ -130,18 +127,7 @@ def test_allowed_fact_ids_namespace_and_metric_derivative(tmp_path: Path) -> Non
     assert deriv[0].startswith("bul_m_001_metric_")
 
 
-def test_metric_derivative_matches_exec_summary_integration_module(tmp_path: Path) -> None:
-    """Regression: shared metric_derivative_fact_id must match legacy executive_summary SRFS."""
-    from apps_rg.runtime.sections.exec_summary_srfs_integration import (
-        metric_derivative_fact_id as legacy_mid,
-    )
-
-    cid = "bul_legacy_metric"
-    raw = "10% uplift"
-    assert srfs.metric_derivative_fact_id(cid, raw) == legacy_mid(cid, raw)
-
-
-def test_build_exec_summary_srfs_bundle_matches_shared_helpers(tmp_path: Path) -> None:
+def test_build_exec_summary_plan_from_in_memory_doc() -> None:
     doc = _required_top(
         {
             "executive_summary": [
@@ -150,25 +136,17 @@ def test_build_exec_summary_srfs_bundle_matches_shared_helpers(tmp_path: Path) -
             ]
         }
     )
-    p = tmp_path / "exec.json"
-    p.write_text(json.dumps(doc))
+    plan = srfs.build_section_fact_plan(doc, "executive_summary")
+    ordered, allowed = srfs.build_allowed_fact_ids_for_plan_facts(list(plan["facts"]))
+    assert len(ordered) >= 2
+    assert allowed
 
-    plan_wrap, env_wrap, ord_wrap, allow_wrap = build_exec_summary_srfs_bundle(srfs_json_path=p)
-    loaded = srfs.load_selected_role_fact_set(p)
-    plan_share = srfs.build_section_fact_plan(loaded, "executive_summary")
-    env_share = srfs.build_srfs_integration_envelope(
-        loaded,
-        executive_summary_plan_facts=list(plan_share["facts"]),
-        artifact_path_resolved=str(p.resolve()),
-    )
-    ord_share, allow_share = srfs.build_allowed_fact_ids_for_plan_facts(
-        list(plan_share["facts"])
-    )
 
-    assert plan_wrap == plan_share
-    assert env_wrap == env_share
-    assert ord_wrap == ord_share
-    assert allow_wrap == allow_share
+def test_load_selected_role_fact_set_raises(tmp_path: Path) -> None:
+    p = tmp_path / "gone.json"
+    p.write_text("{}")
+    with pytest.raises(RuntimeError, match="load_selected_role_fact_set removed"):
+        srfs.load_selected_role_fact_set(p)
 
 
 def test_non_high_row_fails_plan(tmp_path: Path) -> None:
@@ -177,6 +155,6 @@ def test_non_high_row_fails_plan(tmp_path: Path) -> None:
     doc = _required_top({"headline": [row]})
     p = tmp_path / "low.json"
     p.write_text(json.dumps(doc))
-    loaded = srfs.load_selected_role_fact_set(p)
+    loaded = json.loads(p.read_text(encoding="utf-8"))
     with pytest.raises(ValueError, match="only HIGH"):
         srfs.build_section_fact_plan(loaded, "headline")

@@ -44,7 +44,7 @@ from agentic_core.runtime.contracts.apps_rg_ingress_payload import (  # noqa: E4
     ValidatedRequest,
 )
 from apps_rg.runtime.dispatch import apps_rg_parse  # noqa: E402
-from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg  # noqa: E402
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg  # noqa: E402
 from agentic_core.runtime.u0 import (  # noqa: E402
     AppsRgU0ReflectionReceipt,
     MissingJdHashError,

@@ -3,39 +3,45 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from apps_rg.runtime.proof_pool_resolver import (
-    PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
-    PROOF_SOURCE_BASE_RESUME_FALLBACK,
-    PROOF_SOURCE_BROAD_SKILLS_LEDGER,
-    PROOF_SOURCE_SRFS,
-)
+from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 from apps_rg.runtime.section_proof.section_input_usage_ledger import (
     _is_forbidden_proof_source_fact_id,
     source_fact_base_id,
 )
 from apps_rg.runtime.sections.selected_role_fact_set import is_srfs_disallowed_proof_id
 
-VALID_PROOF_SOURCES = frozenset(
-    {
-        PROOF_SOURCE_SRFS,
-        PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
-        PROOF_SOURCE_BROAD_SKILLS_LEDGER,
-        PROOF_SOURCE_BASE_RESUME_FALLBACK,
-    }
-)
+VALID_PROOF_SOURCES = frozenset({PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH})
 
 
 def proof_source_from_metadata(metadata: dict[str, Any] | None) -> str:
-    pt = str((metadata or {}).get("proof_pool_type") or "")
-    if pt == "selected_role_fact_set":
-        return PROOF_SOURCE_SRFS
-    if pt in ("augmented_skills_graph", "augmented_skills_graph_c03_graphrag"):
+    from apps_rg.runtime.product_evidence_authority import (
+        EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
+        proof_source_from_product_metadata,
+    )
+
+    if metadata is None:
         return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
-    if pt == "broad_skills_ledger":
-        return PROOF_SOURCE_BROAD_SKILLS_LEDGER
-    if pt == "base_resume_fallback":
-        return PROOF_SOURCE_BASE_RESUME_FALLBACK
-    return PROOF_SOURCE_BASE_RESUME_FALLBACK
+    meta = metadata if isinstance(metadata, dict) else {}
+    if not meta:
+        return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
+    ea = meta.get("evidence_authority")
+    if isinstance(ea, dict) and str(ea.get("authority") or "").strip():
+        resolved = proof_source_from_product_metadata(meta)
+        if resolved:
+            return resolved
+    pt = str(meta.get("proof_pool_type") or "")
+    if pt in ("augmented_skills_graph", PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH):
+        return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
+    if pt == "selected_role_fact_set":
+        return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
+    if pt:
+        raise ValueError(
+            f"proof_pool_type {pt!r} is not product authority; "
+            f"expected evidence_authority={EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH!r}"
+        )
+    raise ValueError(
+        "missing evidence_authority; product requires augmented_skills_graph + ledger"
+    )
 
 
 def is_id_in_active_proof_pool(fid: str, allowed_fact_ids: set[str]) -> bool:
@@ -161,7 +167,9 @@ def evaluate_proof_pool_source_fact_gate(
     proof_pool_ref: str = "",
     proof_pool_digest: str = "",
 ) -> tuple[bool, dict[str, Any], str | None]:
-    """X2 gate envelope compatible with SRFS slice gates + ledger-primary receipt fields."""
+    """X2 gate envelope for ledger-primary active proof pool (single gate id per section)."""
+    from apps_rg.runtime.product_evidence_authority import is_product_evidence_authority_active
+
     ok, receipt, fail = validate_active_proof_pool_source_fact_ids(
         section=section_id,
         collected_ids=collected_ids,
@@ -171,16 +179,18 @@ def evaluate_proof_pool_source_fact_gate(
         proof_pool_digest=proof_pool_digest,
         validator_name="evaluate_proof_pool_source_fact_gate",
     )
+    product = is_product_evidence_authority_active(proof_pool_metadata)
+    pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
+    srfs_used = (not product) and pt == "selected_role_fact_set"
     env = {
         **receipt,
-        "x2_srfs_gate_status": ok,
+        "x2_srfs_gate_status": "NOT_APPLICABLE" if product else ok,
         "out_of_slice_fact_ids": receipt.get("unsupported_source_fact_ids") or [],
         "srfs_allowed_fact_ids_count": len(allowed_fact_ids),
-        "selected_role_fact_set_used": proof_source_from_metadata(proof_pool_metadata) == PROOF_SOURCE_SRFS,
-        "broad_skills_ledger_used": proof_source_from_metadata(proof_pool_metadata)
-        == PROOF_SOURCE_BROAD_SKILLS_LEDGER,
-        "base_resume_fallback_used": proof_source_from_metadata(proof_pool_metadata)
-        == PROOF_SOURCE_BASE_RESUME_FALLBACK,
+        "selected_role_fact_set_used": srfs_used,
+        "broad_skills_ledger_used": False,
+        "broad_skills_ledger_used_as_authority": False,
+        "base_resume_fallback_used": False,
         "srfs_section_id": section_id,
     }
     return ok, env, fail
@@ -189,18 +199,12 @@ def evaluate_proof_pool_source_fact_gate(
 def proof_pool_x2_gate_id(
     section_id: str,
     *,
-    proof_pool_metadata: dict[str, Any] | None,
+    proof_pool_metadata: dict[str, Any] | None = None,
     srfs_slice_gate_active: bool = False,
 ) -> str:
-    """Legacy SRFS gate id for unit tests; active-pool id for ledger-primary runtime."""
-    pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
-    legacy = f"x2_{section_id}_source_fact_ids_within_srfs_slice"
-    active = f"x2_{section_id}_active_proof_pool_source_fact_ids"
-    if pt == "selected_role_fact_set":
-        return legacy
-    if srfs_slice_gate_active and pt not in (PROOF_SOURCE_BROAD_SKILLS_LEDGER, PROOF_SOURCE_BASE_RESUME_FALLBACK):
-        return legacy
-    return active
+    """Canonical X2 membership gate id (W3: ``*_within_srfs_slice`` retired)."""
+    _ = (proof_pool_metadata, srfs_slice_gate_active)
+    return f"x2_{section_id}_active_proof_pool_source_fact_ids"
 
 
 def write_x2_source_fact_pool_receipt(artifacts_dir: Any, receipt: dict[str, Any]) -> str:

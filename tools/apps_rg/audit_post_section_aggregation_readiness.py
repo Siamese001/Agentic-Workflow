@@ -438,7 +438,7 @@ def run_audit() -> dict[str, Any]:
             "orchestrate_full_resume": "apps_rg/runtime/internal/lane_batch.py",
             "resume_package_x3": "apps_rg/runtime/internal/resume_package_disposition.py",
             "modular_rg_output_builder": "apps_rg/l2_recipe/modular_rg_output_builder.py",
-            "srfs_receipt_aggregator": "apps_rg/audit/srfs_receipt_aggregator.py",
+            "srfs_receipt_aggregator": "REMOVED_D3_legacy_srfs_structural_audit",
         },
         "sections_checked": sections_checked,
         "section_artifacts": section_artifacts,

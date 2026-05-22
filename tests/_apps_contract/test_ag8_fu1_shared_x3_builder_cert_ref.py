@@ -450,12 +450,12 @@ class TestGoldenPathRegressionGuard:
 
     def test_apps_rg_exit_binding_importable(self) -> None:
         """Test 12: apps_rg exit binding still importable after patch."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
         assert callable(exit_finalize_apps_rg)
 
     def test_apps_rg_cert_ref_constant_present(self) -> None:
         """Test 12: apps_rg APPS_RG_EXIT_CERT_REF constant unchanged."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import APPS_RG_EXIT_CERT_REF
+        from apps_rg.runtime.bindings.exit_binding import APPS_RG_EXIT_CERT_REF
         assert APPS_RG_EXIT_CERT_REF == "exit-apps-rg-resume-generation-w3p5"
 
 

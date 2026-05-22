@@ -26,11 +26,16 @@ Rubric dimensions:
 5. ats_alignment_without_stuffing: relevant without JD dumping.
 6. anti_overfit: no JD-as-proof, no briefing-as-proof, no cross-employer facts (Unify, InsurTech, EY).
 7. no_unify_inflation: no Unify-era agentic runtime vocabulary in the sentence.
+8. role_fit_targeting: JD/briefing shape emphasis only — never proof.
+9. why_role_mattered: sentence explains IBM foundation mandate (cloud, data, lineage, observability, regulated context) — companion bullets carry KPI proof.
+10. no_meta_disclaimer: display text must not contain "without claiming/asserting" or similar editorial boundary language.
 
 Decisive failure triggers:
 - first person or wrong-company proof framing
 - unsupported metrics or bul_unify_* / non-IBM fact leakage
 - multiple sentences or obvious five-bullet recap
+- meta-disclaimer phrasing in narrative_sentence ("without claiming", "without asserting", etc.)
+- career-bridge phrasing ("supported later", "subsequent roles") without explicit allowed career-bridge fact
 """.strip()
 
 

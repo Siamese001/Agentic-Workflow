@@ -29,6 +29,7 @@ IBM_BULLET_IDS = (
 )
 IBM_DEFAULT_DISTRIBUTION = {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}
 VALID_INTENSITIES = frozenset({"HEAVY", "MODERATE", "LIGHT_PROTECTED"})
+TEXT_COVERAGE_INTEGRITY_GATE_ID = "x2_text_claim_coverage_integrity"
 
 # Category-style prefix at start of resume bullet (themes belong in bullet_theme / metadata only).
 TAXONOMY_LABEL_PREFIX_PATTERN = re.compile(r"^[A-Z][A-Za-z /,&-]{3,60}:\s+")
@@ -203,6 +204,49 @@ def build_ibm_bullets_text_claim_coverage(
     }
 
 
+def check_ibm_bullets_text_claim_coverage_integrity(
+    bullets: list[dict[str, Any]],
+    claim_ledger: list[dict[str, Any]],
+    text_claim_coverage: dict[str, Any] | None,
+    allowed_fact_ids: set[str],
+) -> tuple[bool, str | None]:
+    """Deterministic gate: stored coverage must match a structural rebuild (no stale loops)."""
+    expected = build_ibm_bullets_text_claim_coverage(bullets, claim_ledger, allowed_fact_ids)
+    actual = text_claim_coverage if isinstance(text_claim_coverage, dict) else {}
+    if actual.get("sentences") != expected.get("sentences"):
+        return False, "text_claim_coverage.sentences mismatch vs structural rebuild"
+    if actual.get("overall_pass") != expected.get("overall_pass"):
+        return (
+            False,
+            f"overall_pass mismatch observed={actual.get('overall_pass')} expected={expected.get('overall_pass')}",
+        )
+    return True, None
+
+
+# Metric ownership: REQUIRED_ANCHOR — metric must appear on assigned canonical bullet text.
+IBM_METRIC_ANCHOR_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
+    (("99.9",), "bul_ibm_001"),
+    (("30%", "30 %"), "bul_ibm_002"),
+    (("25%", "25 %"), "bul_ibm_003"),
+    (("50%", "50 %"), "bul_ibm_004"),
+    (("$15m", "$15 m"), "bul_ibm_005"),
+)
+
+
+def _ibm_metric_anchors_on_assigned_bullets(bullets: list[dict[str, Any]]) -> tuple[bool, list[str]]:
+    by_id = {str(b.get("bullet_id")): b for b in bullets if b.get("bullet_id")}
+    failures: list[str] = []
+    for needles, root in IBM_METRIC_ANCHOR_RULES:
+        bullet = by_id.get(root)
+        if bullet is None:
+            failures.append(f"missing_bullet:{root}")
+            continue
+        tl = str(bullet.get("bullet_text") or "").lower()
+        if not any(n.lower() in tl for n in needles):
+            failures.append(f"{root}_missing_metric_token")
+    return (not failures, failures)
+
+
 @dataclass
 class X2GateResult:
     gate_id: str
@@ -311,6 +355,8 @@ def run_ibm_bullets_x2_gates(
     proof_pool_metadata: dict[str, Any] | None = None,
     proof_pool_ref: str = "",
     proof_pool_digest: str = "",
+    base_resume: dict[str, Any] | None = None,
+    runtime_payload: dict[str, Any] | None = None,
 ) -> list[X2GateResult]:
     gates: list[X2GateResult] = []
 
@@ -332,6 +378,36 @@ def run_ibm_bullets_x2_gates(
                 evidence_ref=gate_id,
             )
         )
+
+    from apps_rg.runtime.sections.graph_story_authority import (
+        x2_gate_base_resume_story_forbidden,
+        x2_gate_graph_only_proof_pool,
+    )
+
+    graph_ok, graph_obs, graph_exp, graph_detail = x2_gate_graph_only_proof_pool(
+        proof_pool_metadata, section_id="ibm_bullets"
+    )
+    add(
+        "x2_ibm_augmented_skills_graph_proof_pool_only",
+        graph_ok,
+        graph_obs,
+        graph_exp,
+        str(graph_detail),
+    )
+
+    story_ok, story_obs, story_exp, story_detail = x2_gate_base_resume_story_forbidden(
+        section_id="ibm_bullets",
+        parsed_output=parsed_output,
+        base_resume=base_resume,
+        runtime_payload=runtime_payload,
+    )
+    add(
+        "x2_ibm_graph_only_no_base_resume_bullets",
+        story_ok,
+        story_obs,
+        story_exp,
+        str(story_detail),
+    )
 
     combined = _combined_bullet_text(bullets)
     combined_lower = combined.lower()
@@ -363,6 +439,31 @@ def run_ibm_bullets_x2_gates(
         ledger_text_reason or ("ok" if ledger_text_ok else "failed"),
         "non-empty trimmed claim_text for every ledger row",
         ledger_text_reason,
+    )
+
+    po_raw = parsed_output or {}
+    cov_gate_payload = po_raw.get("text_claim_coverage") if isinstance(po_raw.get("text_claim_coverage"), dict) else {}
+    cov_ok, cov_reason = check_ibm_bullets_text_claim_coverage_integrity(
+        bullets=bullets,
+        claim_ledger=claim_ledger,
+        text_claim_coverage=cov_gate_payload,
+        allowed_fact_ids=allowed_fact_ids,
+    )
+    add(
+        TEXT_COVERAGE_INTEGRITY_GATE_ID,
+        cov_ok,
+        cov_reason or "structural_alignment_ok",
+        "matches structural rebuild",
+        cov_reason,
+    )
+
+    anchor_ok, anchor_fail = _ibm_metric_anchors_on_assigned_bullets(bullets)
+    add(
+        "x2_ibm_metric_anchor_bullet_ownership",
+        anchor_ok,
+        anchor_fail or "ok",
+        "each core metric on assigned bul_ibm_* bullet_text",
+        None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
     )
 
     dist_valid = (
@@ -575,7 +676,7 @@ def run_ibm_bullets_x2_gates(
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
         from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
             evaluate_proof_pool_source_fact_gate,
-            proof_source_from_metadata,
+            proof_pool_x2_gate_id,
         )
 
         coll_ib = _srfs_w4.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
@@ -587,15 +688,12 @@ def run_ibm_bullets_x2_gates(
             proof_pool_ref=proof_pool_ref,
             proof_pool_digest=proof_pool_digest,
         )
-        pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
-        gate_id = (
-            "x2_ibm_bullets_source_fact_ids_within_srfs_slice"
-            if pt == "selected_role_fact_set"
-            or (srfs_source_fact_slice_gate_active and pt not in ("broad_skills_ledger", "base_resume_fallback"))
-            else "x2_ibm_bullets_active_proof_pool_source_fact_ids"
-        )
         add(
-            gate_id,
+            proof_pool_x2_gate_id(
+                "ibm_bullets",
+                proof_pool_metadata=proof_pool_metadata,
+                srfs_slice_gate_active=srfs_source_fact_slice_gate_active,
+            ),
             ok_ib,
             env_ib,
             "active_proof_pool_allowlist_exact",
@@ -618,9 +716,12 @@ def run_ibm_bullets_x2_gates(
 __all__ = [
     "IBM_BULLET_IDS",
     "IBM_DEFAULT_DISTRIBUTION",
+    "IBM_METRIC_ANCHOR_RULES",
     "REQUIRED_TOP_LEVEL",
+    "TEXT_COVERAGE_INTEGRITY_GATE_ID",
     "TAXONOMY_LABEL_PREFIX_PATTERN",
     "build_ibm_bullets_text_claim_coverage",
+    "check_ibm_bullets_text_claim_coverage_integrity",
     "ibm_bullet_text_has_taxonomy_label_prefix",
     "run_ibm_bullets_x2_gates",
 ]

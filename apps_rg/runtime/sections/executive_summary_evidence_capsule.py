@@ -180,7 +180,12 @@ def build_capsule_document(
     }
 
 
-def format_evidence_capsule_c0_block(capsule: dict[str, Any], allowed_ids: list[str]) -> str:
+def format_evidence_capsule_c0_block(
+    capsule: dict[str, Any],
+    allowed_ids: list[str],
+    *,
+    runtime_payload: dict[str, Any] | None = None,
+) -> str:
     """Compact C0 proof substrate for PA (excludes style-only SRFS prose)."""
     header = format_allowed_source_fact_ids_contract(allowed_ids)
     lines = [
@@ -194,6 +199,16 @@ def format_evidence_capsule_c0_block(capsule: dict[str, Any], allowed_ids: list[
         "",
         "EVIDENCE_FACTS (HIGH executive_summary slice only):",
     ]
+    graph_pa = (
+        runtime_payload.get("graph_targeting_for_pa")
+        if isinstance(runtime_payload, dict)
+        else None
+    )
+    overload_by_fact: dict[str, dict[str, Any]] = {}
+    if isinstance(graph_pa, dict):
+        for row in graph_pa.get("overloaded_fact_compression") or []:
+            if isinstance(row, dict) and str(row.get("fact_id") or "").strip():
+                overload_by_fact[str(row["fact_id"])] = row
     for row in capsule.get("facts") or []:
         fid = row.get("source_fact_id", "")
         ct = row.get("claim_text", "")
@@ -201,7 +216,36 @@ def format_evidence_capsule_c0_block(capsule: dict[str, Any], allowed_ids: list[
         extra = ""
         if mr:
             extra = f" metric_raw={mr!r}"
+        ovl = overload_by_fact.get(fid)
+        if ovl:
+            phrases = "; ".join(ovl.get("executive_capability_phrases") or [])
+            extra += (
+                f" OUTCOME_FRAMING_REQUIRED=true max_mechanism_terms=2;"
+                f" prefer_capability_phrases=[{phrases}];"
+                " do_not_echo_full_mechanism_inventory_from_claim_text."
+            )
         lines.append(f"- {fid}: {ct}{extra}")
+    compression = runtime_payload.get("c04_exec_summary_compression") if isinstance(runtime_payload, dict) else None
+    if isinstance(graph_pa, dict) and graph_pa.get("receipt_only_json_expansion_excluded_from_pa"):
+        lines.extend(
+            [
+                "",
+                "GRAPH_TARGETING_FOR_PA (claim support only; JSON expansion refs are receipt-only):",
+                f"targeting_pillars={','.join(graph_pa.get('targeting_graph_refs') or [])}",
+                f"mechanism_vocabulary_cap={graph_pa.get('mechanism_vocabulary_cap')}",
+            ]
+        )
+        for row in graph_pa.get("overloaded_fact_compression") or []:
+            if not isinstance(row, dict):
+                continue
+            lines.append(
+                f"- {row.get('fact_id')}: use executive_capability_phrases="
+                f"{row.get('executive_capability_phrases')}; "
+                f"max_mechanism_terms={row.get('pa_mechanism_terms_max_per_sentence')}"
+            )
+    if isinstance(compression, dict) and compression.get("pa_instruction"):
+        lines.append(f"C04_COMPRESSION_INSTRUCTION: {compression.get('pa_instruction')}")
+
     counts = capsule.get("proof_pool_counts") or capsule.get("srfs_counts") or {}
     lines.extend(
         [
@@ -317,7 +361,7 @@ def compile_executive_summary_evidence_capsule(
         capsule=capsule,
     )
 
-    c0_block = format_evidence_capsule_c0_block(capsule, allowed_ids)
+    c0_block = format_evidence_capsule_c0_block(capsule, allowed_ids, runtime_payload=runtime_payload)
     appendix = format_evidence_capsule_appendix(capsule)
     capsule_token_est = estimate_tokens_approximate(c0_block + "\n" + appendix)
 

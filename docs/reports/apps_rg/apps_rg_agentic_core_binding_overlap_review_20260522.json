@@ -1,0 +1,28 @@
+{
+  "schema_version": "binding_overlap_review_manifest_v1",
+  "generated_at_utc": "2026-05-22T00:00:00Z",
+  "title": "apps_rg ↔ agentic_core Binding Overlap Review",
+  "status": "W-A_COMPLETE",
+  "w_a_plan": ".cursor/plans/apps-rg-agentic-core-binding-hardening-b7e3f1.md",
+  "w_a_closeout": "docs/reports/apps_rg/apps_rg_binding_hardening_critical_closeout_receipt.md",
+  "issue_count": 20,
+  "layers": ["L0", "L1", "L2", "Evals", "Exit"],
+  "disk_ssot": "docs/reports/apps_rg/apps_rg_agentic_core_binding_overlap_review_20260522.md",
+  "disk_ssot_links": {
+    "path": "docs/reports/apps_rg/apps_rg_agentic_core_binding_overlap_review_20260522.md",
+    "markdown": "[apps_rg_agentic_core_binding_overlap_review_20260522.md](docs/reports/apps_rg/apps_rg_agentic_core_binding_overlap_review_20260522.md)"
+  },
+  "remediation_waves": ["W-A", "W-B", "W-C", "W-D", "W-E"],
+  "related_reports": [
+    "docs/reports/apps_rg/section_authority_convergence_audit.md",
+    "docs/reports/agent_inventory/apps_rg_canonical_runtime_boundary.md",
+    "docs/reports/apps_rg/runtime_substitute_inventory_20260522.md"
+  ],
+  "notion": {
+    "page_id": "36827693-f55c-81a1-bd0c-d4ee6e06c96b",
+    "url": "https://www.notion.so/apps-rg-agentic-core-binding-overlap-review-20260522-36827693f55c81a1bd0cd4ee6e06c96b",
+    "database": "Plans",
+    "status_property": "Completed",
+    "plan_file_path": ".cursor/plans/apps-rg-agentic-core-binding-hardening-b7e3f1.md"
+  }
+}

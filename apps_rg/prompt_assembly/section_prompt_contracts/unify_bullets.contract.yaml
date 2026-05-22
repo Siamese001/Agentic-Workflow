@@ -11,6 +11,7 @@ companion_context_authority: NONE
 emits_companion_context_for: unify_narrative
 required_generation_order: 1
 x2_gate_profile_ref: apps_rg/runtime/validators/unify_bullets_x2.py
+product_shape_ssot_ref: apps_rg/runtime/sections/section_product_shape_ssot.py
 x1d_judge_profile_ref: apps_rg/runtime/judges/unify_bullets_x1d.py
 locked_fields: []
 llm_generation_allowed: true

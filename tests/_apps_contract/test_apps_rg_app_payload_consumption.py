@@ -28,9 +28,9 @@ from typing import Any
 import pytest
 
 from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
-from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
-from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
-from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
+from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
+from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
     ValidatedRequest,
@@ -41,7 +41,7 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import (
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
-from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 
 
 # ---------------------------------------------------------------------------
@@ -382,10 +382,10 @@ def test_pa_signature_takes_validated_request_not_legacy_payload() -> None:
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _BINDING_FILES_NO_LEGACY_IMPORT = [
-    REPO_ROOT / "agentic_core" / "L1_cognition" / "apps_rg_l1_binding.py",
-    REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
-    REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
-    REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py",
 ]
 
 
@@ -603,7 +603,7 @@ def test_ast_helper_fails_on_importlib_dynamic_import() -> None:
 def test_ast_helper_passes_for_actual_c0_binding() -> None:
     """The real apps_rg_c0_binding.py (which has explanatory ChromaDB comments)
     must pass the AST-aware gate — confirming the false positive is fixed."""
-    c0_file = REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py"
+    c0_file = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py"
     source = c0_file.read_text(encoding="utf-8")
     violations = _ast_chromadb_violations(source, c0_file.name)
     assert violations == [], (

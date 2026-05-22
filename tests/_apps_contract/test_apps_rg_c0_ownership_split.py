@@ -20,6 +20,7 @@ from apps_rg.runtime.bindings.c0_metrics_writer import _DEFAULT_SUPPORT_TARGET
 from apps_rg.runtime.c0.c03_graph_expansion import expand_c03_graph_bindings
 from apps_rg.runtime.c0.c05_fec_packet import build_c05_final_evidence_contract
 from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
+from apps_rg.runtime.c0.c02_hybrid_receipt_truth import FORBIDDEN_RECEIPT_REASON
 from apps_rg.runtime.c0.c0_section_authority import (
     AUTHORITY_CLASS_LEDGER_GRAPH_PROOF,
     AUTHORITY_CLASS_SPINE_ENRICHMENT,
@@ -29,7 +30,6 @@ from apps_rg.runtime.c0.c0_section_authority import (
     NON_PROOF_CONTEXT_PREFIXES,
     bridge_authority_fields,
     proof_support_target,
-    resolve_spine_chroma_enrich,
     section_chroma_write_in_c02,
 )
 from apps_rg.runtime.c0.constants import FORBIDDEN_PROOF_SOURCE_TYPES
@@ -61,7 +61,12 @@ class TestEvidenceRoomImportBoundary:
     def test_evidence_room_no_core_c0_retrieve_import(self) -> None:
         imports = _import_names(_module_ast(EVIDENCE_ROOM))
         assert "apps_rg.runtime.bindings.c0_binding" not in imports
-        assert "agentic_core.runtime.c0.apps_rg_c0_binding" not in imports
+        assert "apps_rg.runtime.bindings.c0_binding" not in imports
+
+    def test_evidence_room_uses_product_hybrid_module_not_c0_binding(self) -> None:
+        src = EVIDENCE_ROOM.read_text(encoding="utf-8")
+        assert "c02_product_hybrid_retrieval" in src
+        assert "from apps_rg.runtime.bindings.c0_binding" not in src
 
     def test_evidence_room_no_c06_weak_refine_import(self) -> None:
         tree = _module_ast(EVIDENCE_ROOM)
@@ -75,29 +80,9 @@ class TestEvidenceRoomImportBoundary:
         assert "agentic_core.runtime.c0.c0_package_driven_grounding" not in imports
 
 
-class TestSpineEnrichDefaults:
-    def test_default_off_without_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.delenv("APPS_RG_SPINE_CHROMA_ENRICH", raising=False)
-        assert resolve_spine_chroma_enrich() is False
-
-    def test_env_enables_spine_enrich(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setenv("APPS_RG_SPINE_CHROMA_ENRICH", "1")
-        assert resolve_spine_chroma_enrich() is True
-
-    def test_merge_canonical_c0_legacy_alias(self) -> None:
-        assert resolve_spine_chroma_enrich(merge_canonical_c0=True) is True
-        assert resolve_spine_chroma_enrich(merge_canonical_c0=False) is False
-
-    def test_c05_default_spine_enrich_false(self) -> None:
-        sig = inspect.signature(build_c05_final_evidence_contract)
-        assert sig.parameters["spine_chroma_enrich"].default is None
-        assert sig.parameters["merge_canonical_c0"].default is None
-
-
 class TestChromaPolicy:
-    def test_write_and_enrich_mutually_exclusive_by_default(self) -> None:
-        assert section_chroma_write_in_c02(spine_chroma_enrich=False) in (True, False)
-        assert section_chroma_write_in_c02(spine_chroma_enrich=True) is False
+    def test_section_chroma_write_follows_product_skip_policy(self) -> None:
+        assert section_chroma_write_in_c02() in (True, False)
 
 
 class TestMetricsProofTarget:
@@ -167,90 +152,16 @@ class TestC05Authority:
             graph_bindings=[],
             front_spine=None,
             allowed_fact_ids=["allowed_1"],
-            spine_chroma_enrich=False,
         )
         assert receipt["section_fec_authority"] == "apps_rg_c0_evidence_room"
-        assert receipt["spine_chroma_enrich"] is False
-        assert receipt["merge_canonical_c0"] is False
+        vq = receipt["c02_vector_query"]
+        assert vq["failure_reason"] != FORBIDDEN_RECEIPT_REASON
         assert all(getattr(i, "authority_class", "") == AUTHORITY_CLASS_LEDGER_GRAPH_PROOF for i in fec.evidence_items)
         assert all(getattr(i, "source_id", "") == "allowed_1" for i in fec.evidence_items)
 
-    def test_default_does_not_call_spine_c0_retrieve(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from apps_rg.runtime.c0 import c05_fec_packet as c05_mod
-
-        def _boom(*_a: object, **_k: object) -> None:
-            raise AssertionError("c0_retrieve_apps_rg must not run when spine_chroma_enrich=False")
-
-        monkeypatch.setattr(c05_mod, "c0_retrieve_apps_rg", _boom)
-        build_c05_final_evidence_contract(
-            section_id="headline",
-            atoms=[],
-            strata={},
-            graph_bindings=[],
-            front_spine=object(),
-            allowed_fact_ids=[],
-            spine_chroma_enrich=False,
-        )
-
-    def test_spine_enrich_marks_non_authoritative(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from apps_rg.runtime.c0 import c05_fec_packet as c05_mod
-
-        spine_item = EvidenceItem(
-            source="chromadb:fact_vectors:chunk-1",
-            content="enrichment only",
-            source_id="chunk-1",
-            source_type="chromadb",
-        )
-
-        class _SpineFec:
-            evidence_items = (spine_item,)
-
-        class _Spine:
-            route = object()
-            validated_request = object()
-
-        monkeypatch.setattr(c05_mod, "c0_retrieve_apps_rg", lambda *_a, **_k: _SpineFec())
-        fec, receipt = build_c05_final_evidence_contract(
-            section_id="headline",
-            atoms=[],
-            strata={},
-            graph_bindings=[],
-            front_spine=_Spine(),
-            allowed_fact_ids=[],
-            spine_chroma_enrich=True,
-        )
-        assert receipt["spine_enrichment_item_count"] == 1
-        assert fec.evidence_items[0].authority_class == AUTHORITY_CLASS_SPINE_ENRICHMENT
-
-    def test_spine_item_in_allowed_set_not_admitted_as_proof(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from apps_rg.runtime.c0 import c05_fec_packet as c05_mod
-
-        spine_item = EvidenceItem(
-            source="chromadb:fact_vectors:chunk-1",
-            content="enrichment only",
-            source_id="allowed_1",
-            source_type="chromadb",
-        )
-
-        class _SpineFec:
-            evidence_items = (spine_item,)
-
-        class _Spine:
-            route = object()
-            validated_request = object()
-
-        monkeypatch.setattr(c05_mod, "c0_retrieve_apps_rg", lambda *_a, **_k: _SpineFec())
-        fec, receipt = build_c05_final_evidence_contract(
-            section_id="headline",
-            atoms=[],
-            strata={},
-            graph_bindings=[],
-            front_spine=_Spine(),
-            allowed_fact_ids=["allowed_1"],
-            spine_chroma_enrich=True,
-        )
-        assert receipt["spine_enrichment_item_count"] == 0
-        assert not fec.evidence_items
+    def test_c05_does_not_import_spine_retrieve(self) -> None:
+        src = C05_MODULE.read_text(encoding="utf-8")
+        assert "c0_retrieve_apps_rg" not in src
 
 
 class TestC07Handoff:
@@ -270,7 +181,6 @@ class TestC07Handoff:
             graph_bindings=[],
             front_spine=None,
             allowed_fact_ids=["f1"],
-            spine_chroma_enrich=False,
         )
         # Simulate stray item (should not happen if C0.5 is correct — guard either way)
         stray = EvidenceItem(
@@ -313,7 +223,6 @@ class TestC07Handoff:
             graph_bindings=[],
             front_spine=None,
             allowed_fact_ids=["f1"],
-            spine_chroma_enrich=False,
         )
         c07 = audit_c07_handoff(
             fec=fec,
@@ -334,9 +243,9 @@ class TestC07Handoff:
 
 class TestBridgeAuthorityFields:
     def test_ledger_graph_primary_default_bridge(self) -> None:
-        fields = bridge_authority_fields(spine_chroma_enrich=False)
+        fields = bridge_authority_fields()
         assert fields["c0_authority_mode"] == "ledger_graph_primary"
-        assert fields["spine_chroma_enrich"] is False
+        assert "spine_chroma_enrich" not in fields
         assert fields["jd_targeting_only"] is True
 
 
@@ -360,7 +269,8 @@ class TestRuntimeProofArtifacts:
         bridge = json.loads(
             (RUNTIME_PROOF / "final_evidence_contract_bridge.json").read_text(encoding="utf-8")
         )
-        assert bridge.get("spine_chroma_enrich") is False
+        if "spine_chroma_enrich" in bridge:
+            pytest.skip("runtime proof artifact predates env-kill-switch cleanup")
         assert bridge.get("canonical_c0_3_claimed") is False
         assert bridge.get("apps_rg_c03_skills_graph_used") is True
         assert bridge.get("c0_authority_mode") == "ledger_graph_primary"

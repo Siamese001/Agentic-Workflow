@@ -405,19 +405,14 @@ class TestAgenticCoreRemainsGeneric:
             + "\n".join(violations)
         )
 
-    def test_agentic_core_exit_shim_only_re_exports(self):
-        shim_path = _REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py"
-        if not shim_path.exists():
-            pytest.skip("Shim file not present")
-        text = shim_path.read_text(encoding="utf-8")
-        assert "LEGACY_SHIM" in text, "Shim must declare LEGACY_SHIM"
+    def test_canonical_exit_binding_lives_under_apps_rg(self):
+        binding_path = _REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "exit_binding.py"
+        assert binding_path.is_file(), "Canonical exit binding must exist under apps_rg"
+        text = binding_path.read_text(encoding="utf-8")
+        assert "apps_rg" in text
         tree = ast.parse(text)
-        # Shim should have no function definitions (only imports + __all__)
         func_defs = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
-        assert not func_defs, (
-            f"Shim defines functions — implementation leaked into agentic_core: "
-            f"{[f.name for f in func_defs]}"
-        )
+        assert func_defs, "Exit binding must define apps_rg-owned gate/finalize logic"
 
 
 # ---------------------------------------------------------------------------

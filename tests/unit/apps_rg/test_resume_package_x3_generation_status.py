@@ -27,7 +27,7 @@ from tests._apps_contract.test_resume_package_x3 import _write_minimal_fixture_t
 
 
 def _run_root_with_artifacts(tmp: Path) -> Path:
-    """Manifest lives under .../docx/; JSON + DOCX under docx/outputs/."""
+    """Manifest lives under .../docx/; JSON under docx/outputs/."""
     docx_root = tmp / "artifacts" / "apps_rg" / "runtime_proofs" / "docx"
     out = docx_root / "outputs"
     out.mkdir(parents=True, exist_ok=True)
@@ -35,7 +35,6 @@ def _run_root_with_artifacts(tmp: Path) -> Path:
         json.dumps({"headline": "SVP", "executive_summary": "x", "k": 1}),
         encoding="utf-8",
     )
-    (out / "resume.docx").write_bytes(b"DOCX")
     return docx_root
 
 
@@ -44,9 +43,8 @@ def _manifest(**overrides: object) -> dict:
         "apps_rg_generation_status": REAL_RESUME,
         "resume_shape": REAL_RESUME,
         "full_resume_generated": True,
-        "docx_verified": True,
         "generated_resume_json_relpath": "outputs/generated_resume.json",
-        "resume_docx_relpath": "outputs/resume.docx",
+        "docx_output_required": False,
     }
     m.update(overrides)
     return m
@@ -98,10 +96,14 @@ def test_missing_resume_shape_not_eligible(tmp_path: Path) -> None:
     assert any(r == "missing_resume_shape" for r in reasons)
 
 
-def test_docx_verified_false_not_eligible(tmp_path: Path) -> None:
+def test_docx_verified_false_not_eligible_when_docx_required(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("APPS_RG_DOCX_OUTPUT_REQUIRED", "1")
     root = _run_root_with_artifacts(tmp_path)
+    (root / "outputs" / "resume.docx").write_bytes(b"DOCX")
     ok, reasons = evaluate_apps_rg_full_success_eligibility(
-        manifest=_manifest(docx_verified=False),
+        manifest=_manifest(docx_verified=False, docx_output_required=True),
         run_root=root,
     )
     assert ok is False
@@ -124,7 +126,6 @@ def test_w3_manifest_good_package_allow(tmp_path: Path) -> None:
     out = docx_root / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     (out / "generated_resume.json").write_text(json.dumps({"r": 1}), encoding="utf-8")
-    (out / "resume.docx").write_bytes(b"x")
     paths.apps_rg_output_manifest_json.write_text(
         json.dumps(_manifest()),
         encoding="utf-8",
@@ -154,7 +155,6 @@ def test_w3_manifest_stub_blocks_package_allow(tmp_path: Path) -> None:
     out = docx_root / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     (out / "generated_resume.json").write_text(json.dumps({"r": 1}), encoding="utf-8")
-    (out / "resume.docx").write_bytes(b"x")
     paths.apps_rg_output_manifest_json.write_text(
         json.dumps(_manifest(apps_rg_generation_status=STUB_RECEIPT, resume_shape=STUB_RECEIPT)),
         encoding="utf-8",

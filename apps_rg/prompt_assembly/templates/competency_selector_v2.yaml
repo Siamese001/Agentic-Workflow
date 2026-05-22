@@ -145,23 +145,23 @@ output_contract:
         all_checks_passed: "boolean"
 
 base_categories:
-  required_count: 8
+  required_count: 7
+  taxonomy_ref: apps_rg/config/competencies/executive_capability_taxonomy.yaml
   labels:
-    - "Agentic AI Platforms"
-    - "AI Runtime Governance"
-    - "Retrieval & Context Engineering"
-    - "LLMOps & Reliability"
-    - "Distributed Systems Engineering"
-    - "Platform Productization"
-    - "Strategic Partnerships & Ecosystem Execution"
-    - "Engineering Leadership"
+    - "Technology Strategy & Innovation"
+    - "AI Platform Leadership"
+    - "Data & Analytics Modernization"
+    - "Governance, Risk & Compliance"
+    - "Engineering & Delivery Leadership"
+    - "Commercial & Operating Impact"
+    - "Cloud & Partner Ecosystems"
   allowed_operations:
-    - "Preserve category exactly"
-    - "Reorder categories"
-    - "Lightly rename with supported equivalent language only"
+    - "Use approved taxonomy category_id and category_label"
+    - "Reorder categories for JD emphasis"
+    - "Emit executive capability terms (not scraped resume fragments)"
   forbidden_operations:
-    - "Add ninth category"
-    - "Drop below eight categories"
+    - "Invent categories outside approved taxonomy"
+    - "Drop below six categories"
     - "Use full sentences or paragraphs"
     - "Use bullet format"
     - "Emit Certifications, Credentials, Licenses, or Accreditations as a competency category (reserved for CERTIFICATIONS & CREDENTIALS section)"

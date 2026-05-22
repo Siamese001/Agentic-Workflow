@@ -9,7 +9,7 @@ from apps_rg.fact_inventory.candidate_fact_ledger import (
     load_master_candidate_fact_ledger,
     load_master_role_family_taxonomy,
 )
-from apps_rg.fact_inventory.exec_summary_srfs_arsenal import (
+from apps_rg.fact_inventory.exec_summary_graph_projection_w4b import (
     DEFAULT_ARSENAL_ROLE_FAMILY_KEY,
     external_proof_fact_ids_from_projection,
     resolve_arsenal_role_family_key,

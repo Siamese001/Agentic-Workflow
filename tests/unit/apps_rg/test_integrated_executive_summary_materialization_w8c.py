@@ -43,7 +43,7 @@ def test_generated_lanes_registry_includes_executive_summary() -> None:
 def test_phase1_manual_brief_for_dispatch_prefers_filesystem_ref() -> None:
     repo = find_repo_root()
     brief_path = (
-        repo / "apps_rg" / "config" / "targeting" / "brown_brown_svp_it_strategy_innovation_briefing_exec.txt"
+        repo / "apps_rg" / "config" / "targeting" / "brown_brown_svp_it_strategy_innovation_briefing.md"
     )
     targeting = ModularLaneTargeting(
         target_company="Brown & Brown",

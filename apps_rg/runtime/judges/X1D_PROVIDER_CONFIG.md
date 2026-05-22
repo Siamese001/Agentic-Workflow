@@ -29,6 +29,16 @@ Set `APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK=true` only if you accept a second AP
 | OpenAI score 9.2 / 8.0 without `score_scale` | `BLOCKED_SCHEMA_VALIDATION_ERROR` | Model must return `score_scale` of `0_to_1` or `0_to_5` with in-range score/threshold |
 | OpenAI 400 `temperature` unsupported | `BLOCKED_PROVIDER_UNAVAILABLE` | gpt-5.x chat judges omit `temperature` (API default only) |
 | OpenAI 400 `reasoning` unknown parameter | `BLOCKED_PROVIDER_UNAVAILABLE` | Do not send `reasoning.effort` except on o3/o4 families |
+| OpenAI empty `content` + `finish_reason=length` | `BLOCKED_RESPONSE_PARSE_ERROR` (retriable) | Raise `APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS` (default 4096); bounded retries via `APPS_RG_X1D_JUDGE_MAX_ATTEMPTS` (default 3) |
+
+## Judge retry and OpenAI token budget
+
+| Env | Default | Purpose |
+|-----|---------|---------|
+| `APPS_RG_X1D_JUDGE_MAX_ATTEMPTS` | `3` | Max attempts per provider judge on retriable parse/schema errors (cap 5) |
+| `APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS` | `4096` | gpt-5.x `max_completion_tokens`; doubles on attempt 2+ (cap 8192) |
+
+Attempt 2+ uses a compact system prompt to reduce reasoning-only completions.
 
 ## Quick unblock (local `.env`)
 

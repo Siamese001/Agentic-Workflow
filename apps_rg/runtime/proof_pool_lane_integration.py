@@ -33,8 +33,6 @@ def load_section_proof_for_lane(
     base_ref = str(getattr(args, "base_resume_ref", "") or "").strip() or None
     pool = resolve_section_proof_pool(
         section=section_id,
-        selected_role_fact_set_path=str(getattr(args, "selected_role_fact_set", "") or ""),
-        broad_skills_ledger_path=str(getattr(args, "broad_skills_ledger_path", "") or "") or None,
         base_resume_ref=base_ref,
         target_company=str(getattr(args, "target_company", "") or ""),
         target_title=str(getattr(args, "target_title", "") or ""),
@@ -46,6 +44,11 @@ def load_section_proof_for_lane(
         front_spine=front_spine,
         product_visible=True,
     )
+    from apps_rg.runtime.product_evidence_authority import enforce_product_evidence_authority_for_cli
+    from apps_rg.runtime.sections.graph_story_authority import require_augmented_skills_graph_pool
+
+    pool = enforce_product_evidence_authority_for_cli(pool)
+    require_augmented_skills_graph_pool(pool, section_id=section_id)
     base_dict, base_path, base_hash = load_lane_base_resume_json(
         source_resume_ref=base_ref,
         repo_root=repo_root,
@@ -77,33 +80,18 @@ def apply_proof_pool_to_usage_ledger(doc: dict[str, Any], pool: SectionProofPool
             "CLAIM_EVIDENCE_FALLBACK",
         )
     riu["base_resume"] = base_row
-    if pool.proof_source == "augmented_skills_graph":
-        riu["augmented_skills_graph"] = {
-            "required": True,
-            "used": True,
-            "authority": "CLAIM_EVIDENCE_AND_SKILLS_AUTHORITY",
-            "ref": (pool.proof_pool_metadata or {}).get("graph_ref"),
-        }
-        if pool.broad_skills_ledger_ref:
-            riu["legacy_skills_ledger"] = {
-                "required": False,
-                "used": False,
-                "authority": "DEPRECATED_REFERENCE_ONLY",
-                "ref": pool.broad_skills_ledger_ref,
-            }
-    elif pool.broad_skills_ledger_present:
-        riu["broad_skills_ledger"] = {
+    riu["augmented_skills_graph"] = {
+        "required": True,
+        "used": True,
+        "authority": "CLAIM_EVIDENCE_AND_SKILLS_AUTHORITY",
+        "ref": (pool.proof_pool_metadata or {}).get("graph_ref"),
+    }
+    if pool.broad_skills_ledger_ref:
+        riu["legacy_skills_ledger"] = {
             "required": False,
-            "used": True,
-            "authority": "CLAIM_EVIDENCE",
+            "used": False,
+            "authority": "DEPRECATED_REFERENCE_ONLY",
             "ref": pool.broad_skills_ledger_ref,
-        }
-    if pool.srfs_present:
-        riu["selected_role_fact_set"] = {
-            "required": False,
-            "used": True,
-            "authority": "CLAIM_EVIDENCE",
-            "ref": pool.srfs_ref,
         }
     pp_meta = pool.proof_pool_metadata or {}
     if pp_meta.get("augmented_skills_graph_present"):

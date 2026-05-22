@@ -64,7 +64,6 @@ def _run_competencies_lane_from_cli(
     lane_x1d_judges: str,
     lane_mock_judges: bool,
     lane_allow_test_mock_judges: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only competencies lane — mirrors executive_summary CLI wiring."""
     from apps_rg.runtime.sections import competencies_lane as lane
@@ -102,7 +101,6 @@ def _run_competencies_lane_from_cli(
         jd_text=jd_text,
         briefing=briefing,
         target_role=str(target_role).strip() or None,
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
 
@@ -153,7 +151,6 @@ def _run_headline_lane_from_cli(
     lane_mock_judges: bool,
     lane_allow_test_mock_judges: bool = False,
     lane_allow_non_allow_exit_zero: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only headline lane via ``apps_rg.runtime.sections.headline_lane``."""
     from apps_rg.runtime.sections import headline_lane as lane
@@ -190,7 +187,6 @@ def _run_headline_lane_from_cli(
         target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
         jd_text=jd_text,
         briefing=briefing,
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
 
@@ -241,7 +237,6 @@ def _run_executive_summary_lane_from_cli(
     lane_x1d_judges: str,
     lane_mock_judges: bool,
     lane_allow_test_mock_judges: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only run: same artifacts as legacy dispatch; does not invoke ``dispatch_apps_rg_run``."""
     from apps_rg.runtime.sections import executive_summary_lane as lane
@@ -357,7 +352,6 @@ def _run_executive_summary_lane_from_cli(
         jd_text=jd_text,
         briefing=briefing,
         target_role=tr,
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
     if eff_prov == "qwen_vllm":
@@ -434,7 +428,6 @@ def _run_unify_bullets_lane_from_cli(
     lane_mock_judges: bool,
     lane_allow_non_allow_exit_zero: bool = False,
     lane_allow_test_mock_judges: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only unify_bullets lane; legacy ``python -m`` dispatch entry is never imported here."""
     from apps_rg.runtime.sections import unify_bullets_lane as lane
@@ -472,7 +465,6 @@ def _run_unify_bullets_lane_from_cli(
         briefing=briefing,
         allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
         allow_test_mock_judges=bool(lane_allow_test_mock_judges),
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
@@ -540,7 +532,6 @@ def _run_unify_narrative_lane_from_cli(
     lane_x1d_judges: str,
     lane_mock_judges: bool,
     lane_allow_test_mock_judges: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only unify_narrative lane; legacy ``python -m`` dispatch entry is not used."""
     from apps_rg.runtime.sections import unify_narrative_lane as lane
@@ -577,7 +568,6 @@ def _run_unify_narrative_lane_from_cli(
         target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
         jd_text=jd_text,
         briefing=briefing,
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
@@ -646,7 +636,6 @@ def _run_ibm_bullets_lane_from_cli(
     lane_mock_judges: bool,
     lane_allow_non_allow_exit_zero: bool = False,
     lane_allow_test_mock_judges: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only ibm_bullets lane via ``ibm_bullets_lane`` (legacy CLI wrapper not invoked)."""
     from apps_rg.runtime.sections import ibm_bullets_lane as lane
@@ -684,7 +673,6 @@ def _run_ibm_bullets_lane_from_cli(
         target_company=str(target_company).strip() or lane.TARGET_COMPANY_DEFAULT,
         jd_text=jd_text,
         briefing=briefing,
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
@@ -753,7 +741,6 @@ def _run_ibm_narrative_lane_from_cli(
     lane_mock_judges: bool,
     lane_allow_test_mock_judges: bool = False,
     lane_allow_non_allow_exit_zero: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Section-only ibm_narrative lane (``ibm_narrative_dispatch`` module is implementation-only; CLI retired)."""
     from apps_rg.runtime.sections import ibm_narrative_lane as lane
@@ -791,7 +778,6 @@ def _run_ibm_narrative_lane_from_cli(
         jd_text=jd_text,
         briefing=briefing,
         allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(resume_path or ""),
     )
     if lane_provider_eff == "qwen_vllm":
@@ -1084,7 +1070,6 @@ def run_canonical_apps_rg_from_cli_primitives(
     lane_mock_judges: bool = False,
     lane_allow_non_allow_exit_zero: bool = False,
     lane_allow_test_mock_judges: bool = False,
-    selected_role_fact_set: str = "",
 ) -> dict[str, Any]:
     """Run governed R4 spine for apps_rg; return CLI-shaped result dict."""
     if str(section).strip().lower() == _HEADLINE_SECTION_ID:
@@ -1106,7 +1091,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_mock_judges=lane_mock_judges,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
             lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
     if str(section).strip().lower() == _EXEC_SUMMARY_SECTION_ID:
         return _run_executive_summary_lane_from_cli(
@@ -1127,7 +1111,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_x1d_judges=lane_x1d_judges,
             lane_mock_judges=lane_mock_judges,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
     if str(section).strip().lower() == _UNIFY_BULLETS_SECTION_ID:
         return _run_unify_bullets_lane_from_cli(
@@ -1148,7 +1131,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_mock_judges=lane_mock_judges,
             lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
     if str(section).strip().lower() == _UNIFY_NARRATIVE_SECTION_ID:
         return _run_unify_narrative_lane_from_cli(
@@ -1168,7 +1150,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_x1d_judges=lane_x1d_judges,
             lane_mock_judges=lane_mock_judges,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
     if str(section).strip().lower() == _IBM_BULLETS_SECTION_ID:
         return _run_ibm_bullets_lane_from_cli(
@@ -1189,7 +1170,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_mock_judges=lane_mock_judges,
             lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
     if str(section).strip().lower() == _IBM_NARRATIVE_SECTION_ID:
         return _run_ibm_narrative_lane_from_cli(
@@ -1210,7 +1190,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_mock_judges=lane_mock_judges,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
             lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
     if str(section).strip().lower() == _COMPETENCIES_SECTION_ID:
         return _run_competencies_lane_from_cli(
@@ -1230,7 +1209,6 @@ def run_canonical_apps_rg_from_cli_primitives(
             lane_x1d_judges=lane_x1d_judges,
             lane_mock_judges=lane_mock_judges,
             lane_allow_test_mock_judges=lane_allow_test_mock_judges,
-            selected_role_fact_set=str(selected_role_fact_set or ""),
         )
 
     raw_request = build_raw_request_for_r4(

@@ -18,6 +18,17 @@ CANONICAL_HL = (
 )
 
 
+def _segment_claim_ledger(hl: str, source_fact_ids: list[str]) -> list[dict[str, Any]]:
+    parts = [p.strip() for p in hl.split(" | ")]
+    if len(parts) >= 4:
+        return [
+            {"claim_text": parts[1], "source_fact_ids": list(source_fact_ids)},
+            {"claim_text": parts[2], "source_fact_ids": list(source_fact_ids)},
+            {"claim_text": parts[3], "source_fact_ids": list(source_fact_ids)},
+        ]
+    return [{"claim_text": hl, "source_fact_ids": list(source_fact_ids)}]
+
+
 def _minimal_usage_ledger() -> dict[str, Any]:
     return {
         "schema": "section_input_usage_ledger_v1",
@@ -55,7 +66,7 @@ def _kwargs_real_llm(**overrides: Any) -> dict[str, Any]:
     parsed: dict[str, Any] = {
         "headline_line": hl,
         "selected_fact_plan": {"section_id": "headline", "required_fact_ids": ["bul_1"]},
-        "claim_ledger": [{"claim_text": hl, "source_fact_ids": ["bul_1"]}],
+        "claim_ledger": _segment_claim_ledger(hl, ["bul_1"]),
         "jd_alignment": {
             "targeting_only": True,
             "jd_used_as_proof": False,
@@ -121,6 +132,15 @@ def test_flat_raw_claim_ledger_fails_raw_schema_gate() -> None:
 def test_self_check_word_count_matches_runtime_passes_gate() -> None:
     gates = run_headline_x2_gates(**_kwargs_real_llm())
     assert "x2_headline_self_check_consistent" not in _failed_ids(gates)
+
+
+def test_single_row_full_headline_claim_ledger_fails_segment_decomposition() -> None:
+    hl = CANONICAL_HL
+    kwargs = _kwargs_real_llm()
+    kwargs["claim_ledger"] = [{"claim_text": hl, "source_fact_ids": ["bul_1"]}]
+    kwargs["parsed_output"]["claim_ledger"] = kwargs["claim_ledger"]
+    gates = run_headline_x2_gates(**kwargs)
+    assert "x2_headline_claim_ledger_segment_decomposition" in _failed_ids(gates)
 
 
 def test_validate_raw_headline_claim_ledger_rejects_flat_strings() -> None:
@@ -202,9 +222,16 @@ def test_self_check_word_count_mismatch_large_fails() -> None:
     assert "x2_headline_self_check_consistent" in _failed_ids(gates)
 
 
-def test_polish_claim_text_strips_percent_when_headline_is_metric_free() -> None:
+def test_polish_claim_text_strips_metric_phrases_when_headline_is_metric_free() -> None:
     hl = CANONICAL_HL
     raw = "Architected platforms operating at 99.9% uptime at enterprise scale."
     out = polish_claim_text_when_headline_has_no_metrics(hl, raw)
     assert "%" not in out
     assert "99.9" not in out
+
+
+def test_polish_claim_text_leaves_plain_percent_when_row_not_metric_heavy() -> None:
+    hl = CANONICAL_HL
+    raw = "Platform delivery focus"
+    out = polish_claim_text_when_headline_has_no_metrics(hl, raw)
+    assert out == raw

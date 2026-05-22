@@ -46,7 +46,11 @@ OBSERVED_CHAIN_WITH_FEC_BRIDGE: tuple[str, ...] = (
 )
 
 _PA_AUTHORITY_KEYS: tuple[str, ...] = (
+    "evidence_authority",
+    "selection_scope",
+    "layout_context",
     "proof_pool_type",
+    "proof_pool_type_role",
     "proof_source",
     "claim_evidence_source_type",
     "augmented_skills_graph_present",
@@ -85,11 +89,12 @@ class SectionFecBridge:
 
 
 def fec_bridge_kill_switch_enabled() -> bool:
-    return os.environ.get("APPS_RG_SECTION_FEC_BRIDGE_KILL_SWITCH", "1").strip() not in (
-        "0",
-        "false",
-        "no",
-    )
+    """Product runs always require FEC bridge; test harness may bypass."""
+    from apps_rg.runtime.c0.product_runtime_guards import product_fec_bridge_mandatory
+
+    return product_fec_bridge_mandatory() or os.environ.get(
+        "APPS_RG_SECTION_FEC_BRIDGE_KILL_SWITCH", "1"
+    ).strip() not in ("0", "false", "no")
 
 
 def _utc_now() -> str:
@@ -136,6 +141,13 @@ def _build_pa_proof_authority_metadata(
                 out["c03_graphrag_bound_status"] = c03.get("c03_graphrag_bound_status")
             else:
                 out["c03_graphrag_bound_status"] = pp_meta.get("native_c03_status")
+    ea = pp_meta.get("evidence_authority")
+    if isinstance(ea, dict) and ea and "evidence_authority" not in out:
+        out["evidence_authority"] = dict(ea)
+    if isinstance(pp_meta.get("selection_scope"), dict) and "selection_scope" not in out:
+        out["selection_scope"] = dict(pp_meta["selection_scope"])
+    if isinstance(pp_meta.get("layout_context"), dict) and "layout_context" not in out:
+        out["layout_context"] = dict(pp_meta["layout_context"])
     return out
 
 
@@ -315,7 +327,9 @@ def assert_section_pa_fec_preconditions(
     )
     if not pv:
         return
-    if not fec_bridge_kill_switch_enabled():
+    from apps_rg.runtime.c0.product_runtime_guards import product_fec_bridge_mandatory
+
+    if not product_fec_bridge_mandatory() and not fec_bridge_kill_switch_enabled():
         return
 
     bridge = runtime_payload.get("section_fec_bridge")
@@ -350,10 +364,16 @@ def resolve_pa_proof_authority_for_compile(
 
     bridge = runtime_payload.get("section_fec_bridge")
     if isinstance(bridge, dict):
-        pa = bridge.get("pa_proof_authority_metadata")
+        pa = bridge.get("pa_proof_authority_metadata") or bridge.get("pa_proof_authority")
         if isinstance(pa, dict) and pa:
-            return dict(pa), True
-        return dict(bridge), True
+            safe = dict(pa)
+            if safe.get("receipt_only_json_expansion_excluded_from_pa"):
+                safe.pop("graph_expansion_refs", None)
+            return safe, True
+        safe_bridge = dict(bridge)
+        if safe_bridge.get("receipt_only_json_expansion_excluded_from_pa"):
+            safe_bridge.pop("graph_expansion_refs", None)
+        return safe_bridge, True
 
     canonical = runtime_payload.get("canonical_final_evidence_contract")
     if isinstance(canonical, dict):
@@ -380,7 +400,9 @@ def wire_section_fec_bridge_for_lane(
         run_section_c0_evidence_room,
         section_c0_evidence_room_enabled,
     )
+    from apps_rg.runtime.c0.product_runtime_guards import assert_canonical_product_section_env
 
+    assert_canonical_product_section_env(section_id)
     if section_c0_evidence_room_enabled(section_id):
         bridge = run_section_c0_evidence_room(
             artifact_dir=artifact_dir,

@@ -263,7 +263,7 @@ def _extract_policy_refs(app_payload: Mapping[str, Any]) -> Mapping[str, str]:
 
 def _build_advisory_route_hints(generation_mode: str) -> Mapping[str, str]:
     """Build advisory route hints (not route authority)."""
-    hints: dict[str, str] = {}
+    hints: dict[str, str] = {"authority_class": "ADVISORY_ONLY"}
     if generation_mode in _FULL_RESUME_GENERATION_MODES:
         hints["execution_shape_hint"] = "multi_work_unit_managed_candidate"
     elif generation_mode in _SINGLE_SECTION_MODES:

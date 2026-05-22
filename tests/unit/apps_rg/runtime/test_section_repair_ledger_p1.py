@@ -138,6 +138,38 @@ def test_mechanical_only_after_attempt1_x2_fail_still_blocks_pass(
     assert "attempt_1_x2_failed" in reason
 
 
+def test_mechanical_finalize_coherence_does_not_block_product_pass(
+    monkeypatch, artifact_dir: Path
+) -> None:
+    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    record_repair(
+        artifact_dir,
+        kind=KIND_MECHANICAL,
+        operation="executive_summary_finalize_coherence",
+        reason="display_ledger_coherence",
+        replaced_l2=False,
+    )
+    record_x2_run(
+        artifact_dir,
+        run_number=1,
+        after_l2_source="initial_llm",
+        x2_gates=[{"gate_id": "x2_claim_ledger_materialized_or_gap_excused", "pass": True}],
+    )
+    ledger = json.loads((artifact_dir / "section_repair_ledger.json").read_text(encoding="utf-8"))
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert blocked is False
+    assert reason == ""
+    status, pq_reason = infer_product_quality_with_repair_ledger(
+        runtime_generation_status="REAL_LLM",
+        x2_failed_gate_ids=[],
+        pass_reason="ok",
+        artifact_dir=artifact_dir,
+    )
+    assert status == "PASS"
+    assert pq_reason == "ok"
+
+
 def test_regen_without_authoritative_bump_blocks_pass(monkeypatch, artifact_dir: Path) -> None:
     monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
     monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
@@ -158,6 +190,37 @@ def test_regen_without_authoritative_bump_blocks_pass(monkeypatch, artifact_dir:
     blocked, reason = ledger_blocks_product_pass(ledger)
     assert blocked is True
     assert "authoritative_attempt_still_1" in reason
+
+
+def test_regen_with_authoritative_bump_allows_product_pass(
+    monkeypatch, artifact_dir: Path
+) -> None:
+    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    record_repair(
+        artifact_dir,
+        kind=KIND_REGEN_LLM,
+        operation="synthesis_regen",
+        reason="shape",
+        replaced_l2=True,
+    )
+    set_authoritative_attempt(artifact_dir, 2, reason="synthesis_regen_shape_pass")
+    record_x2_run(
+        artifact_dir,
+        run_number=1,
+        after_l2_source="regen_llm",
+        x2_gates=[{"gate_id": "g1", "pass": True}],
+    )
+    ledger = json.loads((artifact_dir / "section_repair_ledger.json").read_text(encoding="utf-8"))
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert blocked is False
+    status, _ = infer_product_quality_with_repair_ledger(
+        runtime_generation_status="REAL_LLM",
+        x2_failed_gate_ids=[],
+        pass_reason="ok",
+        artifact_dir=artifact_dir,
+    )
+    assert status == "PASS"
 
 
 def test_all_generated_lanes_have_repair_ledger_wiring() -> None:

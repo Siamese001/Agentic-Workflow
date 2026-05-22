@@ -219,6 +219,15 @@ class TestStop8IBMNarrativePrompt:
         assert "claim_ledger_coverage_contract:" in txt
         assert "source_authority_hierarchy:" in txt
 
+    def test_ibm_narrative_north_star_avoids_meta_disclaimer_display_phrases(self):
+        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_position_narrative_v1.yaml"
+        doc = yaml.safe_load(template_path.read_text(encoding="utf-8"))
+        north = str(doc.get("north_star_semantic_contract") or "")
+        assert "PROMPT-ONLY BOUNDARY" in north
+        display_silhouette = north.split("PROMPT-ONLY BOUNDARY", 1)[0]
+        assert "without asserting" not in display_silhouette.lower()
+        assert "without claiming" not in display_silhouette.lower()
+
     def test_ibm_narrative_good_examples_avoid_literal_agentic_ai_bigram(self):
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_position_narrative_v1.yaml"
         doc = yaml.safe_load(template_path.read_text(encoding="utf-8"))

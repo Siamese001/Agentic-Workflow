@@ -125,13 +125,6 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     with (
         mock.patch("subprocess.run", side_effect=fake_run),
         mock.patch(
-            "tests.helpers.offline_lane_orchestration._run_docx_emit",
-            return_value={
-                "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
-                "render": {"gates_all_pass": True, "failed_gate_ids": []},
-            },
-        ),
-        mock.patch(
             "apps_rg.runtime.internal.generated_lane_rollup.build_rollup",
             return_value=rollup_blob,
         ),
@@ -183,10 +176,9 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     assert all(e.get("APPS_RG_MOCK_JUDGES") == "1" for e in lane_envs)
     assert out["orchestrator_status"] == "PASS"
     assert out["package_x3_code"] == "X3_ALLOW"
-    assert "paths" in out and out["paths"]["final_docx"].endswith("amit_ayer_resume_v1.docx")
+    assert "paths" in out and "final_resume_json" in out["paths"]
     assert out["final_resume_assembly_result"]["all_pass"] is True
-    assert out["docx_manifest_result"]["gates_all_pass"] is True
-    assert out["docx_render_result"]["gates_all_pass"] is True
+    assert out.get("docx_emit_skipped") is True
     assert out["l6_handoff_summary"]["generated_lane_l6_artifact_audit"] == {}
     assert out["base_resume_default_used"] is True
     assert out["base_resume_path"] == ofr.CANONICAL_BASE_RESUME_REPO_REL.as_posix()
@@ -232,13 +224,6 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
 
     with (
         mock.patch("subprocess.run", return_value=_FakeProc()),
-        mock.patch(
-            "tests.helpers.offline_lane_orchestration._run_docx_emit",
-            return_value={
-                "manifest": {"gates_all_pass": True, "failed_gate_ids": []},
-                "render": {"gates_all_pass": True, "failed_gate_ids": []},
-            },
-        ),
         mock.patch(
             "apps_rg.runtime.internal.generated_lane_rollup.build_rollup",
             return_value={"rollup_id": "t", "lanes": {}},

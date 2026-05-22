@@ -70,16 +70,23 @@ def modular_sections_root_from_env(repo: Path) -> Path | None:
 
 def resolve_modular_latest_l2(repo: Path, lane: str) -> Path | None:
     """Path to ``l2_output.json`` from modular R4 section pointers (Phase 1+), if env is set."""
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
     msr = modular_sections_root_from_env(repo)
     if msr is None:
         return None
     require_manifest_for_modular_sections_root(msr, env_name=MODULAR_R4_SECTIONS_ROOT_ENV)
     lane_base = msr / lane
-    for ptr_name in (
-        "latest_mock_run.json",
-        "latest_real_run.json",
-        LATEST_SUCCESSFUL_REAL_FILENAME,
-    ):
+    ptr_order = (
+        (LATEST_SUCCESSFUL_REAL_FILENAME,)
+        if product_fail_closed_runtime()
+        else (
+            "latest_mock_run.json",
+            "latest_real_run.json",
+            LATEST_SUCCESSFUL_REAL_FILENAME,
+        )
+    )
+    for ptr_name in ptr_order:
         data = _read_json_dict(lane_base / ptr_name)
         if not data:
             continue
@@ -88,7 +95,9 @@ def resolve_modular_latest_l2(repo: Path, lane: str) -> Path | None:
             continue
         rd = (repo / rel).resolve()
         l2 = rd / "l2_output.json"
-        if l2.is_file():
+        if l2.is_file() and (
+            not product_fail_closed_runtime() or _is_accepted_real_llm_qwen_bundle(rd)
+        ):
             return l2
     return None
 
@@ -476,9 +485,14 @@ def resolve_accepted_real_rollup_run_dir(repo: Path, lane: str) -> tuple[Path | 
 
     Returns (run_directory_or_none, resolution_tag).
     """
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
     rd = resolve_run_dir_from_latest_successful_pointer(repo, lane)
     if rd:
         return rd, "latest_successful_real_run.json"
+
+    if product_fail_closed_runtime():
+        return None, "missing_successful_real_run_product_fail_closed"
 
     rd = _migration_latest_real_llm_qwen_run_dir(repo, lane)
     if rd:

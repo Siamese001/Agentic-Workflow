@@ -11,9 +11,15 @@ from apps_rg.runtime.judges.executive_summary_judge_packet import (
 )
 
 
-def test_judge_packet_uses_srfs_rubric_when_srfs_integration_active() -> None:
+def test_judge_packet_always_uses_graph_rubric_after_d2() -> None:
+    resume = (
+        "Engineering executive building governed agentic AI platforms for regulated enterprise delivery. "
+        "The platform generated proof-backed revenue outcomes while scaling engineering delivery. "
+        "Implementation of Basel III data lineage frameworks reduced regulatory reporting errors. "
+        "Re-architected risk analytics with containerized microservices achieved faster calculations."
+    )
     packet = build_executive_summary_judge_packet(
-        resume_display_text="Engineering executive building governed platforms.",
+        resume_display_text=resume,
         claim_ledger=[
             {
                 "claim_text": "Engineering executive building governed platforms.",
@@ -31,15 +37,16 @@ def test_judge_packet_uses_srfs_rubric_when_srfs_integration_active() -> None:
         target_company="Acme",
         jd_text="JD targeting only.",
         briefing_text="Briefing context only.",
-        parsed_output={"resume_display_text": "Engineering executive building governed platforms."},
-        srfs_integration={
-            "artifact_path_resolved": "artifacts/apps_rg/fact_inventory/selected_role_fact_set_active.json",
-            "executive_summary_selected_fact_ids": ["fact_engineering_platform_001"],
-        },
+        parsed_output={"resume_display_text": resume},
     )
-    assert packet["rubric_ref"] == JUDGE_RUBRIC_REF
-    assert packet["rubric"] == SRFS_GRADE_ONLY_RUBRIC
-    assert "five-sentence" in packet["rubric"].lower()
+    assert packet["rubric_ref"] == GRAPH_ONLY_JUDGE_RUBRIC_REF
+    assert packet["rubric"] == GRAPH_ONLY_GRADE_ONLY_RUBRIC
+    assert "4–5" in packet["rubric"] or "4-5" in packet["rubric"]
+    assert "no_credential_dump" in packet["rubric"] or "credential inventory" in packet["rubric"].lower()
+    assert "s1 thesis" not in packet["rubric"].lower() or "retired" in packet["rubric"].lower()
+    gates = packet["deterministic_gate_summary"]
+    assert gates["x2_exec_summary_no_credential_dump"]["pass"] is True
+    assert gates["x2_exec_summary_no_mechanism_inventory"]["pass"] is True
 
 
 def test_judge_packet_uses_graph_only_rubric_without_srfs() -> None:
@@ -57,8 +64,7 @@ def test_judge_packet_uses_graph_only_rubric_without_srfs() -> None:
         jd_text="JD targeting only.",
         briefing_text="Briefing context only.",
         parsed_output={"resume_display_text": "Led platform delivery."},
-        srfs_integration=None,
     )
     assert packet["rubric_ref"] == GRAPH_ONLY_JUDGE_RUBRIC_REF
     assert packet["rubric"] == GRAPH_ONLY_GRADE_ONLY_RUBRIC
-    assert "2–3 dense executive sentences" in packet["rubric"]
+    assert "4–5 dense executive sentences" in packet["rubric"]

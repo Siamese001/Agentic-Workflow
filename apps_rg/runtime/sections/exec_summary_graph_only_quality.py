@@ -115,7 +115,7 @@ def build_graph_only_executive_summary_from_facts(
     plan_facts: list[dict[str, Any]],
     allowed_fact_ids: set[str],
 ) -> tuple[str, list[dict[str, Any]]]:
-    """Build 2–3 dense sentences and aligned claim_ledger from allowed facts only."""
+    """Build 4–5 dense sentences and aligned claim_ledger from allowed facts only."""
     facts = enrich_allowed_fact_packet_for_judges(plan_facts, allowed_fact_ids)
     by_id = _facts_index(facts)
 
@@ -169,11 +169,21 @@ def build_graph_only_executive_summary_from_facts(
             )
         )
 
-    if len(sentences) > 3:
-        keep_thesis = sentences[0:1]
-        tail = sentences[1:3]
-        sentences = keep_thesis + tail
-        ledger = ledger[: len(sentences)]
+    while len(sentences) < 4 and facts:
+        fid = str(facts[min(len(sentences), len(facts) - 1)].get("fact_id") or "")
+        row = by_id.get(fid) or facts[min(len(sentences), len(facts) - 1)]
+        claim = str(row.get("claim_text") or "").strip()
+        if claim:
+            extra = claim if claim.endswith((".", "!", "?")) else claim + "."
+            if extra not in sentences:
+                sentences.append(extra)
+                ledger.append(_ledger_row(extra, [fid] if fid else []))
+        else:
+            break
+
+    if len(sentences) > 5:
+        sentences = sentences[:5]
+        ledger = ledger[:5]
 
     if not sentences and facts:
         fid = str(facts[0].get("fact_id") or "")

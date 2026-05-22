@@ -142,12 +142,13 @@ class PromptAssemblyInput:
     seniority_band: str = ""
     
     def __post_init__(self):
-        # Validate S0 contains no-fabrication oath
-        if "NO FABRICATION" not in self.s0_system_preamble:
+        s0 = self.s0_system_preamble or ""
+        has_oath = "NO FABRICATION" in s0 or "pa_truth_oath_v1" in s0
+        if not has_oath:
             raise PromptAssemblyError(
                 code="MISSING_NO_FABRICATION_OATH",
-                message="S0 must contain explicit NO FABRICATION oath",
-                slot_id="S0"
+                message="S0 must reference NO FABRICATION or pa_truth_oath_v1",
+                slot_id="S0",
             )
         
         # Validate C0 sources are separated

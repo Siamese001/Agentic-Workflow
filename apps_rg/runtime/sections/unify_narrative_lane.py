@@ -58,7 +58,6 @@ from apps_rg.runtime.sections.unify_narrative_pa import compile_unify_narrative_
 from apps_rg.runtime.exit.unify_narrative_x3 import aggregate_x3
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.judges.unify_narrative_x1d import run_unify_narrative_judges
-from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json

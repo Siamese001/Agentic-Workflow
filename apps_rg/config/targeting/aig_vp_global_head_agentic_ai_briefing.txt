@@ -1,3 +1,0 @@
-AIG VP Global Head Agentic AI — calibration brief
-
-Target: enterprise insurance carrier transformation via governed agentic AI (multi-agent orchestration, RAG, policy-aware routing), underwriting/claims/operations process re-engineering, and AI governance at scale. Emphasize production agent deployments, platform architecture, and measurable operational KPIs — not generic GTM quota or SI partner enablement motion.

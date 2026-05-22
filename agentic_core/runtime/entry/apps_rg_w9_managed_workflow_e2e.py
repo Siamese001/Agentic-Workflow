@@ -46,7 +46,7 @@ from apps_rg.runtime.bindings.l0_binding import (  # guardian: allow-layer-viola
     _MANAGED_ROUTE_TEST_FLAG,
     l0_route_apps_rg,
 )
-from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
 )
@@ -55,14 +55,14 @@ from agentic_core.runtime.contracts.sealed_workflow_types import (
     SealedSectionArtifact,
     SealedWorkflowPackage,
 )
-from agentic_core.runtime.exit.apps_rg_exit_binding import build_apps_rg_exit_harness
+from apps_rg.runtime.bindings.exit_binding import build_apps_rg_exit_harness
 from agentic_core.runtime.exit.exit_disposition import (
     ExitDispositionReceipt,
     RuntimeExhaustBundle,
     X3D_ALLOW_FINISH,
 )
 from agentic_core.runtime.gates.gate_types import GateMeshResult
-from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 
 # ── W9 schema version ─────────────────────────────────────────────────────────
 

@@ -197,7 +197,6 @@ def test_c05_emits_fec_with_allowed_fact_ids() -> None:
         graph_bindings=c03["bindings"],
         front_spine=None,
         allowed_fact_ids=c04["allowed_fact_ids"],
-        merge_canonical_c0=False,
     )
     assert isinstance(fec, FinalEvidenceContract)
     assert receipt["allowed_fact_ids"]
@@ -221,7 +220,6 @@ def test_c07_flags_adjacency_as_proof_violation() -> None:
         graph_bindings=[],
         front_spine=None,
         allowed_fact_ids=["f1"],
-        merge_canonical_c0=False,
     )
     c07 = audit_c07_handoff(
         fec=fec,
@@ -240,23 +238,11 @@ def test_c07_flags_adjacency_as_proof_violation() -> None:
     assert any("adjacency_as_proof" in v for v in c07["violations"])
 
 
-def test_resolve_spine_chroma_enrich_defaults_false() -> None:
-    from apps_rg.runtime.c0.c0_section_authority import resolve_spine_chroma_enrich
-
-    assert resolve_spine_chroma_enrich() is False
-    assert resolve_spine_chroma_enrich(merge_canonical_c0=None) is False
-
-
-def test_c05_default_does_not_call_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
-    from apps_rg.runtime.c0 import c05_fec_packet as c05_mod
-
-    called: list[int] = []
-
-    def _boom(*_a: object, **_k: object) -> None:
-        called.append(1)
-        raise AssertionError("c0_retrieve_apps_rg must not run without spine_chroma_enrich")
-
-    monkeypatch.setattr(c05_mod, "c0_retrieve_apps_rg", _boom)
+def test_c05_does_not_call_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
+    src = (Path(__file__).resolve().parents[3] / "apps_rg/runtime/c0/c05_fec_packet.py").read_text(
+        encoding="utf-8"
+    )
+    assert "c0_retrieve_apps_rg" not in src
     build_c05_final_evidence_contract(
         section_id="competencies",
         atoms=[
@@ -273,7 +259,6 @@ def test_c05_default_does_not_call_spine_c0_retrieve(monkeypatch: pytest.MonkeyP
         front_spine=object(),
         allowed_fact_ids=["f1"],
     )
-    assert called == []
 
 
 def test_c03_skills_graph_receipt_flags() -> None:
@@ -317,7 +302,7 @@ def test_c01_retrieval_plan_lane_aliases(section_id: str, primary_target: str) -
 
 
 def test_agentic_core_binding_import() -> None:
-    from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg as spine_c0
+    from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg as spine_c0
 
     from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg as apps_c0
 

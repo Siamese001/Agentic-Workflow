@@ -23,14 +23,16 @@ def is_apps_rg_test_harness() -> bool:
 
 
 def product_fail_closed_runtime() -> bool:
-    """Live Qwen, BGE, judges required; no pseudo/mock substitutes on product path."""
+    """Live Qwen, BGE, judges required; no pseudo/mock substitutes on product path.
+
+    Default strict for every ``python -m apps_rg`` invocation. Opt-out only via
+    ``APPS_RG_ALLOW_PRODUCT_SHORTCUTS=1`` or ``APPS_RG_TEST_HARNESS=1``.
+    """
     if is_apps_rg_test_harness():
         return False
-    if _env_on("APPS_RG_PRODUCT_FAIL_CLOSED"):
-        return True
-    if _env_on("APPS_RG_WHOLE_RUN_ENVELOPE") or _env_on("APPS_RG_CORRELATED_CLI_RUN"):
-        return True
-    return not _env_on("APPS_RG_ALLOW_PRODUCT_SHORTCUTS")
+    if _env_on("APPS_RG_ALLOW_PRODUCT_SHORTCUTS"):
+        return False
+    return True
 
 
 def require_live_bge_embeddings() -> bool:
@@ -49,10 +51,61 @@ RUNTIME_REAL_LLM = "REAL_LLM"
 PHASE1_PRIOR_LANE_FAILED_BLOCKER = "PHASE1_PRIOR_LANE_FAILED"
 
 
+def product_pass_allows_c02_write(
+    write_receipt: dict | object | None,
+    *,
+    index_maintenance_bound: bool = False,
+) -> tuple[bool, str]:
+    """Same-run Chroma write does not satisfy product PASS without pre-run index receipt."""
+    from apps_rg.runtime.c02_chroma_lifecycle import (
+        C02_CHROMA_WRITE_ATTEMPTED,
+        same_run_write_blocks_product_pass,
+    )
+
+    wr = write_receipt if isinstance(write_receipt, dict) else {}
+    if not same_run_write_blocks_product_pass(wr):
+        return True, "ok"
+    if str(wr.get("status") or "") != C02_CHROMA_WRITE_ATTEMPTED:
+        return True, "ok"
+    if index_maintenance_bound:
+        return True, "pre_run_index_bound"
+    return False, "same_run_c02_chroma_write_not_product_proof"
+
+
 def lane_run_dir_meets_product_bar(run_dir: Path) -> tuple[bool, str]:
     """True when run_dir l2+x3 evidence meets product lane bar (REAL_LLM + PASS + X3 allow family)."""
+    from apps_rg.runtime.c02_chroma_lifecycle import index_build_receipt_bound
     from apps_rg.runtime.runtime_proof_layout import _is_accepted_real_llm_qwen_bundle
     from apps_rg.runtime.validators.companion_bullet_finalization import COMPANION_FINALIZED_X3_CODES
+
+    room_receipt = run_dir / "c0_evidence_room_receipt.json"
+    if room_receipt.is_file():
+        try:
+            room = json.loads(room_receipt.read_text(encoding="utf-8"))
+            bridge = room.get("bridge_doc") or {}
+            c0_room = bridge.get("c0_evidence_room") or {}
+            c02 = c0_room.get("c02") or {}
+            write_block = c02.get("c02_chroma_write") or {}
+            ok_write, write_reason = product_pass_allows_c02_write(
+                write_block,
+                index_maintenance_bound=index_build_receipt_bound(run_dir),
+            )
+            if not ok_write:
+                return False, write_reason
+            ingest = c02.get("fact_vectors_ingest") or {}
+            if str(ingest.get("status") or "") == "PASS" and product_fail_closed_runtime():
+                ok_ing, ing_reason = product_pass_allows_c02_write(
+                    {
+                        "status": "ATTEMPTED",
+                        "attempted": True,
+                        "upserted_count": ingest.get("upserted_count"),
+                    },
+                    index_maintenance_bound=index_build_receipt_bound(run_dir),
+                )
+                if not ok_ing:
+                    return False, ing_reason
+        except (json.JSONDecodeError, OSError):
+            pass
 
     run_posix = run_dir.as_posix()
     if "phase0_synthetic" in run_posix:
@@ -107,5 +160,6 @@ __all__ = [
     "lane_run_dir_meets_product_bar",
     "phase1_dispatch_hard_failed",
     "product_fail_closed_runtime",
+    "product_pass_allows_c02_write",
     "require_live_bge_embeddings",
 ]

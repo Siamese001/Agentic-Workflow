@@ -44,7 +44,14 @@ def _get_bge_model() -> Any:
             return None
         try:
             _bge_model = load_bge_sentence_transformer(settings)
-        except Exception as exc:  # guardian: allow-broad-exception -- optional BGE; pseudo fallback must not block UWG
+        except Exception as exc:
+            from apps_rg.runtime.embedding_settings import AppsRgEmbeddingFailClosedError
+            from apps_rg.runtime.product_output_policy import require_live_bge_embeddings
+
+            if require_live_bge_embeddings():
+                raise AppsRgEmbeddingFailClosedError(
+                    f"BGE-M3 load failed on product path: {exc}"
+                ) from exc
             _logger.warning("R1B BGE load failed (%s); using pseudo-digest fallback", exc)
             return None
         return _bge_model
@@ -82,6 +89,9 @@ def intent_vector_payload(*, intent_text: str, digest: str) -> dict[str, Any]:
     """Canonical vector JSON persisted under ``vectors/<record_id>.json``."""
     from apps_rg.cache.r1b_intent_vector import normalized_intent_digest, pseudo_vector_from_digest
 
+    from apps_rg.runtime.embedding_settings import AppsRgEmbeddingFailClosedError
+    from apps_rg.runtime.product_output_policy import require_live_bge_embeddings
+
     digest = digest or normalized_intent_digest(intent_text)
     bge = embed_text_bge(intent_text)
     if bge is not None:
@@ -95,6 +105,10 @@ def intent_vector_payload(*, intent_text: str, digest: str) -> dict[str, Any]:
             "dimensions": _BGE_DIM,
             "values": bge,
         }
+    if require_live_bge_embeddings():
+        raise AppsRgEmbeddingFailClosedError(
+            "BGE-M3 embedding required; pseudo_digest_fallback forbidden on product path"
+        )
     return {
         "subsystem": R1B_STORAGE_SUBSYSTEM,
         "embedding_model": "pseudo_digest_fallback",
@@ -107,6 +121,9 @@ def intent_vector_payload(*, intent_text: str, digest: str) -> dict[str, Any]:
 
 
 def chunk_vector_payload(*, chunk_text: str, chunk_id: str) -> dict[str, Any]:
+    from apps_rg.runtime.embedding_settings import AppsRgEmbeddingFailClosedError
+    from apps_rg.runtime.product_output_policy import require_live_bge_embeddings
+
     text = (chunk_text or chunk_id or "").strip()
     bge = embed_text_bge(text) if text else None
     if bge is not None:
@@ -116,6 +133,10 @@ def chunk_vector_payload(*, chunk_text: str, chunk_id: str) -> dict[str, Any]:
             "dimensions": _BGE_DIM,
             "values": bge,
         }
+    if require_live_bge_embeddings():
+        raise AppsRgEmbeddingFailClosedError(
+            f"BGE-M3 chunk embedding required; pseudo_digest forbidden (chunk_id={chunk_id!r})"
+        )
     from apps_rg.cache.r1b_intent_vector import normalized_intent_digest, pseudo_vector_from_digest
 
     digest = normalized_intent_digest(text or chunk_id)
@@ -128,12 +149,18 @@ def chunk_vector_payload(*, chunk_text: str, chunk_id: str) -> dict[str, Any]:
 
 
 def resolve_query_vector(intent_text: str, digest: str) -> tuple[list[float], str]:
-    """Query vector for R1B lookup — BGE when active, else pseudo."""
+    """Query vector for R1B lookup — BGE when active, else pseudo (tests only)."""
     from apps_rg.cache.r1b_intent_vector import pseudo_vector_from_digest
+    from apps_rg.runtime.embedding_settings import AppsRgEmbeddingFailClosedError
+    from apps_rg.runtime.product_output_policy import require_live_bge_embeddings
 
     bge = embed_text_bge(intent_text)
     if bge is not None:
         return bge, "bge_m3"
+    if require_live_bge_embeddings():
+        raise AppsRgEmbeddingFailClosedError(
+            "BGE-M3 query vector required; pseudo_digest forbidden on product path"
+        )
     return pseudo_vector_from_digest(digest), "pseudo_digest"
 
 

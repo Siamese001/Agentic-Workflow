@@ -101,28 +101,28 @@ _GOV3_BASELINE: dict[str, dict] = {
     # Added W4B 2026-05-13. Migration: apps-rg-golden-state-section-generation-a4f9e1.
     # Classification: TEMPORARY_THIN_ADAPTER (shim → apps_rg/runtime/bindings/l0_binding.py)
     # Findings: all forbidden_literal / generic_apps_literal / is_binding=True, no CRITICAL
-    "agentic_core/L0_routing/apps_rg_l0_binding.py": {
+    "apps_rg/runtime/bindings/l0_binding.py": {
         "expiry": "2026-08-13",
         "classification": "TEMPORARY_THIN_ADAPTER",
         "migration_plan": "apps-rg-golden-state-section-generation-a4f9e1",
         "target_module": "apps_rg.runtime.bindings.l0_binding",
         "issue": "GOV-3-BASELINE-001",
     },
-    "agentic_core/L1_cognition/apps_rg_l1_binding.py": {
+    "apps_rg/runtime/bindings/l1_binding.py": {
         "expiry": "2026-08-13",
         "classification": "TEMPORARY_THIN_ADAPTER",
         "migration_plan": "apps-rg-golden-state-section-generation-a4f9e1",
         "target_module": "apps_rg.runtime.bindings.l1_binding",
         "issue": "GOV-3-BASELINE-002",
     },
-    "agentic_core/runtime/c0/apps_rg_c0_binding.py": {
+    "apps_rg/runtime/bindings/c0_binding.py": {
         "expiry": "2026-08-13",
         "classification": "TEMPORARY_THIN_ADAPTER",
         "migration_plan": "apps-rg-golden-state-section-generation-a4f9e1",
         "target_module": "apps_rg.runtime.bindings.c0_binding",
         "issue": "GOV-3-BASELINE-003",
     },
-    "agentic_core/runtime/entry/u0_apps_rg_binding.py": {
+    "apps_rg/runtime/bindings/u0_binding.py": {
         "expiry": "2026-08-13",
         "classification": "TEMPORARY_THIN_ADAPTER",
         "migration_plan": "apps-rg-golden-state-section-generation-a4f9e1",
@@ -136,7 +136,7 @@ _GOV3_BASELINE: dict[str, dict] = {
         "target_module": "apps_rg.runtime.u0",
         "issue": "GOV-3-BASELINE-005",
     },
-    "agentic_core/prompt_governance/apps_rg_pa_binding.py": {
+    "apps_rg/runtime/bindings/pa_binding.py": {
         "expiry": "2026-08-13",
         "classification": "TEMPORARY_THIN_ADAPTER",
         "migration_plan": "apps-rg-golden-state-section-generation-a4f9e1",
@@ -162,7 +162,7 @@ _GOV3_BASELINE: dict[str, dict] = {
         "rationale": "Fix circular import chain for sanitize_tool_output - generic runtime infrastructure repair, NOT apps_rg-specific",
         "issue": "GOV-3-BASELINE-008",
     },
-    "agentic_core/runtime/exit/apps_rg_exit_binding.py": {
+    "apps_rg/runtime/bindings/exit_binding.py": {
         "expiry": "2026-08-13",
         "classification": "TEMPORARY_THIN_ADAPTER",
         "migration_plan": "apps-rg-runtime-wiring-completion-d4e8a1",

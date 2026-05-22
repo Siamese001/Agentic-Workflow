@@ -23,8 +23,6 @@ INTERNAL_MODULES = (
     "apps_rg.runtime.internal.resume_package_disposition",
     "apps_rg.runtime.internal.generated_lane_rollup",
     "apps_rg.runtime.internal.final_resume_assembler",
-    "apps_rg.runtime.internal.docx_renderer",
-    "apps_rg.runtime.internal.docx_manifest_builder",
     "apps_rg.runtime.internal.locked_copy_builder",
 )
 

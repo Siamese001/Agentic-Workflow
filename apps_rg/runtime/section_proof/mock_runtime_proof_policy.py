@@ -48,8 +48,17 @@ def infer_product_quality_blocked_or_mock(
     x2_failed_gate_ids: list[str],
     pass_reason: str,
 ) -> tuple[str, str]:
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
     if x2_failed_gate_ids:
         return "FAIL", f"X2 failed gates: {x2_failed_gate_ids}"
+    if product_fail_closed_runtime():
+        if runtime_generation_status != "REAL_LLM":
+            return (
+                "FAIL",
+                f"Product run requires REAL_LLM generation; got {runtime_generation_status!r}.",
+            )
+        return "PASS", pass_reason
     if runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         return (
             "PARTIAL",

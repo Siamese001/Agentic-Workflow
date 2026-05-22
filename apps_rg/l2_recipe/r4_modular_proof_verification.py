@@ -68,9 +68,8 @@ def verify_recorded_modular_r4_proof_bundle(
             if str(man.get("l2_fault") or "") != "":
                 errs.append(f"expected_empty_l2_fault_got:{man.get('l2_fault')!r}")
 
-    for rel in ("outputs/generated_resume.json", "outputs/resume.docx"):
-        if not (run_dir / rel).is_file():
-            errs.append(f"missing:{rel}")
+    if not (run_dir / "outputs/generated_resume.json").is_file():
+        errs.append("missing:outputs/generated_resume.json")
 
     out_man = run_dir / "apps_rg_output_manifest.json"
     outcome_ok = False
@@ -81,19 +80,13 @@ def verify_recorded_modular_r4_proof_bundle(
         if not isinstance(om, dict):
             errs.append("apps_rg_output_manifest_not_object")
         else:
-            if om.get("docx_verified") is not True:
-                errs.append("docx_verified_not_true")
             req = om.get("required_artifacts")
             if not isinstance(req, dict):
                 errs.append("required_artifacts_missing")
-            else:
-                if req.get("generated_resume_json") != "verified":
-                    errs.append("generated_resume_json_not_verified")
-                if req.get("resume_docx") != "verified":
-                    errs.append("resume_docx_not_verified")
+            elif req.get("generated_resume_json") != "verified":
+                errs.append("generated_resume_json_not_verified")
             outcome_ok = bool(
                 om.get("apps_rg_generation_status") == "REAL_RESUME"
-                and om.get("docx_verified") is True
                 and om.get("full_resume_generated") is True
                 and isinstance(om.get("required_artifacts"), dict)
                 and om["required_artifacts"].get("generated_resume_json") == "verified",

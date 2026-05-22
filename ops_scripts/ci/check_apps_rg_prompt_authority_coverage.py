@@ -157,7 +157,7 @@ def _check_stage_boundaries(cls: dict, mat: dict, findings: list) -> None:
 
 
 def _check_pa_binding(findings: list) -> None:
-    pa_path = REPO_ROOT / "agentic_core" / "prompt_governance" / "apps_rg_pa_binding.py"
+    pa_path = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py"
     if pa_path.exists():
         content = pa_path.read_text(encoding="utf-8")
         # PAB-003: slot_lineage_map dict must not assign USER_INTENT+EVIDENCE as a value.
@@ -197,12 +197,12 @@ def _check_pa_binding(findings: list) -> None:
 def _check_binding_isolation(findings: list) -> None:
     checks = [
         {
-            "path": REPO_ROOT / "agentic_core" / "L0_routing" / "apps_rg_l0_binding.py",
+            "path": REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
             "name": "L0",
             "forbidden": ["yaml.safe_load", "yaml.load", "rg_prompt_profile", "slot_mapper", "prompt_bom"],
         },
         {
-            "path": REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py",
+            "path": REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
             "name": "C0",
             "forbidden": ["pa_compose_apps_rg", "PromptBlock(", "_build_system_preamble",
                           "_build_user_instruction", "_build_u0_task_block"],
@@ -214,7 +214,7 @@ def _check_binding_isolation(findings: list) -> None:
                           "strategic_tailor", "warmup_pairs", "_build_system_preamble"],
         },
         {
-            "path": REPO_ROOT / "agentic_core" / "runtime" / "exit" / "apps_rg_exit_binding.py",
+            "path": REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "exit_binding.py",
             "name": "Exit",
             "forbidden": ["pa_compose_apps_rg", "PromptBlock(", "_build_system_preamble",
                           "_build_user_instruction", "_build_u0_task_block"],

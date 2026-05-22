@@ -169,7 +169,14 @@ def _resolve_lane_run_dir(
     if not lane_base.is_dir():
         return None, "lane_section_root_absent", None
 
-    for ptr_name in ("latest_successful_real_run.json", "latest_real_run.json"):
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+    ptr_names = (
+        ("latest_successful_real_run.json",)
+        if product_fail_closed_runtime()
+        else ("latest_successful_real_run.json", "latest_real_run.json")
+    )
+    for ptr_name in ptr_names:
         ptr = lane_base / ptr_name
         if not ptr.is_file():
             continue
@@ -182,6 +189,9 @@ def _resolve_lane_run_dir(
             rd = (repo_root / rel).resolve() if not Path(rel).is_absolute() else Path(rel).resolve()
             if rd.is_dir():
                 return rd, ptr_name, rid
+
+    if product_fail_closed_runtime():
+        return None, "no_run_dir_product_fail_closed", None
 
     real_root = lane_base / "real"
     if real_root.is_dir():

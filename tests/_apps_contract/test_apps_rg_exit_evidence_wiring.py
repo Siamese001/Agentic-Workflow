@@ -152,7 +152,7 @@ class TestArchitectureInvariants:
     def test_core_exit_binding_does_not_define_g22_scorer(self):
         """_compute_deterministic_dim_scores must not be defined in agentic_core."""
         import inspect
-        import agentic_core.runtime.exit.apps_rg_exit_binding as _mod
+        import apps_rg.runtime.bindings.exit_binding as _mod
         fn = getattr(_mod, "_compute_deterministic_dim_scores", None)
         if fn is not None:
             src_file = inspect.getfile(fn)
@@ -164,7 +164,7 @@ class TestArchitectureInvariants:
     def test_core_exit_binding_does_not_define_g24_provenance_builder(self):
         """_build_g24_provenance must not be defined in agentic_core."""
         import inspect
-        import agentic_core.runtime.exit.apps_rg_exit_binding as _mod
+        import apps_rg.runtime.bindings.exit_binding as _mod
         fn = getattr(_mod, "_build_g24_provenance", None)
         if fn is not None:
             src_file = inspect.getfile(fn)
@@ -649,7 +649,7 @@ class TestExitFinalizePassesEvidence:
 
     def test_harness_evaluate_called_with_evidence_dict(self, tmp_path):
         """harness.evaluate() receives a dict with g22_rubric_scores and g24_provenance."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import (
+        from apps_rg.runtime.bindings.exit_binding import (
             exit_finalize_apps_rg,
         )
 
@@ -692,10 +692,10 @@ class TestExitFinalizePassesEvidence:
         mock_harness.evaluate.side_effect = capture_evaluate
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             return_value=mock_harness,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=tmp_path,
         ):
             (tmp_path / "artifacts" / "apps_rg" / "runs").mkdir(parents=True, exist_ok=True)
@@ -713,7 +713,7 @@ class TestExitFinalizePassesEvidence:
 
     def test_g22_rubric_scores_non_empty_for_valid_json(self, tmp_path):
         """g22_rubric_scores is non-empty when parsed_content is valid JSON."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import (
+        from apps_rg.runtime.bindings.exit_binding import (
             exit_finalize_apps_rg,
         )
 
@@ -745,10 +745,10 @@ class TestExitFinalizePassesEvidence:
         mock_harness.evaluate.side_effect = capture_evaluate
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             return_value=mock_harness,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=tmp_path,
         ):
             (tmp_path / "artifacts" / "apps_rg" / "runs").mkdir(parents=True, exist_ok=True)
@@ -761,7 +761,7 @@ class TestExitFinalizePassesEvidence:
 
     def test_g24_provenance_has_real_hashes(self, tmp_path):
         """g24_provenance uses real hashes from sealed + prompt artifacts."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import (
+        from apps_rg.runtime.bindings.exit_binding import (
             exit_finalize_apps_rg,
         )
 
@@ -794,10 +794,10 @@ class TestExitFinalizePassesEvidence:
         mock_harness.evaluate.side_effect = capture_evaluate
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             return_value=mock_harness,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=tmp_path,
         ):
             (tmp_path / "artifacts" / "apps_rg" / "runs").mkdir(parents=True, exist_ok=True)
@@ -866,7 +866,7 @@ class TestSealResumeSections:
     def test_t3_merged_content_from_generated_content(self, tmp_path):
         """T3: merged_content is populated from sealed.generated_content in SealedWorkflowPackage."""
         from unittest.mock import patch
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         resume_json = json.dumps(_FULL_RESUME)
         sealed = _make_sealed(generated_content=resume_json, run_id="run-t3")
@@ -891,10 +891,10 @@ class TestSealResumeSections:
         mock_harness.evaluate.side_effect = capture_evaluate
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             return_value=mock_harness,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=tmp_path,
         ):
             (tmp_path / "artifacts" / "apps_rg" / "runs").mkdir(parents=True, exist_ok=True)
@@ -1370,7 +1370,7 @@ class TestReceiptDualG28:
 
     def test_9_receipt_contains_g28_audit_chain(self, tmp_path):
         """Test 9: 07_gate_receipt.json includes g28_audit_chain with both verdict fields."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         run_id = "run-receipt-test"
         sealed = _make_sealed(
@@ -1381,10 +1381,10 @@ class TestReceiptDualG28:
         mock_harness = _make_harness_mock(run_id=run_id)
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             return_value=mock_harness,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=tmp_path,
         ):
             (tmp_path / "artifacts" / "apps_rg" / "runs").mkdir(parents=True, exist_ok=True)
@@ -1408,7 +1408,7 @@ class TestReceiptDualG28:
 
     def test_10_diagnostics_artifact_written_when_fec_present(self, tmp_path):
         """Test 10: 07_g22_factual_grounding_diagnostics.json written when FEC provided."""
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         run_id = "run-diag-test"
         sealed = _make_sealed(
@@ -1423,10 +1423,10 @@ class TestReceiptDualG28:
         mock_harness = _make_harness_mock(run_id=run_id)
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             return_value=mock_harness,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=tmp_path,
         ):
             (tmp_path / "artifacts" / "apps_rg" / "runs").mkdir(parents=True, exist_ok=True)

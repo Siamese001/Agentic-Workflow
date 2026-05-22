@@ -14,6 +14,7 @@ from apps_rg.l2_recipe.resume_output_shape import (
     REAL_RESUME,
     STUB_RECEIPT,
 )
+from apps_rg.runtime.product_output_policy import docx_output_required
 
 _BLOCKED_FULL_SUCCESS: frozenset[str] = frozenset(
     {
@@ -55,14 +56,14 @@ def evaluate_apps_rg_full_success_eligibility(
     if fr is not True:
         reasons.append("full_resume_generated_not_true")
 
-    dv = manifest.get("docx_verified")
-    if dv is not True:
-        reasons.append(f"docx_verified_not_true:{dv!r}")
+    require_docx = docx_output_required() or manifest.get("docx_output_required") is True
+    if require_docx:
+        dv = manifest.get("docx_verified")
+        if dv is not True:
+            reasons.append(f"docx_verified_not_true:{dv!r}")
 
     json_rel = str(manifest.get("generated_resume_json_relpath") or "outputs/generated_resume.json")
-    docx_rel = str(manifest.get("resume_docx_relpath") or "outputs/resume.docx")
     jp = (run_root / json_rel).resolve()
-    dp = (run_root / docx_rel).resolve()
 
     if not jp.is_file():
         reasons.append(f"missing_generated_resume_json:{json_rel}")
@@ -78,14 +79,17 @@ def evaluate_apps_rg_full_success_eligibility(
         except (OSError, json.JSONDecodeError) as exc:
             reasons.append(f"generated_resume_json_invalid:{exc}")
 
-    if not dp.is_file() or dp.stat().st_size <= 0:
-        reasons.append(f"missing_or_empty_resume_docx:{docx_rel}")
+    if require_docx:
+        docx_rel = str(manifest.get("resume_docx_relpath") or "outputs/resume.docx")
+        dp = (run_root / docx_rel).resolve()
+        if not dp.is_file() or dp.stat().st_size <= 0:
+            reasons.append(f"missing_or_empty_resume_docx:{docx_rel}")
 
     ra = manifest.get("required_artifacts")
     if isinstance(ra, dict) and ra:
         for key, val in ra.items():
             if key == "docx_verified":
-                if val is not True:
+                if require_docx and val is not True:
                     reasons.append(f"required_artifacts_docx_verified_false:{val!r}")
             elif val != "verified":
                 reasons.append(f"required_artifact_not_verified:{key}={val!r}")

@@ -13,7 +13,10 @@ from apps_rg.cache.r1b_bge_embedding import (
     reset_bge_model_for_testing,
     resolve_query_vector,
 )
-from apps_rg.runtime.embedding_settings import bootstrap_apps_rg_embedding_env
+from apps_rg.runtime.embedding_settings import (
+    AppsRgEmbeddingFailClosedError,
+    bootstrap_apps_rg_embedding_env,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -42,8 +45,21 @@ def test_intent_vector_payload_uses_bge_when_model_available(
 
 
 def test_resolve_query_vector_falls_back_without_bge(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
     monkeypatch.setenv("EMBEDDING_ENABLED", "false")
     monkeypatch.setenv("HF_HOME", "/nonexistent")
     vec, kind = resolve_query_vector("apps_rg|role|x|y", "deadbeef" * 8)
     assert kind == "pseudo_digest"
     assert len(vec) == 32
+
+
+def test_resolve_query_vector_fail_closed_on_product_path(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    monkeypatch.delenv("APPS_RG_ALLOW_PRODUCT_SHORTCUTS", raising=False)
+    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
+    monkeypatch.setenv("EMBEDDING_ENABLED", "false")
+    monkeypatch.setenv("HF_HOME", "/nonexistent")
+    with pytest.raises(AppsRgEmbeddingFailClosedError):
+        resolve_query_vector("apps_rg|role|x|y", "deadbeef" * 8)

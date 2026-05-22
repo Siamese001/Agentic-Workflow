@@ -64,6 +64,9 @@ def main(argv: list[str] | None = None) -> int:
         write_selected_role_fact_set_artifacts,
     )
 
+    import os
+
+    os.environ["APPS_RG_OFFLINE_SRFS_JSON_WRITE"] = "1"
     slug = ns.stamp or utc_timestamp_slug()
     srfs = select_candidate_facts_for_role(
         target_company=ns.target_company,

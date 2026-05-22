@@ -49,7 +49,6 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
 )
 from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
-from apps_rg.runtime.qwen_offline_contract_stub import effective_offline_contract_stub_enabled
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.section_proof.lane_proof_accounting import (

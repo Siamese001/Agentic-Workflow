@@ -66,7 +66,7 @@ def _make_prompt():
     import hashlib
 
     from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
-    from agentic_core.prompt_governance.apps_rg_pa_binding import APPS_RG_PA_CERT_REF
+    from apps_rg.runtime.bindings.pa_binding import APPS_RG_PA_CERT_REF
 
     _uid = uuid.uuid4().hex[:16]
     return CompiledPromptArtifact(
@@ -95,7 +95,7 @@ class TestAppsRgExitBindingIntentWriteback:
         (returns tmp_path / "artifact.json") so that the relative_to() call
         inside exit_finalize_apps_rg resolves cleanly without hitting disk.
         """
-        from agentic_core.runtime.exit import apps_rg_exit_binding as _mod
+        from apps_rg.runtime.bindings import exit_binding as _mod
 
         prompt = _make_prompt()
         artifact_path = tmp_path / "artifact.json"
@@ -318,7 +318,7 @@ class TestAppsRgExitBindingC0Writeback:
     """Edge cases for the C0 chunk writeback block in exit_finalize_apps_rg."""
 
     def _run_exit(self, sealed, mock_vrs_instance, tmp_path):
-        from agentic_core.runtime.exit import apps_rg_exit_binding as _mod
+        from apps_rg.runtime.bindings import exit_binding as _mod
 
         prompt = _make_prompt()
         artifact_path = tmp_path / "artifact.json"
@@ -445,7 +445,7 @@ class TestIntentDocumentTruncation:
     """Intent doc / output_preview truncation boundaries."""
 
     def _run_exit_and_get_intent_call(self, sealed, tmp_path):
-        from agentic_core.runtime.exit import apps_rg_exit_binding as _mod
+        from apps_rg.runtime.bindings import exit_binding as _mod
 
         prompt = _make_prompt()
         artifact_path = tmp_path / "artifact.json"

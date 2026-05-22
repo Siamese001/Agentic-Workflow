@@ -544,6 +544,49 @@ def build_rg_output_from_modular_sections(
     )
 
 
+def load_lane_l2_from_section_refs(
+    repo_root: Path,
+    section_output_refs: Mapping[str, str],
+    *,
+    rollup_lanes: Mapping[str, Any] | None = None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
+    """Load per-lane ``l2_output.json`` from modular section refs (product SSOT path).
+
+    Returns ``(lane_l2_by_id, errors_by_lane)`` where *errors_by_lane* lists lanes that
+    could not be loaded (missing ref, missing file, invalid JSON).
+    """
+    from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+
+    rr = repo_root.resolve()
+    lanes_meta = rollup_lanes if isinstance(rollup_lanes, dict) else {}
+    out: dict[str, dict[str, Any]] = {}
+    errors: dict[str, str] = {}
+    for lane in GENERATED_LANES:
+        rel = section_output_refs.get(lane)
+        if not isinstance(rel, str) or not rel.strip():
+            errors[lane] = "missing_section_output_ref"
+            continue
+        path = (rr / rel.strip().replace("\\", "/")).resolve()
+        if not path.is_file():
+            errors[lane] = f"missing_l2_output_json:{rel}"
+            continue
+        try:
+            blob = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            errors[lane] = f"l2_output_unreadable:{exc}"
+            continue
+        if not isinstance(blob, dict):
+            errors[lane] = "l2_output_not_object"
+            continue
+        row = lanes_meta.get(lane)
+        if isinstance(row, dict):
+            st = row.get("runtime_generation_status")
+            if st is not None:
+                blob = {**blob, "runtime_generation_status": st}
+        out[lane] = blob
+    return out, errors
+
+
 def extract_lane_l2_from_assembled_final(final_resume_path: Path) -> dict[str, dict[str, Any]]:
     """Parse ``final_resume_assembled_v1`` JSON; return ``section_id -> l2_output_snapshot``."""
     raw = json.loads(final_resume_path.read_text(encoding="utf-8"))
@@ -564,4 +607,5 @@ __all__ = [
     "RgOutputBuildResult",
     "build_rg_output_from_modular_sections",
     "extract_lane_l2_from_assembled_final",
+    "load_lane_l2_from_section_refs",
 ]

@@ -25,14 +25,18 @@ proof_points:
 
 length:
   display_text_sentence_band:
-    default_min: 2
-    default_max: 3
-    extended_max: 5
+    min: 4
+    max: 5
+  paragraph_max_words: 220
+  max_words_per_sentence: 58
+  length_policy: fit_to_evidence
+  x2_bounds_gate_ids:
+    - x2_exec_summary_sentence_count_4_5
+    - x2_exec_summary_paragraph_max_words
   note: >
-    Default generated resume_display_text: **2–3 dense sentences** (period-delimited
-    executive paragraph). Use up to **4–5 sentences** only when the active section
-    budget or base résumé target explicitly allows a longer executive summary; never
-    use arbitrary word or line caps (legacy max_words/max_lines retired).
+    Product shape: **4–5 period-delimited sentences** forming one polished executive
+    paragraph (fit_to_evidence; no paragraph word minimum). Legacy 2–3 sentence mode
+    is retired. SelectedRoleFactSet controls allowed facts only — not sentence count.
 
 naturalness_guidance_ref: "forbidden_ai_phrases.yaml#generic_openers"
 naturalness_note: >

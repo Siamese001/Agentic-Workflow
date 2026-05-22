@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -167,10 +168,25 @@ def run_ingestion(
 
     model = _load_embedding_model()
     client = chromadb.PersistentClient(path=chromadb_path)
-    collection = client.get_or_create_collection(
-        name=collection_name,
-        metadata={"hnsw:space": "cosine"},
-    )
+    if os.environ.get("APPS_RG_FORBID_CHROMA_DEFAULT_EF", "").strip().lower() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        from apps_rg.runtime.chroma_precomputed_collection import (
+            get_precomputed_embeddings_collection,
+        )
+
+        collection = get_precomputed_embeddings_collection(
+            client,
+            collection_name,
+            metadata={"hnsw:space": "cosine"},
+        )
+    else:
+        collection = client.get_or_create_collection(
+            name=collection_name,
+            metadata={"hnsw:space": "cosine"},
+        )
     _log.info(
         "[chroma_ingest_pipeline] ingesting %d docs into %s at %s",
         len(docs), collection_name, chromadb_path,

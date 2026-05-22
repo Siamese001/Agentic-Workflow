@@ -70,10 +70,7 @@ from apps_rg.runtime.judges.executive_summary_judge_packet import (
 )
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
-from apps_rg.runtime.qwen_offline_contract_stub import (
-    OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,
-    effective_offline_contract_stub_enabled,
-)
+from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
@@ -213,7 +210,6 @@ def build_runtime_payload(
     target_company: str,
     jd_text: str,
     briefing: str,
-    srfs_integration: dict[str, Any] | None = None,
     allowed_fact_ids_ordered: list[str] | None = None,
 ) -> dict[str, Any]:
     ids = allowed_fact_ids_ordered if allowed_fact_ids_ordered is not None else list(selected_fact_plan.get("required_fact_ids") or [])
@@ -234,8 +230,6 @@ def build_runtime_payload(
         "monolithic_prompt_invoked": False,
         "strategic_tailor_v1_invoked": False,
     }
-    if srfs_integration is not None:
-        payload["srfs_integration"] = srfs_integration
     return payload
 
 
@@ -329,20 +323,14 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
     return None, "Model output was not a JSON object."
 
 
-def coerce_resume_display_sentence_count_band(
-    resume: str,
-    srfs_integration: dict[str, Any] | None,
-) -> str:
+def coerce_resume_display_sentence_count_band(resume: str) -> str:
     """No post-hoc sentence-band coercion — X2 enforces 4–5 sentences."""
-    _ = srfs_integration
     return resume
 
 
 def normalize_executive_summary_llm_output(
     parsed: dict[str, Any],
     runtime_selected_fact_plan: dict[str, Any],
-    *,
-    srfs_integration: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Collapse legacy R0 aliases; runtime owns selected_fact_plan (no model echo for proof SSOT)."""
     resume = str(
@@ -350,7 +338,7 @@ def normalize_executive_summary_llm_output(
         or parsed.get("executive_summary")
         or ""
     ).strip()
-    resume = coerce_resume_display_sentence_count_band(resume, srfs_integration)
+    resume = coerce_resume_display_sentence_count_band(resume)
     claims = parsed.get("claim_ledger")
     if claims is None:
         claims = parsed.get("claim_ledger_emitted")
@@ -733,12 +721,14 @@ def _synthesis_shape_reject_reason(
     """Return (all_ok, semicolon-joined failure reasons) for pre-X2 synthesis shape."""
     from apps_rg.runtime.sections.executive_summary_composition import check_human_exec_voice
     from apps_rg.runtime.validators.executive_summary_x2 import (
+        GENERIC_FILLER,
         check_exec_summary_evidence_utilization,
         check_exec_summary_meta_filler_patterns,
         check_exec_summary_no_credential_dump,
         check_exec_summary_no_mechanism_inventory,
         check_exec_summary_paragraph_max_words,
         check_exec_summary_sentence_count_4_5,
+        check_inferred_bridge_claims,
         check_north_star_style_example_echo_unsupported,
         check_resume_display_colon_space_discipline,
         check_synthesis_quality,
@@ -772,6 +762,12 @@ def _synthesis_shape_reject_reason(
     voice_exec_ok, voice_exec_reason = check_human_exec_voice(text)
     if not voice_exec_ok and voice_exec_reason:
         failures.append(voice_exec_reason)
+    filler_hits = [p for p in GENERIC_FILLER if p in text.lower()]
+    if filler_hits:
+        failures.append(f"generic_filler:{','.join(filler_hits)}")
+    bridge_ok, bridge_reason = check_inferred_bridge_claims(text, selected_facts)
+    if not bridge_ok and bridge_reason:
+        failures.append(bridge_reason)
     mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(text)
     if not mech_ok and mech_reason:
         failures.append(mech_reason)
@@ -782,6 +778,18 @@ def _synthesis_shape_reject_reason(
         star_ok, star_reason = check_north_star_style_example_echo_unsupported(text, selected_facts)
         if not star_ok and star_reason:
             failures.append(star_reason)
+    if isinstance(parsed, dict):
+        from apps_rg.runtime.validators.executive_summary_x2 import (
+            check_claim_ledger_materialized_or_gap_excused,
+        )
+
+        ledger = list(parsed.get("claim_ledger") or [])
+        gaps = list(parsed.get("gap_notes") or [])
+        mat_ok, mat_reason = check_claim_ledger_materialized_or_gap_excused(
+            text, ledger, gaps
+        )
+        if not mat_ok and mat_reason:
+            failures.append(mat_reason)
     if failures:
         return False, "; ".join(failures)
     return True, ""
@@ -882,9 +890,15 @@ def _build_synthesis_repair_user(
             "VOICE: third-person executive (Engineering executive who… / Led… / Built…); "
             "no Additionally/Furthermore openers; no \"with extensive experience\" opener. "
         )
+    filler_note = ""
+    if "generic_filler" in blob or "proven track record" in blob or "bridge phrases" in blob:
+        filler_note = (
+            'FORBIDDEN PHRASES: "proven track record", "results-driven", "seasoned executive", '
+            '"dynamic leader", "strategic leader" — use fact-backed outcomes instead. '
+        )
     return (
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
-        f"{mechanism_note}{meta_note}"
+        f"{mechanism_note}{meta_note}{filler_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "Rewrite resume_display_text as exactly 4 or 5 period-delimited sentences (one executive paragraph), "
         "fit_to_evidence integrated narrative — not 2-3 compressed sentences; do not pad with filler. "
@@ -906,7 +920,6 @@ def retry_qwen_for_synthesis(
     raw_output: str,
     parsed: dict[str, Any],
     *,
-    srfs_integration: dict[str, Any] | None = None,
     selected_facts: list[dict[str, Any]] | None = None,
     artifact_dir: Path | None = None,
     run_id: str | None = None,
@@ -1074,8 +1087,13 @@ def retry_qwen_for_synthesis(
     regen_receipt["final_claim_ledger_rows"] = len(list(current_parsed.get("claim_ledger") or []))
     if artifact_dir is not None:
         if regen_receipt.get("triggered") and regen_receipt.get("attempts"):
-            from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, record_repair
+            from apps_rg.runtime.section_repair_ledger import (
+                KIND_REGEN_LLM,
+                record_repair,
+                set_authoritative_attempt,
+            )
 
+            regen_accepted = bool(regen_receipt.get("accepted"))
             record_repair(
                 artifact_dir,
                 kind=KIND_REGEN_LLM,
@@ -1083,8 +1101,14 @@ def retry_qwen_for_synthesis(
                 reason=str(regen_receipt.get("reject_reason") or regen_receipt.get("final_reject_reason") or "")[
                     :240
                 ],
-                replaced_l2=bool(regen_receipt.get("accepted")),
+                replaced_l2=regen_accepted,
             )
+            if regen_accepted:
+                set_authoritative_attempt(
+                    artifact_dir,
+                    2,
+                    reason="synthesis_regen_shape_pass",
+                )
         write_json(artifact_dir / "synthesis_regen_receipt.json", regen_receipt)
     return current_raw, current_parsed, parse_err
 
@@ -1095,12 +1119,39 @@ def enrich_parsed_for_x2(
     coverage: dict[str, Any],
     input_payload_hash: str,
     allowed_fact_ids: set[str],
+    runtime_payload: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """Attach coverage and stable hashes for X2 metadata gates (same coverage object as artifact)."""
     if parsed is None:
         return None
     enriched = dict(parsed)
     enriched["text_claim_coverage"] = coverage
+    if runtime_payload:
+        from apps_rg.runtime.c0.c03_graph_ref_policy import (
+            build_c0_graph_diagnostics,
+            merge_graph_targeting_jd_alignment,
+        )
+
+        gt_pa = runtime_payload.get("graph_targeting_for_pa") or {}
+        bridge = runtime_payload.get("section_fec_bridge")
+        bindings: list[dict[str, Any]] = []
+        projection: dict[str, Any] = dict(gt_pa.get("role_family_projection") or {})
+        if isinstance(bridge, dict):
+            room = bridge.get("c0_evidence_room") or {}
+            c03 = room.get("c03") if isinstance(room.get("c03"), dict) else {}
+            projection = dict(
+                projection or c03.get("role_family_projection") or bridge.get("role_family_projection") or {}
+            )
+            bindings = list(c03.get("bindings") or [])
+        enriched["jd_alignment"] = merge_graph_targeting_jd_alignment(
+            enriched.get("jd_alignment") if isinstance(enriched.get("jd_alignment"), dict) else {},
+            role_family_projection=projection,
+        )
+        enriched["c0_graph_diagnostics"] = build_c0_graph_diagnostics(
+            bindings,
+            role_family_projection=projection,
+            resume_display_text=str(enriched.get("resume_display_text") or ""),
+        )
     output_body = {
         key: enriched[key]
         for key in (
@@ -1188,7 +1239,6 @@ def run_executive_summary_execution(
     allowed_fact_ids_ordered = list(pool.allowed_fact_ids_ordered)
     proof_pool_metadata = pool.proof_pool_metadata
 
-    srfs_integration: dict[str, Any] | None = None
     provider_resolution_source = coalesce_lane_provider_resolution_source(
         explicit=getattr(args, "provider_resolution_source", None),
         resolved_provider=str(args.provider),
@@ -1207,7 +1257,6 @@ def run_executive_summary_execution(
         target_company=str(getattr(args, "target_company", None) or TARGET_COMPANY_DEFAULT),
         jd_text=_args_jd_text(args),
         briefing=briefing_eff,
-        srfs_integration=srfs_integration,
         allowed_fact_ids_ordered=allowed_fact_ids_ordered,
     )
     if briefing_trunc_meta is not None:
@@ -1371,8 +1420,6 @@ def run_executive_summary_execution(
     fec_snap = pp_c03.get("final_evidence_contract_snapshot")
     if isinstance(fec_snap, dict):
         write_json(artifact_dir / "final_evidence_contract_snapshot.json", fec_snap)
-    if srfs_integration is not None:
-        write_json(artifact_dir / "selected_role_fact_set_ref.json", srfs_integration)
     (artifact_dir / "compiled_prompt.txt").write_text(
         json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -1526,24 +1573,17 @@ def run_executive_summary_execution(
     if result.runtime_generation_status == "REAL_LLM":
         parsed, parse_error = parse_model_json(raw_output)
         if parsed:
-            _srfs_i = runtime_payload.get("srfs_integration")
             raw_output, parsed, parse_error = retry_qwen_for_synthesis(
                 messages,
                 provider_payload,
                 raw_output,
                 parsed,
-                srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
                 selected_facts=list(selected_fact_plan.get("facts") or []),
                 artifact_dir=artifact_dir,
                 run_id=str(runtime_payload.get("run_id") or "") or None,
             )
         if parsed:
-            _srfs_i = runtime_payload.get("srfs_integration")
-            parsed = normalize_executive_summary_llm_output(
-                parsed,
-                selected_fact_plan,
-                srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
-            )
+            parsed = normalize_executive_summary_llm_output(parsed, selected_fact_plan)
             prune_exec_summary_claim_ledger_orphans(parsed, allowed_fact_ids)
             from apps_rg.runtime.section_repair_policy import graph_only_reformat_allowed
 
@@ -1574,19 +1614,17 @@ def run_executive_summary_execution(
                     )
                 raw_output = _graph_quality_to_raw(parsed)
         if parsed and isinstance(parsed, dict):
-            _srfs_final = runtime_payload.get("srfs_integration")
             coerced_resume = coerce_resume_display_sentence_count_band(
                 str(parsed.get("resume_display_text") or ""),
-                _srfs_final if isinstance(_srfs_final, dict) else None,
             )
             if coerced_resume != parsed.get("resume_display_text"):
                 parsed["resume_display_text"] = coerced_resume
-                if result.runtime_generation_status == "REAL_LLM":
-                    raw_output = json.dumps(
-                        {k: v for k, v in parsed.items() if k != "selected_fact_plan"},
-                        ensure_ascii=False,
-                        separators=(",", ":"),
-                    )
+            if result.runtime_generation_status == "REAL_LLM":
+                raw_output = json.dumps(
+                    {k: v for k, v in parsed.items() if k != "selected_fact_plan"},
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                )
     elif str(result.runtime_generation_status) == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         parsed, parse_error = parse_model_json(raw_output)
         if parsed:
@@ -1600,12 +1638,9 @@ def run_executive_summary_execution(
         parse_error = result.exact_provider_error or "provider blocked"
 
     resume_display_text = (parsed or {}).get("resume_display_text") or raw_output or ""
-    _srfs_i = runtime_payload.get("srfs_integration")
     _pp_meta = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
     _painting_active = bool(
-        (isinstance(_srfs_i, dict) and str(_srfs_i.get("artifact_path_resolved") or "").strip())
-        or _pp_meta.get("graph_skills_proof_pool")
-        or pool.proof_source == "augmented_skills_graph"
+        _pp_meta.get("graph_skills_proof_pool") or pool.proof_source == "augmented_skills_graph"
     )
     if parsed and isinstance(parsed, dict) and _painting_active:
         from apps_rg.runtime.sections.executive_summary_composition import (
@@ -1623,7 +1658,6 @@ def run_executive_summary_execution(
             ),
             target_company=str(args.target_company or ""),
             proof_pool_metadata=_pp_meta,
-            srfs_integration=_srfs_i if isinstance(_srfs_i, dict) else None,
         )
         parsed = attach_composition_to_parsed(
             parsed,
@@ -1661,6 +1695,37 @@ def run_executive_summary_execution(
             plan_facts=list(selected_fact_plan.get("facts") or []),
             artifact_dir=artifact_dir,
         )
+        from apps_rg.runtime.sections.executive_summary_voice_repair import (
+            finalize_executive_summary_coherence,
+        )
+
+        parsed, finalize_receipt = finalize_executive_summary_coherence(
+            parsed,
+            selected_facts=list(selected_fact_plan.get("facts") or []),
+        )
+        if artifact_dir is not None:
+            write_json(
+                artifact_dir / "executive_summary_finalize_coherence.json",
+                finalize_receipt,
+            )
+            if finalize_receipt.get("voice_repair", {}).get("repaired") or finalize_receipt.get(
+                "gap_excuses_added"
+            ):
+                from apps_rg.runtime.section_repair_ledger import (
+                    KIND_MECHANICAL,
+                    record_repair,
+                )
+
+                record_repair(
+                    artifact_dir,
+                    kind=KIND_MECHANICAL,
+                    operation="executive_summary_finalize_coherence",
+                    reason=str(
+                        finalize_receipt.get("materialization_reason")
+                        or "display_ledger_coherence"
+                    )[:240],
+                    replaced_l2=True,
+                )
         resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
         claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
     coverage = build_sentence_claim_coverage(resume_display_text, claim_ledger, allowed_fact_ids)
@@ -1669,6 +1734,7 @@ def run_executive_summary_execution(
         coverage=coverage,
         input_payload_hash=input_payload_hash,
         allowed_fact_ids=allowed_fact_ids,
+        runtime_payload=runtime_payload,
     )
     model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
     selected_facts_for_x2 = list(selected_fact_plan.get("facts") or [])
@@ -1748,7 +1814,6 @@ def run_executive_summary_execution(
         jd_text=_args_jd_text(args),
         briefing_text=str(args.briefing),
         parsed_output=parsed_for_x2,
-        srfs_integration=srfs_integration if isinstance(srfs_integration, dict) else None,
     )
     judge_packet_ref = write_executive_summary_judge_packet(
         artifact_dir / "executive_summary_judge_packet.json",
@@ -1844,7 +1909,6 @@ def run_executive_summary_execution(
         target_role=args.target_role if hasattr(args, "target_role") else None,
         selected_facts=selected_facts_for_x2,
         x1d_judges=x1d,
-        srfs_integration=srfs_integration,
         proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
@@ -1912,7 +1976,6 @@ def run_executive_summary_execution(
                     selected_fact_plan=selected_fact_plan,
                     allowed_fact_ids=allowed_fact_ids,
                     unused_fact_ids=unused_ids,
-                    srfs_integration=srfs_integration if isinstance(srfs_integration, dict) else None,
                     artifact_dir=artifact_dir,
                     run_id=str(runtime_payload.get("run_id") or "") or None,
                 )
@@ -1951,6 +2014,7 @@ def run_executive_summary_execution(
                         coverage=coverage,
                         input_payload_hash=input_payload_hash,
                         allowed_fact_ids=allowed_fact_ids,
+                        runtime_payload=runtime_payload,
                     )
                     (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
                     (artifact_dir / "resume_display_text.txt").write_text(
@@ -1974,7 +2038,6 @@ def run_executive_summary_execution(
                         raw_output=raw_output,
                         selected_facts=selected_facts_for_x2,
                         x1d_judges=x1d,
-                        srfs_integration=srfs_integration,
                         proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
                         proof_pool_ref=str(pool.proof_pool_ref or ""),
                         proof_pool_digest=str(pool.proof_pool_digest or ""),

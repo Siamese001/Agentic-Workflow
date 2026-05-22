@@ -36,7 +36,17 @@ def _runtime_payload() -> dict:
 
 
 def _proof_pool_meta() -> dict:
-    return {"proof_pool_type": "augmented_skills_graph"}
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+
+    return {
+        "proof_pool_type": "augmented_skills_graph",
+        "evidence_authority": build_evidence_authority(
+            graph_ref="apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+            ledger_ref="artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger.json",
+            skills_authority_status="PASS",
+        ),
+        "selection_scope": {"is_proof_authority": False},
+    }
 
 
 def test_build_unify_alias_map_index_parity() -> None:
@@ -143,12 +153,12 @@ def test_srfs_slice_gate_passes_after_alias_resolution() -> None:
         resume_support_blob="{}",
         employer_names_lower=[],
         allowed_fact_ids=SRFS_ALLOWED,
-        claim_ledger_allowed_fact_ids=SRFS_ALLOWED,
         runtime_generation_status="REAL_LLM",
         srfs_source_fact_slice_gate_active=True,
         proof_pool_metadata=_proof_pool_meta(),
     )
     failed = [g.gate_id for g in gates if not g.pass_]
+    assert "x2_headline_active_proof_pool_source_fact_ids" not in failed
     assert "x2_headline_source_fact_ids_within_srfs_slice" not in failed
     assert "x2_headline_source_supported" not in failed
 
@@ -178,10 +188,13 @@ def test_srfs_slice_gate_fails_on_unresolved_bul_without_crosswalk() -> None:
         resume_support_blob="{}",
         employer_names_lower=[],
         allowed_fact_ids=SRFS_ALLOWED,
-        claim_ledger_allowed_fact_ids=SRFS_ALLOWED,
         runtime_generation_status="REAL_LLM",
         srfs_source_fact_slice_gate_active=True,
         proof_pool_metadata=_proof_pool_meta(),
     )
     failed = [g.gate_id for g in gates if not g.pass_]
-    assert "x2_headline_claim_ledger_rows_present" in failed or "x2_headline_source_fact_ids_within_srfs_slice" in failed
+    assert (
+        "x2_headline_claim_ledger_rows_present" in failed
+        or "x2_headline_active_proof_pool_source_fact_ids" in failed
+        or "x2_headline_source_fact_ids_within_srfs_slice" in failed
+    )

@@ -14,14 +14,15 @@ from apps_rg.runtime.c0.c03_role_family import resolve_c0_role_family_key
 from apps_rg.runtime.c0.c04_stratify import stratify_c04_evidence
 from apps_rg.runtime.c0.c05_fec_packet import build_c05_final_evidence_contract
 from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
+from apps_rg.runtime.c0.c02_hybrid_receipt_truth import normalize_c02_vector_query_receipt
 from apps_rg.runtime.c0.c0_section_authority import (
     C01_ARTIFACT,
     C02_ATOMS_ARTIFACT,
     C02_VECTOR_QUERY_ARTIFACT,
     bridge_authority_fields,
-    resolve_spine_chroma_enrich,
     section_chroma_write_in_c02,
 )
+from apps_rg.runtime.c0.product_runtime_guards import ENV_APPS_RG_C0_EVIDENCE_ROOM
 from apps_rg.runtime.c0.constants import C0_SECTIONS_ENABLED, REPO_ROOT
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 from apps_rg.runtime.section_fec_bridge import (
@@ -44,7 +45,17 @@ def section_c0_evidence_room_enabled(section_id: str) -> bool:
         return False
     import os
 
-    return os.environ.get("APPS_RG_C0_EVIDENCE_ROOM", "1").strip() not in ("0", "false", "no")
+    from apps_rg.runtime.c0.product_runtime_guards import assert_canonical_product_section_env
+
+    env_off = os.environ.get(ENV_APPS_RG_C0_EVIDENCE_ROOM, "1").strip().lower() in (
+        "0",
+        "false",
+        "no",
+    )
+    if env_off:
+        assert_canonical_product_section_env(section_id)
+        return False
+    return True
 
 
 def _write_json(path: Path, doc: dict[str, Any]) -> None:
@@ -65,14 +76,12 @@ def run_section_c0_evidence_room(
     pool: SectionProofPool,
     runtime_payload: dict[str, Any],
     role_family_key: str | None = None,
-    spine_chroma_enrich: bool | None = None,
 ) -> SectionFecBridge:
     """Run governed C0.1–C0.7 and return FEC bridge bound to FinalEvidenceContract."""
     from apps_rg.runtime.embedding_settings import apply_apps_rg_embedding_env_guards
 
     apply_apps_rg_embedding_env_guards()
     ts = _utc_now()
-    enrich = resolve_spine_chroma_enrich(explicit=spine_chroma_enrich)
     rf_key = role_family_key or resolve_c0_role_family_key(
         front_spine=front_spine,
         pool=pool,
@@ -108,7 +117,7 @@ def run_section_c0_evidence_room(
         product_section_skip_lane_upsert,
     )
 
-    if not section_chroma_write_in_c02(enrich):
+    if not section_chroma_write_in_c02():
         fv_ingest: dict[str, Any] = {
             "schema_version": "c02_fact_vectors_ingest_v1",
             "section_id": section_id,
@@ -116,7 +125,7 @@ def run_section_c0_evidence_room(
             "upserted_count": 0,
             "skipped_count": 0,
             "status": "SKIPPED",
-            "reason": "chroma_policy_defer_to_spine_enrich" if enrich else "product_section_skip_lane_upsert",
+            "reason": "product_section_skip_lane_upsert",
         }
     else:
         fv_ingest = maybe_upsert_c02_fact_vectors(
@@ -146,7 +155,42 @@ def run_section_c0_evidence_room(
         graph_bindings=bindings,
         lane_requires_proof=lane_proof,
     )
+    if section_id == "executive_summary":
+        from apps_rg.runtime.c0.c04_exec_summary_shaping import shape_executive_summary_c04
+
+        c04 = shape_executive_summary_c04(c04, bindings=bindings, atoms=atoms)
     allowed = list(c04.get("allowed_fact_ids") or [])
+    app_payload: dict[str, Any] = {}
+    if front_spine is not None and front_spine.validated_request is not None:
+        app_payload = dict(getattr(front_spine.validated_request, "app_payload", None) or {})
+    if not app_payload.get("jd_text") and jd_text:
+        app_payload["jd_text"] = jd_text
+    if not app_payload.get("target_role") and target_role:
+        app_payload["target_role"] = target_role
+
+    from apps_rg.runtime.c0.c02_product_hybrid_retrieval import (
+        perform_product_hybrid_retrieval,
+        provisional_digest_from_atoms,
+    )
+
+    hybrid_digest = provisional_digest_from_atoms(atoms)
+    product_hybrid = perform_product_hybrid_retrieval(
+        section_id=section_id,
+        app_payload=app_payload,
+        evidence_digest=hybrid_digest,
+        timestamp_iso=ts,
+    )
+    metrics_patch = dict(product_hybrid.get("c0_metrics_patch") or {})
+    if metrics_patch:
+        metrics_path = artifact_dir / "c0_metrics.json"
+        metrics_doc = {
+            "schema_version": "c0_metrics.v1",
+            "run_id": str(runtime_payload.get("run_id") or artifact_dir.name),
+            "section_id": section_id,
+            **metrics_patch,
+        }
+        _write_json(metrics_path, metrics_doc)
+
     fec, c05 = build_c05_final_evidence_contract(
         section_id=section_id,
         atoms=atoms,
@@ -156,10 +200,13 @@ def run_section_c0_evidence_room(
         allowed_fact_ids=allowed,
         excluded_refs=list(c04.get("excluded_fact_ids") or []),
         retrieval_plan=plan,
-        spine_chroma_enrich=enrich,
+        product_hybrid=product_hybrid,
     )
-    vector_query = dict(c05.get("c02_vector_query") or {})
-    vector_query["chroma_write_in_c02"] = section_chroma_write_in_c02(enrich)
+    vector_query = normalize_c02_vector_query_receipt(
+        dict(c05.get("c02_vector_query") or {}),
+        section_id=section_id,
+    )
+    vector_query["chroma_write_in_c02"] = section_chroma_write_in_c02()
     _write_json(artifact_dir / C02_VECTOR_QUERY_ARTIFACT, vector_query)
 
     from apps_rg.runtime.c02_chroma_lifecycle import build_c02_chroma_query_receipt
@@ -187,6 +234,29 @@ def run_section_c0_evidence_room(
         "disabled": True,
         "reason": "receipt_only_refine_removed_use_bounded_c02_retry_when_implemented",
     }
+    from apps_rg.runtime.c0.c03_graph_ref_policy import (
+        build_graph_targeting_for_pa,
+        collect_receipt_only_json_expansion_refs,
+    )
+
+    projection = dict(c03.get("role_family_projection") or {})
+    receipt_only_json: list[str] = []
+    if section_id == "executive_summary":
+        from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+
+        graph_doc = load_augmented_skills_graph(repo_root=REPO_ROOT)
+        receipt_only_json = collect_receipt_only_json_expansion_refs(
+            graph_doc, selected_fact_ids=set(allowed)
+        )
+    graph_targeting_pa = build_graph_targeting_for_pa(
+        bindings=bindings,
+        role_family_projection=projection,
+        receipt_only_lineage_refs=receipt_only_json,
+    )
+    runtime_payload["graph_targeting_for_pa"] = graph_targeting_pa
+    if c04.get("exec_summary_compression"):
+        runtime_payload["c04_exec_summary_compression"] = c04.get("exec_summary_compression")
+
     pp_meta = dict(pool.proof_pool_metadata or {})
     support_status = _extract_support_status(pp_meta)
     evidence_items = [
@@ -206,7 +276,13 @@ def run_section_c0_evidence_room(
     pa_meta["fec_shape_only"] = False
     pa_meta["binding_kind"] = "section_c0_evidence_room"
     pa_meta["canonical_c0_path"] = True
-    authority = bridge_authority_fields(spine_chroma_enrich=enrich)
+    pa_meta["claim_support_graph_refs"] = list(graph_targeting_pa.get("claim_support_graph_refs") or [])
+    pa_meta["targeting_graph_refs"] = list(graph_targeting_pa.get("targeting_graph_refs") or [])
+    pa_meta["receipt_only_lineage_refs"] = list(graph_targeting_pa.get("receipt_only_lineage_refs") or [])
+    pa_meta["graph_expansion_refs"] = list(receipt_only_json)
+    pa_meta["receipt_only_json_expansion_excluded_from_pa"] = True
+    pa_meta["role_family_projection"] = projection
+    authority = bridge_authority_fields()
     bridge_doc: dict[str, Any] = {
         "schema_version": "section_fec_bridge_v1",
         "generated_at_utc": ts,
@@ -228,7 +304,11 @@ def run_section_c0_evidence_room(
             str(b.get("lineage_refs", [""])[0]) for b in bindings if b.get("lineage_refs")
         ],
         "graph_lineage_refs": [f"graph:{b['fact_id']}" for b in bindings],
-        "graph_expansion_refs": list(fec.graph_expansion_refs or ()),
+        "claim_support_graph_refs": list(graph_targeting_pa.get("claim_support_graph_refs") or []),
+        "targeting_graph_refs": list(graph_targeting_pa.get("targeting_graph_refs") or []),
+        "receipt_only_lineage_refs": list(graph_targeting_pa.get("receipt_only_lineage_refs") or []),
+        "graph_expansion_refs": list(receipt_only_json),
+        "graph_targeting_for_pa": graph_targeting_pa,
         "srfs_ref": pool.srfs_ref if pool.srfs_present else "",
         "support_status": fec.support_status or support_status,
         "canonical_c0_2_claimed": True,
@@ -256,7 +336,7 @@ def run_section_c0_evidence_room(
             "c02_atoms_artifact": C02_ATOMS_ARTIFACT,
             "c02_vector_query_artifact": C02_VECTOR_QUERY_ARTIFACT,
             "c02_atom_count": len(atoms),
-            "c03": {k: v for k, v in c03.items() if k != "bindings"},
+            "c03": c03,
             "c03_skills_graph": True,
             "c04": c04,
             "c05": c05,
@@ -292,7 +372,6 @@ def run_section_c0_evidence_room(
     runtime_payload["raw_proof_pool_direct_to_pa"] = False
     runtime_payload["product_visible"] = True
     runtime_payload["c0_authority_mode"] = authority["c0_authority_mode"]
-    runtime_payload["spine_chroma_enrich"] = enrich
     return bridge
 
 

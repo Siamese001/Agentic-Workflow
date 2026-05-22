@@ -336,7 +336,26 @@ def run_unify_narrative_x2_gates(
     )
 
     companion = companion_bullet_texts or ""
-    if runtime_generation_status == "MOCKED":
+    from apps_rg.runtime.validators.companion_bullet_finalization import (
+        UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
+        companion_allow_legacy_stale_fallback,
+    )
+
+    skip_finalized_gate = runtime_generation_status == "MOCKED" and companion_allow_legacy_stale_fallback()
+    if runtime_generation_status == UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS:
+        add(
+            "x2_unify_narrative_requires_finalized_bullets",
+            False,
+            {
+                "status": companion_bullets_status or "UNKNOWN",
+                "reason": companion_bullets_reason or "",
+                "has_companion_text": bool(companion.strip()),
+                "runtime_generation_status": runtime_generation_status,
+            },
+            "provider blocked before LLM",
+            "Narrative LLM skipped: upstream bullets not finalized.",
+        )
+    elif skip_finalized_gate:
         add(
             "x2_unify_narrative_requires_finalized_bullets",
             True,
@@ -350,7 +369,14 @@ def run_unify_narrative_x2_gates(
             None,
         )
     else:
-        finalized_dependency_ok = bool(companion.strip()) and companion_bullets_status == "ACCEPTED_FINALIZED"
+        from apps_rg.runtime.validators.companion_bullet_finalization import (
+            ACCEPTED_FINALIZED_COMPANION_STATUS,
+        )
+
+        finalized_dependency_ok = (
+            bool(companion.strip())
+            and companion_bullets_status == ACCEPTED_FINALIZED_COMPANION_STATUS
+        )
         add(
             "x2_unify_narrative_requires_finalized_bullets",
             finalized_dependency_ok,

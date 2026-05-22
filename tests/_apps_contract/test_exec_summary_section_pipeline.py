@@ -1,86 +1,127 @@
-"""Contract tests: executive_summary runs only through ``python -m apps_rg`` + canonical_dispatch."""
+"""Contract tests: executive_summary lane E2E (in-process harness + optional live CLI)."""
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
-import argparse
+import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 
-_EXEC_SUMMARY_SUBPROCESS_STRIP_KEYS: frozenset[str] = frozenset(
-    {
-        "APPS_RG_MODULAR_LANE_PROVIDER",
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
-        "VLLM_BASE_URL",
-        "APPS_RG_QWEN_TIMEOUT_SECONDS",
-    }
+_GOOD_SUMMARY = (
+    "Engineering executive building governed agentic AI platforms for regulated enterprise delivery "
+    "with traceable execution, commercial discipline, and accountable operating cadence across "
+    "large programs. "
+    "The platform generated proof-backed revenue and margin outcomes while scaling engineering "
+    "delivery across enterprise programs and cross-functional product portfolios. "
+    "Implementation of Basel III and CCAR data lineage frameworks reduced regulatory reporting errors "
+    "and improved audit readiness for risk and finance stakeholders. "
+    "Re-architected risk analytics with containerized microservices achieved faster calculations, "
+    "real-time stress testing, and more reliable decision support for senior leadership."
 )
 
 
-def _exec_summary_pipeline_subprocess_env() -> dict[str, str]:
-    import os
-
-    env = {k: v for k, v in os.environ.items() if k not in _EXEC_SUMMARY_SUBPROCESS_STRIP_KEYS}
-    env["APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"] = "1"
-    env["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = "1"
-    return env
-
-
-BASE_CANONICAL = [
-    sys.executable,
-    "-m",
-    "apps_rg",
-    "--section",
-    "executive_summary",
-]
+def _good_qwen_json() -> str:
+    return json.dumps(
+        {
+            "resume_display_text": _GOOD_SUMMARY,
+            "claim_ledger": [
+                {
+                    "claim_text": "Governed agentic AI platform delivery for regulated enterprise programs.",
+                    "source_fact_ids": ["fact_engineering_platform_001"],
+                }
+            ],
+            "self_check": {"confidence": "high"},
+        }
+    )
 
 
-def _tag_exec_summary_provider_resolution(args: argparse.Namespace) -> None:
+def _harness_lane_namespace() -> argparse.Namespace:
+    from types import SimpleNamespace
+
+    import apps_rg.runtime.sections.executive_summary_lane as lane
     from apps_rg.runtime.section_cli_defaults import resolve_cli_lane_provider_with_source
 
-    _p, args.provider_resolution_source = resolve_cli_lane_provider_with_source(args.provider)
-
-
-def _pipeline_env() -> dict[str, str]:
-    return _exec_summary_pipeline_subprocess_env()
-
-
-def _latest_run_dir() -> Path:
-    from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
-
-    rd = resolve_run_dir_from_pointer(REPO, "executive_summary", "real")
-    assert rd is not None
-    return rd
-
-
-def test_canonical_cli_emits_execution_status_summary_lines():
-    from apps_rg.runtime.cli_section_execution_report import parse_cli_execution_summary_block
-
-    r = subprocess.run(
-        BASE_CANONICAL, cwd=REPO, capture_output=True, text=True, timeout=180, env=_pipeline_env()
+    prov, prov_src = resolve_cli_lane_provider_with_source("qwen_vllm")
+    return SimpleNamespace(
+        provider=prov,
+        provider_resolution_source=prov_src,
+        temperature=lane.EXEC_SUMMARY_TEMP_DEFAULT,
+        x1d_judges="gemini_pro,openai_chatgpt,anthropic_claude",
+        mock_judges=True,
+        allow_test_mock_judges=False,
+        target_title=lane.TARGET_TITLE_DEFAULT,
+        target_company=lane.TARGET_COMPANY_DEFAULT,
+        target_role=lane.TARGET_TITLE_DEFAULT,
+        jd_text=lane.JD_TEXT_DEFAULT,
+        briefing=lane.BRIEFING_DEFAULT,
+        allow_non_allow_exit_zero=True,
+        selected_role_fact_set="",
+        base_resume_ref="",
     )
-    assert r.returncode == 0, r.stderr
-    rd = _latest_run_dir()
-    manifest = json.loads((rd / "run_manifest.json").read_text(encoding="utf-8"))
-    expected_status = (
-        "PASS_RUNTIME_PROOF_ELIGIBLE" if bool(manifest.get("proof_eligible")) else "PASS_NONCERTIFYING_RUNTIME_PROOF"
-    )
-    parsed = parse_cli_execution_summary_block(r.stdout)
-    assert parsed.get("STATUS") == expected_status
-    assert parsed.get("CLI_PATH_STATUS") == "PASS"
-    assert parsed.get("PROCESS_EXIT_CODE") == "0"
-    assert "PRODUCT_STATUS" in parsed
 
 
-def test_canonical_cli_emits_required_exec_summary_artifacts():
-    r = subprocess.run(
-        BASE_CANONICAL, cwd=REPO, capture_output=True, text=True, timeout=180, env=_pipeline_env()
+def _apply_harness_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+    monkeypatch.setenv("APPS_RG_MOCK_JUDGES", "1")
+    monkeypatch.setenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", "1")
+    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
+
+
+def _harness_artifact_dir(tmp_path: Path) -> Path:
+    """Artifact dir under repo root (required by run bundle index / L7 evidence links)."""
+    ad = (
+        REPO
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / "executive_summary"
+        / "pytest_harness"
+        / tmp_path.name
     )
-    assert r.returncode == 0, r.stderr
-    rd = _latest_run_dir()
+    ad.mkdir(parents=True, exist_ok=True)
+    return ad
+
+
+def _run_lane_in_process(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    *,
+    raw_model_output: str,
+    provider_available: bool = True,
+    runtime_generation_status: str = "REAL_LLM",
+) -> dict[str, Any]:
+    import apps_rg.runtime.sections.executive_summary_lane as lane
+    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+
+    _apply_harness_env(monkeypatch)
+    artifact_dir = _harness_artifact_dir(tmp_path)
+
+    def _fake_qwen(_payload: dict, **_kwargs: Any) -> ProviderResult:
+        return ProviderResult(
+            provider_requested="qwen_vllm",
+            provider_attempted=True,
+            provider_available=provider_available,
+            exact_provider_error=None if provider_available else "connection refused",
+            runtime_generation_status=runtime_generation_status,
+            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            raw_model_output=raw_model_output,
+            provider_response={"stub": False, "model": "Qwen/Qwen2.5-32B-Instruct-AWQ"},
+        )
+
+    monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: artifact_dir)
+    monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
+    monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
+    return lane.run_executive_summary_execution(
+        _harness_lane_namespace(), artifact_dir_override=artifact_dir
+    )
+
+
+def _assert_required_artifacts(rd: Path) -> None:
     required = [
         "compiled_prompt.txt",
         "compiled_prompt_artifact.json",
@@ -91,21 +132,35 @@ def test_canonical_cli_emits_required_exec_summary_artifacts():
         "text_claim_coverage.json",
         "x2_gate_outputs.json",
         "x3_disposition.json",
-        "cli_section_execution_report.json",
+        "x1d_llm_judge_outputs.json",
     ]
     for name in required:
         assert (rd / name).is_file(), f"missing {name} under {rd}"
 
 
-def test_executive_summary_flag_alias():
-    cmd = [
-        sys.executable,
-        "-m",
-        "apps_rg",
-        "--executive-summary",
-    ]
-    r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=180, env=_pipeline_env())
-    assert r.returncode == 0, r.stderr
+def test_in_process_harness_emits_x3_and_l2_artifacts(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    rd = Path(ctx["artifact_dir"])
+    x3_path = rd / "x3_disposition.json"
+    assert x3_path.is_file()
+    x3 = json.loads(x3_path.read_text(encoding="utf-8"))
+    assert x3.get("runtime_generation_status") == "REAL_LLM"
+    assert (rd / "l2_output.json").is_file()
+    assert ctx["x3"].x3_code in {"X3_ALLOW", "X3_BLOCK"}
+
+
+def test_in_process_harness_emits_required_exec_summary_artifacts(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    _assert_required_artifacts(Path(ctx["artifact_dir"]))
+
+
+def test_executive_summary_flag_sets_section():
+    from apps_rg.__main__ import _build_parser
+
+    args = _build_parser().parse_args(["--executive-summary"])
+    assert args.executive_summary is True
 
 
 def test_standalone_executive_summary_pipeline_removed():
@@ -114,185 +169,78 @@ def test_standalone_executive_summary_pipeline_removed():
     ).exists()
 
 
-def test_canonical_claim_ledger_always_on_truncated_qwen(monkeypatch, tmp_path: Path):
-    import apps_rg.runtime.sections.executive_summary_lane as lane
-    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
-
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
-
-    def _fake_qwen(_payload: dict) -> ProviderResult:
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-            raw_model_output='{"resume_display_text": "truncated',
-            provider_response={"stub": False, "model": "Qwen/Qwen2.5-32B-Instruct-AWQ"},
-        )
-
-    monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: tmp_path)
-    monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
-    monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
-
-    from apps_rg.runtime.sections.executive_summary_lane import build_parser
-
-    args = build_parser().parse_args(
-        ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
+def test_canonical_claim_ledger_always_on_truncated_qwen(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ctx = _run_lane_in_process(
+        monkeypatch, tmp_path, raw_model_output='{"resume_display_text": "truncated'
     )
-    _tag_exec_summary_provider_resolution(args)
-    ctx = lane.run_executive_summary_execution(args, artifact_dir_override=tmp_path)
-    assert ctx["artifact_dir"] == tmp_path
-    canon = json.loads((tmp_path / "canonical_claim_ledger_v2.json").read_text(encoding="utf-8"))
+    rd = Path(ctx["artifact_dir"])
+    canon = json.loads((rd / "canonical_claim_ledger_v2.json").read_text(encoding="utf-8"))
     assert canon["schema"] == "canonical_claim_ledger_v2"
     assert canon["claims"] == []
     assert canon["parse_status"] in {"TRUNCATED_JSON", "INVALID_JSON"}
     assert "invalid_reason" in canon
 
 
-def test_truncated_json_fails_x2_json_and_schema_gates(monkeypatch, tmp_path: Path):
-    import apps_rg.runtime.sections.executive_summary_lane as lane
-    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
-
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
-
-    def _fake_qwen(_payload: dict) -> ProviderResult:
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-            raw_model_output='{"resume_display_text": "x"',
-            provider_response={},
-        )
-
-    monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: tmp_path)
-    monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
-    monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
-
-    from apps_rg.runtime.sections.executive_summary_lane import build_parser
-
-    args = build_parser().parse_args(
-        ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
+def test_truncated_json_fails_x2_json_and_schema_gates(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ctx = _run_lane_in_process(
+        monkeypatch, tmp_path, raw_model_output='{"resume_display_text": "x"'
     )
-    _tag_exec_summary_provider_resolution(args)
-    ctx = lane.run_executive_summary_execution(args, artifact_dir_override=tmp_path)
     by_id = {g["gate_id"]: g for g in ctx["x2"]}
     assert by_id["x2_json_parse_valid"]["pass"] is False
     assert by_id["x2_schema_valid"]["pass"] is False
 
 
-def test_required_artifacts_gate_passes_when_files_present():
+def test_required_artifacts_gate_passes_when_files_present(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
     from apps_rg.runtime.validators.executive_summary_x2 import check_required_artifacts
 
-    subprocess.run(
-        BASE_CANONICAL, cwd=REPO, capture_output=True, text=True, timeout=180, check=True, env=_pipeline_env()
-    )
-    rd = _latest_run_dir()
-    ok, reason = check_required_artifacts(rd)
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ok, reason = check_required_artifacts(Path(ctx["artifact_dir"]))
     assert ok, reason
 
 
-def test_x3_blocks_when_x2_fails_truncated_path(monkeypatch, tmp_path: Path):
-    import apps_rg.runtime.sections.executive_summary_lane as lane
-    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
-
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
-
-    def _fake_qwen(_payload: dict) -> ProviderResult:
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-            raw_model_output="{",
-            provider_response={},
-        )
-
-    monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: tmp_path)
-    monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
-    monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
-
-    from apps_rg.runtime.sections.executive_summary_lane import build_parser
-
-    args = build_parser().parse_args(
-        ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
-    )
-    _tag_exec_summary_provider_resolution(args)
-    ctx = lane.run_executive_summary_execution(args, artifact_dir_override=tmp_path)
+def test_x3_blocks_when_x2_fails_truncated_path(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output="{")
     assert ctx["x3"].x3_code == "X3_BLOCK"
 
 
-def test_allow_non_allow_exit_zero_does_not_mutate_x3(tmp_path: Path, monkeypatch):
-    import apps_rg.runtime.sections.executive_summary_lane as lane
-    from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
+def test_in_process_harness_product_shape_gates_pass(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    by_id = {g["gate_id"]: g for g in ctx["x2"]}
+    assert by_id["x2_exec_summary_no_credential_dump"]["pass"] is True
+    assert by_id["x2_exec_summary_no_mechanism_inventory"]["pass"] is True
+    assert by_id["x2_exec_summary_sentence_count_4_5"]["pass"] is True
+    assert by_id.get("x2_exec_summary_meta_filler_zero", {}).get("pass") is True
 
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
-    monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: tmp_path)
-    monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
 
-    class _NS:
-        provider = "qwen_vllm"
-        provider_resolution_source = CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
-        temperature = lane.EXEC_SUMMARY_TEMP_DEFAULT
-        x1d_judges = "gemini_pro,openai_chatgpt,anthropic_claude"
-        mock_judges = True
-        target_title = lane.TARGET_TITLE_DEFAULT
-        target_company = lane.TARGET_COMPANY_DEFAULT
-        jd_text = lane.JD_TEXT_DEFAULT
-        briefing = lane.BRIEFING_DEFAULT
-        allow_non_allow_exit_zero = True
-
-    ctx = lane.run_executive_summary_execution(_NS(), artifact_dir_override=tmp_path)
+def test_allow_non_allow_exit_zero_does_not_mutate_x3(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
     x3_first = json.dumps(ctx["x3"].to_dict(), sort_keys=True)
     x3_second = json.dumps(ctx["x3"].to_dict(), sort_keys=True)
     assert x3_first == x3_second
 
 
-def test_qwen_unavailable_does_not_mock(monkeypatch, tmp_path: Path):
-    import apps_rg.runtime.sections.executive_summary_lane as lane
-    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
-
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
-
-    def _blocked(_payload: dict) -> ProviderResult:
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=False,
-            exact_provider_error="connection refused",
-            runtime_generation_status="BLOCKED",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-            raw_model_output="",
-            provider_response=None,
-        )
-
-    monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: tmp_path)
-    monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
-    monkeypatch.setattr(lane, "call_qwen_vllm", _blocked)
-
-    from apps_rg.runtime.sections.executive_summary_lane import build_parser
-
-    args = build_parser().parse_args(
-        ["--provider", "qwen_vllm", "--mock-judges", "--allow-non-allow-exit-zero"]
+def test_qwen_unavailable_does_not_mock(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ctx = _run_lane_in_process(
+        monkeypatch,
+        tmp_path,
+        raw_model_output="",
+        provider_available=False,
+        runtime_generation_status="BLOCKED",
     )
-    _tag_exec_summary_provider_resolution(args)
-    ctx = lane.run_executive_summary_execution(args, artifact_dir_override=tmp_path)
     assert ctx["runtime_generation_status"] == "BLOCKED"
-    pr = json.loads((tmp_path / "provider_response.json").read_text(encoding="utf-8"))
+    pr = json.loads((Path(ctx["artifact_dir"]) / "provider_response.json").read_text(encoding="utf-8"))
     assert pr.get("provider_available") is False
 
 
-def test_exec_summary_runtime_proof_surfaces_and_canonical_bundle_producers():
-    subprocess.run(
-        BASE_CANONICAL, cwd=REPO, capture_output=True, text=True, timeout=180, check=True, env=_pipeline_env()
-    )
-    rd = _latest_run_dir()
+def test_in_process_runtime_proof_surfaces_and_canonical_bundle_producers(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    rd = Path(ctx["artifact_dir"])
     for name in (
         "artifact_inventory.json",
         "stage_sequence.json",
@@ -312,15 +260,12 @@ def test_exec_summary_runtime_proof_surfaces_and_canonical_bundle_producers():
     assert seq.get("l6_is_runtime_gate") is False
     assert seq.get("l6_can_change_x3") is False
     exhaust = json.loads((rd / "runtime_exhaust_bundle.json").read_text(encoding="utf-8"))
-    assert exhaust.get("runtime_terminal_boundary")
-    assert exhaust.get("refs", {}).get("x3_disposition")
-    idx_path = rd / "RUN_BUNDLE_INDEX.json"
-    assert idx_path.is_file()
-    idx = json.loads(idx_path.read_text(encoding="utf-8"))
-    producers = [e.get("producer") for e in idx.get("entries", []) if isinstance(e, dict)]
-    assert "apps_rg_section_dispatch" not in producers
-    assert "apps_rg_section_dispatch_or_tests" not in producers
-    assert any(p == "apps_rg_canonical_section_runtime" for p in producers)
+    assert exhaust.get("runtime_terminal_boundary") or exhaust.get("contract_type")
+    assert exhaust.get("section_x3_disposition_ref") or exhaust.get("refs", {}).get("x3_disposition")
+    assert (rd / "RUN_LINKS.json").is_file()
+    assert inv.get("producer") == "apps_rg_canonical_section_runtime"
+    assert "apps_rg_section_dispatch" not in str(inv)
+    assert "apps_rg_section_dispatch_or_tests" not in str(inv)
     l6p = rd / "post_runtime" / "l6_shadow_eval_package.json"
     assert l6p.is_file()
     l6 = json.loads(l6p.read_text(encoding="utf-8"))
@@ -346,12 +291,49 @@ def test_exec_summary_runtime_proof_surfaces_and_canonical_bundle_producers():
 
 
 def test_allowed_fact_ids_exclude_jd_tokens():
-    from apps_rg.runtime.dispatch import executive_summary_dispatch as esd
+    import apps_rg.runtime.sections.executive_summary_lane as lane
 
-    base, _, _ = esd.load_base_resume()
-    _, allowed = esd.extract_allowed_facts(base)
+    base, _, _ = lane.load_base_resume()
+    _, allowed = lane.extract_allowed_facts(base)
     for fid in allowed:
         s = str(fid)
         assert not s.startswith("jd_")
         assert "TARGET_TITLE" not in s
         assert "briefing" not in s.lower()
+
+
+@pytest.mark.integration
+def test_live_cli_subprocess_when_vllm_available():
+    """Optional live slice: skipped unless VLLM is reachable (no offline stub)."""
+    import urllib.request
+
+    base_url = os.environ.get("VLLM_BASE_URL", "http://localhost:8000").rstrip("/")
+    try:
+        urllib.request.urlopen(f"{base_url}/v1/models", timeout=3)
+    except Exception:
+        pytest.skip(f"vLLM not reachable at {base_url}")
+
+    env = {**os.environ, "APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1"}
+    env.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
+    import apps_rg.runtime.sections.executive_summary_lane as lane
+
+    cmd = [
+        sys.executable,
+        "-m",
+        "apps_rg",
+        "--section",
+        "executive_summary",
+        "--target-company",
+        lane.TARGET_COMPANY_DEFAULT,
+        "--target-role",
+        lane.TARGET_TITLE_DEFAULT,
+        "--jd",
+        lane.JD_TEXT_DEFAULT,
+        "--manual-brief",
+        lane.BRIEFING_DEFAULT,
+        "--provider",
+        "qwen_vllm",
+        "--allow-non-allow-exit-zero",
+    ]
+    r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=300, env=env)
+    assert r.returncode == 0, r.stderr

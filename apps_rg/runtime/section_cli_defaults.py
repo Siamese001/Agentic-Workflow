@@ -63,7 +63,14 @@ def _truthy_env(raw: str | None) -> bool:
 
 
 def resolve_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
-    """True when CLI flag set or ``APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO`` is truthy."""
+    """True when CLI flag set or ``APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO`` is truthy.
+
+    Disabled on product fail-closed runs (integrated ``python -m apps_rg`` / whole-run).
+    """
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+    if product_fail_closed_runtime():
+        return False
     if cli_flag:
         return True
     return _truthy_env(os.environ.get("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"))
@@ -96,7 +103,7 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
         if v == "mock":
             raise SectionCliConfigError(
                 "Invalid --provider 'mock': section lanes require qwen_vllm. "
-                "For plumbing without live vLLM, set APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1."
+                "Live qwen_vllm required; APPS_RG_QWEN_OFFLINE_CONTRACT_STUB is disabled on product paths."
             )
         if v != "qwen_vllm":
             raise SectionCliConfigError(

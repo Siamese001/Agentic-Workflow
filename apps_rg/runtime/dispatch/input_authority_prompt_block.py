@@ -7,33 +7,32 @@ import json
 from dataclasses import replace
 
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.sections.section_product_shape_ssot import format_product_shape_prompt_block
 
 
 def format_input_authority_block(
     *,
     allowed_source_fact_ids: Sequence[str],
-    selected_role_fact_set_mode: bool = False,
-    proof_pool_mode: str = "base_resume_fallback",
     skills_authority_metadata: dict[str, Any] | None = None,
+    include_allowed_id_list: bool = True,
 ) -> str:
-    if selected_role_fact_set_mode or proof_pool_mode == "srfs":
-        substrate = (
-            "- CLAIM SUPPORT POOL (SRFS): SelectedRoleFactSet section slice — sole substrate for factual claims"
-        )
-    elif proof_pool_mode == "augmented_skills_graph":
-        from apps_rg.runtime.section_spine_terminology import INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE
+    meta = skills_authority_metadata if isinstance(skills_authority_metadata, dict) else {}
+    from apps_rg.runtime.product_evidence_authority import (
+        EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
+        validate_evidence_authority_block,
+    )
 
-        substrate = INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE
-    elif proof_pool_mode == "broad_skills_ledger":
-        substrate = (
-            "- CLAIM SUPPORT POOL (CANDIDATE FACT LEDGER): governed candidate_fact_id rows — "
-            "sole substrate for factual claims (not skills/competency authority; see augmented skills graph)"
+    ea = meta.get("evidence_authority") if isinstance(meta.get("evidence_authority"), dict) else {}
+    if not ea:
+        raise ValueError(
+            f"INPUT_AUTHORITY requires evidence_authority="
+            f"{EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH!r} with graph_ref and ledger_ref"
         )
-    else:
-        substrate = (
-            "- CLAIM SUPPORT POOL (BASE RESUME FALLBACK): canonical employment bullets — explicit fallback; "
-            "not ledger/SRFS primary"
-        )
+    validate_evidence_authority_block(ea)
+    from apps_rg.runtime.section_spine_terminology import INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE
+
+    substrate = INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE
     skills_meta = skills_authority_metadata or {}
     skills_lines: list[str] = []
     if skills_meta.get("augmented_skills_graph_present"):
@@ -56,40 +55,21 @@ def format_input_authority_block(
         "INPUT_AUTHORITY:",
         substrate,
         *skills_lines,
-        "- JD_TEXT: TARGETING_INPUT (mandatory; guides prioritization and wording; not claim evidence)",
-        "- TARGET_TITLE: POSITIONING_INPUT (mandatory; not claim evidence)",
-        "- TARGET_COMPANY: POSITIONING_INPUT (mandatory; not claim evidence)",
-        "- BRIEFING_RESEARCH: CONTEXT_INPUT (mandatory; positioning and themes; not claim evidence)",
-        "",
-        "Rules:",
-        "- TARGETING INPUTS (NON-PROOF): JD/title/company and briefing — prioritize relevance only",
-        "- source_fact_ids must come only from ALLOWED_SOURCE_FACT_IDS in the CLAIM SUPPORT POOL",
-        "- JD, target title, target company, and briefing/research must never appear in source_fact_ids",
-        "- If a claim cannot be supported by the CLAIM SUPPORT POOL, omit it or write conservatively",
-        "- Do not invent facts to satisfy the JD",
-        "- Do not turn briefing/research into resume experience",
-        "",
-        "ALLOWED_SOURCE_FACT_IDS (JSON array):",
-        json.dumps(list(allowed_source_fact_ids), ensure_ascii=False),
+        "- JD/title/company/briefing: TARGETING_INPUT only (see I0 proof_law_v1)",
+        "- source_fact_ids: ALLOWED_SOURCE_FACT_IDS in C0 only",
     ]
+    if include_allowed_id_list:
+        lines.extend(
+            [
+                "",
+                "ALLOWED_SOURCE_FACT_IDS (JSON array):",
+                json.dumps(list(allowed_source_fact_ids), ensure_ascii=False),
+            ]
+        )
     return "\n".join(lines)
 
 
-def augment_section_compiled_with_input_authority(
-    compiled: SectionCompiledPrompt,
-    *,
-    allowed_source_fact_ids: Sequence[str],
-    selected_role_fact_set_mode: bool = False,
-    proof_pool_mode: str = "base_resume_fallback",
-    skills_authority_metadata: dict[str, Any] | None = None,
-) -> SectionCompiledPrompt:
-    """Return a copy of ``compiled`` with INPUT_AUTHORITY appended to the last message."""
-    block = format_input_authority_block(
-        allowed_source_fact_ids=allowed_source_fact_ids,
-        selected_role_fact_set_mode=selected_role_fact_set_mode,
-        proof_pool_mode=proof_pool_mode,
-        skills_authority_metadata=skills_authority_metadata,
-    )
+def _append_block_to_last_message(compiled: SectionCompiledPrompt, block: str) -> SectionCompiledPrompt:
     art = compiled.artifact
     msgs = [dict(m) for m in art.messages]
     if msgs:
@@ -105,40 +85,77 @@ def augment_section_compiled_with_input_authority(
     )
 
 
+def augment_section_compiled_with_product_shape(compiled: SectionCompiledPrompt) -> SectionCompiledPrompt:
+    """Append PRODUCT_SHAPE block for generated lanes (X2-aligned bounds)."""
+    if compiled.section_id not in GENERATED_LANES:
+        return compiled
+    block = format_product_shape_prompt_block(compiled.section_id)
+    return _append_block_to_last_message(compiled, block)
+
+
+def augment_section_compiled_with_input_authority(
+    compiled: SectionCompiledPrompt,
+    *,
+    allowed_source_fact_ids: Sequence[str],
+    skills_authority_metadata: dict[str, Any] | None = None,
+    include_allowed_id_list: bool = True,
+) -> SectionCompiledPrompt:
+    """Return a copy of ``compiled`` with INPUT_AUTHORITY + PRODUCT_SHAPE on the last message."""
+    block = format_input_authority_block(
+        allowed_source_fact_ids=allowed_source_fact_ids,
+        skills_authority_metadata=skills_authority_metadata,
+        include_allowed_id_list=include_allowed_id_list,
+    )
+    out = _append_block_to_last_message(compiled, block)
+    return augment_section_compiled_with_product_shape(out)
+
+
 def finalize_section_compiled_with_proof_pool(
     compiled: SectionCompiledPrompt,
     *,
     runtime_payload: dict[str, Any],
 ) -> SectionCompiledPrompt:
     """Append INPUT_AUTHORITY using FEC bridge PA authority (not raw proof_pool_metadata)."""
+    from apps_rg.runtime.product_evidence_authority import validate_compiled_prompt_story_authority
     from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
 
     ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
     pp_meta, _fec = resolve_pa_proof_authority_for_compile(runtime_payload)
-    mode = proof_pool_mode_from_metadata(pp_meta if isinstance(pp_meta, dict) else None)
+    proof_pool_mode_from_metadata(pp_meta if isinstance(pp_meta, dict) else None)
     skills_meta = pp_meta if isinstance(pp_meta, dict) else None
-    return augment_section_compiled_with_input_authority(
+    out = augment_section_compiled_with_input_authority(
         compiled,
         allowed_source_fact_ids=ids,
-        selected_role_fact_set_mode=(mode == "srfs"),
-        proof_pool_mode=mode,
         skills_authority_metadata=skills_meta,
     )
+    last_content = ""
+    if out.artifact.messages:
+        last_content = str(out.artifact.messages[-1].get("content") or "")
+    validate_compiled_prompt_story_authority(last_content, section_id=compiled.section_id)
+    return out
 
 
 def proof_pool_mode_from_metadata(metadata: dict[str, Any] | None) -> str:
-    pt = str((metadata or {}).get("proof_pool_type") or "")
-    if pt == "selected_role_fact_set":
-        return "srfs"
-    if pt in ("augmented_skills_graph", "augmented_skills_graph_c03_graphrag"):
-        return "augmented_skills_graph"
-    if pt == "broad_skills_ledger":
-        return "broad_skills_ledger"
-    return "base_resume_fallback"
+    """Validate metadata; product lanes use evidence_authority (not proof_pool_type switch)."""
+    from apps_rg.runtime.product_evidence_authority import (
+        EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
+        validate_evidence_authority_block,
+    )
+
+    meta = metadata if isinstance(metadata, dict) else {}
+    ea = meta.get("evidence_authority") if isinstance(meta.get("evidence_authority"), dict) else {}
+    if not ea:
+        raise ValueError(
+            f"product lanes require evidence_authority={EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH!r}; "
+            "proof_pool_type is not an authority switch"
+        )
+    validate_evidence_authority_block(ea)
+    return EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH
 
 
 __all__ = [
     "augment_section_compiled_with_input_authority",
+    "augment_section_compiled_with_product_shape",
     "finalize_section_compiled_with_proof_pool",
     "format_input_authority_block",
     "proof_pool_mode_from_metadata",

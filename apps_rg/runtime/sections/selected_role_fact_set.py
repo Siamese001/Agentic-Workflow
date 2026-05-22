@@ -5,7 +5,7 @@ artifacts, and deterministic ``allowed_fact_ids`` (including metric derivatives)
 namespace as ``claim_ledger.source_fact_ids`` (``candidate_fact_id`` / ``fact_id``).
 
 This module does not thread CLI or dispatch; callers use it from section lanes and integration
-wrappers (e.g. ``exec_summary_srfs_integration``).
+graph projection helpers (JSON file loaders scheduled for D2 removal).
 """
 
 from __future__ import annotations
@@ -135,17 +135,10 @@ def build_allowed_fact_ids_for_plan_facts(
 
 
 def load_selected_role_fact_set(path: str | Path) -> dict[str, Any]:
-    """Load and validate top-level SRFS document keys from JSON (path must exist)."""
-    p = Path(path)
-    if not p.is_file():
-        raise FileNotFoundError(f"SelectedRoleFactSet path not found: {p}")
-    data = json.loads(p.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError("SelectedRoleFactSet JSON must deserialize to an object")
-    missing = [k for k in _REQUIRED_TOP if k not in data]
-    if missing:
-        raise ValueError(f"SelectedRoleFactSet JSON missing keys: {missing}")
-    return data
+    """Removed D2: SRFS JSON file authority is not permitted on the product path."""
+    raise RuntimeError(
+        "load_selected_role_fact_set removed: use graph proof pool / in-memory projection only"
+    )
 
 
 def get_section_fact_slice(srfs: dict[str, Any], section_id: str) -> list[dict[str, Any]]:
@@ -251,42 +244,9 @@ def build_srfs_integration_envelope(
     executive_summary_plan_facts: list[dict[str, Any]],
     artifact_path_resolved: str,
 ) -> dict[str, Any]:
-    """Executive-summary integration envelope (artifact ref + blocked/confirmation IDs). Unchanged contract."""
-    blocked = srfs_document.get("blocked_facts") or []
-    conf_q = srfs_document.get("facts_requiring_human_confirmation") or []
-    ujd = srfs_document.get("unsupported_jd_needs") or []
-
-    blocked_ids = sorted(
-        {str(x.get("candidate_fact_id") or "").strip() for x in blocked if isinstance(x, dict)}
-    )
-    blocked_ids = [x for x in blocked_ids if x]
-
-    conf_ids: list[str] = []
-    for item in conf_q:
-        if not isinstance(item, dict):
-            continue
-        nested = item.get("fact") or {}
-        if isinstance(nested, dict):
-            cid = str(nested.get("candidate_fact_id") or "").strip()
-            if cid:
-                conf_ids.append(cid)
-    conf_ids = sorted(set(conf_ids))
-
-    exec_fact_ids = [str(f["fact_id"]) for f in executive_summary_plan_facts]
-
-    return {
-        "artifact_path_resolved": artifact_path_resolved,
-        "selection_id": str(srfs_document.get("selection_id") or ""),
-        "executive_summary_selected_fact_ids": exec_fact_ids,
-        "blocked_facts_count": len(blocked_ids),
-        "facts_requiring_human_confirmation_count": len(conf_ids),
-        "unsupported_jd_needs_count": len(ujd if isinstance(ujd, list) else []),
-        "blocked_candidate_fact_ids": blocked_ids,
-        "confirmation_required_candidate_fact_ids": conf_ids,
-        "confidence_policy_excerpt": str(srfs_document.get("confidence_policy") or "")[:500],
-        "candidate_not_canonical_assertion": srfs_document.get("candidate_not_canonical_assertion"),
-        "no_jd_fact_minting_assertion": srfs_document.get("no_jd_fact_minting_assertion"),
-    }
+    """Removed D2: SRFS JSON envelope is not permitted on the product path."""
+    _ = (srfs_document, executive_summary_plan_facts, artifact_path_resolved)
+    raise RuntimeError("build_srfs_integration_envelope removed: graph/ledger authority only")
 
 
 def selected_fact_plan_from_srfs(plan_facts: list[dict[str, Any]]) -> dict[str, Any]:
@@ -373,53 +333,26 @@ def graph_only_proof_pool_metadata(
     legacy_ledger_ref: str = "",
 ) -> dict[str, Any]:
     n = int(allowed_fact_ids_count)
-    return {
+    out: dict[str, Any] = {
         "proof_pool_type": "augmented_skills_graph",
         "selected_role_fact_set_used": False,
-        "broad_skills_ledger_used": False,
         "base_resume_claim_authority": False,
         "graph_only_claim_authority": True,
-        "broad_skills_ledger_ref": legacy_ledger_ref or None,
-        "candidate_fact_ledger_ref": legacy_ledger_ref or None,
-        "legacy_skills_ledger_ref": legacy_ledger_ref or None,
-        "legacy_skills_ledger_role": "deprecated_reference",
-        "broad_skills_ledger_claim_evidence_only": False,
-        "broad_skills_ledger_skills_authority": False,
         "srfs_section_id": section_id,
         "candidate_fact_pool_count": int(candidate_fact_pool_count),
         "allowed_fact_ids_count": n,
-        "srfs_allowed_fact_ids_count": n,
         "fallback_used": False,
         "fallback_reason": "",
         "full_resume_srfs_supported": False,
         "c03_graphrag_bound_required": True,
     }
-
-
-def broad_skills_ledger_proof_pool_metadata(
-    *,
-    section_id: str,
-    candidate_fact_pool_count: int,
-    allowed_fact_ids_count: int,
-    ledger_ref: str,
-) -> dict[str, Any]:
-    n = int(allowed_fact_ids_count)
-    return {
-        "proof_pool_type": "broad_skills_ledger",
-        "selected_role_fact_set_used": False,
-        "broad_skills_ledger_used": True,
-        "broad_skills_ledger_ref": str(ledger_ref),
-        "candidate_fact_ledger_ref": str(ledger_ref),
-        "broad_skills_ledger_claim_evidence_only": True,
-        "broad_skills_ledger_skills_authority": False,
-        "srfs_section_id": section_id,
-        "candidate_fact_pool_count": int(candidate_fact_pool_count),
-        "allowed_fact_ids_count": n,
-        "srfs_allowed_fact_ids_count": 0,
-        "fallback_used": False,
-        "fallback_reason": "",
-        "full_resume_srfs_supported": False,
-    }
+    if legacy_ledger_ref:
+        out["claim_evidence_substrate_ref"] = legacy_ledger_ref
+        out["legacy_skills_ledger_ref"] = legacy_ledger_ref
+        out["legacy_skills_ledger_role"] = "deprecated_reference"
+    if graph_ref:
+        out["graph_ref"] = graph_ref
+    return out
 
 
 def _ledger_root_fact_ids_union(claim_ledger: list[Any] | None) -> set[str]:
@@ -454,6 +387,18 @@ def compute_claim_ledger_union_matches_required_fact_ids(
     return req == ledger
 
 
+def _out_of_slice_from_active_gate(active_gate: dict[str, Any] | None) -> list[str]:
+    if active_gate is None:
+        return []
+    ov = active_gate.get("observed_value")
+    if not isinstance(ov, dict):
+        return []
+    oos = ov.get("out_of_slice_fact_ids")
+    if not isinstance(oos, list):
+        return []
+    return [str(x) for x in oos]
+
+
 def normalized_srfs_section_reporting_fields(
     *,
     section_id: str,
@@ -462,67 +407,32 @@ def normalized_srfs_section_reporting_fields(
     selected_fact_plan: dict[str, Any] | None,
     claim_ledger: list[Any] | None,
 ) -> dict[str, Any]:
-    """W6: flat SRFS audit fields for section_metric_receipt / consumers."""
+    """Flat proof-pool audit fields for section_metric_receipt (graph authority; SRFS gate retired)."""
+    from apps_rg.runtime.product_evidence_authority import product_authority_reporting_fields
+
     pp = dict(runtime_payload.get("proof_pool_metadata") or {})
-    srfs_active = bool(pp.get("selected_role_fact_set_used")) or str(pp.get("proof_pool_type") or "") == (
-        "selected_role_fact_set"
-    )
-    gate_id = SRFS_SLICE_SOURCE_FACT_GATE_BY_SECTION.get(section_id)
-    x2_srfs_gate_status = "NOT_APPLICABLE"
-    out_of_slice: list[str] = []
-    srfs_allowed_from_gate: int | None = None
-
-    if srfs_active and gate_id:
-        gate = next((g for g in x2_gates if g.get("gate_id") == gate_id), None)
-        if gate is None:
-            x2_srfs_gate_status = "UNKNOWN"
-        elif gate.get("pass"):
-            x2_srfs_gate_status = "PASS"
-        else:
-            x2_srfs_gate_status = "FAIL"
-        if gate is not None:
-            ov = gate.get("observed_value")
-            if isinstance(ov, dict):
-                oos = ov.get("out_of_slice_fact_ids")
-                if isinstance(oos, list):
-                    out_of_slice = [str(x) for x in oos]
-                sac = ov.get("srfs_allowed_fact_ids_count")
-                if isinstance(sac, int):
-                    srfs_allowed_from_gate = sac
-    elif srfs_active:
-        x2_srfs_gate_status = "UNKNOWN"
-
-    if not srfs_active:
-        out_of_slice = []
-
     req_ids = (selected_fact_plan or {}).get("required_fact_ids") if isinstance(selected_fact_plan, dict) else None
     req_count = len(req_ids or []) if isinstance(req_ids, list) else 0
-
-    pool_type = str(pp.get("proof_pool_type") or ("selected_role_fact_set" if srfs_active else "base_resume_fallback"))
-    meta_allowed = int(pp.get("allowed_fact_ids_count") or 0)
-    meta_srfs_allowed = int(pp.get("srfs_allowed_fact_ids_count") or 0)
-    if srfs_allowed_from_gate is not None:
-        meta_srfs_allowed = srfs_allowed_from_gate
-
-    return {
-        "proof_pool_type": pool_type,
-        "selected_role_fact_set_used": bool(srfs_active),
-        "srfs_section_id": section_id,
-        "candidate_fact_pool_count": int(pp.get("candidate_fact_pool_count") or 0),
-        "allowed_fact_ids_count": meta_allowed,
-        "required_fact_ids_count": req_count,
-        "claim_ledger_union_matches_required_fact_ids": compute_claim_ledger_union_matches_required_fact_ids(
-            selected_fact_plan if isinstance(selected_fact_plan, dict) else None,
-            claim_ledger,
-            srfs_active=srfs_active,
-        ),
-        "out_of_slice_fact_ids": list(out_of_slice),
-        "fallback_used": bool(pp.get("fallback_used", not srfs_active)),
-        "fallback_reason": str(pp.get("fallback_reason") or ""),
-        "x2_srfs_gate_status": x2_srfs_gate_status,
-        "srfs_allowed_fact_ids_count": meta_srfs_allowed if srfs_active else 0,
-        "full_resume_srfs_supported": False,
-    }
+    out = product_authority_reporting_fields(
+        section_id=section_id,
+        proof_pool_metadata=pp,
+        allowed_fact_ids_count=int(pp.get("allowed_fact_ids_count") or 0),
+        required_fact_ids_count=req_count,
+    )
+    out["claim_ledger_union_matches_required_fact_ids"] = compute_claim_ledger_union_matches_required_fact_ids(
+        selected_fact_plan if isinstance(selected_fact_plan, dict) else None,
+        claim_ledger,
+        srfs_active=False,
+    )
+    active_gate_id = f"x2_{section_id}_active_proof_pool_source_fact_ids"
+    active_gate = next((g for g in x2_gates if g.get("gate_id") == active_gate_id), None)
+    if active_gate is not None:
+        out["x2_active_proof_pool_gate_status"] = "PASS" if active_gate.get("pass") else "FAIL"
+        out["out_of_slice_fact_ids"] = _out_of_slice_from_active_gate(active_gate)
+    if bool(pp.get("fallback_used")):
+        out["fallback_used"] = True
+        out["fallback_reason"] = str(pp.get("fallback_reason") or "")
+    return out
 
 
 def merge_normalized_srfs_reporting_into_dict(
@@ -555,17 +465,9 @@ def resolve_srfs_section_proof_bundle(
     srfs_path: str | Path,
     section_id: str,
 ) -> tuple[dict[str, Any], list[str], set[str], dict[str, Any]]:
-    """Load SRFS JSON, validate slice, return (selected_fact_plan, ordered_allowed, allowed_set, proof_pool_metadata)."""
-    doc = load_selected_role_fact_set(srfs_path)
-    plan = build_section_fact_plan(doc, section_id)
-    facts = list(plan.get("facts") or [])
-    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
-    meta = srfs_proof_pool_metadata(
-        section_id=section_id,
-        candidate_fact_pool_count=len(facts),
-        allowed_fact_ids_count=len(allowed),
-    )
-    return plan, ordered, allowed, meta
+    """Removed D2: resolve proof pool via ``proof_pool_resolver`` (graph authority)."""
+    _ = (srfs_path, section_id)
+    raise RuntimeError("resolve_srfs_section_proof_bundle removed: use proof_pool_resolver")
 
 
 def stub_source_fact_ids_for_allowed(allowed_sorted: list[str], *, max_ids: int = 6) -> list[str]:
@@ -719,7 +621,6 @@ __all__ = [
     "selection_method_for_section",
     "plan_fact_to_employment_bullet_row",
     "base_proof_pool_metadata",
-    "broad_skills_ledger_proof_pool_metadata",
     "graph_only_proof_pool_metadata",
     "compute_claim_ledger_union_matches_required_fact_ids",
     "merge_normalized_srfs_reporting_into_dict",

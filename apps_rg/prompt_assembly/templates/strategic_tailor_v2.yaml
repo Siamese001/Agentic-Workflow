@@ -111,7 +111,7 @@ slot_bodies:
           OUTPUT_FORMAT: Object with section-scoped fact authorization:
             - headline:
                 allowed_fact_ids: array of strings (facts for headline construction)
-                constraints: ["no metrics", "no company names", "8-11 words", "X | Y | Z format"]
+                constraints: ["no metrics", "no company names", "10-13 words", "X | Y | Z format"]
             - executive_summary:
                 allowed_fact_ids: array of strings (facts for summary generation)
                 priority_facts: array of strings (high-priority facts)
@@ -264,7 +264,7 @@ slot_bodies:
     {
       "headline": {
         "allowed_fact_ids": ["exp_unify_001", "skill_svp_001", "skill_ai_001"],
-        "constraints": ["no metrics", "no company names", "8-11 words", "X | Y | Z format"]
+        "constraints": ["no metrics", "no company names", "10-13 words", "X | Y | Z format"]
       },
       "experience.unify.bullets": {
         "allowed_fact_ids": ["bul_unify_001", "bul_unify_002", "bul_unify_003", "bul_unify_004", "bul_unify_005", "bul_unify_006"],

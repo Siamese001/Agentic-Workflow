@@ -7,7 +7,10 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
-from apps_rg.l2_recipe.modular_rg_output_builder import build_rg_output_from_modular_sections
+from apps_rg.l2_recipe.modular_rg_output_builder import (
+    build_rg_output_from_modular_sections,
+    load_lane_l2_from_section_refs,
+)
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
@@ -425,6 +428,53 @@ def test_non_compact_locked_role_still_fails_below_three_bullets(tmp_path: Path)
     )
     assert res.ok is False
     assert "locked_employment_insufficient_bullets:exp_other_lock_001" in res.failure_reason
+
+
+def test_load_lane_l2_from_section_refs_reads_lane_files() -> None:
+    repo = find_repo_root()
+    root = repo / "artifacts" / "apps_rg" / "runs" / f"lane_ref_load_{uuid.uuid4().hex[:10]}"
+    root.mkdir(parents=True, exist_ok=True)
+    l2 = {"runtime_generation_status": "REAL_LLM", "headline_line": "SVP | Platforms"}
+    refs: dict[str, str] = {}
+    for ln in (
+        "headline",
+        "executive_summary",
+        "unify_narrative",
+        "unify_bullets",
+        "ibm_narrative",
+        "ibm_bullets",
+        "competencies",
+    ):
+        d = root / "lanes" / ln
+        d.mkdir(parents=True, exist_ok=True)
+        if ln == "headline":
+            stub = l2
+        elif ln == "executive_summary":
+            stub = {"runtime_generation_status": "REAL_LLM", "resume_display_text": "x" * 80}
+        elif ln.endswith("narrative"):
+            stub = {"runtime_generation_status": "REAL_LLM", "narrative_sentence": "x" * 80}
+        elif ln.endswith("bullets"):
+            stub = {
+                "runtime_generation_status": "REAL_LLM",
+                "bullets": [{"text": "x" * 80, "source_fact_id": "b1", "has_metric": True}],
+            }
+        else:
+            stub = {
+                "runtime_generation_status": "REAL_LLM",
+                "competencies": [{"category_label": "P", "terms": [{"text": "Skill A"}]}],
+            }
+        (d / "l2_output.json").write_text(json.dumps(stub), encoding="utf-8")
+        refs[ln] = d.relative_to(repo).as_posix() + "/l2_output.json"
+    loaded, errs = load_lane_l2_from_section_refs(repo, refs, rollup_lanes=None)
+    assert not errs
+    assert loaded["headline"]["headline_line"] == l2["headline_line"]
+
+
+def test_load_lane_l2_from_section_refs_reports_missing_ref() -> None:
+    repo = find_repo_root()
+    loaded, errs = load_lane_l2_from_section_refs(repo, {"headline": ""})
+    assert "headline" in errs
+    assert not loaded
 
 
 def test_all_seven_lane_ids_required() -> None:

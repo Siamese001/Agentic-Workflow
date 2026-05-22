@@ -33,7 +33,7 @@ from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 
 DEFAULT_JD = REPO / "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_jd.txt"
-DEFAULT_BRIEF = REPO / "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.txt"
+DEFAULT_BRIEF = REPO / "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.md"
 OUT_DIR = REPO / "artifacts/apps_rg/c0"
 
 
@@ -116,7 +116,6 @@ def _run_phase_bundle(
         graph_bindings=bindings,
         front_spine=None,
         allowed_fact_ids=list(c04.get("allowed_fact_ids") or []),
-        merge_canonical_c0=False,
     )
     c07 = audit_c07_handoff(
         fec=fec,

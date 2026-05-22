@@ -28,7 +28,7 @@ from agentic_core.runtime.exit.exit_gate_harness import (
     ExitGateHarness,
     ExitGateHarnessError,
 )
-from agentic_core.runtime.exit.apps_rg_exit_binding import build_apps_rg_exit_harness
+from apps_rg.runtime.bindings.exit_binding import build_apps_rg_exit_harness
 from agentic_core.runtime.gates.gate_evaluators import (
     DEFAULT_EVALUATORS,
     evaluate_g21,
@@ -850,7 +850,7 @@ class TestBR1BoundaryRepair:
         )
 
     def test_apps_rg_exit_factory_lives_in_apps_rg_exit_binding(self):
-        from agentic_core.runtime.exit.apps_rg_exit_binding import build_apps_rg_exit_harness as f
+        from apps_rg.runtime.bindings.exit_binding import build_apps_rg_exit_harness as f
         assert callable(f)
         harness = f(_REPO_ROOT)
         assert isinstance(harness, ExitGateHarness)
@@ -1128,13 +1128,13 @@ class TestExitFinalizeProofPersistence:
     def test_gate_verdict_refs_nonempty_after_finalize(self, tmp_path):
         """P1: gate_verdict_refs must be populated after exit_finalize_apps_rg."""
         from unittest.mock import patch
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         sealed = self._make_sealed()
         prompt = self._make_prompt()
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ):
             disposition = exit_finalize_apps_rg(sealed, prompt)
@@ -1150,13 +1150,13 @@ class TestExitFinalizeProofPersistence:
     def test_gate_verdict_refs_format(self, tmp_path):
         """P2: each gate_verdict_ref entry must be 'GATE_ID::RESULT::DIGEST'."""
         from unittest.mock import patch
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         sealed = self._make_sealed(run_id="run-persist-format")
         prompt = self._make_prompt()
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ):
             disposition = exit_finalize_apps_rg(sealed, prompt)
@@ -1176,7 +1176,7 @@ class TestExitFinalizeProofPersistence:
     def test_outcome_authorized_not_hardcoded_true(self, tmp_path):
         """P3: outcome_authorized must reflect actual gate result, not hardcoded True."""
         from unittest.mock import patch, MagicMock
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
         from agentic_core.runtime.exit.exit_disposition import (
             X3A_DENY_REROUTE, ExitDispositionReceipt,
         )
@@ -1205,10 +1205,10 @@ class TestExitFinalizeProofPersistence:
         mock_exhaust = RuntimeExhaustBundle(run_id="run-persist-deny", created_after_exit=True)
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
         ) as mock_harness_factory:
             mock_harness = MagicMock()
             mock_harness.evaluate.return_value = (mock_receipt, mock_mesh, mock_exhaust)
@@ -1223,7 +1223,7 @@ class TestExitFinalizeProofPersistence:
     def test_outcome_authorized_true_when_harness_allows_finish(self, tmp_path):
         """P3b: outcome_authorized must be True when harness returns X3D_ALLOW_FINISH."""
         from unittest.mock import patch, MagicMock
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
         from agentic_core.runtime.exit.exit_disposition import (
             X3D_ALLOW_FINISH, ExitDispositionReceipt,
         )
@@ -1254,10 +1254,10 @@ class TestExitFinalizeProofPersistence:
         mock_exhaust = RuntimeExhaustBundle(run_id="run-persist-allow", created_after_exit=True)
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
         ) as mock_harness_factory:
             mock_harness = MagicMock()
             mock_harness.evaluate.return_value = (mock_receipt, mock_mesh, mock_exhaust)
@@ -1278,13 +1278,13 @@ class TestExitFinalizeProofPersistence:
     def test_proof_artifacts_written_to_run_dir(self):
         """P6+P7: 07_gate_mesh_result.json and 07_gate_receipt.json must exist in run dir."""
         from unittest.mock import patch
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         sealed = self._make_sealed(run_id="run-proof-artifacts")
         prompt = self._make_prompt()
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ):
             disposition = exit_finalize_apps_rg(sealed, prompt)
@@ -1321,13 +1321,13 @@ class TestExitFinalizeProofPersistence:
     def test_no_placeholder_refs_in_gate_verdict_refs(self):
         """P8: gate_verdict_refs must not contain placeholder sentinel values."""
         from unittest.mock import patch
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         sealed = self._make_sealed(run_id="run-no-placeholder")
         prompt = self._make_prompt()
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ):
             disposition = exit_finalize_apps_rg(sealed, prompt)
@@ -1342,16 +1342,16 @@ class TestExitFinalizeProofPersistence:
     def test_harness_exception_falls_back_conservatively(self):
         """P9: if harness raises, outcome_authorized must be False (never True on exception)."""
         from unittest.mock import patch
-        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
         sealed = self._make_sealed(run_id="run-harness-exception")
         prompt = self._make_prompt()
 
         with patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            "apps_rg.runtime.bindings.exit_binding._resolve_repo_root",
             return_value=_REPO_ROOT,
         ), patch(
-            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            "apps_rg.runtime.bindings.exit_binding.build_apps_rg_exit_harness",
             side_effect=RuntimeError("harness exploded"),
         ):
             disposition = exit_finalize_apps_rg(sealed, prompt)

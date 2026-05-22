@@ -14,7 +14,7 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure. Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and distributed systems engineering.
+      Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure grounded in quantitative actuarial and distributed systems depth.
     claim_ledger_grounded: false
     annotation: >
       STYLE AND QUALITY TARGET ONLY — not proof for arbitrary runs.
@@ -25,6 +25,70 @@ examples:
       paragraph assumes those facts are already in the proof substrate.
       Runtime proof remains claim_ledger + source_fact_ids only; resume_display_text
       stays clean prose.
+
+  - id: exec_summary_pos_outcomes_led_001
+    category: positive_variant
+    authority: E0_STYLE_EXAMPLE_NOT_PROOF
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Generated $22M in productized AI revenue and expanded gross margins by 20% by turning complex AI capabilities into repeatable, production-ready platform services adopted across enterprise programs. Engineering executive building production-grade AI platforms and governed runtime architecture for regulated enterprise environments. Designs and operates systems that combine orchestration, retrieval, policy enforcement, and traceability to improve reliability, auditability, and deployment speed. Leads full platform lifecycle work across architecture, operating model, and engineering scale-out. Quantitative actuarial depth supports regulated delivery when those themes appear in the allowed pool.
+    claim_ledger_grounded: false
+    annotation: >
+      STYLE VARIANT — outcomes-led narrative order (commercial arc first). Same density
+      register as platform-led gold; teaches reordering and emphasis without new facts.
+      Do not copy metrics or credentials unless ALLOWED_SOURCE_FACT_IDS support them.
+
+  - id: exec_summary_pos_integrated_cred_001
+    category: positive_variant
+    authority: E0_STYLE_EXAMPLE_NOT_PROOF
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering executive building governed agentic AI platforms for regulated enterprise delivery with deterministic controls and traceable execution. Leads platform lifecycle and commercialization, converting complex delivery into reusable services adopted across programs. Generated proof-backed revenue and margin outcomes when selected facts support them. Quantitative and platform depth inform governance and commercialization balance, woven into delivery context rather than listed as a separate credential inventory.
+    claim_ledger_grounded: false
+    annotation: >
+      STYLE VARIANT — credentials woven into a substantive sentence (not a fifth-slot cert dump).
+
+  - id: exec_summary_pos_credibility_implied_001
+    category: positive_variant
+    authority: E0_STYLE_EXAMPLE_NOT_PROOF
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering executive building governed agentic AI platforms for regulated enterprise delivery with traceable execution and policy discipline. Leads platform lifecycle and commercialization, converting complex capabilities into reusable services adopted across programs. Generated proof-backed revenue and margin outcomes when selected facts support them. Quantitative actuarial training and cloud data platform depth reinforce governance and delivery decisions without naming individual certifications.
+    claim_ledger_grounded: false
+    annotation: >
+      STYLE VARIANT — passes x2_exec_summary_no_credential_dump: implies credibility without
+      AWS/Databricks/FSA/Basel/CCAR label stacks or a trailing cert sentence.
+
+  - id: exec_summary_neg_credential_dump_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering executive building governed platforms for enterprise delivery. Leads lifecycle and commercial adoption across programs. Delivery outcomes remain grounded in selected executive facts. AWS Certified Machine Learning Engineer, AWS Certified Solutions Architect, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials reinforce senior IT strategy leadership.
+    annotation: >
+      VIOLATION: credential/certification inventory block; belongs in certifications section.
+
+  - id: exec_summary_neg_mechanism_inventory_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering executive building governed platforms. The leader delivers deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces into enterprise capability. Platform lifecycle work spans architecture and operating model design. Outcomes stay grounded in selected executive facts.
+    annotation: >
+      VIOLATION: mechanism inventory sentence; comma-chain architecture list, not synthesis.
 
   - id: exec_summary_neg_label_stitch_001
     category: negative

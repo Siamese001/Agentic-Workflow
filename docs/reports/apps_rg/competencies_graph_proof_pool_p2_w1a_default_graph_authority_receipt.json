@@ -1,6 +1,6 @@
 {
   "schema": "competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt_v1",
-  "generated_at": "2026-05-21T20:50:52Z",
+  "generated_at": "2026-05-22T12:45:50Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W1A",
   "default_proof_pool_type": "augmented_skills_graph",
@@ -13,7 +13,7 @@
   "fail_closed_if_graph_unavailable": true,
   "deprecated_ledger_code_paths_remaining": [
     "apps_rg/runtime/proof_pool_resolver.py::_build_competencies_ledger_plan",
-    "apps_rg/runtime/proof_pool_resolver.py::_allocate_from_ledger (section_id=competencies)",
+    "apps_rg/runtime/proof_pool_resolver.py::_allocate_from_ledger (removed \u2014 graph-only product)",
     "selection_method=broad_skills_ledger_competencies"
   ],
   "deprecated_ledger_code_reachable_from_product_path": false,

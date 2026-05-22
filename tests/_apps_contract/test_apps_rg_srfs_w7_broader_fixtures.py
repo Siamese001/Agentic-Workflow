@@ -220,7 +220,7 @@ def test_w7_headline_cross_slice_exec_id_fails_gate(tmp_path: Path) -> None:
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    g = by_id["x2_headline_source_fact_ids_within_srfs_slice"]
+    g = by_id["x2_headline_active_proof_pool_source_fact_ids"]
     assert g.pass_ is False
     assert "bul_w7_exec_isolated" in (g.observed_value.get("out_of_slice_fact_ids") or [])
 
@@ -258,7 +258,7 @@ def test_w7_unify_narrative_synthetic_id_not_in_slice_fails(tmp_path: Path) -> N
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    g = by_id["x2_unify_narrative_source_fact_ids_within_srfs_slice"]
+    g = by_id["x2_unify_narrative_active_proof_pool_source_fact_ids"]
     assert g.pass_ is False
     assert "unify_narrative_base_001" in (g.observed_value.get("out_of_slice_fact_ids") or [])
 
@@ -318,7 +318,7 @@ def test_w7_competencies_term_source_fact_id_and_ids_collected(tmp_path: Path) -
         srfs_source_fact_slice_gate_active=True,
     )
     by_id = {g.gate_id: g for g in gates}
-    g = by_id["x2_competencies_source_fact_ids_within_srfs_slice"]
+    g = by_id["x2_competencies_active_proof_pool_source_fact_ids"]
     assert g.pass_ is False
     oos = g.observed_value.get("out_of_slice_fact_ids") or []
     assert bad_id in oos

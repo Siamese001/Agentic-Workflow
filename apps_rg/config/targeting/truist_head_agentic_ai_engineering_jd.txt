@@ -1,0 +1,89 @@
+Head of Agentic Engineering — Truist Financial Corporation
+
+The Head of Agentic Engineering is the executive leader of our most strategically critical engineering function — the team responsible for designing, building, and operating the enterprise AI agents and agentic workflows that define the agentic value proposition to Truist.
+
+This role owns the agentic engineering organization, architecture standards, delivery culture, and operational discipline required to ship enterprise-grade AI agents at scale. The Head of Agentic Engineering is a builder-leader with deep expertise in AI agent systems, multi-agent orchestration, prompt architecture, RAG, tool integration, memory, evaluation, and governed deployment — combined with the organizational leadership capability to build and scale a world-class agentic engineering team inside a regulated financial institution.
+
+Daily work includes leading the agentic engineering team, setting architecture and delivery standards, managing complex cross-functional delivery, partnering with product and security leadership, driving hiring and capability development, and ensuring the Forge agentic engineering function delivers production-ready AI agents that are safe, reliable, observable, and enterprise-worthy.
+
+Essential Duties and Responsibilities
+
+Following is a summary of the essential functions for this job. Other duties may be performed, both major and minor, which are not mentioned below. Specific activities may change from time to time.
+
+- Own the agentic engineering function — providing executive leadership, organizational design, technical standards, and delivery accountability across all agentic engineering teams and initiatives.
+
+- Define and enforce the Forge agentic architecture — including patterns for single-agent and multi-agent systems, prompt orchestration, tool-calling, memory and session management, RAG, human-in-the-loop controls, evaluation, observability, and governed deployment.
+
+- Drive delivery execution across agentic engineering — managing sprint cadences, resolving complex technical and delivery blockers, enforcing quality and governance standards, and ensuring the team ships production-ready AI agents on committed timelines.
+
+- Build and develop a world-class agentic engineering team through hiring, onboarding, coaching, performance management, career development, and technical culture investment.
+
+- Partner with the Head of Technology, Head of Development, Head of Product, and AI Security Lead to ensure agentic engineering delivery is aligned to strategic priorities, enterprise security standards, and business outcomes.
+
+- Own the agentic engineering operating model — including team structure, delivery ceremonies, architecture review, code quality standards, evaluation frameworks, deployment controls, and operational support practices.
+
+- Drive cross-functional delivery alignment across agentic engineering, application engineering, data, platform, security, QA, and enablement teams to ensure AI agents move from design to production reliably and at scale.
+
+- Represent agentic engineering in senior leadership forums, governance reviews, architecture discussions, vendor partnerships, and external AI community engagement.
+
+- Stay at the forefront of the AI agent technology landscape — evaluating new platforms, frameworks, models, and capabilities, and incorporating relevant advances into the Forge agentic engineering strategy.
+
+- Manage agentic engineering budget, tooling, vendor relationships, and resource allocation in alignment with Forge delivery priorities and enterprise financial governance.
+
+- Foster a culture of engineering excellence, experimentation with discipline, continuous learning, and accountability within the agentic engineering organization.
+
+Qualifications
+
+Required Qualifications
+
+The requirements listed below are representative of the knowledge, skill and/or ability required. Reasonable accommodations may be made to enable individuals with disabilities to perform the essential functions.
+
+1. Bachelor's degree in Information Technology, Information Security, Engineering or a related discipline.
+
+2. 20+ years of experience in financial services, government, large consulting firms, or equivalent, with a focus on information security risk management.
+
+3. 15+ years prior management experience with a track record of team development and process improvements.
+
+4. 15+ years of experience in leading issue management and resolution of financial regulatory and internal risk partner findings.
+
+5. Extensive knowledge of cybersecurity capabilities, including expertise in one or more of the following areas: Encryption, Data Security, Application Security, IAM, Network Security, Cloud Security, etc.
+
+6. Proven track record in leading delivery of security programs, including planning, execution, and reporting.
+
+7. Demonstrated ability to communicate complex technical concepts in business terms to C-Level executives.
+
+8. Strong interpersonal skills and the ability to interface with all levels of personnel (executive to entry level).
+
+9. Experience developing and operating management routines for large organizations, including process and control effectiveness and metrics (KRI/KPI).
+
+10. Deep knowledge of cybersecurity frameworks (e.g., NIST, ISO 27001) and financial industry regulations (e.g., PCI DSS, SOX, GLBA).
+
+Preferred Qualifications
+
+- 12+ years of progressive software or AI engineering experience, including 5+ years in engineering management or technical leadership with direct people management responsibility.
+
+- Deep technical expertise in AI agent systems, LLM-powered application development, agentic orchestration, prompt engineering, tool integration, RAG, and evaluation for production AI systems.
+
+- Demonstrated experience leading and scaling engineering organizations in enterprise environments, including hiring, team development, delivery management, and organizational design.
+
+- Proven track record of delivering production-ready AI-enabled capabilities at enterprise scale — with strong quality, security, and operational reliability.
+
+- Experience leading engineering delivery across multi-platform AI ecosystems including Microsoft/Azure, cloud-native services, and modern agent frameworks.
+
+- Strong ability to manage senior technical talent, build high-performing agentic engineering teams, and drive a culture that balances innovation speed with enterprise governance.
+
+- Excellent written and verbal communication skills for executive-facing delivery reporting, stakeholder management, and organizational leadership.
+
+- Experience operating within regulated enterprise environments where security, compliance, audit, and governance controls shape AI delivery practice.
+
+- Experience leading agentic engineering organizations building multi-agent systems, enterprise AI platforms, or production-scale prompt-driven workflow automation.
+
+- Deep familiarity with Microsoft Copilot Studio, Azure AI Foundry, Amazon Bedrock AgentCore, Google Vertex AI Agent Engine, or comparable enterprise agentic platforms.
+
+- Experience in financial services, cybersecurity, or other highly regulated industries with strong control, audit, and release management expectations for AI systems.
+
+- Experience building agentic engineering teams from early-stage into scaled enterprise delivery — including architecture, process, tooling, and culture development.
+
+- Familiarity with responsible AI principles, AI governance frameworks, enterprise model risk management, and regulatory AI guidance relevant to financial institutions.
+
+- Experience representing engineering organizations in external AI communities, vendor partnerships, or enterprise technology governance forums.

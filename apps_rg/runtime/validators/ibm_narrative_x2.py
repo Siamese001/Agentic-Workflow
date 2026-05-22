@@ -23,6 +23,11 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 from apps_rg.runtime.qwen_offline_contract_stub import offline_contract_stub_enabled
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, UNIFY_RUNTIME_TERM_PATTERNS
 from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
+from apps_rg.runtime.validators.resume_narrative_display_x2 import (
+    ACCEPTED_FINALIZED_COMPANION_STATUS,
+    career_bridge_phrase_hits,
+    check_ibm_narrative_no_meta_disclaimer_in_display,
+)
 
 
 @dataclass
@@ -160,6 +165,63 @@ IBM_NARRATIVE_THEME_TRIGGERS: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
+def _ledger_row_bul_ibm_roots(row: dict[str, Any]) -> set[str]:
+    roots: set[str] = set()
+    for fid in _iter_source_fact_id_tokens(row.get("source_fact_ids")):
+        base = str(fid).split("_metric_")[0]
+        if base.startswith("bul_ibm_"):
+            roots.add(base)
+    return roots
+
+
+def check_ibm_narrative_claim_ledger_clause_decomposition(
+    narrative_sentence: str,
+    claim_ledger: list[dict[str, Any]],
+) -> tuple[bool, dict[str, Any]]:
+    """Clause-level ledger: no loose 3+ bul_ibm unions; multi-clause sentences need multiple rows."""
+    detail: dict[str, Any] = {}
+    narrative = str(narrative_sentence or "").strip()
+    if not narrative:
+        detail["reason"] = "empty_narrative"
+        return False, detail
+
+    bridge_hits = career_bridge_phrase_hits(narrative)
+    for row in claim_ledger:
+        if isinstance(row, dict):
+            bridge_hits.extend(career_bridge_phrase_hits(str(row.get("claim_text") or "")))
+    if bridge_hits:
+        detail["reason"] = "career_bridge_phrase_without_allowed_fact_class"
+        detail["hits"] = sorted(set(bridge_hits))
+        return False, detail
+
+    parts = re.split(r",\s+(?=establishing\b)", narrative, maxsplit=1, flags=re.I)
+    multi_clause = len(parts) >= 2
+    rows = [r for r in claim_ledger if isinstance(r, dict) and str(r.get("claim_text") or "").strip()]
+    if multi_clause and len(rows) < 2:
+        detail["reason"] = "multi_clause_sentence_requires_multiple_ledger_rows"
+        detail["clause_count"] = len(parts)
+        detail["ledger_rows"] = len(rows)
+        return False, detail
+
+    loose_rows: list[dict[str, Any]] = []
+    for i, row in enumerate(rows):
+        roots = _ledger_row_bul_ibm_roots(row)
+        if len(roots) > 2:
+            loose_rows.append({"ledger_idx": i, "roots": sorted(roots)})
+        ct = str(row.get("claim_text") or "").strip()
+        if narrative.lower() in ct.lower() and len(roots) >= 3:
+            loose_rows.append({"ledger_idx": i, "reason": "whole_sentence_union", "roots": sorted(roots)})
+
+    if loose_rows:
+        detail["reason"] = "loose_source_fact_id_union"
+        detail["violations"] = loose_rows
+        return False, detail
+
+    detail["reason"] = "ok"
+    detail["ledger_rows"] = len(rows)
+    return True, detail
+
+
 def ibm_narrative_material_fact_ids_for_sentence(narrative_sentence: str) -> frozenset[str]:
     nl = narrative_sentence.lower().strip()
     ids: set[str] = set()
@@ -214,6 +276,9 @@ def run_ibm_narrative_x2_gates(
     jd_text: str,
     runtime_generation_status: str,
     companion_bullet_texts: str | None,
+    companion_bullets_status: str | None = None,
+    companion_bullets_reason: str | None = None,
+    companion_aware: bool = True,
     candidate_name: str = "",
     provider_requested: str | None = None,
     provider_attempted: str | None = None,
@@ -267,6 +332,17 @@ def run_ibm_narrative_x2_gates(
         name_hit or "none",
         "absent",
         "Candidate name must not appear in the role narrative sentence.",
+    )
+
+    meta_ok, meta_hits = check_ibm_narrative_no_meta_disclaimer_in_display(narrative_sentence)
+    add(
+        "x2_ibm_narrative_no_meta_disclaimer_in_display",
+        meta_ok,
+        meta_hits or "none",
+        "absent",
+        None
+        if meta_ok
+        else f"Meta-disclaimer language belongs in prompt-only boundary, not display text: {meta_hits}",
     )
 
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
@@ -432,7 +508,78 @@ def run_ibm_narrative_x2_gates(
         theme_fail,
     )
 
+    clause_ok, clause_detail = check_ibm_narrative_claim_ledger_clause_decomposition(
+        narrative_sentence, claim_ledger
+    )
+    add(
+        "x2_ibm_narrative_claim_ledger_clause_decomposition",
+        clause_ok,
+        clause_detail,
+        "per-clause rows; max 2 bul_ibm roots per row; no career-bridge phrasing",
+        None if clause_ok else str(clause_detail.get("reason")),
+    )
+
+    from apps_rg.runtime.validators.companion_bullet_finalization import (
+        UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
+        companion_allow_legacy_stale_fallback,
+    )
+
     companion = companion_bullet_texts or ""
+    skip_finalized_gate = runtime_generation_status == "MOCKED" and companion_allow_legacy_stale_fallback()
+    if runtime_generation_status == UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS:
+        add(
+            "x2_ibm_narrative_requires_finalized_bullets",
+            False,
+            {
+                "status": companion_bullets_status or "UNKNOWN",
+                "reason": companion_bullets_reason or "",
+                "has_companion_text": bool(companion.strip()),
+                "runtime_generation_status": runtime_generation_status,
+            },
+            "provider blocked before LLM",
+            "Narrative LLM skipped: upstream IBM bullets not finalized.",
+        )
+    elif skip_finalized_gate:
+        add(
+            "x2_ibm_narrative_requires_finalized_bullets",
+            True,
+            {
+                "status": companion_bullets_status or "UNKNOWN",
+                "reason": companion_bullets_reason or "",
+                "has_companion_text": bool(companion.strip()),
+                "skipped": "MOCKED_runtime_plumbing",
+            },
+            "skipped for MOCKED provider",
+            None,
+        )
+    elif not companion_aware and companion_allow_legacy_stale_fallback():
+        add(
+            "x2_ibm_narrative_requires_finalized_bullets",
+            True,
+            {
+                "status": "STANDALONE",
+                "reason": "companion_aware_disabled",
+                "has_companion_text": bool(companion.strip()),
+            },
+            "standalone run receipt",
+            None,
+        )
+    else:
+        finalized_dependency_ok = (
+            bool(companion.strip()) and companion_bullets_status == ACCEPTED_FINALIZED_COMPANION_STATUS
+        )
+        add(
+            "x2_ibm_narrative_requires_finalized_bullets",
+            finalized_dependency_ok,
+            {
+                "status": companion_bullets_status or "UNKNOWN",
+                "reason": companion_bullets_reason or "",
+                "has_companion_text": bool(companion.strip()),
+            },
+            ACCEPTED_FINALIZED_COMPANION_STATUS,
+            "IBM narrative must run after ACCEPTED_FINALIZED IBM bullets when companion-aware.",
+        )
+
     metric_hits = _count_metric_hits(narrative_sentence)
     if companion and _companion_ibm_bullets_have_metrics(companion):
         repetition_ok = metric_hits == 0
@@ -638,6 +785,8 @@ def companion_ibm_bullets_have_full_metric_bundle(companion_bullet_texts: str) -
 __all__ = [
     "IBM_NARRATIVE_THEME_TRIGGERS",
     "IBM_RESUME_JARGON_BANNED_PHRASES",
+    "check_ibm_narrative_claim_ledger_clause_decomposition",
+    "check_ibm_narrative_no_meta_disclaimer_in_display",
     "run_ibm_narrative_x2_gates",
     "count_ibm_narrative_metric_hits",
     "companion_ibm_bullets_have_full_metric_bundle",

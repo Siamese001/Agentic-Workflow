@@ -18,7 +18,7 @@ from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 
 REPO = Path(__file__).resolve().parents[3]
 JD = REPO / "apps_rg/config/targeting/openai_partner_ade_jd.txt"
-BRIEF = REPO / "apps_rg/config/targeting/openai_partner_ade_briefing.txt"
+BRIEF = REPO / "apps_rg/config/targeting/openai_partner_ade_briefing.md"
 
 
 @pytest.mark.skipif(not JD.is_file(), reason="ADE JD fixture missing")

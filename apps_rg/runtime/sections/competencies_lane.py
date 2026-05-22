@@ -49,7 +49,6 @@ def build_competencies_lane_args(
     jd_text: str,
     briefing: str,
     target_role: str | None = None,
-    selected_role_fact_set: str = "",
     base_resume_ref: str = "",
 ) -> SimpleNamespace:
     """Namespace compatible with competencies lane execution."""
@@ -64,7 +63,6 @@ def build_competencies_lane_args(
         jd_text=str(jd_text).strip() or JD_TEXT_DEFAULT,
         briefing=str(briefing).strip() or BRIEFING_DEFAULT,
         target_role=(str(target_role).strip() if target_role else None),
-        selected_role_fact_set=str(selected_role_fact_set or ""),
         base_resume_ref=str(base_resume_ref or ""),
     )
     return ns

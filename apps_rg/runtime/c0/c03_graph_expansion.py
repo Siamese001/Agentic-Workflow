@@ -178,18 +178,28 @@ def expand_c03_graph_bindings(
     binding_mode: str = BINDING_MODE_FACT_LINKS_FIRST,
 ) -> dict[str, Any]:
     """Map existing facts to graph relationships — no new atoms."""
+    from apps_rg.runtime.c0.c03_graph_ref_policy import (
+        aggregate_graph_ref_classes,
+        compress_binding_for_executive_summary,
+        resolve_role_family_projection,
+    )
+
     fact_ids = [str(a.get("fact_id") or "") for a in atoms if a.get("fact_id")]
+    projection = resolve_role_family_projection(role_family_key, repo_root=repo_root)
     ctx = assemble_c03_graph_sqlite_context(
         role_family_key=role_family_key,
         section_id=section_id,
         selected_fact_ids=fact_ids,
         repo_root=repo_root,
+        pillar_hint_ids=list(projection.get("pillar_hint_ids") or []),
     )
     inner = ctx.get("context") if isinstance(ctx.get("context"), dict) else ctx
     skill_rows = list(inner.get("skills") or [])
     skill_by_id, skill_by_label = _index_skills(skill_rows)
     links_by_fact = _fact_links_by_fact(inner)
-    pillar_hints = resolve_c0_pillar_hints(role_family_key, repo_root=repo_root)
+    pillar_hints = tuple(projection.get("pillar_hint_ids") or ()) or resolve_c0_pillar_hints(
+        role_family_key, repo_root=repo_root
+    )
     skill_pillar_by_id = _load_skill_pillar_index(repo_root)
     bindings = [
         _bind_atom(
@@ -205,6 +215,15 @@ def expand_c03_graph_bindings(
         )
         for atom in atoms
     ]
+    if section_id == "executive_summary":
+        bindings = [
+            compress_binding_for_executive_summary(
+                b,
+                role_family_projection=projection,
+                skill_pillar_by_id=skill_pillar_by_id,
+            )
+            for b in bindings
+        ]
     pillar_aligned = sum(
         1
         for b in bindings
@@ -221,6 +240,7 @@ def expand_c03_graph_bindings(
     from apps_rg.runtime.c0.c0_section_authority import c03_skills_graph_receipt_flags
 
     flags = c03_skills_graph_receipt_flags(core_graph_rag_ran=False)
+    ref_classes = aggregate_graph_ref_classes(bindings)
     return {
         "schema_version": "c03_skills_graph_v1",
         "step_id": "C0.3_skills_graph",
@@ -229,6 +249,8 @@ def expand_c03_graph_bindings(
         "binding_mode": binding_mode,
         "bindings": bindings,
         **flags,
+        "role_family_projection": projection,
+        "graph_ref_classes": ref_classes,
         "binding_metrics": {
             "atom_count": len(bindings),
             "direct_support_count": direct,

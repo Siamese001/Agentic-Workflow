@@ -41,7 +41,7 @@ C03_STATUS_P2_W1 = C03_STATUS_COMPETENCIES_GRAPH_PROOF  # backward compat for te
 
 DEPRECATED_LEDGER_CODE_PATHS: tuple[str, ...] = (
     "apps_rg/runtime/proof_pool_resolver.py::_build_competencies_ledger_plan",
-    "apps_rg/runtime/proof_pool_resolver.py::_allocate_from_ledger (section_id=competencies)",
+    "apps_rg/runtime/proof_pool_resolver.py::_allocate_from_ledger (removed — graph-only product)",
     "selection_method=broad_skills_ledger_competencies",
 )
 

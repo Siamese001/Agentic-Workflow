@@ -341,6 +341,60 @@ def test_x1d_judges_all_pass_do_not_bypass_category_count_rigor() -> None:
     assert g_cat.pass_ is False
 
 
+def test_v3_post_llm_pipeline_weak_fixture_passes_critical_x2_gates() -> None:
+    """Brown-style weak LLM output through v3 finalize seam must pass lane-critical gates."""
+    from apps_rg.runtime.sections.competencies_capability_projection import (
+        run_competencies_v3_post_llm_pipeline,
+    )
+    from tests.unit.apps_rg.section_rigor.unify_ibm_lane_fixtures import assert_critical_gates_pass
+
+    rows, allowed, bullet_lowers, blob = _base_context()
+    weak: dict = {
+        "categories": [
+            {
+                "category_label": "Data Platforms",
+                "terms": [
+                    {"term": "Databricks Lakehouse Fundamentals", "source_fact_ids": ["fact_certs_001"]},
+                    {"term": "designed", "source_fact_ids": ["bul_unify_001"]},
+                ],
+            }
+        ],
+        "competencies": [],
+        "claim_ledger": [
+            {
+                "claim_id": "c1",
+                "claim_text": "Governed agentic AI platform delivery.",
+                "source_fact_ids": ["bul_unify_001"],
+            }
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "companion_context_used_as_proof": False,
+        },
+    }
+    out = run_competencies_v3_post_llm_pipeline(
+        weak,
+        bullet_rows=rows,
+        allowed_fact_ids=allowed,
+        resume_support_blob=blob,
+        c0_proof_blob=blob,
+        bullet_texts_lower=bullet_lowers,
+    )
+    gates = run_competencies_x2_gates(
+        competencies=out.get("competencies") or [],
+        parsed_output=out,
+        claim_ledger=out.get("claim_ledger") or [],
+        jd_text="",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+    )
+    assert_critical_gates_pass("competencies", gates)
+
+
 def test_near_duplicate_structured_terms_then_expand_minimum_two_terms() -> None:
     rows, allowed, bullet_lowers, blob = _base_context()
     plan = build_selected_fact_plan(rows, sorted(allowed))

@@ -10,7 +10,7 @@ from typing import Any
 import yaml
 
 from apps_rg.fact_inventory.candidate_fact_ledger import load_master_candidate_fact_ledger
-from apps_rg.fact_inventory.exec_summary_srfs_arsenal import (
+from apps_rg.fact_inventory.exec_summary_graph_projection_w4b import (
     external_proof_fact_ids_from_projection,
 )
 from apps_rg.fact_inventory.master_skills_arsenal_ledger import (

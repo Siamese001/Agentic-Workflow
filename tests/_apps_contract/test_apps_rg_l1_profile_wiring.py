@@ -9,7 +9,7 @@ import pytest
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     ValidatedRequest,
 )
-from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
 from apps_rg.runtime.bindings.u0_profile_manifest import (
     l1_planning_profile_digest,

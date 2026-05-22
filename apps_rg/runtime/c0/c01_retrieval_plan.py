@@ -66,6 +66,20 @@ _SECTION_PLAN: dict[str, dict[str, Any]] = {
     },
 }
 
+# Lane CLI ids → canonical C0.1 plan keys (phase 2 bullets, phase 3 narratives).
+_C01_SECTION_ALIASES: dict[str, str] = {
+    "unify_bullets": "bullets",
+    "ibm_bullets": "bullets",
+    "unify_narrative": "narrative",
+    "ibm_narrative": "narrative",
+}
+
+
+def _c01_plan_key(section_id: str) -> str:
+    if section_id in _SECTION_PLAN:
+        return section_id
+    return _C01_SECTION_ALIASES.get(section_id, section_id)
+
 
 def build_c01_retrieval_plan(
     *,
@@ -77,7 +91,8 @@ def build_c01_retrieval_plan(
     jd_text: str = "",
 ) -> dict[str, Any]:
     """C0.1 output: what to retrieve for this section (not proof)."""
-    base = dict(_SECTION_PLAN.get(section_id) or _SECTION_PLAN["executive_summary"])
+    plan_key = _c01_plan_key(section_id)
+    base = dict(_SECTION_PLAN.get(plan_key) or _SECTION_PLAN["executive_summary"])
     targets = {
         "primary_targets": list(base.get("primary_targets") or []),
         "secondary_targets": list(base.get("secondary_targets") or []),

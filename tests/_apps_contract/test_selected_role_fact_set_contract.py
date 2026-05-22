@@ -177,7 +177,10 @@ def test_unsupported_jd_needs_logged(taxonomy: dict) -> None:
     assert "jd_sentence_no_matching_taxonomy_keywords" in kinds
 
 
-def test_write_selected_role_fact_set_roundtrip_schema(tmp_path: Path, ledger: dict, taxonomy: dict) -> None:
+def test_write_selected_role_fact_set_roundtrip_schema(
+    tmp_path: Path, ledger: dict, taxonomy: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("APPS_RG_OFFLINE_SRFS_JSON_WRITE", "1")
     srfs = select_candidate_facts_for_role(
         **_minimal_srfs_kwargs(ledger, taxonomy, now_slug="20260518T999999Z_ROUNDTRIP"),
     )

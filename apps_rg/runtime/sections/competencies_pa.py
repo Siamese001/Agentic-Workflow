@@ -51,7 +51,7 @@ _TEMPLATE_PATH = (
 COMPETENCIES_OUTPUT_SCHEMA: dict[str, Any] = {
         "type": "object",
         "required": [
-            "competencies",
+            "categories",
             "selected_fact_plan",
             "claim_ledger",
             "jd_alignment",
@@ -62,11 +62,18 @@ COMPETENCIES_OUTPUT_SCHEMA: dict[str, Any] = {
             "self_check",
         ],
         "properties": {
+            "categories": {
+                "type": "array",
+                "minItems": 6,
+                "maxItems": 8,
+                "description": (
+                    "Executive capability categories: category_id, category_label, "
+                    "terms[{term, source_fact_ids, source_skill_ids, support_class}]"
+                ),
+            },
             "competencies": {
                 "type": "array",
-                "minItems": 8,
-                "maxItems": 8,
-                "description": "Each category: category_label, terms (structured objects only), source_fact_ids",
+                "description": "Legacy mirror of categories[] for transitional consumers",
             },
             "selected_fact_plan": {"type": "object"},
             "claim_ledger": {"type": "array"},

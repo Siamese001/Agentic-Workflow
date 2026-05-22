@@ -222,17 +222,23 @@ def check_canonical_competency_terms(
             sids_raw = t.get("source_fact_ids")
             if t.get("jd_signal_ids") is not None and not isinstance(t.get("jd_signal_ids"), list):
                 return False, f"category {i} term {j}: jd_signal_ids must be an array when present"
-            if not phrase or sid is None or str(sid).strip() == "":
-                return False, f"category {i} term {j} missing text or source_fact_id"
-            if not isinstance(sids_raw, list) or not sids_raw:
-                return False, f"category {i} term {j} missing non-empty source_fact_ids array"
-            pid = str(sid).split("_metric_")[0]
-            norm_ids = [str(x).split("_metric_")[0] for x in sids_raw]
-            if pid not in norm_ids:
-                return False, f"category {i} term {j}: source_fact_id not listed in source_fact_ids"
-            for fid in norm_ids:
-                if fid not in allowed_fact_ids:
-                    return False, f"{fid} not allowed at category {i} term {j}"
+            skill_ids = [str(x) for x in (t.get("source_skill_ids") or []) if str(x).strip()]
+            if not phrase:
+                return False, f"category {i} term {j} missing text"
+            if not isinstance(sids_raw, list):
+                sids_raw = []
+            if not sids_raw and not skill_ids:
+                return False, f"category {i} term {j} missing source_fact_ids or source_skill_ids"
+            if sid is not None and str(sid).strip() == "" and not skill_ids:
+                return False, f"category {i} term {j} missing source_fact_id"
+            if sids_raw:
+                pid = str(sid or sids_raw[0]).split("_metric_")[0]
+                norm_ids = [str(x).split("_metric_")[0] for x in sids_raw]
+                if sid is not None and str(sid).strip() and pid not in norm_ids:
+                    return False, f"category {i} term {j}: source_fact_id not listed in source_fact_ids"
+                for fid in norm_ids:
+                    if fid not in allowed_fact_ids:
+                        return False, f"{fid} not allowed at category {i} term {j}"
     return True, None
 
 
@@ -257,6 +263,40 @@ def _term_primary_support_ok(term_text: str, primary_fid: str, resume_blob_lower
         if w in _STOPWORDS:
             continue
         if w in resume_blob_lower:
+            return True
+    return False
+
+
+def term_supports_resume_or_graph(
+    term: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str],
+    allowed_skill_ids: set[str],
+    resume_support_blob_lower: str,
+) -> bool:
+    """Graph-backed terms may pass without exact resume text overlap."""
+    from apps_rg.runtime.sections.competencies_v3_contract import (
+        SUPPORT_CLASS_FACT_AND_SKILL_GRAPH,
+        SUPPORT_CLASS_FACT_ONLY,
+        SUPPORT_CLASS_SKILL_GRAPH_ONLY,
+    )
+
+    skill_ids = [str(x) for x in (term.get("source_skill_ids") or []) if str(x).strip()]
+    sids = [str(x).split("_metric_")[0] for x in (term.get("source_fact_ids") or []) if str(x).strip()]
+    support_class = str(term.get("support_class") or "").strip()
+    phrase = _term_phrase(term)
+    if support_class in (SUPPORT_CLASS_SKILL_GRAPH_ONLY, SUPPORT_CLASS_FACT_AND_SKILL_GRAPH):
+        if skill_ids and all(s in allowed_skill_ids for s in skill_ids):
+            return True
+    if skill_ids and all(s in allowed_skill_ids for s in skill_ids):
+        return True
+    if sids and all(fid in allowed_fact_ids for fid in sids):
+        if skill_ids:
+            return True
+        primary = sids[0]
+        if phrase and _term_primary_support_ok(phrase, primary, resume_support_blob_lower):
+            return True
+        if support_class == SUPPORT_CLASS_FACT_ONLY and primary in allowed_fact_ids:
             return True
     return False
 
@@ -301,7 +341,9 @@ def _term_compact_phrase_ok(
 def check_competency_schema_top_level(parsed_output: dict[str, Any] | None) -> tuple[bool, str | None]:
     if not parsed_output or not isinstance(parsed_output, dict):
         return False, "missing parsed output"
-    required = ("competencies", "selected_fact_plan", "claim_ledger", "jd_alignment")
+    if "categories" not in parsed_output and "competencies" not in parsed_output:
+        return False, "missing categories or competencies"
+    required = ("selected_fact_plan", "claim_ledger", "jd_alignment")
     for k in required:
         if k not in parsed_output:
             return False, f"missing {k}"
@@ -500,6 +542,39 @@ def run_competencies_x2_gates(
         metrics_reason or "ok",
         "metrics_need_capability_context",
         None if metrics_ok else metrics_reason,
+    )
+
+    from apps_rg.runtime.sections.competencies_rigor import (
+        check_competencies_approved_category_labels,
+        check_competencies_no_fragment_or_one_word_terms,
+        check_competencies_term_support_ids_present,
+    )
+
+    label_ok, label_reason = check_competencies_approved_category_labels(competencies)
+    add(
+        "x2_competencies_approved_category_labels",
+        label_ok,
+        label_reason or "ok",
+        "taxonomy_labels_only",
+        None if label_ok else label_reason,
+    )
+
+    ids_ok, ids_reason = check_competencies_term_support_ids_present(competencies)
+    add(
+        "x2_competencies_term_support_ids_present",
+        ids_ok,
+        ids_reason or "ok",
+        "source_fact_ids_or_source_skill_ids",
+        None if ids_ok else ids_reason,
+    )
+
+    frag_ok, frag_reason = check_competencies_no_fragment_or_one_word_terms(competencies)
+    add(
+        "x2_competencies_no_fragment_or_one_word_terms",
+        frag_ok,
+        frag_reason or "ok",
+        "no_fragments_bare_verbs_one_word",
+        None if frag_ok else frag_reason,
     )
 
     generic_ok, generic_reason = check_competencies_no_all_generic_skill_phrase(competencies)
@@ -732,6 +807,11 @@ def run_competencies_x2_gates(
     )
 
     blob_lower = proof_blob
+    skill_allow: set[str] = set()
+    if isinstance(proof_pool_metadata, dict):
+        for sid in proof_pool_metadata.get("c03_selected_skill_ids") or []:
+            if str(sid).strip():
+                skill_allow.add(str(sid).strip())
     support_ok = True
     support_reason: str | None = None
     for cat in competencies:
@@ -740,10 +820,18 @@ def run_competencies_x2_gates(
         for raw_t in cat.get("terms") or []:
             if isinstance(raw_t, dict):
                 phrase = _term_phrase(raw_t)
-                pid = str(raw_t.get("source_fact_id") or "").split("_metric_")[0]
-                if pid and phrase and not _term_primary_support_ok(phrase, pid, blob_lower):
+                if not phrase:
                     support_ok = False
-                    support_reason = f"term not resume-grounded: {phrase[:40]!r}"
+                    support_reason = "empty term phrase"
+                    break
+                if not term_supports_resume_or_graph(
+                    raw_t,
+                    allowed_fact_ids=allowed_fact_ids,
+                    allowed_skill_ids=skill_allow,
+                    resume_support_blob_lower=blob_lower,
+                ):
+                    support_ok = False
+                    support_reason = f"term not fact/graph supported: {phrase[:40]!r}"
                     break
         if not support_ok:
             break
@@ -751,7 +839,7 @@ def run_competencies_x2_gates(
         "x2_competency_term_supported",
         support_ok,
         support_reason or "ok",
-        "resume_blob_overlap",
+        "resume_or_graph_skill_support",
         None if support_ok else support_reason,
     )
 
@@ -1003,7 +1091,7 @@ def run_competencies_x2_gates(
         from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
         from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
             evaluate_proof_pool_source_fact_gate,
-            proof_source_from_metadata,
+            proof_pool_x2_gate_id,
         )
 
         coll_co = _srfs_w4.collect_source_fact_ids_from_competencies_struct(competencies, claim_ledger)
@@ -1015,15 +1103,12 @@ def run_competencies_x2_gates(
             proof_pool_ref=proof_pool_ref,
             proof_pool_digest=proof_pool_digest,
         )
-        pt = str((proof_pool_metadata or {}).get("proof_pool_type") or "")
-        gate_id = (
-            "x2_competencies_source_fact_ids_within_srfs_slice"
-            if pt == "selected_role_fact_set"
-            or (srfs_source_fact_slice_gate_active and pt not in ("broad_skills_ledger", "base_resume_fallback"))
-            else "x2_competencies_active_proof_pool_source_fact_ids"
-        )
         add(
-            gate_id,
+            proof_pool_x2_gate_id(
+                "competencies",
+                proof_pool_metadata=proof_pool_metadata,
+                srfs_slice_gate_active=srfs_source_fact_slice_gate_active,
+            ),
             ok_co,
             env_co,
             "active_proof_pool_allowlist_exact",

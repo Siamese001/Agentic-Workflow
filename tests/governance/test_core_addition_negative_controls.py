@@ -515,7 +515,7 @@ class TestBaselineRegression:
         )
 
         # The real baselined paths ARE baselined
-        real_baselined = "agentic_core/L0_routing/apps_rg_l0_binding.py"
+        real_baselined = "apps_rg/runtime/bindings/l0_binding.py"
         assert _is_baselined(real_baselined), (
             f"{real_baselined} must be baselined (valid expiry)"
         )

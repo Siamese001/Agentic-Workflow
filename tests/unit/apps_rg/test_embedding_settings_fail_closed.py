@@ -32,6 +32,25 @@ def _clean_embedding_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(key, raising=False)
 
 
+def test_bootstrap_defaults_chroma_and_embedding_without_manual_env(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    repo = tmp_path / "repo"
+    (repo / "data" / "cache" / "chromadb").mkdir(parents=True)
+    snap = tmp_path / "hub" / "models--BAAI--bge-m3" / "snapshots" / "abc123"
+    snap.mkdir(parents=True)
+    (snap / "config.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("HF_HOME", str(tmp_path))
+    monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+    monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+    monkeypatch.delenv("APPS_RG_EMBEDDING_ENABLED", raising=False)
+    applied = bootstrap_apps_rg_embedding_env(repo_root=repo)
+    assert "CHROMA_PERSIST_DIR" in applied
+    assert applied["EMBEDDING_ENABLED"] == "true"
+    assert os.environ["CHROMA_PERSIST_DIR"] == str((repo / "data" / "cache" / "chromadb").resolve())
+    assert os.environ.get("EMBEDDING_ENABLED") == "true"
+
+
 def test_bootstrap_enables_bge_when_hf_snapshot_present(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

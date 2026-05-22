@@ -37,7 +37,7 @@
           "type": ["number", "null"],
           "minimum": 1,
           "maximum": 5,
-          "description": "Default 2–3 dense sentences; avoids sentence-stacked proof pacing."
+          "description": "4–5 dense sentences in one paragraph; avoids sentence-stacked proof pacing."
         },
         "specificity": {
           "type": ["number", "null"],

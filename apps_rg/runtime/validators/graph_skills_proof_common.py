@@ -5,13 +5,10 @@ from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH
 from apps_rg.runtime.c03_graphrag_bound import FORBIDDEN_SUPPORT_FOR_PRODUCT_PROOF
-from apps_rg.runtime.proof_pool_resolver import (
-    PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
-    PROOF_SOURCE_BROAD_SKILLS_LEDGER,
-    SectionProofPool,
-)
+from apps_rg.runtime.legacy_proof_sources import FORBIDDEN_PRODUCT_PROOF_SOURCES
+from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH, SectionProofPool
 
-FORBIDDEN_PROOF_SOURCES = frozenset({PROOF_SOURCE_BROAD_SKILLS_LEDGER, "base_resume_fallback"})
+FORBIDDEN_PROOF_SOURCES = FORBIDDEN_PRODUCT_PROOF_SOURCES
 
 
 class GraphSkillsProofError(ValueError):
