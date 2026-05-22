@@ -1,0 +1,241 @@
+{
+  "wave": "W0",
+  "plan_id": "sections-pa-core-law-rollout-c3a8f1",
+  "timestamp": "20260522_093143",
+  "targeting": {
+    "company": "Brown & Brown",
+    "role": "SVP IT Strategy & Innovation",
+    "jd_path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt",
+    "brief_path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
+  },
+  "token_estimate": {
+    "method": "approximate_chars_div_3_with_safety_margin",
+    "safety_multiplier": 1.12,
+    "chars_per_token": 3
+  },
+  "lanes": [
+    {
+      "section": "ibm_narrative",
+      "static_ssot_chars": 19470,
+      "compiled_tokens": 14931,
+      "static_slots_tokens": 14528,
+      "product_shape_tokens": 402,
+      "NO FABRICATION": 1,
+      "claim_ledger": 20,
+      "x2_static": 1,
+      "x2_product_shape": 4,
+      "priority": "P3",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/baseline/core_law_rollout_w0_20260522_093143"
+    },
+    {
+      "section": "headline",
+      "static_ssot_chars": 18824,
+      "compiled_tokens": 14911,
+      "static_slots_tokens": 14482,
+      "product_shape_tokens": 427,
+      "NO FABRICATION": 1,
+      "claim_ledger": 8,
+      "x2_static": 0,
+      "x2_product_shape": 10,
+      "priority": "P0",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/headline/baseline/core_law_rollout_w0_20260522_093143"
+    },
+    {
+      "section": "competencies",
+      "static_ssot_chars": 3847,
+      "compiled_tokens": 14899,
+      "static_slots_tokens": 14312,
+      "product_shape_tokens": 585,
+      "NO FABRICATION": 1,
+      "claim_ledger": 5,
+      "x2_static": 0,
+      "x2_product_shape": 13,
+      "priority": "P1",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/competencies/baseline/core_law_rollout_w0_20260522_093143"
+    },
+    {
+      "section": "unify_narrative",
+      "static_ssot_chars": 17202,
+      "compiled_tokens": 12968,
+      "static_slots_tokens": 12591,
+      "product_shape_tokens": 376,
+      "NO FABRICATION": 1,
+      "claim_ledger": 8,
+      "x2_static": 0,
+      "x2_product_shape": 3,
+      "priority": "P3",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/baseline/core_law_rollout_w0_20260522_093143"
+    },
+    {
+      "section": "unify_bullets",
+      "static_ssot_chars": 11516,
+      "compiled_tokens": 11564,
+      "static_slots_tokens": 11215,
+      "product_shape_tokens": 346,
+      "NO FABRICATION": 1,
+      "claim_ledger": 11,
+      "x2_static": 1,
+      "x2_product_shape": 4,
+      "priority": "P2",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/baseline/core_law_rollout_w0_20260522_093143"
+    },
+    {
+      "section": "executive_summary",
+      "static_ssot_chars": 9506,
+      "compiled_tokens": 11322,
+      "static_slots_tokens": 10582,
+      "product_shape_tokens": 738,
+      "NO FABRICATION": 1,
+      "claim_ledger": 11,
+      "x2_static": 0,
+      "x2_product_shape": 9,
+      "priority": "REF",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/baseline/core_law_rollout_w0_20260522_093143"
+    },
+    {
+      "section": "ibm_bullets",
+      "static_ssot_chars": 14639,
+      "compiled_tokens": 10482,
+      "static_slots_tokens": 10160,
+      "product_shape_tokens": 320,
+      "NO FABRICATION": 1,
+      "claim_ledger": 7,
+      "x2_static": 0,
+      "x2_product_shape": 3,
+      "priority": "P2",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/baseline/core_law_rollout_w0_20260522_093143"
+    }
+  ],
+  "errors": {},
+  "static_catalog": {
+    "headline": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+        "exists": true,
+        "chars": 18824,
+        "lines": 404,
+        "count_no_fabrication": 1,
+        "count_claim_ledger": 10,
+        "count_x2": 0
+      }
+    ],
+    "competencies": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/competency_selector_v2.pa_slots.yaml",
+        "exists": true,
+        "chars": 3847,
+        "lines": 72,
+        "count_no_fabrication": 1,
+        "count_claim_ledger": 1,
+        "count_x2": 0
+      }
+    ],
+    "unify_bullets": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+        "exists": true,
+        "chars": 11516,
+        "lines": 256,
+        "count_no_fabrication": 0,
+        "count_claim_ledger": 6,
+        "count_x2": 0
+      },
+      {
+        "source": "apps_rg.runtime.sections.unify_bullets_pa._legacy_i0",
+        "chars": 4515,
+        "lines": 55,
+        "count_no_fabrication": 0,
+        "count_claim_ledger": 4,
+        "count_x2": 1
+      }
+    ],
+    "unify_narrative": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+        "exists": true,
+        "chars": 17202,
+        "lines": 321,
+        "count_no_fabrication": 0,
+        "count_claim_ledger": 6,
+        "count_x2": 0
+      }
+    ],
+    "ibm_bullets": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+        "exists": true,
+        "chars": 14639,
+        "lines": 328,
+        "count_no_fabrication": 0,
+        "count_claim_ledger": 7,
+        "count_x2": 0
+      },
+      {
+        "source": "apps_rg.runtime.sections.ibm_bullets_pa._legacy_i0",
+        "chars": 2575,
+        "lines": 36,
+        "count_no_fabrication": 0,
+        "count_claim_ledger": 2,
+        "count_x2": 0
+      }
+    ],
+    "ibm_narrative": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+        "exists": true,
+        "chars": 19470,
+        "lines": 356,
+        "count_no_fabrication": 0,
+        "count_claim_ledger": 17,
+        "count_x2": 1
+      }
+    ],
+    "executive_summary": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+        "exists": true,
+        "chars": 9506,
+        "lines": 201,
+        "count_no_fabrication": 1,
+        "count_claim_ledger": 7,
+        "count_x2": 0
+      }
+    ],
+    "_shared": [
+      {
+        "path": "apps_rg/prompt_assembly/templates/w7_strategic_tailor_shell_slots.yaml",
+        "exists": true,
+        "chars": 793,
+        "lines": 21,
+        "count_no_fabrication": 1,
+        "count_claim_ledger": 0,
+        "count_x2": 0
+      },
+      {
+        "path": "apps_rg/prompt_assembly/pa_core_law_v1.yaml",
+        "exists": true,
+        "chars": 1809,
+        "lines": 30,
+        "count_no_fabrication": 1,
+        "count_claim_ledger": 2,
+        "count_x2": 0
+      }
+    ]
+  },
+  "findings": {
+    "p0_token_debt": [
+      "headline"
+    ],
+    "x2_in_static_slots_nonzero": [
+      "ibm_narrative",
+      "unify_bullets"
+    ],
+    "governance_echo_high_claim_ledger": [
+      "ibm_narrative",
+      "headline",
+      "unify_narrative",
+      "unify_bullets",
+      "executive_summary"
+    ]
+  }
+}

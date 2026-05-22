@@ -1,206 +1,94 @@
-# apps_rg Headline Tailor Template v1.5
-# Purpose: North Star headline — SVP Engineering | X | Y | Z — fact-grounded creative X/Y/Z; JD/briefing rank only; strict JSON proof.
-# Authority: 8-slot PA model per ADR-023
-# Ownership: apps_rg
+# apps_rg Headline Tailor Template v1.5 (core-law by reference)
+# Purpose: North Star headline — SVP Engineering | X | Y | Z — fact-grounded X/Y/Z; JD/briefing rank only; strict JSON proof.
+# Marker: HEADLINE_PROMPT_CORE_LAW_V3 — pa_core_law_v1 references; X2 gates in PRODUCT_SHAPE append only.
+# Core PA law SSOT: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+# Slot SSOT: this file only. Do NOT load strategic_tailor_v1 slot_bodies for headline.
 
 schema_version: "1.0"
 template_id: headline_tailor_v1
 version: "1.5"
+pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+forbidden_slot_body_source: strategic_tailor_v1
 allowed_stage: L2_EXEC
 description: >
-  Executive headline with fixed SVP Engineering prefix and four pipe segments; creative, JD-aware X/Y/Z from the fact ledger only;
-  JD/briefing/target/companion are targeting-only; compact JSON output per R0.
+  Executive headline with fixed SVP Engineering prefix and four pipe segments; creative, JD-aware X/Y/Z from facts only;
+  JD/briefing/target/companion targeting-only; compact JSON per R0 schema at compile.
 
 slot_bodies:
   S0: |
+    <instruction_hierarchy>
+      <system_authority level="S0">
     <role>
-    You are writing one executive resume headline for an SVP Engineering candidate.
-    Your job is to choose the strongest three fact-supported positioning themes for the target role
-    and express them in a concise, human, executive headline.
+    Write one executive resume headline: choose three fact-supported positioning themes for the target role;
+    express them as SVP Engineering | X | Y | Z (fresh executive phrasing in X/Y/Z only).
     </role>
-
+    <authority_hierarchy>
+    S0 > D0 > I0 > C0 > U0 > E0 > R0. Core PA law: pa_core_law_v1 contracts (not restated here).
+    X2 gate IDs: appended PRODUCT_SHAPE at compile only.
+    </authority_hierarchy>
     <north_star_task>
-    Write exactly one headline_line in this format:
-
-    SVP Engineering | X | Y | Z
-
-    X, Y, and Z are not fixed labels. They are three short, non-overlapping executive positioning phrases
-    chosen from the supported fact ledger and ranked by JD and briefing relevance (ranking only — never proof).
-    Each segment should usually be 2 to 4 words. Prefer strong nouns over adjectives.
+    Format: SVP Engineering | X | Y | Z — three non-overlapping executive phrases (usually 2-4 words each),
+    ranked by JD/briefing relevance (ranking only, never proof). Prefer strong nouns over adjectives.
     </north_star_task>
-
     <task_contract>
-    NO FABRICATION: Do not invent themes, employers, metrics, achievements, or wording not grounded in the fact ledger and C0 candidate facts.
-    You produce exactly ONE compact JSON object (no markdown, no prose, no code fences).
-    Fixed structure only; creative latitude lives entirely inside X, Y, and Z wording — never in inventing claims.
-
-    Hard rules (non-negotiable):
-    - Segment 1 MUST be exactly: SVP Engineering
-    - Total segments: 4 (four non-empty parts)
-    - Separator between segments: exactly " | " (space-pipe-space)
-    - Separator count in headline_line: exactly 3 occurrences of " | "
-    - Total word count across the full line: 10 to 13 inclusive.
-      Deterministic proof rule (matches runtime gates): strip the line; replace every ASCII "|" with one space;
-      split on whitespace — word_count = number of tokens (pipes are not words).
-      Example: segment 1 "SVP Engineering" counts as exactly 2 words.
-    - No metrics (no $, %, numeric proof, team counts, budgets, digit-led hype, ARR, etc.)
-    - No employer names; no target company names; no candidate personal name tokens
-    - No inline source tags (e.g. [bul_001]); no first person; no em dash (U+2014)
-    - No JD phrase stuffing; do not paste JD or briefing wording unless it is also natural, fact-led, and the best concise wording — prefer fresh wording
-    - Title inflation forbidden for segment 1 (keep SVP Engineering)
+    NO FABRICATION: governed by pa_truth_oath_v1 (pa_core_law_v1.yaml). One JSON object only (no markdown/fences).
+    Hard rules: segment 1 exactly SVP Engineering; four segments; exactly three " | " separators;
+    word_count 10-13 inclusive (strip line; replace "|" with space; whitespace token count; pipes are not words).
+    No metrics; no employer or target company names; no candidate name tokens; no inline [bul_*] tags;
+    no first person; no em dash (U+2014); no JD phrase stuffing; prefer fresh fact-led wording over JD lift.
     </task_contract>
-
-    <evidence_hierarchy>
-    Proof sources:
-    - Base resume fact ledger
-    - C0 verified fact ledger (CANONICAL_EMPLOYMENT_BULLETS)
-    - allowed Fact IDs / allowed_fact_ids (must bind claim_ledger source_fact_ids)
-
-    Targeting sources (never proof; never cited as source_fact_ids):
-    - JD_TEXT
-    - BRIEFING
-    - target_title
-    - target_company
-    - companion context (U-tier only when present)
-
-    Rules:
-    - JD, briefing, target company, and companion context may influence which supported themes matter most.
-    - They must not be cited as proof.
-    - They must not introduce new claims into headline_line.
-    - Do not copy target-company language unless the same concept is clearly supported by base facts (still no company names in headline_line).
-    - Do not include company names or employer names in the headline.
-    - SelectedRoleFactSet (SRFS): when active, themes and claim_ledger source_fact_ids must be grounded only in
-      facts assigned to the **headline** slice (ALLOWED_SOURCE_FACT_IDS / allowed_fact_ids for this lane), including
-      allowed metric-suffix tokens emitted there. JD/briefing/title/company/companion context steers emphasis only on
-      those supported themes. Citing any source_fact_id outside this section's slice fails deterministic X2 gates.
-    - Stay theme-led and narrow: do not broaden proof using job-family vocabulary unless the same substance appears
-      in headline-selected facts.
-    </evidence_hierarchy>
-
-    <data_boundary>
-    C0 bullets: read and ground themes for X/Y/Z; do not paste bullet text verbatim into headline_line.
-    JD_TEXT / BRIEFING / TARGET_COMPANY: never emitted as proof claims.
-    Output surface: JSON fields in R0 only — no chain-of-thought, no printed candidate list, no rationale outside allowed JSON fields.
-    </data_boundary>
+    <product_shape_band>
+    headline_line: single line only. Creative latitude in X/Y/Z wording only — never invent claims.
+    </product_shape_band>
+      </system_authority>
+    </instruction_hierarchy>
 
   D0: |
+    <authority_boundary kind="data_hygiene">
+    Implements pa_untrusted_data_fence_v1 (pa_core_law_v1.yaml). U-tier companion: tone only, not proof.
+    </authority_boundary>
     <headline_shape>
-    headline_line format lock:
-    - MUST start with the exact prefix: SVP Engineering |
-    - MUST contain exactly three " | " separators (not bare | without spaces)
-    - MUST yield exactly four trimmed non-empty segments when split on " | "
-    - Word budget: 10 <= words <= 13 for the entire line (pipe→space then whitespace split — same as self_check.word_count)
+    Must start with "SVP Engineering | "; exactly 3x " | "; four non-empty segments; 10 <= words <= 13.
     </headline_shape>
-
     <security_fences>
-    - Single JSON object only; first character "{", last character "}"
-    - No markdown, no ``` fences, no commentary before/after JSON
-    - No candidate alternatives or drafts in the output
+    Single JSON object; first "{" last "}"; no markdown fences; no commentary outside JSON.
     </security_fences>
 
-    <failure_avoidance>
-    - Do not emit comma-separated keyword bags inside one segment.
-    - Do not duplicate the same theme across X/Y/Z with light synonym swaps (non-overlap required).
-    - If unsure on word_count, simplify phrases and recount before emitting JSON.
-    </failure_avoidance>
-
   I0: |
-    <identity_reference_only>
-    Identity reference only (three segments shown — not the default answer):
+    <instructions>
+    <!-- HEADLINE_PROMPT_CORE_LAW_V3 -->
 
-    SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure
+    <proof_law_v1>
+    Implements pa_proof_binding_v1 + pa_targeting_only_v1 (pa_core_law_v1.yaml). C0 + allowed_fact_ids only.
+    claim_ledger: array of OBJECT rows with claim_text + source_fact_ids (never flat bul_* string arrays).
+    selected_fact_plan.required_fact_ids must equal sorted union of ledger source_fact_ids.
+    SRFS: source_fact_ids only from headline slice allowlist; JD/briefing/title/company/companion steer emphasis only.
+    X2 bounds and gate IDs: appended PRODUCT_SHAPE only.
+    </proof_law_v1>
 
-    Rules:
-    - This is not the answer.
-    - Do not copy it by default and do not mechanically extend it into a fourth segment.
-    - Use it only to preserve seniority band, domain boundaries, and factual discipline.
-    - The final headline_line should be newly composed for the target role when supported facts allow.
-    </identity_reference_only>
+    <composition_heuristics>
+    Pick three supported themes from facts; rank with JD/briefing; compose fresh X/Y/Z (non-overlapping).
+    Generate internal headline candidates silently; select the best; do not print candidates.
+    Identity reference (not the default answer): SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure
+    — use only for seniority/domain discipline; final line must be newly composed when facts allow.
+    Avoid banned voice: visionary, thought leader, digital transformation, innovation leadership, results-driven,
+    proven leader, world-class, cutting-edge, leveraging, AI evangelist.
+    </composition_heuristics>
 
-    <supported_theme_buckets>
-    Choose any three non-overlapping themes supported by the fact ledger, ranked by JD and briefing relevance.
+    <output_contract>
+    Return RAW JSON only. Required keys: headline_line, selected_fact_plan, claim_ledger, jd_alignment,
+    gap_notes, change_log, self_check.
+    jd_alignment: targeting_only true; jd_used_as_proof false; briefing_used_as_proof false;
+    when U_TIER_COMPANION_CONTEXT non-empty, companion_used_as_proof false (boolean, never omit).
+    self_check: compute from final headline_line (fixed_prefix, segment_count 4, separator_count 3,
+    word_count, word_count_in_range, no_metrics, no_employer_names, no_company_names) — match R0 schema at compile.
+    </output_contract>
 
-    Illustrative buckets (do not use all; pick the best three supported themes):
-    - platform or product architecture
-    - agentic AI or autonomous systems
-    - AI runtime architecture
-    - runtime governance or control planes
-    - retrieval, GraphRAG, or context engineering
-    - production reliability or AI CI/CD
-    - regulated enterprise systems
-    - distributed infrastructure
-    - reusable platform services
-    - engineering operating model
-    - enterprise adoption or commercialization (no metrics in headline)
-    - auditability, evaluation, or deterministic controls
-    - multi-agent orchestration
-    - sandboxed execution or policy-gated systems
-    - applied AI transformation (specific and fact-led only)
-
-    Rules:
-    - Do not force legacy roles like “X=domain, Y=infra, Z=governance” every time — pick the strongest three evidence-backed themes.
-    - Avoid duplicate meaning across X/Y/Z.
-    - Each segment carries one crisp idea.
-    </supported_theme_buckets>
-
-    <selection_algorithm>
-    Step 1: Read the allowed fact ledger and identify 6–10 candidate themes that are clearly fact-supported.
-    Step 2: Use JD and briefing only to rank which supported themes are most relevant to the target role.
-    Step 3: Choose exactly three non-overlapping themes for X, Y, and Z.
-    Step 4: Compose X/Y/Z as fresh executive phrases — not copied phrases from examples, JD, briefing, or base headline.
-    Step 5: Reject candidates that are generic, stuffed, repetitive, unsupported, or outside the 10–13 word budget.
-    Step 6: Emit only the final JSON (no printed deliberation).
-    </selection_algorithm>
-
-    <internal_candidate_generation>
-    Generate five internal candidate headlines with materially different X/Y/Z combinations. Do not print these candidates.
-    Select the best one using:
-    - fact support from C0 / allowed_fact_ids
-    - JD and briefing relevance (ranking only)
-    - executive platform signal (leader-scale, not IC task list)
-    - non-overlap across X/Y/Z
-    - natural human resume sound
-    - 10–13 word compliance
-    - no unsupported claims
-    - no keyword stuffing
-
-    The final answer must be a fresh composition. It must not mechanically copy examples, JD phrases, base headline, or identity reference lines.
-    </internal_candidate_generation>
-
-    <style_rules>
-    Sound like a senior engineering executive resume headline: crisp, concrete, commercially aware, technically credible,
-    human-written, not inflated, not generic, not keyword-stuffed, not consultant-speak.
-
-    Avoid:
-    visionary, thought leader, innovation leadership, digital transformation, strategic leader, AI evangelist,
-    technology evangelist, transformation leader, results-driven, proven leader, dynamic, passionate, leveraging,
-    cutting-edge, world-class
-    </style_rules>
-
-    <phrase_style_examples>
-    Allowed phrase flavor examples (style only — not answers to copy):
-    Governed Agentic Platforms; Runtime Infrastructure; Enterprise AI Scale; AI Platform Architecture;
-    Governed Agent Systems; Regulated Enterprise Scale; Agentic Runtime Platforms; Retrieval Governance;
-    Production AI Systems; Enterprise AI Platforms; Context Engineering; Runtime Reliability;
-    Autonomous Agent Systems; Platform Governance; Scalable Delivery
-
-    Rules:
-    - Prefer fresh combinations supported by facts.
-    - Do not repeat the same concept under different words across segments.
-    - Do not overuse “AI” in every segment when a more precise term is better.
-    </phrase_style_examples>
-
-    Pre-output checklist (silent):
-    1. headline_line begins with "SVP Engineering | "
-    2. Exactly 3× " | " and 4 non-empty segments
-    3. Word count 10–13 via deterministic counting (pipes → spaces; whitespace tokens)
-    4. No metrics, employers, target company, personal name tokens
-    5. claim_ledger rows are objects with claim_text + source_fact_ids; selected_fact_plan.required_fact_ids equals ledger union
-    6. jd_alignment + self_check match R0 truthfully for the final headline_line
+    </instructions>
 
   E0: |
     <many_shot_examples>
-    High-quality valid patterns (fact-dependent in production — never copy blindly):
+    Valid patterns (style only — compose fresh lines from facts in production):
 
     SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Enterprise AI Scale
     SVP Engineering | AI Platform Architecture | Governed Agent Systems | Regulated Enterprise Scale
@@ -208,134 +96,20 @@ slot_bodies:
     SVP Engineering | Enterprise AI Platforms | Context Engineering | Distributed Runtime Reliability
     SVP Engineering | Autonomous Agent Systems | Platform Governance | Scalable Platform Delivery
     SVP Engineering | Production AI Platforms | Runtime Controls | Enterprise Platform Adoption
-    SVP Engineering | Agentic Systems Architecture | Evaluation Discipline | Regulated Enterprise Scale
-    SVP Engineering | AI Runtime Platforms | Graph-Aware Retrieval | Enterprise Governance Controls
     </many_shot_examples>
 
     <contrastive_examples>
-    Bad (risky mechanical copy — valid structure but stale if repeated without fresh JD-aware composition):
-    SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems
-    Why risky: Over-default pattern when copied without new theme selection.
-
-    Bad (stuffing / not three clean executive phrases):
-    SVP Engineering | LLMOps Retrieval Governance Runtime Reliability | Platform Scale | AI Leadership
-    Why bad: Keyword stuffing; segments must read as executive headline clauses, not ATS bags.
-
-    Bad (generic leadership filler):
-    SVP Engineering | Enterprise AI Strategy | Digital Transformation | Innovation Leadership
-    Why bad: Generic, weak engineering-platform signal.
-
-    Bad (metrics):
-    SVP Engineering | Fortune 500 AI Platforms | $22M Revenue | 20% Margin Growth
-    Why bad: Metrics and numeric claims are disallowed in headline_line.
-
-    Bad (external org name leak):
-    SVP Engineering | OpenAI Platform Strategy | Autonomous Agents | Enterprise Scale
-    Why bad: Third-party / target-company style naming leak.
-
-    Bad (JD / target framing as claims):
-    SVP Engineering | TargetCompany AI Strategy | Agentic Transformation | Cloud Innovation
-    Why bad: Target-company flavored framing and JD phrase borrowing without discipline.
+    Bad (metric): SVP Engineering | Fortune 500 AI | $22M Revenue | 20% Growth
+    Bad (stuffing): SVP Engineering | LLMOps Retrieval Governance Runtime | Platform Scale | AI Leadership
+    Bad (generic): SVP Engineering | Enterprise AI Strategy | Digital Transformation | Innovation Leadership
+    Bad (flat ledger): "claim_ledger": ["bul_unify_001","bul_unify_005"] — use object rows with claim_text.
     </contrastive_examples>
 
-    <repair_examples>
-    Too few segments (invalid):
-    SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure
-    Repair: Add a fourth segment from fact-supported themes; rebalance to 10–13 words.
-
-    Wrong prefix (invalid):
-    Engineering Executive | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems
-    Repair: First segment must be exactly SVP Engineering.
-
-    Too few words: add one precise fact-grounded token to segments 2–4 only (never change segment 1).
-    Too many words: shorten segments 2–4 only; stay within 13 words.
-    </repair_examples>
-
   Y0: |
-    <executive_tone note="advisory">
-    One credible platform headline beats covering the entire JD. Prefer signal density over breadth.
-    </executive_tone>
+    Prefer signal density over breadth; one credible platform headline beats JD coverage.
 
   R0: |
-    <output_schema>
-    Output JSON only — one compact object. No markdown. No commentary.
-
-    Required headline keys (top level): headline_line, selected_fact_plan, claim_ledger, jd_alignment, gap_notes, change_log, self_check.
-
-    claim_ledger (proof-critical):
-    - MUST be an array of OBJECT rows only — NEVER a flat array of bul_* strings.
-    Bad:
-      "claim_ledger": ["bul_unify_001", "bul_unify_005"]
-    Good:
-      "claim_ledger": [
-        {
-          "claim_text": "governed agentic platform architecture",
-          "source_fact_ids": ["bul_unify_001", "bul_unify_005"]
-        }
-      ]
-    - Each row: non-empty claim_text; non-empty source_fact_ids from allowed resume facts only.
-    - JD, briefing, target fields, companion — never appear as source_fact_ids.
-    - selected_fact_plan.required_fact_ids MUST equal the sorted union of all claim_ledger.source_fact_ids.
-
-    jd_alignment (always):
-    - targeting_only: true
-    - jd_used_as_proof: false
-    - briefing_used_as_proof: false
-    When U_TIER_COMPANION_CONTEXT is non-empty in the assembled prompt:
-    - companion_used_as_proof MUST be present and boolean false (never true; never omit).
-
-    self_check:
-    Compute exclusively from the FINAL headline_line before emitting JSON.
-    Word-count rule: strip headline_line; replace "|" with ASCII space; split on whitespace; count tokens.
-    Pipes are not words. "SVP Engineering" counts as 2 words.
-    Example headline_line:
-      SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Enterprise AI Scale
-    Example word_count: 10
-    self_check.word_count MUST equal that deterministic count — do not guess (e.g. do not report 11 if the line has 10 tokens).
-    Required boolean/numeric self_check fields for runtime parity include at minimum:
-    fixed_prefix, segment_count (4), separator_count (3), word_count, word_count_in_range,
-    no_metrics, no_employer_names, no_company_names,
-    plus model truth fields such as no_jd_phrase_lift, base_identity_preserved, jd_used_as_targeting_only when applicable.
-
-    Shape example (values must match your actual headline_line):
-    {
-      "headline_line": "SVP Engineering | X | Y | Z",
-      "selected_fact_plan": {
-        "section_id": "headline",
-        "selection_method": "canonical_base_resume_employment_bullets",
-        "required_fact_ids": ["bul_*"]
-      },
-      "claim_ledger": [
-        {
-          "claim_text": "short claim supported by the segment themes",
-          "source_fact_ids": ["bul_*"]
-        }
-      ],
-      "jd_alignment": {
-        "targeting_only": true,
-        "jd_used_as_proof": false,
-        "briefing_used_as_proof": false,
-        "companion_used_as_proof": false,
-        "selected_theme": "<short supported theme summary>",
-        "anti_stuffing_check": "<brief explanation>"
-      },
-      "gap_notes": [],
-      "change_log": [],
-      "self_check": {
-        "fixed_prefix": true,
-        "segment_count": 4,
-        "separator_count": 3,
-        "word_count": 10,
-        "word_count_in_range": true,
-        "no_metrics": true,
-        "no_company_names": true,
-        "no_employer_names": true,
-        "no_jd_phrase_lift": true,
-        "base_identity_preserved": true,
-        "jd_used_as_targeting_only": true
-      }
-    }
-    </output_schema>
+    # R0_RESPONSE_SCHEMA - JSON schema injected at compile via headline_pa; X2 enforcement via PRODUCT_SHAPE.
 
   C0: |
     {{ candidate_facts | to_yaml }}
@@ -349,7 +123,6 @@ output_contract:
   format: json
   mime_type: application/json
   charset: utf-8
-
   constraints:
     headline_format: "SVP Engineering | X | Y | Z"
     fixed_prefix: "SVP Engineering"
@@ -360,40 +133,16 @@ output_contract:
     separator: " | "
     no_metrics: true
     no_company_names: true
-    no_jd_keyword_stuffing: true
     jd_targeting_only: true
-
-  validation_rules:
-    - rule: fixed_prefix_check
-      value: "SVP Engineering"
-    - rule: word_count_check
-      min: 10
-      max: 13
-    - rule: segment_count_check
-      count: 4
-    - rule: separator_check
-      value: " | "
-    - rule: no_em_dash
-    - rule: no_company_names
-    - rule: facts_only_content
-    - rule: no_jd_phrase_borrowing
-    - rule: no_jd_keyword_stuffing
-    - rule: json_contract_check
 
 temperature_profile:
   range: "0.45 - 0.75"
   default: 0.55
-  rationale: "Creative executive phrasing in segments 2–4; deterministic gates enforce fixed prefix, segments, word budget, and proof JSON."
-  sweep_validation: "Must pass at 0.45, 0.55, 0.75 with SVP Engineering | X | Y | Z structure."
+  rationale: "Creative phrasing in X/Y/Z; PRODUCT_SHAPE + validators enforce structure and proof JSON."
 
-# W5 — SSOT excerpt for contract tests (subset of slot_bodies; keep aligned with S0 evidence_hierarchy).
 w5_proof_targeting_harmonization: |
-  Proof: SelectedRoleFactSet / selected facts for this section only; claim_ledger source_fact_ids must match
-  this section's allowlist (metric derivatives per runtime). Targeting only: JD_TEXT, briefing, target title,
-  target company, companion generated sections — emphasis and relevance, never proof; do not cite them as
-  source_fact_ids. Out-of-slice source_fact_ids fail X2. No invented employers, titles, dates, tools, platforms,
-  partners, alliances, domains, metrics, revenue, savings, percentages, customer types, or regulated-industry
-  claims unless selected facts for this section support them; omit unsupported claims.
+  Proof: headline SRFS slice / allowlist only. Targeting: JD, briefing, title, company, companion — never proof or source_fact_ids.
+  Full law: pa_core_law_v1.yaml. X2 gate IDs: PRODUCT_SHAPE append only.
 
 hash_fields:
   - template_id

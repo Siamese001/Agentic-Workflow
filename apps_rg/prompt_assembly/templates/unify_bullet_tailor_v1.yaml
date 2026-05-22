@@ -1,8 +1,15 @@
+# Spec SSOT for unify_bullets (compile uses w7 shell + unify_bullets_pa._legacy_i0 at runtime).
+# Marker: UNIFY_IBM_PROMPT_CORE_LAW_V3 — shared w7 shell cites pa_core_law_v1; X2 gates in PRODUCT_SHAPE append only.
+# Core PA law SSOT: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+# forbidden_slot_body_source: strategic_tailor_v1 (full slot bodies — not loaded for unify_bullets compile)
+
 schema_version: "prompt_template_v1"
 template_id: "unify_bullet_tailor_v1"
 version: "1.1"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "UNIFY_BULLET"
+pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+forbidden_slot_body_source: strategic_tailor_v1
 
 purpose: |
   Rewrite Unify Consulting employment bullets for an SVP Engineering target while preserving the canonical Unify facts.
@@ -12,25 +19,10 @@ purpose: |
   This lane must run before unify_position_narrative_v1.
 
 sovereign_oath: |
-  UNIFY FACTS ONLY - NO CROSS-CONTAMINATION
-  
-  I may ONLY use facts from the Unify Consulting employment entry (fact_id: exp_unify_001).
-  I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
-  I may NOT introduce claims beyond supported Unify facts.
-  I may NOT copy JD phrases beyond 4 consecutive words.
-  I may NOT use em dash character anywhere.
-  I may NOT output narrative text - bullets only.
-
-  QUALITY BAR - BASE RESUME PARITY: Each bullet MUST preserve at least the same information density and
-  technical specificity as the corresponding bullet in the locked canonical base resume. Do not replace
-  concrete mechanism nouns (GraphRAG, policy gating, dependency graph intelligence, Databricks, API gateways)
-  with generic "AI platform" gloss. LIGHT_PROTECTED means minimal copy edit only; MODERATE/HEAVY may reorder
-  or compress but must retain the same causal claims, metrics, and technology nouns unless change_log documents removal with claim_ledger support.
-
-  SelectedRoleFactSet (SRFS): bullet and claim_ledger source_fact_ids must be ONLY tokens from the unify_bullets
-  slice allowlist (ALLOWED_SOURCE_FACT_IDS / allowed_fact_ids), including allowed metric-suffix hashes. JD, briefing,
-  target title, and target company steer which supported facts to emphasize — never proof; do not add partnerships,
-  products, customer types, domains, or metrics visible in JD unless the same substance is in a selected Unify fact.
+  UNIFY BULLETS ONLY — governed by pa_truth_oath_v1, pa_proof_binding_v1, pa_targeting_only_v1 (pa_core_law_v1.yaml).
+  bul_unify_001..006 / exp_unify_001 slice only; no cross-employer contamination; bullets only (no narrative).
+  Base-resume parity: preserve mechanism nouns and locked metrics on protected bullets; SRFS allowlist in C0.
+  Runtime compile I0: unify_bullets_pa._legacy_i0; X2 gates via PRODUCT_SHAPE append only.
   Out-of-slice source_fact_ids fail deterministic X2 SRFS gates; omit unsupported claims rather than generalizing from JD.
 
 role_header_fields:
@@ -139,8 +131,9 @@ rewrite_rules:
   bullet_specific_guidance:
     bul_unify_001:
       intensity_default: "MODERATE"
-      content: "Agentic AI platform architecture"
-      key_terms: ["deterministic routing", "multi-agent orchestration", "GraphRAG", "sandboxed execution", "policy gating"]
+      content: "Agentic AI platform architecture — one outcome spine (regulated enterprise platform delivery)"
+      key_terms: ["governed agentic AI platform", "regulated enterprise workflows", "production-grade platform"]
+      mechanism_stack_cap: "At most ONE bullet may list dense mechanism vocabulary (routing, orchestration, GraphRAG, sandbox, policy gates, traces). Prefer this bullet for that stack OR distribute outcomes across bullets without comma-stacked machinery."
     bul_unify_002:
       intensity_default: "MODERATE"
       content: "Dependency graph intelligence"
@@ -150,10 +143,10 @@ rewrite_rules:
       content: "Governed runtime reliability"
       key_terms: ["retrieval quality", "context assembly", "evaluation gates", "telemetry", "rollback controls"]
     bul_unify_004:
-      intensity_default: "LIGHT_PROTECTED"
+      intensity_default: "MODERATE"
       content: "AI systems lifecycle standardization"
       key_terms: ["lab-to-production", "cycle time reduction", "6 months to 3 weeks"]
-      protected_reason: "Contains specific metric that should not be altered"
+      protected_reason: "Metric-anchored (six months to three weeks); use MODERATE not HEAVY — sole LIGHT_PROTECTED slot reserved for bul_unify_006"
     bul_unify_005:
       intensity_default: "HEAVY"
       content: "Distributed ecosystem engineering"

@@ -167,17 +167,17 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
     header = runtime_payload["ibm_header"]
     layers = _yaml_instruction_layers(spec)
     mechanical = (
+        "<!-- UNIFY_IBM_PROMPT_CORE_LAW_V3 — section I0; X2 gate IDs in PRODUCT_SHAPE only -->\n\n"
         "OUTPUT MECHANICS:\n"
         "- Return RAW JSON only: first character {, last character }. No markdown fences.\n"
         "- Required JSON keys: narrative_sentence, selected_fact_plan, claim_ledger, jd_alignment, "
         "gap_notes, change_log, self_check.\n"
         "- narrative_sentence: exactly one sentence; third person or implied subject; include the employer anchor "
         "\"IBM\" once; no em dash; no inline source tags; preferred 34–48 words, hard max 58 words.\n"
-        "- claim_ledger: array of rows {claim_text, source_fact_ids}. claim_text MUST be non-empty after trim "
-        "(deterministic gate x2_claim_ledger_claim_text_non_empty). "
-        "source_fact_ids MUST be a non-empty array; tokens MUST come only from ALLOWED_SOURCE_FACT_IDS. "
-        "Each material theme in the sentence must have a matching bul_ibm_* id in the ledger union "
-        "(deterministic gate x2_ibm_narrative_claim_theme_coverage).\n"
+        "- claim_ledger: rows {claim_text, source_fact_ids}; claim_text non-empty after trim; "
+        "source_fact_ids non-empty, ALLOWED_SOURCE_FACT_IDS only; each material theme needs matching bul_ibm_* "
+        "(see claim_ledger_coverage_contract in spec).\n"
+        "- Proof/targeting: pa_proof_binding_v1 + pa_targeting_only_v1 (pa_core_law_v1.yaml).\n"
         "- JD and briefing are targeting context only — never treated as résumé proof.\n"
         "- When ACCEPTED_IBM_BULLETS companion context exists (U-tier): write narrative_sentence as the capstone "
         "after that tailoring — align strategically, never contradict, never paste companion lines.\n"

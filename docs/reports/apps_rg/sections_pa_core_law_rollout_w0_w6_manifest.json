@@ -1,0 +1,76 @@
+{
+  "plan_id": "sections-pa-core-law-rollout-c3a8f1",
+  "status": "COMPLETED",
+  "completed_utc": "2026-05-22",
+  "waves": {
+    "W0": {
+      "script": "ops_scripts/apps_rg/core_law_rollout_w0_baseline.py",
+      "reports": [
+        "docs/reports/apps_rg/sections_pa_core_law_rollout_w0_baseline.md",
+        "docs/reports/apps_rg/sections_pa_core_law_rollout_w0_baseline.json"
+      ]
+    },
+    "W1": {
+      "artifacts": [
+        "apps_rg/prompt_assembly/pa_core_law_v1.yaml",
+        "apps_rg/prompt_assembly/pa_core_law.py",
+        "apps_rg/prompt_assembly/templates/w7_strategic_tailor_shell_slots.yaml"
+      ],
+      "tests": [
+        "tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w1.py",
+        "tests/unit/apps_rg/prompt_assembly/test_pa_core_law_v1.py"
+      ]
+    },
+    "W2": {
+      "template": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+      "tests": [
+        "tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py",
+        "tests/_apps_contract/test_headline_pa_compiled_prompt.py"
+      ]
+    },
+    "W3": {
+      "template": "apps_rg/prompt_assembly/templates/competency_selector_v2.pa_slots.yaml",
+      "tests": [
+        "tests/unit/apps_rg/test_competencies_prompt_drift_ratchet.py",
+        "tests/_apps_contract/test_competencies_pa_compiled_prompt.py"
+      ]
+    },
+    "W4": {
+      "runtime": [
+        "apps_rg/runtime/sections/unify_bullets_pa.py",
+        "apps_rg/runtime/sections/unify_narrative_pa.py",
+        "apps_rg/runtime/sections/ibm_bullets_pa.py",
+        "apps_rg/runtime/sections/ibm_narrative_pa.py"
+      ],
+      "tests": [
+        "tests/unit/apps_rg/test_unify_ibm_prompt_drift_ratchet.py",
+        "tests/_apps_contract/test_unify_ibm_pa_compiled_prompt.py"
+      ]
+    },
+    "W5": {
+      "script": "ops_scripts/apps_rg/sections_pa_core_law_w5_pytest_gate.py",
+      "report": "docs/reports/apps_rg/sections_pa_core_law_rollout_w5_pytest_gate.md"
+    },
+    "W6": {
+      "scripts": [
+        "ops_scripts/apps_rg/sections_pa_core_law_w6_smoke.py",
+        "ops_scripts/apps_rg/sections_pa_core_law_w6_post_baseline.py"
+      ],
+      "reports": [
+        "docs/reports/apps_rg/sections_pa_core_law_rollout_w6_smoke.md",
+        "docs/reports/apps_rg/sections_pa_core_law_rollout_w6_post_baseline.md",
+        "docs/reports/apps_rg/sections_pa_core_law_rollout_closeout_receipt.md"
+      ],
+      "acceptance": {
+        "real_llm_primary_lanes": 4,
+        "compile_governance_all_lanes": 6,
+        "narrative_real_llm_operational_follow_on": "Requires ACCEPTED_FINALIZED companion bullets (X3_ALLOW or X3_REVIEW_JUDGE_PROVIDER_BLOCKED) in modular whole-run order"
+      }
+    }
+  },
+  "notion": {
+    "slug": "sections-pa-core-law-rollout-c3a8f1",
+    "sync_script": "tools/notion/plan_notion_sync_sections_pa_core_law_rollout_closeout.py"
+  },
+  "plan_file": ".cursor/plans/sections-pa-core-law-rollout-c3a8f1.md"
+}

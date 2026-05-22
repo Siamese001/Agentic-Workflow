@@ -1,8 +1,15 @@
+# Spec SSOT for ibm_narrative (compile uses w7 shell + YAML spec layers in ibm_narrative_pa).
+# Marker: UNIFY_IBM_PROMPT_CORE_LAW_V3 — pa_core_law_v1 references; X2 gates in PRODUCT_SHAPE append only.
+# Core PA law SSOT: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+# forbidden_slot_body_source: strategic_tailor_v1
+
 schema_version: "prompt_template_v1"
 template_id: "ibm_position_narrative_v1"
 version: "1.2"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "IBM_NARRATIVE"
+pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+forbidden_slot_body_source: strategic_tailor_v1
 execution_order: "AFTER_IBM_BULLET_FACT_CHECK"
 
 purpose: |
@@ -15,32 +22,22 @@ purpose: |
   framing is allowed only when stated as directional career positioning, not proof.
 
 sovereign_oath: |
-  IBM NARRATIVE ONLY — BULLETS ARE READ-ONLY CONTEXT — CAPSTONE, NOT METRIC SUMMARY
-  
-  I may reference finalized IBM bullets ONLY to avoid repetition and to understand what is already proven elsewhere.
-  I may NOT copy bullet_text, mirror bullet sentence structure, or replay bullet metrics (see metric_handling_rules).
-  I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts or employers.
-  I may NOT import Unify runtime architecture as candidate proof at IBM.
-  I may NOT introduce claims beyond supported IBM facts (bul_ibm_*) and the allowed fact list.
-  I may NOT output bullet-list format — exactly one sentence only.
-  I may NOT put JD, briefing, target title, or target company into source_fact_ids.
-  I may NOT use the exact phrase "agentic AI" or other Unify-runtime stack vocabulary (see forbidden_terms_in_narrative).
-  I may NOT name the candidate.
-  
-  FORBIDDEN stack / layer tokens unless literally in résumé prose (they are not): C0, L2, Exit (as layer), UWG, GraphRAG,
-  multi-agent orchestration, deterministic routing, governed AI runtime, prompt assembly.
-
-  SelectedRoleFactSet (SRFS): claim_ledger source_fact_ids must be ONLY ibm_narrative slice allowlist tokens. Finalized
-  IBM bullets are companion context for anti-repetition — companion bullet IDs are not proof unless the same id appears in
-  the ibm_narrative allowlist. JD, briefing, title, and company steer emphasis only. Out-of-slice IDs fail deterministic
-  X2 SRFS gates.
+  IBM NARRATIVE — capstone sentence only (not bullet recap). pa_truth_oath_v1, pa_proof_binding_v1,
+  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: bul_ibm_* from ALLOWED_SOURCE_FACT_IDS; companion bullets read-only.
+  No Unify-era agentic stack as IBM proof; no candidate name; one sentence. Forbidden terms: see forbidden_terms_in_narrative.
+  Runtime compile I0: ibm_narrative_pa from this spec; X2 gates via PRODUCT_SHAPE append only.
 
 north_star_semantic_contract: |
   Preferred QUALITY silhouette (PARAPHRASE allowed; MUST stay bul_ibm_*-grounded via claim_ledger; not a required verbatim string):
 
   At IBM, led enterprise-scale cloud, data, lineage, observability, and platform modernization work for regulated
-  financial services, establishing the reliability, governance, and partnership discipline that supported later
-  production AI platform leadership in subsequent roles — without asserting IBM shipped agentic platform products.
+  financial services, establishing reliability, governance, and partnership discipline for enterprise-scale delivery.
+
+  PROMPT-ONLY BOUNDARY (never appear in narrative_sentence display text):
+  - Do not write meta-disclaimers such as "without claiming", "without asserting", "not claiming", or "did not assert".
+  - Do not use career-bridge phrasing: "supported later", "subsequent roles", "later production AI platform leadership".
+  - Do not imply IBM delivered modern agentic platform products or Unify-era agentic runtime ownership.
+  - Express IBM as enterprise cloud, data, lineage, observability, reliability, and governance foundation only.
 
   North-star checks (self-enforce plus deterministic gates):
   - Exactly ONE sentence ending with one period; IBM appears exactly once as employer anchor (case-insensitive "IBM").
@@ -74,7 +71,11 @@ claim_ledger_coverage_contract: |
   - Lineage / observability / instrumentation / distributed data / regulatory response speed → bul_ibm_004
   - Partnerships / hyperscaler alliances / ecosystem execution → bul_ibm_005
 
-  Prefer MULTIPLE concise claim_ledger rows (one per cluster) over one row that cannot justify the full sentence.
+  Prefer MULTIPLE concise claim_ledger rows (one per material clause) over one row that cannot justify the full sentence.
+  Each claim_ledger row MUST cite at most two bul_ibm_* roots aligned to that clause's theme.
+  Do NOT cite three or more bul_ibm_* ids on a single row.
+  Do NOT use career-bridge phrasing ("supported later", "subsequent roles", "later production AI platform leadership")
+  unless an explicit career-bridge fact id exists in ALLOWED_SOURCE_FACT_IDS (default: omit such framing).
 
 role_header_fields:
   company:
@@ -206,8 +207,10 @@ narrative_complement_guidance:
       reason: "Imports Unify as proof and uses runtime stack vocabulary"
     - bad: "Concentrated enterprise cloud outcomes by tightening reliability posture and migration cadence with client-facing instrumentation."
       reason: "Consulting-fluff stack; weak executive résumé voice; likely under-maps claim_ledger to facts"
-    - good: "At IBM, led enterprise-scale cloud, data, lineage, and observability foundations for regulated financial services, establishing the reliability and governance discipline that supported later production AI platform leadership without claiming IBM delivered modern agentic platform products."
-      reason: "Capstone synthesis; later AI leadership is directional only; avoids forbidden 'agentic AI' phrase and Unify import"
+    - bad: "establishing the reliability and governance discipline that supported later production AI platform leadership"
+      reason: "Career-bridge phrasing forbidden in display text; X2 fails clause decomposition"
+    - good: "At IBM, led enterprise-scale cloud, data, lineage, and observability foundations for regulated financial services, establishing governed delivery and platform discipline that scaled analytics and modernization across enterprise lines of business."
+      reason: "Capstone synthesis stays IBM-scoped; no later-role bridge; multi-theme without bullet metric replay"
 
 metric_handling_rules:
   default_policy: "Do NOT restate bullet metrics in narrative_sentence when companion bullets already carry the canonical KPI set (99.9%, 30%, 25%, 50%, $15M). Prefer conceptual wording. Deterministic X2 enforces zero metric-token replay in that companion mode."
@@ -306,7 +309,7 @@ validation_rules:
       message: "Bullet list format forbidden"
     - assert: "every claim_ledger row has non-empty claim_text and non-empty source_fact_ids"
       error: "CLAIM_LEDGER_SHAPE"
-      message: "claim_ledger rows require claim_text and source_fact_ids (X2: x2_claim_ledger_claim_text_non_empty)"
+      message: "claim_ledger rows require non-empty claim_text and source_fact_ids (enforced via PRODUCT_SHAPE X2)"
     - assert: "every source_fact_ids token appears in ALLOWED_SOURCE_FACT_IDS for the run"
       error: "FACT_ID_OUTSIDE_ALLOW_LIST"
       message: "Ledger fact IDs must be subset of runtime allow-list"

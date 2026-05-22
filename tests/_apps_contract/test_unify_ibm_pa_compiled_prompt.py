@@ -53,8 +53,32 @@ def _ibm_facts() -> list[dict]:
     ]
 
 
+def _minimal_proof_metadata() -> dict:
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+
+    meta = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+    }
+    meta["evidence_authority"] = build_evidence_authority(
+        graph_ref=str(meta["graph_ref"]),
+        ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
+        skills_authority_status="PASS",
+    )
+    return meta
+
+
+def _product_lane_base() -> dict:
+    return {
+        "product_visible": False,
+        "proof_pool_metadata": _minimal_proof_metadata(),
+    }
+
+
 def test_unify_narrative_compiled_shape():
     payload = {
+        **_product_lane_base(),
         "run_id": "pa_un_narr",
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
@@ -63,6 +87,7 @@ def test_unify_narrative_compiled_shape():
         "candidate_name": "",
         "unify_header": _unify_header(),
         "selected_fact_plan": {"facts": _unify_facts()},
+        "allowed_fact_ids": ["bul_unify_001"],
     }
     out = compile_unify_narrative_prompt(payload, "", run_id="pa_un_narr")
     _assert_compiled(out, "unify_narrative", "unify_position_narrative_v1.yaml")
@@ -91,6 +116,7 @@ def test_strategic_tailor_v1_yaml_resolvable():
 
 def test_unify_narrative_companion_fence_when_present():
     payload = {
+        **_product_lane_base(),
         "run_id": "pa_un_narr2",
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
@@ -110,6 +136,7 @@ def test_unify_narrative_companion_fence_when_present():
 
 def test_ibm_narrative_compiled_shape():
     payload = {
+        **_product_lane_base(),
         "run_id": "pa_ibm_narr",
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
@@ -177,6 +204,7 @@ def test_canonical_dispatch_routes_ibm_narrative_lane():
 
 def test_unify_bullets_compiled_shape():
     payload = {
+        **_product_lane_base(),
         "run_id": "pa_un_bul",
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
@@ -191,6 +219,7 @@ def test_unify_bullets_compiled_shape():
 
 def test_ibm_bullets_compiled_shape():
     payload = {
+        **_product_lane_base(),
         "run_id": "pa_ibm_bul",
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
@@ -207,6 +236,8 @@ def test_ibm_bullets_compiled_shape():
     assert "bul_ibm_001" in body
     assert "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1" in body
     assert "REWRITE_FROM_FACT_POOL_CONSTRAINED" in body
+    assert "UNIFY_IBM_PROMPT_CORE_LAW_V3" in body
+    assert "PRODUCT_SHAPE" in body
 
 
 def test_w7_shell_slots_file_exists():

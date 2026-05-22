@@ -1,0 +1,71 @@
+{
+  "wave": "W6_post_baseline",
+  "plan_id": "sections-pa-core-law-rollout-c3a8f1",
+  "timestamp": "20260522_102612",
+  "targeting": {
+    "company": "Brown & Brown",
+    "role": "SVP IT Strategy & Innovation"
+  },
+  "comparison": [
+    {
+      "section": "headline",
+      "w0_compiled_tokens": 14911,
+      "post_compiled_tokens": 12248,
+      "delta_tokens": 2663,
+      "w0_static_ssot_chars": 18824,
+      "x2_static_w0": 0,
+      "x2_static_post": 0,
+      "product_shape_present": true
+    },
+    {
+      "section": "competencies",
+      "w0_compiled_tokens": 14899,
+      "post_compiled_tokens": 14729,
+      "delta_tokens": 170,
+      "w0_static_ssot_chars": 3847,
+      "x2_static_w0": 0,
+      "x2_static_post": 0,
+      "product_shape_present": true
+    },
+    {
+      "section": "unify_bullets",
+      "w0_compiled_tokens": 11564,
+      "post_compiled_tokens": 10912,
+      "delta_tokens": 652,
+      "w0_static_ssot_chars": 11516,
+      "x2_static_w0": 1,
+      "x2_static_post": 0,
+      "product_shape_present": true
+    },
+    {
+      "section": "unify_narrative",
+      "w0_compiled_tokens": 12968,
+      "post_compiled_tokens": 11868,
+      "delta_tokens": 1100,
+      "w0_static_ssot_chars": 17202,
+      "x2_static_w0": 0,
+      "x2_static_post": 0,
+      "product_shape_present": true
+    },
+    {
+      "section": "ibm_bullets",
+      "w0_compiled_tokens": 10482,
+      "post_compiled_tokens": 10368,
+      "delta_tokens": 114,
+      "w0_static_ssot_chars": 14639,
+      "x2_static_w0": 0,
+      "x2_static_post": 0,
+      "product_shape_present": true
+    },
+    {
+      "section": "ibm_narrative",
+      "w0_compiled_tokens": 14931,
+      "post_compiled_tokens": 14670,
+      "delta_tokens": 261,
+      "w0_static_ssot_chars": 19470,
+      "x2_static_w0": 1,
+      "x2_static_post": 0,
+      "product_shape_present": true
+    }
+  ]
+}

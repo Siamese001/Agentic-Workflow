@@ -1,8 +1,15 @@
+# Spec SSOT for ibm_bullets (compile uses w7 shell + ibm_bullets_pa._legacy_i0 at runtime).
+# Marker: UNIFY_IBM_PROMPT_CORE_LAW_V3 — shared w7 shell cites pa_core_law_v1; X2 gates in PRODUCT_SHAPE append only.
+# Core PA law SSOT: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+# forbidden_slot_body_source: strategic_tailor_v1
+
 schema_version: "prompt_template_v1"
 template_id: "ibm_bullet_tailor_v1"
 version: "1.0"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "IBM_BULLET"
+pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+forbidden_slot_body_source: strategic_tailor_v1
 
 foundation_proof_model_id: "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
 treatment_profile: "REWRITE_FROM_FACT_POOL_CONSTRAINED"

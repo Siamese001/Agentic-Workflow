@@ -16,9 +16,26 @@ def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
 
 
+def _minimal_proof_metadata() -> dict:
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+
+    meta = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+    }
+    meta["evidence_authority"] = build_evidence_authority(
+        graph_ref=str(meta["graph_ref"]),
+        ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
+        skills_authority_status="PASS",
+    )
+    return meta
+
+
 def _payload(*, run_id: str = "head_pa_test") -> dict:
     return {
         "run_id": run_id,
+        "product_visible": False,
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
         "jd_text": "enterprise AI platform",
@@ -29,6 +46,8 @@ def _payload(*, run_id: str = "head_pa_test") -> dict:
             "required_fact_ids": ["bul_unify_001"],
             "facts": [],
         },
+        "proof_pool_metadata": _minimal_proof_metadata(),
+        "allowed_fact_ids": ["bul_unify_001"],
     }
 
 
@@ -123,16 +142,18 @@ def test_compiled_headline_production_prompt_markers():
     assert "briefing" in low
     assert "fact ledger" in low or "canonical_employment_bullets" in low or "c0" in low
     assert "targeting" in low
-    assert "fresh composition" in low or "fresh" in low
-    assert "identity reference only" in low or "not the answer" in low
-    assert "five internal" in low
+    assert "fresh" in low or "newly composed" in low
+    assert "not the default answer" in low or "identity reference" in low
+    assert "internal headline candidates" in low or "internal candidates" in low
+    assert "pa_truth_oath_v1" in content or "pa_core_law" in content
+    assert "PRODUCT_SHAPE" in content
     assert "forbidden: flat arrays of strings" in low or "flat arrays of strings" in low
     assert "claim_text" in content and "source_fact_ids" in content
     assert "pipe" in low and "word_count" in low
 def test_headline_r0_embedded_schema_claim_ledger_requires_object_rows():
     import json as _json
 
-    from apps_rg.runtime.dispatch.headline_pa import _HEADLINE_OUTPUT_SCHEMA_JSON
+    from apps_rg.runtime.sections.headline_pa import _HEADLINE_OUTPUT_SCHEMA_JSON
 
     schema = _json.loads(_HEADLINE_OUTPUT_SCHEMA_JSON)
     cl = schema["properties"]["claim_ledger"]

@@ -16,9 +16,26 @@ def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
 
 
+def _minimal_proof_metadata() -> dict:
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+
+    meta = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+    }
+    meta["evidence_authority"] = build_evidence_authority(
+        graph_ref=str(meta["graph_ref"]),
+        ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
+        skills_authority_status="PASS",
+    )
+    return meta
+
+
 def _payload(*, run_id: str = "comp_pa_test") -> dict:
     return {
         "run_id": run_id,
+        "product_visible": False,
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
         "jd_text": "enterprise AI platform",
@@ -29,6 +46,8 @@ def _payload(*, run_id: str = "comp_pa_test") -> dict:
             "required_fact_ids": ["bul_unify_001"],
             "facts": [],
         },
+        "proof_pool_metadata": _minimal_proof_metadata(),
+        "allowed_fact_ids": ["bul_unify_001"],
     }
 
 
@@ -91,16 +110,22 @@ def test_compiled_prompt_requires_selection_mode_and_audit_ids():
     assert "ALLOWED_SOURCE_FACT_IDS" in content
     assert "bul_unify_001" in content
     assert "scannable executive capability index" in content.lower()
+    assert "COMPETENCIES_PROMPT_CORE_LAW_V3" in content
+    assert "PRODUCT_SHAPE" in content
+    assert "x2_competencies_min_category_count" in content
     path = REPO_ROOT / "apps_rg/prompt_assembly/templates/competency_selector_v2.pa_slots.yaml"
     assert path.is_file()
     import yaml
 
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert raw.get("slot_bodies", {}).get("S0") is not None
+    txt = path.read_text(encoding="utf-8")
+    assert "pa_core_law_v1.yaml" in txt
+    assert "x2_competencies_min_category_count" not in txt
 
 
 def test_r0_schema_requires_source_fact_ids_on_competency_term_object():
-    from apps_rg.runtime.dispatch.competencies_pa import COMPETENCIES_OUTPUT_SCHEMA
+    from apps_rg.runtime.sections.competencies_pa import COMPETENCIES_OUTPUT_SCHEMA
 
     term = COMPETENCIES_OUTPUT_SCHEMA["definitions"]["competency_term"]
     assert term["required"] == ["text", "source_fact_id", "source_fact_ids"]

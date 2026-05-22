@@ -79,9 +79,8 @@ def test_many_shot_examples_material_theme_variation() -> None:
 def test_contrastive_section_preserves_mechanical_copy_warning() -> None:
     txt = TEMPLATE_PATH.read_text(encoding="utf-8")
     assert "<contrastive_examples>" in txt
-    assert "Distributed AI Infrastructure | Governed Enterprise Systems" in txt.replace("\n", " ") or (
-        "Distributed AI Infrastructure" in txt and "Governed Enterprise Systems" in txt
-    )
+    assert "Agentic AI Platforms | Distributed AI Infrastructure" in txt
+    assert "flat ledger" in txt.lower() or "flat bul_" in txt.lower()
 
 
 @pytest.fixture(scope="module")

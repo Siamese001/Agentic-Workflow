@@ -1,8 +1,15 @@
+# Spec SSOT for unify_narrative (compile uses w7 shell + unify_narrative_pa._legacy_i0 at runtime).
+# Marker: UNIFY_IBM_PROMPT_CORE_LAW_V3 — pa_core_law_v1 references; X2 gates in PRODUCT_SHAPE append only.
+# Core PA law SSOT: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+# forbidden_slot_body_source: strategic_tailor_v1
+
 schema_version: "prompt_template_v1"
 template_id: "unify_position_narrative_v1"
 version: "1.1"
 allowed_stage: "L2_EXEC"
 rewrite_intent: "UNIFY_NARRATIVE"
+pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
+forbidden_slot_body_source: strategic_tailor_v1
 execution_order: "AFTER_UNIFY_BULLET_FACT_CHECK"
 
 purpose: |
@@ -15,22 +22,10 @@ purpose: |
   Complements bullets by concept overlap, never by copying labels, metrics, machinery stacks, or sentence structure.
 
 sovereign_oath: |
-  UNIFY NARRATIVE ONLY — ROLE CAPSTONE, NOT BULLET RECAP
-
-  The narrative is a role-level capstone, not a bullet summary.
-  I may ONLY cite C0 canonical facts: unify_narrative_base_* (when present) and bul_unify_* in claim_ledger source_fact_ids.
-  I may reference finalized Unify bullets ONLY to avoid repetition; companion lines are not proof.
-  I may NOT use IBM, InsurTech, EY, Early Career, education, certifications, or competency facts.
-  I may NOT put JD, briefing, target title, or target company into source_fact_ids.
-  I may NOT paste bullet display labels (e.g., Enterprise Agentic AI Platform Architecture).
-  I may NOT default to six-months-to-three-weeks or other bullet metric clusters unless strictly necessary and supported.
-  I may NOT output bullet-list format — exactly one sentence only.
-
-  SelectedRoleFactSet (SRFS): claim_ledger source_fact_ids must be ONLY tokens from the unify_narrative slice
-  allowlist (ALLOWED_SOURCE_FACT_IDS), including unify_narrative_base_* only if explicitly listed there. Finalized
-  Unify bullets are companion context for anti-repetition — do not treat companion bullet IDs as proof unless the same
-  fact id appears in the unify_narrative allowlist. JD, briefing, title, and company steer emphasis only. Out-of-slice
-  IDs fail deterministic X2 SRFS gates.
+  UNIFY NARRATIVE — role capstone only (not bullet recap). Governed by pa_truth_oath_v1, pa_proof_binding_v1,
+  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: C0 unify_narrative_base_* (when listed) and bul_unify_* only.
+  Companion finalized bullets: anti-repetition only. One sentence; no cross-employer facts; no JD-as-proof in source_fact_ids.
+  X2 enforcement: PRODUCT_SHAPE append at compile (not restated in runtime I0).
 
 north_star_semantic_contract: |
   Preferred semantic shape (paraphrase allowed; must remain fact-grounded):
@@ -156,7 +151,7 @@ output_contract:
       constraints:
         - "Exactly one sentence"
         - "Preferred 34–48 words; hard maximum 58 words"
-        - "Hard maximum ~360 characters (no legacy 250-character cap)"
+        - "Hard maximum ~360 characters (retired short-char cap; word budget is authoritative)"
         - "No bullet characters (•, -, *)"
         - "No line breaks"
         - "No numbering"
