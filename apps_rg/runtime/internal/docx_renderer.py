@@ -322,7 +322,7 @@ def build_docx_from_final_resume(paths: DocxRendererPaths | None = None) -> dict
     render_manifest_blob: dict[str, Any] = {
         "render_manifest_id": "docx_render_manifest_v1",
         "constructed_at_utc": utc_now,
-        "constructor_module": "apps_rg.runtime.render.docx_renderer",
+        "constructor_module": "apps_rg.runtime.internal.docx_renderer",
         "sources": {
             "final_resume_json": paths.rel(paths.final_resume_json),
             "docx_manifest_json": paths.rel(paths.docx_manifest_json),

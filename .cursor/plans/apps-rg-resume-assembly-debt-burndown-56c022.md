@@ -23,9 +23,9 @@ Reduce resume assembly technical debt: retire unused/ghost paths, complete DOCX 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: Not Started
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: In Progress
+CURRENT_WAVE: W1-complete
+LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-05-22
 
 PLAN_CREATED: slug=apps-rg-resume-assembly-debt-burndown-56c022 path=.cursor/plans/apps-rg-resume-assembly-debt-burndown-56c022.md status=Not Started
@@ -48,7 +48,7 @@ PLAN_CREATED: slug=apps-rg-resume-assembly-debt-burndown-56c022 path=.cursor/pla
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W0 | W0.1 | Inventory + risk matrix (chat + receipt) | ~10k | Analysis only | ✅ DONE | Receipt + this plan on disk |
-| W1 | W1.1–W1.3 | Safe ghost / dead-step cleanup | ~8k | No behavior change on golden path | 🔲 TODO | `rg` clean; tests green |
+| W1 | W1.1–W1.3 | Safe ghost / dead-step cleanup | ~8k | No behavior change on golden path | ✅ DONE | outside_main + l2 registry tests pass |
 | W2 | W2.1–W2.4 | DOCX removal (child plan W1–W4) | ~50k | See docx plan | 🔲 TODO | No product DOCX; JSON gates pass |
 | W3 | W3.1–W3.3 | JSON SSOT — drop assembler bridge on integrated | ~35k | `rg_output` authoritative | 🔲 TODO | Integrated run without `extract_lane_l2_from_assembled_final` |
 | W4 | W4.1–W4.2 | Offline stack demotion | ~25k | Contract tests migrated | 🔲 TODO | No `build_rollup()` on product path; package optional |
@@ -59,9 +59,9 @@ PLAN_CREATED: slug=apps-rg-resume-assembly-debt-burndown-56c022 path=.cursor/pla
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|-----------------|-------------|-------------|--------|
 | W0.1 | Assembly debt inventory | Chat + [receipt](docs/reports/apps_rg/apps_rg_resume_assembly_debt_inventory.md) | Dual pipelines | ~10k | ✅ DONE |
-| W1.1 | Remove ghost policy targets | `outside_main_entry_policy.py`, prompt inventories | Stale `render.docx_renderer` | ~2k | 🔲 TODO |
-| W1.2 | Delete dead recipe step | `steps.py` `NarrativePassStep`; empty `runtime/reports/` | Unregistered step | ~2k | 🔲 TODO |
-| W1.3 | Doc sync for deleted CLIs | `RUNBOOK`, `outside_main` DISALLOWED list | Ghost `narrative_pass` | ~2k | 🔲 TODO |
+| W1.1 | Remove ghost policy targets | `outside_main_entry_policy.py`, `docx_renderer.py` metadata | Stale CLI path | ~2k | ✅ DONE |
+| W1.2 | Delete dead recipe step | `steps.py` `NarrativePassStep`; empty `runtime/reports/` | Unregistered step | ~2k | ✅ DONE |
+| W1.3 | Doc sync for deleted CLIs | `outside_main` DISALLOWED uses `internal.docx_renderer` | Ghost `narrative_pass` kept in DISALLOWED | ~2k | ✅ DONE |
 | W2.1–W2.4 | DOCX burndown | Per [apps-rg-docx-output-removal-4650ff](.cursor/plans/apps-rg-docx-output-removal-4650ff.md) | Two DOCX stacks | ~50k | 🔲 TODO |
 | W3.1 | Direct lane → rg_output merge | `modular_rg_output_builder.py`, `modular_resume_generation.py` | Assembler bridge | ~15k | 🔲 TODO |
 | W3.2 | Structural-only assembly default | `final_resume_assembler.py`, env defaults | LLM coherence optional | ~10k | 🔲 TODO |
@@ -107,15 +107,17 @@ WAVE_COMPLETE: plan=apps-rg-resume-assembly-debt-burndown-56c022 wave=0 note="in
 ## Wave 1 — Safe cleanup (ghost / dead code)
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 
 **Phases:** W1.1 policy/inventory path fixes · W1.2 remove `NarrativePassStep` + empty `runtime/reports` · W1.3 docs
 
 **Acceptance:**
-- `rg "resume_package_x3|NarrativePassStep|runtime\.reports\.generated_lane" apps_rg/` — no false product references
-- `pytest tests/_apps_contract/test_no_outside_main_runtime_entrypoints.py -q` pass
+- `NarrativePassStep` removed from `apps_rg/l2_recipe/steps.py`; tests updated
+- `pytest tests/_apps_contract/test_no_outside_main_runtime_entrypoints.py tests/unit/apps_rg/test_l2_recipe_registry.py -q` — 65 passed
+
+WAVE_COMPLETE: plan=apps-rg-resume-assembly-debt-burndown-56c022 wave=1 note="NarrativePassStep removed, reports pkg deleted, policy/docx metadata paths fixed"
 
 ---
 
@@ -182,8 +184,8 @@ DoD-1: Plan + inventory receipt on disk; Notion Plans row `Status=Not Started` (
 - Status: TODO (pending your review approval)
 
 DoD-2: W1 — Safe cleanup merged; no new test failures.
-- Evidence: `pytest tests/_apps_contract/test_no_outside_main_runtime_entrypoints.py tests/unit/apps_rg/test_l2_recipe_registry.py -q`
-- Status: TODO
+- Evidence: `pytest tests/_apps_contract/test_no_outside_main_runtime_entrypoints.py tests/unit/apps_rg/test_l2_recipe_registry.py -q` — 65 passed
+- Status: DONE
 
 DoD-3: W2 — DOCX child plan DoD-3 satisfied (integrated smoke, no `outputs/resume.docx`).
 - Evidence: per docx plan

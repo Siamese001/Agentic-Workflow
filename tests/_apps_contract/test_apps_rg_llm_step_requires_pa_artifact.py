@@ -2,8 +2,8 @@
 
 Proves:
   - GenerateResumeStep (REQUIRES_PA=True) raises RuntimeError without PA
-  - NarrativePassStep (REQUIRES_PA=False) does NOT require PA
   - DocxExportStep (REQUIRES_PA=False) does NOT require PA
+  - ResumeArtifactGateStep (REQUIRES_PA=False) does NOT require PA
   - PA guard passes when pa_compatible=True or prompt_bom_dir set
 """
 
@@ -86,18 +86,6 @@ class TestLlmStepRequiresPAGuard:
         assert result["exit_code"] == 0
         assert "compiled_prompt_artifact" in result
 
-    def test_narrative_step_does_not_require_pa(self):
-        """NarrativePassStep has REQUIRES_PA=False — no PA check."""
-        from apps_rg.l2_recipe.steps import NarrativePassStep
-
-        step = NarrativePassStep()
-        assert step.REQUIRES_PA is False
-
-        # Should not raise even without PA context
-        context = {"target_company": "", "target_role": "Eng"}
-        result = step(context)
-        assert result["exit_code"] == 0  # skipped due to empty target_company
-
     def test_docx_step_does_not_require_pa(self):
         """DocxExportStep has REQUIRES_PA=False — no PA check."""
         from apps_rg.l2_recipe.steps import DocxExportStep
@@ -123,9 +111,9 @@ class TestLlmStepRequiresPAGuard:
         from apps_rg.l2_recipe.steps import (
             DocxExportStep,
             GenerateResumeStep,
-            NarrativePassStep,
+            ResumeArtifactGateStep,
         )
 
         assert GenerateResumeStep.REQUIRES_PA is True
-        assert NarrativePassStep.REQUIRES_PA is False
         assert DocxExportStep.REQUIRES_PA is False
+        assert ResumeArtifactGateStep.REQUIRES_PA is False

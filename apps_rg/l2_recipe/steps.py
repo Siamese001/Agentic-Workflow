@@ -5,8 +5,8 @@ They are composed into a pipeline by the L2 recipe resolver.
 
 Step classes:
 - GenerateResumeStep  — main LLM-driven resume generation (REQUIRES_PA=True)
-- NarrativePassStep   — optional narrative polish pass (REQUIRES_PA=False)
 - DocxExportStep      — DOCX export from structured JSON (REQUIRES_PA=False)
+- ResumeArtifactGateStep — on-disk JSON + DOCX bundle verification (REQUIRES_PA=False)
 """
 from __future__ import annotations
 
@@ -40,7 +40,6 @@ from apps_rg.l2_recipe.sealed_resume_extract import generated_resume_from_sealed
 
 __all__ = [
     "GenerateResumeStep",
-    "NarrativePassStep",
     "DocxExportStep",
     "ResumeArtifactGateStep",
     "BaseRecipeStep",
@@ -281,37 +280,6 @@ class GenerateResumeStep(BaseRecipeStep):
                 "with resume_artifact_contract_mode stub_receipt/diagnostic."
             )
         return self._modular_section_lanes_generation(context)
-
-
-class NarrativePassStep(BaseRecipeStep):
-    """Optional narrative polish pass — does NOT require PA artifact.
-
-    Runs only when target_company is non-empty.  Skips cleanly otherwise.
-    """
-
-    REQUIRES_PA: bool = False
-    STEP_NAME: str = "narrative_pass"
-
-    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
-        target_company = context.get("target_company", "") or ""
-        if not target_company:
-            return {
-                "status": "skipped",
-                "step": self.STEP_NAME,
-                "reason": "no target_company",
-            }
-        try:
-            from apps_rg.runtime.bindings.narrative_adapter import run_narrative_pass
-            result = run_narrative_pass(context)
-            return {"status": "ok", "step": self.STEP_NAME, "result": result}
-        except ImportError:
-            return {
-                "status": "skipped",
-                "step": self.STEP_NAME,
-                "reason": "narrative_adapter not available",
-            }
-        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
-            return {"status": "error", "step": self.STEP_NAME, "error": str(exc)}
 
 
 class DocxExportStep(BaseRecipeStep):

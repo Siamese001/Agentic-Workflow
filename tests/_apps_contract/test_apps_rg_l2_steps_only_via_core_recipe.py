@@ -1,7 +1,7 @@
 """Test 5: L2 steps only invoked through core recipe resolution.
 
 Proves:
-  - GenerateResumeStep, NarrativePassStep, DocxExportStep are only
+  - GenerateResumeStep, DocxExportStep, ResumeArtifactGateStep are only
     reachable via the core recipe resolver (not directly from __main__)
   - Step classes exist in apps_rg.l2_recipe.steps
   - Steps implement the __call__(context) -> dict interface
@@ -23,20 +23,20 @@ class TestL2StepsOnlyViaCore:
         from apps_rg.l2_recipe.steps import (
             DocxExportStep,
             GenerateResumeStep,
-            NarrativePassStep,
+            ResumeArtifactGateStep,
         )
         assert GenerateResumeStep.STEP_NAME == "generate_resume"
-        assert NarrativePassStep.STEP_NAME == "narrative_pass"
         assert DocxExportStep.STEP_NAME == "docx_export"
+        assert ResumeArtifactGateStep.STEP_NAME == "resume_artifact_gate"
 
     def test_step_classes_are_callable(self):
         """Step instances implement __call__(context) -> dict."""
         from apps_rg.l2_recipe.steps import (
             DocxExportStep,
             GenerateResumeStep,
-            NarrativePassStep,
+            ResumeArtifactGateStep,
         )
-        for cls in (GenerateResumeStep, NarrativePassStep, DocxExportStep):
+        for cls in (GenerateResumeStep, DocxExportStep, ResumeArtifactGateStep):
             instance = cls()
             assert callable(instance)
             sig = inspect.signature(instance.__call__)
@@ -58,8 +58,8 @@ class TestL2StepsOnlyViaCore:
                     docstr_lines.add(ln)
         code_only = "\n".join(l for i, l in enumerate(lines, 1) if i not in docstr_lines and not l.strip().startswith("#"))
         assert "GenerateResumeStep" not in code_only
-        assert "NarrativePassStep" not in code_only
         assert "DocxExportStep" not in code_only
+        assert "ResumeArtifactGateStep" not in code_only
 
     def test_main_does_not_import_l2_recipe_registry(self):
         """apps_rg/__main__.py has no reference to l2_recipe.registry in executable code."""
@@ -88,14 +88,6 @@ class TestL2StepsOnlyViaCore:
         # The callable's source closure references step_classes
         source = inspect.getsource(callable_fn)
         assert "step_cls" in source or "step_classes" in source
-
-    def test_narrative_step_skips_without_target_company(self):
-        """NarrativePassStep skips cleanly when target_company is empty."""
-        from apps_rg.l2_recipe.steps import NarrativePassStep
-
-        step = NarrativePassStep()
-        result = step({"target_company": "", "target_role": "Eng"})
-        assert result.get("status") == "skipped"
 
     def test_docx_step_fails_without_artifact_dir(self):
         """DocxExportStep returns error when no artifact_dir in context."""

@@ -55,7 +55,7 @@ DISALLOWED_DOC_CI_COMMAND_SUBSTRINGS: tuple[str, ...] = (
     "python -m apps_rg.runtime.package.resume_package_x3",
     "python -m apps_rg.runtime.reports.generated_lane_rollup",
     "python -m apps_rg.runtime.assembly.final_resume_assembler",
-    "python -m apps_rg.runtime.render.docx_renderer",
+    "python -m apps_rg.runtime.internal.docx_renderer",
     "python -m apps_rg.runtime.locked_copy.locked_copy_builder",
     "python -m apps_rg.runtime._offline.",
     "python -m apps_rg.runtime.internal.",
