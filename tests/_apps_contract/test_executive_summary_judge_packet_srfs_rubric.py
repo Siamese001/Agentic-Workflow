@@ -41,7 +41,7 @@ def test_judge_packet_always_uses_graph_rubric_after_d2() -> None:
     )
     assert packet["rubric_ref"] == GRAPH_ONLY_JUDGE_RUBRIC_REF
     assert packet["rubric"] == GRAPH_ONLY_GRADE_ONLY_RUBRIC
-    assert "5–6" in packet["rubric"] or "5-6" in packet["rubric"]
+    assert "six" in packet["rubric"].lower() or "exactly 6" in packet["rubric"].lower()
     assert "no_credential_dump" in packet["rubric"] or "credential inventory" in packet["rubric"].lower()
     assert "s1 thesis" not in packet["rubric"].lower() or "retired" in packet["rubric"].lower()
     gates = packet["deterministic_gate_summary"]
@@ -67,4 +67,5 @@ def test_judge_packet_uses_graph_only_rubric_without_srfs() -> None:
     )
     assert packet["rubric_ref"] == GRAPH_ONLY_JUDGE_RUBRIC_REF
     assert packet["rubric"] == GRAPH_ONLY_GRADE_ONLY_RUBRIC
-    assert "4–5 dense executive sentences" in packet["rubric"]
+    assert "six" in packet["rubric"].lower()
+    assert "4 sentences is valid" not in packet["rubric"].lower()

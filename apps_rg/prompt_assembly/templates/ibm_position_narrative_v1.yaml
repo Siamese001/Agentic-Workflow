@@ -295,7 +295,7 @@ prompt_engineering_hardening:
 
 validation_rules:
   pre_output:
-    - assert: "output.narrative_sentence.count('.') >= 1"
+    - assert: "output.narrative_sentence.count('.') == 1"
       error: "NOT_EXACTLY_ONE_SENTENCE"
       message: "Must read as exactly one sentence for runtime"
     - assert: "len([w for w in output.narrative_sentence.split() if w]) <= 58"

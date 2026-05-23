@@ -17,6 +17,13 @@ from typing import Any, Final, Mapping
 
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.sections.section_product_shape_export_bounds import (
+    COMPETENCIES_EXPORT_MAX_CATEGORIES,
+    EXEC_SUMMARY_EXPORT_MAX_CHARS,
+    EXEC_SUMMARY_EXPORT_MAX_WORDS,
+    EXEC_SUMMARY_EXPORT_MIN_WORDS,
+    RG_BULLET_MAX_CHARS,
+)
 
 # Locked roles that are not driven by generated lanes must provide enough base bullets to
 # populate ``rg_output.sections.experience[*].bullets``. Default minimum is three (schema);
@@ -94,11 +101,20 @@ def _norm_bullet_text(raw: str) -> str:
     return t.strip()
 
 
+def _maybe_truncate_bullet_text(text: str, export_warnings: list[str] | None) -> str:
+    if len(text) > RG_BULLET_MAX_CHARS:
+        if export_warnings is not None and "bullet_text_truncated" not in export_warnings:
+            export_warnings.append("bullet_text_truncated")
+        return text[:RG_BULLET_MAX_CHARS]
+    return text
+
+
 def _lane_bullets_to_rg(
     lane_bullets: list[Any],
     *,
     max_bullets: int = 5,
     min_bullets: int = 3,
+    export_warnings: list[str] | None = None,
 ) -> tuple[list[dict[str, Any]] | None, str]:
     if not isinstance(lane_bullets, list):
         return None, "lane_bullets_not_list"
@@ -109,8 +125,7 @@ def _lane_bullets_to_rg(
         text = _norm_bullet_text(str(b.get("text") or b.get("bullet_text") or ""))
         if len(text) < 20:
             return None, "bullet_text_too_short"
-        if len(text) > 250:
-            text = text[:250]
+        text = _maybe_truncate_bullet_text(text, export_warnings)
         ent: dict[str, Any] = {"text": text}
         sid = b.get("source_fact_id") or b.get("bullet_id") or b.get("fact_id")
         if sid:
@@ -127,7 +142,7 @@ def _competencies_to_skills(competencies: Any) -> dict[str, Any] | None:
     if not isinstance(competencies, list) or not competencies:
         return None
     categories: list[dict[str, Any]] = []
-    for cat in competencies[:6]:
+    for cat in competencies[:COMPETENCIES_EXPORT_MAX_CATEGORIES]:
         if not isinstance(cat, dict):
             continue
         cat_name = str(cat.get("category_label") or "").strip() or "Capabilities"
@@ -276,7 +291,9 @@ def build_rg_output_from_modular_sections(
         "locked_employment_mapped_count": 0,
         "compact_early_career_excluded_count": 0,
         "excluded_locked_roles": [],
+        "export_shape_warnings": [],
     }
+    export_warnings: list[str] = receipt["export_shape_warnings"]
 
     gen_at = generated_at_utc or datetime.now(timezone.utc).isoformat()
 
@@ -344,8 +361,18 @@ def build_rg_output_from_modular_sections(
         receipt["failure"] = "missing_executive_summary"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
     wc = _word_count(exec_text)
-    if wc < 10 or wc > 60 or len(exec_text) > 500:
+    if (
+        wc < EXEC_SUMMARY_EXPORT_MIN_WORDS
+        or wc > EXEC_SUMMARY_EXPORT_MAX_WORDS
+        or len(exec_text) > EXEC_SUMMARY_EXPORT_MAX_CHARS
+    ):
         receipt["failure"] = "executive_summary_out_of_rg_bounds"
+        receipt["export_bounds"] = {
+            "word_count": wc,
+            "max_words": EXEC_SUMMARY_EXPORT_MAX_WORDS,
+            "char_len": len(exec_text),
+            "max_chars": EXEC_SUMMARY_EXPORT_MAX_CHARS,
+        }
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
     for lab, sent in (
@@ -364,12 +391,17 @@ def build_rg_output_from_modular_sections(
     uni_lane_bullets, uerr = _lane_bullets_to_rg(
         list(uni_b.get("bullets") or []),
         max_bullets=6,
+        export_warnings=export_warnings,
     )
     if uni_lane_bullets is None:
         receipt["failure"] = f"unify_bullets_invalid:{uerr}"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
-    ibm_lane_bullets, ierr = _lane_bullets_to_rg(list(ibm_b.get("bullets") or []), max_bullets=5)
+    ibm_lane_bullets, ierr = _lane_bullets_to_rg(
+        list(ibm_b.get("bullets") or []),
+        max_bullets=5,
+        export_warnings=export_warnings,
+    )
     if ibm_lane_bullets is None:
         receipt["failure"] = f"ibm_bullets_invalid:{ierr}"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
@@ -389,8 +421,7 @@ def build_rg_output_from_modular_sections(
             txt = _norm_bullet_text(str(b.get("text") or ""))
             if len(txt) < 20:
                 continue
-            if len(txt) > 250:
-                txt = txt[:250]
+            txt = _maybe_truncate_bullet_text(txt, export_warnings)
             ent2: dict[str, Any] = {"text": txt}
             bid = b.get("bullet_id")
             if bid:

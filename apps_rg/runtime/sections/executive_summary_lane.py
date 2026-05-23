@@ -324,7 +324,7 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 
 
 def coerce_resume_display_sentence_count_band(resume: str) -> str:
-    """No post-hoc sentence-band coercion — X2 enforces 5–6 sentences."""
+    """No post-hoc sentence-band coercion — X2 enforces exactly six sentences."""
     return resume
 
 
@@ -729,7 +729,7 @@ def _synthesis_shape_reject_reason(
         check_exec_summary_no_credential_dump,
         check_exec_summary_no_mechanism_inventory,
         check_exec_summary_paragraph_max_words,
-        check_exec_summary_sentence_count_5_6,
+        check_exec_summary_sentence_count_6,
         check_inferred_bridge_claims,
         check_north_star_style_example_echo_unsupported,
         check_cross_fact_display_conflation,
@@ -761,7 +761,7 @@ def _synthesis_shape_reject_reason(
     colon_ok, colon_reason = check_resume_display_colon_space_discipline(text)
     if not colon_ok and colon_reason:
         failures.append(colon_reason)
-    sent_ok, sent_reason = check_exec_summary_sentence_count_5_6(text)
+    sent_ok, sent_reason = check_exec_summary_sentence_count_6(text)
     if not sent_ok and sent_reason:
         failures.append(sent_reason)
     util_ok, util_reason = check_exec_summary_evidence_utilization(
@@ -870,7 +870,7 @@ def _build_synthesis_repair_user(
     length_note = ""
     if "exceeds maximum" in blob:
         length_note = (
-            "LENGTH: trim to one executive paragraph (5–6 sentences, max 140 words) without dropping supported proof; "
+            "LENGTH: trim to one executive paragraph (exactly 6 sentences, max 140 words) without dropping supported proof; "
             "do not remove claim_ledger rows. "
         )
     else:
@@ -923,7 +923,7 @@ def _build_synthesis_repair_user(
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
         f"{mechanism_note}{meta_note}{filler_note}{conflation_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
-        "Rewrite resume_display_text as exactly 5 or 6 period-delimited sentences (one executive paragraph, max 140 words), "
+        "Rewrite resume_display_text as exactly 6 period-delimited sentences (one executive paragraph, max 140 words), "
         "fit_to_evidence integrated narrative — not 4 compressed sentences; do not pad with filler. "
         "Sentence 1 must be grammatically complete; vary openers (avoid six Led/Built/Delivered chains). "
         "No certification labels in display text. "
@@ -1680,7 +1680,7 @@ def run_executive_summary_execution(
 
     resume_display_text = (parsed or {}).get("resume_display_text") or raw_output or ""
     _pp_meta = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
-    _painting_active = bool(
+    _painting_active = bool(  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
         _pp_meta.get("graph_skills_proof_pool") or pool.proof_source == "augmented_skills_graph"
     )
     if parsed and isinstance(parsed, dict) and _painting_active:

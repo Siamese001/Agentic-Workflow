@@ -29,6 +29,7 @@ from apps_rg.runtime.validators.unify_bullets_x2 import DEFAULT_DISTRIBUTION as 
 # Headline (aligned with headline_x2 headline_runtime_self_check_truth)
 HEADLINE_WORD_MIN = 10
 HEADLINE_WORD_MAX = 13
+HEADLINE_MAX_CHARS = 140
 HEADLINE_SEGMENT_PREFIX = "SVP Engineering"
 HEADLINE_PIPE_SEPARATORS = 3
 HEADLINE_SEGMENT_COUNT = 4
@@ -79,11 +80,15 @@ RETIRED_EXEC_SUMMARY_X2_GATE_IDS: frozenset[str] = frozenset(
         "x2_exec_summary_sentence_count_2_3",
         "x2_exec_summary_srfs_density_word_count",
         "x2_exec_summary_sentence_count_4_5",
+        "x2_exec_summary_sentence_count_5_6",
         "x2_exec_summary_srfs_sentence_count_4_5",
         "x2_exec_summary_srfs_sentence_responsibility_shape",
         "x2_exec_summary_paragraph_word_bounds",
     }
 )
+
+# Non-authoritative upper bound; distribution correctness is x2_unify_rewrite_distribution_valid only.
+RETIRED_UNIFY_BULLETS_X2_GATE_IDS: frozenset[str] = frozenset({"x2_unify_max_heavy_3"})
 
 # W3: legacy SRFS slice membership gate IDs — superseded by *_active_proof_pool_source_fact_ids.
 RETIRED_PROOF_POOL_SLICE_X2_GATE_IDS: frozenset[str] = frozenset(
@@ -145,13 +150,13 @@ def _exec_summary_shape() -> SectionProductShape:
         x2_module_ref="apps_rg/runtime/validators/executive_summary_x2.py",
         display_field="resume_display_text",
         shape_summary=(
-            f"{EXEC_SUMMARY_MIN_SENTENCES}-{EXEC_SUMMARY_MAX_SENTENCES} sentences; "
+            f"exactly {EXEC_SUMMARY_MIN_SENTENCES} sentences; "
             f"max {EXEC_SUMMARY_MAX_WORDS} words; "
             f"max {EXEC_SUMMARY_MAX_WORDS_PER_SENTENCE} words/sentence; "
             "fit_to_evidence; claim_ledger required; no inline source tags in display text"
         ),
         bounds_gate_ids=(
-            "x2_exec_summary_sentence_count_5_6",
+            "x2_exec_summary_sentence_count_6",
             "x2_exec_summary_paragraph_max_words",
             "x2_exec_summary_evidence_utilization",
         ),
@@ -168,14 +173,12 @@ def _exec_summary_shape() -> SectionProductShape:
             "x2_exec_summary_no_credential_dump",
         ),
         required_any_text_patterns=(
-            r"5\s*[-–]\s*6",
-            r"5 or 6",
+            r"exactly\s+6",
+            r"\b6\s+sentences\b",
         ),
         required_all_text_patterns=(
             "fit_to_evidence",
-            "briefing_used_as_proof",
             "jd_used_as_proof",
-            "companion_context_used_as_proof",
             "targeting_only",
             EXEC_SUMMARY_PROMPT_ID,
         ),
@@ -183,7 +186,7 @@ def _exec_summary_shape() -> SectionProductShape:
         jd_alignment_proof_fields=JD_ALIGNMENT_PROOF_FIELDS,
         compile_hints=(
             f"template_id={EXEC_SUMMARY_PROMPT_ID}",
-            f"sentence_band={EXEC_SUMMARY_MIN_SENTENCES}-{EXEC_SUMMARY_MAX_SENTENCES}",
+            f"sentence_count={EXEC_SUMMARY_MIN_SENTENCES}",
             f"max_words={EXEC_SUMMARY_MAX_WORDS}",
             "x2_exec_summary_paragraph_max_words",
             "x2_exec_summary_evidence_utilization",
@@ -207,6 +210,7 @@ def _headline_shape() -> SectionProductShape:
             "x2_headline_exactly_one_line",
             "x2_headline_pipe_four_segments",
             "x2_headline_word_count_10_to_13",
+            "x2_headline_executive_length",
         ),
         proof_gate_ids=(
             "x2_headline_claim_ledger_rows_present",
@@ -433,7 +437,10 @@ def _ibm_narrative_shape() -> SectionProductShape:
             f"exactly 1 sentence; <= {NARRATIVE_MAX_WORDS} words; <= {NARRATIVE_MAX_CHARS} chars; "
             "requires finalized ibm bullets; no meta disclaimer in display"
         ),
-        bounds_gate_ids=("x2_ibm_narrative_exactly_one_sentence",),
+        bounds_gate_ids=(
+            "x2_ibm_narrative_exactly_one_sentence",
+            "x2_ibm_narrative_word_budget",
+        ),
         proof_gate_ids=(
             "x2_ibm_narrative_requires_finalized_bullets",
             "x2_ibm_narrative_claim_ledger_clause_decomposition",
@@ -539,11 +546,13 @@ __all__ = [
     "FORBIDDEN_LEGACY_EXEC_SUMMARY",
     "FORBIDDEN_LEGACY_HEADLINE",
     "FORBIDDEN_LEGACY_NARRATIVE",
+    "HEADLINE_MAX_CHARS",
     "HEADLINE_PIPE_SEPARATORS",
     "HEADLINE_SEGMENT_COUNT",
     "HEADLINE_SEGMENT_PREFIX",
     "HEADLINE_WORD_MAX",
     "HEADLINE_WORD_MIN",
+    "RETIRED_UNIFY_BULLETS_X2_GATE_IDS",
     "JD_ALIGNMENT_PROOF_FIELDS",
     "NARRATIVE_MAX_CHARS",
     "NARRATIVE_MAX_WORDS",

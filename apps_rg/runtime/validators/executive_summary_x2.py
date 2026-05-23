@@ -11,7 +11,7 @@ from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
-EXEC_SUMMARY_MIN_SENTENCES = 5
+EXEC_SUMMARY_MIN_SENTENCES = 6
 EXEC_SUMMARY_MAX_SENTENCES = 6
 EXEC_SUMMARY_MAX_WORDS = 140
 EXEC_SUMMARY_MAX_WORDS_PER_SENTENCE = 45
@@ -374,6 +374,12 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     """
     sentences = split_sentences(text)
     if len(sentences) < EXEC_SUMMARY_MIN_SENTENCES:
+        if EXEC_SUMMARY_MIN_SENTENCES == EXEC_SUMMARY_MAX_SENTENCES:
+            return (
+                False,
+                f"Output has {len(sentences)} sentences; executive synthesis requires exactly "
+                f"{EXEC_SUMMARY_MIN_SENTENCES} sentences",
+            )
         return (
             False,
             f"Output has {len(sentences)} sentences; executive synthesis requires "
@@ -1044,27 +1050,27 @@ def check_raw_json_no_selected_fact_plan_echo(raw_output: str | None) -> tuple[b
     return True, None
 
 
-def check_exec_summary_sentence_count_5_6(resume_display_text: str) -> tuple[bool, str | None]:
-    """Single product shape: 5–6 polished sentences (SRFS and non-SRFS)."""
+def check_exec_summary_sentence_count_6(resume_display_text: str) -> tuple[bool, str | None]:
+    """Single product shape: exactly six polished sentences (SRFS and non-SRFS)."""
     sentences = [s for s in split_sentences(resume_display_text) if str(s).strip()]
     n = len(sentences)
-    if n < EXEC_SUMMARY_MIN_SENTENCES:
+    if n != EXEC_SUMMARY_MIN_SENTENCES:
         return (
             False,
-            f"resume_display_text must have {EXEC_SUMMARY_MIN_SENTENCES}-{EXEC_SUMMARY_MAX_SENTENCES} "
-            f"sentences; found {n} (legacy 4-sentence band retired)",
-        )
-    if n > EXEC_SUMMARY_MAX_SENTENCES:
-        return (
-            False,
-            f"resume_display_text must have at most {EXEC_SUMMARY_MAX_SENTENCES} sentences; found {n}",
+            f"resume_display_text must have exactly {EXEC_SUMMARY_MIN_SENTENCES} sentences; found {n} "
+            "(legacy 4–5 and 5–6 bands retired)",
         )
     return True, None
 
 
+def check_exec_summary_sentence_count_5_6(resume_display_text: str) -> tuple[bool, str | None]:
+    """Deprecated alias — product band is exactly six sentences."""
+    return check_exec_summary_sentence_count_6(resume_display_text)
+
+
 def check_exec_summary_sentence_count_4_5(resume_display_text: str) -> tuple[bool, str | None]:
-    """Deprecated alias — product band is 5–6 sentences."""
-    return check_exec_summary_sentence_count_5_6(resume_display_text)
+    """Deprecated alias — product band is exactly six sentences."""
+    return check_exec_summary_sentence_count_6(resume_display_text)
 
 
 def check_exec_summary_jd_alignment_proof_flags(
@@ -1218,7 +1224,7 @@ def check_exec_summary_paragraph_max_words(
     resume_display_text: str,
     parsed_output: dict[str, Any] | None = None,
 ) -> tuple[bool, str | None]:
-    """Overflow guard only — no paragraph word minimum (fit_to_evidence + 5–6 sentences)."""
+    """Overflow guard only — no paragraph word minimum (fit_to_evidence + exactly six sentences)."""
     _ = parsed_output
     wc = _resume_word_count(resume_display_text)
     if wc > EXEC_SUMMARY_MAX_WORDS:
@@ -1594,13 +1600,13 @@ def run_x2_gates(
         [],
         colon_stitch_reason,
     )
-    sent56_ok, sent56_reason = check_exec_summary_sentence_count_5_6(resume_display_text)
+    sent6_ok, sent6_reason = check_exec_summary_sentence_count_6(resume_display_text)
     add(
-        "x2_exec_summary_sentence_count_5_6",
-        sent56_ok,
-        sent56_reason or "ok",
-        f"{EXEC_SUMMARY_MIN_SENTENCES}-{EXEC_SUMMARY_MAX_SENTENCES}",
-        sent56_reason,
+        "x2_exec_summary_sentence_count_6",
+        sent6_ok,
+        sent6_reason or "ok",
+        f"exactly_{EXEC_SUMMARY_MIN_SENTENCES}",
+        sent6_reason,
     )
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         resume_display_text,

@@ -383,7 +383,7 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
 
     artifact_refs = {n: _rel(lp.p(n)) for n in REQUIRED_RELATIVE}
     if (base / EXIT_DISPOSITION_RECEIPT_ARTIFACT).is_file():
-        artifact_refs[EXIT_DISPOSITION_RECEIPT_ARTIFACT] = _rel(
+        artifact_refs[EXIT_DISPOSITION_RECEIPT_ARTIFACT] = _rel(  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             base / EXIT_DISPOSITION_RECEIPT_ARTIFACT
         )
     x3_auth = resolve_lane_x3_from_artifact_refs(

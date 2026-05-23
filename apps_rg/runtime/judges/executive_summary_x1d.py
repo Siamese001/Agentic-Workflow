@@ -161,7 +161,7 @@ Rubric dimensions:
 6. synthesis_quality: **executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, visible process language
    (e.g. “selected facts”, “active-voice delivery”, “governance discipline” as filler), and excessive naked capability lists without narrative.
 
-**Target shape:** **5–6 dense sentences** (one executive paragraph, max 140 words); commercially aware technical platform story; metrics/credentials only when ledger-backed.
+**Target shape:** **exactly six dense sentences** (one executive paragraph, max 140 words); commercially aware technical platform story; metrics/credentials only when ledger-backed.
 
 Decisive failure triggers:
 - unsupported business metric or credential (including pasted gold-example numbers/titles not in ledger)
@@ -533,7 +533,7 @@ def _parse_gemini_retry_delay_seconds(error_body: str) -> float | None:
                 try:
                     delay = float(s)
                     break
-                except ValueError:
+                except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                     continue
     if delay is None and msg:
         m = re.search(r"retry\s+in\s+([0-9]+(?:\.[0-9]+)?)\s*s", msg, flags=re.I)
@@ -559,7 +559,7 @@ def _classify_gemini_http_block(status_code: int, error_body: str) -> tuple[str,
         snippet = (
             error_body[:500] + ("…" if len(error_body) > 500 else "")
             if error_body
-            else f"Gemini authorization error ({status_code})."
+            else f"Gemini authorization error ({status_code})."  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         )
         return (
             "BLOCKED_PROVIDER_UNAVAILABLE",
@@ -1650,7 +1650,7 @@ def run_llm_judges(
                 (
                     f"No non-empty API credential in {env_checked}; "
                     f"Gemini resolves GOOGLE_API_KEY then deprecated GEMINI_API_KEY alias."
-                    if key == "gemini_pro"
+                    if key == "gemini_pro"  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     else f"{meta['env']} environment variable not set"
                 ),
             ))

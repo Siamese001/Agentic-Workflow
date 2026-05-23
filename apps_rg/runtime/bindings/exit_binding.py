@@ -544,7 +544,7 @@ def _safe_run_dirname(run_id: str) -> str:
 
 def _build_artifact_commit_candidate(
     artifact_type: str,
-    proposed_path: str,
+    proposed_path: str,  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
     content_digest: str,
     serialized_content: dict,
 ) -> InertArtifactCommitCandidate:

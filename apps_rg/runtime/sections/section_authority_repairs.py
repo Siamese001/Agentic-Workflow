@@ -84,7 +84,7 @@ def _exec_summary_shape_ok(resume_display_text: str, parsed: dict[str, Any]) -> 
         check_exec_summary_meta_filler_patterns,
         check_exec_summary_no_credential_dump,
         check_exec_summary_paragraph_max_words,
-        check_exec_summary_sentence_count_5_6,
+        check_exec_summary_sentence_count_6,
     )
 
     failures: list[str] = []
@@ -97,7 +97,7 @@ def _exec_summary_shape_ok(resume_display_text: str, parsed: dict[str, Any]) -> 
     cred_ok, cred_reason = check_exec_summary_no_credential_dump(resume_display_text)
     if not cred_ok and cred_reason:
         failures.append(cred_reason)
-    sent_ok, sent_reason = check_exec_summary_sentence_count_5_6(resume_display_text)
+    sent_ok, sent_reason = check_exec_summary_sentence_count_6(resume_display_text)
     if not sent_ok and sent_reason:
         failures.append(sent_reason)
     if failures:

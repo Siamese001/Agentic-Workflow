@@ -14,7 +14,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
-    check_exec_summary_sentence_count_5_6,
+    check_exec_summary_sentence_count_6,
     collect_unused_allowed_fact_ids,
 )
 
@@ -40,16 +40,17 @@ Mandatory rules:
 """.strip()
 
 SRFS_GRADE_ONLY_RUBRIC = """
-Rubric dimensions (SRFS executive summary — product shape **5 or 6 sentences**, one paragraph, max 140 words):
+Rubric dimensions (SRFS executive summary — product shape **exactly 6 sentences**, one paragraph, max 140 words):
 1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids.
 2. executive_signal: SVP-level platform/governance/commercialization synthesis, not bullet stacks.
 3. resume_voice: credible third-person executive prose; penalize recruiter filler, "this individual", "Additionally/Furthermore" chains.
 4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
-6. synthesis_quality: **5–6** integrated sentences with optional composition themes (identity, platform/governance,
-   scale/commercialization, outcomes, implied credibility). **Not** a fixed S1–S5 slot checklist. **4 sentences is valid**
-   when dense and complete. **Concise alone is insufficient** when evidence_utilization lists unused high-confidence facts
-   or prose reads as four stacked bullets. Credential facts are **optional** — omit rather than inventory AWS/Databricks/FSA/Basel/CCAR labels.
+6. synthesis_quality: **exactly six** integrated sentences with optional composition themes (identity, platform/governance,
+   scale/commercialization, outcomes, implied credibility). **Not** a fixed S1–S5 slot checklist. Fewer than six sentences
+   is a decisive failure (aligned with x2_exec_summary_sentence_count_6). **Concise alone is insufficient** when
+   evidence_utilization lists unused high-confidence facts or prose reads as stacked bullets. Credential facts are
+   **optional** — omit rather than inventory AWS/Databricks/FSA/Basel/CCAR labels.
 7. evidence_utilization: penalize under-use of allowed_fact_packet when unused_fact_ids is non-empty and synthesis is thin.
 8. deterministic_alignment: **only** penalize gates that show `"pass": false` in deterministic_gate_summary.
 
@@ -91,7 +92,7 @@ Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS la
 3. resume_voice: credible executive prose; no recruiter filler or meta narration.
 4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
-6. synthesis_quality: **5–6 dense executive sentences** (same band as X2); integrated narrative flow;
+6. synthesis_quality: **six dense executive sentences** (same band as X2); integrated narrative flow;
    penalize orphan source_fact_ids not in allowed_fact_packet and bare credential inventory.
 7. deterministic_alignment: respect deterministic_gate_summary — penalize failed density, orphans, or scope violations.
 
@@ -162,8 +163,8 @@ def build_deterministic_gate_summary(
     claim_ledger: list[dict[str, Any]],
     allowed_fact_ids: set[str],
 ) -> dict[str, Any]:
-    """Pre-judge X2 gate snapshot aligned with live product-shape gates (5–6 sentences, max 140 words)."""
-    sent_ok, sent_reason = check_exec_summary_sentence_count_5_6(resume_display_text)
+    """Pre-judge X2 gate snapshot aligned with live product-shape gates (exactly six sentences, max 140 words)."""
+    sent_ok, sent_reason = check_exec_summary_sentence_count_6(resume_display_text)
     cred_ok, cred_reason = check_exec_summary_no_credential_dump(resume_display_text)
     mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(resume_display_text)
     bounds_ok, bounds_reason = check_exec_summary_paragraph_max_words(
@@ -179,7 +180,7 @@ def build_deterministic_gate_summary(
         isinstance(r, dict) and str(r.get("claim_text") or "").strip() for r in claim_ledger
     )
     return {
-        "x2_exec_summary_sentence_count_5_6": {
+        "x2_exec_summary_sentence_count_6": {
             "pass": sent_ok,
             "detail": sent_reason or "ok",
         },
@@ -215,7 +216,7 @@ def build_deterministic_gate_summary(
         },
         "product_shape_note": {
             "pass": True,
-            "detail": "5-6 sentences; composition heuristics; no mandatory S1-S5 arc",
+            "detail": "exactly 6 sentences; composition heuristics; no mandatory S1-S5 arc",
         },
     }
 

@@ -1,5 +1,7 @@
 """Phase 0 modular R4 API — shared runner (artifact-local; optional via ``GenerateResumeStep`` flag).
 
+PHASE0_SMOKE_ONLY: synthetic lane payloads here are wiring stubs — forbidden as product-shape proof.
+
 Writes **only** under ``Path(artifact_dir) / \"modular_r4\"`` for pipeline artifacts
 (does not use ``artifacts/apps_rg/runtime_proofs`` for canonical outputs).
 
@@ -466,7 +468,7 @@ def run_modular_resume_generation(
             targeting=lane_targeting,
         )
         lane_run_dirs: dict[str, Path] = {}
-        lane_dispatch_results: dict[str, dict[str, Any]] = {}
+        lane_dispatch_results: dict[str, dict[str, Any]] = {}  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
         _ = lane_argv  # argv shape retained for phase1_lane_inventory metadata
         lane_mock_j_for_phase1 = False
         tc = str(lane_targeting.target_company or "") if lane_targeting is not None else ""

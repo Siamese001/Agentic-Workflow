@@ -502,3 +502,76 @@ def test_all_seven_lane_ids_required() -> None:
     assert res.ok is False
     assert "missing_required_lanes" in res.failure_reason
     assert "headline" in res.failure_reason
+
+
+def _six_sentence_exec_text(word_repeat: int = 12) -> str:
+    clause = " ".join(["platform"] * word_repeat)
+    return (
+        f"Engineering executive delivers governed agentic AI platforms with {clause}. "
+        f"The leader scales deterministic routing and policy-gated execution with {clause}. "
+        f"Platform lifecycle work ties architecture to commercial adoption with {clause}. "
+        f"Delivery outcomes include measurable margin improvements with {clause}. "
+        f"Prior roles show quantitative depth across regulated programs with {clause}. "
+        f"Governed runtime delivery stays audit-ready without weakening velocity with {clause}."
+    )
+
+
+def test_export_accepts_six_sentence_exec_summary_61_to_140_words(tmp_path: Path) -> None:
+    repo = find_repo_root()
+    art = tmp_path / "export_band"
+    art.mkdir()
+    modular_root = art / "modular_r4"
+    modular_root.mkdir()
+    base = json.loads(
+        (repo / "tests" / "_fixtures" / "modular_rg_merge" / "base_resume_min_for_merge.json").read_text(
+            encoding="utf-8",
+        ),
+    )
+    lanes = _lane_bundle()
+    lanes["executive_summary"]["resume_display_text"] = _six_sentence_exec_text(word_repeat=3)
+    res = build_rg_output_from_modular_sections(
+        lane_l2_by_id=lanes,
+        base_resume=base,
+        input_package=_Pkg(),
+        modular_root=modular_root,
+        artifact_dir=art,
+        run_id=f"export_band_{uuid.uuid4().hex[:8]}",
+        reject_mocked_lanes=True,
+    )
+    assert res.ok is True, res.failure_reason
+    assert res.rg_output is not None
+    wc = res.rg_output["sections"]["summary"]["word_count"]
+    assert 61 <= wc <= 140
+
+
+def test_export_preserves_eight_competency_categories(tmp_path: Path) -> None:
+    repo = find_repo_root()
+    art = tmp_path / "export_comp"
+    art.mkdir()
+    modular_root = art / "modular_r4"
+    modular_root.mkdir()
+    base = json.loads(
+        (repo / "tests" / "_fixtures" / "modular_rg_merge" / "base_resume_min_for_merge.json").read_text(
+            encoding="utf-8",
+        ),
+    )
+    lanes = _lane_bundle()
+    lanes["competencies"]["competencies"] = [
+        {
+            "category_label": f"Category {i}",
+            "terms": [{"text": f"Skill {i}a"}, {"text": f"Skill {i}b"}, {"text": f"Skill {i}c"}],
+        }
+        for i in range(8)
+    ]
+    res = build_rg_output_from_modular_sections(
+        lane_l2_by_id=lanes,
+        base_resume=base,
+        input_package=_Pkg(),
+        modular_root=modular_root,
+        artifact_dir=art,
+        run_id=f"export_comp_{uuid.uuid4().hex[:8]}",
+        reject_mocked_lanes=True,
+    )
+    assert res.ok is True, res.failure_reason
+    cats = res.rg_output["sections"]["skills"]["categories"]
+    assert len(cats) == 8

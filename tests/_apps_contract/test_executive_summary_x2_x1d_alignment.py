@@ -12,11 +12,11 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_meta_filler_patterns,
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
-    check_exec_summary_sentence_count_5_6,
+    check_exec_summary_sentence_count_6,
 )
 
 
-def _good_five_sentence_summary() -> str:
+def _good_six_sentence_summary() -> str:
     return (
         "Engineering executive building governed agentic AI platforms for regulated enterprise delivery "
         "with traceable execution, commercial discipline, and accountable operating cadence across "
@@ -27,7 +27,8 @@ def _good_five_sentence_summary() -> str:
         "and improved audit readiness for risk and finance stakeholders. "
         "Re-architected risk analytics with containerized microservices achieved faster calculations, "
         "real-time stress testing, and more reliable decision support for senior leadership. "
-        "Quantitative actuarial depth informs governance and delivery trade-offs across complex programs."
+        "Quantitative actuarial depth informs governance and delivery trade-offs across complex programs. "
+        "Governed runtime delivery stays audit-ready without weakening commercial velocity."
     )
 
 
@@ -42,15 +43,15 @@ def test_meta_filler_rejects_this_individual() -> None:
 
 
 def test_x2_product_gates_pass_on_aligned_candidate() -> None:
-    text = _good_five_sentence_summary()
-    assert check_exec_summary_sentence_count_5_6(text)[0]
+    text = _good_six_sentence_summary()
+    assert check_exec_summary_sentence_count_6(text)[0]
     assert check_exec_summary_no_credential_dump(text)[0]
     assert check_exec_summary_no_mechanism_inventory(text)[0]
     assert check_exec_summary_meta_filler_patterns(text)[0]
 
 
 def test_judge_packet_gate_summary_matches_product_gates() -> None:
-    text = _good_five_sentence_summary()
+    text = _good_six_sentence_summary()
     ledger = [
         {
             "claim_text": "Governed agentic AI platform delivery.",
@@ -65,7 +66,7 @@ def test_judge_packet_gate_summary_matches_product_gates() -> None:
     )
     assert summary["x2_exec_summary_no_credential_dump"]["pass"] is True
     assert summary["x2_exec_summary_no_mechanism_inventory"]["pass"] is True
-    assert summary["x2_exec_summary_sentence_count_5_6"]["pass"] is True
+    assert summary["x2_exec_summary_sentence_count_6"]["pass"] is True
     assert "x2_exec_summary_evidence_utilization" in summary
     assert "x2_exec_summary_srfs_density_word_count" not in summary
     assert "x2_exec_summary_srfs_sentence_count_4_5" not in summary
@@ -75,7 +76,7 @@ def test_judge_packet_gate_summary_matches_product_gates() -> None:
 def test_reconcile_clears_decisive_failure_on_retired_arc_when_gates_pass() -> None:
     gates = {
         "x2_exec_summary_no_credential_dump": {"pass": True, "detail": "ok"},
-        "x2_exec_summary_sentence_count_5_6": {"pass": True, "detail": "ok"},
+        "x2_exec_summary_sentence_count_6": {"pass": True, "detail": "ok"},
     }
     raw = {
         "score_scale": "0_to_5",
@@ -126,7 +127,7 @@ def test_x3_allow_when_x2_pass_and_all_judges_model_backed_pass() -> None:
         },
     ]
     x3 = aggregate_x3(
-        resume_display_text=_good_five_sentence_summary(),
+        resume_display_text=_good_six_sentence_summary(),
         claim_ledger=[],
         x2_gates=[{"gate_id": "x2_exec_summary_no_credential_dump", "pass": True}],
         x1d_judges=judges,
@@ -148,7 +149,7 @@ def test_x3_allow_when_x2_pass_and_all_judges_model_backed_pass() -> None:
 
 
 def test_build_judge_packet_includes_reconcilable_gate_summary() -> None:
-    text = _good_five_sentence_summary()
+    text = _good_six_sentence_summary()
     packet = build_executive_summary_judge_packet(
         resume_display_text=text,
         claim_ledger=[

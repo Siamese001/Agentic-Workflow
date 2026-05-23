@@ -212,7 +212,7 @@ def test_in_process_harness_product_shape_gates_pass(
     by_id = {g["gate_id"]: g for g in ctx["x2"]}
     assert by_id["x2_exec_summary_no_credential_dump"]["pass"] is True
     assert by_id["x2_exec_summary_no_mechanism_inventory"]["pass"] is True
-    assert by_id["x2_exec_summary_sentence_count_5_6"]["pass"] is True
+    assert by_id["x2_exec_summary_sentence_count_6"]["pass"] is True
     assert by_id.get("x2_exec_summary_meta_filler_zero", {}).get("pass") is True
 
 

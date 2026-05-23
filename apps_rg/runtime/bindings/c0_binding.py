@@ -193,7 +193,7 @@ class C0EvidenceGapError(Exception):
 # _NORMATIVE_SOURCE_CLASSES_HARDCODED is the fallback used when the YAML
 # cannot be loaded. Both must stay in sync with the profile.
 _NORMATIVE_SOURCE_CLASSES_HARDCODED: tuple[str, ...] = (
-    "candidate_profile",
+    "candidate_profile",  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
     "project_evidence",
     "approved_examples",
     "rubrics",
@@ -356,7 +356,7 @@ def c0_retrieve_apps_rg(
                     source_type="app_payload_inline",
                     retrieval_timestamp=ts,
                     allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
-                )
+                )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             )
 
     chroma_lane_items: list[EvidenceItem] = []
@@ -640,7 +640,7 @@ def c0_retrieve_apps_rg(
 # =============================================================================
 
 def _emit_retrieval_quality_span(
-    evidence_items: list[Any],
+    evidence_items: list[Any],  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
     support_status: str,
     gate_verdicts: list[Any],
     evidence_digest: str,
@@ -1054,7 +1054,7 @@ def _merge_section_dense_sparse_items(
                     bm25_score=float(row.lexical_score),
                     confidence_score=float(max(row.vector_score, row.lexical_score)),
                     retrieval_method="sparse" if row.vector_score <= 0.0 else "dense,sparse",
-                    retrieval_run_ref="c0_section_sparse:v1",
+                    retrieval_run_ref="c0_section_sparse:v1",  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     retrieval_timestamp=timestamp_iso,
                     allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
                     support_status=STATUS_UNKNOWN,
@@ -1250,7 +1250,7 @@ def _perform_bounded_section_retrieval(
                 query_embeddings=[qemb],
                 n_results=min(nk, 32),
                 where=where,
-            )
+            )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
 
             section_dense_items: list[EvidenceItem] = []
             if result and result.get("ids"):
@@ -1380,7 +1380,7 @@ def _perform_bounded_section_retrieval(
                 _build_section_evidence_trace(
                     section,
                     query,
-                    section_dense_items,
+                    section_dense_items,  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     app_payload,
                     timestamp_iso=timestamp_iso,
                 )

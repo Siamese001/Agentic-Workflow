@@ -79,7 +79,7 @@ output_contract:
     - name: rewrite_distribution
       type: "object"
       schema:
-        HEAVY: "integer (0-3, max 3)"
+        HEAVY: "integer (must equal 2 for product distribution)"
         MODERATE: "integer (0-6)"
         LIGHT_PROTECTED: "integer (1-6, min 1)"
         total: "integer (must equal 6)"
@@ -88,7 +88,7 @@ output_contract:
         MODERATE: 3
         LIGHT_PROTECTED: 1
       constraints:
-        - "HEAVY <= 3"
+        - "HEAVY == 2"
         - "LIGHT_PROTECTED >= 1"
         - "HEAVY + MODERATE + LIGHT_PROTECTED == 6"
     - name: claim_ledger
@@ -125,7 +125,7 @@ rewrite_rules:
       protected_bullet_rationale: "Platform Commercialization and Engineering Leadership contains compound metrics ($22M, 20%, 8 to 28) that should not be split"
     CUSTOM:
       requires_strategic_justification: true
-      max_HEAVY: 3
+      max_HEAVY: 2
       min_LIGHT_PROTECTED: 1
       
   bullet_specific_guidance:
@@ -201,9 +201,9 @@ validation_rules:
     - assert: "len(output.bullets) == 6"
       error: "BULLET_COUNT_INVALID"
       message: "Must emit exactly 6 bullets"
-    - assert: "output.rewrite_distribution.HEAVY <= 3"
-      error: "HEAVY_EXCEEDS_MAX"
-      message: "Cannot have more than 3 HEAVY rewrites"
+    - assert: "output.rewrite_distribution.HEAVY == 2"
+      error: "HEAVY_DISTRIBUTION_INVALID"
+      message: "Product shape requires exactly 2 HEAVY rewrites"
     - assert: "output.rewrite_distribution.LIGHT_PROTECTED >= 1"
       error: "NO_LIGHT_PROTECTED"
       message: "Must have at least 1 LIGHT_PROTECTED bullet"

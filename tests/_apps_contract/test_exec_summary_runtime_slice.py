@@ -1417,11 +1417,11 @@ def test_compile_exec_summary_srfs_includes_style_oneshot_block():
     assert "<srfs_composition_oneshot" in body
     assert "<srfs_style_only_oneshot" in body
     assert "PRODUCT_SHAPE" in body
-    assert "x2_exec_summary_sentence_count_5_6" in body
+    assert "x2_exec_summary_sentence_count_6" in body
     assert "x2_exec_summary_no_credential_dump" in body
 
 
-def test_srfs_sentence_responsibility_shape_passes_compliant_five_sentences():
+def test_srfs_sentence_responsibility_shape_passes_compliant_six_sentences():
     from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
@@ -1432,6 +1432,7 @@ def test_srfs_sentence_responsibility_shape_passes_compliant_five_sentences():
         "Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and "
         "commercialization, connecting governed runtime primitives to reusable platform services adopted across enterprise "
         "programs. "
+        "Theme-led delivery connects governed runtime primitives to reusable platform services across enterprise programs. "
         "Delivered measurable commercial and engineering outcomes including IP-led revenue expansion, gross margin "
         "improvement, and disciplined deployment cycles grounded in cited executive facts. "
         "Fellow of the Society of Actuaries reinforces quantitative credibility for regulated enterprise stakeholders."
@@ -1575,7 +1576,7 @@ def test_srfs_sentence_responsibility_shape_not_emitted_in_run_x2():
     assert "x2_exec_summary_srfs_sentence_count_4_5" not in by_id
 
 
-def test_x2_sentence_count_5_6_active_for_srfs_and_non_srfs():
+def test_x2_sentence_count_6_active_for_srfs_and_non_srfs():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     resume = (
@@ -1583,7 +1584,8 @@ def test_x2_sentence_count_5_6_active_for_srfs_and_non_srfs():
         "Mechanism sentence with orchestration and traceability to improve reliability. "
         "Lifecycle bridge without commercial metrics in this lane. "
         "Outcomes sentence with $1M revenue supported by facts. "
-        "Credibility sentence weaving quantitative depth into delivery context without credential labels."
+        "Credibility sentence weaving quantitative depth into delivery context without credential labels. "
+        "Governed runtime delivery stays audit-ready without weakening commercial velocity."
     )
     gates = run_x2_gates(
         resume_display_text=resume,
@@ -1605,8 +1607,8 @@ def test_x2_sentence_count_5_6_active_for_srfs_and_non_srfs():
         strategic_tailor_v1_invoked=False,
     )
     by_id = {g.gate_id: g for g in gates}
-    g56 = by_id["x2_exec_summary_sentence_count_5_6"]
-    assert g56.pass_ is True
+    g6 = by_id["x2_exec_summary_sentence_count_6"]
+    assert g6.pass_ is True
     assert "x2_exec_summary_srfs_sentence_responsibility_shape" not in by_id
 
 

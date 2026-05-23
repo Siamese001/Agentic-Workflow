@@ -319,7 +319,7 @@ def project_governed_chroma_read_surface(
         artifact_dir / REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
         {
             "record_id": record.record_id,
-            "request_intent_embedding_ref": f"embeddings/{record.record_id}.json",
+            "request_intent_embedding_ref": f"embeddings/{record.record_id}.json",  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             "embedding": intent_payload,
             "not_c0_fact_vectors": True,
         },

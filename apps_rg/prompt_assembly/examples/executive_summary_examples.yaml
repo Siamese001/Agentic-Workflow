@@ -1,7 +1,7 @@
 version: "1.0"
 section: executive_summary
 description: >
-  Multishot examples for the executive_summary section (product band 5-6 sentences, max 140 words).
+  Multishot examples for the executive_summary section (product band exactly 6 sentences, max 140 words).
   Proof substrate is always selected base-résumé facts + claim_ledger in runtime artifacts;
   examples teach voice and structure only unless marked as STYLE_EXAMPLE_NOT_PROOF.
 
@@ -14,7 +14,12 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure grounded in quantitative actuarial and distributed systems depth.
+      Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments.
+      Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed.
+      Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs.
+      Generated $22M in productized AI revenue, expanded gross margins by 20%, and reclaimed $14M in operating capacity across enterprise programs.
+      Reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure grounded in quantitative actuarial depth.
+      Distributed systems and regulated-risk analytics experience inform governance and commercialization balance when selected facts support those themes.
     claim_ledger_grounded: false
     annotation: >
       STYLE AND QUALITY TARGET ONLY — not proof for arbitrary runs.
@@ -34,7 +39,12 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Generated $22M in productized AI revenue and expanded gross margins by 20% by turning complex AI capabilities into repeatable, production-ready platform services adopted across enterprise programs. Engineering executive building production-grade AI platforms and governed runtime architecture for regulated enterprise environments. Designs and operates systems that combine orchestration, retrieval, policy enforcement, and traceability to improve reliability, auditability, and deployment speed. Leads full platform lifecycle work across architecture, operating model, and engineering scale-out. Quantitative actuarial depth supports regulated delivery when those themes appear in the allowed pool.
+      Generated $22M in productized AI revenue and expanded gross margins by 20% by turning complex AI capabilities into repeatable, production-ready platform services adopted across enterprise programs.
+      Engineering executive building production-grade AI platforms and governed runtime architecture for regulated enterprise environments.
+      Designs and operates systems that combine orchestration, retrieval, policy enforcement, and traceability to improve reliability, auditability, and deployment speed.
+      Leads full platform lifecycle work across architecture, operating model, and engineering scale-out.
+      Quantitative actuarial depth supports regulated delivery when those themes appear in the allowed pool.
+      Platform commercialization and governance themes stay woven into one narrative arc rather than stacked credential lists.
     claim_ledger_grounded: false
     annotation: >
       STYLE VARIANT — outcomes-led narrative order (commercial arc first). Same density
@@ -49,7 +59,12 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Engineering executive building governed agentic AI platforms for regulated enterprise delivery with deterministic controls and traceable execution. Leads platform lifecycle and commercialization, converting complex delivery into reusable services adopted across programs. Generated proof-backed revenue and margin outcomes when selected facts support them. Quantitative and platform depth inform governance and commercialization balance, woven into delivery context rather than listed as a separate credential inventory.
+      Engineering executive building governed agentic AI platforms for regulated enterprise delivery with deterministic controls and traceable execution.
+      Leads platform lifecycle and commercialization, converting complex delivery into reusable services adopted across programs.
+      Generated proof-backed revenue and margin outcomes when selected facts support them.
+      Quantitative and platform depth inform governance and commercialization balance, woven into delivery context rather than listed as a separate credential inventory.
+      Delivery outcomes remain anchored in allowed facts without credential inventory blocks.
+      Regulated enterprise posture stays visible through governance and execution discipline when facts support those themes.
     claim_ledger_grounded: false
     annotation: >
       STYLE VARIANT — credentials woven into a substantive sentence (not a fifth-slot cert dump).
@@ -62,7 +77,12 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Engineering executive building governed agentic AI platforms for regulated enterprise delivery with traceable execution and policy discipline. Leads platform lifecycle and commercialization, converting complex capabilities into reusable services adopted across programs. Generated proof-backed revenue and margin outcomes when selected facts support them. Quantitative actuarial training and cloud data platform depth reinforce governance and delivery decisions without naming individual certifications.
+      Engineering executive building governed agentic AI platforms for regulated enterprise delivery with traceable execution and policy discipline.
+      Leads platform lifecycle and commercialization, converting complex capabilities into reusable services adopted across programs.
+      Generated proof-backed revenue and margin outcomes when selected facts support them.
+      Quantitative actuarial training and cloud data platform depth reinforce governance and delivery decisions without naming individual certifications.
+      Platform scale and operating discipline stay integrated with commercial outcomes when selected facts support them.
+      Credibility is implied through delivery context rather than certification label stacks in the display paragraph.
     claim_ledger_grounded: false
     annotation: >
       STYLE VARIANT — passes x2_exec_summary_no_credential_dump: implies credibility without
@@ -76,11 +96,16 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one enterprise direction when facts support platform and governance themes. Scales engineering and platform delivery with quantified margin and revenue outcomes woven into a single narrative arc rather than stacked bullets. Leads platform lifecycle and operating-model design when selected facts support scale and governance themes. Delivers proof-backed outcomes across regulated enterprise programs when ALLOWED_SOURCE_FACT_IDS support commercial and delivery metrics.
+      Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one enterprise direction when facts support platform and governance themes.
+      Scales engineering and platform delivery with quantified margin and revenue outcomes woven into a single narrative arc rather than stacked bullets.
+      Leads platform lifecycle and operating-model design when selected facts support scale and governance themes.
+      Delivers proof-backed outcomes across regulated enterprise programs when ALLOWED_SOURCE_FACT_IDS support commercial and delivery metrics.
+      Enterprise direction stays coherent across platform, governance, and commercialization themes when facts support them.
+      Targeting shapes emphasis only; proof remains in claim_ledger and allowed facts rather than JD or briefing copy.
     claim_ledger_grounded: false
     annotation: >
       STYLE VARIANT — SVP IT strategy register (targeting shapes emphasis only). Four dense
-      sentences (expand to 5-6 in live runs); JD/briefing may tilt emphasis but must not add proof.
+      sentences (expand to exactly 6 in live runs); JD/briefing may tilt emphasis but must not add proof.
 
   - id: exec_summary_neg_credential_dump_001
     category: negative

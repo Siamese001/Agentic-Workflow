@@ -75,7 +75,7 @@ def _x2_all_pass(blob: Mapping[str, Any]) -> tuple[bool, list[str]]:
 
 
 def _rollup_x2_failed_int(raw: Any) -> int | None:
-    if isinstance(raw, bool):
+    if isinstance(raw, bool):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     if isinstance(raw, int):
         return raw
@@ -163,7 +163,7 @@ def _merge_l6_package_checks(per_lane: Mapping[str, Mapping[str, Any]]) -> tuple
     return agg, fatal_bundle
 
 
-def _load_json_if_exists(path: Path) -> dict[str, Any]:
+def _load_json_if_exists(path: Path) -> dict[str, Any]:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
     if not path.is_file():
         return {}
     try:

@@ -83,7 +83,7 @@ def test_product_shape_block_format() -> None:
     assert "Bounds gates" in block
     assert "Proof gates" in block
     assert "Style gates" in block
-    assert "x2_exec_summary_sentence_count_5_6" in block
+    assert "x2_exec_summary_sentence_count_6" in block
     assert "x2_exec_summary_paragraph_max_words" in block
     assert "fit_to_evidence" in block
 
@@ -117,8 +117,20 @@ def test_compiled_prompt_includes_product_shape_block() -> None:
     out = augment_section_compiled_with_input_authority(
         compiled,
         allowed_source_fact_ids=["bul_unify_001"],
+        skills_authority_metadata={
+            "evidence_authority": {
+                "authority": "augmented_skills_graph",
+                "graph_ref": "artifacts/adg/augmented_skills_graph.json",
+                "ledger_ref": "artifacts/adg/candidate_fact_ledger.json",
+                "skills_authority_status": "PASS",
+            },
+            "augmented_skills_graph_present": True,
+            "graph_ref": "artifacts/adg/augmented_skills_graph.json",
+            "graph_version": "test",
+        },
     )
     content = str(out.artifact.messages[-1]["content"])
     assert "PRODUCT_SHAPE" in content
     assert "INPUT_AUTHORITY" in content
-    assert re.search(r"4\s*[-–]\s*5|4-5", content) or "4-5" in content
+    assert re.search(r"exactly\s+6|6\s+sentences", content, re.IGNORECASE)
+    assert not re.search(r"4\s*[-–]\s*5\s+dense", content, re.IGNORECASE)

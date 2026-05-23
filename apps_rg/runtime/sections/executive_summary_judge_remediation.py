@@ -250,9 +250,9 @@ def build_judge_remediation_user_message(
         )
     prefer_five = ""
     if allowed_fact_count >= 6:
-        prefer_five = "Shape: 5 or 6 sentences (max 140 words); prefer 6 when integrating additional allowed facts.\n"
+        prefer_five = "Shape: exactly 6 sentences (max 140 words); integrate additional allowed facts across the six-sentence arc.\n"
     else:
-        prefer_five = "Shape: 5 or 6 sentences (max 140 words); fit_to_evidence integrated narrative.\n"
+        prefer_five = "Shape: exactly 6 sentences (max 140 words); fit_to_evidence integrated narrative.\n"
     return (
         "JUDGE_REMEDIATION (GRADE_ONLY feedback — do not invent facts):\n"
         f"- synthesis: {' | '.join(feedback['synthesis'][:6]) or 'improve integrated narrative; reduce bullet-stack'}\n"

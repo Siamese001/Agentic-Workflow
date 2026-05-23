@@ -23,11 +23,19 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 from apps_rg.runtime.qwen_offline_contract_stub import offline_contract_stub_enabled
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, UNIFY_RUNTIME_TERM_PATTERNS
 from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
+from apps_rg.runtime.sections.section_product_shape_ssot import (
+    NARRATIVE_MAX_CHARS,
+    NARRATIVE_MAX_WORDS,
+)
 from apps_rg.runtime.validators.resume_narrative_display_x2 import (
     ACCEPTED_FINALIZED_COMPANION_STATUS,
     career_bridge_phrase_hits,
     check_ibm_narrative_no_meta_disclaimer_in_display,
 )
+
+
+def _narrative_word_count(text: str) -> int:
+    return len(text.split())
 
 
 @dataclass
@@ -323,6 +331,17 @@ def run_ibm_narrative_x2_gates(
         len(sentences),
         1,
         "Must be exactly one sentence.",
+    )
+
+    stripped_narrative = narrative_sentence.strip()
+    wc = _narrative_word_count(stripped_narrative)
+    budget_ok = wc <= NARRATIVE_MAX_WORDS and len(stripped_narrative) <= NARRATIVE_MAX_CHARS
+    add(
+        "x2_ibm_narrative_word_budget",
+        budget_ok,
+        {"word_count": wc, "char_len": len(stripped_narrative)},
+        f"<={NARRATIVE_MAX_WORDS} words and <={NARRATIVE_MAX_CHARS} chars",
+        None if budget_ok else "IBM narrative exceeds word or character budget.",
     )
 
     leaks_name, name_hit = narrative_leaks_candidate_name_tokens(narrative_sentence, candidate_name)

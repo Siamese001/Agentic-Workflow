@@ -462,7 +462,7 @@ def run_unify_bullets_x2_gates(
         "Rewrite distribution must be 2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED.",
     )
 
-    add("x2_unify_max_heavy_3", intensity_counts["HEAVY"] <= 3, intensity_counts["HEAVY"], 3, "HEAVY count exceeds 3.")
+    # x2_unify_max_heavy_3 retired — non-authoritative; use x2_unify_rewrite_distribution_valid only.
     add(
         "x2_unify_min_light_protected_1",
         intensity_counts["LIGHT_PROTECTED"] >= 1,

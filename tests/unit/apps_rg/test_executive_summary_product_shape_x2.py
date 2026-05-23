@@ -1,4 +1,4 @@
-"""Executive summary product shape: 5–6 sentences, max 140 words, quality gates, briefing, prompt authority."""
+"""Executive summary product shape: exactly six sentences, max 140 words, quality gates, briefing, prompt authority."""
 
 from __future__ import annotations
 
@@ -19,20 +19,21 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
-    check_exec_summary_sentence_count_5_6,
+    check_exec_summary_sentence_count_6,
     check_prompt_template_authority,
     check_synthesis_quality,
     EXPECTED_PROMPT_ID,
 )
 
 
-def _five_good_sentences() -> str:
+def _six_good_sentences() -> str:
     return (
         "Engineering executive builds governed agentic AI platforms for regulated enterprise delivery. "
         "The leader scales deterministic routing, orchestration, and policy-gated execution across programs. "
         "Platform lifecycle work ties architecture decisions to commercial adoption and operating discipline. "
         "Delivery outcomes include measurable margin and cycle-time improvements grounded in selected facts. "
-        "Prior roles show quantitative platform depth across regulated enterprise programs."
+        "Prior roles show quantitative platform depth across regulated enterprise programs. "
+        "Governed runtime delivery stays audit-ready without weakening commercial velocity."
     )
 
 
@@ -49,41 +50,38 @@ def test_split_sentences_handles_us_and_regulatory_prose():
     assert "12.5%" in sents[2]
 
 
+def _jd_alignment_fixture(**overrides: object) -> dict[str, object]:
+    base: dict[str, object] = {
+        "targeting_only": True,
+        "jd_used_as_proof": False,
+        "briefing_used_as_proof": False,
+        "graph_targeting": {"targeting_degraded_explicit": True},
+    }
+    base.update(overrides)
+    return {"jd_alignment": base}
+
+
 def test_jd_alignment_proof_flags_require_briefing_false():
-    ok, _ = check_exec_summary_jd_alignment_proof_flags(
-        {
-            "jd_alignment": {
-                "targeting_only": True,
-                "jd_used_as_proof": False,
-                "briefing_used_as_proof": False,
-            }
-        }
-    )
+    ok, _ = check_exec_summary_jd_alignment_proof_flags(_jd_alignment_fixture())
     assert ok is True
     bad, reason = check_exec_summary_jd_alignment_proof_flags(
-        {
-            "jd_alignment": {
-                "targeting_only": True,
-                "jd_used_as_proof": False,
-                "briefing_used_as_proof": True,
-            }
-        }
+        _jd_alignment_fixture(briefing_used_as_proof=True)
     )
     assert bad is False
     assert reason is not None
 
 
-def test_sentence_count_5_6_pass_and_legacy_bands_fail():
-    good = _five_good_sentences()
-    assert check_exec_summary_sentence_count_5_6(good)[0] is True
+def test_sentence_count_6_pass_and_legacy_bands_fail():
+    good = _six_good_sentences()
+    assert check_exec_summary_sentence_count_6(good)[0] is True
     legacy = "One sentence here. Two sentences here."
-    assert check_exec_summary_sentence_count_5_6(legacy)[0] is False
-    four_only = _five_good_sentences().rsplit(". ", 1)[0] + "."
-    assert check_exec_summary_sentence_count_5_6(four_only)[0] is False
+    assert check_exec_summary_sentence_count_6(legacy)[0] is False
+    five_only = _six_good_sentences().rsplit(". ", 1)[0] + "."
+    assert check_exec_summary_sentence_count_6(five_only)[0] is False
     six = " ".join([f"Sentence {i} states executive platform value." for i in range(6)])
-    assert check_exec_summary_sentence_count_5_6(six)[0] is True
+    assert check_exec_summary_sentence_count_6(six)[0] is True
     seven = " ".join([f"Sentence {i} states executive platform value." for i in range(7)])
-    assert check_exec_summary_sentence_count_5_6(seven)[0] is False
+    assert check_exec_summary_sentence_count_6(seven)[0] is False
 
 
 def test_mechanism_inventory_fails():
@@ -186,14 +184,14 @@ def test_style_exemplars_pass_no_credential_dump_gate():
         assert ok, f"{label}: {reason}"
 
 
-def test_synthesis_quality_requires_five_sentences():
+def test_synthesis_quality_requires_six_sentences():
     short = (
         "An experienced engineering executive with a strong background in platforms. "
         "This individual scaled teams and reduced errors by 40%. "
         "Additionally, their expertise provides leadership."
     )
     assert check_synthesis_quality(short)[0] is False
-    assert check_exec_summary_sentence_count_5_6(short)[0] is False
+    assert check_exec_summary_sentence_count_6(short)[0] is False
     assert check_exec_summary_meta_filler_patterns(short)[0] is False
     assert check_exec_summary_paragraph_max_words(short, {})[0] is True
 
@@ -214,8 +212,8 @@ def test_run_x2_gates_does_not_emit_retired_srfs_product_gate_ids():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     gates = run_x2_gates(
-        resume_display_text=_five_good_sentences(),
-        parsed_output={"resume_display_text": _five_good_sentences(), "jd_alignment": {}},
+        resume_display_text=_six_good_sentences(),
+        parsed_output={"resume_display_text": _six_good_sentences(), "jd_alignment": {}},
         claim_ledger=[{"claim_text": "c", "source_fact_ids": ["fact_engineering_platform_001"]}],
         text_claim_coverage={"sentences": [], "overall_pass": True},
         allowed_fact_ids={"fact_engineering_platform_001"},

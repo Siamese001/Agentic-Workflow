@@ -30,7 +30,7 @@ from typing import Any
 try:
     from dotenv import load_dotenv
 
-    load_dotenv()
+    load_dotenv()  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
 except ImportError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
     pass
 

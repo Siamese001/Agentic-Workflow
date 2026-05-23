@@ -1,4 +1,5 @@
 # apps_rg Strategic Tailor Template v2
+# NON_PRODUCT_PLANNING_ONLY — do not use for live lane product shape; SSOT: section_product_shape_ssot.py
 # Purpose: Planning-only — emits target_signal_map, jd_requirement_map, briefing_signal_map, 
 #          allowed_fact_ids_by_section, forbidden_claims, vocabulary_map, gap_list, section_budget
 # Authority: 8-slot PA model per ADR-023

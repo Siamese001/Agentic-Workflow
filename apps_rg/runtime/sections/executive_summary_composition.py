@@ -345,10 +345,10 @@ def check_srfs_sentence_responsibility_shape_painting(
 
     sentences = [s.strip() for s in split_sentences(resume_display_text) if str(s).strip()]
     n = len(sentences)
-    if n not in (5, 6):
+    if n != 6:
         return (
             False,
-            f"x2_exec_summary_srfs_sentence_responsibility_shape requires 5 or 6 sentences; found {n}",
+            f"x2_exec_summary_srfs_sentence_responsibility_shape requires exactly 6 sentences; found {n}",
         )
     ok1, r1 = check_s1_dominant_brushstroke_thesis(sentences[0])
     if not ok1:
@@ -369,23 +369,15 @@ def check_srfs_sentence_responsibility_shape_painting(
     if bad3:
         return False, bad3
 
-    if n == 6:
-        bad4 = _srfs_lane_no_commercial_org_cred(sentences[3], "S4 theme bridge")
-        if bad4:
-            return False, bad4
-        bad5 = _srfs_outcomes_sentence_opener_ok(sentences[4])
-        if bad5:
-            return False, bad5
-        bad6 = _srfs_credibility_sentence_opener_ok(sentences[5])
-        if bad6:
-            return False, bad6
-    else:
-        bad4 = _srfs_outcomes_sentence_opener_ok(sentences[3])
-        if bad4:
-            return False, bad4
-        bad5 = _srfs_credibility_sentence_opener_ok(sentences[4])
-        if bad5:
-            return False, bad5
+    bad4 = _srfs_lane_no_commercial_org_cred(sentences[3], "S4 theme bridge")
+    if bad4:
+        return False, bad4
+    bad5 = _srfs_outcomes_sentence_opener_ok(sentences[4])
+    if bad5:
+        return False, bad5
+    bad6 = _srfs_credibility_sentence_opener_ok(sentences[5])
+    if bad6:
+        return False, bad6
     return True, "ok"
 
 

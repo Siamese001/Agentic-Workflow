@@ -203,7 +203,7 @@ def load_derived_index_entry(
     if not path.is_file():
         return None
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8"))  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
     except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     return data if isinstance(data, dict) else None

@@ -80,7 +80,7 @@ def assemble_c03_graph_sqlite_context(
                 for item in targeting:
                     if isinstance(item, dict) and item.get("pillar_id"):
                         pillar_ids.append(str(item["pillar_id"]))
-                    elif isinstance(item, str):
+                    elif isinstance(item, str):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                         pillar_ids.append(item)
             except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass

@@ -43,8 +43,8 @@
     "headline_line": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 240,
-      "description": "Professional headline from headline lane (export / merge enrichment)"
+      "maxLength": 140,
+      "description": "Professional headline from headline lane (export / merge enrichment; X2 x2_headline_executive_length)"
     },
     "contact_info": {
       "type": "object",
@@ -68,14 +68,14 @@
             "text": {
               "type": "string",
               "minLength": 10,
-              "maxLength": 500,
-              "description": "Professional summary text (2-4 lines)"
+              "maxLength": 900,
+              "description": "Professional summary text (exactly six sentences; SSOT max 140 words)"
             },
             "word_count": {
               "type": "integer",
               "minimum": 10,
-              "maximum": 60,
-              "description": "Word count for validation"
+              "maximum": 140,
+              "description": "Word count for validation (SSOT EXEC_SUMMARY_MAX_WORDS)"
             }
           }
         },
@@ -110,8 +110,8 @@
                   "role_narrative": {
                     "type": "string",
                     "minLength": 20,
-                    "maxLength": 800,
-                    "description": "Optional one-paragraph role narrative (LLM lanes for Unify/IBM; else copied from base resume when present)"
+                    "maxLength": 360,
+                    "description": "Optional one-sentence role narrative (Unify/IBM; SSOT <=58 words / <=360 chars)"
                   },
                   "bullets": {
                     "type": "array",
@@ -206,7 +206,7 @@
             "categories": {
               "type": "array",
               "minItems": 1,
-              "maxItems": 6,
+              "maxItems": 8,
               "items": {
                 "type": "object",
                 "required": ["name", "items"],

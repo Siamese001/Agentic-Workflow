@@ -672,12 +672,14 @@ def run_headline_x2_gates(
     else:
         add("x2_x1d_schema_valid", False, "no judges", "present", "No judges.")
 
-    exec_ok = bool(h) and len(h) <= 140
+    from apps_rg.runtime.sections.section_product_shape_ssot import HEADLINE_MAX_CHARS
+
+    exec_ok = bool(h) and len(h) <= HEADLINE_MAX_CHARS
     add(
         "x2_headline_executive_length",
         exec_ok,
         len(h),
-        "<=140 chars",
+        f"<={HEADLINE_MAX_CHARS} chars",
         None if exec_ok else "Headline too long for ATS headline slot.",
     )
 

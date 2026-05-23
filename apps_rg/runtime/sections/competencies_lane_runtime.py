@@ -1362,7 +1362,7 @@ def retry_qwen_competency_restatement(
             "role": "user",
             "content": (
                 f"DETERMINISTIC_REVISION: The term or phrase \"{bad_term}\" overlaps a canonical employment bullet. "
-                "Rewrite ALL eight categories so every term is a short distinct noun phrase (max 5 words, under 48 characters) "
+                "Rewrite all categories (6–8 per product shape) so every term is a short distinct noun phrase (max 5 words, under 48 characters) "
                 "that does NOT contain any contiguous 18+ character substring copied from C0 candidate_facts / proof bullets. "
                 "Keep bul_* source_fact_ids accurate. Return full JSON again with the same required keys; "
                 "selected_fact_plan stub only (section_id, selection_method, required_fact_ids)."

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Callable, Literal
 
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES, REQUIRED_RELATIVE
+from apps_rg.runtime.sections.section_product_shape_ssot import section_product_shape
 
 ProviderMode = Literal["qwen_live"]
 
@@ -54,7 +55,7 @@ LANE_CRITICAL_GATES: dict[str, frozenset[str]] = {
     ),
     "executive_summary": frozenset(
         {
-            "x2_exec_summary_sentence_count_5_6",
+            "x2_exec_summary_sentence_count_6",
             "x2_exec_summary_jd_alignment_proof_flags",
             "x2_claim_ledger_claim_text_non_empty",
             "x2_first_person_zero",
@@ -144,7 +145,8 @@ def lane_specs() -> tuple[LaneRigorSpec, ...]:
                 critical_gates=UNIVERSAL_CRITICAL_GATES
                 | C0_CRITICAL_GATES
                 | style
-                | LANE_CRITICAL_GATES[lane],
+                | LANE_CRITICAL_GATES[lane]
+                | frozenset(section_product_shape(lane).required_gate_ids),
             )
         )
     return tuple(specs)

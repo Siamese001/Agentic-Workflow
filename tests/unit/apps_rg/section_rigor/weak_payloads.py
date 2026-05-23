@@ -816,7 +816,7 @@ def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
         ),
         WeakFailCase(
             "executive_summary",
-            "x2_exec_summary_sentence_count_5_6",
+            "x2_exec_summary_sentence_count_6",
             _executive_summary_weak_legacy_two_sentences,
         ),
         WeakFailCase(

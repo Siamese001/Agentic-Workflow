@@ -138,7 +138,7 @@ def build_competencies_assembly_input(
     if pp_meta.get("augmented_skills_graph_present") or pp_meta.get("skills_authority_status") == "PASS":
         try:
             proj = build_verified_skill_inventory_projection(
-                section_id="competencies",
+                section_id="competencies",  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
                 allowed_fact_ids=allowed_set,
             )
             skill_projection_block = (

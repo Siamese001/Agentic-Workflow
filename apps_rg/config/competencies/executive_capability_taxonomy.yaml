@@ -5,7 +5,7 @@ purpose: |
 
 min_categories: 6
 max_categories: 8
-default_category_count: 7
+default_category_count: 7  # within 6–8 band; not a fixed product requirement
 
 categories:
   - category_id: tech_strategy_innovation

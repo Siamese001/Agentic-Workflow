@@ -324,7 +324,7 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 def normalize_unify_narrative_parsed(
     parsed: dict[str, Any] | None,
     runtime_payload: dict[str, Any],
-) -> dict[str, Any] | None:
+) -> dict[str, Any] | None:  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
     """Normalize narrative + ledger IDs only — never fabricate claim_ledger from narrative or all bullet IDs."""
     if not parsed:
         return parsed

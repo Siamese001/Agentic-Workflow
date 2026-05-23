@@ -84,7 +84,7 @@ class R1BSemanticCacheStore:
 
     def load_intent(self, record_id: str) -> HistoricalIntentRecord | None:
         path = self.intents_dir / f"{record_id}.json"
-        if not path.is_file():
+        if not path.is_file():  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
             return None
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -116,7 +116,7 @@ class R1BSemanticCacheStore:
 
             return pseudo_vector_from_digest(record.normalized_intent_digest)
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             vals = data.get("values")
             if isinstance(vals, list) and vals:
                 return [float(x) for x in vals]

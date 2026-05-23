@@ -6,7 +6,7 @@ import re
 from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_x2 import (
-    check_exec_summary_sentence_count_5_6,
+    check_exec_summary_sentence_count_6,
 )
 
 
@@ -29,8 +29,8 @@ def _unique_source_fact_ids(claim_ledger: list[dict[str, Any]]) -> set[str]:
 def _prior_failed_sentence_count(prior_reject_reason: str) -> bool:
     blob = str(prior_reject_reason or "").lower()
     return (
-        "5-6 sentences" in blob
-        or "5 or 6" in blob
+        "exactly 6" in blob.lower()
+        or "6 sentences" in blob.lower()
         or "found 3" in blob
         or "found 2" in blob
         or "found 1" in blob
@@ -79,8 +79,8 @@ def evaluate_synthesis_regen_monotonicity(
     post_ledger = list(new_parsed.get("claim_ledger") or [])
     pre_facts = _unique_source_fact_ids(pre_ledger)
     post_facts = _unique_source_fact_ids(post_ledger)
-    pre_sent_ok, _ = check_exec_summary_sentence_count_5_6(pre_text)
-    post_sent_ok, _ = check_exec_summary_sentence_count_5_6(post_text)
+    pre_sent_ok, _ = check_exec_summary_sentence_count_6(pre_text)
+    post_sent_ok, _ = check_exec_summary_sentence_count_6(post_text)
 
     ledger_rows_gained = len(post_ledger) > len(pre_ledger)
     facts_gained = len(post_facts) > len(pre_facts)
