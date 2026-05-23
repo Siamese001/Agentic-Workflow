@@ -826,6 +826,22 @@ def run_integrated_safe_reuse(
     )
     _emit("runtime_identity_envelope.json", _identity.to_dict())
 
+    from agentic_core.L5_safety.certification.integrated_l5_evidence import (
+        binding_payload_from_identity,
+        build_hitl_reclearance_not_applicable,
+    )
+
+    _binding_payload = binding_payload_from_identity(_identity.to_dict())
+    _emit("runtime_certification_binding.json", _binding_payload)
+    _emit(
+        "l5_hitl_reclearance.json",
+        build_hitl_reclearance_not_applicable(
+            request_id=vr.request_id,
+            run_id=vr.request_id,
+            replay_key=_deterministic_replay_key,
+        ),
+    )
+
     _emit("validated_request.json", {
         "request_id": vr.request_id,
         "trace_root": vr.trace_root,

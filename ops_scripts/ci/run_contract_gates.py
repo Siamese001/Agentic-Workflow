@@ -1425,6 +1425,22 @@ def main():
         ("D1 layer doc binding (warn)", "ops_scripts/ci/check_layer_doc_binding.py"),
         ("S1 global state mutation ratchet", "ops_scripts/ci/check_global_state_mutation_ratchet.py"),
         ("S2 UWG bypass ratchet", "ops_scripts/ci/check_uwg_bypass_ratchet.py"),
+        (
+            "00A L5 cross-child consistency (parent-pack alias)",
+            "ops_scripts/ci/verify_l5_cross_child_consistency_validator.py",
+        ),
+        (
+            "00A L5 no-write (parent-pack alias)",
+            "ops_scripts/ci/verify_l5_no_write_validator.py",
+        ),
+        (
+            "00B UWG sole admission (parent-pack alias)",
+            "ops_scripts/ci/verify_uwg_sole_admission_validator.py",
+        ),
+        (
+            "00B UWG receipt parent fields",
+            "ops_scripts/ci/verify_uwg_receipt_parent_fields.py",
+        ),
         ("S3 exception swallow ratchet", "ops_scripts/ci/check_exception_swallow_ratchet.py"),
         ("S4 unused imports ratchet", "ops_scripts/ci/check_unused_imports_ratchet.py"),
         ("W5 waiver expiry", "ops_scripts/ci/check_waiver_expiry.py"),

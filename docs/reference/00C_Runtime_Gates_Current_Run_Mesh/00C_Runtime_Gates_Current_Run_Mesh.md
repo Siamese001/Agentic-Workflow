@@ -50,8 +50,8 @@ Per-gate detail rows (e.g. `REQ-GATE-G06-HITL-INVOKE-001`) live in the matching 
 
 | REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `REQ-GATE-VERDICT-SCHEMA-001` | Every G01–G29 invocation MUST emit a GateVerdict with: `gate_id` ∈ {G01..G29}, `result` ∈ {`PASS`, `FAIL`, `UNKNOWN`, `NOT_APPLICABLE`}, `disposition` ∈ {`ALLOW`, `DENY`, `REROUTE_HINT`, `ESCALATE_HINT`, `BLOCK_COMMIT`, `NA`}, `severity` ∈ {`info`, `low`, `medium`, `high`, `critical`}, `reason_codes[]`, `score`, `threshold`, `evidence_refs[]`, `replay_refs[]`, `confidence`, `abstain_flag`, `remediation_hint`. | 00C | gate input | `gate_verdict.json` | every required field non-null per row's applicability | `gate.<gate_id>` span with `attributes.gate_id`, `attributes.result`, `attributes.disposition`, `attributes.severity`, `attributes.reason_codes`, `attributes.score` | `gate_verdict_<gate_id>.json` | `validator: gate_verdict_schema_validator` (release-gate) | `NC-GATE-MISSING-FIELD-001`: emit verdict missing `reason_codes` | `gate_verdict_field_missing` | `byte_identical` per fixture | DOC_ONLY |
-| `REQ-GATE-VERDICT-UNKNOWN-NOT-PASS-001` | UNKNOWN MUST NEVER be treated as PASS by any consumer; the verdict consumer (Exit aggregation) MUST treat UNKNOWN as a release-blocking distinct state. | 00C | gate verdict | (consumer behavior) | `gate_verdict.result=UNKNOWN` produces `gate_verdict.disposition` ∈ {`ESCALATE_HINT`, `DENY`} per gate-class; never `ALLOW` | `gate.<gate_id>` event `unknown_emitted` | `gate_verdict.json` | `validator: gate_unknown_handling_validator` (release-gate) | `NC-GATE-UNKNOWN-AS-PASS-001`: pipeline maps UNKNOWN→ALLOW | `unknown_treated_as_pass` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-VERDICT-SCHEMA-001` | Every G01–G29 invocation MUST emit a GateVerdict conformant to **00C.7** (15 bounded `disposition` values, 5 `result` values including `WARN`, uppercase `severity`, extended fields including `schema_version`, `deterministic_digest`, `grader_type`). Parent §5 defers normative field list to `00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix.md`; implementation: `agentic_core/L5_safety/runtime_gates/types.py` (`GateDecision.to_verdict()`, `SCHEMA_VERSION=00C-1.0.0`). Optional auditor export: `export_profile.py` → `00C_parent_reqid_v1` (6-disposition summary). | 00C.7 | gate input | `gate_verdict.json` | every required field non-null per row's applicability | `gate.<gate_id>` span with `attributes.gate_id`, `attributes.result`, `attributes.disposition`, `attributes.severity`, `attributes.reason_codes`, `attributes.score` | `gate_verdict_<gate_id>.json` | `validator: gate_verdict_schema_validator` (release-gate) | `NC-GATE-MISSING-FIELD-001`: emit verdict missing `reason_codes` | `gate_verdict_field_missing` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-GATE-VERDICT-UNKNOWN-NOT-PASS-001` | UNKNOWN MUST NEVER be treated as PASS by any consumer; the verdict consumer (Exit aggregation) MUST treat UNKNOWN as a release-blocking distinct state. | 00C | gate verdict | (consumer behavior) | `gate_verdict.result=UNKNOWN` produces mesh `disposition` ∈ {`ESCALATE_HITL`, `DENY`, …} per 00C.7; never `ALLOW` | `gate.<gate_id>` event `unknown_emitted` | `gate_verdict.json` | `validator: gate_unknown_handling_validator` (release-gate) | `NC-GATE-UNKNOWN-AS-PASS-001`: pipeline maps UNKNOWN→ALLOW | `unknown_treated_as_pass` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-VERDICT-NA-JUSTIFY-001` | A `NOT_APPLICABLE` verdict MUST carry `reason_codes` containing a justification token; empty justification escalates to UNKNOWN. | 00C | gate input | gate verdict | `result=NOT_APPLICABLE` always paired with `reason_codes` non-empty | `gate.<gate_id>` attribute `na_reason` | `gate_verdict.json` | `validator: gate_na_justification_validator` (release-gate) | `NC-GATE-NA-EMPTY-001`: emit NA with empty reason | `na_missing_reason_escalated_to_unknown` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-VERDICT-NO-INFER-PASS-001` | A consumer MUST NOT infer PASS from missing evidence; absence of a verdict is `UNKNOWN`, not `PASS`. | 00C | (consumer behavior) | (consumer behavior) | absence of `gate_verdict_<gate_id>.json` for an applicable gate is treated as UNKNOWN | NOT_APPLICABLE: missing-span detection in compiler | `compiler missing_artifacts.json` | `validator: gate_presence_validator` (release-gate) | `NC-GATE-MISSING-VERDICT-001`: omit a required gate verdict | `gate_verdict_missing_for_applicable_gate` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-G01-INGRESS-001` | G01 (Ingress) MUST emit a verdict for every ValidatedRequest before L1 receives the request. | 00C.1 | ValidatedRequest | gate_verdict | verdict bound to `request_id` and `trace_root` | `gate.G01.ingress` span child of intake | `gate_verdict_G01.json` | `validator: g01_ingress_validator` (release-gate) | `NC-GATE-G01-SKIP-001`: L1 receives without G01 verdict | `g01_ingress_skipped` | `byte_identical` | DOC_ONLY |
@@ -74,10 +74,10 @@ Per-gate detail rows (e.g. `REQ-GATE-G06-HITL-INVOKE-001`) live in the matching 
 | `REQ-GATE-G18-WORKFLOW-001` | G18 (Workflow) MUST emit a verdict at every L3 workflow step boundary. | 00C.4 | step event | gate_verdict | verdict carries `step_id`, `workflow_id` | `gate.G18.workflow` span | `gate_verdict_G18.json` | `validator: g18_workflow_validator` (release-gate) | `NC-GATE-G18-HIDDEN-STEP-001`: workflow expansion without G18 | `hidden_workflow_expansion` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-G19-LOOP-001` | G19 (Loop) MUST emit a verdict on iteration / repair loop boundaries. | 00C.4 | loop event | gate_verdict | verdict carries `loop_id`, `iteration_count`, `oscillation_signal` | `gate.G19.loop` span | `gate_verdict_G19.json` | `validator: g19_loop_validator` (release-gate) | `NC-GATE-G19-OSCILLATE-001`: oscillation passes through | `loop_oscillation_unflagged` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-G20-BUDGET-001` | G20 (Budget) MUST emit a verdict on cost/time/token budgets at every consume point. | 00C.4 | budget event | gate_verdict | verdict carries `budget_kind`, `consumed`, `limit` | `gate.G20.budget` span | `gate_verdict_G20.json` | `validator: g20_budget_validator` (release-gate) | `NC-GATE-G20-OVERSPEND-001`: budget exhausted but allowed | `budget_exhausted_allowed` | `byte_identical` | DOC_ONLY |
-| `REQ-GATE-G21-OUTPUT-001` | G21 (Output) MUST emit a verdict on the final output payload. | 00C.5 | output payload | gate_verdict | verdict carries `output_hash`, `safety_findings[]` | `gate.G21.output` span | `gate_verdict_G21.json` | `validator: g21_output_validator` (release-gate) | `NC-GATE-G21-UNSAFE-OUTPUT-001`: unsafe output passes | `unsafe_output_passed` | `byte_identical` | DOC_ONLY |
-| `REQ-GATE-G22-SECURITY-001` | G22 (Security) MUST emit a verdict on security posture (auth, integrity, freshness). | 00C.5 | security event | gate_verdict | verdict carries `security_findings[]` | `gate.G22.security` span | `gate_verdict_G22.json` | `validator: g22_security_validator` (release-gate) | `NC-GATE-G22-STALE-CRED-001`: stale credential admitted | `stale_credential_admitted` | `byte_identical` | DOC_ONLY |
-| `REQ-GATE-G23-REPLAY-001` | G23 (Replay) MUST emit a verdict on replay digest comparison. | 00C.5 | replay event | gate_verdict | verdict carries `replay_match_type` | `gate.G23.replay` span | `gate_verdict_G23.json` | `validator: g23_replay_validator` (release-gate) | `NC-GATE-G23-DRIFT-001`: replay digest mismatch passes | `replay_drift_passed` | `byte_identical` | DOC_ONLY |
-| `REQ-GATE-G24-AUDIT-001` | G24 (Audit) MUST emit a verdict on audit completeness. | 00C.5 | audit ledger event | gate_verdict | verdict carries `audit_chain_hash`, `gaps[]` | `gate.G24.audit` span | `gate_verdict_G24.json` | `validator: g24_audit_validator` (release-gate) | `NC-GATE-G24-CHAIN-BREAK-001`: audit chain break passes | `audit_chain_break` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G21-OUTPUT-001` | G21 (Output schema) MUST emit a verdict on output schema conformance. Detail: `00C.5`; impl: `g21_output_schema.py`. | 00C.5 | output payload | gate_verdict | verdict carries schema conformance signals | `gate.G21.output` span | `gate_verdict_G21.json` | `validator: g21_output_validator` (release-gate) | `NC-GATE-G21-UNSAFE-OUTPUT-001`: unsafe output passes | `unsafe_output_passed` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G22-OUTPUT-QUALITY-001` | G22 (Output quality) MUST emit a verdict on answer quality before release. Detail: `00C.5`; impl: `g22_output_quality.py`. | 00C.5 | output payload | gate_verdict | verdict carries quality / safety findings | `gate.G22.output` span | `gate_verdict_G22.json` | `validator: g22_output_validator` (release-gate) | `NC-GATE-G22-STALE-CRED-001`: unsafe output passes | `unsafe_output_passed` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G23-SECURITY-001` | G23 (Security / leakage) MUST emit a verdict on security posture and leakage. Detail: `00C.5`; impl: `g23_security_leakage.py`. | 00C.5 | security event | gate_verdict | verdict carries `security_findings[]` | `gate.G23.security` span | `gate_verdict_G23.json` | `validator: g23_security_validator` (release-gate) | `NC-GATE-G23-LEAK-001`: leakage passes | `security_leak_passed` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G24-REPLAY-001` | G24 (Determinism / replay) MUST emit a verdict on replay digest comparison. Detail: `00C.5`; impl: `g24_determinism_replay.py`. | 00C.5 | replay event | gate_verdict | verdict carries `replay_match_type` | `gate.G24.replay` span | `gate_verdict_G24.json` | `validator: g24_replay_validator` (release-gate) | `NC-GATE-G24-DRIFT-001`: replay digest mismatch passes | `replay_drift_passed` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-G25-ANOMALY-001` | G25 (Anomaly) MUST emit a verdict on anomaly signals. | 00C.6 | anomaly signal | gate_verdict | verdict carries `anomaly_class`, `score` | `gate.G25.anomaly` span | `gate_verdict_G25.json` | `validator: g25_anomaly_validator` (release-gate) | `NC-GATE-G25-IGNORE-ANOMALY-001`: high-score anomaly ignored | `anomaly_ignored` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-G26-EXIT-001` | G26 (Exit) MUST emit a verdict at the Exit boundary precondition (Exit X1 entry). | 00C.6 | ExitReviewPacket | gate_verdict | verdict carries `exit_packet_id` | `gate.G26.exit` span | `gate_verdict_G26.json` | `validator: g26_exit_validator` (release-gate) | `NC-GATE-G26-EXIT-SKIP-001`: Exit reached without G26 | `exit_precondition_skipped` | `byte_identical` | DOC_ONLY |
 | `REQ-GATE-G27-WRITE-001` | G27 (Write) MUST emit a verdict on UWG commit eligibility. | 00C.6 | CommitRequest | gate_verdict | verdict carries `commit_request_id`, `eligibility_codes[]` | `gate.G27.write` span | `gate_verdict_G27.json` | `validator: g27_write_validator` (release-gate) | `NC-GATE-G27-DIRECT-WRITE-001`: durable write without G27 | `direct_l4_write_attempt` | `byte_identical` | DOC_ONLY |
@@ -86,32 +86,21 @@ Per-gate detail rows (e.g. `REQ-GATE-G06-HITL-INVOKE-001`) live in the matching 
 
 5. RUNTIME EVIDENCE CONTRACT (GATE VERDICT SCHEMA — BINDING)
 ------------------------------------------------------------------------------------------------------------------------
-Every `GateVerdict` artifact MUST be a JSON object with these fields:
+**Normative schema owner:** `00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix.md` (MECE child file).
 
-```
-{
-  "gate_id": "G01" | ... | "G29",
-  "result": "PASS" | "FAIL" | "UNKNOWN" | "NOT_APPLICABLE",
-  "disposition": "ALLOW" | "DENY" | "REROUTE_HINT" | "ESCALATE_HINT" | "BLOCK_COMMIT" | "NA",
-  "severity": "info" | "low" | "medium" | "high" | "critical",
-  "reason_codes": [str, ...],
-  "score": float | null,
-  "threshold": float | null,
-  "evidence_refs": [str, ...],
-  "replay_refs": [str, ...],
-  "confidence": float in [0.0, 1.0],
-  "abstain_flag": bool,
-  "remediation_hint": str | null,
-  "req_id": "REQ-GATE-G##-...",
-  "trace_id": str,
-  "span_id": str,
-  "policy_hash": str,
-  "blueprint_hash": str,
-  "replay_key": str
-}
-```
+**Runtime implementation SSOT:** `agentic_core/L5_safety/runtime_gates/types.py` — `GateDecision.to_verdict()` with `schema_version=00C-1.0.0`.
 
-`reason_codes` MUST be non-empty when `result` ∈ {`FAIL`, `UNKNOWN`, `NOT_APPLICABLE`}. Empty `reason_codes` for these states is `FAKE` per `00X` §11.
+**Parent-pack summary (this §5):** REQ-ID tables and release-gate rows reference 00C.7 for the authoritative field list, vocabulary, and aggregation rules. Do **not** treat the historical six-disposition JSON sketch below as implementation authority.
+
+| Surface | Role |
+|---------|------|
+| 00C.7 | Canonical GateVerdict contract (15 dispositions, 5 results, mesh aggregation) |
+| `types.py` | Running mesh serialization |
+| `export_profile.py` | Optional `00C_parent_reqid_v1` projection for external auditors only |
+
+**Optional export profile (`00C_parent_reqid_v1`):** maps mesh verdicts to a reduced disposition set (`ALLOW`, `DENY`, `REROUTE_HINT`, `ESCALATE_HINT`, `BLOCK_COMMIT`, `NA`) and four results (`PASS`, `FAIL`, `UNKNOWN`, `NOT_APPLICABLE`) without changing internal mesh behavior. See ADR `docs/adr/ADR-00C-7-gate-verdict-ssot-b8e4f2.md`.
+
+`reason_codes` MUST be non-empty when `result` ∈ {`FAIL`, `UNKNOWN`, `NOT_APPLICABLE`} (and when `WARN` is material per 00C.7). Empty `reason_codes` for these states is `FAKE` per `00X` §11.
 
 6. OTEL SPAN CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +144,7 @@ A 00C row's `Release Gate` is `PASS` only when:
 
 **Forbidden duplicated ownership**: 00C MUST NOT define final dispositions (Exit X3); 00C MUST NOT issue certification (L5); 00C MUST NOT mutate L4 (UWG). 05/00A/00B MUST NOT redefine GateVerdict schema.
 
-**Forbidden output vocabulary**: `ALLOW_FINISH`, `durable_write_committed`, `policy_certified`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. 00C may emit `ALLOW`/`DENY`/`REROUTE_HINT`/`ESCALATE_HINT`/`BLOCK_COMMIT`/`NA` only inside a `GateVerdict.disposition` field — never as a top-level pack output.
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `durable_write_committed`, `policy_certified`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. 00C may emit the **15 bounded dispositions** defined in 00C.7 only inside a `GateVerdict.disposition` field — never as a top-level pack output. Optional `00C_parent_reqid_v1` export may use the six-disposition summary vocabulary inside exported JSON only.
 
 12. CHILD FILE MAP
 ------------------------------------------------------------------------------------------------------------------------
