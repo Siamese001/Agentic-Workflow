@@ -52,3 +52,12 @@ def judge_safe_prefilter_enabled() -> bool:
     """Deterministic prose tighten before LLM judge regen (SRFS only)."""
     raw = os.environ.get("APPS_RG_EXEC_SUMMARY_JUDGE_SAFE_PREFILTER", "0").strip().lower()
     return RELEASE_SRFS_JUDGE_SAFE_REPAIR_ENABLED and raw in ("1", "true", "yes", "on")
+
+
+# Re-run X1D after full X2 with authoritative gate snapshot (default on; no gate weakening).
+RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = True
+
+
+def post_x2_judge_refresh_enabled() -> bool:
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_X1D_POST_X2_REFRESH", "1").strip().lower()
+    return RELEASE_POST_X2_JUDGE_REFRESH_ENABLED and raw not in ("0", "false", "no", "off")

@@ -5,6 +5,7 @@ from __future__ import annotations
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
 from apps_rg.runtime.judges.executive_summary_judge_packet import (
     build_deterministic_gate_summary,
+    build_deterministic_gate_summary_from_x2_gates,
     build_executive_summary_judge_packet,
     reconcile_grade_only_judge_result,
 )
@@ -71,6 +72,17 @@ def test_judge_packet_gate_summary_matches_product_gates() -> None:
     assert "x2_exec_summary_srfs_density_word_count" not in summary
     assert "x2_exec_summary_srfs_sentence_count_4_5" not in summary
     assert "x2_exec_summary_srfs_sentence_responsibility_shape" not in summary
+
+
+def test_x2_gate_list_snapshot_includes_all_lane_gate_ids() -> None:
+    x2_gates = [
+        {"gate_id": "x2_exec_summary_sentence_count_6", "pass": True, "failure_reason": None},
+        {"gate_id": "x2_exec_summary_evidence_utilization", "pass": False, "observed_value": "thin"},
+    ]
+    summary = build_deterministic_gate_summary_from_x2_gates(x2_gates)
+    assert summary["x2_exec_summary_sentence_count_6"]["pass"] is True
+    assert summary["x2_exec_summary_evidence_utilization"]["pass"] is False
+    assert summary["product_shape_note"]["pass"] is True
 
 
 def test_reconcile_clears_decisive_failure_on_retired_arc_when_gates_pass() -> None:

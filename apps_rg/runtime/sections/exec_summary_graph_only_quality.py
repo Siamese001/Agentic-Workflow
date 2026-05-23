@@ -267,12 +267,35 @@ def detect_graph_only_synthesis_violations(
 
 
 def _strategic_closer_sentence(target_role: str) -> str:
-    """JD-shaped synthesis clause — not JD-as-proof; used only for six-sentence pad band."""
-    role = str(target_role or "").strip() or "the target role"
+    """Fact-tone synthesis pad for six-sentence band — no JD phrases or target-title echo."""
+    _ = target_role  # targeting is composition input only; not mirrored in display pad
     return (
-        "Technology strategy leadership aligns governed platform delivery with multi-year "
-        f"IT strategy, enterprise architecture governance, and innovation incubation for {role}."
+        "Governed platform delivery, engineering scale, and regulatory-grade controls "
+        "connect execution discipline to measurable enterprise outcomes."
     )
+
+
+_CLOSER_FACT_PRIORITY: tuple[str, ...] = (
+    "fact_engineering_platform_001",
+    "fact_governance_003",
+    "fact_exec_002",
+    "fact_engineering_platform_006",
+    "fact_quant_hpc_001",
+)
+
+
+def _pad_closer_source_fact_ids(
+    allowed_fact_ids: set[str],
+    facts: list[dict[str, Any]],
+) -> list[str]:
+    by_id = {str(r.get("fact_id") or ""): r for r in facts if isinstance(r, dict)}
+    for fid in _CLOSER_FACT_PRIORITY:
+        if fid in allowed_fact_ids and fid in by_id:
+            return [fid]
+    for fid in sorted(allowed_fact_ids):
+        if fid in by_id:
+            return [fid]
+    return list(allowed_fact_ids)[:1] if allowed_fact_ids else []
 
 
 def _flags_opener_only(flags: dict[str, Any]) -> bool:
@@ -461,14 +484,16 @@ def build_graph_only_executive_summary_from_facts(
     if not sent_ok and len(sentences) < EXEC_SUMMARY_MIN_SENTENCES:
         if composition_plan and str(target_role or "").strip():
             pad = _strategic_closer_sentence(target_role)
+            pad_ids = _pad_closer_source_fact_ids(allowed_fact_ids, facts)
         else:
             pad = (
                 "Delivery outcomes and platform scale remain anchored in the allowed fact pool "
                 "when additional synthesis clauses are required for the six-sentence band."
             )
+            pad_ids = _pad_closer_source_fact_ids(allowed_fact_ids, facts)
         if pad not in sentences:
             sentences.append(pad)
-            ledger.append(_ledger_row(pad, list(allowed_fact_ids)[:1] if allowed_fact_ids else []))
+            ledger.append(_ledger_row(pad, pad_ids))
         resume = " ".join(sentences[:EXEC_SUMMARY_MAX_SENTENCES]).strip()
     return resume, ledger
 

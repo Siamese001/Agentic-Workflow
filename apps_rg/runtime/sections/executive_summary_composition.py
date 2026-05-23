@@ -17,6 +17,90 @@ BRUSHSTROKE_ROLES = (
     "B4_business_role_fit",
 )
 
+# Six-sentence product band: index 0..5 maps to brushstroke + arc role (runtime + PA injection).
+SENTENCE_ARC_DEFAULT: tuple[dict[str, str], ...] = (
+    {
+        "brushstroke_id": "B1_executive_identity",
+        "arc_role": "thesis",
+        "guidance": "Executive thesis and regulated platform scope; no mechanism inventory.",
+    },
+    {
+        "brushstroke_id": "B2_governed_platform_system",
+        "arc_role": "platform_system",
+        "guidance": "One synthesized platform/runtime clause; max two mechanism terms verbatim from facts.",
+    },
+    {
+        "brushstroke_id": "B2_governed_platform_system",
+        "arc_role": "operating_model",
+        "guidance": "Lifecycle, scale-out, or operating-model substance from allowed facts.",
+    },
+    {
+        "brushstroke_id": "B3_control_evidence_discipline",
+        "arc_role": "governance_evidence",
+        "guidance": "Governance, lineage, or validation discipline when facts support it.",
+    },
+    {
+        "brushstroke_id": "B4_business_role_fit",
+        "arc_role": "commercial_outcomes",
+        "guidance": "Metrics and commercial outcomes woven into narrative; not a bullet dump.",
+    },
+    {
+        "brushstroke_id": "B4_business_role_fit",
+        "arc_role": "integrated_capstone",
+        "guidance": "Integrated credibility or enterprise-direction capstone from allowed facts only.",
+    },
+)
+
+SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
+    {
+        "brushstroke_id": "B1_executive_identity",
+        "arc_role": "strategy_thesis",
+        "guidance": (
+            "Technology strategy / enterprise technology executive thesis; avoid narrow engineering-manager label."
+        ),
+    },
+    {
+        "brushstroke_id": "B2_governed_platform_system",
+        "arc_role": "platform_arc",
+        "guidance": (
+            "Connect governed AI platform and runtime architecture to enterprise IT direction; "
+            "one causal clause, not a mechanism comma-list."
+        ),
+    },
+    {
+        "brushstroke_id": "B2_governed_platform_system",
+        "arc_role": "scale_operating_model",
+        "guidance": (
+            "Sentences 3–4: weave platform scale, operating model, and innovation delivery as one arc "
+            "(team growth, lifecycle, federated architecture) using allowed facts only."
+        ),
+    },
+    {
+        "brushstroke_id": "B3_control_evidence_discipline",
+        "arc_role": "governance_innovation",
+        "guidance": (
+            "Regulatory lineage, validation, or governance themes that support IT strategy and innovation "
+            "posture — substantive synthesis, not a control checklist."
+        ),
+    },
+    {
+        "brushstroke_id": "B4_business_role_fit",
+        "arc_role": "commercial_strategy",
+        "guidance": (
+            "Sentence 5: commercialization, margin, or revenue outcomes plus quantitative depth implied in "
+            "delivery context — never a certification or AWS/Databricks/FSA inventory."
+        ),
+    },
+    {
+        "brushstroke_id": "B4_business_role_fit",
+        "arc_role": "enterprise_capstone",
+        "guidance": (
+            "Sentence 6: fact-backed capstone on enterprise technology direction (platform + governance + "
+            "commercialization); no JD/briefing echo, no at/for TARGET_COMPANY, no generic filler."
+        ),
+    },
+)
+
 MECHANISM_TERMS = (
     "routing",
     "retrieval",
@@ -147,7 +231,7 @@ def _brushstroke_for_role(role: str, facts: list[dict[str, Any]], allowed: set[s
     )
     skill_refs = _infer_graph_skill_refs(role_facts, proof_pool_metadata=None)
     image_goals = {
-        "B1_executive_identity": "Establish SVP Engineering identity and regulated enterprise platform scope.",
+        "B1_executive_identity": "Establish executive identity and regulated enterprise platform scope.",
         "B2_governed_platform_system": "Paint the governed agentic platform system (runtime, retrieval, orchestration).",
         "B3_control_evidence_discipline": "Show control, lineage, validation, and audit-ready evidence discipline.",
         "B4_business_role_fit": "Close with commercial, scale, and credibility outcomes tied to role fit.",
@@ -241,6 +325,63 @@ def check_exec_summary_brushstroke_coverage_pre_l2(
     }
 
 
+def build_sentence_arc(
+    *,
+    target_role: str,
+    strategy_executive: bool,
+) -> list[dict[str, Any]]:
+    """Deterministic six-sentence arc map for L2 and post-parse sentence_map."""
+    template = SENTENCE_ARC_SVP_STRATEGY if strategy_executive else SENTENCE_ARC_DEFAULT
+    out: list[dict[str, Any]] = []
+    for idx, row in enumerate(template):
+        out.append(
+            {
+                "sentence_index": idx,
+                "brushstroke_id": row["brushstroke_id"],
+                "arc_role": row["arc_role"],
+                "guidance": row["guidance"],
+            }
+        )
+    if strategy_executive:
+        out[0]["guidance"] = (
+            f"{out[0]['guidance']} Target role framing: {target_role.strip() or 'SVP IT strategy'} "
+            "(targeting only — never cite role title as proof)."
+        )
+    return out
+
+
+def format_composition_plan_for_pa(plan: dict[str, Any]) -> str:
+    """Compact PA block: brushstrokes + six-sentence arc (pre-L2 painting contract)."""
+    lines = [
+        "<executive_summary_composition_plan>",
+        f"schema: {plan.get('schema') or COMPOSITION_PLAN_SCHEMA}",
+        f"dominant_arc: {plan.get('dominant_arc')}",
+        f"target_picture: {plan.get('target_picture')}",
+    ]
+    missing = plan.get("brushstroke_missing_ids") or []
+    if missing:
+        lines.append(f"brushstroke_gaps (weave if facts exist): {', '.join(missing)}")
+    for bs in plan.get("brushstrokes") or []:
+        if not isinstance(bs, dict):
+            continue
+        bid = bs.get("brushstroke_id")
+        req = bs.get("required_fact_ids") or []
+        lines.append(f"- {bid}: facts={req or '[]'} — {bs.get('image_goal')}")
+    lines.append("six_sentence_arc (resume_display_text must follow index order):")
+    for row in plan.get("sentence_arc") or []:
+        if not isinstance(row, dict):
+            continue
+        idx = row.get("sentence_index")
+        lines.append(
+            f"  S{int(idx) + 1} [{row.get('brushstroke_id')}/{row.get('arc_role')}]: {row.get('guidance')}"
+        )
+    lines.append(
+        "Bind each sentence to claim_ledger rows; prose is clean — no brushstroke labels in display text."
+    )
+    lines.append("</executive_summary_composition_plan>")
+    return "\n".join(lines) + "\n"
+
+
 def build_executive_summary_composition_plan(
     *,
     selected_facts: list[dict[str, Any]],
@@ -251,8 +392,13 @@ def build_executive_summary_composition_plan(
     srfs_integration: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Deterministic composition plan from SRFS/graph proof pool (runtime authority)."""
+    from apps_rg.runtime.sections.executive_summary_pa import is_strategy_executive_target_title
+
     facts = [f for f in selected_facts if isinstance(f, dict)]
     allowed = {_fact_id_base(x) for x in allowed_fact_ids}
+    role_s = str(target_role or "").strip()
+    company_s = str(target_company or "").strip()
+    strategy_executive = is_strategy_executive_target_title(role_s)
     graph_refs = _infer_graph_skill_refs(facts, proof_pool_metadata=proof_pool_metadata)
     brushstroke_bind = bind_facts_to_brushstrokes(
         facts, allowed_fact_ids=allowed_fact_ids, proof_pool_metadata=proof_pool_metadata
@@ -263,16 +409,27 @@ def build_executive_summary_composition_plan(
         dominant = "B2_governed_platform_system"
     elif any("governance" in str(f.get("fact_id") or "").lower() for f in facts):
         dominant = "B3_control_evidence_discipline"
+    if strategy_executive:
+        target_picture = (
+            "Executive portrait: technology strategy leader aligning governed AI platforms, "
+            "regulatory lineage, and commercialization into one enterprise IT direction "
+            f"(targeting context: {role_s or 'SVP IT strategy role'}; company name never in prose)."
+        )
+    else:
+        target_picture = (
+            f"Executive portrait: governed agentic AI platform leader "
+            f"(targeting: {role_s or 'target role'}; company name never in prose)."
+        )
+    sentence_arc = build_sentence_arc(target_role=role_s, strategy_executive=strategy_executive)
     return {
         "schema": COMPOSITION_PLAN_SCHEMA,
         "composition_style": COMPOSITION_STYLE,
-        "target_picture": (
-            f"Executive portrait of Amit as an SVP Engineering leader for governed agentic AI platforms "
-            f"aligned to {target_role.strip() or 'the target role'} at {target_company.strip() or 'the target company'}."
-        ),
+        "target_picture": target_picture,
+        "strategy_executive_arc": strategy_executive,
         "dominant_arc": dominant,
         "dominant_brushstroke_id": dominant,
         "brushstrokes": brushstrokes,
+        "sentence_arc": sentence_arc,
         "graph_skill_refs": graph_refs,
         "brushstroke_required_ids": brushstroke_bind["brushstroke_required_ids"],
         "brushstroke_covered_ids": brushstroke_bind["brushstroke_covered_ids"],
@@ -336,15 +493,20 @@ def attach_composition_to_parsed(
         out["resume_display_text"] = text
     out["executive_summary_composition_plan"] = plan
     sentences = split_sentences(text)
+    arc_rows = list(plan.get("sentence_arc") or [])
     if not isinstance(out.get("sentence_map"), list) or not out.get("sentence_map"):
-        out["sentence_map"] = [
-            {
-                "sentence_index": i,
-                "sentence_text": s,
-                "brushstroke_id": BRUSHSTROKE_ROLES[min(i, len(BRUSHSTROKE_ROLES) - 1)],
-            }
-            for i, s in enumerate(sentences)
-        ]
+        out["sentence_map"] = []
+        for i, s in enumerate(sentences):
+            arc = arc_rows[i] if i < len(arc_rows) and isinstance(arc_rows[i], dict) else {}
+            out["sentence_map"].append(
+                {
+                    "sentence_index": i,
+                    "sentence_text": s,
+                    "brushstroke_id": arc.get("brushstroke_id")
+                    or BRUSHSTROKE_ROLES[min(i, len(BRUSHSTROKE_ROLES) - 1)],
+                    "arc_role": arc.get("arc_role"),
+                }
+            )
     if not isinstance(out.get("brushstroke_map"), list) or not out.get("brushstroke_map"):
         out["brushstroke_map"] = [
             {

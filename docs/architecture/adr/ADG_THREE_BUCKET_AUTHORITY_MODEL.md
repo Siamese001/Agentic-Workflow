@@ -1,7 +1,8 @@
 # ADG Three-Bucket Authority Model
 
-**Status**: Phase 1 (Foundation) — landed 2026-04-29
-**Certification**: ADG_NOT_CERTIFIED (W2/W3/W4/W5 outstanding)
+**Status**: Phase 1 (Foundation) — landed 2026-04-29  
+**Pipeline (2026-05-23)**: [ADR-079](ADR-079-adg-pipeline-three-bucket-opt-in.md) — audit stages off `generate_full_adg` hot path by default  
+**Certification**: ADG_NOT_CERTIFIED (audit via `run_three_bucket_audit.py` + contract gates)
 **SSOT**: `agentic_core/adg/artifact/edge_authority.py`
 
 ## Why this exists

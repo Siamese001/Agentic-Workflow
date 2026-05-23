@@ -250,7 +250,9 @@ class WriteSovereigntyGate(ADGGateBase):
         except sqlite3.Error:
             pass
 
-        # Determine status: P0 blocks if any critical violations or new bypass paths
+        # Determine status: P0 blocks only on NEW bypass paths or NEW critical writes.
+        # Steady-state warning inventory (844+ rows) is tracked but does not halt ADG;
+        # cross-snapshot delta is owned by mv_new_write_bypass_paths / phase_d regression.
         summary["total_violations"] = len(violations)
         has_critical = summary["critical_writes"] > 0 or summary["new_bypass_paths"] > 0
         status = "blocked" if has_critical else ("warn" if violations else "passed")

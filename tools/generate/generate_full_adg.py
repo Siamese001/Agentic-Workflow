@@ -150,6 +150,10 @@ from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularizatio
 from tools.generate.adg_graph_watchlist_builder import build_and_emit_graph_watchlist  # noqa: E402  # P5: graph-native intelligence
 from tools.generate.adg_watchlist_builder import build_and_emit_watchlist  # noqa: E402  # P4: high-signal watchlist
 from tools.generate.infra_wiring_views import enrich_and_report as _enrich_infra_views  # noqa: E402
+from tools.generate.integration.optional_three_bucket import (  # noqa: E402
+    format_mode_banner as _three_bucket_mode_banner,
+    run_optional_three_bucket_enrichment as _run_optional_three_bucket,
+)
 from tools.generate.materialized_views import materialize_all_views as _materialize_adg_views  # noqa: E402
 from tools.generate.validation import (  # noqa: E402  # M.3 modularization
     _check_agentic_antipatterns,
@@ -602,7 +606,7 @@ def generate_full_adg(
     import time as _time
 
     # --- Startup mode banner (visible before any work begins) ---
-    print("[ADG] Mode: FULL  zip=ON  reports=ON")
+    print(f"[ADG] Mode: FULL  zip=ON  reports=ON  {_three_bucket_mode_banner()}")
 
     # Track semantic enrichment warnings for P4 defect reporting
     semantic_warnings: list[str] = []
@@ -865,17 +869,13 @@ def generate_full_adg(
     ) as _phase2_exc:  # guardian: allow-log-and-swallow -- phase2 is enrichment, not a gate; ImportError covers reduced-install envs, sqlite3.Error/RuntimeError/OSError cover transient I/O so one bad disposition cycle does not block a full regen
         _record_pipeline_skip(adg_artifacts_dir, ts, layer="phase2", name="auto-disposition", exc=_phase2_exc)
 
-    # --- ADG Pipeline Ordering Contract (plan adg-pipeline-e2e-5287a1 W1) ---
-    # Enrichment (infra wiring views + Phase A..E materialized views) MUST run
-    # BEFORE any Tier-2 gate that may sys.exit(1), because:
+    # --- ADG Pipeline Ordering Contract (plan adg-pipeline-e2e-5287a1 W1, ADR-079) ---
+    # Enrichment MUST run BEFORE any Tier-2 gate that may sys.exit(1), because:
     #   1. Downstream gates (P0 runner, witness-tier gate) QUERY mv_*/v_p* tables.
-    #      Un-enriched SQLite causes silent fail-open (empty result = pass) OR
-    #      fail-closed (empty-table error = gate crash), both wrong.
-    #   2. Any sys.exit(1) in P0/P1/dead-import gates would otherwise strand the
-    #      committed snapshot without MVs, breaking constitutional §22 for every
-    #      consumer on that snapshot (plans, refactor analysis, hotspot reports).
-    # MV materialization is a pure derivation over nodes/edges/violations — no
-    # coupling to gate outcomes — so moving it ahead of gates is always safe.
+    #   2. sys.exit(1) would strand the snapshot without MVs (constitutional §22).
+    # Hot path: infra wiring → coverage → overlay/truth/R6 → authority backfill
+    # → Phase A..F MVs. Three-bucket runtime/registry/gap reports are opt-in
+    # (ADG_THREE_BUCKET=1 or tools/adg/run_three_bucket_audit.py).
     _enrich_infra_views(paths.sqlite)
 
     # --- Coverage.py ingest (plan hotspot-coverage-pipeline-c4e8d2 W1.2) ---
@@ -900,29 +900,6 @@ def generate_full_adg(
         )
     except Exception as _coverage_exc:  # guardian: allow-broad-exception -- enrichment fail-soft
         print(f"[WARN] coverage_ingest failed (continuing): {_coverage_exc}")
-
-    _materialize_adg_views(paths.sqlite)
-
-    # --- Runtime-as-VIEW: populate v_runtime_proof from OTel store ---
-    # Plan: .windsurf/plans/three-bucket-otel-view-5db409.md (W1.P1.3)
-    # Doctrinal source: 2026-04-29 user critique — OTel IS the runtime
-    # graph; runtime_adg lift was a fake indirection. Validated against
-    # OTel GenAI SIG, OpenAI Agents SDK, Anthropic Claude Code OTel docs.
-    # Fail-soft: missing/empty OTel store produces an empty v_runtime_proof
-    # and the pipeline continues — runtime evidence is optional, not a
-    # correctness gate. Same pattern as coverage ingest above.
-    try:
-        from tools.otel.runtime_view_builder import build_runtime_view  # noqa: PLC0415
-
-        rv_stats = build_runtime_view(paths.sqlite, fail_soft=True)
-        print(
-            f"[ADG] runtime_view_builder: snapshots={rv_stats.snapshots_read} "
-            f"aggregates={rv_stats.edges_aggregated} "
-            f"rows_written={rv_stats.rows_written} "
-            f"error={rv_stats.error or 'none'}"
-        )
-    except Exception as _rv_exc:  # guardian: allow-broad-exception -- runtime view fail-soft
-        print(f"[WARN] runtime_view_builder failed (continuing): {_rv_exc}")
 
     # --- Overlay enrichment (RCA 2026-04-24, R1-R4 upstream) ---
     # Adds `nodes.body_hash`, `overlay_violations` table, and 4 mv_*_overlay
@@ -1020,34 +997,12 @@ def generate_full_adg(
     except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
         print(f"[ADG] r6 enrichment: SKIPPED ({type(_e).__name__}: {_e})")
 
-    # --- Registry-bucket lift (W1 of plan three-bucket-gap-remediation-069806) ---
-    # Resolvers in agentic_core/adg/registry/registry_resolvers.py read
-    # declarative sources (.windsurf/mcp_config.json, apps_*/config/agent_specs*.json,
-    # agentic_core/L0_routing/config/v15_policy_pack.json) and emit
-    # RegistryEdge records. tools/adg/registry_bucket_lift.lift() persists
-    # them into `edges` with bucket='registry',
-    # authority='registry_declared', and the W1 closed-enum resolution_status
-    # / authority_status. Idempotent: dedup by (src_id, dst_id, relation_type,
-    # source_file, authority='registry_declared').
-    #
-    # Positioning: AFTER the supplementary scanners (A6/A12/r6) and BEFORE
-    # the final edge-authority backfill. The lift writes its own
-    # authority/bucket/resolution columns, so the final backfill (which fills
-    # NULL authority for the supplementary-scanner rows) does not disturb
-    # registry rows. Fail-soft per the supplementary-scanner contract.
-    try:
-        from tools.adg.registry_bucket_lift import lift as _registry_lift  # noqa: PLC0415
-
-        _reg_stats = _registry_lift(static_snapshot=paths.sqlite, dry_run=False)
-        print(
-            f"[ADG] registry-bucket lift: "
-            f"resolved={_reg_stats.edges_resolved} "
-            f"inserted={_reg_stats.edges_inserted} "
-            f"deduped={_reg_stats.edges_skipped_duplicate} "
-            f"nodes_stubbed={_reg_stats.nodes_stubbed}"
-        )
-    except (ImportError, OSError, _phase2_sqlite3.Error, FileNotFoundError) as _e:
-        print(f"[ADG] registry-bucket lift: SKIPPED ({type(_e).__name__}: {_e})")
+    # --- Optional three-bucket audit (ADR-079): runtime view + registry lift ---
+    # When enabled, runs BEFORE authority backfill so registry rows get backfilled.
+    _three_bucket_result = _run_optional_three_bucket(
+        paths.sqlite,
+        sqlite_error_type=_phase2_sqlite3.Error,
+    )
 
     # --- Final edge-authority backfill (2026-04-28 graph-authority directive) ---
     # The supplementary scanners above (entrypoint, gate_self_test, r6) insert
@@ -1103,6 +1058,9 @@ def generate_full_adg(
             _con.close()
     except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
         print(f"[ADG] edge-authority backfill: SKIPPED ({type(_e).__name__}: {_e})")
+
+    # --- Phase A..F materialized views (static graph + infra wiring; ADR-079) ---
+    _materialize_adg_views(paths.sqlite)
 
     # --- P6: Derived graph projection (adg_graph_<ts>.sqlite) ---
     # Plan adg-pipeline-e2e-5287a1 W3: catch narrowed to ImportError only.
@@ -1518,6 +1476,8 @@ def generate_full_adg(
     # where a watchlist written >10 min after the cutoff would silently
     # drop from the zip). Burndown is a fixed-name overwrite per run.
     extra_files: list[Path] = []
+    if _three_bucket_result.report_paths:
+        extra_files.extend(_three_bucket_result.report_paths.values())
     burndown = adg_artifacts_dir / "adg_burndown_table.json"
     if burndown.exists():
         extra_files.append(burndown)
@@ -1646,26 +1606,6 @@ def generate_full_adg(
             print("[ADG] Pipeline skips: none")
     else:
         print("[ADG] Pipeline skips: none")
-
-    # --- W6 of three-bucket-gap-remediation-069806: in-toto/SLSA signing ---
-    # Sign the canonical snapshot with an Ed25519 keypair so downstream
-    # consumers can verify supply-chain provenance via DSSE envelope.
-    # Fail-soft: a missing `cryptography` install or signing failure must
-    # NOT break the snapshot pipeline; the signature gate
-    # (check_adg_snapshot_signed.py) catches an unsigned snapshot at CI
-    # time. Same fail-soft pattern as runtime_view_builder above.
-    try:
-        from tools.adg.sign_snapshot import sign_snapshot as _sign_snapshot  # noqa: PLC0415
-
-        _sig_stats = _sign_snapshot(snapshot=paths.sqlite)
-        print(
-            f"[ADG] in-toto sign: verified={_sig_stats.verified} "
-            f"sha256={_sig_stats.snapshot_sha256[:16]} "
-            f"content_digest={_sig_stats.content_digest_sha256[:16]} "
-            f"envelope={_sig_stats.envelope_path}"
-        )
-    except Exception as _sig_exc:  # guardian: allow-broad-exception -- in-toto signing fail-soft
-        print(f"[WARN] in-toto sign failed (continuing): {_sig_exc}")
 
     _adg_elapsed = _time.time() - _adg_start
     print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
@@ -1818,8 +1758,22 @@ def main() -> None:
             "runs with baseline ratchet — fails only on NEW uncovered modules."
         ),
     )
+    parser.add_argument(
+        "--three-bucket",
+        action="store_true",
+        help=(
+            "Enable optional three-bucket audit stages (runtime OTel view, "
+            "registry lift, gap/audit reports). Default: off (ADR-079). "
+            "Same as ADG_THREE_BUCKET=1. For audit-only on an existing snapshot "
+            "use tools/adg/run_three_bucket_audit.py instead."
+        ),
+    )
 
     args = parser.parse_args()
+
+    if args.three_bucket:
+        os.environ["ADG_THREE_BUCKET"] = "1"
+        print("[ADG] --three-bucket enabled: optional audit stages will run after R6 enrichment")
 
     # W8 (plan adg-pipeline-simplification-e2e-9b4c27): translate the
     # `--continue-on-p0` flag into the env var the p0_runner reads. We

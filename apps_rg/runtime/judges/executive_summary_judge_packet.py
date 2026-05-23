@@ -221,6 +221,32 @@ def build_deterministic_gate_summary(
     }
 
 
+def build_deterministic_gate_summary_from_x2_gates(
+    x2_gates: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Authoritative X2 snapshot for post-X2 judge refresh (all lane gates, not pre-X2 subset)."""
+    summary: dict[str, Any] = {}
+    for gate in x2_gates:
+        if not isinstance(gate, dict):
+            continue
+        gate_id = str(gate.get("gate_id") or "").strip()
+        if not gate_id:
+            continue
+        detail = gate.get("failure_reason")
+        if detail is None:
+            detail = gate.get("observed_value")
+        summary[gate_id] = {
+            "pass": bool(gate.get("pass")),
+            "detail": str(detail if detail is not None else "ok"),
+        }
+    if summary:
+        summary["product_shape_note"] = {
+            "pass": True,
+            "detail": f"authoritative_x2_run_snapshot gates={len(summary)}",
+        }
+    return summary
+
+
 def reconcile_grade_only_judge_result(
     result: dict[str, Any],
     deterministic_gate_summary: dict[str, Any] | None,

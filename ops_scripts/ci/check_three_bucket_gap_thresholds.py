@@ -192,7 +192,8 @@ def main(argv: list[str] | None = None) -> int:
     if not args.report.exists():
         print(
             f"[three_bucket_gap] FAIL: report not found at {args.report}\n"
-            f"  Run: python tools/adg/three_bucket_gap_report.py"
+            f"  Run: ADG_THREE_BUCKET=1 python tools/adg/run_three_bucket_audit.py\n"
+            f"  Or: python tools/adg/three_bucket_gap_report.py"
         )
         return 1 if strict else 0
 

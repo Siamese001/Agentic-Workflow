@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from apps_rg.runtime.sections.executive_summary_composition import (
     build_executive_summary_composition_plan,
+    build_sentence_arc,
     check_brushstroke_fact_support,
     check_composition_plan_present,
     check_dominant_brushstroke_coherence,
     check_graph_skill_coverage,
     check_mechanism_inventory_control,
     check_s1_dominant_brushstroke_thesis,
+    format_composition_plan_for_pa,
     is_mechanism_inventory_sentence,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
@@ -116,6 +118,29 @@ def test_composition_plan_present_requires_artifact_fields() -> None:
     )
     assert ok is False
     assert reason
+
+
+def test_strategy_target_emits_svp_sentence_arc() -> None:
+    plan = build_executive_summary_composition_plan(
+        selected_facts=_facts(),
+        allowed_fact_ids={"fact_engineering_platform_001", "fact_governance_003"},
+        target_role="SVP, IT Strategy & Innovation",
+        target_company="Brown & Brown",
+    )
+    assert plan.get("strategy_executive_arc") is True
+    arc = plan.get("sentence_arc") or []
+    assert len(arc) == 6
+    assert arc[2].get("arc_role") == "scale_operating_model"
+    assert arc[4].get("arc_role") == "commercial_strategy"
+    pa_block = format_composition_plan_for_pa(plan)
+    assert "six_sentence_arc" in pa_block
+    assert "S3" in pa_block
+
+
+def test_build_sentence_arc_default_has_six_rows() -> None:
+    arc = build_sentence_arc(target_role="VP Engineering", strategy_executive=False)
+    assert len(arc) == 6
+    assert arc[0]["brushstroke_id"] == "B1_executive_identity"
 
 
 def test_dominant_brushstroke_coherence_passes_thesis() -> None:

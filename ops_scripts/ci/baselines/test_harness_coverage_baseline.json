@@ -221,6 +221,7 @@
     "agentic_core/L2_execution/types/l2_instruction_packet.py",
     "agentic_core/L2_execution/types/l2_phase_spec.py",
     "agentic_core/L2_execution/types/llm_replay_types.py",
+    "agentic_core/L2_execution/types/local_first_disposition.py",
     "agentic_core/L2_execution/types/mcp_client_types.py",
     "agentic_core/L2_execution/types/mcp_error_types.py",
     "agentic_core/L2_execution/types/mcp_security_types.py",
@@ -1036,5 +1037,5 @@
     "apps_underwriting_ai/engines/rubric_output_mapper.py",
     "apps_underwriting_ai/engines/underwriting_engine.py"
   ],
-  "count": 1034
+  "count": 1035
 }

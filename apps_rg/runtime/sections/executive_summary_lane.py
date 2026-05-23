@@ -75,6 +75,7 @@ from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, pre
 from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
 from apps_rg.runtime.shadow.executive_summary_l6 import build_l6_shadow_package
+from apps_rg.runtime.shadow.l6_shadow_learning import build_l6_shadow_learning_record
 from apps_rg.runtime.sections.executive_summary_proof_bundle import (
     emit_executive_summary_post_x3_proof_artifacts,
     write_executive_summary_artifact_inventory,
@@ -2061,6 +2062,40 @@ def run_executive_summary_execution(
     )
 
     x2_failed_initial = [g for g in x2 if not g["pass"]]
+    _composition_plan_refresh: dict[str, Any] = {}
+    _comp_plan_path = artifact_dir / "executive_summary_composition_plan.json"
+    if _comp_plan_path.is_file():
+        try:
+            _raw_plan = json.loads(_comp_plan_path.read_text(encoding="utf-8"))
+            if isinstance(_raw_plan, dict):
+                _composition_plan_refresh = _raw_plan
+        except (OSError, json.JSONDecodeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
+            _composition_plan_refresh = {}
+
+    if runtime_generation_status == "REAL_LLM" and not x2_failed_initial:
+        from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+            refresh_x1d_judges_after_full_x2,
+        )
+        x1d, _x1d_refresh_receipt = refresh_x1d_judges_after_full_x2(
+            x2_gates=x2,
+            resume_display_text=resume_display_text,
+            claim_ledger=claim_ledger,
+            allowed_fact_packet=selected_facts_for_x2,
+            allowed_fact_ids=allowed_fact_ids,
+            target_title=_args_target_title(args),
+            target_company=str(args.target_company),
+            jd_text=_args_jd_text(args),
+            briefing_text=str(args.briefing),
+            parsed_output=parsed_for_x2,
+            judge_keys=judge_keys,
+            judge_mode=judge_mode,
+            artifact_dir=artifact_dir,
+            compiled_prompt=compiled_prompt,
+            prior_judges=x1d,
+        )
+        write_json(artifact_dir / "post_x2_x1d_refresh_receipt.json", _x1d_refresh_receipt)
+        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+
     if runtime_generation_status == "REAL_LLM" and not x2_failed_initial and parsed_for_x2:
         from apps_rg.runtime.section_repair_policy import judge_remediation_regen_allowed
         from apps_rg.runtime.sections.executive_summary_judge_remediation import (
@@ -2078,6 +2113,36 @@ def run_executive_summary_execution(
                 x2_passed=True,
             )
             write_json(artifact_dir / "judge_remediation_trigger.json", trigger_receipt)
+            if (
+                not trigger_ok
+                and trigger_receipt.get("reason") == "two_or_more_judges_already_pass_skip_regen"
+            ):
+                from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+                    _is_model_backed_soft_fail,
+                )
+
+                _soft_only = [j for j in x1d if _is_model_backed_soft_fail(j)]
+                if len(_soft_only) == 1:
+                    x1d = rerun_soft_failed_judges(
+                        resume_display_text=resume_display_text,
+                        claim_ledger=claim_ledger,
+                        judge_packet=judge_packet,
+                        judge_packet_ref=judge_packet_ref,
+                        compiled_prompt=compiled_prompt,
+                        artifact_dir=artifact_dir,
+                        judge_keys=judge_keys,
+                        judge_mode=judge_mode,
+                        prior_judges=x1d,
+                    )
+                    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+                    write_json(
+                        artifact_dir / "soft_judge_only_rerun_receipt.json",
+                        {
+                            "schema": "executive_summary_soft_judge_only_rerun_v1",
+                            "reason": "skip_regen_two_judges_pass",
+                            "rerun_provider": _soft_only[0].get("provider_key"),
+                        },
+                    )
             if trigger_ok:
                 _pre_raw = raw_output
                 _pre_parsed = dict(parsed_for_x2)
@@ -2095,6 +2160,7 @@ def run_executive_summary_execution(
                     selected_fact_plan=selected_fact_plan,
                     allowed_fact_ids=allowed_fact_ids,
                     unused_fact_ids=unused_ids,
+                    composition_plan=_composition_plan_refresh,
                     artifact_dir=artifact_dir,
                     run_id=str(runtime_payload.get("run_id") or "") or None,
                 )
@@ -2105,13 +2171,6 @@ def run_executive_summary_execution(
                         set_authoritative_attempt,
                     )
 
-                    record_repair(
-                        artifact_dir,
-                        kind=KIND_REGEN_LLM,
-                        operation="judge_remediation_regen",
-                        reason=str(_j_receipt.get("trigger_reason") or "judge_remediation")[:240],
-                        replaced_l2=True,
-                    )
                     parsed = parsed_regen
                     from apps_rg.runtime.sections.section_authority_repairs import (
                         apply_exec_summary_display_authority_repairs,
@@ -2123,6 +2182,14 @@ def run_executive_summary_execution(
                         plan_facts=list(selected_fact_plan.get("facts") or []),
                         artifact_dir=artifact_dir,
                         target_company=str(getattr(args, "target_company", "") or ""),
+                    )
+                    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+                        finalize_executive_summary_coherence,
+                    )
+
+                    parsed, _finalize_receipt = finalize_executive_summary_coherence(
+                        parsed,
+                        selected_facts=list(selected_fact_plan.get("facts") or []),
                     )
                     resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
                     claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
@@ -2163,6 +2230,13 @@ def run_executive_summary_execution(
                         proof_pool_digest=str(pool.proof_pool_digest or ""),
                     )
                     if not [g for g in x2_regen if not g["pass"]]:
+                        record_repair(
+                            artifact_dir,
+                            kind=KIND_REGEN_LLM,
+                            operation="judge_remediation_regen",
+                            reason=str(_j_receipt.get("trigger_reason") or "judge_remediation")[:240],
+                            replaced_l2=True,
+                        )
                         x2 = x2_regen
                         _ledger2 = load_ledger(artifact_dir) or {}
                         record_x2_run(
@@ -2224,6 +2298,9 @@ def run_executive_summary_execution(
                         l2_output["text_claim_coverage"] = coverage
                         write_json(artifact_dir / "l2_output.json", l2_output)
                         _j_receipt["reverted"] = "post_regen_x2_failed"
+                        _j_receipt["post_regen_x2_failed_gate_ids"] = [
+                            g["gate_id"] for g in x2_regen if not g["pass"]
+                        ]
                         write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
 
     _graph_only_repaired = False
@@ -2313,6 +2390,14 @@ def run_executive_summary_execution(
     post_rt = artifact_dir / "post_runtime"
     post_rt.mkdir(parents=True, exist_ok=True)
     write_json(post_rt / "l6_shadow_eval_package.json", l6)
+    l6_learn = build_l6_shadow_learning_record(
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        section_id="executive_summary",
+        lane_key=LANE_KEY,
+    )
+    write_json(artifact_dir / "l6_shadow_learning.json", l6_learn)
+    write_json(post_rt / "l6_shadow_learning.json", l6_learn)
     write_executive_summary_artifact_inventory(repo_root=REPO_ROOT, artifact_dir=artifact_dir)
     real_result = {
         "provider_attempted": args.provider,

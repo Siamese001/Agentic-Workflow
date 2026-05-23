@@ -89,6 +89,10 @@ _APPROVED_ADAPTER_PATHS = (
     "agentic_core/L4_state/utils/memory/semantic_cache_manager.py",
     "agentic_core/L4_state/utils/memory/sovereign_semantic_cache.py",
     "agentic_core/L4_state/cache/gptcache_client.py",
+    # apps_rg Chroma seams (mirror _SANCTIONED_APP_DIRECT_INFRA — exclude from t_infra_importers)
+    "apps_rg/runtime/chroma_precomputed_collection.py",
+    "apps_rg/runtime/c0/c02_fact_vector_ingest.py",
+    "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",
 )
 
 # Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
@@ -145,6 +149,9 @@ _SANCTIONED_APP_DIRECT_INFRA = (
     "apps_underwriting_ai/engines/judges/rationale_quality_judge.py",  # Judge adapter — anthropic
     # 2026-05-12 adg-snapshot-regen-check-rg-chroma-e2f8b1 — C0 binding already in file-scan allowlist
     "apps_rg/runtime/bindings/c0_binding.py",  # C0 ChromaDB binding — receipted in W4 of apps-rg-chroma-ingestion-wiring-c7f2d9; peer of chroma_research_store.py
+    "apps_rg/runtime/chroma_precomputed_collection.py",  # apps_rg Chroma collection boundary — precomputed BGE only
+    "apps_rg/runtime/c0/c02_fact_vector_ingest.py",  # C0.2 fact-vector upsert seam
+    "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",  # C0.2 product hybrid retrieval seam
     "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",  # C0.3 skills graph materialization — sqlite3 adapter for augmented_skills_graph ledger
 )
 

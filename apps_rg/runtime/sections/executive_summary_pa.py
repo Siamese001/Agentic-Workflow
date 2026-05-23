@@ -151,6 +151,9 @@ def format_strategy_executive_targeting_appendix(target_title: str) -> str:
         "- Use JD_TEXT/BRIEFING only to tilt emphasis among evidenced themes (federated architecture, innovation, "
         "post-merger integration, AI/data roadmap) — never cite JD/briefing as proof; jd_used_as_proof=false.\n"
         "- Avoid bullet-stack sequencing; connect outcomes to enterprise IT direction when facts support it.\n"
+        "- Sentences 3–6: one causal arc (platform scale → governance/innovation → commercial outcomes → fact-backed capstone).\n"
+        "- Sentence 5: synthesize quantitative depth into delivery context — not a certification inventory.\n"
+        "- Sentence 6: capstone from platform/governance/commercial allowed facts only — no JD echo, no generic filler.\n"
         "- NEVER name TARGET_COMPANY in resume_display_text (no at/for/with Company, no align-with-Company closers).\n"
         "- Weave team-scale facts (e.g. 8-to-28 engineering growth) into prose when present in ALLOWED_SOURCE_FACT_IDS.\n"
     )
@@ -419,8 +422,29 @@ def build_executive_summary_assembly_input(
     if is_strategy_executive_target_title(t_title):
         strategy_voice = (
             " SVP IT strategy voice: integrated enterprise technology narrative; "
-            "technology strategy executive opener; JD/briefing shape emphasis only."
+            "technology strategy executive opener; sentences 3–6 follow injected six_sentence_arc; "
+            "JD/briefing shape emphasis only."
         )
+    composition_block = ""
+    _pp_for_plan = runtime_payload.get("proof_pool_metadata")
+    if not isinstance(_pp_for_plan, dict):
+        _pp_for_plan = {}
+    from apps_rg.runtime.sections.executive_summary_composition import (
+        build_executive_summary_composition_plan,
+        format_composition_plan_for_pa,
+    )
+
+    _composition_plan = runtime_payload.get("executive_summary_composition_plan")
+    if not isinstance(_composition_plan, dict):
+        _composition_plan = build_executive_summary_composition_plan(
+            selected_facts=facts,
+            allowed_fact_ids=set(allowed_ids),
+            target_role=t_title,
+            target_company=t_company,
+            proof_pool_metadata=_pp_for_plan,
+        )
+        runtime_payload["executive_summary_composition_plan"] = _composition_plan
+    composition_block = format_composition_plan_for_pa(_composition_plan)
     u0 = (
         f"Task: executive summary for {t_title!r} at {t_company!r} (targeting context only).\n"
         "Proof: C0 selected facts + ALLOWED_SOURCE_FACT_IDS only. Follow I0 proof_law_v1, composition_heuristics, "
@@ -450,6 +474,8 @@ def build_executive_summary_assembly_input(
 
             product_patch += "\n\n" + format_graph_targeting_capsule_for_pa(capsule)
         product_patch += "\n\n" + format_srfs_style_only_quality_oneshot_block()
+    if composition_block:
+        product_patch += "\n\n" + composition_block
     return PromptAssemblyInput(
         template_id="strategic_tailor_v1",
         request_id=request_id,

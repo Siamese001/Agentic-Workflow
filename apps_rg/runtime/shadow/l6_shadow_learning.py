@@ -202,6 +202,29 @@ def build_l6_shadow_learning_record(
             }
         )
 
+    if section_id == "executive_summary" and judge_gap:
+        soft = list(x1_sum.get("soft_failed_judges") or [])
+        recs.append(
+            {
+                "applies_to": "future_run_only",
+                "recommendation": (
+                    "Executive summary: keep APPS_RG_EXEC_SUMMARY_X1D_POST_X2_REFRESH=1 so judges "
+                    "see the full authoritative X2 snapshot (not the pre-X2 subset)."
+                ),
+            }
+        )
+        if soft:
+            recs.append(
+                {
+                    "applies_to": "future_run_only",
+                    "recommendation": (
+                        f"Executive summary soft-fail judges {soft}: prefer bounded judge regen only when "
+                        "<2 judges pass; weave unused allowed facts into sentences 3–5; avoid JD-echo "
+                        "capstone; link sentence 6 claim_ledger to platform/governance facts (not certs)."
+                    ),
+                }
+            )
+
     proof_elig = x3_raw.get("proof_eligible")
     judge_proof_elig = x3_raw.get("judge_proof_eligible")
 

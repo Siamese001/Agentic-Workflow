@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 template_id: executive_summary.generate_scratch_v1
-version: "1.2"
+version: "1.3"
 allowed_stage: L2_EXEC
 description: Executive summary - dense voice; facts prove; JD + briefing target only
 
@@ -64,6 +64,15 @@ slot_bodies:
     Anti-stacking: no comma-chain mechanism inventories; no "Architected X, reducing Y, while leading Z..." glue chains.
     Sentence 1: thesis and domain only - max two mechanism terms in any later sentence, only when verbatim in facts.
     </north_star_synthesis_contract>
+
+    <sentence_arc_contract>
+    Six sentences form one integrated arc (not six mini-bullets). When U0 injects six_sentence_arc, follow it index-for-index.
+    S1 — differentiated thesis (technology strategy framing for SVP IT strategy targets).
+    S2 — governed platform/runtime substance; max two mechanism terms, verbatim from facts only.
+    S3–S4 — connect platform scale, operating model, and innovation delivery in causal prose (allowed facts only).
+    S5 — commercial or quant outcomes woven into strategy context; never a cert/AWS/Databricks/FSA label stack.
+    S6 — fact-backed enterprise-direction capstone; no JD/briefing echo, no TARGET_COMPANY name, no extensive-experience filler.
+    </sentence_arc_contract>
 
     <composition_heuristics>
     **Exactly 6** sentences, one paragraph; fit_to_evidence (max **140** words — hard X2 cap only; no word-count floor).
