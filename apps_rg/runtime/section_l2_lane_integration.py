@@ -45,14 +45,22 @@ def finalize_section_l2_after_output(
     section_output_ref: str | None = None,
     l2_output_ref: str = "l2_output.json",
 ) -> dict[str, Path]:
-    """After l2_output.json — emit SealedL2Artifact + l2_spine_receipt."""
-    return emit_section_l2_spine_receipt_artifacts(
+    """After l2_output.json — emit SealedL2Artifact + l2_spine_receipt, then spine exit authority."""
+    paths = emit_section_l2_spine_receipt_artifacts(
         artifact_dir,
         section_id=section_id,
         runtime_payload=runtime_payload,
         l2_output_ref=l2_output_ref,
         section_output_ref=section_output_ref,
     )
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_spine_exit_after_sealed_l2
+
+    finalize_section_spine_exit_after_sealed_l2(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+    )
+    return paths
 
 
 __all__ = ["finalize_section_l2_after_output", "prepare_section_l2_before_provider"]

@@ -49,60 +49,16 @@ def persist_section_x3_mirror(
     return x3_doc
 
 
-def refresh_section_exit_after_x3_change(
+def _run_section_spine_exit_eval(
     artifact_dir: Path,
     *,
     section_id: str,
     runtime_payload: dict[str, Any],
     x3_doc: dict[str, Any],
+    x3: Any | None = None,
+    receipts_extra: dict[str, Any] | None = None,
 ) -> None:
-    """Re-run ExitEvalPipeline + exit receipts when x3 mirror changed after initial finalize."""
-    run_id = str(runtime_payload.get("run_id") or "")
-    request_id = str(runtime_payload.get("request_id") or run_id)
-    receipts: dict[str, Any] = {
-        "run_id": run_id,
-        "request_id": request_id,
-        "section_id": section_id,
-        "x3_disposition": x3_doc,
-        "x3_code": str(x3_doc.get("x3_code") or "UNKNOWN"),
-        "terminal_class": "success" if x3_doc.get("pass") or x3_doc.get("pass_") else "failure",
-        "app_name": "apps_rg",
-        "spine_mode": "section_spine_run",
-        "x3_refresh": True,
-    }
-    exit_result = ExitEvalPipeline(app_name="apps_rg").run(receipts)
-    runtime_payload["spine_exit_eval_disposition"] = str(
-        getattr(getattr(exit_result, "disposition", None), "value", exit_result)
-    )
-    from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
-
-    finalize_section_exit_after_l2(artifact_dir, section_id, runtime_payload)
-
-
-def finalize_section_lane_x3(
-    *,
-    artifact_dir: Path,
-    section_id: str,
-    runtime_payload: dict[str, Any],
-    aggregate_x3_fn: Callable[..., Any] | None = None,
-    x3_result: Any | None = None,
-    x3_doc_extra: dict[str, Any] | None = None,
-    skip_exit_receipts: bool = False,
-    **aggregate_kwargs: Any,
-) -> Any:
-    """Run lane aggregate_x3, mirror to x3_disposition.json, spine ExitEvalPipeline, exit receipt."""
-    if x3_result is not None:
-        x3 = x3_result
-    elif aggregate_x3_fn is not None:
-        x3 = aggregate_x3_fn(**aggregate_kwargs)
-    else:
-        raise ValueError("finalize_section_lane_x3 requires aggregate_x3_fn or x3_result")
-
-    x3_doc = persist_section_x3_mirror(artifact_dir, x3, x3_doc_extra=x3_doc_extra)
-
-    if skip_exit_receipts:
-        return x3
-
+    """ExitEvalPipeline + section exit receipts — requires ``sealed_l2_artifact.json`` on disk."""
     run_id = str(runtime_payload.get("run_id") or "")
     request_id = str(runtime_payload.get("request_id") or run_id)
     receipts: dict[str, Any] = {
@@ -115,14 +71,94 @@ def finalize_section_lane_x3(
         "app_name": "apps_rg",
         "spine_mode": "section_spine_run",
     }
-    exit_result = ExitEvalPipeline(app_name="apps_rg").run(receipts)
+    if receipts_extra:
+        receipts.update(receipts_extra)
+    exit_result = ExitEvalPipeline().run(receipts)
     runtime_payload["spine_exit_eval_disposition"] = str(
         getattr(getattr(exit_result, "disposition", None), "value", exit_result)
     )
-
     from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
 
     finalize_section_exit_after_l2(artifact_dir, section_id, runtime_payload)
+
+
+def finalize_section_spine_exit_after_sealed_l2(
+    artifact_dir: Path,
+    *,
+    section_id: str,
+    runtime_payload: dict[str, Any],
+) -> None:
+    """Run spine exit authority after ``finalize_section_l2_after_output`` sealed L2."""
+    x3_path = artifact_dir / "x3_disposition.json"
+    if not x3_path.is_file():
+        return
+    try:
+        x3_doc = json.loads(x3_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return
+    if not isinstance(x3_doc, dict):
+        return
+    _run_section_spine_exit_eval(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+        x3_doc=x3_doc,
+    )
+
+
+def refresh_section_exit_after_x3_change(
+    artifact_dir: Path,
+    *,
+    section_id: str,
+    runtime_payload: dict[str, Any],
+    x3_doc: dict[str, Any],
+) -> None:
+    """Re-run ExitEvalPipeline + exit receipts when x3 mirror changed after initial finalize."""
+    _run_section_spine_exit_eval(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+        x3_doc=x3_doc,
+        receipts_extra={"x3_refresh": True},
+    )
+
+
+def finalize_section_lane_x3(
+    *,
+    artifact_dir: Path,
+    section_id: str,
+    runtime_payload: dict[str, Any],
+    aggregate_x3_fn: Callable[..., Any] | None = None,
+    x3_result: Any | None = None,
+    x3_doc_extra: dict[str, Any] | None = None,
+    skip_exit_receipts: bool = True,
+    **aggregate_kwargs: Any,
+) -> Any:
+    """Run lane aggregate_x3 and mirror to x3_disposition.json.
+
+    Exit authority runs after sealed L2 via ``finalize_section_spine_exit_after_sealed_l2``
+    (hooked from ``finalize_section_l2_after_output``). Set ``skip_exit_receipts=False`` only
+    when sealed L2 already exists (tests).
+    """
+    if x3_result is not None:
+        x3 = x3_result
+    elif aggregate_x3_fn is not None:
+        x3 = aggregate_x3_fn(**aggregate_kwargs)
+    else:
+        raise ValueError("finalize_section_lane_x3 requires aggregate_x3_fn or x3_result")
+
+    x3_doc = persist_section_x3_mirror(artifact_dir, x3, x3_doc_extra=x3_doc_extra)
+
+    if skip_exit_receipts:
+        return x3
+
+    _run_section_spine_exit_eval(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+        x3_doc=x3_doc,
+        x3=x3,
+    )
     return x3
 
 
@@ -130,6 +166,7 @@ __all__ = [
     "LEGACY_FEC_BRIDGE_ALIAS",
     "SPINE_FEC_ARTIFACT",
     "finalize_section_lane_x3",
+    "finalize_section_spine_exit_after_sealed_l2",
     "persist_section_x3_mirror",
     "refresh_section_exit_after_x3_change",
 ]

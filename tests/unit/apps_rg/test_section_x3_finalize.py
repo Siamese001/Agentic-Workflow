@@ -45,11 +45,16 @@ def test_finalize_section_lane_x3_writes_exit_receipt(
     )
     x3.to_dict = lambda: {"x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL", "pass": False}  # type: ignore[method-assign]
 
+    (tmp_path / "sealed_l2_artifact.json").write_text(
+        '{"schema_version":"section_sealed_l2_artifact_v1"}', encoding="utf-8"
+    )
+    runtime_payload["sealed_l2_artifact_ref"] = "sealed_l2_artifact.json"
     finalize_section_lane_x3(
         artifact_dir=tmp_path,
         section_id="executive_summary",
         runtime_payload=runtime_payload,
         x3_result=x3,
+        skip_exit_receipts=False,
     )
     assert (tmp_path / "x3_disposition.json").is_file()
     mock_exit_hooks.assert_called_once()
@@ -65,6 +70,10 @@ def test_refresh_section_exit_after_x3_change(
 ) -> None:
     mock_exit_hooks.reset_mock()
     runtime_payload = {"run_id": "r2"}
+    (tmp_path / "sealed_l2_artifact.json").write_text(
+        '{"schema_version":"section_sealed_l2_artifact_v1"}', encoding="utf-8"
+    )
+    runtime_payload["sealed_l2_artifact_ref"] = "sealed_l2_artifact.json"
     refresh_section_exit_after_x3_change(
         tmp_path,
         section_id="competencies",

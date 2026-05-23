@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+import inspect
 from pathlib import Path
 from typing import Any, Literal
 
@@ -100,26 +101,29 @@ def run_apps_rg_spine(
                 "l7_how_trace_emitted": False,
                 "terminal_r5": False,
             }
-        return runner(
-            target_company=tc,
-            target_role=tr,
-            target_level=target_level,
-            jd=jd,
-            job_description_ref=job_description_ref,
-            job_description_text=job_description_text,
-            manual_brief=manual_brief,
-            resume_path=resume_path,
-            source_resume_text=source_resume_text,
-            generation_mode=generation_mode,
-            artifact_dir=artifact_dir,
-            lane_provider=lane_provider,
-            lane_provider_resolution_source=lane_provider_resolution_source,
-            lane_temperature=float(lane_temperature),
-            lane_x1d_judges=lane_x1d_judges,
-            lane_mock_judges=lane_mock_judges,
-            lane_allow_non_allow_exit_zero=lane_allow_non_allow_exit_zero,
-            lane_allow_test_mock_judges=lane_allow_test_mock_judges,
-        )
+        section_kwargs = {
+            "target_company": tc,
+            "target_role": tr,
+            "target_level": target_level,
+            "jd": jd,
+            "job_description_ref": job_description_ref,
+            "job_description_text": job_description_text,
+            "manual_brief": manual_brief,
+            "resume_path": resume_path,
+            "source_resume_text": source_resume_text,
+            "generation_mode": generation_mode,
+            "artifact_dir": artifact_dir,
+            "lane_provider": lane_provider,
+            "lane_provider_resolution_source": lane_provider_resolution_source,
+            "lane_temperature": float(lane_temperature),
+            "lane_x1d_judges": lane_x1d_judges,
+            "lane_mock_judges": lane_mock_judges,
+            "lane_allow_non_allow_exit_zero": lane_allow_non_allow_exit_zero,
+            "lane_allow_test_mock_judges": lane_allow_test_mock_judges,
+        }
+        accepted = inspect.signature(runner).parameters
+        filtered = {k: v for k, v in section_kwargs.items() if k in accepted}
+        return runner(**filtered)
 
     from apps_rg.runtime.orchestration.canonical_dispatch import (
         run_canonical_full_resume_from_cli_primitives,

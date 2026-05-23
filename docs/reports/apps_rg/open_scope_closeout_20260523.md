@@ -14,7 +14,7 @@ Rollup after exec-summary repair hardening and plan/Notion sync.
 | Plan | Wave | Next |
 |------|------|------|
 | [apps-rg-proof-pool-c0-ssot-a7f3e2](../../.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md) | W3 / Track C | Track B DONE; Track C X2 PASS — unanimous X1D `X3_ALLOW` still open |
-| [apps-rg-spine-only-unification-d8f4a2](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) | W4 done / W5–W7 open | See [spine_unification_open_scope_20260523.md](spine_unification_open_scope_20260523.md) |
+| [apps-rg-spine-only-unification-d8f4a2](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) | W1–W4,W6 done; **W5 open** | Commit OS-E2E-WIRING; W5 full résumé assembly; W7 deferred (author-gate). Disk: [plan](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) · scope: [spine_unification_open_scope_20260523.md](spine_unification_open_scope_20260523.md) · `main` @ `3e7ab52413` · live E2E: [exec_summary_20260523_171726](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_171726) |
 
 ## Superseded / review-only
 

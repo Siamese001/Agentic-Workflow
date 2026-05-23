@@ -40,7 +40,7 @@ def test_scan_detects_synthetic_forbidden_bridge_import(tmp_path: Path) -> None:
     """Negative control: gate must catch a forbidden bridge import."""
     bad = tmp_path / "synthetic_product.py"
     bad.write_text(
-        "from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section\n",
+        "from apps_rg.runtime.section_fec_bridge import wire_section_fec_bridge_for_lane\n",
         encoding="utf-8",
     )
     findings = scan_file(bad, tmp_path)

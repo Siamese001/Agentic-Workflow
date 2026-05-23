@@ -204,6 +204,7 @@ def run_section_executive_summary_spine(
     lane_x1d_judges: str,
     lane_mock_judges: bool,
     lane_allow_test_mock_judges: bool = False,
+    lane_allow_non_allow_exit_zero: bool = False,
 ) -> dict[str, Any]:
     """Section-only run: same artifacts as legacy dispatch; does not invoke ``dispatch_apps_rg_run``."""
     from apps_rg.runtime.sections import executive_summary_lane as lane
@@ -314,6 +315,7 @@ def run_section_executive_summary_spine(
         x1d_judges=str(lane_x1d_judges),
         mock_judges=bool(lane_mock_judges),
         allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
         target_title=tr,
         target_company=tc,
         jd_text=jd_text,
