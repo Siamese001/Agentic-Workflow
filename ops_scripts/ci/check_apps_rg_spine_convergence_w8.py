@@ -38,9 +38,16 @@ REQUIRED_MODULES: tuple[str, ...] = (
     "apps_rg/runtime/spine/governed_l2_exit_compose.py",
     "apps_rg/runtime/spine/governed_l6_shadow_compose.py",
     "apps_rg/runtime/spine/spine_span_emit.py",
+    "tests/_apps_contract/test_apps_rg_spine_harden_edge_cases.py",
+    "apps_rg/runtime/spine/c0_graph_lane_receipt.py",
+    "apps_rg/runtime/spine/l6_eval_before_learn_receipt.py",
+    "ops_scripts/ci/check_apps_rg_spine_span_emit_sites.py",
+    "ops_scripts/apps_rg/live_section_spine_smoke_all_lanes.py",
+    "tests/_apps_contract/test_apps_rg_spine_waves_w4_w7.py",
     "apps_rg/runtime/spine/spine_contract_loaders.py",
     "apps_rg/runtime/spine/l2_handoff_receipt.py",
     "apps_rg/config/domain_contract/L6_eval_before_learn_scope.md",
+    "apps_rg/config/domain_contract/C0_graph_lane_deferral.md",
 )
 
 
@@ -132,6 +139,18 @@ def main(argv: list[str] | None = None) -> int:
     spine_rc = _run_single_spine_gate()
     if spine_rc != 0:
         errors.append(f"SINGLE_SPINE_GATE exit={spine_rc}")
+
+    span_sites = REPO_ROOT / "ops_scripts" / "ci" / "check_apps_rg_spine_span_emit_sites.py"
+    span_rc = subprocess.run(
+        [sys.executable, str(span_sites)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    ).returncode
+    if span_rc != 0:
+        errors.append(f"SPAN_EMIT_SITES_GATE exit={span_rc}")
 
     status = "PASS" if not errors else "FAIL"
     REPORT_JSON.parent.mkdir(parents=True, exist_ok=True)

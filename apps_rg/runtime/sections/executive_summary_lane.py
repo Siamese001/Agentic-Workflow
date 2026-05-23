@@ -1341,7 +1341,10 @@ def run_executive_summary_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
-    input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
+    from apps_rg.runtime.sections.lane_artifact_io import runtime_payload_for_json
+
+    payload_for_json = runtime_payload_for_json(runtime_payload)
+    input_payload_hash = sha16(json.dumps(payload_for_json, sort_keys=True))
     from apps_rg.runtime.sections.executive_summary_evidence_capsule import (
         ExecutiveSummaryEvidenceCapsuleError,
         _capsule_enabled,
@@ -1438,7 +1441,7 @@ def run_executive_summary_execution(
     messages = section_compiled.artifact.messages
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
-    write_json(artifact_dir / "runtime_payload.json", runtime_payload)
+    write_json(artifact_dir / "runtime_payload.json", payload_for_json)
     pp_c03 = proof_pool_metadata or {}
     c03_doc = pp_c03.get("c03_graphrag_bound")
     if isinstance(c03_doc, dict):

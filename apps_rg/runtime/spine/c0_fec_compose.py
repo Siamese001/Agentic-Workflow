@@ -327,6 +327,26 @@ def emit_spine_c0_fec_artifacts(
         p_legacy = artifact_dir / "final_evidence_contract_snapshot.json"
         p_legacy.write_text(json.dumps(fec_inner, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         paths["final_evidence_contract_snapshot"] = p_legacy
+
+    from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
+
+    emit_spine_span_event(
+        artifact_dir,
+        layer_key="C0",
+        binding_seam="apps_rg/runtime/spine/section_c0_retrieve.py",
+        product_visible=bridge.product_visible,
+        extra={"fec_bridge_mode": bridge.bridge_doc.get("fec_bridge_mode")},
+    )
+    from apps_rg.runtime.spine.c0_graph_lane_receipt import (
+        build_c0_graph_lane_receipt_from_bridge,
+        emit_c0_graph_lane_receipt,
+    )
+
+    graph_receipt = build_c0_graph_lane_receipt_from_bridge(
+        bridge.bridge_doc,
+        section_id=str(bridge.bridge_doc.get("section_id") or ""),
+    )
+    emit_c0_graph_lane_receipt(artifact_dir, graph_receipt)
     return paths
 
 
@@ -416,7 +436,8 @@ def wire_spine_c0_fec_for_section(
     from apps_rg.runtime.spine.front_contracts import emit_section_front_spine_receipts
 
     emit_section_front_spine_receipts(artifact_dir, front_spine)
-    runtime_payload["_section_front_spine"] = front_spine
+    # Contracts persist under artifact_dir; do not stash dataclass objects on runtime_payload
+    # (executive_summary_lane hashes/writes runtime_payload.json via json.dumps).
     from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
 
     for layer_key, seam in (
@@ -474,7 +495,13 @@ def wire_spine_c0_fec_for_section(
             from agentic_core.runtime.contracts.final_evidence_contract import (
                 FinalEvidenceContract,
             )
+            from apps_rg.runtime.bindings.c0_binding import APPS_RG_C0_CERT_REF
 
+            l5_ref = str(
+                snap.get("l5_certification_ref")
+                or bridge.bridge_doc.get("l5_certification_ref")
+                or APPS_RG_C0_CERT_REF
+            )
             fec_check = FinalEvidenceContract(
                 request_id=str(snap.get("request_id") or ""),
                 run_id=str(snap.get("run_id") or ""),
@@ -482,6 +509,7 @@ def wire_spine_c0_fec_for_section(
                 trace_id="",
                 support_status=support,
                 support_target_met=support in ("PASS",),
+                l5_certification_ref=l5_ref,
             )
             assert_no_stop_as_evidence_gap(
                 grounding_required=grounding_required_for_section(front_spine),

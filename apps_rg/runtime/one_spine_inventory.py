@@ -133,11 +133,11 @@ def _misnamed_c0_artifacts() -> list[dict[str, Any]]:
 
 def _open_gaps() -> list[str]:
     return [
-        "GAP-SPINE-OTEL: spine_span_emit_receipt.jsonl fallback; full OTEL SDK on all lanes still open (P1)",
+        "GAP-SPINE-OTEL: dual-write bridge + emit-site gate; full semconv OTEL on all lanes still open (P1)",
         "GAP-SPINE-PA-CORE: section slots remain primary; core assemble_prompt signs manifest (section_slot_bom_core_signed)",
-        "Full C0.3 graph RAG deferred per C0_graph_lane_deferral.md",
-        "L6 promotion / full EvalRecord gauntlet deferred per L6_eval_before_learn_scope.md",
-        "Live LLM provider re-certification across all lanes out of plan scope",
+        "GAP-C0-3-ENGINE: core Graph RAG engine deferred; c0_graph_lane_receipt.json proves NA/skills-bound only",
+        "GAP-L6-PROMOTION: l6_eval_before_learn_receipt.json blocks promotion; human eval+gauntlet execution deferred",
+        "GAP-LIVE-ALL-LANES: live_section_spine_smoke_all_lanes.py BLOCKED without Chroma+provider (dry-run manifest only)",
     ]
 
 

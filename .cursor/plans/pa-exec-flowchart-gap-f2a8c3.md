@@ -68,7 +68,7 @@ SCOPE_EXPANSION: 2026-05-23 expanded from PA-only to full U0-L6 + governed PA pe
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W0.1 | Bridge architecture record (U0 pkg + PA orchestrator) | 🔲 TODO |
+| W0.1 | Bridge architecture record (U0 pkg + PA orchestrator) | ✅ DONE |
 | W1.1 | `runtime_customization_package.yaml` + registry | ✅ DONE |
 | W1.2 | `u0_validate_apps_rg` → `u0_runtime_package_binding` | ✅ DONE |
 | W2.1 | Section lanes through U0→L1→L0 front bridge | ✅ DONE |

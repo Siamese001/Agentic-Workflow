@@ -13,6 +13,11 @@ def sha16(value: str | bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:16]
 
 
+def runtime_payload_for_json(payload: dict[str, Any]) -> dict[str, Any]:
+    """Drop in-process-only keys before hashing or persisting ``runtime_payload.json``."""
+    return {k: v for k, v in payload.items() if not str(k).startswith("_")}
+
+
 def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

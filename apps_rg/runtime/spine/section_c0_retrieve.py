@@ -290,4 +290,11 @@ def write_spine_c0_retrieve_receipt(artifact_dir: Path, receipt: dict[str, Any])
         json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    from apps_rg.runtime.spine.c0_graph_lane_receipt import (
+        build_c0_graph_lane_receipt_from_spine_retrieve,
+        emit_c0_graph_lane_receipt,
+    )
+
+    graph_receipt = build_c0_graph_lane_receipt_from_spine_retrieve(receipt)
+    emit_c0_graph_lane_receipt(artifact_dir, graph_receipt)
     return path

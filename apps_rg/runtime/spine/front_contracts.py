@@ -378,6 +378,21 @@ def emit_section_front_spine_receipts(
         encoding="utf-8",
     )
     paths["route_contract"] = p_route
+
+    from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
+
+    product_visible = bool(getattr(bridge, "product_visible", True))
+    for layer_key, seam in (
+        ("U0", "apps_rg/runtime/bindings/u0_binding.py"),
+        ("L1", "apps_rg/runtime/bindings/l1_binding.py"),
+        ("L0", "apps_rg/runtime/bindings/l0_binding.py"),
+    ):
+        emit_spine_span_event(
+            artifact_dir,
+            layer_key=layer_key,
+            binding_seam=seam,
+            product_visible=product_visible,
+        )
     return paths
 
 

@@ -320,6 +320,52 @@ def emit_section_runtime_exhaust_spine_artifacts(
     runtime_payload["l6_shadow_handoff_receipt_ref"] = L6_SHADOW_HANDOFF_RECEIPT_ARTIFACT
     runtime_payload["l6_post_runtime_boundary_sealed"] = True
 
+    from apps_rg.runtime.spine.spine_span_emit import (
+        emit_spine_span_coverage_receipt,
+        emit_spine_span_event,
+    )
+
+    product_visible = bool(runtime_payload.get("product_visible", True))
+    emit_spine_span_event(
+        artifact_dir,
+        layer_key="L6",
+        binding_seam="apps_rg/runtime/spine/governed_l6_shadow_compose.py",
+        product_visible=product_visible,
+        extra={"handoff_phase": "post_runtime_exhaust_only"},
+    )
+    emit_spine_span_coverage_receipt(artifact_dir, product_visible=product_visible)
+
+    from apps_rg.runtime.spine.governed_l6_shadow_compose import (
+        GOVERNED_L6_SHADOW_MODE_SECTION,
+        build_governed_l6_handoff_envelope,
+    )
+    from apps_rg.runtime.spine.l6_eval_before_learn_receipt import (
+        build_l6_eval_before_learn_receipt,
+        emit_l6_eval_before_learn_receipt,
+    )
+
+    governed_env = runtime_payload.get("governed_l6_handoff_envelope")
+    if not isinstance(governed_env, dict):
+        exhaust_doc = _load_json(artifact_dir, RUNTIME_EXHAUST_BUNDLE_ARTIFACT)
+        governed_env = build_governed_l6_handoff_envelope(
+            section_id=section_id,
+            run_id=str(runtime_payload.get("run_id") or ""),
+            mode=GOVERNED_L6_SHADOW_MODE_SECTION,
+            runtime_exhaust_ref=RUNTIME_EXHAUST_BUNDLE_ARTIFACT,
+            exit_disposition_ref=EXIT_DISPOSITION_RECEIPT_ARTIFACT,
+            x3_code=str(exhaust_doc.get("x3_code") or ""),
+        )
+        runtime_payload["governed_l6_handoff_envelope"] = governed_env
+    eval_receipt = build_l6_eval_before_learn_receipt(
+        section_id=section_id,
+        run_id=str(runtime_payload.get("run_id") or ""),
+        governed_envelope=governed_env,
+        runtime_exhaust_ref=RUNTIME_EXHAUST_BUNDLE_ARTIFACT,
+        exit_disposition_ref=EXIT_DISPOSITION_RECEIPT_ARTIFACT,
+    )
+    emit_l6_eval_before_learn_receipt(artifact_dir, eval_receipt)
+    runtime_payload["l6_eval_before_learn_receipt_ref"] = "l6_eval_before_learn_receipt.json"
+
     return {
         "runtime_exhaust_bundle": p_bundle,
         "runtime_exhaust_receipt": p_receipt,

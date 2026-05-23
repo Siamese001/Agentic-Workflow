@@ -436,6 +436,20 @@ def build_l6_shadow_handoff_dict(
         pkt["governed_l6_handoff_envelope"] = governed_env
         pkt["promotion_allowed"] = False
         pkt["promotion_status"] = governed_env["promotion_status"]
+        from apps_rg.runtime.spine.l6_eval_before_learn_receipt import (
+            build_l6_eval_before_learn_receipt,
+            emit_l6_eval_before_learn_receipt,
+        )
+
+        eval_receipt = build_l6_eval_before_learn_receipt(
+            section_id=section_id,
+            run_id=run_id,
+            governed_envelope=governed_env,
+            runtime_exhaust_ref=repo_rel(rr, exhaust_path),
+            exit_disposition_ref=repo_rel(rr, edr_path) if edr_path.is_file() else "",
+        )
+        emit_l6_eval_before_learn_receipt(ad, eval_receipt)
+        pkt["l6_eval_before_learn_receipt_ref"] = "l6_eval_before_learn_receipt.json"
 
     return pkt
 

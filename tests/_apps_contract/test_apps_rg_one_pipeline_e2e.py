@@ -49,7 +49,11 @@ from apps_rg.runtime.spine.governed_pa_compose import (
     stamp_section_governed_pa_receipt,
 )
 from apps_rg.runtime.spine.l2_handoff_receipt import L2_HANDOFF_RECEIPT_ARTIFACT
-from apps_rg.runtime.spine.spine_span_emit import SPINE_SPAN_RECEIPT
+from apps_rg.runtime.spine.spine_span_emit import (
+    SPINE_SPAN_COVERAGE_RECEIPT,
+    SPINE_SPAN_RECEIPT,
+    validate_spine_span_coverage,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 GATE_SINGLE = REPO / "ops_scripts/ci/check_apps_rg_single_spine.py"
@@ -253,6 +257,12 @@ def test_section_lane_one_pipeline_u0_through_l6_e2e(tmp_path: Path) -> None:
     assert (tmp_path / L2_HANDOFF_RECEIPT_ARTIFACT).is_file()
     assert (tmp_path / "exit_disposition_receipt.json").is_file()
     assert (tmp_path / "runtime_exhaust_bundle.json").is_file()
+    assert (tmp_path / "c0_graph_lane_receipt.json").is_file()
+    assert (tmp_path / "l6_eval_before_learn_receipt.json").is_file()
+
+    coverage = validate_spine_span_coverage(tmp_path, product_visible=True)
+    assert coverage["complete"] is True, coverage.get("missing_layers")
+    assert (tmp_path / SPINE_SPAN_COVERAGE_RECEIPT).is_file()
 
     span_layers: list[str] = []
     span_path = tmp_path / SPINE_SPAN_RECEIPT
@@ -260,8 +270,8 @@ def test_section_lane_one_pipeline_u0_through_l6_e2e(tmp_path: Path) -> None:
         for line in span_path.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 span_layers.append(json.loads(line)["layer_key"])
-    for layer in ("PA", "L2", "EXIT"):
-        assert layer in span_layers
+    for layer in SPINE_LAYER_ORDER:
+        assert layer in span_layers, f"missing spine span layer {layer!r} in {span_layers}"
 
     edr = json.loads((tmp_path / "exit_disposition_receipt.json").read_text(encoding="utf-8"))
     assert edr.get("exit_disposition_receipt_authority") is True or edr.get("schema_version")
