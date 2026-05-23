@@ -1099,6 +1099,33 @@ def check_exec_summary_cross_sentence_metric_dedup(resume_display_text: str) -> 
     return True, None
 
 
+def check_c03_selected_fact_ids_claimable_subset_allowed_fact_ids(
+    *,
+    allowed_fact_ids: set[str] | list[str] | None,
+    proof_pool_metadata: dict[str, Any] | None,
+) -> tuple[bool, str | None]:
+    """Fail when track/C03 expansion advertises claimable facts outside the proof pool."""
+    allowed = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
+    if not allowed:
+        return False, "missing_allowed_fact_ids"
+    from apps_rg.runtime.c0.c03_allowlist_coherence import (
+        collect_expansion_fact_ids,
+        fact_id_in_allowed_pool,
+    )
+
+    meta = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
+    c03 = meta.get("c03_graphrag_bound")
+    track = meta.get("track_weighted_graph_expansion") or {}
+    expansion_ids = collect_expansion_fact_ids(c03_bound=c03 if isinstance(c03, dict) else None, track_expansion=track)
+    violations = sorted({fid for fid in expansion_ids if not fact_id_in_allowed_pool(fid, allowed)})
+    filtered = meta.get("c03_filtered_out_fact_ids") or []
+    if violations and not filtered:
+        return False, f"claimable_outside_pool:{violations}"
+    if violations and filtered and sorted(filtered) != violations:
+        return False, f"filtered_out_mismatch:violations={violations}:filtered={filtered}"
+    return True, None
+
+
 def check_exec_summary_sentence_count_5_6(resume_display_text: str) -> tuple[bool, str | None]:
     """Deprecated alias — product band is exactly six sentences."""
     return check_exec_summary_sentence_count_6(resume_display_text)
@@ -1661,6 +1688,17 @@ def run_x2_gates(
         dedup_reason or "ok",
         "no_duplicate_high_signal_metrics",
         dedup_reason,
+    )
+    allowlist_ok, allowlist_reason = check_c03_selected_fact_ids_claimable_subset_allowed_fact_ids(
+        allowed_fact_ids=allowed_fact_ids,
+        proof_pool_metadata=proof_pool_metadata,
+    )
+    add(
+        "x2_exec_summary_c03_selected_fact_ids_claimable_subset_allowed_fact_ids",
+        allowlist_ok,
+        allowlist_reason or "ok",
+        "pool_wins_allowlist",
+        allowlist_reason,
     )
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         resume_display_text,

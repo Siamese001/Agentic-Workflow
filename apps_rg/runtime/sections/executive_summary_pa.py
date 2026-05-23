@@ -442,6 +442,13 @@ def build_executive_summary_assembly_input(
     if not use_capsule:
         if graph_product or facts:
             product_patch += "\n\n" + format_graph_proof_pool_appendix(runtime_payload)
+        capsule = pp_meta.get("graph_targeting_capsule")
+        if isinstance(capsule, dict):
+            from apps_rg.runtime.c0.exec_summary_graph_targeting_capsule import (
+                format_graph_targeting_capsule_for_pa,
+            )
+
+            product_patch += "\n\n" + format_graph_targeting_capsule_for_pa(capsule)
         product_patch += "\n\n" + format_srfs_style_only_quality_oneshot_block()
     return PromptAssemblyInput(
         template_id="strategic_tailor_v1",

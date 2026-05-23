@@ -358,7 +358,9 @@ def enrich_c03_bound_with_sqlite_context(
         )
         receipt_path = write_c03_graph_sqlite_context_receipt(bundle, repo_root=repo_root)
         out = dict(c03_doc)
+        out["c03_sqlite_attach_status"] = "ATTACHED"
         out["c03_sqlite_context_status"] = "ATTACHED"
+        out["c03_sqlite_attach_reason"] = "sqlite_context_bound"
         out["c03_sqlite_db_path"] = bundle["sqlite_db_path"]
         out["c03_sqlite_graph_version"] = bundle["receipt"]["graph_version"]
         out["c03_sqlite_graph_hash"] = bundle["receipt"]["graph_hash"]
@@ -378,7 +380,9 @@ def enrich_c03_bound_with_sqlite_context(
         return out
     except (OSError, ValueError, FileNotFoundError) as exc:
         out = dict(c03_doc)
+        out["c03_sqlite_attach_status"] = "DEGRADED"
         out["c03_sqlite_context_status"] = "UNAVAILABLE"
+        out["c03_sqlite_attach_reason"] = f"{type(exc).__name__}:{exc}"
         out["c03_sqlite_context_error"] = f"{type(exc).__name__}:{exc}"
         out["c03_sqlite_proof_classification"] = PROOF_CLASSIFICATION
         return out

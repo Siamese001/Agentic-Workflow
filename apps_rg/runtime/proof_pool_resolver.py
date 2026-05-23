@@ -293,19 +293,11 @@ def _resolve_executive_summary_graph_only_proof_pool(
     allowed = set(ordered)
     bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
 
-    from apps_rg.runtime.c03_graphrag_bound import build_executive_summary_c03_graphrag_bound
-
-    c03 = build_executive_summary_c03_graphrag_bound(
-        graph=graph,
-        graph_ref=graph_ref,
-        graph_digest=graph_digest,
-        selected_fact_ids=ordered,
-    )
-
     from apps_rg.fact_inventory.track_weighted_graph_expansion import (
         build_track_weighted_expansion,
         infer_projection_role_family_key,
     )
+    from apps_rg.runtime.c03_graphrag_bound import build_section_c03_graphrag_bound
 
     role_family_key = infer_projection_role_family_key(
         target_role=target_role,
@@ -324,6 +316,34 @@ def _resolve_executive_summary_graph_only_proof_pool(
         repo_root=root,
     )
 
+    c03 = build_section_c03_graphrag_bound(
+        section_id="executive_summary",
+        graph=graph,
+        graph_ref=graph_ref,
+        graph_digest=graph_digest,
+        selected_fact_ids=ordered,
+        role_family_key=role_family_key,
+        attach_sqlite_context=True,
+        repo_root=root,
+    )
+
+    from apps_rg.runtime.c0.c03_allowlist_coherence import (
+        build_exec_summary_allowlist_receipt,
+        filter_c03_evidence_to_allowed_pool,
+    )
+    from apps_rg.runtime.c0.exec_summary_graph_targeting_capsule import build_graph_targeting_capsule
+
+    c03, allowlist_filter_receipt = filter_c03_evidence_to_allowed_pool(
+        c03,
+        allowed,
+        track_expansion=track_expansion,
+    )
+    graph_targeting_capsule = build_graph_targeting_capsule(
+        track_expansion,
+        role_family_key=role_family_key,
+        allowed_fact_ids=allowed,
+    )
+
     meta = graph_only_proof_pool_metadata(
         section_id="executive_summary",
         candidate_fact_pool_count=len(facts),
@@ -338,6 +358,24 @@ def _resolve_executive_summary_graph_only_proof_pool(
     meta["broad_skills_ledger_used_as_authority"] = False
     meta["silent_fallback_possible"] = False
     meta["c03_graphrag_bound"] = c03
+    meta["graph_targeting_capsule"] = graph_targeting_capsule
+    meta["exec_summary_allowlist_receipt"] = build_exec_summary_allowlist_receipt(
+        allowed_fact_ids=allowed,
+        allowlist_filter_receipt=allowlist_filter_receipt,
+        track_expansion=track_expansion,
+        proof_pool_digest="",  # filled after digest computed
+    )
+    meta["allowlist_mismatch"] = False
+    meta["c03_expansion_surplus_fact_ids"] = list(
+        allowlist_filter_receipt.get("c03_expansion_surplus_fact_ids")
+        or allowlist_filter_receipt.get("c03_filtered_out_fact_ids")
+        or []
+    )
+    meta["c03_filtered_out_fact_ids"] = list(allowlist_filter_receipt.get("c03_filtered_out_fact_ids") or [])
+    meta["c03_context_fact_ids"] = list(allowlist_filter_receipt.get("c03_context_fact_ids") or [])
+    meta["c03_sqlite_attach_status"] = str(c03.get("c03_sqlite_attach_status") or "DEGRADED")
+    meta["c03_sqlite_attach_reason"] = str(c03.get("c03_sqlite_attach_reason") or "")
+    meta["canonical_c0_3_claimed"] = False
     meta["c03_graph_hop_paths_count"] = c03.get("graph_hop_paths_count", len(c03.get("graph_expansion_refs") or []))
     meta["non_graph_evidence_items_count"] = c03.get("non_graph_evidence_items_count", 0)
     meta["c03_graph_bound_status"] = str(c03.get("c03_graphrag_bound_status") or "NOT_BOUND")
@@ -384,6 +422,9 @@ def _resolve_executive_summary_graph_only_proof_pool(
         ),
     )
     digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+    receipt = meta.get("exec_summary_allowlist_receipt")
+    if isinstance(receipt, dict):
+        receipt["proof_pool_digest"] = digest
     return SectionProofPool(
         section="executive_summary",
         proof_source=PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
@@ -793,20 +834,24 @@ def _resolve_section_proof_pool_inner(
         return finalize_product_pool(pool)
 
     if section == "executive_summary":
-        return finalize_product_pool(
-            _resolve_executive_summary_graph_only_proof_pool(
-                root=root,
-                broad_skills_ledger_path=broad_skills_ledger_path,
-                target_company=company_eff,
-                target_role=role_eff,
-                jd_text=jd_eff,
-                briefing_text=br_eff,
-                base_ref_str=base_ref_str,
-                base_hash=base_hash,
-                override_used=override_used,
-                targeting=targeting,
-            )
+        pool = _resolve_executive_summary_graph_only_proof_pool(
+            root=root,
+            broad_skills_ledger_path=broad_skills_ledger_path,
+            target_company=company_eff,
+            target_role=role_eff,
+            jd_text=jd_eff,
+            briefing_text=br_eff,
+            base_ref_str=base_ref_str,
+            base_hash=base_hash,
+            override_used=override_used,
+            targeting=targeting,
         )
+        from apps_rg.runtime.native_c03_skills_graph import enrich_proof_pool_with_native_c03
+
+        pool = enrich_proof_pool_with_native_c03(
+            pool, front_spine=front_spine, repo_root=root
+        )
+        return finalize_product_pool(pool)
 
     return finalize_product_pool(
         _resolve_generic_section_graph_skills_proof_pool(

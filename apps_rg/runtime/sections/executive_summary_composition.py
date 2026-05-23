@@ -168,6 +168,79 @@ def _brushstroke_for_role(role: str, facts: list[dict[str, Any]], allowed: set[s
     }
 
 
+def bind_facts_to_brushstrokes(
+    facts: list[dict[str, Any]],
+    *,
+    allowed_fact_ids: set[str],
+    proof_pool_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Map allowed facts to B1–B4 brushstroke roles (selection-time metadata)."""
+    allowed = {_fact_id_base(x) for x in allowed_fact_ids}
+    bindings: list[dict[str, Any]] = []
+    for fact in facts:
+        if not isinstance(fact, dict):
+            continue
+        fid = str(fact.get("fact_id") or "")
+        role = _classify_fact_brushstroke_role(fid, str(fact.get("claim_text") or ""))
+        bindings.append(
+            {
+                "fact_id": fid,
+                "fact_id_base": _fact_id_base(fid),
+                "brushstroke_role": role,
+                "in_allowed_pool": _fact_id_base(fid) in allowed,
+            }
+        )
+    covered_roles = sorted({b["brushstroke_role"] for b in bindings if b.get("in_allowed_pool")})
+    missing_roles = [r for r in BRUSHSTROKE_ROLES if r not in covered_roles]
+    return {
+        "brushstroke_fact_bindings": bindings,
+        "brushstroke_required_ids": list(BRUSHSTROKE_ROLES),
+        "brushstroke_covered_ids": covered_roles,
+        "brushstroke_missing_ids": missing_roles,
+        "graph_skill_refs": _infer_graph_skill_refs(facts, proof_pool_metadata=proof_pool_metadata),
+    }
+
+
+def check_exec_summary_brushstroke_coverage_pre_l2(
+    composition_plan: dict[str, Any] | None,
+    *,
+    strict: bool = False,
+) -> tuple[str, dict[str, Any]]:
+    """Pre-L2 brushstroke gate — block or allow explicit gaps (no graph hallucination)."""
+    plan = composition_plan or {}
+    brushstrokes = list(plan.get("brushstrokes") or [])
+    missing: list[str] = []
+    for role in BRUSHSTROKE_ROLES:
+        role_rows = [b for b in brushstrokes if b.get("brushstroke_role") == role]
+        req = []
+        for row in role_rows:
+            req.extend(list(row.get("required_fact_ids") or []))
+        if not req:
+            missing.append(role)
+    receipt = {
+        "brushstroke_required_ids": list(BRUSHSTROKE_ROLES),
+        "brushstroke_covered_ids": [r for r in BRUSHSTROKE_ROLES if r not in missing],
+        "brushstroke_missing_ids": missing,
+        "brushstroke_fact_bindings": bind_facts_to_brushstrokes(
+            [],
+            allowed_fact_ids=set(),
+        ).get("brushstroke_fact_bindings"),
+    }
+    if not missing:
+        return "PASS", {**receipt, "brushstroke_gate_status": "PASS"}
+    if strict:
+        return "BLOCKED", {
+            **receipt,
+            "brushstroke_gate_status": "BLOCKED",
+            "gap_notes": [f"missing_brushstroke:{r}" for r in missing],
+        }
+    return "GAP_ALLOWED", {
+        **receipt,
+        "brushstroke_gate_status": "GAP_ALLOWED",
+        "gap_notes": [f"missing_brushstroke:{r}" for r in missing],
+    }
+
+
 def build_executive_summary_composition_plan(
     *,
     selected_facts: list[dict[str, Any]],
@@ -181,6 +254,9 @@ def build_executive_summary_composition_plan(
     facts = [f for f in selected_facts if isinstance(f, dict)]
     allowed = {_fact_id_base(x) for x in allowed_fact_ids}
     graph_refs = _infer_graph_skill_refs(facts, proof_pool_metadata=proof_pool_metadata)
+    brushstroke_bind = bind_facts_to_brushstrokes(
+        facts, allowed_fact_ids=allowed_fact_ids, proof_pool_metadata=proof_pool_metadata
+    )
     brushstrokes = [_brushstroke_for_role(role, facts, allowed) for role in BRUSHSTROKE_ROLES]
     dominant = "B2_governed_platform_system"
     if graph_refs:
@@ -198,6 +274,10 @@ def build_executive_summary_composition_plan(
         "dominant_brushstroke_id": dominant,
         "brushstrokes": brushstrokes,
         "graph_skill_refs": graph_refs,
+        "brushstroke_required_ids": brushstroke_bind["brushstroke_required_ids"],
+        "brushstroke_covered_ids": brushstroke_bind["brushstroke_covered_ids"],
+        "brushstroke_missing_ids": brushstroke_bind["brushstroke_missing_ids"],
+        "brushstroke_fact_bindings": brushstroke_bind["brushstroke_fact_bindings"],
         "srfs_active": False,
         "graph_backed_composition_claimed": bool(graph_refs) or bool(
             proof_pool_metadata and proof_pool_metadata.get("graph_skills_proof_pool")

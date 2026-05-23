@@ -166,6 +166,22 @@ def audit_run(run_dir: Path, lane: str) -> dict:
         if isinstance(pp, dict):
             meta = pp.get("proof_pool_metadata") or {}
             out["c03_bound"] = meta.get("c03_graphrag_bound_status")
+            if lane == "executive_summary":
+                allowed = set(fec_ids or pool_ids)
+                expansion_ids: set[str] = set()
+                track = meta.get("track_weighted_graph_expansion") or {}
+                for fid in track.get("c03_selected_fact_ids") or []:
+                    expansion_ids.add(str(fid))
+                for fid in meta.get("c03_context_fact_ids") or []:
+                    expansion_ids.add(str(fid))
+                for fid in meta.get("c03_filtered_out_fact_ids") or []:
+                    expansion_ids.add(str(fid))
+                out["c03_expansion_fact_ids"] = sorted(expansion_ids)
+                out["c03_expansion_minus_allowed"] = sorted(expansion_ids - allowed)
+                out["allowlist_mismatch"] = bool(meta.get("allowlist_mismatch"))
+                out["c03_filtered_out_fact_ids"] = list(meta.get("c03_filtered_out_fact_ids") or [])
+                out["graph_targeting_capsule_present"] = bool(meta.get("graph_targeting_capsule"))
+                out["c03_sqlite_attach_status"] = meta.get("c03_sqlite_attach_status")
 
     chain = build_canonical_evidence_digest_chain(run_dir, section_id=lane)
     inv = chain.get("invariants") or {}

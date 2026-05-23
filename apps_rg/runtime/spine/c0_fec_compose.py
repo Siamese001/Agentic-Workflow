@@ -199,6 +199,23 @@ def build_spine_c0_fec_artifact(
                 }
             )
 
+    if section_id == "executive_summary":
+        from apps_rg.runtime.c0.c03_allowlist_coherence import (
+            _fact_id_from_evidence_item,
+            fact_id_in_allowed_pool,
+        )
+
+        allowed_set = set(pool.allowed_fact_ids)
+        evidence_items = [
+            it
+            for it in evidence_items
+            if isinstance(it, dict)
+            and (
+                not _fact_id_from_evidence_item(it)
+                or fact_id_in_allowed_pool(_fact_id_from_evidence_item(it), allowed_set)
+            )
+        ]
+
     support_status = _extract_support_status(pp_meta)
     pa_meta = _build_pa_proof_authority_metadata(
         pp_meta, pool=pool, route_contract_ref=route_contract_ref

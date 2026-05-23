@@ -245,6 +245,14 @@ def format_evidence_capsule_c0_block(
             )
     if isinstance(compression, dict) and compression.get("pa_instruction"):
         lines.append(f"C04_COMPRESSION_INSTRUCTION: {compression.get('pa_instruction')}")
+    if isinstance(runtime_payload, dict):
+        gtc = runtime_payload.get("graph_targeting_capsule")
+        if isinstance(gtc, dict):
+            from apps_rg.runtime.c0.exec_summary_graph_targeting_capsule import (
+                format_graph_targeting_capsule_for_pa,
+            )
+
+            lines.extend(["", format_graph_targeting_capsule_for_pa(gtc)])
 
     counts = capsule.get("proof_pool_counts") or capsule.get("srfs_counts") or {}
     lines.extend(

@@ -1360,8 +1360,43 @@ def run_executive_summary_execution(
         write_token_budget_receipt,
     )
 
-    evidence_capsule_block_reason: str | None = None
-    if _capsule_enabled(runtime_payload):
+    from apps_rg.runtime.c0.c03_allowlist_coherence import assert_pre_l2_allowlist_coherence
+
+    allowlist_block_reason: str | None = assert_pre_l2_allowlist_coherence(
+        allowed_fact_ids=allowed_fact_ids,
+        c03_bound=proof_pool_metadata.get("c03_graphrag_bound")
+        if isinstance(proof_pool_metadata, dict)
+        else None,
+        track_expansion=proof_pool_metadata.get("track_weighted_graph_expansion")
+        if isinstance(proof_pool_metadata, dict)
+        else None,
+        runtime_payload=runtime_payload,
+    )
+    if allowlist_block_reason:
+        runtime_payload["allowlist_coherence_policy"] = {
+            "fail_closed": True,
+            "fail_closed_reason": allowlist_block_reason,
+            "dispatch_allowed": False,
+        }
+
+    capsule_doc = (
+        proof_pool_metadata.get("graph_targeting_capsule")
+        if isinstance(proof_pool_metadata, dict)
+        else None
+    )
+    if isinstance(capsule_doc, dict):
+        runtime_payload["graph_targeting_capsule"] = capsule_doc
+        write_json(artifact_dir / "graph_targeting_capsule.json", capsule_doc)
+    _allowlist_receipt_early = (
+        proof_pool_metadata.get("exec_summary_allowlist_receipt")
+        if isinstance(proof_pool_metadata, dict)
+        else None
+    )
+    if isinstance(_allowlist_receipt_early, dict):
+        write_json(artifact_dir / "allowlist_coherence_receipt.json", _allowlist_receipt_early)
+
+    evidence_capsule_block_reason: str | None = allowlist_block_reason
+    if _capsule_enabled(runtime_payload) and not evidence_capsule_block_reason:
         try:
             baseline_payload = dict(runtime_payload)
             baseline_payload["evidence_capsule_active"] = False
@@ -1524,13 +1559,18 @@ def run_executive_summary_execution(
     provider_req: Any = None
     provider_payload: dict[str, Any] = {}
     if evidence_capsule_block_reason:
+        _block_ref = (
+            "allowlist_coherence_receipt.json"
+            if allowlist_block_reason
+            else "evidence_capsule_receipt.json"
+        )
         provider_request_data = {
             "provider_requested": str(args.provider),
             "provider_attempted": False,
             "blocked_before_dispatch": True,
             "fail_closed_reason": evidence_capsule_block_reason,
             "max_tokens": max_out_tokens,
-            "evidence_capsule_receipt_ref": "evidence_capsule_receipt.json",
+            "pre_l2_block_receipt_ref": _block_ref,
             "mock_fallback_allowed": False,
         }
         write_json(artifact_dir / "provider_request.json", provider_request_data)
@@ -1543,7 +1583,11 @@ def run_executive_summary_execution(
             model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
             raw_model_output="",
             provider_response={
-                "evidence_capsule_blocked": True,
+                "pre_l2_blocked": True,
+                "allowlist_coherence_blocked": bool(allowlist_block_reason),
+                "evidence_capsule_blocked": bool(
+                    evidence_capsule_block_reason and not allowlist_block_reason
+                ),
                 "reason": evidence_capsule_block_reason,
             },
         )
@@ -1591,7 +1635,11 @@ def run_executive_summary_execution(
             }
         write_json(artifact_dir / "provider_request.json", provider_request_data)
         req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
-    if evidence_capsule_block_reason or token_budget_block_reason:
+    if (
+        evidence_capsule_block_reason
+        or token_budget_block_reason
+        or allowlist_block_reason
+    ):
         pass
     else:
         result = call_qwen_vllm(
@@ -2296,6 +2344,11 @@ def run_executive_summary_execution(
         bundle=proof_bundle,
     )
     write_json(artifact_dir / "real_l2_generation_result.json", real_result)
+    _allowlist_receipt = (
+        proof_pool_metadata.get("exec_summary_allowlist_receipt")
+        if isinstance(proof_pool_metadata, dict)
+        else {}
+    )
     _smr_es = {
         "run_id": runtime_payload["run_id"],
         "lane_id": "executive_summary",
@@ -2310,6 +2363,30 @@ def run_executive_summary_execution(
         "x3_code": x3.x3_code,
         "proof_eligible": proof_bundle["proof_eligible"],
         "judge_proof_eligible": proof_bundle["judge_proof_eligible"],
+        "proof_pool_digest": str(pool.proof_pool_digest or ""),
+        "allowed_fact_ids": sorted(allowed_fact_ids),
+        "c03_context_fact_ids": list(
+            (_allowlist_receipt or {}).get("c03_context_fact_ids")
+            or (proof_pool_metadata or {}).get("c03_context_fact_ids")
+            or []
+        ),
+        "c03_filtered_out_fact_ids": list(
+            (_allowlist_receipt or {}).get("c03_filtered_out_fact_ids")
+            or (proof_pool_metadata or {}).get("c03_filtered_out_fact_ids")
+            or []
+        ),
+        "promoted_fact_ids": list((_allowlist_receipt or {}).get("promoted_fact_ids") or []),
+        "graph_targeting_skill_ids": list(
+            (_allowlist_receipt or {}).get("graph_targeting_skill_ids") or []
+        ),
+        "allowlist_mismatch": bool(
+            (_allowlist_receipt or {}).get("allowlist_mismatch")
+            or (proof_pool_metadata or {}).get("allowlist_mismatch")
+        ),
+        "native_c03_status": str((proof_pool_metadata or {}).get("native_c03_status") or ""),
+        "c03_graphrag_bound_status": str((proof_pool_metadata or {}).get("c03_graphrag_bound_status") or ""),
+        "c03_sqlite_attach_status": str((proof_pool_metadata or {}).get("c03_sqlite_attach_status") or ""),
+        "canonical_c0_3_claimed": False,
     }
     merge_normalized_srfs_reporting_into_dict(
         _smr_es,
