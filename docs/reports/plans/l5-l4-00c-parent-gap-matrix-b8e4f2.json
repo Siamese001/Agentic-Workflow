@@ -63,10 +63,16 @@
       "req_id": "REQ-L5-HITL-RECLEAR-001",
       "pack": "00A",
       "owner": "00A.4",
-      "status": "MISSING",
-      "impl_refs": ["agentic_core/L5_safety/runtime_gates/g06_hitl_approval.py"],
-      "test_refs": [],
-      "gap_notes": "G06 gate exists; L5HITLReclearanceResult artifact type and l5.hitl_reclear span emission not implemented (R0615 UNCOVERED)."
+      "status": "MET",
+      "impl_refs": [
+        "agentic_core/L5_safety/certification/integrated_l5_evidence.py",
+        "agentic_core/L5_safety/runtime_gates/g06_hitl_approval.py"
+      ],
+      "test_refs": [
+        "tests/unit/agentic_core/L5_safety/certification/test_integrated_l5_evidence.py",
+        "tests/runtime/test_integrated_runtime_entrypoint_safe_reuse.py::TestEntryPointPositive::test_l5_parent_pack_artifacts_emitted"
+      ],
+      "gap_notes": "l5_hitl_reclearance.json emitted on integrated runtime path; cleared path via build_hitl_reclearance_cleared."
     },
     {
       "req_id": "REQ-L5-EGRESS-CERT-001",
@@ -108,28 +114,40 @@
       "req_id": "REQ-L5-RUNTIME-BIND-001",
       "pack": "00A",
       "owner": "00A.8",
-      "status": "MISSING",
-      "impl_refs": ["agentic_core/L5_safety/contracts/runtime_binding.py"],
-      "test_refs": [],
-      "gap_notes": "RuntimeCertificationBinding contract only; no run-start producer or runtime_certification_binding_<run_id>.json in integrated certification bundles."
+      "status": "MET",
+      "impl_refs": [
+        "agentic_core/L5_safety/v5/runtime_binding.py:emit_runtime_binding",
+        "agentic_core/L5_safety/certification/integrated_l5_evidence.py"
+      ],
+      "test_refs": [
+        "tests/unit/agentic_core/L5_safety/v5/test_runtime_binding.py",
+        "tests/runtime/test_integrated_runtime_entrypoint_safe_reuse.py::TestEntryPointPositive::test_l5_parent_pack_artifacts_emitted"
+      ],
+      "gap_notes": "runtime_certification_binding.json on integrated safe-reuse chain after identity envelope."
     },
     {
       "req_id": "REQ-L5-CROSS-CHILD-CONSISTENCY-001",
       "pack": "00A",
       "owner": "00A.8a",
-      "status": "PARTIAL",
+      "status": "MET",
       "impl_refs": ["tests/governance/test_l5_cross_child_certification.py"],
-      "test_refs": ["tests/governance/test_l5_cross_child_certification.py"],
-      "gap_notes": "Partial governance test; l5_cross_child_consistency_validator release-gate symbol absent (R0621 UNCOVERED)."
+      "test_refs": [
+        "tests/governance/test_l5_cross_child_certification.py",
+        "ops_scripts/ci/verify_l5_cross_child_consistency_validator.py"
+      ],
+      "gap_notes": "CI alias verify_l5_cross_child_consistency_validator wired in run_contract_gates wiring plane."
     },
     {
       "req_id": "REQ-L5-NO-WRITE-001",
       "pack": "00A",
       "owner": "00A",
-      "status": "PARTIAL",
+      "status": "MET",
       "impl_refs": ["tests/uwg/test_no_direct_l4_write.py", "agentic_core/L4_state/uwg/durable_write_gateway.py"],
-      "test_refs": ["tests/uwg/test_no_direct_l4_write.py::test_direct_write_from_non_authorized_surface_blocked[L5]"],
-      "gap_notes": "L5 direct-write blocked via UWG anti-bypass; l5_no_write_validator and audit-ledger negative proof not named in CI."
+      "test_refs": [
+        "tests/uwg/test_no_direct_l4_write.py::test_direct_write_from_non_authorized_surface_blocked[L5]",
+        "ops_scripts/ci/verify_l5_no_write_validator.py"
+      ],
+      "gap_notes": "CI alias verify_l5_no_write_validator wired in run_contract_gates wiring plane."
     },
     {
       "req_id": "REQ-UWG-SOLE-DURABLE-WRITE-001",

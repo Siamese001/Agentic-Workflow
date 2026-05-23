@@ -107,6 +107,22 @@ class TestEntryPointPositive:
         assert result.safe_reuse_decision.allow is True
         assert result.x3_disposition == "X3D"
 
+    def test_l5_parent_pack_artifacts_emitted(self, tmp_path):
+        """REQ-L5-RUNTIME-BIND-001 + REQ-L5-HITL-RECLEAR-001 integrated-runtime evidence."""
+        _drive_allow_path(tmp_path)
+        binding = json.loads(
+            (tmp_path / "runtime_certification_binding.json").read_text(encoding="utf-8")
+        )
+        hitl = json.loads(
+            (tmp_path / "l5_hitl_reclearance.json").read_text(encoding="utf-8")
+        )
+        bind_payload = binding.get("payload", binding)
+        hitl_payload = hitl.get("payload", hitl)
+        assert bind_payload["req_id"] == "REQ-L5-RUNTIME-BIND-001"
+        assert bind_payload["cert_status"] == "certified"
+        assert hitl_payload["req_id"] == "REQ-L5-HITL-RECLEAR-001"
+        assert hitl_payload.get("not_applicable") is True
+
 
 # ──────────────────────────────────────────────────────────────────────
 # Fail-closed
