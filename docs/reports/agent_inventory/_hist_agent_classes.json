@@ -1,0 +1,108 @@
+{
+  "apps_rg\\engines\\resume_engine\\orchestrate_resume.py": [
+    "ResumeOrchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\resume_planner.py": [
+    "RGPlanner"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\agents.py": [
+    "ContentQualityAgent",
+    "FactCheckAgent",
+    "BrandComplianceAgent",
+    "SectionBalanceAgent",
+    "ATSCompatibilityAgent",
+    "StrategicPlanner",
+    "ReflectionAgent"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\context.py": [
+    "BudgetManager"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py": [
+    "GitOpsManager",
+    "Phase4Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\governance.py": [
+    "PredictiveBudgetManager",
+    "Phase7Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\healing.py": [
+    "SignalRouter",
+    "AgentFactory",
+    "HealingOrchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py": [
+    "UnifiedOrchestrator",
+    "Phase6Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\learning.py": [
+    "ResumeLearningAgent"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py": [
+    "ProactiveAgent"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py": [
+    "ResumeAgent"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py": [
+    "TestContentQualityAgent",
+    "TestFactCheckAgent",
+    "TestBrandComplianceAgent",
+    "TestSectionBalanceAgent",
+    "TestATSCompatibilityAgent",
+    "TestStrategicPlanner",
+    "TestReflectionAgent"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py": [
+    "TestBudgetManager"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py": [
+    "TestGitOpsManager",
+    "TestPhase4Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py": [
+    "TestResilientMutatorWithAgents",
+    "TestConversationalRepairWithOrchestrator",
+    "TestPhase4OrchestratorIntegration"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py": [
+    "TestPredictiveBudgetManager",
+    "TestPhase7Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py": [
+    "TestBudgetManagerWithMissionPlanning"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing.py": [
+    "TestSignalRouter",
+    "TestAgentFactory"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py": [
+    "TestHealingOrchestratorIntegration"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py": [
+    "TestAgentCoordination"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py": [
+    "TestUnifiedOrchestrator",
+    "TestPhase6Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py": [
+    "TestUnifiedOrchestratorWithPipeline"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning.py": [
+    "TestResumeLearningAgent"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py": [
+    "TestResumeLearningAgentIntegration"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py": [
+    "TestValidationAgent",
+    "TestPhase5Orchestrator"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py": [
+    "TestMetricsWithAgents",
+    "TestValidatorWithResumeProcessing"
+  ],
+  "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_proactive.py": [
+    "TestProactiveAgent"
+  ]
+}

@@ -1,0 +1,1437 @@
+[
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 31,
+    "text": "# Actual completion logic would go here"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\debug_resume_test.py",
+    "line": 2,
+    "text": "Auto-generated stub for debug_resume_test.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\debug_resume_test.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\dispatch_resume_tools.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:29:00.528748"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\evaluate_resume_effectiveness.py",
+    "line": 2,
+    "text": "evaluate_resume_effectiveness.py - Scoring Module"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\evaluate_resume_effectiveness.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.223993"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\evaluate_resume_effectiveness.py",
+    "line": 18,
+    "text": "class EvaluateResumeEffectiveness:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\evaluate_resume_effectiveness.py",
+    "line": 67,
+    "text": "return EvaluateResumeEffectiveness(ConfigurationService().config).score(ConfigurationService().data)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:29:00.515392"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 48,
+    "text": "# Initialize LLM-powered components with workflow configuration"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 52,
+    "text": "provider=self.config.get(\"provider\"),"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 57,
+    "text": "provider=self.config.get(\"provider\"),"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 95,
+    "text": "elif action == \"generate_resume\":"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 96,
+    "text": "return self._generate_resultume(params)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 115,
+    "text": "def _generate_resultume(self, params: Dict[str, object]) -> Dict[str, Any]:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 116,
+    "text": "\"\"\"Generate a new resume from scratch.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 120,
+    "text": "\"action\": \"generate_resume\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 139,
+    "text": "tailored_resultume = self.resume_generator.generate(resultume_data, analysis)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 2,
+    "text": "extract_resume_requirements.py - Retrieval Module"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.188342"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 17,
+    "text": "\"\"\"Retrieval engine for resume domain.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 27,
+    "text": "limit: int = 10) -> 'RetrievalResult':"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 33,
+    "text": "result = RetrievalResult(items=items, total=len(items), query=query)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 45,
+    "text": "object]) -> 'RetrievalResult':"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 49,
+    "text": "class RetrievalResult:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\extract_resume_requirements.py",
+    "line": 50,
+    "text": "\"\"\"Placeholder for RetrievalResult.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\information_prepare_resume_context.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.194597"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\inspect_resume_quality.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.215610"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\kx_nodes_resume_types.py",
+    "line": 37,
+    "text": "\"\"\"Decoding parameters for LLM generation.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\prepare_resume_context.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.194597"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\rank_resume_sections.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.207251"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\refine_resume_ranking.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.238560"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_extract_resume_requirements.py",
+    "line": 2,
+    "text": "extract_resume_requirements.py - Retrieval Module"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_extract_resume_requirements.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.188342"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_extract_resume_requirements.py",
+    "line": 15,
+    "text": "\"\"\"Retrieval engine for resume domain.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_extract_resume_requirements.py",
+    "line": 25,
+    "text": "LIMIT: INT = 10) -> RetrievalResult:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_extract_resume_requirements.py",
+    "line": 31,
+    "text": "RESULT = RetrievalResult(items=items, total=len(items), query=query)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_extract_resume_requirements.py",
+    "line": 43,
+    "text": "object]) -> RetrievalResult:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 2,
+    "text": "retrieve_resume_history.py - Retrieval Module"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.191301"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 17,
+    "text": "\"\"\"Retrieval engine for resume domain.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 27,
+    "text": "limit: int = 10) -> 'RetrievalResult':"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 33,
+    "text": "result = RetrievalResult(items=items, total=len(items), query=query)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 45,
+    "text": "object]) -> 'RetrievalResult':"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\request_retrieve_resume_history.py",
+    "line": 50,
+    "text": "class RetrievalResult:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 12,
+    "text": "generate_draft_llm,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 39,
+    "text": "\"api.openai.com\", \"anthropic.com\", \"genai.google.com\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 140,
+    "text": "Generated via Agentic Workflow Resume Engine"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 152,
+    "text": "\"\"\"Saves the generated content to a file.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 165,
+    "text": "\"\"\"Saves a verifiable JSON file with LLM provenance metadata.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 217,
+    "text": "def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_out: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 236,
+    "text": "# We validate the fetched content BEFORE sending it to Pinecone or LLM."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 254,
+    "text": "# Abort the process safely. DO NOT proceed to LLM generation."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 272,
+    "text": "# --- Step 4: Synthesize Content (LLM Action) ---"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 282,
+    "text": "\"generator_model\": \"gemini-3-pro\",  # Model used for final synthesis"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 297,
+    "text": "\"message\": f\"Cover letter generated and saved. Memory updated.\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 355,
+    "text": "def _generate_skill_gap_report(user_name: str, job_description: str, missing_keywords: list) -> str:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 356,
+    "text": "\"\"\"Generates the skill gap analysis report content.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 445,
+    "text": "# --- Step 5: Validation & Cache (LLM + L4 Redis) ---"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 446,
+    "text": "skill_report_content = _generate_skill_gap_report(user_name, job_description, missing_keywords)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 452,
+    "text": "# --- Step 6: Generate Report (L1 Filesystem) ---"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 520,
+    "text": "Generate a professional resume draft that optimally aligns with the job requirements."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 527,
+    "text": "def _generate_and_score_draft(rendered_prompt: str, user_name: str, job_description: str, logger: Optional[Any] = None) -> Dict[str, Any]:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 528,
+    "text": "\"\"\"Generates a draft using governed caching and scores it.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 542,
+    "text": "return {\"status\": \"budget_aborted\", \"message\": \"LLM generation budget exhausted\"}"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 544,
+    "text": "draft_content = generate_draft_llm(rendered_prompt)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 546,
+    "text": "logger.info(f\"\u2705 Generated new draft\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 549,
+    "text": "return {\"draft\": draft_content, \"score\": score, \"source\": cache_result.get(\"status\", \"generated\")}"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 555,
+    "text": "draft_content = generate_draft_llm(rendered_prompt)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 557,
+    "text": "return {\"draft\": draft_content, \"score\": score, \"source\": \"fallback_generated\"}"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 581,
+    "text": "def generate_optimized_draft(job_description: str, user_name: str, score_threshold: float = 0.90, max_iterations: int = 3, logger: Optional[Any] = None) -> Dict[str, Any]:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 583,
+    "text": "Iteratively generates and refines a resume draft until a semantic score threshold is met."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 594,
+    "text": "# 1. Initial Context Retrieval"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 597,
+    "text": "return {\"status\": \"error\", \"message\": \"Context retrieval failed.\"}"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 605,
+    "text": "# Generate and score draft"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 606,
+    "text": "generation_result = _generate_and_score_draft(rendered_prompt, user_name, job_description, logger)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 611,
+    "text": "\"message\": \"LLM generation budget exhausted\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 617,
+    "text": "source = generation_result.get(\"source\", \"generated\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 654,
+    "text": "# We could loop back to the LLM with a correction prompt:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 2,
+    "text": "Resume Generator - LLM-powered resume tailoring."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 10,
+    "text": "import google.generativeai as genai  # For Gemini client"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 12,
+    "text": "# Assuming Provider and get_client are from a local utility module"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 13,
+    "text": "from .utils import Provider, get_client"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 19,
+    "text": "\"\"\"Generates tailored resumes using LLM based on job analysis.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 23,
+    "text": "provider: Optional[Provider] = None,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 31,
+    "text": "llm_client: Optional pre-configured LLM client"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 32,
+    "text": "provider: Provider to use if client not supplied (defaults to Google/Gemini)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 34,
+    "text": "self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 35,
+    "text": "self.provider = provider or Provider.GOOGLE # Fixed SELF.PROVIDER to self.provider"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 41,
+    "text": "f\"Failed to initialize LLM client for provider {self.provider}\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 43,
+    "text": "def generate(self,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 51,
+    "text": "Generate a tailored resume based on job analysis."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 127,
+    "text": "RESPONSE = self._generate_response(PROMPT) # Fixed variable name case"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 244,
+    "text": "RESPONSE = self._generate_response(PROMPT) # Fixed variable name case"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 271,
+    "text": "RESPONSE = self._generate_response(PROMPT) # Fixed variable name case"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 278,
+    "text": "def _generate_response(self, prompt: str) -> str:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 279,
+    "text": "\"\"\"Generate response using the configured LLM.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 280,
+    "text": "if self.provider == Provider.GOOGLE:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 281,
+    "text": "return self._generate_with_gemini(prompt)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 283,
+    "text": "return self._generate_with_generic_client(prompt)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 285,
+    "text": "def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 286,
+    "text": "\"\"\"Generate response using Google Gemini.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 288,
+    "text": "MODEL = genai.GenerativeModel('gemini-1.5-flash')"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 291,
+    "text": "RESPONSE = MODEL.generate_content( # Fixed variable name case (model -> MODEL)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 295,
+    "text": "def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 296,
+    "text": "\"\"\"Generate response using generic client interface.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 297,
+    "text": "if hasattr(self.llm_client, 'generate'):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_generator.py",
+    "line": 298,
+    "text": "RESPONSE = self.llm_client.generate("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_planner.py",
+    "line": 111,
+    "text": "\"\"\"Generate comprehensive resume processing plan."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\retrieve_resume_history.py",
+    "line": 2,
+    "text": "retrieve_resume_history.py - Retrieval Module"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\retrieve_resume_history.py",
+    "line": 5,
+    "text": "Generated: 2025-12-07T13:28:54.191301"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\retrieve_resume_history.py",
+    "line": 15,
+    "text": "\"\"\"Retrieval engine for resume domain.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\retrieve_resume_history.py",
+    "line": 25,
+    "text": "LIMIT: INT = 10) -> RetrievalResult:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\retrieve_resume_history.py",
+    "line": 31,
+    "text": "RESULT = RetrievalResult(items=items, total=len(items), query=query)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\retrieve_resume_history.py",
+    "line": 43,
+    "text": "object]) -> RetrievalResult:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\scores_refine_resume_ranking.py",
+    "line": 6,
+    "text": "Generated: 2025-12-07T13:28:54.238560"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 3,
+    "text": "Test script for the generate_personalized_cover_letter function."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 9,
+    "text": "from resume_engine import generate_personalized_cover_letter"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 101,
+    "text": "\"\"\"Test the generate_personalized_cover_letter function with mock data.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 122,
+    "text": "result = generate_personalized_cover_letter("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 134,
+    "text": "result = generate_personalized_cover_letter("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 146,
+    "text": "result = generate_personalized_cover_letter("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 30,
+    "text": "mock_model.return_value.generate_content.return_value = ConfigurationService().mock_response"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 46,
+    "text": "ConfigurationService().mock_client.generate_content.return_value.text = 'Senior Python Developer with Django expert\\n    ise'"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 59,
+    "text": "generator.generate(ConfigurationService().resume_data, analysis)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 82,
+    "text": "ConfigurationService().mock_generator.generate.return_value = {"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 98,
+    "text": "ConfigurationService().mock_generator.generate.assert_called_once()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 108,
+    "text": "assert hasattr(ResumeGenerator, 'generate')"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 122,
+    "text": "RESULT = generator.generate("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_flows.py",
+    "line": 2,
+    "text": "Auto-generated stub for e2e\\resume_flows\\test_resume_flows.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_flows.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_flows.py",
+    "line": 14,
+    "text": "def test_generate_resume_from_data():"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_flows.py",
+    "line": 16,
+    "text": "E2E: Resume is generated from structured data."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_flows.py",
+    "line": 20,
+    "text": "def test_generate_summary():"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_flows.py",
+    "line": 22,
+    "text": "E2E: Professional summary is generated."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_generation_lifecycle.py",
+    "line": 2,
+    "text": "Auto-generated stub for e2e\\resume_flows\\test_resume_generation_lifecycle.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_generation_lifecycle.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_generation_lifecycle.py",
+    "line": 28,
+    "text": "E2E: All resume sections are generated."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_integrity.py",
+    "line": 2,
+    "text": "Auto-generated stub for unit\\apps_rg\\test_resume_integrity.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_integrity.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_integrity_simple.py",
+    "line": 2,
+    "text": "Auto-generated stub for unit\\apps_rg\\test_resume_integrity_simple.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_integrity_simple.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic.py",
+    "line": 2,
+    "text": "Auto-generated stub for integration\\test_resume_logic.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic.py",
+    "line": 26,
+    "text": "Test resume tailoring with real LLM."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic_mock.py",
+    "line": 2,
+    "text": "Auto-generated stub for unit\\apps_rg\\test_resume_logic_mock.py"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic_mock.py",
+    "line": 4,
+    "text": "Original file had syntax errors and has been regenerated as a stub."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 486,
+    "text": "Runs validation tests on the generated resume."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 22,
+    "text": "\"\"\"Manages token budget and cost tracking for LLM calls.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 120,
+    "text": "- LLM client configuration"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 129,
+    "text": "model_id: str = field(default_factory=lambda: os.getenv(\"GEMINI_MODEL\", \"gemini-3-flash-preview\"))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 131,
+    "text": "# LLM Client (initialized in __post_init__)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 183,
+    "text": "\"\"\"Initialize the LLM client.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 186,
+    "text": "api_key = os.getenv(\"GOOGLE_API_KEY\") or os.getenv(\"GEMINI_API_KEY\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 191,
+    "text": "print(f\"   \ud83e\udde0 Resume Engine: Gemini initialized ({self.model_id})\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 197,
+    "text": "print(f\"   \u26a0\ufe0f Resume Engine: Failed to initialize LLM: {e}\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 267,
+    "text": "\"\"\"Clean LLM output of markdown artifacts.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 429,
+    "text": "# Call LLM"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 527,
+    "text": "\"\"\"Call the LLM for mutation.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 532,
+    "text": "model = self.ctx.client.GenerativeModel(self.ctx.model_id)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 534,
+    "text": "model.generate_content,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 540,
+    "text": "print(f\"   [{agent_name}] \u274c LLM call failed: {e}\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 561,
+    "text": "\"\"\"Clean LLM output.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 719,
+    "text": "mutator: Optional mutator for LLM-based patching"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 786,
+    "text": "Simulates AutoGen-style group chat where multiple specialized"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 796,
+    "text": "\"SafetyInspector\": \"Security enforcer. No eval/exec, no hardcoded secrets.\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 877,
+    "text": "model = self.ctx.client.GenerativeModel(self.ctx.model_id)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 879,
+    "text": "model.generate_content,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 425,
+    "text": "Generates visual HTML Mission Control report."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 436,
+    "text": "self._generated_reports: List[str] = []"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 438,
+    "text": "def generate("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 445,
+    "text": "Generate HTML dashboard."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 453,
+    "text": "Path to generated file"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 461,
+    "text": "html = self._generate_html("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 474,
+    "text": "self._generated_reports.append(output_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 478,
+    "text": "def _generate_html("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 487,
+    "text": "\"\"\"Generate HTML content.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 502,
+    "text": "<div class=\"container\"><h1>\ud83e\uddec Resume Engine Mission Control</h1><p class=\"timestamp\">Generated: {timestamp}</p>"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 563,
+    "text": "def get_generated_reports(self) -> List[str]:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 564,
+    "text": "\"\"\"Get list of generated reports.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 565,
+    "text": "return self._generated_reports"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 570,
+    "text": "\"reports_generated\": len(self._generated_reports),"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 693,
+    "text": "\"\"\"Check if text looks like an LLM prompt.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 695,
+    "text": "\"you are\", \"your task\", \"please\", \"generate\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 811,
+    "text": "# Generate recommendation"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 905,
+    "text": "def generate_dashboard("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 911,
+    "text": "\"\"\"Generate mission control dashboard.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "line": 912,
+    "text": "return self.dashboard.generate(results, signals, output_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 8,
+    "text": "- OmniContext: Global context management and semantic retrieval"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 130,
+    "text": "r\"eval\\s*\\(\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 417,
+    "text": "# Generate recommendations"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 579,
+    "text": "Global context management and semantic retrieval."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
+    "line": 28,
+    "text": "\"\"\"Confidence levels for LLM responses.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
+    "line": 279,
+    "text": "Confidence scoring for LLM responses using logprobs."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
+    "line": 305,
+    "text": "Score the confidence of an LLM response."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
+    "line": 308,
+    "text": "response: The LLM response object"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\observability.py",
+    "line": 7,
+    "text": "- AuditReporter: Generates comprehensive audit reports"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "line": 125,
+    "text": "name=\"Generate Summary\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "line": 126,
+    "text": "description=\"Generate missing summary section\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "line": 264,
+    "text": "# Generate suggested actions based on reason"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "line": 386,
+    "text": "\"\"\"Generate a capability profile for an agent.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 69,
+    "text": "Call the LLM with budget checking."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 74,
+    "text": "self.log(\"\u26a0\ufe0f LLM not available\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 83,
+    "text": "self.ctx.client.GenerativeModel(self.ctx.model_id).generate_content,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 92,
+    "text": "self.ctx.model_id,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 97,
+    "text": "self.log(f\"\ud83d\udcb0 LLM call cost: ${cost:.6f}\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 102,
+    "text": "self.log(f\"\u26a0\ufe0f LLM error: {e}\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 35,
+    "text": "cost = budget.track_tokens(\"gemini-3-flash-preview\", 1000, 500)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 54,
+    "text": "\"\"\"Test statistics retrieval.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 56,
+    "text": "budget.track_tokens(\"gemini-3-flash-preview\", 100, 50)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 89,
+    "text": "\"\"\"Test dependency retrieval.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 111,
+    "text": "assert ctx.model_id is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 186,
+    "text": "\"\"\"Test failed results retrieval.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_context.py",
+    "line": 240,
+    "text": "\"\"\"Test comprehensive stats retrieval.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 464,
+    "text": "# This will fail without LLM but should create backup"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 343,
+    "text": "\"\"\"Test conversational repair without LLM.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 109,
+    "text": "# Simulate mutations (without LLM)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 219,
+    "text": "# Heal (will fail without LLM but should backup)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 301,
+    "text": "# Simulate mutation (without LLM)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 314,
+    "text": "def test_generate_dashboard(self, ctx, tmp_path):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 325,
+    "text": "result = generator.generate(results, signals, output_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 332,
+    "text": "def test_generate_empty_results(self, ctx, tmp_path):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 337,
+    "text": "result = generator.generate({}, set(), output_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 344,
+    "text": "generator.generate({}, set(), str(tmp_path / \"test.html\"))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 348,
+    "text": "assert stats[\"reports_generated\"] == 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 526,
+    "text": "def test_generate_dashboard(self, ctx, tmp_path):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 531,
+    "text": "result = orchestrator.generate_dashboard("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 83,
+    "text": "# Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 85,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 145,
+    "text": "# Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 147,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 168,
+    "text": "phase7.generate_dashboard(results, signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 229,
+    "text": "# Phase 7: Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 231,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 334,
+    "text": "# 6. Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 336,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 385,
+    "text": "# Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 387,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 392,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 393,
+    "text": "report = phase5.generate_report(\"healing_governance_workflow\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 180,
+    "text": "# Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 184,
+    "text": "generator.generate(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 201,
+    "text": "generator.generate(results, signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 309,
+    "text": "# Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 310,
+    "text": "step_id = phase5.track_agent(\"DashboardGenerator\", \"generate\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 312,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 373,
+    "text": "# Generate dashboard"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 375,
+    "text": "phase7.generate_dashboard(ctx.results, ctx.signals, dashboard_path)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 287,
+    "text": "# Budget should be tracked (even if no LLM calls)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 295,
+    "text": "# Run agents (they may or may not call LLM)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 299,
+    "text": "# Budget should be tracked (even if no LLM calls)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 186,
+    "text": "def test_scan_content_eval(self, ctx):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 187,
+    "text": "\"\"\"Test detecting eval usage.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 190,
+    "text": "content = \"result = eval(user_input)\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 153,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 154,
+    "text": "report = phase5.generate_report(\"full_pipeline_e2e\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 173,
+    "text": "def test_omni_context_section_retrieval(self, ctx, valid_resume):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 174,
+    "text": "\"\"\"Test OmniContext section retrieval.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 231,
+    "text": "async def test_revalidate_changed_sections(self, valid_resume, temp_memory_dir):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 232,
+    "text": "\"\"\"Test that changed sections are revalidated.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 461,
+    "text": "def test_generate_report(self, ctx, valid_resume):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 475,
+    "text": "report = reporter.generate_report(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 488,
+    "text": "report = reporter.generate_report(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 504,
+    "text": "report = reporter.generate_report(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 520,
+    "text": "reporter.generate_report(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 690,
+    "text": "def test_generate_report(self, ctx):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 696,
+    "text": "report = orchestrator.generate_report(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 119,
+    "text": "async def test_generate_comprehensive_report(self, valid_resume, job_description):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 139,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 140,
+    "text": "report = phase5.generate_report(\"report_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 160,
+    "text": "# Generate and export report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 161,
+    "text": "report = phase5.generate_report(\"export_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 238,
+    "text": "# Generate comprehensive report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 239,
+    "text": "report = phase5.generate_report(\"all_phases_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 409,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 410,
+    "text": "report = phase5.generate_report(\"self_healing_workflow\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 432,
+    "text": "phase5.generate_report(\"stats_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 200,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 201,
+    "text": "report = reporter.generate_report(\"full_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 207,
+    "text": "async def test_reporter_generates_recommendations(self, ctx):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 208,
+    "text": "\"\"\"Test that reporter generates recommendations.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 223,
+    "text": "report = reporter.generate_report(\"failed_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 252,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 253,
+    "text": "report = phase5.generate_report(\"learning_mission\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 307,
+    "text": "# Generate report"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 308,
+    "text": "report = phase5.generate_report(\"full_pipeline\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_proactive.py",
+    "line": 106,
+    "text": "assert any(t.name == \"Generate Summary\" for t in tasks)"
+  }
+]

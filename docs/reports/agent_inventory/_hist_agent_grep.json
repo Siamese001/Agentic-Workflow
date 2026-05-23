@@ -1,0 +1,2362 @@
+[
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief.py",
+    "line": 14,
+    "text": "# from agentic_core.rg_creative_brief_impl_impl_impl import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief.py",
+    "line": 15,
+    "text": "# from agentic_core.rg_creative_brief_models import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief.py",
+    "line": 16,
+    "text": "# from agentic_core.rg_creative_brief_models_1 import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief.py",
+    "line": 17,
+    "text": "# from agentic_core.brief_models_2 import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief.py",
+    "line": 18,
+    "text": "# from agentic_core.rg_creative_brief_impl import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief_enums.py",
+    "line": 4,
+    "text": "agentic_core/schemas/models/core_contracts.py"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief_enums.py",
+    "line": 9,
+    "text": "from agentic_core.schemas.models.core_contracts import ("
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief_models.py",
+    "line": 4,
+    "text": "agentic_core/schemas/models/core_contracts.py"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_creative_brief_models.py",
+    "line": 9,
+    "text": "from agentic_core.schemas.models.core_contracts import ("
+  },
+  {
+    "path": "apps_rg\\domain\\rg_validation_gates.py",
+    "line": 14,
+    "text": "# from agentic_core.rg_validation_gates_impl import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\rg_validation_gates.py",
+    "line": 15,
+    "text": "# from agentic_core.rg_validation_gates_impl import *  # Star import removed"
+  },
+  {
+    "path": "apps_rg\\domain\\__init__.py",
+    "line": 4,
+    "text": "Contains app-specific domain logic moved from agentic_core for separation of concerns:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 36,
+    "text": "Main executor class for check resume rules operations."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 53,
+    "text": "executor = logging.StreamHandler(sys.stdout)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 56,
+    "text": "executor.setFormatter(formatter)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 57,
+    "text": "self.logger.addHandler(executor)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 99,
+    "text": "'executor': self.__class__.__name__})"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 123,
+    "text": "\"\"\"module function to create configured executor instance.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\check_resume_rules_impl.py",
+    "line": 130,
+    "text": "executor = create_processor(config)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\dispatch_resume_tools.py",
+    "line": 29,
+    "text": "\"\"\"Executor for resume domain with Titanium RAG integration.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 15,
+    "text": "# Local workflow loader to avoid L3 dependency"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 17,
+    "text": "\"\"\"Local workflow loader to avoid architectural violation.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 23,
+    "text": "\"\"\"Load workflow configuration.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 28,
+    "text": "\"\"\"Create local workflow loader instance.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 36,
+    "text": "\"\"\"Executor for resume domain.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 45,
+    "text": "# Load workflow configuration"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 46,
+    "text": "self.workflow = workflow_loader or create_local_workflow_loader()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 48,
+    "text": "# Initialize LLM-powered components with workflow configuration"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 49,
+    "text": "creative_brief = self.workflow.get_creative_brief()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 53,
+    "text": "workflow_config=self.workflow.get_knode_config(\"K.0\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 59,
+    "text": "validation_rules=self.workflow.get_validation_rules()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\execute_resume_generation.py",
+    "line": 62,
+    "text": "logger.info(f\"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\orchestrate_resume.py",
+    "line": 15,
+    "text": "\"\"\"Orchestrate the multi-hop resume generation workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\orchestrate_resume.py",
+    "line": 19,
+    "text": "\"\"\"Initialize the orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\orchestrate_resume.py",
+    "line": 28,
+    "text": "\"\"\"Execute the full resume generation workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\orchestrate_resume.py",
+    "line": 56,
+    "text": "return ConfigurationService().orchestrator.run(ConfigurationService().job_description)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\rank_resume_sections.py",
+    "line": 18,
+    "text": "\"\"\"Operations executor for resume domain.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_engine.py",
+    "line": 140,
+    "text": "Generated via Agentic Workflow Resume Engine"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_planner.py",
+    "line": 1,
+    "text": "\"\"\"RG Planner - Resume Generation L1 Planning Layer."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_planner.py",
+    "line": 3,
+    "text": "Incorporated from historical agentic_workflow/l1/rg_planner.py to provide"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_planner.py",
+    "line": 73,
+    "text": "\"\"\"Resume generation planner - L1 planning layer."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\resume_planner.py",
+    "line": 82,
+    "text": "\"\"\"Initialize resume generation planner.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine.py",
+    "line": 65,
+    "text": "\"text\": \"\"\"Dear Hiring Manager,"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 12,
+    "text": "from agentic_core.config.blueprint_sovereign.structure_blueprint import ("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 91,
+    "text": "executor.execute('tailor_resume', params)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_engine_simple.py",
+    "line": 125,
+    "text": "RESULT = executor.execute('analyze_job', {'job_description': 'test'})"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_integrity.py",
+    "line": 56,
+    "text": "Test workflow enum values."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_integrity_simple.py",
+    "line": 46,
+    "text": "Test workflow enum values."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic.py",
+    "line": 50,
+    "text": "Test the complete resume tailoring workflow."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\test_resume_logic_mock.py",
+    "line": 62,
+    "text": "Test full workflow with all components mocked."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 25,
+    "text": "class ContentQualityAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 106,
+    "text": "class FactCheckAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 187,
+    "text": "class BrandComplianceAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 263,
+    "text": "class TemplateOptimizer(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 304,
+    "text": "executive_keywords = [\"director\", \"vp\", \"vice president\", \"chief\", \"head of\", \"executive\", \"senior manager\"]"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 320,
+    "text": "class SectionBalanceAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 391,
+    "text": "class ATSCompatibilityAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 484,
+    "text": "class TestPilot(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 574,
+    "text": "class StrategicPlanner(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "line": 631,
+    "text": "class ReflectionAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\context.py",
+    "line": 25,
+    "text": "from agentic_core.config.P1_core.sovereign_config import config"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 62,
+    "text": "\"\"\"A proposed repair from collective intelligence.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 784,
+    "text": "Multi-agent conversational repair for complex issues."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 801,
+    "text": "# Repair history"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 804,
+    "text": "async def repair("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 811,
+    "text": "Perform conversational repair on an issue."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 815,
+    "text": "affected_content: Content that needs repair"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 819,
+    "text": "Repaired content or None if repair failed"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 824,
+    "text": "print(f\"   \ud83d\udde3\ufe0f Initiating CONVERSATIONAL REPAIR...\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 861,
+    "text": "\"\"\"Get a repair proposal from an agent.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 868,
+    "text": "Content to repair:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 953,
+    "text": "\"\"\"Get repair statistics.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 972,
+    "text": "- Conversational repair for complex issues"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 999,
+    "text": "use_conversational: Use conversational repair"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 1008,
+    "text": "# Try conversational repair for complex issues"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "line": 1010,
+    "text": "repaired = await self.conversational.repair("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "line": 124,
+    "text": "class AgentFactory:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "line": 318,
+    "text": "print(\"\ud83e\uddec SELF-HEALING ORCHESTRATOR STARTED\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "line": 427,
+    "text": "# Create and run orchestrator"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "line": 428,
+    "text": "orchestrator = HealingOrchestrator("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "line": 434,
+    "text": "return await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 237,
+    "text": "\"hardcoded_secret\": \"Use environment variables or a secrets manager\","
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 691,
+    "text": "Multi-phase execution orchestrator."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "line": 838,
+    "text": "\"orchestrator\": {"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
+    "line": 756,
+    "text": "class ResumeLearningAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\orchestrator.py",
+    "line": 2,
+    "text": "Resume Engine Orchestrator - Self-Healing Mission Runner"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\orchestrator.py",
+    "line": 98,
+    "text": "# Always run strategic planner first"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "line": 411,
+    "text": "class ProactiveAgent(ResumeAgent):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
+    "line": 17,
+    "text": "class ResumeAgent(ABC):"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\__init__.py",
+    "line": 104,
+    "text": "from .orchestrator import quick_validate, run_resume_mission"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+    "line": 67,
+    "text": "class TestContentQualityAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+    "line": 122,
+    "text": "class TestFactCheckAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+    "line": 166,
+    "text": "class TestBrandComplianceAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+    "line": 244,
+    "text": "class TestSectionBalanceAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+    "line": 282,
+    "text": "class TestATSCompatibilityAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+    "line": 405,
+    "text": "class TestReflectionAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_e2e.py",
+    "line": 4,
+    "text": "Tests the complete mission workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_e2e.py",
+    "line": 8,
+    "text": "- Full workflow scenarios"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_e2e.py",
+    "line": 13,
+    "text": "from ..orchestrator import quick_validate, run_resume_mission"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_e2e.py",
+    "line": 71,
+    "text": "\"\"\"Tests for run_resume_mission orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 126,
+    "text": "\"\"\"Test creating a repair proposal.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 143,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 145,
+    "text": "assert manager.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 146,
+    "text": "assert manager.enable_git is False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 147,
+    "text": "assert manager.files_modified == 0"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 151,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 153,
+    "text": "result = manager.backup_file(sample_python_file)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 156,
+    "text": "assert sample_python_file in manager._backups"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 160,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 162,
+    "text": "result = manager.backup_file(str(temp_dir / \"nonexistent.py\"))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 168,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 171,
+    "text": "manager.backup_file(sample_python_file)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 178,
+    "text": "result = manager.rollback_file(sample_python_file)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 182,
+    "text": "assert manager.rollbacks_performed == 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 186,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 194,
+    "text": "manager.backup_file(str(file_path))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 201,
+    "text": "count = manager.rollback_all()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 209,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 213,
+    "text": "result = manager.write_compliant_file(file_path, content)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 217,
+    "text": "assert manager.files_modified == 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 221,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 225,
+    "text": "result = manager.write_compliant_file(file_path, content)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 232,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 236,
+    "text": "result = manager.write_compliant_file(file_path, content)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 244,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 245,
+    "text": "manager.backup_file(sample_python_file)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 247,
+    "text": "stats = manager.get_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 417,
+    "text": "repair = ConversationalRepair(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 419,
+    "text": "assert repair.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 420,
+    "text": "assert \"Sherlock\" in repair.agents"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 421,
+    "text": "assert \"SafetyInspector\" in repair.agents"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 425,
+    "text": "repair = ConversationalRepair(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 428,
+    "text": "cleaned = repair._clean_proposal(proposal)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 435,
+    "text": "repair = ConversationalRepair(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 437,
+    "text": "stats = repair.get_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 448,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 450,
+    "text": "assert orchestrator.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 451,
+    "text": "assert orchestrator.gitops is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 452,
+    "text": "assert orchestrator.mutator is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 453,
+    "text": "assert orchestrator.import_patcher is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 454,
+    "text": "assert orchestrator.conversational is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 459,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 460,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 465,
+    "text": "result = await orchestrator.heal_with_gitops("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 472,
+    "text": "assert sample_python_file in orchestrator.gitops._backups"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 476,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 478,
+    "text": "stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 491,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 499,
+    "text": "manager.backup_file(str(file_path))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 503,
+    "text": "manager.write_compliant_file(str(file_path), modified, backup=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 508,
+    "text": "manager.rollback_file(str(file_path))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 514,
+    "text": "manager = GitOpsManager(ctx, enable_git=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops.py",
+    "line": 519,
+    "text": "result = manager.write_compliant_file(str(file_path), content)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 4,
+    "text": "Tests the complete GitOps workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 77,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 78,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 84,
+    "text": "orchestrator.gitops.backup_file(str(file_path))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 91,
+    "text": "assert orchestrator.gitops._backups"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 101,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 102,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 108,
+    "text": "orchestrator.gitops.backup_file(str(test_file))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 114,
+    "text": "orchestrator.gitops.rollback_all()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 222,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 223,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 232,
+    "text": "orchestrator.gitops.backup_file(str(test_file))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 236,
+    "text": "assert str(test_file) in orchestrator.gitops._backups"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 240,
+    "text": "\"\"\"Test Phase 4 with Phase 2 healing orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 343,
+    "text": "\"\"\"Test conversational repair without LLM.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 347,
+    "text": "repair = ConversationalRepair(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 349,
+    "text": "result = await repair.repair("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 358,
+    "text": "\"\"\"Tests for comprehensive end-to-end workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 362,
+    "text": "\"\"\"Test complete Phase 4 workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_e2e.py",
+    "line": 418,
+    "text": "\"\"\"Test workflow using the main entry point function.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 8,
+    "text": "- ConversationalRepair with orchestrator"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 101,
+    "text": "class TestResilientMutatorWithAgents:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 179,
+    "text": "\"\"\"Integration tests for ConversationalRepair with orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 182,
+    "text": "\"\"\"Test that conversational repair has all agents.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 183,
+    "text": "repair = ConversationalRepair(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 188,
+    "text": "assert agent in repair.agents"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 193,
+    "text": "repair = ConversationalRepair(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 202,
+    "text": "cleaned = repair._clean_proposal(input_text)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 211,
+    "text": "\"\"\"Test that orchestrator creates backups before healing.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 212,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 213,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 220,
+    "text": "await orchestrator.heal_with_gitops("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 227,
+    "text": "assert str(test_file) in orchestrator.gitops._backups"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 231,
+    "text": "\"\"\"Test orchestrator integration with learning agent.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 234,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 247,
+    "text": "orchestrator_stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 255,
+    "text": "\"\"\"Test full orchestrator workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 258,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 259,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 272,
+    "text": "result = await orchestrator.heal_with_gitops("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 316,
+    "text": "\"\"\"Test complete Phase 4 workflow with all components.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 320,
+    "text": "orchestrator = Phase4Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 321,
+    "text": "orchestrator.gitops.enable_git = False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 336,
+    "text": "orchestrator.gitops.backup_file(str(file_path))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 339,
+    "text": "orchestrator.import_patcher.build_import_map(list(files.values()))"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 342,
+    "text": "stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "line": 348,
+    "text": "count = orchestrator.gitops.rollback_all()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 419,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 421,
+    "text": "assert manager.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 422,
+    "text": "assert manager.budget_limit == 1.0"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 426,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 428,
+    "text": "prediction = manager.predict_cost(files_count=10, agents_count=5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 435,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=0.001)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 437,
+    "text": "prediction = manager.predict_cost(files_count=100, agents_count=10, cycles=5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 443,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 445,
+    "text": "manager.record_cost(0.5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 447,
+    "text": "assert manager.get_current_cost() == 0.5"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 448,
+    "text": "assert manager.get_remaining_budget() == 0.5"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 452,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 454,
+    "text": "assert manager.check_budget() is True"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 456,
+    "text": "manager.record_cost(1.5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 458,
+    "text": "assert manager.check_budget() is False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 462,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 463,
+    "text": "manager.record_cost(0.5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 465,
+    "text": "manager.reset()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 467,
+    "text": "assert manager.get_current_cost() == 0.0"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 471,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 472,
+    "text": "manager.predict_cost(10, 5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 474,
+    "text": "stats = manager.get_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 485,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 487,
+    "text": "assert orchestrator.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 488,
+    "text": "assert orchestrator.dependency is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 489,
+    "text": "assert orchestrator.doc_enforcer is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 490,
+    "text": "assert orchestrator.dashboard is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 491,
+    "text": "assert orchestrator.prompt_gov is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 492,
+    "text": "assert orchestrator.budget is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 496,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 498,
+    "text": "issues = orchestrator.check_dependencies()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 504,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 506,
+    "text": "violations = orchestrator.check_documentation(sample_code_undocumented)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 512,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 514,
+    "text": "issues = orchestrator.scan_prompts(sample_code_with_prompts)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 520,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 522,
+    "text": "prediction = orchestrator.predict_mission_cost(10, 5, 3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 528,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 531,
+    "text": "result = orchestrator.generate_dashboard("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 542,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 544,
+    "text": "results = await orchestrator.run_governance_checks(sample_code_with_prompts)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 553,
+    "text": "orchestrator = Phase7Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance.py",
+    "line": 555,
+    "text": "stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 4,
+    "text": "Tests the complete governance workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 292,
+    "text": "\"\"\"Tests for comprehensive end-to-end workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 296,
+    "text": "\"\"\"Test complete workflow with all Phase 7 components.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 355,
+    "text": "\"\"\"Test workflow combining healing and governance.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_e2e.py",
+    "line": 404,
+    "text": "\"\"\"Test getting comprehensive statistics after workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 254,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=1.0)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 257,
+    "text": "prediction = manager.predict_cost("
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 268,
+    "text": "manager = PredictiveBudgetManager(ctx, budget_limit=0.5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 271,
+    "text": "manager.record_cost(0.1)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 272,
+    "text": "assert manager.get_remaining_budget() == 0.4"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 274,
+    "text": "manager.record_cost(0.2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 275,
+    "text": "assert abs(manager.get_remaining_budget() - 0.2) < 0.001"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 278,
+    "text": "assert manager.check_budget() is True"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 280,
+    "text": "manager.record_cost(0.3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_governance_integration.py",
+    "line": 281,
+    "text": "assert manager.check_budget() is False"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing.py",
+    "line": 125,
+    "text": "class TestAgentFactory:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_e2e.py",
+    "line": 4,
+    "text": "Tests the complete self-healing workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 63,
+    "text": "\"\"\"Test orchestrator converges with valid resume.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 67,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 68,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 77,
+    "text": "\"\"\"Test orchestrator with problematic resume.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 81,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 82,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 90,
+    "text": "\"\"\"Test orchestrator respects max_cycles limit.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 93,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=1)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 94,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 100,
+    "text": "\"\"\"Test orchestrator tracks all cycle results.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 103,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 104,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 114,
+    "text": "\"\"\"Test orchestrator runs reflection agent.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 117,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2, enable_reflection=True)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 118,
+    "text": "await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 125,
+    "text": "\"\"\"Test orchestrator without reflection agent.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 128,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2, enable_reflection=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 129,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 142,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 143,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 157,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 158,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 169,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 170,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 248,
+    "text": "\"\"\"Test convergence detector works with orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 253,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 254,
+    "text": "await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 266,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 267,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 284,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 285,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 298,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=5)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 299,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 318,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=3)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing_integration.py",
+    "line": 319,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 61,
+    "text": "class TestAgentCoordination:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 122,
+    "text": "# Strategic planner should pick up the signal"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 123,
+    "text": "planner = StrategicPlanner(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 124,
+    "text": "await planner.execute()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 144,
+    "text": "# Strategic planner should recommend BrandComplianceAgent"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 145,
+    "text": "planner = StrategicPlanner(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 146,
+    "text": "await planner.execute()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 163,
+    "text": "# Strategic planner should handle all"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 164,
+    "text": "planner = StrategicPlanner(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 165,
+    "text": "await planner.execute()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 220,
+    "text": "\"\"\"Test strategic planner after agent failures.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 228,
+    "text": "# Run strategic planner"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 229,
+    "text": "planner = StrategicPlanner(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 230,
+    "text": "await planner.execute()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "line": 358,
+    "text": "# Strategic planner should identify issues"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 435,
+    "text": "orchestrator = UnifiedOrchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 437,
+    "text": "assert orchestrator.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 438,
+    "text": "assert orchestrator.security is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 439,
+    "text": "assert orchestrator.semantic is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 444,
+    "text": "orchestrator = UnifiedOrchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 446,
+    "text": "result = await orchestrator.run_mission(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 455,
+    "text": "orchestrator = UnifiedOrchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 458,
+    "text": "result = await orchestrator.run_mission(valid_resume, jd)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 464,
+    "text": "orchestrator = UnifiedOrchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 466,
+    "text": "stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 479,
+    "text": "orchestrator = Phase6Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 481,
+    "text": "assert orchestrator.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 482,
+    "text": "assert orchestrator.security is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 483,
+    "text": "assert orchestrator.semantic is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 484,
+    "text": "assert orchestrator.strategic is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 485,
+    "text": "assert orchestrator.omni is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 486,
+    "text": "assert orchestrator.unified is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 491,
+    "text": "orchestrator = Phase6Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 493,
+    "text": "result = await orchestrator.analyze_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 503,
+    "text": "orchestrator = Phase6Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 506,
+    "text": "result = await orchestrator.analyze_resume(valid_resume, jd)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 513,
+    "text": "orchestrator = Phase6Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 515,
+    "text": "result = await orchestrator.run_full_mission(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 522,
+    "text": "orchestrator = Phase6Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 523,
+    "text": "orchestrator.omni.build_context(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 525,
+    "text": "matches = orchestrator.search_context(\"engineer\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 531,
+    "text": "orchestrator = Phase6Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence.py",
+    "line": 533,
+    "text": "stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 4,
+    "text": "Tests the complete intelligence workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 262,
+    "text": "\"\"\"Tests for comprehensive end-to-end workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 266,
+    "text": "\"\"\"Test complete workflow with all Phase 6 components.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 314,
+    "text": "\"\"\"Test workflow using the main entry point function.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 335,
+    "text": "\"\"\"Test getting comprehensive statistics after workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_e2e.py",
+    "line": 355,
+    "text": "assert stats[\"unified\"][\"orchestrator\"][\"cycles\"] >= 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 192,
+    "text": "orchestrator = UnifiedOrchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 194,
+    "text": "result = await orchestrator.run_mission(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 201,
+    "text": "\"\"\"Test unified orchestrator with job description.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 202,
+    "text": "orchestrator = UnifiedOrchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 204,
+    "text": "result = await orchestrator.run_mission(valid_resume, job_description)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 256,
+    "text": "\"\"\"Test Phase 6 with healing orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_intelligence_integration.py",
+    "line": 279,
+    "text": "\"\"\"Test complete Phase 6 workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning.py",
+    "line": 480,
+    "text": "class TestResumeLearningAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 4,
+    "text": "Tests the complete learning workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 91,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 92,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 126,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 127,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 142,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 143,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 196,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 197,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 386,
+    "text": "\"\"\"Tests for comprehensive end-to-end workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 390,
+    "text": "\"\"\"Test complete workflow with all Phase 3 components.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 413,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 414,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_e2e.py",
+    "line": 440,
+    "text": "\"\"\"Test workflow using the main entry point function.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 7,
+    "text": "- InstructionInjector with orchestrator"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 144,
+    "text": "\"\"\"Integration tests for InstructionInjector with orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 259,
+    "text": "class TestResumeLearningAgentIntegration:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 260,
+    "text": "\"\"\"Integration tests for ResumeLearningAgent with full workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 346,
+    "text": "\"\"\"Test complete learning workflow across components.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 389,
+    "text": "\"\"\"Test orchestrator integration with learning components.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 402,
+    "text": "# Run orchestrator"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 403,
+    "text": "orchestrator = HealingOrchestrator(ctx, max_cycles=2)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "line": 404,
+    "text": "result = await orchestrator.run()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 363,
+    "text": "class TestValidationAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 368,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 370,
+    "text": "assert validator.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 374,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 376,
+    "text": "issues = validator.validate_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 384,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 386,
+    "text": "issues = validator.validate_resume(invalid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 393,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 395,
+    "text": "issues = validator.validate_resume({\"summary\": \"\"})"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 402,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 404,
+    "text": "issues = validator.validate_resume({\"summary\": \"Short.\"})"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 411,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 413,
+    "text": "issues = validator.validate_resume({"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 422,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 424,
+    "text": "issues = validator.validate_resume({\"experience\": []})"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 431,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 432,
+    "text": "validator.validate_resume(invalid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 434,
+    "text": "errors = validator.get_issues_by_severity(ValidationSeverity.ERROR)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 440,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 441,
+    "text": "validator.validate_resume(invalid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 443,
+    "text": "stats = validator.get_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 455,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 457,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 465,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 466,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 473,
+    "text": "validator.validate_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 485,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 486,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 501,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 502,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 517,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 518,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 623,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 625,
+    "text": "assert orchestrator.ctx == ctx"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 626,
+    "text": "assert orchestrator.tracer is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 627,
+    "text": "assert orchestrator.metrics is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 628,
+    "text": "assert orchestrator.validator is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 629,
+    "text": "assert orchestrator.reporter is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 630,
+    "text": "assert orchestrator.exporter is not None"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 634,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 636,
+    "text": "trace_id = orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 639,
+    "text": "assert orchestrator.metrics.get_counter(\"missions.started\") == 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 643,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 644,
+    "text": "orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 646,
+    "text": "trace = orchestrator.end_mission(success=True)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 650,
+    "text": "assert orchestrator.metrics.get_counter(\"missions.succeeded\") == 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 654,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 655,
+    "text": "orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 657,
+    "text": "trace = orchestrator.end_mission(success=False)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 660,
+    "text": "assert orchestrator.metrics.get_counter(\"missions.failed\") == 1"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 664,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 665,
+    "text": "orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 667,
+    "text": "step_id = orchestrator.track_agent(\"TestAgent\", \"test_action\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 673,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 674,
+    "text": "orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 675,
+    "text": "step_id = orchestrator.track_agent(\"TestAgent\", \"test_action\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 677,
+    "text": "orchestrator.complete_agent(step_id, success=True)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 679,
+    "text": "trace = orchestrator.end_mission()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 684,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 686,
+    "text": "issues = orchestrator.validate_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 692,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 693,
+    "text": "orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 694,
+    "text": "orchestrator.end_mission()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 696,
+    "text": "report = orchestrator.generate_report(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 703,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 704,
+    "text": "orchestrator.start_mission(\"mission_1\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 705,
+    "text": "orchestrator.metrics.increment(\"test_metric\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 706,
+    "text": "orchestrator.end_mission()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 708,
+    "text": "telemetry = orchestrator.export_telemetry(format=\"json\")"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 715,
+    "text": "orchestrator = Phase5Orchestrator(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 717,
+    "text": "stats = orchestrator.get_comprehensive_stats()"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability.py",
+    "line": 721,
+    "text": "assert \"validator\" in stats"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 4,
+    "text": "Tests the complete observability workflow:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 248,
+    "text": "\"\"\"Test observability integration with healing orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 342,
+    "text": "\"\"\"Tests for comprehensive end-to-end workflow.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 346,
+    "text": "\"\"\"Test complete workflow with telemetry export.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 353,
+    "text": "# Run complete workflow"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 389,
+    "text": "\"\"\"Test workflow using the main entry point function.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_e2e.py",
+    "line": 440,
+    "text": "assert \"validator\" in stats"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 95,
+    "text": "class TestMetricsWithAgents:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 139,
+    "text": "\"\"\"Test validator with healing result.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 142,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 145,
+    "text": "issues_before = validator.validate_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 156,
+    "text": "issues_after = validator.validate_resume(improved_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 162,
+    "text": "\"\"\"Test that validator checks all resume sections.\"\"\""
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 163,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 165,
+    "text": "issues = validator.validate_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 167,
+    "text": "# Check that validator examined multiple sections"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 170,
+    "text": "assert validator.get_stats()[\"total_issues\"] >= 0"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 183,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 184,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 196,
+    "text": "validator.validate_resume(valid_resume)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 211,
+    "text": "validator = ValidationAgent(ctx)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 212,
+    "text": "reporter = AuditReporter(ctx, tracer, metrics, validator)"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "line": 221,
+    "text": "validator.validate_resume({\"summary\": \"\"})"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_proactive.py",
+    "line": 340,
+    "text": "class TestProactiveAgent:"
+  },
+  {
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_proactive.py",
+    "line": 382,
+    "text": "\"\"\"Test full proactive workflow.\"\"\""
+  }
+]

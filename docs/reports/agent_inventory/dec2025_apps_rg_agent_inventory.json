@@ -1,0 +1,993 @@
+{
+  "historical_commit_source": {
+    "commit_sha": "5b443166b24379ba09c843ed59474c0800e26f4e",
+    "commit_date": "2025-12-31T21:52:33-05:00",
+    "branch_tag": null,
+    "selection_method": "git log --before=2026-01-01T00:00:00 -1 (last commit in calendar Dec 2025). No Dec 2025 tags matched *2025*/*dec*/*apps_rg*. Read-only worktree: c:/Git/apps_rg_dec2025_review.",
+    "confidence": "HIGH",
+    "apps_rg_py_file_count": 104,
+    "apps_rg_all_file_count": 112
+  },
+  "inventory": [
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/resume_base.py",
+      "symbol": "ResumeAgent",
+      "description": "Base agent with Gemini call_llm",
+      "apparent_role": [
+        "agent_execute",
+        "model_call",
+        "validate"
+      ],
+      "archetype": "SECTION_GENERATOR_AGENT",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_lane.py + qwen_vllm_provider",
+      "recommendation": "SUPERSEDED_BY_SECTION_LANE",
+      "risks": [
+        "DIRECT_MODEL_BYPASS",
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "ContentQualityAgent",
+      "description": "Content quality validator agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "VALIDATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/validators/*_x2.py",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "FactCheckAgent",
+      "description": "Profile fact-check agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "VALIDATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/validators/*_x2.py",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "BrandComplianceAgent",
+      "description": "Brand/tone compliance",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "VALIDATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/validators/*_x2.py",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "TemplateOptimizer",
+      "description": "Template selection agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "SectionBalanceAgent",
+      "description": "Section balance validator",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "VALIDATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/validators/*_x2.py",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "ATSCompatibilityAgent",
+      "description": "ATS formatting validator",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "VALIDATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/validators/*_x2.py",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "TestPilot",
+      "description": "Validation test runner agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "VALIDATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/validators/*_x2.py",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "StrategicPlanner",
+      "description": "Execution strategy planner agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "PLANNER_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/l2_recipe/modular_resume_generation.py, domain_contract targeting",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/agents.py",
+      "symbol": "ReflectionAgent",
+      "description": "Post-run reflection/learning agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "plan",
+        "validate"
+      ],
+      "archetype": "JUDGE_OR_EVALUATOR_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/judges/*, APPS_RG_*_JUDGE_MODEL_*",
+      "recommendation": "SUPERSEDED_BY_X2_X3",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/healing.py",
+      "symbol": "HealingOrchestrator",
+      "description": "Multi-cycle self-healing coordinator",
+      "apparent_role": [
+        "agent_execute",
+        "heal",
+        "judge",
+        "orchestrate",
+        "plan",
+        "route"
+      ],
+      "archetype": "HEALER_OR_RECOVERY_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": true,
+      "executed": true,
+      "healed": true,
+      "judged": true,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_repair_policy.py, section_repair_ledger.py (E4)",
+      "recommendation": "SUPERSEDED_BY_E2_E4",
+      "risks": [
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT",
+        "ROUTE_AUTHORITY_DRIFT",
+        "SAME_AUTHORITY_HEALING_VIOLATION",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/healing.py",
+      "symbol": "SignalRouter",
+      "description": "Maps signals to agent sets",
+      "apparent_role": [
+        "agent_execute",
+        "heal",
+        "judge",
+        "orchestrate",
+        "plan",
+        "route"
+      ],
+      "archetype": "HEALER_OR_RECOVERY_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": true,
+      "executed": true,
+      "healed": true,
+      "judged": true,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_repair_policy.py, section_repair_ledger.py (E4)",
+      "recommendation": "SUPERSEDED_BY_E2_E4",
+      "risks": [
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT",
+        "ROUTE_AUTHORITY_DRIFT",
+        "SAME_AUTHORITY_HEALING_VIOLATION",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/healing.py",
+      "symbol": "AgentFactory",
+      "description": "Instantiates healing agents",
+      "apparent_role": [
+        "agent_execute",
+        "heal",
+        "judge",
+        "orchestrate",
+        "plan",
+        "route"
+      ],
+      "archetype": "HEALER_OR_RECOVERY_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": true,
+      "executed": true,
+      "healed": true,
+      "judged": true,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_repair_policy.py, section_repair_ledger.py (E4)",
+      "recommendation": "SUPERSEDED_BY_E2_E4",
+      "risks": [
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT",
+        "ROUTE_AUTHORITY_DRIFT",
+        "SAME_AUTHORITY_HEALING_VIOLATION",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/intelligence.py",
+      "symbol": "UnifiedOrchestrator",
+      "description": "Phase-6 intelligence orchestrator",
+      "apparent_role": [
+        "judge",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "RESUME_ORCHESTRATOR_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/orchestration/canonical_dispatch.py, python -m apps_rg",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": [
+        "ROUTE_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/intelligence.py",
+      "symbol": "Phase6Orchestrator",
+      "description": "Phase 6 wrapper orchestrator",
+      "apparent_role": [
+        "judge",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "RESUME_ORCHESTRATOR_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/orchestration/canonical_dispatch.py, python -m apps_rg",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": [
+        "ROUTE_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/gitops.py",
+      "symbol": "GitOpsManager",
+      "description": "File mutation / gitops repair",
+      "apparent_role": [
+        "heal",
+        "model_call",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": true,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "DIRECT_MODEL_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK",
+        "ROUTE_AUTHORITY_DRIFT",
+        "SAME_AUTHORITY_HEALING_VIOLATION",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/gitops.py",
+      "symbol": "ConversationalRepair",
+      "description": "LLM-driven conversational repair",
+      "apparent_role": [
+        "heal",
+        "model_call",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "HEALER_OR_RECOVERY_AGENT",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": true,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_repair_policy.py, section_repair_ledger.py (E4)",
+      "recommendation": "SUPERSEDED_BY_E2_E4",
+      "risks": [
+        "DIRECT_MODEL_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK",
+        "ROUTE_AUTHORITY_DRIFT",
+        "SAME_AUTHORITY_HEALING_VIOLATION",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/gitops.py",
+      "symbol": "Phase4Orchestrator",
+      "description": "GitOps phase orchestrator",
+      "apparent_role": [
+        "heal",
+        "model_call",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "RESUME_ORCHESTRATOR_AGENT",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": true,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/orchestration/canonical_dispatch.py, python -m apps_rg",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": [
+        "DIRECT_MODEL_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK",
+        "ROUTE_AUTHORITY_DRIFT",
+        "SAME_AUTHORITY_HEALING_VIOLATION",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/governance.py",
+      "symbol": "Phase7Orchestrator",
+      "description": "Governance phase orchestrator",
+      "apparent_role": [
+        "heal",
+        "judge",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "RESUME_ORCHESTRATOR_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": true,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/orchestration/canonical_dispatch.py, python -m apps_rg",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT",
+        "ROUTE_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/governance.py",
+      "symbol": "PredictiveBudgetManager",
+      "description": "Cost prediction / budget",
+      "apparent_role": [
+        "heal",
+        "judge",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": true,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "EXIT_X3_BYPASS",
+        "PROMPT_AUTHORITY_DRIFT",
+        "ROUTE_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/learning.py",
+      "symbol": "ResumeLearningAgent",
+      "description": "Learning loop agent",
+      "apparent_role": [
+        "agent_execute",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": []
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/proactive.py",
+      "symbol": "ProactiveAgent",
+      "description": "Proactive scheduling/handoff agent",
+      "apparent_role": [
+        "agent_execute",
+        "judge",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/context.py",
+      "symbol": "ResumeEngineContext",
+      "description": "Shared mutable agent context",
+      "apparent_role": [
+        "heal",
+        "judge",
+        "model_call",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": true,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/autonomous/context.py",
+      "symbol": "BudgetManager",
+      "description": "Token/cost budget for agents",
+      "apparent_role": [
+        "heal",
+        "judge",
+        "model_call",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": true,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "EVIDENCE_AUTHORITY_DRIFT",
+        "EXIT_X3_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK",
+        "UWG_L4_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/resume_planner.py",
+      "symbol": "RGPlanner",
+      "description": "K1-K8 resume pipeline planner (L1)",
+      "apparent_role": [
+        "plan",
+        "validate"
+      ],
+      "archetype": "PLANNER_AGENT",
+      "model_providers": [],
+      "planned": true,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/l2_recipe/modular_resume_generation.py, domain_contract targeting",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": []
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/orchestrate_resume.py",
+      "symbol": "ResumeOrchestrator",
+      "description": "Hop-based resume workflow orchestrator",
+      "apparent_role": [
+        "judge",
+        "orchestrate",
+        "validate"
+      ],
+      "archetype": "RESUME_ORCHESTRATOR_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": true,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/orchestration/canonical_dispatch.py, python -m apps_rg",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": [
+        "ROUTE_AUTHORITY_DRIFT"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/dispatch_resume_tools.py",
+      "symbol": "DispatchResumeTools",
+      "description": "Titanium RAG tool dispatcher",
+      "apparent_role": [
+        "route"
+      ],
+      "archetype": "DISPATCH_OR_ROUTER_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": true,
+      "executed": false,
+      "healed": false,
+      "judged": false,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/orchestration/canonical_dispatch.py",
+      "recommendation": "REPLACED_BY_CANONICAL_RUNTIME",
+      "risks": []
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/resume_generator.py",
+      "symbol": "ResumeGenerator",
+      "description": "Gemini resume synthesis",
+      "apparent_role": [
+        "model_call",
+        "test_mock",
+        "validate"
+      ],
+      "archetype": "SECTION_GENERATOR_AGENT",
+      "model_providers": [
+        "google_gemini"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_lane.py + qwen_vllm_provider",
+      "recommendation": "SUPERSEDED_BY_SECTION_LANE",
+      "risks": [
+        "DIRECT_MODEL_BYPASS",
+        "PROVIDER_SUBSTITUTION_RISK"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/resume_engine.py",
+      "symbol": "resume_engine",
+      "description": "Main resume engine entry / Gemini config",
+      "apparent_role": [
+        "judge",
+        "model_call",
+        "validate"
+      ],
+      "archetype": "UNKNOWN",
+      "model_providers": [
+        "google_gemini",
+        "openai",
+        "anthropic"
+      ],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": true,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": true,
+      "fallback_retry_heal": true,
+      "receipts_or_proof": false,
+      "current_equivalent": "NEEDS_DECISION",
+      "recommendation": "NEEDS_DECISION",
+      "risks": [
+        "PROVIDER_SUBSTITUTION_RISK"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/execute_resume_generation.py",
+      "symbol": "execute_resume_generation",
+      "description": "Generation execution",
+      "apparent_role": [
+        "validate"
+      ],
+      "archetype": "SECTION_GENERATOR_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": false,
+      "validated": true,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "apps_rg/runtime/sections/*_lane.py + qwen_vllm_provider",
+      "recommendation": "SUPERSEDED_BY_SECTION_LANE",
+      "risks": [
+        "DIRECT_MODEL_BYPASS"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/test_resume_logic_mock.py",
+      "symbol": "test_resume_logic_mock",
+      "description": "Mock resume logic tests",
+      "apparent_role": [
+        "test_mock"
+      ],
+      "archetype": "DEMO_OR_SMOKE_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": false,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "tests/unit/apps_rg/, tests.helpers.offline_lane_orchestration",
+      "recommendation": "KEEP_AS_TEST_FIXTURE",
+      "risks": [
+        "MOCK_AS_PRODUCT_PROOF"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/debug_resume_test.py",
+      "symbol": "debug_resume_test",
+      "description": "Debug resume test harness",
+      "apparent_role": [
+        "test_mock"
+      ],
+      "archetype": "DEMO_OR_SMOKE_AGENT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": false,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "tests/unit/apps_rg/, tests.helpers.offline_lane_orchestration",
+      "recommendation": "KEEP_AS_TEST_FIXTURE",
+      "risks": [
+        "MOCK_AS_PRODUCT_PROOF"
+      ]
+    },
+    {
+      "path": "apps_rg/engines/resume_engine/create_test_resume.py",
+      "symbol": "create_test_resume",
+      "description": "Test resume factory script",
+      "apparent_role": [
+        "judge",
+        "test_mock"
+      ],
+      "archetype": "UTILITY_SCRIPT",
+      "model_providers": [],
+      "planned": false,
+      "routed": false,
+      "executed": false,
+      "healed": false,
+      "judged": true,
+      "validated": false,
+      "domain_specific": true,
+      "direct_model_calls": false,
+      "fallback_retry_heal": false,
+      "receipts_or_proof": false,
+      "current_equivalent": "ops_scripts/apps_rg/, historical reference",
+      "recommendation": "HISTORICAL_REFERENCE_ONLY",
+      "risks": [
+        "MOCK_AS_PRODUCT_PROOF"
+      ]
+    }
+  ],
+  "archetype_counts": {
+    "SECTION_GENERATOR_AGENT": 3,
+    "VALIDATOR_AGENT": 6,
+    "UNKNOWN": 8,
+    "PLANNER_AGENT": 2,
+    "JUDGE_OR_EVALUATOR_AGENT": 1,
+    "HEALER_OR_RECOVERY_AGENT": 4,
+    "RESUME_ORCHESTRATOR_AGENT": 5,
+    "DISPATCH_OR_ROUTER_AGENT": 1,
+    "DEMO_OR_SMOKE_AGENT": 2,
+    "UTILITY_SCRIPT": 1
+  }
+}

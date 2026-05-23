@@ -1,0 +1,5047 @@
+[
+  {
+    "path": "apps_rg\\__main__.py",
+    "line": 444,
+    "text": "description=\"Agentic resume generator \u2014 apps_rg pipeline\","
+  },
+  {
+    "path": "apps_rg\\__main__.py",
+    "line": 483,
+    "text": "help=\"Run a single section lane through the apps_rg orchestrator (default: full R4 product).\","
+  },
+  {
+    "path": "apps_rg\\__main__.py",
+    "line": 537,
+    "text": "\"Optional comma-separated X1D judge keys for section lanes; when omitted, uses \""
+  },
+  {
+    "path": "apps_rg\\__main__.py",
+    "line": 538,
+    "text": "\"APPS_RG_E2E_X1D_JUDGES or the apps_rg default judge list.\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_chroma_read_surface_projection.py",
+    "line": 102,
+    "text": "\"Chroma upsert on this path counts only with full UWG receipt chain\","
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_chroma_read_surface_projection.py",
+    "line": 176,
+    "text": "from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_durable_write_guard.py",
+    "line": 55,
+    "text": "from agentic_core.L4_state.uwg.durable_write_gateway import DurableWriteGateway"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 1,
+    "text": "\"\"\"W6B/W6C \u2014 governed R1B semantic-cache receipt chain in section run folders (apps_rg only)."
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 222,
+    "text": "chain: R1BGovernedReceiptChainOutcome,"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 239,
+    "text": "chain.artifacts_written.append(READ_SURFACE_DEFERRED_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 252,
+    "text": "chain.artifacts_written.append(CHROMA_PROJECTION_DEFERRED_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 253,
+    "text": "chain.read_surface_refresh_status = \"NOT_APPLICABLE\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 254,
+    "text": "chain.chroma_projection_status = \"MISSING\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 276,
+    "text": "chain = R1BGovernedReceiptChainOutcome("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 312,
+    "text": "chain.artifacts_written.append(COMMIT_REQUEST_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 330,
+    "text": "chain.artifacts_written.append(PROPOSED_STATE_DIFF_REF_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 334,
+    "text": "chain.uwg_validation_status = val_status"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 342,
+    "text": "chain.artifacts_written.append(STATE_DIFF_VALIDATION_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 354,
+    "text": "chain.promotion_outcome = outcome"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 355,
+    "text": "chain.uwg_commit_or_block_status = \"BLOCKED\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 369,
+    "text": "chain.artifacts_written.append(BLOCKED_WRITE_RECEIPT_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 370,
+    "text": "chain.semantic_cache_persistence_status = \"PARTIAL_UWG_ARTIFACTS_ONLY\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 372,
+    "text": "artifact_dir, section_id=section_id, run_id=run_id, chain=chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 374,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 394,
+    "text": "chain.promotion_outcome = outcome"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 395,
+    "text": "chain.uwg_commit_or_block_status = \"BLOCKED\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 407,
+    "text": "chain.artifacts_written.append(BLOCKED_WRITE_RECEIPT_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 408,
+    "text": "chain.semantic_cache_persistence_status = \"PARTIAL_UWG_ARTIFACTS_ONLY\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 410,
+    "text": "artifact_dir, section_id=section_id, run_id=run_id, chain=chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 412,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 430,
+    "text": "chain.promotion_outcome = outcome"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 431,
+    "text": "chain.uwg_commit_or_block_status = \"ADMITTED\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 439,
+    "text": "chain.artifacts_written.append(UWG_COMMIT_RECEIPT_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 440,
+    "text": "chain.l4_object_ref_status = \"PRESENT\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 450,
+    "text": "chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 451,
+    "text": "chain.semantic_cache_persistence_status = \"PROVEN_UWG_CHAIN_ONLY\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 466,
+    "text": "chain.artifacts_written.extend(chroma_out.artifacts_written)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 467,
+    "text": "chain.read_surface_refresh_status = chroma_out.read_surface_refresh_status"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 468,
+    "text": "chain.chroma_projection_status = chroma_out.chroma_projection_status"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 469,
+    "text": "chain.read_surface_refresh_complete = chroma_out.read_surface_refresh_complete"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 470,
+    "text": "chain.chroma_projection_complete = chroma_out.chroma_projection_complete"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 472,
+    "text": "chain.semantic_cache_persistence_status = \"PROVEN_GOVERNED_VECTOR_CHAIN\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 474,
+    "text": "chain.semantic_cache_persistence_status = \"PARTIAL_READ_SURFACE_ONLY\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 499,
+    "text": "chain.promotion_outcome = outcome"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 500,
+    "text": "chain.uwg_commit_or_block_status = \"BLOCKED\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 519,
+    "text": "chain.artifacts_written.append(BLOCKED_WRITE_RECEIPT_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 520,
+    "text": "chain.semantic_cache_persistence_status = \"PARTIAL_UWG_ARTIFACTS_ONLY\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 532,
+    "text": "chain.artifacts_written.append(L4_NAMESPACE_OBJECT_REF_ARTIFACT)"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 534,
+    "text": "artifact_dir, section_id=section_id, run_id=run_id, chain=chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 536,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 548,
+    "text": "\"\"\"Emit governed R1B receipt chain into ``artifact_dir`` (W6C Chroma only after UWG admit).\"\"\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 555,
+    "text": "chain = R1BGovernedReceiptChainOutcome("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 571,
+    "text": "json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + \"\\n\","
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 574,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 582,
+    "text": "chain = R1BGovernedReceiptChainOutcome("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 598,
+    "text": "json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + \"\\n\","
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 601,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 604,
+    "text": "chain = R1BGovernedReceiptChainOutcome("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 618,
+    "text": "json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + \"\\n\","
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 621,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 633,
+    "text": "chain = _materialize_uwg_receipts("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 642,
+    "text": "json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + \"\\n\","
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_governed_receipt_emission.py",
+    "line": 645,
+    "text": "return chain"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_post_exit_ingest.py",
+    "line": 112,
+    "text": "chain = emit_section_r1b_governed_receipt_chain("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_post_exit_ingest.py",
+    "line": 119,
+    "text": "if chain.promotion_outcome and chain.promotion_outcome.status == \"ADMITTED\":"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_post_exit_ingest.py",
+    "line": 132,
+    "text": "outcome=chain.promotion_outcome,"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_semantic_chunk_builder.py",
+    "line": 44,
+    "text": "\"\"\"P1 \u2014 hiring-manager-visible copy from lane display TXT candidates.\"\"\""
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_uwg_promotion.py",
+    "line": 130,
+    "text": "from agentic_core.L4_state.contracts.digests import compute_deterministic_digest"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_uwg_promotion.py",
+    "line": 143,
+    "text": "from agentic_core.L4_state.contracts.records import ("
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_uwg_promotion.py",
+    "line": 470,
+    "text": "from agentic_core.L4_state.contracts import records as records_mod"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_uwg_promotion.py",
+    "line": 485,
+    "text": "\"agentic_core.L4_state.uwg.durable_write_gateway.UWGCommitReceipt\","
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_uwg_promotion.py",
+    "line": 492,
+    "text": "from agentic_core.L4_state.uwg.durable_write_gateway import DurableWriteGateway"
+  },
+  {
+    "path": "apps_rg\\cache\\r1b_uwg_receipt_contract.py",
+    "line": 260,
+    "text": "\"agentic_core_edit_required_for_full_parity\": False,"
+  },
+  {
+    "path": "apps_rg\\cache\\whole_run_entrypoint_preflight.py",
+    "line": 23,
+    "text": "ENTRYPOINT_DISPATCH_APPS_RG_RUN = \"agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run\""
+  },
+  {
+    "path": "apps_rg\\config\\agent_spec_config.py",
+    "line": 27,
+    "text": "class RgAgentSpecs(PromptReceptionSpec, BaseModel):"
+  },
+  {
+    "path": "apps_rg\\enforcement\\cli_prerequisite_gate.py",
+    "line": 10,
+    "text": "from agentic_core.L0_routing.gates.apps_rg_prerequisite_gate import ("
+  },
+  {
+    "path": "apps_rg\\enforcement\\HardenedanthropicexecutorStrategy.py",
+    "line": 1,
+    "text": "\"\"\"Hardened Anthropic executor with resilient client wiring (EX1 / EX2)."
+  },
+  {
+    "path": "apps_rg\\enforcement\\HardenedanthropicexecutorStrategy.py",
+    "line": 14,
+    "text": "from agentic_core.mixins.hardening_mixin import HardeningMixin"
+  },
+  {
+    "path": "apps_rg\\enforcement\\HardenedanthropicexecutorStrategy.py",
+    "line": 22,
+    "text": "\"\"\"Executor that configures a live ``anthropic.Anthropic`` client when keyed.\"\"\""
+  },
+  {
+    "path": "apps_rg\\enforcement\\HardenedanthropicexecutorStrategy.py",
+    "line": 35,
+    "text": "\"ANTHROPIC_API_KEY not set; anthropic executor has no authenticated client.\","
+  },
+  {
+    "path": "apps_rg\\engines\\base_rg_engine.py",
+    "line": 5,
+    "text": "OPS scripts occasionally import orchestrator primitives from this namespace."
+  },
+  {
+    "path": "apps_rg\\engines\\resume_orchestrator_engine.py",
+    "line": 1,
+    "text": "\"\"\"Lightweight RG resume orchestrator for scripts + deterministic anti-overfit hooks.\"\"\""
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 3,
+    "text": "All evidence builders live in apps_rg.exit, NOT in agentic_core."
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 74,
+    "text": "\"\"\"Result of header extraction/repair from source resume evidence.\"\"\""
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 202,
+    "text": "generic G22 gate evaluator in agentic_core."
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 223,
+    "text": "G24 verifies that the cryptographic provenance chain is intact:"
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 329,
+    "text": "\"\"\"Seal resume section content dict with hash integrity and optional header repair."
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 370,
+    "text": "repair = extract_header_from_source_resume(fec)"
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 371,
+    "text": "if repair.repaired:"
+  },
+  {
+    "path": "apps_rg\\exit\\apps_rg_exit_evidence_builder.py",
+    "line": 372,
+    "text": "header_block = repair.as_dict()"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_commercial_fact_promotion.py",
+    "line": 258,
+    "text": "\"agentic_core_touched\": False,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_commercial_skills_expansion.py",
+    "line": 422,
+    "text": "\"agentic_core_touched\": False,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_cro_projection_hardening.py",
+    "line": 144,
+    "text": "\"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_gtm_presales_expansion.py",
+    "line": 391,
+    "text": "\"Productized core agentic AI primitives into reusable platform services, generating $22M in IP-led revenue\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_gtm_presales_expansion.py",
+    "line": 687,
+    "text": "\"agentic_core_touched\": False,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w12.py",
+    "line": 34,
+    "text": "P_AGENTIC = \"pillar_agentic_ai_platforms\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w12.py",
+    "line": 368,
+    "text": "\"target_pillar_id\": P_AGENTIC,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w12.py",
+    "line": 371,
+    "text": "\"rationale\": \"Partner GTM ecosystem bridges to agentic AI platform adoption (traversal only).\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 456,
+    "text": "\"bridge_edge_family\": \"actuarial_to_agentic_transformation\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 461,
+    "text": "\"evidence_sources\": [\"insurtech_carrier_modernization_to_agentic_epoch\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 462,
+    "text": "\"rationale\": \"Actuarial/insurance domain fluency bridges to carrier transformation pillar for agentic targeting.\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 465,
+    "text": "\"bridge_edge_family\": \"actuarial_to_agentic_transformation\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 467,
+    "text": "\"target_pillar_id\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 470,
+    "text": "\"evidence_sources\": [\"regulated_enterprise_agentic_platform\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 471,
+    "text": "\"rationale\": \"Forward bridge from actuarial/regulatory domain to agentic runtime pillar (traversal only).\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 512,
+    "text": "\"target_pillar_id\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 516,
+    "text": "\"rationale\": \"Data lineage / regulatory reporting bridges to agentic auditability and traceability skills.\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\apply_phase2_senior_role_graph_w8_w11.py",
+    "line": 684,
+    "text": "\"agentic_core\": False,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 7,
+    "text": "AGENTIC_CAPABILITY_DOMAINS,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 13,
+    "text": "_AGENTIC_ROW_TEMPLATE,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 17,
+    "text": "EPOCH_AGENTIC = \"epoch_agentic_ai_runtime_architecture\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 75,
+    "text": "def build_agentic_skill_row("
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 84,
+    "text": "domain = next(d for d in AGENTIC_CAPABILITY_DOMAINS if d[\"domain_id\"] == domain_id)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 112,
+    "text": "\"career_epoch\": EPOCH_AGENTIC,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 141,
+    "text": "def build_agentic_runtime_matrix() -> list[dict[str, Any]]:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 143,
+    "text": "for tpl in _AGENTIC_ROW_TEMPLATE:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 145,
+    "text": "rows.append(build_agentic_skill_row(sid, cap, concepts, snippet, facts, repos))"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 322,
+    "text": "for d in AGENTIC_CAPABILITY_DOMAINS:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 363,
+    "text": "for d in AGENTIC_CAPABILITY_DOMAINS:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 452,
+    "text": "# Actuarial chain edges"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 453,
+    "text": "chain = [s for s in ACTUARIAL_CHAIN_SKILL_IDS if any(r[\"skill_id\"] == s for r in skill_rows)]"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 454,
+    "text": "for i in range(len(chain) - 1):"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 456,
+    "text": "f\"edge_actuarial_chain_{chain[i]}_{chain[i+1]}\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 459,
+    "text": "chain[i + 1],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 460,
+    "text": "\"Actuarial foundation chain\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 464,
+    "text": "# Partner chain"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 472,
+    "text": "\"Partner GTM chain\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 499,
+    "text": "agentic_rows = build_agentic_runtime_matrix()"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 503,
+    "text": "for row in enhanced_legacy + agentic_rows:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 519,
+    "text": "agentic_by_domain: dict[str, list[str]] = {}"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 520,
+    "text": "for row in agentic_rows:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 522,
+    "text": "agentic_by_domain.setdefault(did, []).append(row[\"skill_id\"])"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 532,
+    "text": "\"deep_agentic_row_count\": len(agentic_rows),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 538,
+    "text": "\"agentic_runtime_matrix\": agentic_rows,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 539,
+    "text": "\"agentic_capability_domains\": AGENTIC_CAPABILITY_DOMAINS,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_builder.py",
+    "line": 551,
+    "text": "\"agentic_rows_by_domain\": agentic_by_domain,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 1,
+    "text": "\"\"\"W4A capability-domain taxonomy and deep agentic skill row SSOT (apps_rg only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 7,
+    "text": "AGENTIC_CAPABILITY_DOMAINS: list[dict[str, str]] = ["
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 9,
+    "text": "\"domain_id\": \"domain_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 10,
+    "text": "\"label\": \"Agentic Systems Architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 11,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 16,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 20,
+    "text": "\"label\": \"Routing, Triage, and Workflow Selection\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 21,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 26,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 31,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 36,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 41,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 46,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 66,
+    "text": "\"pillar\": \"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 120,
+    "text": "\"node_id\": \"epoch_agentic_ai_runtime_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 121,
+    "text": "\"label\": \"Agentic AI Runtime Architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 123,
+    "text": "\"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 126,
+    "text": "\"capability_domain_ids\": [d[\"domain_id\"] for d in AGENTIC_CAPABILITY_DOMAINS],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 152,
+    "text": "\"Governed AI platform and agentic runtime engineering leader with actuarial, derivatives, \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 159,
+    "text": "_AGENTIC_ROW_TEMPLATE: list[tuple[str, str, list[str], str, list[str], list[str]]] = ["
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 161,
+    "text": "(\"skill_governed_agentic_systems_architecture\", \"Governed agentic systems architecture\", [\"GovernedAgenticRuntime\", \"L2ProposeL3Execute\", \"SpineContracts\"], \"Designed governed agentic AI platform capabilities with deterministic routing, orc"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 162,
+    "text": "(\"skill_layered_runtime_spine_design\", \"Layered runtime spine design\", [\"L0L6Spine\", \"LayerGravity\", \"ProfileResolver\"], \"Layered L0\u2013L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary.\", [\"fact_engineer"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 163,
+    "text": "(\"skill_agentic_control_plane_design\", \"Agentic control plane design\", [\"RoutePolicyInterpreter\", \"GateMesh\", \"ExitEnforcer\"], \"Control-plane routing, GateMesh enforcement, and Exit profile enforcer for generic runtime infrastructure.\", [\"f"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 165,
+    "text": "(\"skill_reusable_agentic_platform_architecture\", \"Reusable agentic platform architecture\", [\"PlatformReuse\", \"EnterpriseAdoption\"], \"Reusable agentic platform patterns for regulated enterprise workflows and auditability.\", [\"fact_engineerin"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 167,
+    "text": "(\"skill_intent_interpretation_and_ambiguity_framing\", \"Intent interpretation and ambiguity framing\", [\"IntentFrame\", \"AmbiguityHITL\"], \"Frame ambiguous intents with bounded planning contracts before execution.\", [], [\"agentic_core/L2_execut"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 170,
+    "text": "(\"skill_task_decomposition_for_agentic_workflows\", \"Task decomposition for agentic workflows\", [\"TaskDecomposition\", \"WorkflowSteps\"], \"Decompose complex tasks into bounded steps with separate reasoning, routing, execution, verification.\", "
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 179,
+    "text": "(\"skill_managed_workflow_orchestration\", \"Managed workflow orchestration\", [\"ManagedWorkflow\", \"MultiAgentOrchestration\"], \"Multi-agent orchestration with managed workflow joins and checkpoints.\", [\"fact_engineering_platform_001\"], [\"apps_r"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 182,
+    "text": "(\"skill_workflow_checkpointing_and_resumability\", \"Workflow checkpointing and resumability\", [\"Checkpoint\", \"ResumableWorkflow\"], \"Checkpointed workflows supporting resumability after failure.\", [], [\"agentic_core/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 195,
+    "text": "(\"skill_schema_bound_generation\", \"Schema bound generation\", [\"SchemaBoundOutput\", \"JSONSchema\"], \"Schema-bound generation with parse/repair gates on structured outputs.\", [\"fact_engineering_platform_003\"], [\"apps_rg/runtime/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 202,
+    "text": "(\"skill_side_effect_bounded_action_design\", \"Side effect bounded action design\", [\"SideEffectBounds\", \"NoDirectWrite\"], \"Side-effect-bounded actions; no direct UWG/L4 write path from L2/L3/tools.\", [\"fact_engineering_platform_001\"], [\".curs"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 205,
+    "text": "(\"skill_same_authority_runtime_repair\", \"Same authority runtime repair\", [\"SameAuthorityRepair\", \"HealingChain\"], \"Same-authority runtime repair without cross-layer privilege escalation.\", [], [\"agentic_core/L2_execution/healers/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 207,
+    "text": "(\"skill_schema_and_output_repair\", \"Schema and output repair\", [\"OutputRepair\", \"SchemaRepair\"], \"Deterministic schema and output repair before re-judging.\", [], [\"apps_rg/runtime/sections/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 215,
+    "text": "(\"skill_llm_judge_packet_design\", \"LLM judge packet design\", [\"JudgePacket\", \"GradeOnlyJudge\"], \"LLM judge packet design with grade-only rubrics and allowed_fact_packet.\", [\"fact_governance_001\"], [\"apps_rg/runtime/judges/executive_summary_"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 216,
+    "text": "(\"skill_multi_judge_calibration\", \"Multi judge calibration\", [\"MultiJudge\", \"Calibration\"], \"Multi-judge calibration across providers with soft-fail vs block semantics.\", [], [\"apps_rg/runtime/judges/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 220,
+    "text": "(\"skill_authority_and_registry_binding\", \"Authority and registry binding\", [\"AuthorityBinding\", \"ProfileRegistry\"], \"Authority and registry binding via generic profile resolver.\", [\"fact_governance_002\"], [\"agentic_core/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 229,
+    "text": "(\"skill_receipt_and_artifact_chain_design\", \"Receipt and artifact chain design\", [\"ReceiptChain\", \"ArtifactProvenance\"], \"Receipt and artifact chain design with provenance discipline.\", [\"fact_governance_001\"], [\".cursor/rules/artifact-prov"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 232,
+    "text": "(\"skill_trace_and_reconstruction_design\", \"Trace and reconstruction design\", [\"TraceReconstruction\", \"SpanAnalysis\"], \"Trace reconstruction for per-agent span analysis and healing chains.\", [], [\"agentic_core/L6_observability/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 237,
+    "text": "(\"skill_eval_regression_and_gauntlet_design\", \"Eval regression and gauntlet design\", [\"EvalRegression\", \"Gauntlet\"], \"Eval regression gauntlets for gate and judge threshold preservation.\", [], [\"tests/_apps_contract/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 241,
+    "text": "(\"skill_approval_gated_workflow_design\", \"Approval gated workflow design\", [\"ApprovalGated\", \"WaveLifecycle\"], \"Approval-gated workflows with wave lifecycle markers and human confirmation.\", [\"fact_governance_003\"], [\".cursor/rules/wave-com"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 246,
+    "text": "(\"skill_agentic_platform_productization\", \"Agentic platform productization\", [\"PlatformProductization\", \"EnterpriseAdoption\"], \"Agentic platform productization for enterprise regulated workflows.\", [\"fact_engineering_platform_004\"], [\"apps_"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 248,
+    "text": "(\"skill_app_specific_runtime_overlay_design\", \"App specific runtime overlay design\", [\"apps_rgOverlay\", \"U0Package\"], \"apps_rg runtime overlay design without agentic_core leakage.\", [\"fact_engineering_platform_001\"], [\"apps_rg/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 249,
+    "text": "(\"skill_enterprise_workflow_adoption\", \"Enterprise workflow adoption\", [\"EnterpriseAdoption\", \"OperatingModel\"], \"Enterprise workflow adoption with auditability and stakeholder alignment.\", [\"fact_exec_002\"], [\"apps_rg/runtime/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 250,
+    "text": "(\"skill_operating_model_for_agentic_ai\", \"Operating model for agentic AI\", [\"OperatingModel\", \"GovernedDelivery\"], \"Operating model for governed agentic AI delivery at scale.\", [\"fact_exec_001\"], [\"apps_rg/\"]),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 255,
+    "text": "(\"domain_agentic_systems_architecture\", slice(0, 5)),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\arsenal_graph_w4a_spec.py",
+    "line": 273,
+    "text": "for tpl in _AGENTIC_ROW_TEMPLATE[sl]:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 147,
+    "text": "THEME_AGENTIC_SKILL_IDS = frozenset("
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 149,
+    "text": "\"skill_governed_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 158,
+    "text": "\"skill_reusable_agentic_platform_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 159,
+    "text": "\"skill_agentic_platform_productization\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 174,
+    "text": "\"skill_governed_agentic_systems_architecture\": [\"fact_engineering_platform_001\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 184,
+    "text": "\"skill_reusable_agentic_platform_architecture\": [\"fact_engineering_platform_006\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 185,
+    "text": "\"skill_agentic_platform_productization\": [\"fact_engineering_platform_006\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 576,
+    "text": "for r in payload.get(\"agentic_runtime_matrix\") or []:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 617,
+    "text": "\"\"\"Promotion decision enum for governed agentic/platform skills.\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 655,
+    "text": "for r in payload.get(\"agentic_runtime_matrix\") or []:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 659,
+    "text": "for sid in sorted(THEME_AGENTIC_SKILL_IDS):"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 688,
+    "text": "\"\"\"Merge skill_rows SSOT with agentic_runtime_matrix (agentic wins on collision).\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 693,
+    "text": "for r in payload.get(\"agentic_runtime_matrix\") or []:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 728,
+    "text": "\"\"\"Keep graph_nodes / agentic_runtime_matrix / skill_rows aligned for one skill.\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 733,
+    "text": "(\"agentic_runtime_matrix\", \"skill_id\"),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 902,
+    "text": "if \"agentic\" in epoch or pillar == \"pillar_agentic_ai_platforms\":"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 903,
+    "text": "track_high[\"track_genai_agentic\"] += 1"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 922,
+    "text": "\"track_genai_agentic_high_skills\": sorted(genai_high_skills),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\augmented_skills_graph_sqlite.py",
+    "line": 2093,
+    "text": "\"THEME_AGENTIC_SKILL_IDS\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\competencies_graph_skills_proof_pool.py",
+    "line": 119,
+    "text": "target_role: str = \"SVP Engineering Agentic AI\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\competencies_graph_skills_proof_pool.py",
+    "line": 272,
+    "text": "\"\"\"Fail-closed validator for P2-W1A default graph authority receipt.\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 27,
+    "text": "\"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 44,
+    "text": "\"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 55,
+    "text": "\"pillar_agentic_ai_platforms\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 77,
+    "text": "\"domain_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 92,
+    "text": "\"domain_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 111,
+    "text": "\"domain_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 121,
+    "text": "\"domain_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\executive_summary_arsenal_projection.py",
+    "line": 127,
+    "text": "\"domain_agentic_systems_architecture\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 10,
+    "text": "from apps_rg.fact_inventory.arsenal_graph_w4a_spec import AGENTIC_CAPABILITY_DOMAINS"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 385,
+    "text": "DOMAIN_ID_TO_LABEL: dict[str, str] = {d[\"domain_id\"]: d[\"label\"] for d in AGENTIC_CAPABILITY_DOMAINS}"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 397,
+    "text": "\"target_role\": \"SVP Engineering AI Platform leadership agentic kubernetes orchestration\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 400,
+    "text": "\"agentic AI deterministic routing runtime gates productization\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 418,
+    "text": "\"partner engineering pre-sales enterprise adoption approval workflow\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 436,
+    "text": "\"productization operating model multi-judge exit control\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 722,
+    "text": "agentic_in_exec = any("
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 726,
+    "text": "if not agentic_in_exec:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 727,
+    "text": "blockers.append(\"No fact_engineering_platform_001 in any exec SRFS slice (agentic anchor thin)\")"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 736,
+    "text": "\"Semantic density and mechanism vocabulary may still soft-fail Anthropic judge \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 737,
+    "text": "\"until live run validates S2/S5 repair; graph ranking does not replace fact-backed prose.\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\exec_summary_graph_projection_w4b.py",
+    "line": 741,
+    "text": "\"HIGH candidate ledger. Deep agentic rows are mostly REPO_EVIDENCE_PORTFOLIO / internal. \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\harden_augmented_skills_graph_ssot.py",
+    "line": 212,
+    "text": "stats = {\"skill_rows\": 0, \"graph_nodes\": 0, \"agentic_runtime_matrix\": 0, \"edges_rewired\": 0}"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\harden_augmented_skills_graph_ssot.py",
+    "line": 219,
+    "text": "(\"agentic_runtime_matrix\", \"skill_id\", \"agentic_runtime_matrix\"),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\harden_augmented_skills_graph_ssot.py",
+    "line": 393,
+    "text": "\"TRACK_GENAI_AGENTIC_HIGH_SKILLS_AFTER\": counts_after_promotion.get("
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\harden_augmented_skills_graph_ssot.py",
+    "line": 394,
+    "text": "\"track_genai_agentic_high_skills\", []"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\harden_augmented_skills_graph_ssot.py",
+    "line": 436,
+    "text": "\"agentic_core/\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\harden_augmented_skills_graph_ssot.py",
+    "line": 454,
+    "text": "and counts_after_promotion.get(\"track_genai_agentic_high_skills\")"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.py",
+    "line": 30,
+    "text": "\"agentic_runtime_matrix\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.py",
+    "line": 31,
+    "text": "\"agentic_capability_domains\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_arsenal_from_design.py",
+    "line": 423,
+    "text": "agentic_count = w4a[\"graph_metadata\"][\"deep_agentic_row_count\"]"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_arsenal_from_design.py",
+    "line": 435,
+    "text": "\"deep_agentic_row_count\": agentic_count,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_arsenal_from_design.py",
+    "line": 436,
+    "text": "\"capability_domain_count\": len(w4a.get(\"agentic_capability_domains\") or []),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_arsenal_from_design.py",
+    "line": 443,
+    "text": "\"agentic_runtime_matrix\": w4a[\"agentic_runtime_matrix\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_arsenal_from_design.py",
+    "line": 444,
+    "text": "\"agentic_capability_domains\": w4a[\"agentic_capability_domains\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_arsenal_from_design.py",
+    "line": 504,
+    "text": "f\"agentic={payload['metadata']['deep_agentic_row_count']} \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 6,
+    "text": "Does not modify competencies runtime or agentic_core."
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 43,
+    "text": "\"node_id\": \"track_genai_agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 44,
+    "text": "\"track_id\": \"TRACK_GENAI_AGENTIC\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 57,
+    "text": "\"epoch_agentic_ai_runtime_architecture\": \"track_genai_agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 67,
+    "text": "\"pillar_agentic_ai_platforms\": \"track_genai_agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 134,
+    "text": "\"exp_unify_001\": (\"track_genai_agentic\", []),"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 156,
+    "text": "return \"track_genai_agentic\", notes"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 160,
+    "text": "return \"track_genai_agentic\", notes"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 168,
+    "text": "\"track_genai_agentic\": 0,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 177,
+    "text": "track_months[\"track_genai_agentic\"] += 1"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 353,
+    "text": "\"track_genai_agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 569,
+    "text": "\"track_genai_agentic\": \"TRACK_GENAI_AGENTIC\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\materialize_career_tracks_p1.py",
+    "line": 588,
+    "text": "for row in ledger.get(\"agentic_runtime_matrix\") or []:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 325,
+    "text": "\"SVP Engineering Agentic AI platform leader for regulated financial services \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 326,
+    "text": "\"with GraphRAG and governed agentic runtime.\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 330,
+    "text": "CANONICAL_LIVE_ROLE = \"SVP Engineering Agentic AI\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 492,
+    "text": "target_role: str = \"SVP Engineering Agentic AI\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 576,
+    "text": "\"--target-company TargetCo --target-role \\\"SVP Engineering Agentic AI\\\" \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 577,
+    "text": "\"--jd \\\"SVP Engineering Agentic AI platform leader for regulated financial services \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\p2_graph_skills_accelerated_closeout.py",
+    "line": 578,
+    "text": "\"with GraphRAG and governed agentic runtime.\\\" \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\run_w14_senior_role_offline_traversal.py",
+    "line": 401,
+    "text": "for k in (\"track_actuarial_risk_derivatives\", \"track_data_tech_cloud_ml\", \"track_genai_agentic\")"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\run_w4_w14_multilane_section_projection.py",
+    "line": 73,
+    "text": "\"aig_carrier_agentic\": \"insurance carrier agentic transformation\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\run_w4_w14_multilane_section_projection.py",
+    "line": 206,
+    "text": "if slug == \"aig_carrier_agentic\":"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 31,
+    "text": "capture_agentic_core_isolation,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 48,
+    "text": "\"track_genai_agentic\": \"TRACK_GENAI_AGENTIC\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 54,
+    "text": "\"track_genai_agentic\": \"GenAI / Agentic (2022-present)\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 95,
+    "text": "for row in graph.get(\"agentic_runtime_matrix\") or []:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 302,
+    "text": "role_key = infer_projection_role_family_key(target_role=\"SVP Engineering Agentic AI\", jd_text=jd_text)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 317,
+    "text": "isolation = capture_agentic_core_isolation(repo_root=root)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 318,
+    "text": "p1_w5_touched = any(p.startswith(\"agentic_core/\") for p in P1_W5_FILE_PREFIXES)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 327,
+    "text": "\"agentic_core_isolation\": isolation,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_balanced_section_projection.py",
+    "line": 368,
+    "text": "\"agentic_core_isolation\": built[\"agentic_core_isolation\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 34,
+    "text": "\"track_genai_agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 40,
+    "text": "\"track_genai_agentic\": 0.65,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 48,
+    "text": "\"track_genai_agentic\": 0.60,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 53,
+    "text": "\"track_genai_agentic\": 0.50,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 58,
+    "text": "\"track_genai_agentic\": 0.30,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 63,
+    "text": "\"track_genai_agentic\": 0.10,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 68,
+    "text": "\"track_genai_agentic\": 0.25,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 74,
+    "text": "\"track_genai_agentic\": 0.40,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 79,
+    "text": "\"track_genai_agentic\": 0.35,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 84,
+    "text": "\"track_genai_agentic\": 0.40,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 89,
+    "text": "\"track_genai_agentic\": 0.35,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 94,
+    "text": "\"track_genai_agentic\": 0.30,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 99,
+    "text": "\"track_genai_agentic\": 0.40,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 104,
+    "text": "\"track_genai_agentic\": 0.25,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 109,
+    "text": "\"track_genai_agentic\": 0.35,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 145,
+    "text": "\"SVP Engineering \u2014 Agentic AI platform leader for regulated financial services. \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 146,
+    "text": "\"Must show governed agentic runtime, GraphRAG, multi-agent orchestration, and policy gates. \""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 153,
+    "text": "\"Greeks hedging, exotic options, and capital modeling only. No agentic AI or partner GTM scope.\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 258,
+    "text": "\"agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 269,
+    "text": "bumps[\"track_genai_agentic\"] = 0.05"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 283,
+    "text": "bumps[\"track_genai_agentic\"] = max(bumps.get(\"track_genai_agentic\", 0.0), 0.06)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 285,
+    "text": "k in jd for k in (\"agentic ai\", \"agentic ai transformation\", \"global head\")"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 287,
+    "text": "bumps[\"track_genai_agentic\"] = max(bumps.get(\"track_genai_agentic\", 0.0), 0.12)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 295,
+    "text": "bumps[\"track_genai_agentic\"] = max(bumps.get(\"track_genai_agentic\", 0.0), 0.08)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 348,
+    "text": "\"agentic ai\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 489,
+    "text": "\"TRACK_GENAI_AGENTIC\": \"track_genai_agentic\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 791,
+    "text": "def capture_agentic_core_isolation(*, repo_root: Path | None = None) -> dict[str, Any]:"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 792,
+    "text": "\"\"\"Record agentic_core git state and whether P1-W4 paths touched it.\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 795,
+    "text": "[\"git\", \"diff\", \"--name-only\", \"--\", \"agentic_core\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 802,
+    "text": "[\"git\", \"status\", \"--short\", \"--\", \"agentic_core\"],"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 811,
+    "text": "touched = any(p.startswith(\"agentic_core/\") for p in p1_files)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 813,
+    "text": "\"git_diff_name_only_agentic_core\": diff_names,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 814,
+    "text": "\"git_status_short_agentic_core\": status_lines,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 822,
+    "text": "else (\"CLEAN\" if not diff_names else \"BLOCKED_WAVE_TOUCHED_AGENTIC_CORE\")"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 826,
+    "text": "\"tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope.\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 839,
+    "text": "role_key = infer_projection_role_family_key(target_role=\"SVP Engineering Agentic AI\", jd_text=hybrid_jd)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 849,
+    "text": "isolation = capture_agentic_core_isolation(repo_root=root)"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 872,
+    "text": "\"agentic_core_isolation\": isolation,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 883,
+    "text": "\"agentic_core_isolation\": isolation,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\track_weighted_graph_expansion.py",
+    "line": 937,
+    "text": "\"## agentic_core isolation\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\validate_commercial_medium_claim_output_containment.py",
+    "line": 276,
+    "text": "\"agentic_core_touched\": False,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\validate_commercial_srfs_projection.py",
+    "line": 352,
+    "text": "\"agentic_core_touched\": False,"
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\validate_p1_w4_track_weighted_closeout.py",
+    "line": 1,
+    "text": "\"\"\"P1-W4 closeout validator \u2014 C0.3 binding + hybrid track coverage + authority.\"\"\""
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\validate_p1_w4_track_weighted_closeout.py",
+    "line": 89,
+    "text": "target_role=\"SVP Engineering Agentic AI\","
+  },
+  {
+    "path": "apps_rg\\fact_inventory\\validate_p2_w0_graph_skills_gap_inventory.py",
+    "line": 1,
+    "text": "\"\"\"P2-W0 gap inventory validator \u2014 inventory-only wave; no competencies runtime changes.\"\"\""
+  },
+  {
+    "path": "apps_rg\\integrations\\anti_overfitting.py",
+    "line": 21,
+    "text": "\"agentic\","
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\modular_lane_recipe_policy.py",
+    "line": 26,
+    "text": "# Deterministic / security-style blocks that cannot be waived by judge availability."
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\modular_lane_recipe_policy.py",
+    "line": 129,
+    "text": "\"note\": \"Lane deterministic X2 passed; X3 reflects judge/review signal only (policy v1).\","
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\modular_lane_recipe_policy.py",
+    "line": 138,
+    "text": "\"Remaining signals are classified as non-fatal judge/provider degradation \""
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\modular_lane_recipe_policy.py",
+    "line": 139,
+    "text": "\"(e.g. external judge rate-limited or soft-fail) \u2014 not deterministic section failure.\""
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\modular_resume_generation.py",
+    "line": 383,
+    "text": "\"\"\"Phase 0 / mock Phase 1: structural assembly only. Real Phase 1: aggregate full-resume judge.\"\"\""
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\pa_to_core_cpa.py",
+    "line": 1,
+    "text": "\"\"\"Adapt apps_rg PA ``CompiledPromptArtifact`` \u2192 agentic_core ``CompiledPromptArtifact``."
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\pa_to_core_cpa.py",
+    "line": 14,
+    "text": "from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID"
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\pa_to_core_cpa.py",
+    "line": 16,
+    "text": "from agentic_core.runtime.contracts.compiled_prompt_artifact import ("
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\prompt_budget.py",
+    "line": 11,
+    "text": "from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MAX_MODEL_LEN"
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\r4_generation_route.py",
+    "line": 43,
+    "text": "\"agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run\""
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\r4_generation_route.py",
+    "line": 47,
+    "text": "# Offline / lane-based orchestration (no agentic_core R4); modular Qwen by lane."
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\raw_text_json_unwrap.py",
+    "line": 1,
+    "text": "\"\"\"Extract JSON embedded in ``raw_text`` wrappers (honest repair, apps_rg-only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\l2_recipe\\registry.py",
+    "line": 3,
+    "text": "``agentic_core.runtime.l2_recipe_resolver`` imports ``get_apps_rg_recipe_metadata``"
+  },
+  {
+    "path": "apps_rg\\prerequisites\\briefing_validator.py",
+    "line": 1,
+    "text": "\"\"\"apps_rg prerequisite gate \u2014 historical research briefing validator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\prerequisites\\briefing_validator.py",
+    "line": 170,
+    "text": "validator = HistoricalBriefingValidator(max_freshness_hours=max_freshness_hours)"
+  },
+  {
+    "path": "apps_rg\\prerequisites\\briefing_validator.py",
+    "line": 171,
+    "text": "return validator.validate("
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\compiler.py",
+    "line": 15,
+    "text": "from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID"
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\compiler.py",
+    "line": 115,
+    "text": "NO agentic_core imports \u2014 self-contained for apps_rg local use."
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\contracts.py",
+    "line": 3,
+    "text": "# NO agentic_core imports \u2014 self-contained for apps_rg local use"
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\e0_examples.py",
+    "line": 76,
+    "text": "if cat == \"repair\":"
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\e0_examples.py",
+    "line": 77,
+    "text": "return \"repair\""
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\e0_examples.py",
+    "line": 174,
+    "text": "elif kind == \"repair\":"
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\e0_examples.py",
+    "line": 200,
+    "text": "elif kind == \"repair\":"
+  },
+  {
+    "path": "apps_rg\\prompt_assembly\\pa_core_law.py",
+    "line": 41,
+    "text": "\"\"\"One-line S0 bound satisfying PromptAssemblyInput validator + core-law reference.\"\"\""
+  },
+  {
+    "path": "apps_rg\\reasoning\\ContentQualityAgent.py",
+    "line": 8,
+    "text": "class ContentQualityAgent:"
+  },
+  {
+    "path": "apps_rg\\reasoning\\ContentQualityAgent.py",
+    "line": 9,
+    "text": "\"\"\"Structural validator scaffold \u2014 modular pipeline applies heavy logic.\"\"\""
+  },
+  {
+    "path": "apps_rg\\reasoning\\ProactiveAgent.py",
+    "line": 6,
+    "text": "class ProactiveAgent(BaseProactiveAgent):"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgHealingOrchestrator.py",
+    "line": 1,
+    "text": "\"\"\"RG healing orchestrator \u2014 subclasses ``BaseHealingOrchestrator``.\"\"\""
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgReflectionAgent.py",
+    "line": 6,
+    "text": "class RgReflectionAgent(BaseReflectionAgent):"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 10,
+    "text": "from agentic_core.L2_execution.types.local_first_disposition import LocalFirstDisposition"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 42,
+    "text": "class RgResumeOrchestrator(RGAgentBase):"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 94,
+    "text": "from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: PLC0415"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 113,
+    "text": "orchestrator=orchestrator_name,"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 121,
+    "text": "from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (  # noqa: PLC0415"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 135,
+    "text": "orchestrator=orchestrator_name,"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 150,
+    "text": "orchestrator=orchestrator_name,"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgResumeOrchestrator.py",
+    "line": 162,
+    "text": "orchestrator=orchestrator_name,"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgStrategicPlannerAgent.py",
+    "line": 1,
+    "text": "\"\"\"Strategic planner agent for RG PascalCase seams.\"\"\""
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgStrategicPlannerAgent.py",
+    "line": 6,
+    "text": "class RgStrategicPlannerAgent(RGAgentBase):"
+  },
+  {
+    "path": "apps_rg\\reasoning\\RGStrategyExecutor.py",
+    "line": 1,
+    "text": "\"\"\"RG strategy executor (canonical PascalCase shim for modular routing).\"\"\""
+  },
+  {
+    "path": "apps_rg\\reasoning\\RGStrategyExecutor.py",
+    "line": 5,
+    "text": "\"\"\"Dispatcher-facing strategy fa\u00e7ade for RG L2 hops.\"\"\""
+  },
+  {
+    "path": "apps_rg\\reasoning\\RgTemplateOptimizerAgent.py",
+    "line": 6,
+    "text": "class RgTemplateOptimizerAgent(RGAgentBase):"
+  },
+  {
+    "path": "apps_rg\\reasoning\\rg_agent_base.py",
+    "line": 4,
+    "text": "class RGAgentBase:"
+  },
+  {
+    "path": "apps_rg\\runtime\\competencies_x2_diagnostics.py",
+    "line": 3,
+    "text": "Used by CI lane-dev boundary tests \u2014 does not import agentic_core."
+  },
+  {
+    "path": "apps_rg\\runtime\\embedding_settings.py",
+    "line": 117,
+    "text": "repo = Path(os.environ.get(\"AGENTIC_REPO_ROOT\", Path.cwd()))"
+  },
+  {
+    "path": "apps_rg\\runtime\\embedding_settings.py",
+    "line": 139,
+    "text": "env_root = os.environ.get(\"AGENTIC_REPO_ROOT\", \"\").strip()"
+  },
+  {
+    "path": "apps_rg\\runtime\\embedding_settings.py",
+    "line": 162,
+    "text": "os.environ.setdefault(\"AGENTIC_REPO_ROOT\", str(repo))"
+  },
+  {
+    "path": "apps_rg\\runtime\\full_resume_review_bundle.py",
+    "line": 80,
+    "text": "lines.append(f\"- `{base}x1d_llm_judge_outputs.json` \u2014 judge scores\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 4,
+    "text": "required judge provider has no usable API credential configured."
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 6,
+    "text": "Live provider rate-limit / transient errors are discoverable only at judge-call time unless"
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 43,
+    "text": "\"detail\": f\"judge provider key not in PROVIDERS map: {key!r}\","
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 45,
+    "text": "blockers.append(f\"unknown judge provider key: {key}\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 53,
+    "text": "\"Simulated unavailable/blocked judge via \""
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 58,
+    "text": "f\"required judge provider {key} unavailable/blocked \""
+  },
+  {
+    "path": "apps_rg\\runtime\\ibm_narrative_judge_preflight.py",
+    "line": 79,
+    "text": "blockers.append(f\"required judge provider {key} missing credentials ({detail})\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_lane_evidence_packaging.py",
+    "line": 415,
+    "text": "spine_path = integrated_dir / \"agentic_core_spine_proof.json\""
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_lane_evidence_packaging.py",
+    "line": 453,
+    "text": "\"W8B does not rewrite agentic_core spine verifier\","
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_lane_evidence_packaging.py",
+    "line": 454,
+    "text": "\"packaging-only diagnosis for operator repair\","
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 58,
+    "text": "(\"agentic_core_how_trace.json\", (\"agentic_core_how_trace.json\",)),"
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 59,
+    "text": "(\"agentic_core_spine_proof.json\", (\"agentic_core_spine_proof.json\",)),"
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 61,
+    "text": "\"agentic_core_l7_route_family_coverage.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 62,
+    "text": "(\"agentic_core_l7_route_family_coverage.json\",),"
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 281,
+    "text": "if paths.get(\"agentic_core_how_trace.json\") and paths.get(\"agentic_core_spine_proof.json\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 287,
+    "text": "how = paths.get(\"agentic_core_how_trace.json\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 350,
+    "text": "spine_path = run_dir / \"agentic_core_spine_proof.json\""
+  },
+  {
+    "path": "apps_rg\\runtime\\integrated_product_proof_gate.py",
+    "line": 353,
+    "text": "status = str(spine.get(\"agentic_core_spine_status\") or \"\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\non_product_proof_stamp.py",
+    "line": 1,
+    "text": "\"\"\"Non-product proof classification stamps \u2014 offline rollup, orchestrator, demo harness.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\non_product_proof_stamp.py",
+    "line": 6,
+    "text": "# Orchestrator / offline lane rollup (SP-001)"
+  },
+  {
+    "path": "apps_rg\\runtime\\non_product_proof_stamp.py",
+    "line": 17,
+    "text": "\"not agentic_core Exit X3\","
+  },
+  {
+    "path": "apps_rg\\runtime\\non_product_proof_stamp.py",
+    "line": 24,
+    "text": "\"package X3 is not agentic_core Exit X3\","
+  },
+  {
+    "path": "apps_rg\\runtime\\non_product_proof_stamp.py",
+    "line": 111,
+    "text": "\"agentic_core_how_trace_required_for_product_cert\": True,"
+  },
+  {
+    "path": "apps_rg\\runtime\\one_spine_inventory.py",
+    "line": 122,
+    "text": "\"reason\": \"Static ledger neighbor expansion is not agentic_core graph traverse\","
+  },
+  {
+    "path": "apps_rg\\runtime\\prepare_orchestrator_inputs.py",
+    "line": 3,
+    "text": "This helper **does not** read, write, or require a base resume path. The orchestrator"
+  },
+  {
+    "path": "apps_rg\\runtime\\prepare_orchestrator_inputs.py",
+    "line": 67,
+    "text": "sys.stdout.write(\"Validated inputs (base resume unchanged; use orchestrator default or --base-resume).\\n\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\qwen_live_only_guard.py",
+    "line": 71,
+    "text": "\"\"\"Reject mock-judge CLI flags on the product entry (``python -m apps_rg``).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\qwen_live_only_guard.py",
+    "line": 125,
+    "text": "\"\"\"Live Qwen + no mock-judge CLI flags (product default).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\qwen_transport_diag.py",
+    "line": 21,
+    "text": "from agentic_core.L2_execution.healers.vllm_health_probe import VLLMHealth, probe"
+  },
+  {
+    "path": "apps_rg\\runtime\\qwen_vllm_docker_restart.py",
+    "line": 5,
+    "text": "call :func:`agentic_core.L2_execution.healers.vllm_health_probe.probe` on"
+  },
+  {
+    "path": "apps_rg\\runtime\\qwen_vllm_docker_restart.py",
+    "line": 34,
+    "text": "from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL"
+  },
+  {
+    "path": "apps_rg\\runtime\\qwen_vllm_docker_restart.py",
+    "line": 35,
+    "text": "from agentic_core.L2_execution.healers.vllm_health_probe import probe"
+  },
+  {
+    "path": "apps_rg\\runtime\\resume_resolution.py",
+    "line": 177,
+    "text": "raise ResumeResolutionError(\"required resume material is empty (ref-only chain exhausted)\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\run_bundle_index.py",
+    "line": 294,
+    "text": "(\"audit_l7_route_family_coverage\", \"agentic_core_l7_route_family_coverage.json\", \"application/json\", True, \"integrated_single_action_spine\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\run_bundle_index.py",
+    "line": 295,
+    "text": "(\"audit_how_trace\", \"agentic_core_how_trace.json\", \"application/json\", True, \"integrated_single_action_spine\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\run_bundle_index.py",
+    "line": 296,
+    "text": "(\"audit_spine_proof\", \"agentic_core_spine_proof.json\", \"application/json\", False, \"integrated_single_action_spine\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_binding_taxonomy.py",
+    "line": 5,
+    "text": "\"agentic_core_how_trace.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_binding_taxonomy.py",
+    "line": 6,
+    "text": "\"agentic_core_l7_route_family_coverage.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_binding_taxonomy.py",
+    "line": 7,
+    "text": "\"agentic_core_spine_proof.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_binding_taxonomy.py",
+    "line": 15,
+    "text": "\"agentic_core_how_trace.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_binding_taxonomy.py",
+    "line": 16,
+    "text": "\"agentic_core_l7_route_family_coverage.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_binding_taxonomy.py",
+    "line": 17,
+    "text": "\"agentic_core_spine_proof.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_cli_preflight.py",
+    "line": 10,
+    "text": "from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 3,
+    "text": "Does not emit agentic_core L7 artifacts, 99 RuntimeProofBundle, or UWG/Chroma writes."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 57,
+    "text": "\"certification/agentic_core/integrated_runtime/uwg_commit_latest\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 70,
+    "text": "\"agentic_core_how_trace.json\": \"agentic_core.L7_auditability.how_trace.how_trace_builder\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 71,
+    "text": "\"agentic_core_l7_route_family_coverage.json\": ("
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 72,
+    "text": "\"agentic_core.L7_auditability.coverage.route_family_l7_coverage\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 74,
+    "text": "\"agentic_core_spine_proof.json\": \"agentic_core.runtime.artifacts.spine_proof_bundle\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 76,
+    "text": "\"agentic_core.runtime.artifacts.integrated_runtime_emitter\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 78,
+    "text": "\"runtime_trace_snapshot.json\": \"agentic_core.runtime.artifacts.integrated_runtime_emitter\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 80,
+    "text": "\"agentic_core.runtime.entrypoints.integrated_safe_reuse_run\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 483,
+    "text": "\"no UWG/L4 durable write chain claimed from external refs alone\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 502,
+    "text": "source_owner_layer=\"agentic_core\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 504,
+    "text": "producer_module=_L7_PRODUCER_HINTS.get(filename, \"agentic_core.integrated_runtime\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 544,
+    "text": "(\"commit_request.json\", OWNER_CORE_UWG_WRITE_ADMISSION, \"agentic_core\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 545,
+    "text": "(\"uwg_commit_receipt.json\", OWNER_CORE_UWG_WRITE_ADMISSION, \"agentic_core\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 546,
+    "text": "(\"uwg_refresh_receipts.json\", OWNER_CORE_L4_DURABLE_STATE, \"agentic_core\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 559,
+    "text": "producer_module=\"agentic_core.runtime.entrypoints.integrated_uwg_commit_run\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 663,
+    "text": "notes=\"section modular CLI path; managed workflow not exercised\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 696,
+    "text": "\"C0.7 is real agentic_core observability subphase (docs/tests); \""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 783,
+    "text": "local_how = _present_local(artifact_dir, \"agentic_core_how_trace.json\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 784,
+    "text": "ext_how = refs_by_name.get(\"agentic_core_how_trace.json\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 786,
+    "text": "return row(\"PRESENT\", evidence_ref=\"agentic_core_how_trace.json\", owner_class=OWNER_CORE_L7_PROJECTION)"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1082,
+    "text": "\"core D2 Chroma upsert is NON_DURABLE_INDEX_WRITE unless governed UWG refresh chain proven\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1136,
+    "text": "\"agentic_core_how_trace.json\": bool(doc.get(\"l7_how_trace_emitted\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1137,
+    "text": "\"agentic_core_l7_route_family_coverage.json\": bool("
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1140,
+    "text": "\"agentic_core_spine_proof.json\": bool(doc.get(\"l7_spine_proof_emitted\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1160,
+    "text": "doc[\"l7_how_trace_emitted\"] = l7_emitted_flags[\"agentic_core_how_trace.json\"]"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1162,
+    "text": "\"agentic_core_l7_route_family_coverage.json\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_evidence_package.py",
+    "line": 1164,
+    "text": "doc[\"l7_spine_proof_emitted\"] = l7_emitted_flags[\"agentic_core_spine_proof.json\"]"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_judge_policy.py",
+    "line": 1,
+    "text": "\"\"\"Canonical apps_rg section judge policy matrix (apps_rg only; no agentic_core).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_judge_policy.py",
+    "line": 186,
+    "text": "raise KeyError(f\"Unknown apps_rg section for judge policy: {section_id!r}\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 1,
+    "text": "\"\"\"Section lane \u2192 agentic_core L7 binding manifest (refs only; no L7 artifact emission)."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 5,
+    "text": "untrusted \u2014 without writing duplicate ``agentic_core_how_trace.json`` / spine proof files."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 37,
+    "text": "\"agentic_core_how_trace.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 38,
+    "text": "\"agentic_core_l7_route_family_coverage.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 39,
+    "text": "\"agentic_core_spine_proof.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 46,
+    "text": "\"section_l7_binding_manifest is not agentic_core_how_trace\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 47,
+    "text": "\"section_l7_binding_manifest is not agentic_core_spine_proof\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 91,
+    "text": "\"\"\"Return (trusted, reason). Trusted only for agentic_core L7 HOW trace shape.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 97,
+    "text": "and pay.get(\"runtime_subject\") == \"agentic_core\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 101,
+    "text": "if _producer_component(doc).startswith(\"agentic_core.\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 114,
+    "text": "if _producer_component(doc).startswith(\"agentic_core.\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 124,
+    "text": "if body.get(\"runtime_subject\") != \"agentic_core\" and not body.get(\"proof_schema_version\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 125,
+    "text": "if doc.get(\"runtime_subject\") != \"agentic_core\" and not doc.get(\"proof_schema_version\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 128,
+    "text": "if subject and subject != \"agentic_core\":"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 132,
+    "text": "if _producer_component(doc).startswith(\"agentic_core.\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 147,
+    "text": "if _producer_component(doc).startswith(\"agentic_core.\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 155,
+    "text": "if _producer_component(doc).startswith(\"agentic_core.\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 166,
+    "text": "if _producer_component(doc).startswith(\"agentic_core.\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 175,
+    "text": "\"agentic_core_how_trace.json\": assess_l7_how_trace_trust,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 176,
+    "text": "\"agentic_core_l7_route_family_coverage.json\": assess_l7_route_family_coverage_trust,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 177,
+    "text": "\"agentic_core_spine_proof.json\": assess_l7_spine_proof_trust,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 290,
+    "text": "\"agentic_core_how_trace.json\": False,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 291,
+    "text": "\"agentic_core_l7_route_family_coverage.json\": False,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 292,
+    "text": "\"agentic_core_spine_proof.json\": False,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 408,
+    "text": "l7_emitted_flags[\"agentic_core_how_trace.json\"]"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 409,
+    "text": "and l7_emitted_flags[\"agentic_core_l7_route_family_coverage.json\"]"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 410,
+    "text": "and l7_emitted_flags[\"agentic_core_spine_proof.json\"]"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 468,
+    "text": "\"l7_how_trace_emitted\": l7_emitted_flags[\"agentic_core_how_trace.json\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 470,
+    "text": "\"agentic_core_l7_route_family_coverage.json\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_l7_binding_manifest.py",
+    "line": 472,
+    "text": "\"l7_spine_proof_emitted\": l7_emitted_flags[\"agentic_core_spine_proof.json\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 1,
+    "text": "\"\"\"One-spine section certification receipts \u2014 runtime artifact chain proof (Wave 8)."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 4,
+    "text": "inspected fields. Clean X3_ALLOW is separate from chain completeness."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 37,
+    "text": "\"\"\"Raised when certification is claimed without required chain artifacts.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 79,
+    "text": "\"\"\"Inspect required chain artifacts and upstream refs.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 209,
+    "text": "chain: dict[str, Any],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 216,
+    "text": "if not chain.get(\"required_chain_complete\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 239,
+    "text": "chain: dict[str, Any],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 249,
+    "text": "\"required_chain_complete\": bool(chain.get(\"required_chain_complete\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 250,
+    "text": "\"all_required_artifacts_present\": bool(chain.get(\"all_required_artifacts_present\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 251,
+    "text": "\"all_required_refs_valid\": bool(chain.get(\"all_required_refs_valid\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 253,
+    "text": "\"artifact_status\": chain.get(\"artifact_status\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 254,
+    "text": "\"ref_checks\": chain.get(\"ref_checks\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 255,
+    "text": "\"fec_artifact_used\": chain.get(\"fec_artifact_used\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 256,
+    "text": "\"certification_status\": \"PASS\" if chain.get(\"required_chain_complete\") else \"FAIL\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 259,
+    "text": "\"chain completeness does not require X3_ALLOW\","
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 269,
+    "text": "chain: dict[str, Any],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 281,
+    "text": "chain=chain,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 311,
+    "text": "chain: dict[str, Any],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 320,
+    "text": "chain=chain,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 331,
+    "text": "chain_ok = bool(chain.get(\"required_chain_complete\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 359,
+    "text": "\"all_required_artifacts_present\": bool(chain.get(\"all_required_artifacts_present\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 360,
+    "text": "\"all_required_refs_valid\": bool(chain.get(\"all_required_refs_valid\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 380,
+    "text": "chain: dict[str, Any],"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 389,
+    "text": "\"certification bypass without chain is forbidden in product-visible mode\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 391,
+    "text": "if product_certification == \"ONE_SPINE_SECTION_CERTIFIED\" and not chain.get(\"required_chain_complete\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 406,
+    "text": "\"\"\"Write Wave 8 certification receipts after full spine chain + L6 handoff exist.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 408,
+    "text": "chain = inspect_one_spine_chain(artifact_dir)"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 421,
+    "text": "chain=chain,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 429,
+    "text": "chain=chain,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 440,
+    "text": "chain=chain,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification.py",
+    "line": 450,
+    "text": "chain=chain,"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_certification_lane_integration.py",
+    "line": 21,
+    "text": "\"\"\"After L6 handoff \u2014 emit certification receipts from runtime chain inspection.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_no_two_path.py",
+    "line": 26,
+    "text": "chain = inspect_one_spine_chain(artifact_dir)"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_no_two_path.py",
+    "line": 108,
+    "text": "\"required_chain_complete\": bool(chain.get(\"required_chain_complete\")),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_no_two_path.py",
+    "line": 132,
+    "text": "\"chain\": {"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_no_two_path.py",
+    "line": 133,
+    "text": "\"required_chain_complete\": chain.get(\"required_chain_complete\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_no_two_path.py",
+    "line": 134,
+    "text": "\"all_required_artifacts_present\": chain.get(\"all_required_artifacts_present\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_one_spine_no_two_path.py",
+    "line": 135,
+    "text": "\"all_required_refs_valid\": chain.get(\"all_required_refs_valid\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_repair_lane_integration.py",
+    "line": 1,
+    "text": "\"\"\"Lane helpers for P1 repair ledger wiring (init, X2 snapshot, product quality).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_repair_ledger.py",
+    "line": 1,
+    "text": "\"\"\"Section repair ledger \u2014 counted regen and documented mechanical repairs (P1).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_repair_ledger.py",
+    "line": 30,
+    "text": "except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: missing repair ledger is non-fatal"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_repair_ledger.py",
+    "line": 162,
+    "text": "# Graph-only quality repair is authorized on augmented_skills_graph product path"
+  },
+  {
+    "path": "apps_rg\\runtime\\section_repair_policy.py",
+    "line": 1,
+    "text": "\"\"\"Product repair policy \u2014 mechanical vs counted regen vs forbidden deterministic rewrite.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_repair_policy.py",
+    "line": 20,
+    "text": "\"\"\"Graph-only reformat, SRFS judge-safe, display authority graph fallback.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_spine_terminology.py",
+    "line": 28,
+    "text": "# Section lane modular chain (executive_summary exemplar; other lanes analogous)."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_spine_terminology.py",
+    "line": 65,
+    "text": "# Governed spine contract types (agentic_spine_contracts_master.json)."
+  },
+  {
+    "path": "apps_rg\\runtime\\section_spine_terminology.py",
+    "line": 84,
+    "text": "\"static master_skills_arsenal ledger neighbors; not full agentic_core C0.3 GraphRAG traverse \u2014 \""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_spine_terminology.py",
+    "line": 105,
+    "text": "if prod in {\"c0\", \"c0_retrieve\", \"agentic_core.c0\"}:"
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 5,
+    "text": "chain is present in the run evidence package."
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 31,
+    "text": "\"agentic_core/L0_routing/reasoning/execution_orchestrator.py::_populate_d2_cache_promote\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 32,
+    "text": "\"agentic_core/L4_state/utils/memory/semantic_cache_manager.py::promote_to_long_term\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 33,
+    "text": "\"agentic_core/L4_state/cache/gptcache_client.py::NativePersistentCacheClient.store\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 34,
+    "text": "\"agentic_core/L4_state/cache/gptcache_client.py::_chroma_collection.upsert\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 39,
+    "text": "\"caller\": \"agentic_core/L0_routing/reasoning/execution_orchestrator.py\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 46,
+    "text": "\"caller\": \"agentic_core/mixins/semantic_cache_mixin.py\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 53,
+    "text": "\"caller\": \"agentic_core/utils/meta_learning_storage_util.py\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 60,
+    "text": "\"caller\": \"agentic_core/L4_state/utils/memory/semantic_cache_manager.py\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 77,
+    "text": "\"path\": \"agentic_core/L4_state/cache/gptcache_client.py\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 83,
+    "text": "\"path\": \"agentic_core/L4_state/utils/memory/semantic_cache_manager.py\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 217,
+    "text": "\"\"\"Return chain assessment from on-disk receipts in section + correlated integrated dirs.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 422,
+    "text": "\"notes\": \"Direct Chroma collection existence or upsert without UWG chain is not persistence proof\","
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 591,
+    "text": "\"core D2 shadow path uses agentic_core/L4_state/cache/gptcache_client Chroma upsert; \""
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 592,
+    "text": "\"classified NON_DURABLE_INDEX_WRITE without governed read_surface_refresh chain\""
+  },
+  {
+    "path": "apps_rg\\runtime\\semantic_cache_persistence_quarantine.py",
+    "line": 737,
+    "text": "\"NOT_PROVEN unless full UWG/L4/refresh chain present with canonical receipts\","
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow_product_path_quarantine.py",
+    "line": 26,
+    "text": "\"orchestrator rollup is not integrated R4 product runtime proof\","
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow_product_path_quarantine.py",
+    "line": 27,
+    "text": "\"package rollup X3 is not agentic_core Exit X3\","
+  },
+  {
+    "path": "apps_rg\\runtime\\w3_execution_path_labels.py",
+    "line": 1,
+    "text": "\"\"\"W3 execution-path classification \u2014 child plan ``apps-rg-agentic-core-boundary-remediation-child-f8e3c1``."
+  },
+  {
+    "path": "apps_rg\\runtime\\w3_execution_path_labels.py",
+    "line": 16,
+    "text": "PLAN_SLUG = \"apps-rg-agentic-core-boundary-remediation-child-f8e3c1\""
+  },
+  {
+    "path": "apps_rg\\runtime\\whole_run_exit.py",
+    "line": 7,
+    "text": "This module is apps_rg-local and does not import agentic_core."
+  },
+  {
+    "path": "apps_rg\\runtime\\whole_run_exit.py",
+    "line": 70,
+    "text": "if \"x1d\" in gl or \"judge\" in gl:"
+  },
+  {
+    "path": "apps_rg\\runtime\\whole_run_exit.py",
+    "line": 172,
+    "text": "blockers.append(f\"lane {lk}: deterministic X2 failures outside judge gates\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\whole_run_exit.py",
+    "line": 222,
+    "text": "warnings.append(\"X1D judge quorum not satisfied \u2014 see x1d_judge_policy in artifact\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\whole_run_exit.py",
+    "line": 223,
+    "text": "decisive_reason = \"WHOLE_RUN_REVIEW: judge quorum not satisfied (preflight credentials / config)\""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_judge_policy.py",
+    "line": 1,
+    "text": "\"\"\"apps_rg-local X1D judge preflight and proof policy (no agentic_core imports)."
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_judge_policy.py",
+    "line": 65,
+    "text": "\"\"\"Return judge policy summary for proof harness and whole-run Exit."
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_judge_policy.py",
+    "line": 146,
+    "text": "\"same chain as lane judges (Gemini prefers GOOGLE_API_KEY, then deprecated GEMINI_API_KEY).\","
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_judge_policy.py",
+    "line": 177,
+    "text": "\"SDK availability, allowed model catalogs, or that judge HTTP calls succeed.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 1,
+    "text": "\"\"\"Per-lane X1D judge diagnostics for E2E proof (apps_rg-local)."
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 3,
+    "text": "Separates preflight credential availability from runtime judge execution outcomes and quality."
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 6,
+    "text": "Does not import agentic_core."
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 220,
+    "text": "\"Gemini judge HTTP 429 with RESOURCE_EXHAUSTED/free-tier quotas is classified as BLOCKED_RATE_LIMIT \""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 224,
+    "text": "\"Anthropic MODEL_BACKED_FAIL rows carry model-backed evaluator_mode=MODEL_BACKED \u2014 classify as judge \""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 249,
+    "text": "per-judge artifact fields enrich ``judge_results`` (error tails, attempted flags, etc.)."
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 339,
+    "text": "dq = \"MODEL_BACKED_FAIL \u2014 judge call ran but score/threshold/decisive_failure failed\""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 394,
+    "text": "decisive = f\"Unknown/missing judge status for providers {lane_bucket_unk!r}\""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 439,
+    "text": "f\"MODEL_BACKED_FAIL count={model_fail_ct} (judge quality / threshold \u2014 not provider quorum).\""
+  },
+  {
+    "path": "apps_rg\\runtime\\x1d_lane_judge_diagnostics.py",
+    "line": 442,
+    "text": "rollup_reason = f\"UNKNOWN judge status count={unknown_ct}\""
+  },
+  {
+    "path": "apps_rg\\tools\\fact_vector_ingest.py",
+    "line": 89,
+    "text": "\"\"\"Schema validator for fact_vectors collection.\"\"\""
+  },
+  {
+    "path": "apps_rg\\types\\AllProvidersDownError.py",
+    "line": 1,
+    "text": "\"\"\"Provider exhaustion error + hardened router scaffolding for RG types.\"\"\""
+  },
+  {
+    "path": "apps_rg\\types\\gap_closure_architect_agent_types.py",
+    "line": 7,
+    "text": "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin"
+  },
+  {
+    "path": "apps_rg\\types\\gap_closure_architect_agent_types.py",
+    "line": 24,
+    "text": "class GapClosureArchitectAgent(SubatomicTestingMixin):"
+  },
+  {
+    "path": "apps_rg\\types\\SovereignContext.py",
+    "line": 37,
+    "text": "\"\"\"Minimal wiring surface for deterministic resume orchestrator scripts.\"\"\""
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 1,
+    "text": "\"\"\"Thin LLM client adapter for narrative-pipeline ensemble + judge."
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 3,
+    "text": "Decision lock D6: Anthropic Sonnet generator + Anthropic Haiku judge \u0393\u00c7\u00f6"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 18,
+    "text": "(NEXT_STEP-1 \u0393\u00c7\u00f6 wire SovereignLLMGateway into ensemble + judge live)."
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 31,
+    "text": "# Model IDs \u0393\u00c7\u00f6 sourced from agentic_core/L0_routing/config/model_registry.py"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 182,
+    "text": "# --------------------------------------------------------------------- judge"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 186,
+    "text": "\"\"\"Call the judge model and parse JSON soft-scores."
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 188,
+    "text": "Decision lock D6: prefer Anthropic Haiku for the judge slot."
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 206,
+    "text": "_log.info(\"[narrative_llm] judge JSON parse failed: %s\", exc)"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 239,
+    "text": "except Exception as exc:  # guardian: allow-broad-exception -- Anthropic SDK raises heterogeneous; judge fail-soft drops to heuristics"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 240,
+    "text": "_log.warning(\"[narrative_llm] anthropic judge failed: %s\", exc)"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 266,
+    "text": "except Exception as exc:  # guardian: allow-broad-exception -- OpenAI SDK raises heterogeneous; judge fail-soft drops to heuristics"
+  },
+  {
+    "path": "apps_rg\\integrations\\hops\\_llm_client.py",
+    "line": 267,
+    "text": "_log.warning(\"[narrative_llm] openai judge failed: %s\", exc)"
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\final_resume_x2.py",
+    "line": 447,
+    "text": "if \"x1d\" in name or \"llm_judge\" in name or \"judge\" in name:"
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\final_resume_x2.py",
+    "line": 475,
+    "text": "None if len(judge_hits) == 0 else \"lane-level judge artifacts must not be re-invoked in assembly dir\","
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\final_resume_x2.py",
+    "line": 493,
+    "text": "\"both aggregate judge artifacts required\","
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\final_resume_x2.py",
+    "line": 496,
+    "text": "else \"missing full-resume aggregate judge artifact(s)\","
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\full_resume_llm_coherence.py",
+    "line": 52,
+    "text": "Lines marked [NOT COMPLETED: <section> \u2014 <reason>] are intentional gaps \u2014 do not score as prose; judge flow/overlap only on completed sections."
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\full_resume_llm_coherence.py",
+    "line": 70,
+    "text": "\"\"\"Structural package: lane copy + deterministic X2 only \u2014 no aggregate LLM judge.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\full_resume_llm_coherence.py",
+    "line": 120,
+    "text": "findings=[\"MOCKED judge \u2014 does not count toward quorum pass.\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\full_resume_llm_coherence.py",
+    "line": 159,
+    "text": "f\"Unknown judge provider key: {key}\","
+  },
+  {
+    "path": "apps_rg\\runtime\\assembly\\full_resume_llm_coherence.py",
+    "line": 225,
+    "text": "except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: full-resume judge must not crash assembly"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\briefing_mode_classifier.py",
+    "line": 4,
+    "text": "No agentic_core imports \u2014 this is apps_rg-owned logic."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_binding.py",
+    "line": 17,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_binding.py",
+    "line": 18,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_binding.py",
+    "line": 37,
+    "text": "from agentic_core.runtime.gates.gate_types import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_binding.py",
+    "line": 45,
+    "text": "from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_binding.py",
+    "line": 48,
+    "text": "from agentic_core.knowledge.retrieval.c0_sparse_exact_seam import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_briefing_bypass.py",
+    "line": 55,
+    "text": "\"\"\"Evaluator for manual briefing bypass eligibility.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_briefing_bypass.py",
+    "line": 243,
+    "text": "evaluator = BriefingBypassEvaluator()"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_briefing_bypass.py",
+    "line": 244,
+    "text": "return evaluator.evaluate_brief(brief_path)"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_evidence_trace_map.py",
+    "line": 5,
+    "text": "machinery remain in agentic_core."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_evidence_trace_map.py",
+    "line": 7,
+    "text": "See ``FinalEvidenceContract`` in agentic_core \u2014 this map is not a substitute FEC."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_metrics_writer.py",
+    "line": 6,
+    "text": "No agentic_core imports for app-specific logic \u2014 this module uses the"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_metrics_writer.py",
+    "line": 7,
+    "text": "generic extractor from agentic_core.runtime.c0.evidence_metrics_extractor"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_metrics_writer.py",
+    "line": 20,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\c0_metrics_writer.py",
+    "line": 27,
+    "text": "from agentic_core.runtime.c0.evidence_metrics_extractor import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 4,
+    "text": "agentic_core Exit must remain generic."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 8,
+    "text": "It is **not** ``agentic_core.runtime_gates.definitions.GateVerdict`` (**00C**"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 23,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 32,
+    "text": "from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 37,
+    "text": "# Blocking status set \u2014 apps_rg-owned; never in agentic_core"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 250,
+    "text": "NOT appear in agentic_core Exit files."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 433,
+    "text": "from agentic_core.runtime.exhaust.runtime_exhaust_bundle import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_binding.py",
+    "line": 506,
+    "text": "from agentic_core.runtime.contracts.x3_disposition import X3Disposition  # noqa: F401"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\exit_evidence_receipts.py",
+    "line": 4,
+    "text": "G21/G22 gate modules in agentic_core.  They carry structured evidence"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l0_binding.py",
+    "line": 17,
+    "text": "from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l0_binding.py",
+    "line": 18,
+    "text": "from agentic_core.runtime.contracts.route_contract import GraphTraversePolicy, RouteContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l0_binding.py",
+    "line": 19,
+    "text": "from agentic_core.runtime.contracts.route_gate_receipt import RouteGateReceipt"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l0_binding.py",
+    "line": 35,
+    "text": "# W9 / L3 harness \u2014 env var name for managed-workflow test activation (stable symbol)"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l0_route_evidence.py",
+    "line": 11,
+    "text": "from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l0_route_evidence.py",
+    "line": 12,
+    "text": "from agentic_core.runtime.contracts.route_contract import RouteContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l1_binding.py",
+    "line": 13,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l1_binding.py",
+    "line": 14,
+    "text": "from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 4,
+    "text": "when the v4 feature flag is off, the generic package-driven L2 executor."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 8,
+    "text": "Canonical L2 implementation surface. The ``agentic_core`` LEGACY_SHIM at"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 9,
+    "text": "``agentic_core.L2_execution.apps_rg_l2_binding`` is ARCHIVE_PENDING (W11) and must"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 12,
+    "text": "**W3:** ``governed_pa_l2_exit`` \u2014 default spine for CPA\u2192Sealed L2 via core executor/envelope."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 30,
+    "text": "from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 31,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 32,
+    "text": "from agentic_core.runtime.contracts.route_contract import RouteContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 33,
+    "text": "from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_binding_adapter.py",
+    "line": 80,
+    "text": "from agentic_core.L2_execution.l2_package_driven_executor import l2_execute_package_driven"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 7,
+    "text": "**W3:** ``governed_pa_l2_exit`` \u2014 uses ``agentic_core`` ``ProviderGateway`` under envelope stages."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 29,
+    "text": "from agentic_core.runtime.providers.provider_gateway import ProviderGateway"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 30,
+    "text": "from agentic_core.runtime.providers.provider_types import ProviderModeBlockedError"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 115,
+    "text": "from agentic_core.L2_execution.types.l2_v3_receipts import LineageRoot"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 131,
+    "text": "from agentic_core.L2_execution.types.l2_v3_receipts import DeterminismBundle"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 154,
+    "text": "from agentic_core.L2_execution.types.l2_v4_contracts import FrozenExecutionContext"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 182,
+    "text": "from agentic_core.L2_execution.types.l2_v4_contracts import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 239,
+    "text": "from agentic_core.L2_execution.types.l2_v4_contracts import SealedRejectionPacket"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 267,
+    "text": "from agentic_core.L2_execution.types.l2_v4_contracts import PrepOutput, ReplayBindings, WriteLockAssertion"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 303,
+    "text": "from agentic_core.L2_execution.types.l2_v4_contracts import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 378,
+    "text": "from agentic_core.runtime.providers.provider_types import ProviderMode"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 393,
+    "text": "from agentic_core.runtime.providers.provider_types import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 490,
+    "text": "from agentic_core.L2_execution.types.l2_v3_receipts import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 537,
+    "text": "from agentic_core.L2_execution.types.l2_v3_receipts import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 584,
+    "text": "from agentic_core.L2_execution.types.l2_v3_receipts import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 589,
+    "text": "from agentic_core.runtime.providers.provider_types import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1008,
+    "text": "from agentic_core.L2_execution.types.l2_v3_receipts import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1015,
+    "text": "from agentic_core.L2_execution.types.l2_v4_contracts import DISALLOWED_REPAIRS, SAFE_LOCAL_REPAIRS, is_repair_allowed"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1070,
+    "text": "delta=\"repair budget exhausted\","
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1192,
+    "text": "from agentic_core.runtime.contracts.origin import Origin"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1193,
+    "text": "from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1297,
+    "text": "from agentic_core.runtime.contracts.origin import Origin"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\l2_envelope_adapter.py",
+    "line": 1298,
+    "text": "from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\pa_binding.py",
+    "line": 28,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\pa_binding.py",
+    "line": 29,
+    "text": "from agentic_core.runtime.contracts.compiled_prompt_artifact import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\pa_binding.py",
+    "line": 33,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\pa_binding.py",
+    "line": 34,
+    "text": "from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\pa_binding.py",
+    "line": 35,
+    "text": "from agentic_core.runtime.contracts.origin import Origin"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\pa_binding.py",
+    "line": 36,
+    "text": "from agentic_core.runtime.contracts.route_contract import RouteContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\section_lane_c0_metrics.py",
+    "line": 14,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\section_prompt_adapter.py",
+    "line": 6,
+    "text": "- L2 executes the provider packet; X2 / X1D / Exit judge downstream."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 1,
+    "text": "\"\"\"apps_rg U0 binding \u2014 cert reference, task class, and ingress validator."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 4,
+    "text": "``apps_rg.runtime.bindings.u0_binding`` only \u2014 not from agentic_core shims."
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 76,
+    "text": "from agentic_core.L0_routing.intake.reason_codes import IngressReasonCode"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 77,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 82,
+    "text": "from agentic_core.runtime.entry.u0_runtime_package_binding import U0PackageValidationError"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 103,
+    "text": "\"validator\": \"u0_validate_apps_rg\","
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 130,
+    "text": "\"validator\": \"ingest_apps_rg_runtime_package\","
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_binding.py",
+    "line": 352,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_package_ingest.py",
+    "line": 8,
+    "text": "from agentic_core.runtime.contracts.runtime_customization_package import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_package_ingest.py",
+    "line": 12,
+    "text": "from agentic_core.runtime.entry.u0_runtime_package_binding import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_rejection.py",
+    "line": 9,
+    "text": "from agentic_core.L0_routing.intake.reason_codes import IngressReasonCode"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_rejection.py",
+    "line": 10,
+    "text": "from agentic_core.L0_routing.intake.validated_request import RejectedRequestNotice"
+  },
+  {
+    "path": "apps_rg\\runtime\\bindings\\u0_rejection.py",
+    "line": 11,
+    "text": "from agentic_core.L0_routing.intake.verdicts import SourceClass"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c01_retrieval_plan.py",
+    "line": 11,
+    "text": "\"agentic_platform_governance_facts\","
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c01_retrieval_plan.py",
+    "line": 21,
+    "text": "\"primary_targets\": [\"platform_engineering\", \"governed_agentic_runtime\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c02_evidence_fetch.py",
+    "line": 160,
+    "text": "\"\"\"Convert C0.2 atom to agentic_core EvidenceItem (data-only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c02_evidence_fetch.py",
+    "line": 161,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c02_product_hybrid_retrieval.py",
+    "line": 9,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import EvidenceItem"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c03_graph_ref_policy.py",
+    "line": 33,
+    "text": "(\"governed_agentic\", \"governed enterprise AI platform delivery\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c03_graph_ref_policy.py",
+    "line": 35,
+    "text": "(\"multi_agent\", \"multi-agent workflow orchestration at enterprise scale\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c03_graph_ref_policy.py",
+    "line": 40,
+    "text": "(\"workflow_adoption\", \"enterprise workflow adoption and operating model change\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c03_graph_ref_policy.py",
+    "line": 282,
+    "text": "\"\"\"Diagnostics for X2 gates and repair ledgers.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c05_fec_packet.py",
+    "line": 1,
+    "text": "\"\"\"C0.5 \u2014 freeze FinalEvidenceContract for PA (governed agentic_core type only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c05_fec_packet.py",
+    "line": 10,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c06_weak_refine.py",
+    "line": 7,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import SUPPORT_STATUS_WEAK"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c07_handoff_audit.py",
+    "line": 7,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c0_section_authority.py",
+    "line": 1,
+    "text": "\"\"\"apps_rg section C0 authority law \u2014 ownership split from agentic_core C0 builders.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\c0_section_authority.py",
+    "line": 7,
+    "text": "from agentic_core.runtime.c0.evidence_metrics_extractor import SupportTarget"
+  },
+  {
+    "path": "apps_rg\\runtime\\c0\\hybrid_informed_fact_plan_reorder.py",
+    "line": 8,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import EvidenceItem"
+  },
+  {
+    "path": "apps_rg\\runtime\\dispatch\\apps_rg_dispatch.py",
+    "line": 3,
+    "text": "`apps_rg_parse` converts a raw dict payload into an `agentic_core`"
+  },
+  {
+    "path": "apps_rg\\runtime\\dispatch\\apps_rg_dispatch.py",
+    "line": 8,
+    "text": "`agentic_core.runtime.entry.apps_rg_dispatch`."
+  },
+  {
+    "path": "apps_rg\\runtime\\dispatch\\apps_rg_dispatch.py",
+    "line": 16,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import AppsRgIngressPayload"
+  },
+  {
+    "path": "apps_rg\\runtime\\dispatch\\apps_rg_dispatch.py",
+    "line": 75,
+    "text": "A validated `agentic_core` RequestEnvelope ready for U0 validation."
+  },
+  {
+    "path": "apps_rg\\runtime\\dispatch\\apps_rg_dispatch.py",
+    "line": 77,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import RequestEnvelope"
+  },
+  {
+    "path": "apps_rg\\runtime\\dispatch\\apps_rg_dispatch.py",
+    "line": 142,
+    "text": "from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run"
+  },
+  {
+    "path": "apps_rg\\runtime\\evidence\\canonical_evidence_digest_chain.py",
+    "line": 1,
+    "text": "\"\"\"W2/W3 canonical evidence digest chain \u2014 cross-surface digest proof for live lane runs.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\evidence\\canonical_evidence_digest_chain.py",
+    "line": 97,
+    "text": "\"\"\"Assemble digest chain + subset invariants from a completed lane artifact dir.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 12,
+    "text": "# Blocked provider evaluator modes"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 53,
+    "text": "def _is_blocked_judge(judge: dict[str, Any]) -> bool:"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 54,
+    "text": "return bool(judge.get(\"provider_blocked\")) or judge.get(\"evaluator_mode\") in BLOCKED_MODES"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 57,
+    "text": "def _is_mocked_judge(judge: dict[str, Any]) -> bool:"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 58,
+    "text": "return judge.get(\"evaluator_mode\") == \"MOCKED\""
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 61,
+    "text": "def _is_model_backed_soft_fail(judge: dict[str, Any]) -> bool:"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 62,
+    "text": "if judge.get(\"evaluator_mode\") != \"MODEL_BACKED\":"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 64,
+    "text": "if judge.get(\"decisive_failure\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 66,
+    "text": "if judge.get(\"provider_status\") == \"MODEL_BACKED_FAIL\":"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 68,
+    "text": "if judge.get(\"pass\") is False:"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 70,
+    "text": "normalized_score = judge.get(\"normalized_score\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 71,
+    "text": "normalized_threshold = judge.get(\"normalized_threshold\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 187,
+    "text": "remediation.append(f\"Configure blocked judge providers: {', '.join(blocked)}\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 198,
+    "text": "remediation.append(f\"Remediate decisive judge failures: {', '.join(decisive)}\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 229,
+    "text": "reason = \"One or more required X1D judge providers are blocked.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 262,
+    "text": "reason = \"X1D decisive judge failure\""
+  },
+  {
+    "path": "apps_rg\\runtime\\exit\\executive_summary_x3.py",
+    "line": 283,
+    "text": "reason = \"No X1D judge rows present for a section that requires judges.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\internal\\final_resume_assembler.py",
+    "line": 1008,
+    "text": "\"Section-level X3 pass is necessary but not sufficient; full-resume aggregate judge quorum required for product_release_eligible.\","
+  },
+  {
+    "path": "apps_rg\\runtime\\internal\\generated_lane_rollup.py",
+    "line": 115,
+    "text": "def _judge_provider_status(judge: Mapping[str, Any]) -> str:"
+  },
+  {
+    "path": "apps_rg\\runtime\\internal\\generated_lane_rollup.py",
+    "line": 117,
+    "text": "judge.get(\"provider_status\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\internal\\generated_lane_rollup.py",
+    "line": 118,
+    "text": "or judge.get(\"evaluator_mode\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\internal\\resume_package_disposition.py",
+    "line": 574,
+    "text": "\"agentic_core_edits_in_this_packaging_task\": False,"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\competencies_x1d.py",
+    "line": 45,
+    "text": "- Judge pass/fail does not gate product proof eligibility for competencies."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\competencies_x1d.py",
+    "line": 94,
+    "text": "findings=[\"MOCKED plumbing judge. Not valid for X3_ALLOW.\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\competencies_x1d.py",
+    "line": 127,
+    "text": "f\"Unknown judge provider key: {key}\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\competencies_x1d.py",
+    "line": 202,
+    "text": "f\"{meta['provider_name']} judge call failed: {type(exc).__name__}: {exc}\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 39,
+    "text": "- Return ONLY the required structured judge JSON schema (no markdown fences, no prose)."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 67,
+    "text": "- mechanism inventory in opening sentence or comma-chain architecture dump"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 71,
+    "text": "# Judge hallucination guard: legacy rubric phrases that must not drive decisive_failure when X2 snapshot all pass."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 166,
+    "text": "\"\"\"Pre-judge X2 gate snapshot aligned with live product-shape gates (exactly six sentences, max 140 words).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 244,
+    "text": "\"Reconciled: judge cited retired five-part/S1-S5 criteria; deterministic_gate_summary all pass.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 253,
+    "text": "except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: optional score coercion on judge packet"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 340,
+    "text": "\"\"\"Render judge user message from JudgePacket \u2014 never the generator compiled_prompt.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_packet.py",
+    "line": 375,
+    "text": "\"\"\"True when judge prompt is not a substring reuse of the L2 generator prompt.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_judge_profile.py",
+    "line": 1,
+    "text": "\"\"\"Enhanced X1D judge model profile for executive_summary (re-exports section_judge_profile).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1,
+    "text": "\"\"\"X1D LLM-as-Judge panel for executive summary runtime slice."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 40,
+    "text": "# Back-compat alias for tests and external imports (same resolution as Google AI judge path)."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 46,
+    "text": "\"\"\"Budget for gpt-5.x judge completions; escalates on retry (reasoning can consume the cap).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 68,
+    "text": "\"\"\"True when another bounded judge attempt may recover (parse/empty/schema).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 79,
+    "text": "\"no judge text\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 83,
+    "text": "\"incomplete judge json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 118,
+    "text": "\"You are a strict executive resume judge. Output a single compact JSON object only. \""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 139,
+    "text": "Score contract (mandatory - every judge response MUST comply):"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 149,
+    "text": "``executive_summary.generate_scratch_v1`` north star: **polished SVP / agentic-AI-platform synthesis**, not bullet stacks,"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 179,
+    "text": "\"\"\"Complete judge output with provider status tracking.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 259,
+    "text": "\"model_env\": \"APPS_RG_ANTHROPIC_JUDGE_MODEL\",  # Specific judge model env"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 267,
+    "text": "\"\"\"Return `(api_key, env_vars_consulted_in_order)` for preflight parity with lane judge execution.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 347,
+    "text": "\"\"\"Map raw judge score/threshold to 0..1 using an explicit scale.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 360,
+    "text": "\"\"\"Resolve Google AI judge model via section_judge_profile tier matrix.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 374,
+    "text": "\"\"\"Resolve Anthropic judge model via section_judge_profile tier matrix.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 385,
+    "text": "\"\"\"Coerce provider-native judge JSON into the executive_summary_x1d schema.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 427,
+    "text": "\"\"\"Build provider judge user prompt with compact JSON-only output contract.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 436,
+    "text": "\"\"\"Gemini generationConfig for compact schema-valid judge JSON.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 638,
+    "text": "\"\"\"Under pytest, outbound judge HTTPS is opt-in to avoid hanging unit runs on real sockets."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 662,
+    "text": "f\"{service_label} judge HTTPS is disabled under pytest \""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 663,
+    "text": "\"(set APPS_RG_ENABLE_NETWORK_TESTS=1 to enable live network for judge calls).\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 681,
+    "text": "\"\"\"Create a blocked judge output with full context.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 709,
+    "text": "findings=[\"Judge blocked - see exact_provider_error and raw_response_ref for details.\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 726,
+    "text": "\"\"\"Create a model-backed judge output from parsed result.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 838,
+    "text": "\"You are a strict executive resume judge. Return JSON only.\\n\\n\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 954,
+    "text": "\"OpenAI judge returned empty content (finish_reason=length); \""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1002,
+    "text": "\"\"\"Return a blocked JudgeOutput when required judge fields are missing; else None.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1315,
+    "text": "\"\"\"Parse extracted judge text into JudgeOutput or blocked status.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1333,
+    "text": "f\"Gemini finishReason={finish_reason} (incomplete judge JSON)\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1348,
+    "text": "\"Response contained no judge text\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1531,
+    "text": "\"\"\"Create a mocked judge output.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1554,
+    "text": "findings=[\"MOCKED plumbing judge. Not valid for X3_ALLOW.\"],"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1636,
+    "text": "\"BLOCKED_PROVIDER_UNAVAILABLE\", f\"Unknown judge provider key: {key}\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1670,
+    "text": "resolution.block_reason or \"proof judge model unavailable\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\executive_summary_x1d.py",
+    "line": 1775,
+    "text": "\"BLOCKED_PROVIDER_UNAVAILABLE\", f\"{meta['provider_name']} judge call failed: {type(exc).__name__}: {exc}\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\grade_only_judge_packet.py",
+    "line": 24,
+    "text": "- Return ONLY the required structured judge JSON schema (no markdown fences, no prose)."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\grade_only_judge_packet.py",
+    "line": 106,
+    "text": "\"\"\"Render judge user message from JudgePacket \u2014 never the generator compiled_prompt.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\ibm_bullets_x1d.py",
+    "line": 24,
+    "text": "2. enterprise_platform_credibility: IBM reads as enterprise/platform proof, not current agentic runtime ownership."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\ibm_bullets_x1d.py",
+    "line": 29,
+    "text": "7. no_unify_inflation: no Unify-era agentic runtime vocabulary (agentic AI, GraphRAG, multi-agent orchestration, etc.)."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\ibm_narrative_x1d.py",
+    "line": 23,
+    "text": "2. enterprise_platform_signal: IBM reads as supporting enterprise/platform credibility, not current agentic runtime ownership."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\ibm_narrative_x1d.py",
+    "line": 28,
+    "text": "7. no_unify_inflation: no Unify-era agentic runtime vocabulary in the sentence."
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\policy_backed_section_judges.py",
+    "line": 1,
+    "text": "\"\"\"Policy-backed GRADE_ONLY judge runner for standard apps_rg sections.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\section_judge_profile.py",
+    "line": 1,
+    "text": "\"\"\"Section-tier proof judge model resolution (apps_rg only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\section_judge_profile.py",
+    "line": 10,
+    "text": "from agentic_core.config.google_ai_env import google_ai_pro_model_id"
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\section_judge_profile.py",
+    "line": 25,
+    "text": "\"\"\"False when the model id is known to fail chat/completions (judge transport).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\section_judge_profile.py",
+    "line": 134,
+    "text": "\"\"\"Resolve proof judge model for a section; fail closed on missing or weak tiers.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\section_judge_profile.py",
+    "line": 150,
+    "text": "block_reason=f\"Unknown judge provider key: {provider_key}\","
+  },
+  {
+    "path": "apps_rg\\runtime\\judges\\section_judge_profile.py",
+    "line": 210,
+    "text": "f\"No proof-eligible judge model configured for section={sid} provider={provider_key} \""
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\canonical_dispatch.py",
+    "line": 3,
+    "text": "``dispatch_apps_rg_run`` in ``agentic_core.runtime.entry.apps_rg_dispatch`` delegates"
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\canonical_dispatch.py",
+    "line": 7,
+    "text": "``agentic_core_how_trace.json``)."
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\canonical_dispatch.py",
+    "line": 21,
+    "text": "from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\canonical_dispatch.py",
+    "line": 202,
+    "text": "Does not modify ``artifact_filenames`` \u2014 SSOT chain enumerations stay stable."
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\canonical_dispatch.py",
+    "line": 372,
+    "text": "l7_path = art / \"agentic_core_how_trace.json\""
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\r3r4_whole_run_orchestration.py",
+    "line": 12,
+    "text": "from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\orchestration\\r3r4_whole_run_orchestration.py",
+    "line": 594,
+    "text": "\"l7_how_trace_emitted\": bool(result.fault == \"\" and (art / \"agentic_core_how_trace.json\").is_file()),"
+  },
+  {
+    "path": "apps_rg\\runtime\\profiles\\retrieval_requirements.py",
+    "line": 4,
+    "text": "This module must NOT import from agentic_core."
+  },
+  {
+    "path": "apps_rg\\runtime\\providers\\provider_run_mode.py",
+    "line": 11,
+    "text": "from agentic_core.runtime.providers.provider_types import ProviderKind, ProviderProfile"
+  },
+  {
+    "path": "apps_rg\\runtime\\providers\\section_qwen_slice.py",
+    "line": 10,
+    "text": "from agentic_core.runtime.reasoning.reasoning_control_resolver import resolve_gateway_receipt"
+  },
+  {
+    "path": "apps_rg\\runtime\\providers\\section_qwen_slice.py",
+    "line": 11,
+    "text": "from agentic_core.runtime.reasoning.transport_capabilities import TransportCapabilities"
+  },
+  {
+    "path": "apps_rg\\runtime\\reasoning\\apps_rg_http_reasoning_plan.py",
+    "line": 18,
+    "text": "from agentic_core.runtime.reasoning.reasoning_control_requirement import AllowedSurface, RequirementLevel"
+  },
+  {
+    "path": "apps_rg\\runtime\\reasoning\\apps_rg_http_reasoning_plan.py",
+    "line": 19,
+    "text": "from agentic_core.runtime.reasoning.reasoning_control_resolver import canonical_plan_digest, default_gateway_control_requirements"
+  },
+  {
+    "path": "apps_rg\\runtime\\reasoning\\apps_rg_http_reasoning_plan.py",
+    "line": 20,
+    "text": "from agentic_core.runtime.reasoning.reasoning_execution_plan import ReasoningExecutionPlan"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_capability_projection.py",
+    "line": 1,
+    "text": "\"\"\"Executive capability projection \u2014 replaces phrase-extraction repair for competencies v3.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_capability_projection.py",
+    "line": 32,
+    "text": "# Never repair INTO these outputs (regression anchors)."
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_defaults.py",
+    "line": 12,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_execution.py",
+    "line": 3,
+    "text": "``apps_rg.runtime.sections.competencies_lane_runtime`` retains shared compile/repair helpers and"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_execution.py",
+    "line": 756,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_execution.py",
+    "line": 758,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('provider_status')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_execution.py",
+    "line": 759,
+    "text": "f\"{judge.get('score')} | {judge.get('pass')} | {judge.get('decisive_failure')} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_runtime.py",
+    "line": 505,
+    "text": "\"reason\": \"missing source_fact_id after structured repair\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_runtime.py",
+    "line": 1197,
+    "text": "# (x2_no_keyword_stuffing) after deterministic repair \u2014 avoids ``governed capability cluster`` templates."
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_runtime.py",
+    "line": 1357,
+    "text": "\"\"\"One repair turn when a competency term copies a long bullet substring.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_runtime.py",
+    "line": 1426,
+    "text": "\"Use mocked judge rows for contract-test plumbing only. Blocked unless paired with \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_lane_runtime.py",
+    "line": 1445,
+    "text": "help=\"Exit 0 for inspection despite X3\u2260ALLOW \u2014 does not bypass mock-judge blocks.\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_rigor.py",
+    "line": 21,
+    "text": "\"agentic\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\competencies_term_phrase.py",
+    "line": 1,
+    "text": "\"\"\"Competency term display normalization (shared by dispatch repair and X2 diagnostics).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_briefing.py",
+    "line": 48,
+    "text": "if any(k in sid for k in (\"platform\", \"agentic\", \"modern\", \"delivery\")):"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 64,
+    "text": "(\"agentic\", \"skill_governed_agentic_systems_architecture\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 73,
+    "text": "(\"revenue\", \"skill_agentic_platform_commercialization\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 74,
+    "text": "(\"commercial\", \"skill_agentic_platform_commercialization\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 75,
+    "text": "(\"platform lifecycle\", \"skill_reusable_agentic_platform_architecture\"),"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 99,
+    "text": "\"agentic\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 151,
+    "text": "\"B2_governed_platform_system\": \"Paint the governed agentic platform system (runtime, retrieval, orchestration).\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 194,
+    "text": "f\"Executive portrait of Amit as an SVP Engineering leader for governed agentic AI platforms \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_composition.py",
+    "line": 209,
+    "text": "\"\"\"Deterministic voice repair: replace thin recruiter openers without weakening X2.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 1,
+    "text": "\"\"\"Post-X1D judge-informed Qwen remediation for executive_summary (apps_rg only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 73,
+    "text": "def _judge_text_blob(judge: dict[str, Any]) -> str:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 76,
+    "text": "val = judge.get(key)"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 81,
+    "text": "if judge.get(\"rationale\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 82,
+    "text": "parts.append(str(judge.get(\"rationale\")))"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 97,
+    "text": "def _is_model_backed_soft_fail(judge: dict[str, Any]) -> bool:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 98,
+    "text": "if judge.get(\"evaluator_mode\") != \"MODEL_BACKED\":"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 100,
+    "text": "if judge.get(\"decisive_failure\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 102,
+    "text": "if judge.get(\"provider_status\") == \"MODEL_BACKED_FAIL\":"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 104,
+    "text": "if judge.get(\"pass\") is False:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 106,
+    "text": "ns = judge.get(\"normalized_score\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 107,
+    "text": "nt = judge.get(\"normalized_threshold\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 140,
+    "text": "\"\"\"Return whether post-judge Qwen regen should run (X2 must already be green).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 220,
+    "text": "provider = str(j.get(\"provider_name\") or j.get(\"provider_key\") or \"judge\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 261,
+    "text": "\"- opener: technology strategy / enterprise technology executive (not narrow engineering-manager label) when TARGET_TITLE is SVP IT strategy.\\n\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 279,
+    "text": "\"\"\"SRFS judge-safe repair stack removed (D1 purge). No-op for compatibility.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_judge_remediation.py",
+    "line": 298,
+    "text": "\"\"\"Bounded post-judge same-authority regen (max 1 attempt when enabled).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 88,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 91,
+    "text": "\"enterprise AI platform leadership, agentic AI systems, runtime governance, \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 378,
+    "text": "\"\"\"Drop or repair claim_ledger source_fact_ids outside the active proof pool allowlist.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 677,
+    "text": "\"Commercial and technical leadership stay aligned as teams scale governed agentic capabilities into production.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 704,
+    "text": "\"\"\"Product quality follows X2 + repair ledger (P1 counted regen policy).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 2330,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_lane.py",
+    "line": 2332,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('score')} | {judge.get('threshold')} | {judge.get('pass')} | {judge.get('decisive_failure')} | {judge.get('exact_provider_error') or ''} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_pa.py",
+    "line": 149,
+    "text": "\"- Open as a technology strategy / enterprise technology executive (not a narrow engineering-manager label).\\n\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_pa.py",
+    "line": 271,
+    "text": "# W4C: global resume_display_text bans (prompt contract; judge_safe may also strip at repair)."
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_proof_bundle.py",
+    "line": 1,
+    "text": "\"\"\"Post\u2013X3 runtime proof surfaces for executive_summary (lane-local; not agentic_core).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_proof_bundle.py",
+    "line": 180,
+    "text": "\"agentic_core_l7_route_family_coverage.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_proof_bundle.py",
+    "line": 181,
+    "text": "\"agentic_core_spine_proof.json\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_repair_policy.py",
+    "line": 1,
+    "text": "\"\"\"Release repair policy for executive_summary \u2014 bounded same-authority only.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_repair_policy.py",
+    "line": 7,
+    "text": "# Product path: no SRFS template finalizer, judge-safe rewrite, or density micro-expansion."
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_repair_policy.py",
+    "line": 40,
+    "text": "# Post-X1D same-authority regen when X2 passed but judge quorum/median signals synthesis gap."
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_repair_policy.py",
+    "line": 52,
+    "text": "\"\"\"Deterministic prose tighten before LLM judge regen (SRFS only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_voice_repair.py",
+    "line": 1,
+    "text": "\"\"\"Deterministic recruiter-filler repair for executive_summary (apps_rg only).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_voice_repair.py",
+    "line": 184,
+    "text": "f\"{i} source_fact_ids={','.join(sids)} not materialized after display repair\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_voice_repair.py",
+    "line": 197,
+    "text": "\"\"\"Apply filler repair to ``resume_display_text`` in-place copy of parsed output.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\executive_summary_voice_repair.py",
+    "line": 221,
+    "text": "\"\"\"Last post-LLM mutator: voice repair, ledger reconcile, gap excuse for display drift.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\exec_summary_graph_only_quality.py",
+    "line": 1,
+    "text": "\"\"\"Graph-only executive_summary generation quality repair (apps_rg only)."
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\exec_summary_graph_only_quality.py",
+    "line": 75,
+    "text": "\"Technology strategy executive who operationalizes governed agentic AI platforms \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\exec_summary_graph_only_quality.py",
+    "line": 142,
+    "text": "\"\"\"Shape gates repair must not regress (monotonicity).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 87,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 690,
+    "text": "\"gap_notes, change_log, self_check must reflect model truth (no dispatcher patching).\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 827,
+    "text": "'    {\"claim_text\": \"Governed Agentic Platforms\", \"source_fact_ids\": [\"bul_unify_001\"]},\\n'"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 896,
+    "text": "hl = \"SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Regulated Delivery\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 915,
+    "text": "\"selected_theme\": \"agentic_platforms\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 1740,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 1742,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('provider_status')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\headline_lane.py",
+    "line": 1743,
+    "text": "f\"{judge.get('score')} | {judge.get('pass')} | {judge.get('decisive_failure')} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_lane.py",
+    "line": 85,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_lane.py",
+    "line": 501,
+    "text": "\"\"\"Compat alias \u2014 deterministic metric injection supersedes plan-paste repair.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_lane.py",
+    "line": 1075,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_lane.py",
+    "line": 1077,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('provider_status')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_lane.py",
+    "line": 1078,
+    "text": "f\"{judge.get('score')} | {judge.get('pass')} | {judge.get('decisive_failure')} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_pa.py",
+    "line": 50,
+    "text": "\"lineage/observability/regulatory response, hyperscaler leverage \u2014 NOT Unify agentic-platform story.\\n\\n\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_pa.py",
+    "line": 55,
+    "text": "\"Forbidden Unify/runtime vocab: agentic runtime, agentic AI, GraphRAG, multi-agent orchestration, \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_bullets_pa.py",
+    "line": 56,
+    "text": "\"judge mesh, governed spine, deterministic routing, sandboxed execution, replayable traces, \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_defaults.py",
+    "line": 12,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 235,
+    "text": "exact_provider_error=\"IBM narrative X1D judge credential preflight blocked narrative generation.\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 359,
+    "text": "blocker_detail or \"judge credential preflight failed before narrative generation\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 571,
+    "text": "decisive_blockers.append(\"runtime X1D judge rows evaluated in MOCKED mode\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 578,
+    "text": "\"configure missing judge credentials; Gemini expects GOOGLE_API_KEY \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 584,
+    "text": "\"(clean X3 ALLOW requires every_active X1D judge MODEL_BACKED_PASS).\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 744,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 746,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('provider_status')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_execution.py",
+    "line": 747,
+    "text": "f\"{judge.get('score')} | {judge.get('pass')} | {judge.get('decisive_failure')} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\ibm_narrative_lane_runtime.py",
+    "line": 423,
+    "text": "\"\"\"One repair turn when companion bullets already carry the full metric bundle.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\section_authority_repairs.py",
+    "line": 116,
+    "text": "\"\"\"In-place repair of resume_display_text for rigor-critical X2 gates.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\section_product_shape_parity.py",
+    "line": 1,
+    "text": "\"\"\"Cross-seam parity snapshots: SSOT vs export, judge, graph-only, registry.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 476,
+    "text": "chain = build_canonical_evidence_digest_chain(ad, section_id=section_id)"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 477,
+    "text": "receipt[\"canonical_evidence_set_digest\"] = chain.get(\"c05_canonical_evidence_digest\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 478,
+    "text": "receipt[\"fec_allowed_fact_ids_digest\"] = chain.get(\"c06_final_evidence_contract_digest\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 479,
+    "text": "receipt[\"c07_runtime_bound_evidence_digest\"] = chain.get(\"c07_runtime_bound_evidence_digest\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 480,
+    "text": "receipt[\"pa_c0_slot_digest\"] = chain.get(\"pa_c0_slot_digest\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 481,
+    "text": "receipt[\"provider_request_allowed_ids_digest\"] = chain.get("
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 484,
+    "text": "receipt[\"claim_ledger_source_fact_ids_digest\"] = chain.get("
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 487,
+    "text": "receipt[\"x2_active_pool_digest\"] = chain.get(\"x2_active_pool_digest\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 488,
+    "text": "receipt[\"section_receipt_digest\"] = chain.get(\"section_receipt_digest\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\selected_role_fact_set.py",
+    "line": 490,
+    "text": "receipt[\"canonical_evidence_invariants_pass\"] = (chain.get(\"invariants\") or {}).get("
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_lane.py",
+    "line": 87,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_lane.py",
+    "line": 513,
+    "text": "\"Designed and operationalized a governed agentic AI platform for regulated enterprise \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_lane.py",
+    "line": 1113,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_lane.py",
+    "line": 1115,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('score')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_lane.py",
+    "line": 1116,
+    "text": "f\"{judge.get('threshold')} | {judge.get('pass')} | {judge.get('decisive_failure')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_lane.py",
+    "line": 1117,
+    "text": "f\"{judge.get('exact_provider_error') or ''} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_bullets_pa.py",
+    "line": 58,
+    "text": "\"Rewrite ONLY Unify Consulting employment bullets for SVP Engineering / Agentic AI platform targets. \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 94,
+    "text": "TARGET_TITLE_DEFAULT = \"SVP Engineering, Agentic AI Platforms\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 404,
+    "text": "\"Briefing and JD prioritize governed agentic platform delivery and production reliability \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 472,
+    "text": "\"agentic AI platform leadership\","
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 483,
+    "text": "\"governed agentic platforms without using JD language as proof; briefing tilts toward \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 1089,
+    "text": "for judge in x1d:"
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 1091,
+    "text": "f\"| {judge['provider_name']} | {judge['evaluator_mode']} | {judge.get('score')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 1092,
+    "text": "f\"{judge.get('threshold')} | {judge.get('pass')} | {judge.get('decisive_failure')} | \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_lane.py",
+    "line": 1093,
+    "text": "f\"{judge.get('exact_provider_error') or ''} |\""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_pa.py",
+    "line": 62,
+    "text": "\"Forbidden labels: Enterprise Agentic AI Platform Architecture; Dependency Graph Accelerator; Governed Runtime Reliability; \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\unify_narrative_pa.py",
+    "line": 66,
+    "text": "\"Good: Led platform roadmap and commercialization of a production-grade agentic AI platform at Unify Consulting, \""
+  },
+  {
+    "path": "apps_rg\\runtime\\sections\\__init__.py",
+    "line": 1,
+    "text": "\"\"\"apps_rg section lanes (app-owned execution paths; not agentic_core).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\section_proof\\mock_runtime_proof_policy.py",
+    "line": 40,
+    "text": "f\"dispatcher={dispatcher_label!r}. Mock judges cannot certify X1D evidence.\","
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow\\competencies_l6.py",
+    "line": 40,
+    "text": "\"\"\"Split normal dispatcher repairs vs REAL_LLM proof anomalies (mock-slice leakage).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow\\ibm_bullets_l6.py",
+    "line": 77,
+    "text": "if not _x2_gate_pass(x2_gates, \"x2_no_agentic_inflation\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow\\ibm_bullets_l6.py",
+    "line": 78,
+    "text": "unify_overlap.append(\"agentic_token_in_display_text_failed\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow\\l6_shadow_learning.py",
+    "line": 179,
+    "text": "\"production proof is required; no judge mutation on this run.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\shadow\\l6_shadow_learning.py",
+    "line": 200,
+    "text": "\"No automatic X3 rescue or ledger repair on this run.\""
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\c0_fec_compose.py",
+    "line": 495,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_l2_exit_compose.py",
+    "line": 14,
+    "text": "from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_l2_exit_compose.py",
+    "line": 15,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_l2_exit_compose.py",
+    "line": 16,
+    "text": "from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_l2_exit_compose.py",
+    "line": 42,
+    "text": "\"\"\"Integrated L2 \u2014 core executor (package-driven or v4 envelope) + governed marker.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_l2_exit_compose.py",
+    "line": 107,
+    "text": "from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 4,
+    "text": "Integrated spine: ``agentic_core.prompt_governance.orchestrator.assemble_prompt`` runs"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 16,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 17,
+    "text": "from agentic_core.runtime.contracts.compiled_prompt_artifact import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 21,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 25,
+    "text": "from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 26,
+    "text": "from agentic_core.runtime.contracts.origin import Origin"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 27,
+    "text": "from agentic_core.runtime.contracts.route_contract import RouteContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 60,
+    "text": "from agentic_core.L0_routing.c0_retrieval.verdicts import SupportStatus"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 81,
+    "text": "\"\"\"Adapt runtime ``FinalEvidenceContract`` for core PA orchestrator.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 82,
+    "text": "from agentic_core.L0_routing.c0_retrieval.candidate_pool import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 86,
+    "text": "from agentic_core.L0_routing.c0_retrieval.final_contract import FinalEvidenceContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 87,
+    "text": "from agentic_core.L0_routing.c0_retrieval.hydration import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 92,
+    "text": "from agentic_core.L0_routing.c0_retrieval.verdicts import RetrievalLane, SourceClass"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 151,
+    "text": "from agentic_core.L0_routing.c0_retrieval.route_contract import RouteContract as OrchRoute"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 152,
+    "text": "from agentic_core.L0_routing.c0_retrieval.verdicts import FreshnessClass, SupportTarget"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 181,
+    "text": "from agentic_core.L0_routing.c0_retrieval.route_contract import L1PlanContract as OrchPlan"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\governed_pa_compose.py",
+    "line": 287,
+    "text": "from agentic_core.prompt_governance.orchestrator import assemble_prompt"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\l2_handoff_receipt.py",
+    "line": 10,
+    "text": "from agentic_core.prompt_governance.prompt_assembly.l2_handoff import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\l2_handoff_receipt.py",
+    "line": 58,
+    "text": "\"contract_surface\": \"agentic_core.prompt_governance.prompt_assembly.l2_handoff\","
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\section_c0_retrieve.py",
+    "line": 17,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\section_x3_finalize.py",
+    "line": 1,
+    "text": "\"\"\"Section lane X3 + spine Exit \u2014 aggregate_x3 judge math then ExitEvalPipeline authority.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\section_x3_finalize.py",
+    "line": 8,
+    "text": "from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\spine_contract_loaders.py",
+    "line": 9,
+    "text": "from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\spine_contract_loaders.py",
+    "line": 10,
+    "text": "from agentic_core.runtime.contracts.final_evidence_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\spine_contract_loaders.py",
+    "line": 15,
+    "text": "from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\spine\\spine_contract_loaders.py",
+    "line": 16,
+    "text": "from agentic_core.runtime.contracts.route_contract import RouteContract"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\achv_bullet_synthesizer_validator.py",
+    "line": 3,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\achv_bullet_synthesizer_validator.py",
+    "line": 102,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ats_validator.py",
+    "line": 2,
+    "text": "ATS Validator - Deterministic ATS Compatibility Validation"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ats_validator.py",
+    "line": 5,
+    "text": "Category: VALIDATOR (Deterministic safety check)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ats_validator.py",
+    "line": 23,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ats_validator.py",
+    "line": 108,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\companion_bullet_finalization.py",
+    "line": 13,
+    "text": "# Upstream bullets may proceed to narrative when L2+X2 product proof passed but a judge provider blocked."
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\companion_bullet_finalization.py",
+    "line": 18,
+    "text": "# Deterministic X2/product_quality passed; judge soft-fail must not block narrative LLM."
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\competencies_x2.py",
+    "line": 1066,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\competencies_x2.py",
+    "line": 1067,
+    "text": "if str(judge.get(\"evaluator_mode\", \"\")).startswith(\"BLOCKED_\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\competencies_x2.py",
+    "line": 1068,
+    "text": "schema_ok2, _ = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\competencies_x2.py",
+    "line": 1070,
+    "text": "blocked_invalid.append(judge.get(\"provider_key\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\content_quality_validator.py",
+    "line": 2,
+    "text": "Content Quality Validator - Deterministic Content Quality Validation"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\content_quality_validator.py",
+    "line": 5,
+    "text": "Category: VALIDATOR (Deterministic safety check)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\content_quality_validator.py",
+    "line": 23,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\content_quality_validator.py",
+    "line": 108,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 217,
+    "text": "# Required X1D judge providers"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 257,
+    "text": "\"\"\"Fail when too many sentences start with resume bullet-chain openers.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 296,
+    "text": "r\"\\b(governed\\s+enterprise\\s+ai\\s+platform|agentic\\s+ai\\s+platform|enterprise\\s+ai\\s+platform)\\b\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 665,
+    "text": "\"\"\"Check if provider output was parsed from JSON without repair ambiguity.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 867,
+    "text": "\"\"\"Check if all required judge provider rows are present.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 875,
+    "text": "return False, f\"Missing required judge providers: {', '.join(missing)}\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 885,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 886,
+    "text": "provider_key = judge.get(\"provider_key\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 887,
+    "text": "raw_response_ref = judge.get(\"raw_response_ref\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 889,
+    "text": "if not raw_response_ref and judge.get(\"evaluator_mode\") in (\"MODEL_BACKED\", \"BLOCKED_RESPONSE_PARSE_ERROR\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 898,
+    "text": "def check_judge_schema_valid(judge: dict[str, Any]) -> tuple[bool, str | None]:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 899,
+    "text": "\"\"\"Check if a judge row has valid schema.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 905,
+    "text": "missing = [f for f in required_fields if f not in judge]"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 2002,
+    "text": "# Gate 19: x2_x1d_schema_valid \u2014 every judge row must satisfy required fields."
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 2005,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 2006,
+    "text": "schema_ok, schema_reason = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\executive_summary_x2.py",
+    "line": 2008,
+    "text": "pk = judge.get(\"provider_key\", \"unknown\")"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\fact_id_typo_repair.py",
+    "line": 1,
+    "text": "\"\"\"Deterministic candidate fact id typo repair against an allowlist (no gate weakening).\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\fact_id_typo_repair.py",
+    "line": 45,
+    "text": "\"\"\"Repair model typos like ``bul_unify_.003`` \u2192 ``bul_unify_003`` against allowlist.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\fact_id_typo_repair.py",
+    "line": 61,
+    "text": "\"\"\"Repair common model typos; optionally map to a unique allowlist member by fingerprint.\"\"\""
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\headline_x2.py",
+    "line": 660,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\headline_x2.py",
+    "line": 661,
+    "text": "if str(judge.get(\"evaluator_mode\", \"\")).startswith(\"BLOCKED_\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\headline_x2.py",
+    "line": 662,
+    "text": "judge_schema_ok, _ = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\headline_x2.py",
+    "line": 664,
+    "text": "blocked_invalid.append(judge.get(\"provider_key\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 38,
+    "text": "r\"\\bagentic\\s+ai\\b\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 39,
+    "text": "r\"\\bagentic\\s+runtime\\b\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 568,
+    "text": "\"x2_no_agentic_inflation\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 569,
+    "text": "not re.search(r\"\\bagentic\\b\", combined, re.I),"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 570,
+    "text": "\"agentic token\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 572,
+    "text": "\"Agentic inflation language in IBM bullets.\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 672,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 673,
+    "text": "if str(judge.get(\"evaluator_mode\", \"\")).startswith(\"BLOCKED_\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 674,
+    "text": "schema_ok, _ = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_bullets_x2.py",
+    "line": 676,
+    "text": "blocked_invalid.append(judge.get(\"provider_key\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_narrative_x2.py",
+    "line": 114,
+    "text": "\"mocked judge\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_narrative_x2.py",
+    "line": 703,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_narrative_x2.py",
+    "line": 704,
+    "text": "if str(judge.get(\"evaluator_mode\", \"\")).startswith(\"BLOCKED_\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_narrative_x2.py",
+    "line": 705,
+    "text": "schema_ok, _ = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\ibm_narrative_x2.py",
+    "line": 707,
+    "text": "blocked_invalid.append(judge.get(\"provider_key\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_bullets_x2.py",
+    "line": 711,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_bullets_x2.py",
+    "line": 712,
+    "text": "if str(judge.get(\"evaluator_mode\", \"\")).startswith(\"BLOCKED_\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_bullets_x2.py",
+    "line": 713,
+    "text": "schema_ok, _ = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_bullets_x2.py",
+    "line": 715,
+    "text": "blocked_invalid.append(judge.get(\"provider_key\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_narrative_x2.py",
+    "line": 33,
+    "text": "\"Enterprise Agentic AI Platform Architecture\","
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_narrative_x2.py",
+    "line": 66,
+    "text": "for anchor in (\"unify consulting\", \"agentic ai platform\", \"agentic ai platforms\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_narrative_x2.py",
+    "line": 510,
+    "text": "for judge in x1d_judges:"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_narrative_x2.py",
+    "line": 511,
+    "text": "if str(judge.get(\"evaluator_mode\", \"\")).startswith(\"BLOCKED_\"):"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_narrative_x2.py",
+    "line": 512,
+    "text": "schema_ok, _ = check_judge_schema_valid(judge)"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\unify_narrative_x2.py",
+    "line": 514,
+    "text": "blocked_invalid.append(judge.get(\"provider_key\"))"
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\validate_exec_summary_graph_only_generation.py",
+    "line": 1,
+    "text": "\"\"\"Live proof validator: executive_summary uses augmented skills graph + section graph binding shim only."
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\verb_canonicalizer_validator.py",
+    "line": 5,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  },
+  {
+    "path": "apps_rg\\runtime\\validators\\verb_canonicalizer_validator.py",
+    "line": 95,
+    "text": "from agentic_core.runtime.contracts.lifecycle_trace_contract import ("
+  }
+]

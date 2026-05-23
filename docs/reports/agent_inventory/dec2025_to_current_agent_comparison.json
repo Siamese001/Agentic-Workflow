@@ -1,0 +1,76 @@
+{
+  "historical_source": {
+    "commit_sha": "5b443166b24379ba09c843ed59474c0800e26f4e",
+    "commit_date": "2025-12-31T21:52:33-05:00",
+    "branch_tag": null,
+    "selection_method": "git log --before=2026-01-01T00:00:00 -1 (last commit in calendar Dec 2025). No Dec 2025 tags matched *2025*/*dec*/*apps_rg*. Read-only worktree: c:/Git/apps_rg_dec2025_review.",
+    "confidence": "HIGH",
+    "apps_rg_py_file_count": 104,
+    "apps_rg_all_file_count": 112
+  },
+  "dec2025_agent_count": 33,
+  "dec2025_archetype_counts": {
+    "SECTION_GENERATOR_AGENT": 3,
+    "VALIDATOR_AGENT": 6,
+    "UNKNOWN": 8,
+    "PLANNER_AGENT": 2,
+    "JUDGE_OR_EVALUATOR_AGENT": 1,
+    "HEALER_OR_RECOVERY_AGENT": 4,
+    "RESUME_ORCHESTRATOR_AGENT": 5,
+    "DISPATCH_OR_ROUTER_AGENT": 1,
+    "DEMO_OR_SMOKE_AGENT": 2,
+    "UTILITY_SCRIPT": 1
+  },
+  "removed_entire_subtree": "apps_rg/engines/resume_engine/autonomous/ \u2014 present Dec 2025, not current product runtime",
+  "current_canonical_entry": "python -m apps_rg (__main__.py -> canonical_dispatch)",
+  "current_section_lanes": [
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/sections/headline_lane.py",
+    "apps_rg/runtime/sections/unify_narrative_lane.py",
+    "apps_rg/runtime/sections/competencies_lane_runtime.py"
+  ],
+  "legacy_surfaces_still_present": [
+    "apps_rg/reasoning/Rg*.py (test/harness fa\u00e7ades)",
+    "apps_rg/engines/resume_orchestrator_engine.py"
+  ],
+  "mapping_summary": [
+    {
+      "old": "ResumeAgent swarm + HealingOrchestrator",
+      "new": "Section lanes + E4 repair + X2 gates + Exit/X3",
+      "status": "SUPERSEDED_BY_SECTION_LANE"
+    },
+    {
+      "old": "RGPlanner K1-K8 pipeline plan",
+      "new": "l2_recipe/modular_resume_generation + domain_contract",
+      "status": "REPLACED_BY_CANONICAL_RUNTIME"
+    },
+    {
+      "old": "Gemini GenerativeModel in ResumeAgent.call_llm",
+      "new": "qwen_vllm_provider + APPS_RG judge pins",
+      "status": "DO_NOT_RESTORE"
+    },
+    {
+      "old": "DispatchResumeTools / Titanium RAG",
+      "new": "C0 retrieval + apps_rg cache (r1b)",
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "old": "test_resume_logic_mock.py",
+      "new": "pytest harness (APPS_RG_TEST_HARNESS)",
+      "status": "KEEP_AS_TEST_FIXTURE"
+    }
+  ],
+  "top_risks": [
+    "ROUTE_AUTHORITY_DRIFT",
+    "DIRECT_MODEL_BYPASS",
+    "SAME_AUTHORITY_HEALING_VIOLATION",
+    "MOCK_AS_PRODUCT_PROOF",
+    "PROVIDER_SUBSTITUTION_RISK",
+    "EXIT_X3_BYPASS",
+    "EVIDENCE_AUTHORITY_DRIFT"
+  ],
+  "needs_decision": [
+    "Whether apps_rg/reasoning/Rg* classes remain or move to quarantine",
+    "Historical Titanium dispatch_resume_tools vs current C0 retrieval"
+  ]
+}
