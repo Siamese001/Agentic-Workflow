@@ -40,7 +40,6 @@ PRODUCT_GENERATION_ROOTS: tuple[Path, ...] = (
 CLASSIFIED_NON_GENERATION_PREFIXES: tuple[str, ...] = (
     "apps_rg/runtime/dry_run/",
     "apps_rg/runtime/judges/",
-    "apps_rg/reasoning/",
     "apps_rg/runtime/dispatch/",
 )
 

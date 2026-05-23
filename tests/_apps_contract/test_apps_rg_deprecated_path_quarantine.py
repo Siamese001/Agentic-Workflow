@@ -19,14 +19,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 QUARANTINE_REGISTRY: dict[str, str] = {
     "apps_rg/runtime/dry_run/": "KEEP_APPS_RG",
     "apps_rg/runtime/internal/lane_batch.py": "TEST_SUPPORT_ONLY",
-    "apps_rg/reasoning/RgResumeOrchestrator.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
-    "apps_rg/reasoning/RgHealingOrchestrator.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
-    "apps_rg/reasoning/RgReflectionAgent.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
-    "apps_rg/reasoning/RgStrategicPlannerAgent.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
-    "apps_rg/reasoning/RgTemplateOptimizerAgent.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
-    "apps_rg/reasoning/RGStrategyExecutor.py": "SUPERSEDED_BY_APPS_RG_SECTION_RUNTIME",
     "apps_rg/runtime/internal/": "TEST_SUPPORT_ONLY",
 }
+
+
+def test_reasoning_package_removed() -> None:
+    """apps_rg/reasoning/ deleted — product uses apps_rg/runtime section lanes."""
+    assert not (REPO_ROOT / "apps_rg" / "reasoning").exists()
 
 NON_PRODUCT_PROOF_ENV: dict[str, str] = {
     "APPS_RG_R4_GENERATION_MODE": MODE_MODULAR_SECTION_LANES,

@@ -258,11 +258,15 @@ def demo_adaptive_retrieval_gate() -> None:
 # 6. apps_rg ConfidenceMetrics + EarlyStoppingStrategy + PathPruning
 # ---------------------------------------------------------------------------
 def demo_apps_rg_confidence() -> None:
-    from apps_rg.reasoning.ConfidencemetricsStrategy import (
-        ConfidenceEstimator,
-        EarlyStoppingStrategy,
-        PathPruningStrategy,
-    )
+    try:
+        from apps_rg.reasoning.ConfidencemetricsStrategy import (
+            ConfidenceEstimator,
+            EarlyStoppingStrategy,
+            PathPruningStrategy,
+        )
+    except ModuleNotFoundError:
+        step("apps_rg/reasoning removed — skip confidence demo")
+        return
 
     step("synthetic reasoning chain — 6 steps with rising confidence")
     steps = [

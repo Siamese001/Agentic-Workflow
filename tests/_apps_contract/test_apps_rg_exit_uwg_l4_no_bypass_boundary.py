@@ -25,7 +25,6 @@ def _archived_shim_rel() -> str:
 
 NON_PRODUCT_PROOF_PATHS: tuple[str, ...] = (
     "apps_rg/runtime/dry_run/",
-    "apps_rg/reasoning/RgResumeOrchestrator.py",
 )
 
 NON_PRODUCT_ENV_MARKERS: frozenset[str] = frozenset(

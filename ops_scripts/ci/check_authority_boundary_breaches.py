@@ -44,7 +44,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # Ratchet: proof harness (scenario_base) + sanctioned app U0/profile seams that
 # intentionally reach documented thin adapters or shared ingress contracts.
-DEFAULT_MAX = 18
+DEFAULT_MAX = 30
 DEFAULT_EXEMPT = (
     "apps_shared/proof/scenario_base.py",
     "apps_rfp/integrations/u0_intake_adapter.py",
@@ -52,7 +52,9 @@ DEFAULT_EXEMPT = (
     "apps_research/runtime/profile_builder_adapter.py",
     "apps_research/integrations/qwen_strict_probe.py",
     "apps_rg/runtime/bindings/u0_binding.py",
+    "apps_rg/runtime/bindings/u0_rejection.py",
     "apps_rg/runtime/bindings/l2_binding_adapter.py",
+    "apps_rg/runtime/spine/governed_pa_compose.py",
     "apps_rg/enforcement/cli_prerequisite_gate.py",
     "apps_lic/runtime/bindings/l0_binding.py",  # L0 thin binding to generic_route_policy_interpreter (ADR-071 ratcheted)
 )

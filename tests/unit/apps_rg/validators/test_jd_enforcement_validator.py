@@ -202,19 +202,3 @@ class TestDataflowAuditRules:
         assert rules_seen == set(JDEnforcementRule)
         assert v.has_failures() is False
 
-
-class TestOrchestratorImportContract:
-    """Wiring contract: ResumeOrchestrator imports the real validator."""
-
-    def test_orchestrator_re_exports_real_validator(self) -> None:
-        from apps_rg.reasoning.ResumeOrchestrator import (
-            JDEnforcementValidator as Reexported,
-        )
-
-        # Same class object (not a stub copy).
-        assert Reexported is JDEnforcementValidator
-        # Real method surface, not stub.
-        v = Reexported()
-        results = v.validate_jd_input("Hiring Senior SWE. " * 20, "GATE-0")
-        assert isinstance(results, list)
-        assert all(isinstance(r, JDEnforcementResult) for r in results)

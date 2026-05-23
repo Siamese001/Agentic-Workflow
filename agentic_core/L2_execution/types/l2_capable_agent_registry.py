@@ -81,12 +81,6 @@ _STATIC_FALLBACK: tuple[L2CapableAgentEntry, ...] = (
         "static",
     ),
     L2CapableAgentEntry(
-        "ADG::Module::apps_rg/reasoning/ContentQualityAgent.py",
-        "apps_rg/reasoning/ContentQualityAgent.py",
-        "L_APP",
-        "static",
-    ),
-    L2CapableAgentEntry(
         "ADG::Module::apps_shared/reasoning/BaseDispatchAgent.py",
         "apps_shared/reasoning/BaseDispatchAgent.py",
         "L_APP",

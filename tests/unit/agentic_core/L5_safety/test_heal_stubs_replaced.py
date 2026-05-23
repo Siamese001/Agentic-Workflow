@@ -82,38 +82,6 @@ class TestStructuredEngineAgentHeal:
         assert result["blueprint_hash"] == "bp-xyz"
 
 
-class TestResumeAssemblyAgentHeal:
-    """W3 replaces raise NotImplementedError with HealResult(NEEDS_HELP).to_dict()."""
-
-    def test_heal_returns_needs_help_not_raises(self):
-        # Defer import: ResumeAssemblyAgent has heavy init requirements we can't
-        # satisfy in unit tests. Inspect the method definition directly via its
-        # descriptor, bind to a minimal shim, and invoke.
-        from apps_rg.reasoning import ResumeAssemblyAgent as module
-
-        heal_method = module.ResumeAssemblyAgent.heal
-
-        # Call unbound with a minimal self-stub; the method doesn't touch self.
-        class _Stub:
-            pass
-
-        result = heal_method(_Stub(), {"type": "malformed"})
-        _assert_valid_heal_dict(result)
-        assert result["outcome"] == "NEEDS_HELP"
-        assert result["reason_code"] == "heal_not_implemented"
-
-    def test_heal_repository_returns_needs_help_not_raises(self):
-        from apps_rg.reasoning import ResumeAssemblyAgent as module
-
-        class _Stub:
-            pass
-
-        result = module.ResumeAssemblyAgent.heal_repository(_Stub())
-        _assert_valid_heal_dict(result)
-        assert result["outcome"] == "NEEDS_HELP"
-        assert result["reason_code"] == "heal_repository_not_implemented"
-
-
 class TestBaseProactiveAgentHeal:
     def test_heal_returns_needs_help_shape(self):
         from apps_shared.reasoning import BaseProactiveAgent as module

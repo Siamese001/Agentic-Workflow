@@ -106,17 +106,6 @@ class TestModelCallGating:
             "_llm_client.py must use capture_prompt_bom for PA-compatible model gating"
         )
 
-    def test_orchestrator_uses_capture_prompt_bom(self):
-        """RgResumeOrchestrator uses capture_prompt_bom for HOP 3 LLM calls."""
-        import inspect
-        from apps_rg.reasoning import RgResumeOrchestrator
-
-        source = inspect.getsource(RgResumeOrchestrator)
-        assert "capture_prompt_bom" in source, (
-            "RgResumeOrchestrator must use capture_prompt_bom for HOP 3 model gating"
-        )
-
-
 # ===========================================================================
 # CHECK 5: Artifact negative control — R4 runner raises → no domain artifacts
 # ===========================================================================

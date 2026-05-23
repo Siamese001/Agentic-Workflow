@@ -6,7 +6,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from apps_rg.types.skill_extractor_node_types import SkillExtractorNode
-from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent  # for _resume_to_profile_text
 
 # Load canonical master_resume (legacy `your_resume_updated.json` retired 2026-04-30).
 _CANONICAL_MASTER = Path(__file__).resolve().parents[2] / "apps_shared" / "data" / "master_resume.json"

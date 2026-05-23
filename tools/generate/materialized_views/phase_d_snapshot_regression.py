@@ -25,6 +25,57 @@ from typing import Any
 
 from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_mv as _connect_sqlite
 
+_BASELINE_COLS: tuple[str, ...] = (
+    "snapshot_id",
+    "node_count",
+    "edge_count",
+    "violation_count",
+    "cross_layer_edge_count",
+    "provider_surface_count",
+    "write_bypass_count",
+    "debt_score",
+)
+
+
+def _baseline_row_to_dict(row: tuple[Any, ...]) -> dict[str, Any]:
+    return dict(zip(_BASELINE_COLS, row, strict=True))
+
+
+def _load_prior_snapshot_baseline(current_sqlite: Path) -> dict[str, Any]:
+    """Load baseline from the newest prior ``adg_indexed_*.sqlite`` on disk.
+
+    Each ADG run builds a fresh indexed sqlite, so in-file ``mv_snapshot_baseline``
+    is empty on first materialization. Cross-run regression must read the previous
+    committed snapshot's baseline row instead of treating every run as first-run.
+    """
+    adg_dir = current_sqlite.parent
+    if not adg_dir.is_dir():
+        return {}
+    candidates = sorted(
+        (
+            p
+            for p in adg_dir.glob("adg_indexed_*.sqlite")
+            if p.resolve() != current_sqlite.resolve() and "smoketest" not in p.name
+        ),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    for prior in candidates:
+        try:
+            with sqlite3.connect(prior) as prior_conn:
+                row = prior_conn.execute(
+                    "SELECT snapshot_id, node_count, edge_count, violation_count, "
+                    "cross_layer_edge_count, provider_surface_count, "
+                    "write_bypass_count, debt_score "
+                    "FROM mv_snapshot_baseline LIMIT 1",
+                ).fetchone()
+        except sqlite3.OperationalError:
+            continue
+        if row and str(row[0] or "").strip():
+            return _baseline_row_to_dict(row)
+    return {}
+
+
 _PHASE_D_TABLES: tuple[str, ...] = (
     "mv_snapshot_baseline",
     "mv_snapshot_regression_summary",
@@ -62,20 +113,12 @@ def materialize_phase_d(sqlite_path: Path) -> dict[str, int]:
             "       write_bypass_count, debt_score "
             "FROM mv_snapshot_baseline LIMIT 1"
         ).fetchone()
-        if row:
-            keys = (
-                "snapshot_id",
-                "node_count",
-                "edge_count",
-                "violation_count",
-                "cross_layer_edge_count",
-                "provider_surface_count",
-                "write_bypass_count",
-                "debt_score",
-            )
-            _prev = dict(zip(keys, row))
+        if row and str(row[0] or "").strip():
+            _prev = _baseline_row_to_dict(row)
     except sqlite3.OperationalError:
         pass  # Table doesn't exist yet — first run.
+    if not _prev:
+        _prev = _load_prior_snapshot_baseline(sqlite_path)
 
     for tbl in reversed(_PHASE_D_TABLES):
         cur.execute(f"DROP TABLE IF EXISTS {tbl}")
@@ -306,7 +349,8 @@ def materialize_phase_d(sqlite_path: Path) -> dict[str, int]:
                 ws.is_uwg_routed      AS is_uwg_routed,
                 ws.is_direct_infra_write AS is_direct_infra_write,
                 CASE WHEN '{prev_snap_id}' = '' THEN 1
-                     WHEN ws.severity IN ('critical', 'warning') THEN 1
+                     WHEN {bypass_count} > {prev_bypass} THEN 1
+                     WHEN ws.severity = 'critical' THEN 1
                      ELSE 0
                 END AS is_new
             FROM mv_write_sovereignty_paths ws

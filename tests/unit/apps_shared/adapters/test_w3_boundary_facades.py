@@ -3,7 +3,7 @@
 Locks in the W3 invariants:
 1. ``apps_shared.adapters.system_learning_facade`` exports the 6 system_learning
    symbols apps may consume.
-2. ``apps_shared.adapters.rg_orchestrator_facade`` exports ``RgResumeOrchestrator``.
+2. ``apps_shared.adapters.rg_orchestrator_facade`` exports canonical dispatch only.
 3. Both facades use PEP 562 ``__getattr__`` lazy resolution \u2014 module-level
    import does NOT eagerly pull in the upstream peer.
 4. NO file under ``apps_eval/`` or ``apps_lic/`` imports directly from
@@ -48,16 +48,8 @@ def test_system_learning_facade_exports_expected_symbols() -> None:
         assert hasattr(system_learning_facade, name), f"{name} not resolvable"
 
 
-def test_rg_orchestrator_facade_exports_expected_symbol() -> None:
-    """W3.1: rg_orchestrator_facade must re-export RgResumeOrchestrator."""
-    from apps_shared.adapters import rg_orchestrator_facade
-
-    assert "RgResumeOrchestrator" in rg_orchestrator_facade.__all__
-    assert hasattr(rg_orchestrator_facade, "RgResumeOrchestrator")
-
-
 def test_rg_orchestrator_facade_exports_canonical_dispatch_symbol() -> None:
-    """W11-M3A: facade documents canonical product dispatch alongside legacy Rg*."""
+    """W11-M3A: facade exports canonical product dispatch (legacy Rg* removed)."""
     from apps_shared.adapters import rg_orchestrator_facade
 
     assert rg_orchestrator_facade.CANONICAL_DISPATCH_MODULE.endswith("canonical_dispatch")

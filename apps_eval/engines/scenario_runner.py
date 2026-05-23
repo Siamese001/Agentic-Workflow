@@ -658,46 +658,19 @@ def _scenario_repo_brief_dry_run() -> tuple[ScenarioOutcome, float, str]:
 
 
 def _scenario_single_hop() -> tuple[ScenarioOutcome, float, str]:
-    try:
-        from apps_shared.adapters.rg_orchestrator_facade import RgResumeOrchestrator
-
-        orch = RgResumeOrchestrator(test_mode=True)
-        result = orch.run("Software Engineer at ACME Corp")
-        if result.get("status") == "success":
-            return (
-                "PASS",
-                1.0,
-                "Single hop orchestration: success",
-            )  # review: Test exceptions should use proper test assertions
-        return "FAIL", 0.0, f"Unexpected result: {result}"
-    except ImportError as e:
-        return "SKIP", _SKIP_SCORE, f"apps_rg not available: {e}"
-    except _SCENARIO_EXCEPTIONS as exc:  # review: Test exceptions should use proper test assertions
-        return "FAIL", 0.0, str(exc)
+    return (
+        "SKIP",
+        _SKIP_SCORE,
+        "legacy RgResumeOrchestrator removed; use canonical_dispatch section-lane eval",
+    )
 
 
 def _scenario_multi_hop_pass() -> tuple[ScenarioOutcome, float, str]:
-    try:
-        from apps_shared.adapters.rg_orchestrator_facade import RgResumeOrchestrator
-
-        orch = RgResumeOrchestrator(test_mode=True)
-        result = orch.run("Senior ML Engineer at ACME Corp with 10 years experience")
-        checkpoints = result.get("checkpoints", [])
-        if len(checkpoints) >= 2:
-            return (
-                "PASS",
-                1.0,
-                f"Multi-hop: {len(checkpoints)} checkpoints",
-            )  # review: Test exceptions should use proper test assertions
-        return "FAIL", 0.4, f"Expected >=2 checkpoints, got {len(checkpoints)}"
-    except ImportError as e:
-        return (
-            "SKIP",
-            _SKIP_SCORE,
-            f"apps_rg not available: {e}",
-        )  # review: Test exceptions should use proper test assertions
-    except _SCENARIO_EXCEPTIONS as exc:
-        return "FAIL", 0.0, str(exc)
+    return (
+        "SKIP",
+        _SKIP_SCORE,
+        "legacy RgResumeOrchestrator removed; use canonical_dispatch section-lane eval",
+    )
 
 
 def _scenario_multi_hop_gate_fail() -> tuple[ScenarioOutcome, float, str]:

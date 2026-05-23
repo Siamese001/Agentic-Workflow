@@ -56,8 +56,6 @@ ASYNC_BRIDGE_ALLOWLIST = [
     "apps_shared/reasoning/BaseHealingOrchestrator.py",
     "apps_shared/config/titanium_search_tool_config.py",
     "apps_shared/types/hardened_gemini_executor_types.py",
-    "apps_rg/reasoning/HardenedopenaiexecutorStrategy.py",
-    "apps_rg/reasoning/RgReflectionAgent.py",
     "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py",
     "agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py",
 ]
