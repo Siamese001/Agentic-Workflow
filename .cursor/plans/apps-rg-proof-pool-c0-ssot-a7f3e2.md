@@ -22,14 +22,158 @@ Close gaps between **resolver allowlist** (PA/L2/X2 enforcement), **C0 evidence 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: NOT_STARTED
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: none
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W3
+LAST_COMPLETED_WAVE: Track-C-code-unit
 LAST_UPDATED: 2026-05-23
-NOTION_STATUS: Not Started
+NOTION_STATUS: In Progress
+NOTION_PLANS_ROW: page_id=36927693-f55c-8173-99c1-c25da5321677
 DISK_SSOT: .cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md
 
 PLAN_CREATED: slug=apps-rg-proof-pool-c0-ssot-a7f3e2 path=.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md status=Not Started
+
+**Machine audit (regenerate after sweeps):** [proof_pool_c0_ssot_gap_audit.json](artifacts/apps_rg/plans/proof_pool_c0_ssot_gap_audit.json)  
+**Modular sweep root:** `artifacts/apps_rg/plans/w23_lane_sweep/modular_lanes`  
+**Sweep manifest:** [w23_lane_sweep_manifest.json](artifacts/apps_rg/plans/w23_lane_sweep/w23_lane_sweep_manifest.json)
+
+---
+
+## Integrated remediation map (two tracks)
+
+| Track | Scope | Status |
+|-------|--------|--------|
+| **Track B** | W23 debugger RCAs RCA-1…4 (bullets, modular sweep, competencies, IBM anchors) + audit script | **DONE** (2026-05-23 modular sweep) |
+| **Track C** | Executive-summary synthesis RCA (X2 pass + X1D soft-fail; graph-only regen; regen authority) | **PARTIAL** (X2/product quality PASS on [exec_summary_20260523_164959](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_164959); `X3_ALLOW` pending unanimous judges — see [exec-summary-e0-repair-hardening-c4e8f1](exec-summary-e0-repair-hardening-c4e8f1.md)) |
+| **W0–W4** | Proof-pool / FEC / digest SSOT convergence (this plan’s original waves) | **W0 design open**; W1+ pending |
+
+**Cross-link:** Track B **does not** fix Track C. Fresh audit shows `executive_summary` with `x2_all_pass: true`, `lane_proof_ok: true`, `x3_outcome: X3_REVIEW_JUDGE_SOFT_FAIL` (`rca_fix_reference: RCA-6-related-not-fixed`). Same root class as Brown & Brown runs (proof-safe prose, judges &lt; 4.0).
+
+---
+
+## Track B — W23 RCA fixes (completed 2026-05-23)
+
+### RCA fix order (implemented)
+
+| RCA | Fix | Key files | Proof |
+|-----|-----|-----------|-------|
+| **RCA-1** (P0) | `repair_unify_bullet_surface_id()` — `bul_unify_.003` → `bul_unify_003` on bullet ids + `source_fact_ids` | [fact_id_typo_repair.py](apps_rg/runtime/validators/fact_id_typo_repair.py), [unify_bullets_lane.py](apps_rg/runtime/sections/unify_bullets_lane.py) | [unify_bullets_20260523_125754](artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260523_125754) — `PRODUCT_QUALITY_STATUS: PASS`, canonical `bul_unify_003` |
+| **RCA-2** (P0) | Modular sweep: `APPS_RG_MODULAR_R4_SECTIONS_ROOT`, manifest emit, upstream-first lane order | [run_w23_windows_lane_sweep.ps1](ops_scripts/apps_rg/run_w23_windows_lane_sweep.ps1) | `companion_unify_bullets_context.json` → **ACCEPTED_FINALIZED** |
+| **RCA-3** (P1) | `expand_structured_competencies_min_two_terms` runs **after** final dedupe | [competencies_lane_execution.py](apps_rg/runtime/sections/competencies_lane_execution.py) | Audit: competencies `x2_all_pass: true`, `lane_proof_ok: true` |
+| **RCA-4** (P1) | `inject_ibm_locked_metric_anchors()` + foreign-metric scrub for granularity gate | [ibm_bullets_lane.py](apps_rg/runtime/sections/ibm_bullets_lane.py) | [ibm_bullets_20260523_131013](artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260523_131013) — product quality PASS |
+| **Audit** | `_latest_run_dir` prefers modular root when env set | [proof_pool_c0_ssot_gap_audit.py](ops_scripts/apps_rg/proof_pool_c0_ssot_gap_audit.py) | Audit JSON at modular root |
+
+**Sweep hygiene (same pass):** repaired broken module docstrings that blocked mid-run — [__main__.py](apps_rg/__main__.py), [embedding_settings.py](apps_rg/runtime/embedding_settings.py), [conftest.py](tests/conftest.py), [test_unify_bullet_surface_id_repair.py](tests/unit/apps_rg/test_unify_bullet_surface_id_repair.py), [test_ibm_metric_repair_from_plan.py](tests/unit/apps_rg/test_ibm_metric_repair_from_plan.py).
+
+### Fresh modular sweep evidence (2026-05-23)
+
+`proof_classification.track_b_rca_remediation: RCA_FIXES_PROVEN_ON_MODULAR_SWEEP`  
+`all_lanes_proof_ok: false` · `release_eligible_proof_claimed: false` (unchanged).
+
+| Lane | x2_all_pass | lane_proof_ok | x3 |
+|------|-------------|---------------|-----|
+| executive_summary | true | true | **X3_REVIEW_JUDGE_SOFT_FAIL** |
+| headline | false | false | X3_BLOCK |
+| competencies | true | true | X3_BLOCK |
+| unify_bullets | true | true | X3_REVIEW_JUDGE_SOFT_FAIL |
+| unify_narrative | false | false | X3_BLOCK |
+| ibm_bullets | true | true | X3_BLOCK |
+| ibm_narrative | false | false | X3_BLOCK |
+
+**Notes**
+
+- P0 RCA-1/2/4 proven on live modular runs (unify + IBM bullets X2/product PASS; companion ACCEPTED).
+- RCA-3 lifted competencies to `x2_all_pass` in audit; X3 still BLOCK on judges (separate from expand/dedupe).
+- Narrative lanes still fail deterministic narrative X2 (parse / one-sentence / finalized-bullets chain).
+- Headline regressed on X2 (`x2_headline_word_count_10_to_13`) in this sweep — not reopened this pass.
+- WSL remains **ENVIRONMENT_BLOCKED** per audit; not a product regression.
+
+### Track B completion receipt
+
+```text
+STATUS: PARTIAL
+PROOF_CLASSIFICATION: RCA_FIXES_PROVEN_ON_MODULAR_SWEEP
+COMMANDS_RUN:
+- pytest (4 RCA unit tests) -> 4 passed
+- run_w23_windows_lane_sweep.ps1 (~465s) -> exit 0; lane CLIs exit 1 (expected X3 non-ALLOW)
+- ibm_bullets targeted re-run -> PRODUCT_QUALITY PASS
+- proof_pool_c0_ssot_gap_audit.py (modular env) -> wrote audit JSON
+```
+
+---
+
+## Track C — Executive summary synthesis RCA (remaining)
+
+**Two-sentence root cause:** L2/Qwen produces proof-valid prose that passes X2 but fails unanimous X1D (≥ 4.0); graph-only anti-conflation repair is off under `product_fail_closed`, and synthesis regen can keep a weak `initial_llm` draft. X3 `X3_REVIEW_JUDGE_SOFT_FAIL` is correct product semantics, not infra failure.
+
+**Relation to debugger RCA-6:** Same lane; W23 sweep now shows **X2 + lane_proof_ok PASS** and **X1D soft-fail** (matches Brown & Brown `exec_summary_20260522_*`). Earlier RCA-6 symptom (X2 claim-coverage / evidence-utilization FAIL) is the **hard gate** side of the same synthesis gap; Track C fixes should help both paths.
+
+**Guardrails (unchanged):** No weaken X2/X3/judge thresholds/exit semantics; no default judge regen; no `agentic_core`; no target company in prose; preserve graph/ledger authority.
+
+### Phase 0 — Baseline
+
+| Step | Action |
+|------|--------|
+| C0.1 | Baseline runs: [exec_summary_20260522_230849](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260522_230849) (2/3 judges), [exec_summary_20260523_130346](artifacts/apps_rg/plans/w23_lane_sweep/modular_lanes/executive_summary/real/exec_summary_20260523_130346) (modular; same X3) |
+| C0.2 | Success: 3/3 judges ≥ 4.0 → `X3_ALLOW` |
+| C0.3 | Keep `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=0` until C1–C2 stable |
+
+### Phase 1 — Enforce synthesis (highest leverage)
+
+| ID | Change | Files (expected) |
+|----|--------|------------------|
+| C1A | Allow `apply_graph_only_generation_quality_repair` on product path when `proof_source == augmented_skills_graph` (fail-closed safe) | [section_repair_policy.py](apps_rg/runtime/section_repair_policy.py), [exec_summary_graph_only_quality.py](apps_rg/runtime/sections/exec_summary_graph_only_quality.py), [executive_summary_lane.py](apps_rg/runtime/sections/executive_summary_lane.py) |
+| C1B | Regen authority: do not leave `initial_llm` authoritative when regen `accepted: false` / shape failures remain | [executive_summary_lane.py](apps_rg/runtime/sections/executive_summary_lane.py) |
+| C1C | Deterministic anti-conflation: always apply `governance_framework_to_basel_lineage` when `fact_governance_003` present; split platform vs Basel in display | [executive_summary_voice_repair.py](apps_rg/runtime/sections/executive_summary_voice_repair.py) |
+
+### Phase 2 — Align X2 pre-checks with X1D (no threshold change)
+
+| ID | Change |
+|----|--------|
+| C2A | Strengthen stacking: Led / Successfully / Also / Built / Delivered (fail at 3+ in 4–5 sentences) |
+| C2B | Display-level causal merge gate when ledger row multi-base-fact + participial causation across governance vs platform |
+
+### Phase 3 — Prompt / regen bullets (narrow)
+
+- Keep I0 composition rules (complete S1, no cert dump, no opener chains, SVP technology-strategy voice).
+- Regen repair user: one theme per sentence; Basel/CCAR only with `fact_governance_003`; weave `fact_exec_002` team scale.
+
+### Phase 4 — Claude / SVP (only if still 2/3 after C1–C2)
+
+- Shape from allowed facts only (platform + lineage + scale); optional graph slice expansion per [proof_pool_c0_ssot_gap_audit.json](artifacts/apps_rg/plans/proof_pool_c0_ssot_gap_audit.json).
+
+### Phase 5 — Verify
+
+```text
+python -m apps_rg --section executive_summary ...
+```
+
+Require 3× stability; modular sweep row `executive_summary` → `x3_outcome: X3_ALLOW`.
+
+### Track C implementation receipt (2026-05-23)
+
+**Receipt:** [track_c_exec_summary_remediation_receipt.md](artifacts/apps_rg/plans/track_c_exec_summary_remediation_receipt.md)
+
+```text
+STATUS: PARTIAL
+COMMANDS_RUN:
+- pytest Track C bundle (13 tests) -> 13 passed
+- live executive_summary x3 -> NOT RUN (qwen_vllm + judges required)
+```
+
+C1A–C2B + C3 implemented; padding-loop infinite-spin fixed in graph-only builder.
+
+---
+
+## Unified priority order (what to do next)
+
+1. **Track C5** — live 3× `executive_summary` proof → `X3_ALLOW` (operator; vLLM required).
+2. **W0 Author-Gate** — allowlist SSOT A/B/C (original plan).
+3. **W0 Author-Gate** — allowlist SSOT A/B/C (original plan).
+4. **W1–W2** — FEC/pool convergence + digest receipts.
+5. **Residual lane X3** — headline X2 word count; narrative parse/finalized-bullets; competencies/IBM/unify **judge** semantics (Track B fixed structure, not judges).
+6. **W3** — full 7-lane proof sweep after above.
+
+**Explicit non-goals:** `RELEASE_ELIGIBLE` claim; weakening gates; WSL product fixes.
 
 ---
 

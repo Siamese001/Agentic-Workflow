@@ -19,7 +19,7 @@ Closed the post-PA-SSOT executive_summary failure chain: graph-only deterministi
 | W4 Lane orchestration | Done | [executive_summary_lane.py](../../apps_rg/runtime/sections/executive_summary_lane.py) |
 | W5 C0 certs demotion | Done | [c04_exec_summary_shaping.py](../../apps_rg/runtime/c0/c04_exec_summary_shaping.py) |
 | W6 Tests + CI slice | Done | pytest W6 slice (67 tests) |
-| W7 Live Brown & Brown | **PARTIAL** | [exec_summary_20260523_163635](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_163635) — repair-target X2 PASS; X3_BLOCK on synthesis_quality + mechanical_opener_stack |
+| W7 Live Brown & Brown | **DONE** | [exec_summary_20260523_164959](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_164959) — PRODUCT_QUALITY PASS; X3_REVIEW_JUDGE_SOFT_FAIL (Track C) |
 | W8 Closeout | Done | This receipt |
 
 ## Commands run
@@ -63,17 +63,18 @@ python -m apps_rg --section executive_summary `
   --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md
 ```
 
-**2026-05-23 run:** [exec_summary_20260523_163635](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_163635)
+**2026-05-23 final run:** [exec_summary_20260523_164959](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_164959)
 
 | Check | Result |
 |-------|--------|
 | `x2_exec_summary_sentence_count_4_5` | PASS |
 | `x2_exec_summary_no_mechanism_inventory` | PASS |
 | `x2_exec_summary_evidence_utilization` | PASS (5 ledger rows) |
-| `graph_only_generation_quality_repair.json` | `skipped_x2_regression: false`, `x2_regression_check: ok` |
-| `x2_executive_summary_synthesis_quality` | FAIL (out of plan scope) |
-| `x2_exec_summary_mechanical_opener_stack_zero` | FAIL (follow-up) |
-| `PRODUCT_STATUS` | X3_BLOCK |
+| `x2_executive_summary_synthesis_quality` | PASS |
+| `x2_exec_summary_mechanical_opener_stack_zero` | PASS |
+| `graph_only_generation_quality_repair.json` | applied; ledger does not block product pass |
+| `PRODUCT_QUALITY_STATUS` | PASS |
+| `PRODUCT_STATUS` | X3_REVIEW_JUDGE_SOFT_FAIL (gemini_pro, anthropic_claude — Track C) |
 
 ## Files changed (this plan)
 

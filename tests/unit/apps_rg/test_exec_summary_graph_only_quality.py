@@ -9,6 +9,8 @@ from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
 from apps_rg.runtime.sections.executive_summary_composition import is_mechanism_inventory_sentence
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_evidence_utilization,
+    check_exec_summary_mechanical_opener_stack,
+    check_synthesis_quality,
     split_sentences,
 )
 
@@ -105,6 +107,15 @@ def test_build_graph_only_passes_mechanism_inventory_on_opener() -> None:
     assert len(sents) >= 4
     inv, reason = is_mechanism_inventory_sentence(sents[0])
     assert inv is False, reason
+
+
+def test_build_graph_only_passes_synthesis_and_mechanical_opener_gates() -> None:
+    allowed = {str(row["fact_id"]) for row in _seven_fact_pool()}
+    resume, _ledger = build_graph_only_executive_summary_from_facts(_seven_fact_pool(), allowed)
+    stack_ok, stack_reason = check_exec_summary_mechanical_opener_stack(resume)
+    assert stack_ok, stack_reason
+    synth_ok, synth_reason = check_synthesis_quality(resume)
+    assert synth_ok, synth_reason
 
 
 def test_build_graph_only_five_ledger_rows_when_pool_seven() -> None:

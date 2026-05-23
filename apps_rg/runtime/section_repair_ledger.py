@@ -159,10 +159,14 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
         return False, ""
 
     repairs = list(ledger.get("repairs") or [])
+    # Graph-only quality repair is authorized on augmented_skills_graph product path
+    # (see graph_only_reformat_allowed); do not treat as uncounted deterministic rewrite.
+    _GRAPH_ONLY_QUALITY_OP = "graph_only_generation_quality_repair"
     det_ops = [
         r.get("operation")
         for r in repairs
         if r.get("kind") == KIND_DETERMINISTIC_REWRITE
+        and r.get("operation") != _GRAPH_ONLY_QUALITY_OP
     ]
     if det_ops:
         return True, f"deterministic_rewrite_without_counted_regen:{det_ops}"

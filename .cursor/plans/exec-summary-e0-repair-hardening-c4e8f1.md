@@ -33,6 +33,7 @@ CURRENT_WAVE: W8
 LAST_COMPLETED_WAVE: W8
 LAST_UPDATED: 2026-05-23
 INHERITED_FROM: apps-rg-pa-ssot-gap-b8e4f1 (W1–W5 COMPLETED 2026-05-23)
+NOTION_PLANS_ROW: page_id=36927693-f55c-812c-9299-e92220d8a6e6 url=https://www.notion.so/exec-summary-e0-repair-hardening-c4e8f1-36927693f55c812c9299e92220d8a6e6
 
 ---
 
@@ -103,7 +104,7 @@ python -m pytest tests/_apps_contract/test_pa_e0_examples_ssot.py tests/_apps_co
 | **W4** | Lane repair orchestration | **DONE** |
 | **W5** | C0 / utilization policy (optional) | **DONE** |
 | **W6** | Repair-focused test matrix + CI slice | **DONE** (67 passed) |
-| **W7** | Live proof Brown & Brown | **PARTIAL** ([exec_summary_20260523_163635](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_163635) — repair-target X2 PASS; X3_BLOCK on synthesis_quality + mechanical_opener) |
+| **W7** | Live proof Brown & Brown | **DONE** ([exec_summary_20260523_164959](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_164959) — PRODUCT_QUALITY PASS; X3_REVIEW_JUDGE_SOFT_FAIL Track C) |
 | **W8** | Closeout receipt | **DONE** |
 
 ---

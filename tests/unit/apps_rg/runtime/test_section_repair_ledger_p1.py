@@ -71,6 +71,23 @@ def test_ledger_blocks_pass_after_deterministic_rewrite_without_regen(
     assert "deterministic_rewrite" in pq_reason
 
 
+def test_ledger_allows_graph_only_quality_repair_without_blocking_product_pass(
+    monkeypatch, artifact_dir: Path
+) -> None:
+    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    record_repair(
+        artifact_dir,
+        kind=KIND_DETERMINISTIC_REWRITE,
+        operation="graph_only_generation_quality_repair",
+        reason="synthesis_violations",
+        replaced_l2=True,
+    )
+    ledger = json.loads((artifact_dir / "section_repair_ledger.json").read_text(encoding="utf-8"))
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert blocked is False, reason
+
+
 def test_ledger_allows_counted_regen_authoritative_attempt(
     monkeypatch, artifact_dir: Path
 ) -> None:

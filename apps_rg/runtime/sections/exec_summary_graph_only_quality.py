@@ -19,6 +19,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_mechanical_opener_stack,
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
+    check_synthesis_quality,
 )
 
 _METRIC_PCT_RE = re.compile(r"\d+(?:\.\d+)?\s*%", re.IGNORECASE)
@@ -80,8 +81,8 @@ def _short_platform_sentence(row: dict[str, Any]) -> str:
 
 def _governance_metric_sentence(row: dict[str, Any]) -> str:
     return (
-        "Implemented Basel III and CCAR data lineage, cataloging, and automated "
-        "validation frameworks that cut regulatory reporting errors by 40%."
+        "Basel III and CCAR data lineage, cataloging, and automated validation "
+        "frameworks cut regulatory reporting errors by 40%."
     )
 
 
@@ -94,16 +95,16 @@ def _team_scale_sentence(row: dict[str, Any]) -> str:
 
 def _commercialization_sentence(row: dict[str, Any]) -> str:
     return (
-        "Productized platform capabilities into reusable services, generating $22M in "
-        "IP-led revenue and expanding gross margins by 20% while scaling delivery teams."
+        "Platform commercialization generated $22M in IP-led revenue and expanded gross "
+        "margins by 20% while scaling delivery teams."
     )
 
 
 def _quant_hpc_sentence(row: dict[str, Any]) -> str:
     _ = row
     return (
-        "Re-architected monolithic risk analytics with containerized microservices and HPC, "
-        "trimming stress-testing cycles by 40% and enabling real-time stress testing."
+        "Monolithic risk analytics were containerized with HPC microservices, trimming "
+        "stress-testing cycles by 40% and enabling real-time stress testing."
     )
 
 
@@ -113,13 +114,13 @@ def _quant_background_sentence(row: dict[str, Any]) -> str:
         first = claim.split(".")[0].strip()
         if len(first) > 200:
             return (
-                "Built quantitative depth across derivatives pricing, capital modeling, "
-                "and regulated risk analytics when those themes appear in selected facts."
+                "Quantitative depth spans derivatives pricing, capital modeling, and "
+                "regulated risk analytics when those themes appear in selected facts."
             )
         return first if first.endswith((".", "!", "?")) else first + "."
     return (
-        "Built quantitative depth across derivatives pricing, capital modeling, "
-        "and regulated risk analytics when those themes appear in selected facts."
+        "Quantitative depth spans derivatives pricing, capital modeling, and regulated "
+        "risk analytics when those themes appear in selected facts."
     )
 
 
@@ -129,7 +130,7 @@ def _x2_critical_shape_failures(
     *,
     plan_facts: list[dict[str, Any]],
 ) -> dict[str, str]:
-    """Mechanism inventory + evidence utilization only (repair monotonicity)."""
+    """Shape gates repair must not regress (monotonicity)."""
     out: dict[str, str] = {}
     mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(resume, parsed)
     if not mech_ok and mech_reason:
@@ -139,6 +140,12 @@ def _x2_critical_shape_failures(
     )
     if not util_ok and util_reason:
         out["evidence_utilization"] = util_reason
+    stack_ok, stack_reason = check_exec_summary_mechanical_opener_stack(resume)
+    if not stack_ok and stack_reason:
+        out["mechanical_opener_stack"] = stack_reason
+    synth_ok, synth_reason = check_synthesis_quality(resume)
+    if not synth_ok and synth_reason:
+        out["synthesis_quality"] = synth_reason
     return out
 
 
@@ -280,9 +287,9 @@ def build_graph_only_executive_summary_from_facts(
         sc = _commercialization_sentence(commercial)
         if team:
             sc = (
-                "Productized agentic AI primitives into reusable platform services, generating "
-                "$22M in IP-led revenue and expanding gross margins by 20% while scaling the "
-                "ML engineering organization from 8 to 28 specialists."
+                "Platform commercialization generated $22M in IP-led revenue and expanded gross "
+                "margins by 20% while scaling the ML engineering organization from 8 to 28 "
+                "specialists."
             )
         sentences.append(sc)
         ids = _metric_ids_for_base("fact_engineering_platform_006", commercial, allowed_fact_ids)
