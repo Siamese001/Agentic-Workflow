@@ -1,0 +1,47 @@
+# Runtime customization package — apps_rg / resume_generation
+#
+# Consumed by apps_rg U0 via RuntimePackageRegistry (core u0_runtime_package_binding).
+# Domain config refs only — execution stays in apps_rg/runtime/bindings/.
+
+package_id: apps_rg_runtime_package_resume_generation_v1
+package_version: "1.0.0"
+app_id: apps_rg
+task_class: resume_generation
+schema_version: "1.0"
+
+profile_refs:
+  route_profile: apps_rg/config/domain_contract/route_profiles.yaml
+  retrieval_profile: apps_rg/config/domain_contract/section_retrieval_profile.yaml
+  retrieval_requirements_profile: apps_rg/config/domain_contract/retrieval_requirements_profile.resume_generation.v1.yaml
+  cache_profile: apps_rg/config/domain_contract/cache_profiles.yaml
+  runtime_gate_profile: apps_rg/config/domain_contract/runtime_gate_profile.resume_generation.v1.json
+  metadata_filter_profile: apps_rg/config/domain_contract/metadata_filter_profile.yaml
+  research_delegation_profile: apps_rg/config/domain_contract/research_delegation_profile.yaml
+  fact_vectors_schema: apps_rg/config/domain_contract/fact_vectors_schema.yaml
+  composite_projection_profiles: apps_rg/config/domain_contract/composite_projection_profiles.yaml
+  master_role_family_taxonomy: apps_rg/config/domain_contract/master_role_family_taxonomy.yaml
+  senior_role_track_weights: apps_rg/config/domain_contract/senior_role_track_weight_profiles_design.yaml
+  l6_learning_profile: apps_rg/config/domain_contract/l6_learning_profile.json
+  prompt_registry: apps_rg/prompt_assembly/templates/registry.v1.yaml
+  hitl_policy: apps_rg/config/hitl_trigger_policy.yaml
+  l0_policy: apps_rg/config/l0_policy.yaml
+  agent_spec: apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml
+  thresholds: apps_rg/config/rg_thresholds.yaml
+  l5_governance: apps_rg/profiles/rg_l5_governance_profile.yaml
+  l1_planning: apps_rg/profiles/rg_planning_profile.yaml
+  judge_executive_rubric: apps_rg/config/domain_contract/judges/executive_positioning_rubric.txt
+  judge_executive_system_prompt: apps_rg/config/domain_contract/judges/executive_positioning_system_prompt.txt
+
+extra:
+  workflow_manifest_ref: wfm::apps_rg::resume_generation::v1
+  orchestration_profile_ref: apps_rg_orch_managed_workflow_v1
+  package_self_ref: apps_rg/config/domain_contract/runtime_customization_package.yaml
+  registry_ref: apps_rg/config/domain_contract/runtime_package_registry.yaml
+  write_policy: read_only
+  auto_injection_eligible: true
+
+package_digest: ""
+
+policy:
+  default_posture: read_only
+  write_policy: uwg_only_after_exit

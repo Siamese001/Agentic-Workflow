@@ -311,6 +311,10 @@ def exit_finalize_apps_rg(
 ) -> ExitResult:
     """apps_rg Exit gate evaluation and disposition assembly.
 
+    When governed L2/Exit is enabled (W6), also runs ``ExitEvalPipeline`` and
+    builds a canonical ``RuntimeExhaustBundle`` (attached on the returned
+    ``ExitResult`` via private attribute for integrated callers).
+
     Parameters
     ----------
     sealed:
@@ -329,6 +333,41 @@ def exit_finalize_apps_rg(
     ExitResult
         Disposition + list of inert artifact commit candidates.
     """
+    from apps_rg.runtime.spine.governed_l2_exit_compose import (
+        governed_exit_finalize_integrated,
+        governed_l2_exit_enabled,
+    )
+
+    if governed_l2_exit_enabled():
+        bundle = governed_exit_finalize_integrated(
+            sealed,
+            fec=fec,
+            target_company=target_company,
+            target_role=target_role,
+            prompt_artifact=prompt_artifact,
+        )
+        result = bundle.exit_result
+        object.__setattr__(result, "_governed_integrated_exit_bundle", bundle)
+        return result
+
+    return _exit_finalize_apps_rg_impl(
+        sealed,
+        prompt_artifact=prompt_artifact,
+        fec=fec,
+        target_company=target_company,
+        target_role=target_role,
+    )
+
+
+def _exit_finalize_apps_rg_impl(
+    sealed: SealedL2Artifact,
+    prompt_artifact: Any = None,
+    *,
+    fec: Optional[FinalEvidenceContract] = None,
+    target_company: str = "",
+    target_role: str = "",
+) -> ExitResult:
+    """Core apps_rg Exit gate evaluation (no spine ExitEvalPipeline wrapper)."""
     gate_results, c0_blocking, blocking_reason = _evaluate_c0_evidence_gates(fec)
     owned_fields = _compute_apps_rg_owned_fields(fec, sealed)
 

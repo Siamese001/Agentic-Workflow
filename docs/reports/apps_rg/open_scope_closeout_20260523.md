@@ -9,12 +9,18 @@ Rollup after exec-summary repair hardening and plan/Notion sync.
 | [apps-rg-pa-ssot-gap-b8e4f1](../../.cursor/plans/apps-rg-pa-ssot-gap-b8e4f1.md) | **COMPLETED** | [pa_e0_compile_proof_receipt.json](../../artifacts/apps_rg/plans/pa_e0_compile_proof_receipt.json) |
 | [exec-summary-e0-repair-hardening-c4e8f1](../../.cursor/plans/exec-summary-e0-repair-hardening-c4e8f1.md) | **COMPLETED** | [executive_summary_e0_repair_hardening_receipt.md](executive_summary_e0_repair_hardening_receipt.md); live [exec_summary_20260523_164959](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_164959) |
 
+## Completed (spine convergence)
+
+| Plan | Status | Proof |
+|------|--------|-------|
+| [pa-exec-flowchart-gap-f2a8c3](../../.cursor/plans/pa-exec-flowchart-gap-f2a8c3.md) | **COMPLETED** (Notion + disk 2026-05-23) | [pa_exec_flowchart_gap_closeout_receipt.md](pa_exec_flowchart_gap_closeout_receipt.md); harness E2E `test_apps_rg_one_pipeline_e2e` 20/20; `p0_count=0` |
+
 ## In progress (active execution)
 
 | Plan | Wave | Next |
 |------|------|------|
 | [apps-rg-proof-pool-c0-ssot-a7f3e2](../../.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md) | W3 / Track C | Track B DONE; Track C X2 PASS — unanimous X1D `X3_ALLOW` still open |
-| [apps-rg-spine-only-unification-d8f4a2](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) | W1–W4,W6 done; **W5 open** | Commit OS-E2E-WIRING; W5 full résumé assembly; W7 deferred (author-gate). Disk: [plan](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) · scope: [spine_unification_open_scope_20260523.md](spine_unification_open_scope_20260523.md) · `main` @ `3e7ab52413` · live E2E: [exec_summary_20260523_171726](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_171726) |
+| [apps-rg-spine-only-unification-d8f4a2](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) | Superseded by pa-exec-flowchart-gap | See closeout above |
 
 ## Superseded / review-only
 

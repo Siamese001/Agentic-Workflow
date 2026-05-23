@@ -243,6 +243,7 @@ def assemble_prompt(
         "provider_lane": "anthropic",  # default lane; caller-overridable later
         "required_slots": ("L5_policy", "L0_route", "L1_plan", "C0_evidence", "U0_task"),
         "hmac_sig": route.hmac_sig,
+        "l5_certification_ref": str(getattr(route, "l5_certification_ref", "") or ""),
     }
     evidence_dict: dict[str, Any] = {
         "contract_id": final_contract.contract_id,
@@ -306,13 +307,6 @@ def assemble_prompt(
     ]
 
     pa_result = run_prompt_assembly_pipeline(
-        boundary=boundary_check(
-            route_contract=route_dict,
-            plan_contract=plan_dict,
-            evidence_contract=evidence_dict,
-            execution_metadata=execution_metadata,
-            emitter=emitter,  # W3: Pass emitter for C0 policy OTEL spans
-        ),
         plan_contract=plan_dict,
         route_contract=route_dict,
         evidence_contract=evidence_dict,

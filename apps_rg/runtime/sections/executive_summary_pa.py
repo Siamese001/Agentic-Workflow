@@ -515,6 +515,9 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
         trace_root=f"exec_summary:{run_id}",
     )
     compiled = compile_section_prompt(assembly, section_id="executive_summary")
+    from apps_rg.runtime.spine.governed_pa_compose import stamp_section_governed_pa_receipt
+
+    stamp_section_governed_pa_receipt(runtime_payload, compiled)
     ids = list(runtime_payload.get("allowed_fact_ids") or [])
     pp, _fec_consumed = _proof_pool_metadata_for_compile(runtime_payload)
     from apps_rg.runtime.dispatch.input_authority_prompt_block import proof_pool_mode_from_metadata

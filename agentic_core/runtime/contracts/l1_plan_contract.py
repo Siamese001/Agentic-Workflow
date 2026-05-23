@@ -102,6 +102,10 @@ class L1PlanContract:
     # W3: judge evaluation expectation refs
     judge_eval_expectation_refs: tuple[str, ...] = field(default_factory=tuple)
 
+    # W3 spine (REQ-L1-PLAN-VALIDATION-001, REQ-L1-AMBIGUITY-REGISTER-001)
+    validation_receipt_id: str = ""
+    ambiguity_register: Mapping[str, Any] = field(default_factory=dict)
+
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref
         if not verify_certification_ref(self.l5_certification_ref):

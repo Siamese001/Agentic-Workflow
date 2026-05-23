@@ -154,11 +154,25 @@ def build_spine_c0_fec_artifact(
     route_contract_ref: str = "route_contract.json",
     proof_pool_ref: str | None = None,
 ) -> SectionFecBridge:
-    """Build apps_rg-local FEC bridge (section_fec_bridge, not canonical C0.5)."""
+    """Build section FEC bridge — spine ``c0_retrieve_apps_rg`` when required (W4)."""
     if front_spine is None or front_spine.route is None:
         raise SectionFecBridgePreconditionError(
             "section FEC bridge requires RouteContract from section front spine"
         )
+
+    from apps_rg.runtime.spine.section_c0_retrieve import (
+        invoke_section_spine_c0_retrieve,
+        merge_spine_fec_into_bridge_doc,
+        section_spine_c0_retrieve_required,
+    )
+
+    spine_result = None
+    if section_spine_c0_retrieve_required(front_spine):
+        spine_result = invoke_section_spine_c0_retrieve(
+            front_spine=front_spine,
+            section_id=section_id,
+        )
+
     pp_meta = dict(pool.proof_pool_metadata or {})
     c03 = pp_meta.get("c03_graphrag_bound")
     fec_snap: dict[str, Any] = {}
@@ -233,7 +247,15 @@ def build_spine_c0_fec_artifact(
             "not canonical C0.3 governed graph traverse unless spine traverse ran",
             "not canonical C0.5 FinalEvidenceContract unless spine C0 emitted FEC",
         ],
+        "proof_pool_shim_only": spine_result is None,
     }
+    if spine_result is not None:
+        bridge_doc = merge_spine_fec_into_bridge_doc(
+            bridge_doc,
+            spine=spine_result,
+            pool_allowed_fact_ids=list(pool.allowed_fact_ids_ordered),
+        )
+
     fixture_dev = bool(front_spine.fixture_dev_only_bypass or fixture_dev_bypass_active())
     return SectionFecBridge(
         section_id=section_id,
@@ -394,6 +416,20 @@ def wire_spine_c0_fec_for_section(
     from apps_rg.runtime.spine.front_contracts import emit_section_front_spine_receipts
 
     emit_section_front_spine_receipts(artifact_dir, front_spine)
+    runtime_payload["_section_front_spine"] = front_spine
+    from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
+
+    for layer_key, seam in (
+        ("U0", "apps_rg/runtime/bindings/u0_binding.py"),
+        ("L1", "apps_rg/runtime/bindings/l1_binding.py"),
+        ("L0", "apps_rg/runtime/bindings/l0_binding.py"),
+    ):
+        emit_spine_span_event(
+            artifact_dir,
+            layer_key=layer_key,
+            binding_seam=seam,
+            product_visible=front_spine.product_visible,
+        )
     from apps_rg.runtime.c0.evidence_room import (
         run_section_c0_evidence_room,
         section_c0_evidence_room_enabled,
@@ -416,6 +452,46 @@ def wire_spine_c0_fec_for_section(
             front_spine=front_spine,
             pool=pool,
         )
+    from apps_rg.runtime.spine.section_c0_retrieve import (
+        assert_no_stop_as_evidence_gap,
+        grounding_required_for_section,
+        invoke_section_spine_c0_retrieve,
+        section_spine_c0_retrieve_required,
+        write_spine_c0_retrieve_receipt,
+    )
+
+    if section_spine_c0_retrieve_required(front_spine):
+        if not bridge.bridge_doc.get("spine_c0_retrieve_receipt"):
+            spine_res = invoke_section_spine_c0_retrieve(
+                front_spine=front_spine,
+                section_id=section_id,
+            )
+            write_spine_c0_retrieve_receipt(artifact_dir, spine_res.receipt)
+            runtime_payload["spine_c0_retrieve_receipt"] = spine_res.receipt
+        snap = bridge.bridge_doc.get("final_evidence_contract_snapshot") or {}
+        support = str(snap.get("support_status") or bridge.bridge_doc.get("support_status") or "")
+        if support:
+            from agentic_core.runtime.contracts.final_evidence_contract import (
+                FinalEvidenceContract,
+            )
+
+            fec_check = FinalEvidenceContract(
+                request_id=str(snap.get("request_id") or ""),
+                run_id=str(snap.get("run_id") or ""),
+                app_id="apps_rg",
+                trace_id="",
+                support_status=support,
+                support_target_met=support in ("PASS",),
+            )
+            assert_no_stop_as_evidence_gap(
+                grounding_required=grounding_required_for_section(front_spine),
+                fec=fec_check,
+                section_id=section_id,
+            )
+        receipt = bridge.bridge_doc.get("spine_c0_retrieve_receipt")
+        if isinstance(receipt, dict):
+            write_spine_c0_retrieve_receipt(artifact_dir, receipt)
+
     emit_spine_c0_fec_artifacts(artifact_dir, bridge)
     runtime_payload["section_fec_bridge"] = bridge.bridge_doc
     runtime_payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
@@ -439,6 +515,13 @@ def wire_spine_c0_fec_for_section(
         pool=pool,
         runtime_payload=runtime_payload,
         bridge=bridge,
+    )
+    emit_spine_span_event(
+        artifact_dir,
+        layer_key="C0",
+        binding_seam="apps_rg/runtime/spine/section_c0_retrieve.py",
+        product_visible=bridge.product_visible,
+        extra={"fec_bridge_mode": bridge.bridge_doc.get("fec_bridge_mode")},
     )
     return bridge
 

@@ -260,7 +260,30 @@ def pa_compose_apps_rg(
     fec: FinalEvidenceContract,
     validated_request: ValidatedRequest,
 ) -> CompiledPromptArtifact:
-    """AG-2 runtime PA — consumes RouteContract + L1 projections + C0 FEC + U0 VR."""
+    """AG-2 runtime PA — core ``assemble_prompt`` when governed PA enabled (W5)."""
+    from apps_rg.runtime.spine.governed_pa_compose import (
+        governed_pa_compose_enabled,
+        governed_pa_compose_integrated,
+    )
+
+    if governed_pa_compose_enabled():
+        return governed_pa_compose_integrated(
+            route,
+            plan,
+            fec,
+            validated_request,
+        )
+
+    return _pa_compose_apps_rg_legacy(route, plan, fec, validated_request)
+
+
+def _pa_compose_apps_rg_legacy(
+    route: RouteContract,
+    plan: L1PlanContract,
+    fec: FinalEvidenceContract,
+    validated_request: ValidatedRequest,
+) -> CompiledPromptArtifact:
+    """Legacy two-block PA (pre-W5); used when ``APPS_RG_GOVERNED_PA_SKIP=1``."""
     profile = _load_pa_prompt_profile(None)
     preamble = _build_system_preamble(profile)
     route_hint = (

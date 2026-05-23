@@ -24,6 +24,8 @@ from agentic_core.runtime.contracts.runtime_customization_package import (
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
     ValidatedRequest,
+)
+from agentic_core.runtime.contracts.apps_rg_runtime_authority_policy import (
     AuthorityValidationReceipt,
 )
 

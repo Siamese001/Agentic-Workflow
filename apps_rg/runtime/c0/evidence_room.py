@@ -242,6 +242,18 @@ def run_section_c0_evidence_room(
             "C0.7 handoff audit failed — packet unsafe for section PA: "
             + ", ".join(str(v) for v in (c07.get("violations") or []))
         )
+
+    from apps_rg.runtime.spine.section_c0_retrieve import (
+        assert_no_stop_as_evidence_gap,
+        grounding_required_for_section,
+    )
+
+    if front_spine is not None:
+        assert_no_stop_as_evidence_gap(
+            grounding_required=grounding_required_for_section(front_spine),
+            fec=fec,
+            section_id=section_id,
+        )
     c06 = {
         "schema_version": "c06_weak_refine_v1",
         "disabled": True,

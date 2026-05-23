@@ -1055,6 +1055,12 @@ def main():
             "APPS-RG-SINGLE-SPINE apps_rg one spine product-path ratchet (fail-closed)",
             "ops_scripts/ci/check_apps_rg_single_spine.py",
         ),
+        # APPS-RG-SPINE-CONVERGENCE — W8 ratchet: governed W5–W7 seams + span checklist + gap audit.
+        # Fail-closed by default. Bypass: APPS_RG_SPINE_CONVERGENCE_BYPASS=1.
+        (
+            "APPS-RG-SPINE-CONVERGENCE apps_rg spine convergence W8 (fail-closed)",
+            "ops_scripts/ci/check_apps_rg_spine_convergence_w8.py",
+        ),
         (
             "APPS-DRYRUN apps_rg --dry-run smoke (advisory)",
             "ops_scripts/ci/check_apps_rg_dryrun.py",

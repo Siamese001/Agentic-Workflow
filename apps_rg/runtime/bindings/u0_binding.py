@@ -17,6 +17,11 @@ __all__ = [
     "u0_validate_apps_rg",
 ]
 
+# Re-export terminal rejection for callers/tests.
+from apps_rg.runtime.bindings.u0_rejection import AppsRgU0RejectedError  # noqa: E402
+
+__all__.append("AppsRgU0RejectedError")
+
 APPS_RG_U0_CERT_REF: str = "u0-apps-rg-resume-generation-w2"
 APPS_RG_TASK_CLASS: str = "resume_generation"
 
@@ -63,24 +68,69 @@ def u0_validate_apps_rg(
 
     Raises
     ------
-    ValueError
-        If the envelope is missing required app_payload keys.
+    AppsRgU0RejectedError
+        Terminal rejection with ``RejectedRequestNotice`` (missing fields, package load).
     TypeError
         If the envelope type is not supported.
     """
+    from agentic_core.L0_routing.intake.reason_codes import IngressReasonCode
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
         AppsRgIngressPayload,
         RequestEnvelope,
         ValidatedRequest,
     )
+    from agentic_core.runtime.entry.u0_runtime_package_binding import U0PackageValidationError
+
+    from apps_rg.runtime.bindings.u0_package_ingest import ingest_apps_rg_runtime_package
+    from apps_rg.runtime.bindings.u0_rejection import (
+        AppsRgU0RejectedError,
+        build_u0_rejected_notice,
+    )
 
     app_payload, meta = _coerce_envelope_to_app_payload(envelope)
 
+    request_id_pre = str(meta.get("request_id") or "") or str(uuid.uuid4())
+    trace_root_pre = str(meta.get("trace_id") or "") or request_id_pre
+
     missing = _REQUIRED_APP_PAYLOAD_KEYS - set(app_payload.keys())
     if missing:
-        raise ValueError(
-            f"u0_validate_apps_rg: app_payload missing required keys: {sorted(missing)}"
+        notice = build_u0_rejected_notice(
+            request_id=request_id_pre,
+            trace_root=trace_root_pre,
+            rejection_reason=IngressReasonCode.FIELD_TYPE_MISMATCH,
+            machine_readable_detail={
+                "missing_keys": sorted(missing),
+                "validator": "u0_validate_apps_rg",
+            },
         )
+        raise AppsRgU0RejectedError(
+            notice=notice,
+            message=f"u0_validate_apps_rg: app_payload missing required keys: {sorted(missing)}",
+        )
+
+    try:
+        pkg_ingest = ingest_apps_rg_runtime_package(
+            app_id=str(meta.get("app_id") or app_payload.get("app_id") or "apps_rg"),
+            task_class=str(app_payload.get("task_class") or APPS_RG_TASK_CLASS),
+            request_context={
+                "caller_app_id": (app_payload.get("user_constraints") or {}).get(
+                    "caller_app_id"
+                ),
+                "request_id": request_id_pre,
+            },
+        )
+    except U0PackageValidationError as exc:
+        notice = build_u0_rejected_notice(
+            request_id=request_id_pre,
+            trace_root=trace_root_pre,
+            rejection_reason=IngressReasonCode.MALFORMED_ENVELOPE,
+            machine_readable_detail={
+                "field": exc.field,
+                "message": exc.message,
+                "validator": "ingest_apps_rg_runtime_package",
+            },
+        )
+        raise AppsRgU0RejectedError(notice=notice, message=exc.message) from exc
 
     target_company: str = str(app_payload.get("target_company", ""))
     target_role: str = str(app_payload.get("target_role", ""))
@@ -115,17 +165,40 @@ def u0_validate_apps_rg(
     l1_digest = l1_planning_profile_digest(allow_missing=allow_missing_profiles)
     profile_manifest: dict[str, Any] = {
         **existing_pm,
+        **pkg_ingest.profile_manifest_refs,
         "l1_planning_profile_ref": l1_planning_profile_ref(),
         "l1_planning_profile_digest": l1_digest,
         "prompt_registry_ref": existing_pm.get(
-            "prompt_registry_ref", _DEFAULT_PROMPT_REGISTRY_REF
+            "prompt_registry_ref",
+            pkg_ingest.profile_manifest_refs.get(
+                "prompt_registry_ref", _DEFAULT_PROMPT_REGISTRY_REF
+            ),
         ),
-        "hitl_policy_ref": existing_pm.get("hitl_policy_ref", _DEFAULT_HITL_POLICY_REF),
-        "l0_policy_ref": existing_pm.get("l0_policy_ref", _DEFAULT_L0_POLICY_REF),
-        "agent_spec_ref": existing_pm.get("agent_spec_ref", _DEFAULT_AGENT_SPEC_REF),
-        "thresholds_ref": existing_pm.get("thresholds_ref", _DEFAULT_THRESHOLDS_REF),
+        "hitl_policy_ref": existing_pm.get(
+            "hitl_policy_ref",
+            pkg_ingest.profile_manifest_refs.get(
+                "hitl_policy_ref", _DEFAULT_HITL_POLICY_REF
+            ),
+        ),
+        "l0_policy_ref": existing_pm.get(
+            "l0_policy_ref",
+            pkg_ingest.profile_manifest_refs.get("l0_policy_ref", _DEFAULT_L0_POLICY_REF),
+        ),
+        "agent_spec_ref": existing_pm.get(
+            "agent_spec_ref",
+            pkg_ingest.profile_manifest_refs.get(
+                "agent_spec_ref", _DEFAULT_AGENT_SPEC_REF
+            ),
+        ),
+        "thresholds_ref": existing_pm.get(
+            "thresholds_ref",
+            pkg_ingest.profile_manifest_refs.get("thresholds_ref", _DEFAULT_THRESHOLDS_REF),
+        ),
         "l5_governance_profile_ref": existing_pm.get(
-            "l5_governance_profile_ref", _DEFAULT_L5_GOVERNANCE_PROFILE_REF
+            "l5_governance_profile_ref",
+            pkg_ingest.profile_manifest_refs.get(
+                "l5_governance_profile_ref", _DEFAULT_L5_GOVERNANCE_PROFILE_REF
+            ),
         ),
     }
     if "manifest_digest" not in profile_manifest or not profile_manifest["manifest_digest"]:
@@ -178,6 +251,15 @@ def u0_validate_apps_rg(
 
     validated_app_payload: dict[str, Any] = {
         **app_payload,
+        "runtime_customization_package": pkg_ingest.package_dict,
+        "package_validation_receipt": {
+            "package_id": pkg_ingest.validation_receipt.package_id,
+            "package_version": pkg_ingest.validation_receipt.package_version,
+            "task_class": pkg_ingest.validation_receipt.task_class,
+            "validation_passed": pkg_ingest.validation_receipt.validation_passed,
+            "digest_verified": pkg_ingest.validation_receipt.digest_verified,
+            "timestamp_iso": pkg_ingest.validation_receipt.timestamp_iso,
+        },
         "generation_mode": generation_mode,
         "target_company": target_company,
         "target_role": target_role,
@@ -206,10 +288,15 @@ def u0_validate_apps_rg(
         "policy_refs": policy_refs,
     }
 
-    trace_id = str(meta.get("trace_id") or "") or str(uuid.uuid4())
-    request_id = str(meta.get("request_id") or "") or str(uuid.uuid4())
+    trace_id = str(meta.get("trace_id") or "") or trace_root_pre
+    request_id = str(meta.get("request_id") or "") or request_id_pre
     run_id = str(meta.get("run_id") or "") or str(uuid.uuid4())
     tenant_id = str(meta.get("tenant_id") or app_payload.get("tenant_id") or "")
+    session_id = run_id or request_id
+    trace_root = trace_id or request_id
+    caller_scope_baseline = (
+        f"tenant:{tenant_id}" if tenant_id.strip() else "user:standard"
+    )
 
     payload_digest = str(app_payload.get("payload_digest") or "")
 
@@ -253,6 +340,9 @@ def u0_validate_apps_rg(
         replay_key=replay_key_final,
         l5_certification_ref=l5_str,
         app_payload=validated_app_payload,
+        session_id=session_id,
+        trace_root=trace_root,
+        caller_scope_baseline=caller_scope_baseline,
     )
 
 
@@ -268,7 +358,9 @@ def _coerce_envelope_to_app_payload(envelope: Any) -> tuple[dict[str, Any], dict
         p: AppsRgIngressPayload = envelope.payload
         uc = dict(p.user_constraints or {})
         gm = uc.pop("_generation_mode", None)
-        bref = p.briefing_artifact_ref
+        bref = getattr(p, "manual_brief_path", None) or getattr(
+            p, "briefing_artifact_ref", None
+        )
         app_payload: dict[str, Any] = {
             "app_id": p.app_id,
             "task_class": p.task_class,

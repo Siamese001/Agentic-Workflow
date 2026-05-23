@@ -34,6 +34,14 @@ def prepare_section_l2_before_provider(
     emit_l2_execution_packet_artifact(artifact_dir, packet)
     runtime_payload["l2_execution_packet"] = packet
     runtime_payload["l2_execution_packet_ref"] = L2_EXECUTION_PACKET_ARTIFACT
+    from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
+
+    emit_spine_span_event(
+        artifact_dir,
+        layer_key="L2",
+        binding_seam="apps_rg/runtime/section_l2_spine_receipt.py",
+        product_visible=bool(runtime_payload.get("product_visible", True)),
+    )
     return packet
 
 

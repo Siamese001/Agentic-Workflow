@@ -342,7 +342,7 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
     ts = datetime.now(timezone.utc).isoformat()
     policy_path = str(_ROUTE_PROFILE_RELPATH).replace("\\", "/")
 
-    return RouteContract(
+    route = RouteContract(
         request_id=plan.request_id,
         run_id=plan.run_id,
         app_id=plan.app_id,
@@ -374,4 +374,17 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
         routing_timestamp=ts,
         l5_certification_ref=plan.l5_certification_ref,
         graph_traverse_policy=graph_policy,
+    )
+
+    from apps_rg.runtime.bindings.l0_route_evidence import stamp_route_evidence
+
+    return stamp_route_evidence(
+        route,
+        plan=plan,
+        route_id=route_id,
+        route_family=route_family,
+        execution_form=execution_form,
+        l3_required=l3_required,
+        route_profile_ref=route_profile_ref,
+        cache_eligibility=cache_eligibility,
     )

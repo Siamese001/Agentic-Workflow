@@ -219,10 +219,24 @@ def build_l6_shadow_handoff_dict(
     prompt_id: str,
     temperature: float | None,
     max_tokens: int | None,
+    runtime_payload: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble the full L6 shadow handoff JSON from artifacts on disk (dispatch tail)."""
     ad = artifact_dir.resolve()
     rr = repo_root.resolve()
+
+    from apps_rg.runtime.spine.governed_l6_shadow_compose import (
+        assert_l6_shadow_ingest_preconditions,
+        build_governed_l6_handoff_envelope,
+        governed_l6_shadow_enabled,
+        GOVERNED_L6_SHADOW_MODE_SECTION,
+    )
+
+    assert_l6_shadow_ingest_preconditions(
+        ad,
+        section_id=section_id,
+        runtime_payload=dict(runtime_payload) if runtime_payload is not None else None,
+    )
 
     l2_path = ad / "l2_output.json"
     x1_path = ad / "x1d_llm_judge_outputs.json"
@@ -402,6 +416,26 @@ def build_l6_shadow_handoff_dict(
         }
         pkt["promotion_request_candidate"] = False
         pkt["current_run_effect"] = "none"
+
+    exhaust_path = ad / "runtime_exhaust_bundle.json"
+    edr_path = ad / "exit_disposition_receipt.json"
+    if governed_l6_shadow_enabled() and exhaust_path.is_file():
+        exhaust_doc = _load_json(exhaust_path)
+        x3_from_exhaust = ""
+        if isinstance(exhaust_doc, dict):
+            x3_from_exhaust = str(exhaust_doc.get("x3_code") or "")
+        x3sum_final = pkt.get("x3_summary") if isinstance(pkt.get("x3_summary"), dict) else {}
+        governed_env = build_governed_l6_handoff_envelope(
+            section_id=section_id,
+            run_id=run_id,
+            mode=GOVERNED_L6_SHADOW_MODE_SECTION,
+            runtime_exhaust_ref=repo_rel(rr, exhaust_path),
+            exit_disposition_ref=repo_rel(rr, edr_path) if edr_path.is_file() else "",
+            x3_code=x3_from_exhaust or str(x3sum_final.get("x3_code") or ""),
+        )
+        pkt["governed_l6_handoff_envelope"] = governed_env
+        pkt["promotion_allowed"] = False
+        pkt["promotion_status"] = governed_env["promotion_status"]
 
     return pkt
 

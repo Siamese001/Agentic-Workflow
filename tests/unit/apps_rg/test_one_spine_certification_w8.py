@@ -6,12 +6,21 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.contracts.final_evidence_contract import (
+    EvidenceItem,
+    FinalEvidenceContract,
+    SUPPORT_STATUS_PASS,
+)
 from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
-from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section
+from apps_rg.runtime.spine.c0_fec_compose import (
+    build_spine_c0_fec_artifact,
+    emit_spine_c0_fec_artifacts,
+)
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     build_section_front_spine_from_args,
     deactivate_fixture_dev_bypass,
+    emit_section_front_spine_receipts,
 )
 from apps_rg.runtime.section_l2_lane_integration import (
     finalize_section_l2_after_output,
@@ -34,22 +43,62 @@ from tests.unit.apps_rg.test_one_spine_fec_bridge_w5a import W5A_SECTIONS, _args
 REPO = Path(__file__).resolve().parents[3]
 
 
+@pytest.fixture(autouse=True)
+def _mock_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
+    def _fake(**_: object) -> FinalEvidenceContract:
+        return FinalEvidenceContract(
+            request_id="req-w8",
+            run_id="run-w8",
+            app_id="apps_rg",
+            trace_id="trace-w8",
+            l5_certification_ref="test:valid:w6",
+            support_status=SUPPORT_STATUS_PASS,
+            support_target_met=True,
+            final_evidence_digest="d" * 64,
+            evidence_items=(
+                EvidenceItem(
+                    source="fact:bul_001",
+                    content="Harness chain proof.",
+                    source_type="proof_pool",
+                ),
+            ),
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_c0_retrieve.c0_retrieve_apps_rg",
+        _fake,
+    )
+
+
 def _write_json(path: Path, doc: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
 
 
 def _minimal_chain(tmp_path: Path, section_id: str) -> dict:
-    spine = build_section_front_spine_from_args(section_id=section_id, args=_args(), repo_root=REPO)
-    pool = _minimal_pool(section_id)
-    payload: dict = {"allowed_fact_ids": list(pool.allowed_fact_ids_ordered), "run_id": "w8"}
-    wire_spine_c0_fec_for_section(
-        artifact_dir=tmp_path,
-        section_id=section_id,
-        front_spine=spine,
-        pool=pool,
-        runtime_payload=payload,
-    )
+    activate_fixture_dev_bypass(non_product_certified=True)
+    try:
+        spine = build_section_front_spine_from_args(
+            section_id=section_id, args=_args(), repo_root=REPO
+        )
+        pool = _minimal_pool(section_id)
+        payload: dict = {
+            "allowed_fact_ids": list(pool.allowed_fact_ids_ordered),
+            "run_id": "w8",
+            "product_visible": True,
+            "artifact_dir": str(tmp_path),
+        }
+        emit_section_front_spine_receipts(tmp_path, spine)
+        bridge = build_spine_c0_fec_artifact(
+            section_id=section_id,
+            front_spine=spine,
+            pool=pool,
+        )
+        emit_spine_c0_fec_artifacts(tmp_path, bridge)
+        payload["section_fec_bridge"] = bridge.bridge_doc
+        payload["_section_front_spine"] = spine
+    finally:
+        deactivate_fixture_dev_bypass()
     _write_json(
         tmp_path / "compiled_prompt_artifact.json",
         {

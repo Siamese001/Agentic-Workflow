@@ -8,7 +8,10 @@ import pytest
 
 from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
 from apps_rg.runtime.spine.exit_artifacts import EXIT_DISPOSITION_RECEIPT_ARTIFACT
-from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section
+from apps_rg.runtime.spine.c0_fec_compose import (
+    FEC_BRIDGE_ARTIFACT,
+    build_spine_c0_fec_artifact,
+)
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     build_section_front_spine_from_args,
@@ -34,6 +37,35 @@ from apps_rg.runtime.section_runtime_exhaust_spine_receipt import (
 from tests.unit.apps_rg.test_one_spine_fec_bridge_w5a import W5A_SECTIONS, _args, _minimal_pool
 
 REPO = Path(__file__).resolve().parents[3]
+
+
+@pytest.fixture(autouse=True)
+def _patch_spine_c0_for_w7_chain(monkeypatch: pytest.MonkeyPatch) -> None:
+    from agentic_core.runtime.contracts.final_evidence_contract import (
+        FinalEvidenceContract,
+        SUPPORT_STATUS_PASS,
+    )
+    from apps_rg.runtime.bindings.c0_binding import C0_GRAPH_LANE_NA_REF
+
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+
+    def _fake_c0_retrieve(**_: object) -> FinalEvidenceContract:
+        return FinalEvidenceContract(
+            request_id="req-w7-exhaust-chain",
+            run_id="run-w7-exhaust-chain",
+            app_id="apps_rg",
+            trace_id="trace-w7-exhaust-chain",
+            l5_certification_ref="test:valid:w6",
+            support_status=SUPPORT_STATUS_PASS,
+            support_target_met=True,
+            final_evidence_digest="digest-w7-exhaust-chain",
+            graph_expansion_refs=(C0_GRAPH_LANE_NA_REF,),
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_c0_retrieve.c0_retrieve_apps_rg",
+        _fake_c0_retrieve,
+    )
 
 
 def _write_json(path: Path, doc: dict) -> None:
@@ -93,13 +125,14 @@ def test_full_exit_then_exhaust_chain(tmp_path: Path, section_id: str):
     spine = build_section_front_spine_from_args(section_id=section_id, args=_args(), repo_root=REPO)
     pool = _minimal_pool(section_id)
     payload: dict = {"allowed_fact_ids": list(pool.allowed_fact_ids_ordered), "run_id": "w7_chain"}
-    wire_spine_c0_fec_for_section(
-        artifact_dir=tmp_path,
+    bridge = build_spine_c0_fec_artifact(
         section_id=section_id,
         front_spine=spine,
         pool=pool,
-        runtime_payload=payload,
     )
+    _write_json(tmp_path / FEC_BRIDGE_ARTIFACT, bridge.bridge_doc)
+    payload["section_fec_bridge"] = bridge.bridge_doc
+    payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
     _write_json(tmp_path / "compiled_prompt_artifact.json", {"evidence_contract_consumed": True})
     prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="qwen_vllm")
     _write_json(tmp_path / "l2_output.json", {})

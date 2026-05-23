@@ -827,11 +827,162 @@ def tier2_stage_names() -> tuple[str, ...]:
     return tuple(_TIER2_CONTRACTS.keys())
 
 
+# ===========================================================================
+# apps_rg governed spine — REQ parent span checklist (pa-exec-flowchart-gap W8)
+#
+# Maps REQ reference parents to Tier 2 semconv stages and spine receipt fallbacks
+# when product paths emit filesystem receipts before full OTEL on every lane.
+# ===========================================================================
+
+@dataclass(frozen=True, slots=True)
+class AppsRgSpineSpanRow:
+    """One REQ-parent row in the apps_rg spine span checklist."""
+
+    req_parent: str
+    layer_key: str
+    tier2_stage: str
+    span_patterns: tuple[str, ...]
+    spine_receipt_fallback: str
+    binding_seam: str
+    wave: str
+
+
+APPS_RG_SPINE_SPAN_CHECKLIST: tuple[AppsRgSpineSpanRow, ...] = (
+    AppsRgSpineSpanRow(
+        "01_Request_Intake",
+        "U0",
+        "stage_02_intake",
+        ("u0.intake", "intake.validate", "intake.stamp_trace"),
+        "validated_request.json",
+        "apps_rg/runtime/bindings/u0_binding.py",
+        "W1",
+    ),
+    AppsRgSpineSpanRow(
+        "02_L1_Reasoning_Plan",
+        "L1",
+        "stage_03_L1_reasoning",
+        ("l1.plan", "l1.intent"),
+        "l1_plan_contract.json",
+        "apps_rg/runtime/bindings/l1_binding.py",
+        "W3",
+    ),
+    AppsRgSpineSpanRow(
+        "03_L0_Route",
+        "L0",
+        "stage_04_L0_routing",
+        ("l0.route", "route.contract", "router."),
+        "route_contract.json",
+        "apps_rg/runtime/bindings/l0_binding.py",
+        "W3",
+    ),
+    AppsRgSpineSpanRow(
+        "03A_C0_Context",
+        "C0",
+        "stage_07_C0_retrieval",
+        ("c0.evidence", "c0.retrieval", "c0.query"),
+        "final_evidence_contract_bridge.json",
+        "apps_rg/runtime/spine/section_c0_retrieve.py",
+        "W4",
+    ),
+    AppsRgSpineSpanRow(
+        "03B_PA_Prompt_Assembly",
+        "PA",
+        "stage_08_PA_assembly",
+        ("pa.", "prompt_assembly", "pa.0.boundary"),
+        "compiled_prompt_artifact.json",
+        "apps_rg/runtime/spine/governed_pa_compose.py",
+        "W5",
+    ),
+    AppsRgSpineSpanRow(
+        "04_L2_Execute",
+        "L2",
+        "stage_09_L2_execution",
+        ("l2.step", "l2.model", "l2.tool"),
+        "sealed_l2_artifact.json",
+        "apps_rg/runtime/spine/governed_l2_exit_compose.py",
+        "W6",
+    ),
+    AppsRgSpineSpanRow(
+        "05_Exit_Evaluation",
+        "EXIT",
+        "stage_10_exit_eval",
+        ("exit.eval", "exit.disposition", "pa.0.boundary"),
+        "exit_disposition_receipt.json",
+        "apps_rg/runtime/spine/section_x3_finalize.py",
+        "W6",
+    ),
+    AppsRgSpineSpanRow(
+        "06_L6_Learning",
+        "L6",
+        "stage_14_L6_learning",
+        ("l6.", "shadow"),
+        "runtime_exhaust_bundle.json",
+        "apps_rg/runtime/spine/governed_l6_shadow_compose.py",
+        "W7",
+    ),
+)
+
+
+def apps_rg_spine_span_checklist_report() -> dict[str, object]:
+    """Serializable checklist for CI / gap audit (read-only)."""
+    return {
+        "plan_id": "pa-exec-flowchart-gap-f2a8c3",
+        "wave": "W8",
+        "checklist_id": "apps_rg_spine_span_vs_req_parents",
+        "row_count": len(APPS_RG_SPINE_SPAN_CHECKLIST),
+        "rows": [
+            {
+                "req_parent": r.req_parent,
+                "layer_key": r.layer_key,
+                "tier2_stage": r.tier2_stage,
+                "span_patterns": list(r.span_patterns),
+                "spine_receipt_fallback": r.spine_receipt_fallback,
+                "binding_seam": r.binding_seam,
+                "wave": r.wave,
+            }
+            for r in APPS_RG_SPINE_SPAN_CHECKLIST
+        ],
+        "explicit_non_claims": [
+            "receipt_fallback does not replace OTEL on live product paths",
+            "tier2_stage satisfied in snapshot OR receipt file exists on disk for CI",
+        ],
+    }
+
+
+def validate_apps_rg_spine_spans_against_snapshot(
+    snapshot: RuntimeADGSnapshot,
+    *,
+    receipt_dir: str | None = None,
+) -> dict[str, str]:
+    """Per-layer status: satisfied | receipt_only | emit_site_gap."""
+    from pathlib import Path
+
+    tier2 = validate_tier2_coverage(snapshot)
+    receipt_root = Path(receipt_dir) if receipt_dir else None
+    status: dict[str, str] = {}
+    for row in APPS_RG_SPINE_SPAN_CHECKLIST:
+        stage_ok = tier2.stage_status.get(row.tier2_stage) == "satisfied"
+        receipt_ok = False
+        if receipt_root is not None:
+            receipt_ok = (receipt_root / row.spine_receipt_fallback).is_file()
+        if stage_ok:
+            status[row.layer_key] = "satisfied"
+        elif receipt_ok:
+            status[row.layer_key] = "receipt_only"
+        else:
+            status[row.layer_key] = "emit_site_gap"
+    return status
+
+
 __all__ = [
+    "APPS_RG_SPINE_SPAN_CHECKLIST",
+    "AppsRgSpineSpanRow",
+    "apps_rg_spine_span_checklist_report",
     "Tier1Coverage",
     "CorpusTier1Report",
     "validate_tier1_coverage",
     "validate_tier1_corpus_coverage",
+    "validate_apps_rg_spine_spans_against_snapshot",
     "Tier2Coverage",
     "CorpusTier2Report",
     "validate_tier2_coverage",

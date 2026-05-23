@@ -23,11 +23,13 @@ from apps_rg.runtime.sections.executive_summary_proof_bundle import (
 )
 
 
-def test_inventory_two_paths_and_canonical_target():
+def test_inventory_single_entry_and_canonical_target():
     inv = build_one_spine_section_path_inventory()
-    assert inv["two_paths_found"] is True
+    assert inv["two_paths_found"] is False
     assert list(inv["canonical_spine_target"]) == list(CANONICAL_SPINE_CHAIN)
     assert inv["path_a_section_cli"]["exemplar_lane"] == "executive_summary"
+    assert "section_front_spine_bridge" in inv["path_a_section_cli"]["front_bridge"]
+    assert inv["section_cli_status"]["u0_package_path_required"] is True
     assert inv["path_b_canonical_r4"]["dispatch"].endswith("run_integrated_single_action_spine")
 
 

@@ -95,7 +95,7 @@ def apps_rg_parse(payload: dict[str, Any]) -> Any:
         source_resume_text=payload.get("source_resume_text"),
         job_description_ref=payload.get("job_description_ref"),
         job_description_text=payload.get("job_description_text"),
-        briefing_artifact_ref=bar,
+        manual_brief_path=bar,
         auto_research_internal=bool(payload.get("auto_research_internal", False)),
         auto_research_tavily=bool(payload.get("auto_research_tavily", False)),
         research_via=payload.get("research_via"),

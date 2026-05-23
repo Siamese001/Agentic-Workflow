@@ -255,7 +255,7 @@ def build_l2_spine_receipt(
         "schema_version": "l2_spine_receipt_v1",
         "generated_at_utc": _utc_now(),
         "plan_slug": "one-canonical-spine",
-        "wave": "5B",
+        "wave": "6",
         "lane": section_id,
         "section_id": section_id,
         "run_id": str(runtime_payload.get("run_id") or ""),
@@ -337,9 +337,17 @@ def emit_section_l2_spine_receipt_artifacts(
     p_receipt.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     runtime_payload["sealed_l2_artifact_ref"] = SEALED_L2_ARTIFACT
     runtime_payload["l2_spine_receipt_ref"] = L2_SPINE_RECEIPT_ARTIFACT
+    from apps_rg.runtime.spine.l2_handoff_receipt import emit_section_l2_handoff_receipt
+
+    p_handoff = emit_section_l2_handoff_receipt(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+    )
     return {
         "sealed_l2_artifact": p_sealed,
         "l2_spine_receipt": p_receipt,
+        "l2_handoff_receipt": p_handoff,
     }
 
 

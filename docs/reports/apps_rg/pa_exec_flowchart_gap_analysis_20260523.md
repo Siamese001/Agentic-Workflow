@@ -6,6 +6,7 @@
 **Machine audit:** [pa_exec_flowchart_gap_audit.json](../../artifacts/apps_rg/plans/pa_exec_flowchart_gap_audit.json)  
 **Execution plan:** [.cursor/plans/pa-exec-flowchart-gap-f2a8c3.md](../../.cursor/plans/pa-exec-flowchart-gap-f2a8c3.md)  
 **Notion (Plans DB):** [pa-exec-flowchart-gap-f2a8c3](https://www.notion.so/pa-exec-flowchart-gap-f2a8c3-36927693f55c8138afb7fe72202f206a)  
+**Full spine (U0–L6):** [apps_rg_spine_req_gap_analysis_20260523.md](apps_rg_spine_req_gap_analysis_20260523.md)  
 **Related (narrower, E0 SSOT — closed):** [prompt_assembly_ssot_gap_analysis_20260523.md](prompt_assembly_ssot_gap_analysis_20260523.md)
 
 ---

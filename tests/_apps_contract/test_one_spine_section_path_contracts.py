@@ -27,13 +27,18 @@ def test_inventory_json_on_disk_matches_builder():
         pytest.skip("inventory report not emitted yet; run tools/apps_rg/emit_one_spine_reports.py")
 
 
-def test_section_cli_missing_all_canonical_contracts():
+def test_section_cli_front_bridge_emits_u0_l1_l0_contracts():
     inv = build_one_spine_section_path_inventory()
+    emitted = set(inv["section_cli_status"]["front_spine_contracts_emitted"])
+    assert {"ValidatedRequest", "L1PlanContract", "RouteContract"} <= emitted
     missing = set(inv["section_cli_status"]["missing_canonical_contracts"])
-    assert missing == set(SECTION_LANE_MISSING_CANONICAL_CONTRACTS)
+    assert "ValidatedRequest" not in missing
+    assert "L1PlanContract" not in missing
+    assert "RouteContract" not in missing
     for row in inv["contract_bypass_matrix"]:
-        assert row["section_cli_emits_canonical"] is False
         assert row["canonical_r4_emits"] is True
+        if row["contract_type"] in ("ValidatedRequest", "L1PlanContract", "RouteContract"):
+            assert row["section_cli_emits_canonical"] is True
 
 
 def test_no_misnamed_artifact_claims_full_c0_without_fec():

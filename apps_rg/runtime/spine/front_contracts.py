@@ -38,15 +38,12 @@ DOWNSTREAM_MISSING_CANONICAL_CONTRACTS: tuple[str, ...] = tuple(
 
 OBSERVED_CHAIN_WITH_FRONT_BRIDGE: tuple[str, ...] = (
     "CLI",
-    "apps_rg_spine_run",
+    "section_front_spine_bridge",
     "U0",
     "L1",
     "L0",
-    "c0_retrieve_apps_rg",
-    "pa_compose_apps_rg",
-    "l2_execute_apps_rg",
-    "ExitEvalPipeline",
-    "section_L6_shadow",
+    "proof_pool_resolver",
+    "section_lane_modular",
 )
 
 
@@ -163,6 +160,7 @@ def build_section_front_spine_from_args(
     from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
     from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
     from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+    from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
     from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 
     base_ref = str(getattr(args, "base_resume_ref", "") or "").strip() or None
@@ -180,32 +178,37 @@ def build_section_front_spine_from_args(
     jd_text = str(getattr(args, "jd_text", "") or "").strip()
     briefing_text = str(getattr(args, "briefing", "") or "").strip()
 
-    app_payload: dict[str, Any] = {
-        "target_company": target_company,
-        "target_role": target_role,
-        "target_title": target_role,
-        "job_description_text": jd_text,
-        "jd_text": jd_text,
-        "briefing_text": briefing_text,
-        "generation_mode": generation_mode,
-        "section_id": section_id,
-        "source_resume_text": source_resume_text,
-        "transport": "ui",
-        "source_channel": "apps_rg_section_cli",
-    }
-
     request_id = str(uuid.uuid4())
     run_id = str(uuid.uuid4())
     trace_id = str(uuid.uuid4())
-    envelope = SimpleNamespace(
-        app_payload=app_payload,
-        request_id=request_id,
-        run_id=run_id,
-        trace_id=trace_id,
-        app_id="apps_rg",
-        tenant_id="default",
-    )
+    thin: dict[str, Any] = {
+        "app_id": "apps_rg",
+        "task_class": "resume_generation",
+        "target_company": target_company,
+        "target_role": target_role,
+        "target_level": str(getattr(args, "target_level", "") or "").strip(),
+        "source_resume_text": source_resume_text,
+        "job_description_text": jd_text,
+        "generation_mode": generation_mode,
+        "request_id": request_id,
+        "run_id": run_id,
+        "trace_id": trace_id,
+        "tenant_id": str(getattr(args, "tenant_id", "") or "default"),
+        "l5_certification_ref": "test:valid:w6",
+        "user_constraints": {
+            "section_id": section_id,
+            "briefing_text": briefing_text,
+            "source_channel": "apps_rg_section_cli",
+        },
+    }
+    envelope = apps_rg_parse(thin)
     validated_request = u0_validate_apps_rg(envelope, allow_missing_profiles=False)
+    ap = dict(validated_request.app_payload or {})
+    if not ap.get("runtime_customization_package"):
+        raise SectionFrontSpinePreconditionError(
+            "section_front_spine_bridge blocked: U0 package path did not attach "
+            "runtime_customization_package (ingest_apps_rg_runtime_package required)"
+        )
     l1_plan = l1_plan_apps_rg(validated_request)
     route = l0_route_apps_rg(l1_plan)
     whole_run = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip().lower() in (
@@ -259,8 +262,13 @@ def build_section_front_spine_receipt(bridge: SectionFrontSpineBridge) -> dict[s
     return {
         "schema_version": "section_front_spine_receipt_v1",
         "generated_at_utc": ts,
-        "plan_slug": "apps-rg-spine-only-unification-d8f4a2",
+        "plan_slug": "pa-exec-flowchart-gap-f2a8c3",
         "wave": "W2",
+        "u0_runtime_package_ingested": bool(
+            dict(getattr(bridge.validated_request, "app_payload", None) or {}).get(
+                "runtime_customization_package"
+            )
+        ),
         "section_id": bridge.section_id,
         "product_visible": bridge.product_visible,
         "fixture_dev_only": fixture_dev,

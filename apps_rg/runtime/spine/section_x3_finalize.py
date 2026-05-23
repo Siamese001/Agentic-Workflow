@@ -78,8 +78,16 @@ def _run_section_spine_exit_eval(
         getattr(getattr(exit_result, "disposition", None), "value", exit_result)
     )
     from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
+    from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
 
     finalize_section_exit_after_l2(artifact_dir, section_id, runtime_payload)
+    emit_spine_span_event(
+        artifact_dir,
+        layer_key="EXIT",
+        binding_seam="apps_rg/runtime/spine/section_x3_finalize.py",
+        product_visible=bool(runtime_payload.get("product_visible", True)),
+        extra={"x3_code": receipts.get("x3_code")},
+    )
 
 
 def finalize_section_spine_exit_after_sealed_l2(

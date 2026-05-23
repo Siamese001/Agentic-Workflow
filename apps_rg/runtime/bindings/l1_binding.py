@@ -99,6 +99,21 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
 
     replay_key = str(getattr(validated_request, "replay_key", "") or "")
 
+    pm = app_payload.get("profile_manifest") if isinstance(app_payload.get("profile_manifest"), Mapping) else {}
+    planning_digest = str(pm.get("l1_planning_profile_digest") or "")
+    manifest_digest = str(pm.get("manifest_digest") or validated_request.payload_digest)
+    from apps_rg.runtime.bindings.l1_plan_evidence import (
+        build_ambiguity_register,
+        build_validation_receipt_id,
+    )
+
+    validation_receipt_id = build_validation_receipt_id(
+        request_id=validated_request.request_id,
+        profile_manifest_digest=manifest_digest,
+        planning_profile_digest=planning_digest,
+    )
+    ambiguity_register = build_ambiguity_register(app_payload)
+
     return L1PlanContract(
         request_id=validated_request.request_id,
         run_id=validated_request.run_id,
@@ -135,6 +150,8 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         # L5 certification ref from U0
         l5_certification_ref=l5_cert_ref,
         replay_key=replay_key,
+        validation_receipt_id=validation_receipt_id,
+        ambiguity_register=ambiguity_register,
     )
 
 

@@ -118,6 +118,10 @@ class RouteContract:
     # W4: route policy ref — pointer to the route profile used
     route_policy_ref: str = ""
 
+    # W3 spine (REQ-L0-DETERMINISTIC-DIGEST-001, REQ-L0-HMAC-SIGNED-001)
+    route_digest: str = ""
+    hmac_sig: str = ""  # parallel to signature; G07 gate reads hmac_sig on route dict views
+
     # Cache lookup receipts (prove actual lookups completed before L3 entry)
     cache_lookup_r1a_receipt: str = ""  # serialized R1A lookup result (hit/miss + digest)
     cache_lookup_r1b_receipt: str = ""  # serialized R1B lookup result (hit/miss + digest)

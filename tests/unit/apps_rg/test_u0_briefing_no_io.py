@@ -20,7 +20,7 @@ def test_u0_validate_apps_rg_does_not_open_briefing_artifact_file(tmp_path: Path
         target_company="Co",
         target_role="Role",
         source_resume_text="resume body",
-        briefing_artifact_ref=str(brief),
+        manual_brief_path=str(brief),
         l5_certification_ref="test:valid:w6",
     )
     env = RequestEnvelope(payload=payload)

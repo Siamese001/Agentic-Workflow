@@ -1,0 +1,24 @@
+# Runtime package registry — apps_rg (app-owned SSOT for core U0 auto-injection)
+#
+# Loaded by agentic_core.runtime.entry.u0_runtime_package_binding.RuntimePackageRegistry
+
+app_id: apps_rg
+schema_version: "1.0"
+
+default_packages:
+  resume_generation:
+    package_ref: apps_rg/config/domain_contract/runtime_customization_package.yaml
+    schema_ref: ""
+    auto_injection_allowed_for:
+      - direct_apps_rg
+    auto_injection_blocked_for:
+      - delegated_any_without_context
+
+resolution_rules:
+  direct_call_default: resume_generation
+  delegated_call_requires_explicit: true
+
+registry_metadata:
+  maintainer: apps_rg
+  last_updated: "2026-05-23"
+  version: "1.0.0"

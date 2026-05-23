@@ -16,7 +16,10 @@ from apps_rg.runtime.spine.exit_artifacts import (
     build_exit_disposition_receipt_for_section,
     exit_spine_kill_switch_enabled,
 )
-from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section
+from apps_rg.runtime.spine.c0_fec_compose import (
+    FEC_BRIDGE_ARTIFACT,
+    build_spine_c0_fec_artifact,
+)
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     build_section_front_spine_from_args,
@@ -30,6 +33,50 @@ from apps_rg.runtime.section_l2_spine_receipt import SEALED_L2_ARTIFACT
 from tests.unit.apps_rg.test_one_spine_fec_bridge_w5a import W5A_SECTIONS, _args, _minimal_pool
 
 REPO = Path(__file__).resolve().parents[3]
+
+
+@pytest.fixture(autouse=True)
+def _patch_spine_c0_for_w6_chain(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Avoid live Chroma in full L2→Exit chain tests."""
+    from agentic_core.runtime.contracts.final_evidence_contract import (
+        FinalEvidenceContract,
+        SUPPORT_STATUS_PASS,
+    )
+    from apps_rg.runtime.bindings.c0_binding import C0_GRAPH_LANE_NA_REF
+
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+
+    def _fake_c0_retrieve(**_: object) -> FinalEvidenceContract:
+        return FinalEvidenceContract(
+            request_id="req-w6-exit-chain",
+            run_id="run-w6-exit-chain",
+            app_id="apps_rg",
+            trace_id="trace-w6-exit-chain",
+            l5_certification_ref="test:valid:w6",
+            support_status=SUPPORT_STATUS_PASS,
+            support_target_met=True,
+            final_evidence_digest="digest-w6-exit-chain",
+            graph_expansion_refs=(C0_GRAPH_LANE_NA_REF,),
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_c0_retrieve.c0_retrieve_apps_rg",
+        _fake_c0_retrieve,
+    )
+
+    def _fake_evidence_room(**kwargs: object):
+        from apps_rg.runtime.spine.c0_fec_compose import build_spine_c0_fec_artifact
+
+        return build_spine_c0_fec_artifact(
+            section_id=str(kwargs.get("section_id") or ""),
+            front_spine=kwargs["front_spine"],
+            pool=kwargs["pool"],
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.c0.evidence_room.run_section_c0_evidence_room",
+        _fake_evidence_room,
+    )
 
 
 def _write_json(path: Path, doc: dict) -> None:
@@ -91,13 +138,15 @@ def test_full_l2_then_exit_chain(tmp_path: Path, section_id: str):
     )
     pool = _minimal_pool(section_id)
     payload: dict = {"allowed_fact_ids": list(pool.allowed_fact_ids_ordered), "run_id": "w6_unit"}
-    wire_spine_c0_fec_for_section(
-        artifact_dir=tmp_path,
+    bridge = build_spine_c0_fec_artifact(
         section_id=section_id,
         front_spine=spine,
         pool=pool,
-        runtime_payload=payload,
     )
+    _write_json(tmp_path / FEC_BRIDGE_ARTIFACT, bridge.bridge_doc)
+    payload["section_fec_bridge"] = bridge.bridge_doc
+    payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
+    payload["evidence_contract_consumed"] = True
     _write_json(
         tmp_path / "compiled_prompt_artifact.json",
         {"evidence_contract_consumed": True, "fec_bridge_mode": "section_fec_bridge"},

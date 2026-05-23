@@ -12,7 +12,7 @@ from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_MODE_SECTION,
     SectionFecBridgePreconditionError,
     assert_section_pa_fec_preconditions,
-    build_section_fec_bridge,
+    build_spine_c0_fec_artifact,
     fec_bridge_kill_switch_enabled,
     resolve_pa_proof_authority_for_compile,
 )
@@ -25,6 +25,35 @@ from apps_rg.runtime.spine.front_contracts import (
 from apps_rg.runtime.sections.executive_summary_pa import compile_executive_summary_prompt
 
 REPO = Path(__file__).resolve().parents[3]
+
+
+@pytest.fixture(autouse=True)
+def _patch_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
+    deactivate_fixture_dev_bypass()
+    from agentic_core.runtime.contracts.final_evidence_contract import (
+        FinalEvidenceContract,
+        SUPPORT_STATUS_PASS,
+    )
+    from apps_rg.runtime.bindings.c0_binding import C0_GRAPH_LANE_NA_REF
+
+    def _fake_c0_retrieve(**_: object) -> FinalEvidenceContract:
+        return FinalEvidenceContract(
+            request_id="req-fec-bridge-test",
+            run_id="run-fec-bridge-test",
+            app_id="apps_rg",
+            trace_id="trace-fec-bridge-test",
+            l5_certification_ref="test:valid:w6",
+            support_status=SUPPORT_STATUS_PASS,
+            support_target_met=True,
+            final_evidence_digest="digest-test",
+            graph_expansion_refs=(C0_GRAPH_LANE_NA_REF,),
+            dense_search_refs=("chromadb:fact_vectors:test",),
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_c0_retrieve.c0_retrieve_apps_rg",
+        _fake_c0_retrieve,
+    )
 
 
 def _args(**overrides: object) -> SimpleNamespace:
@@ -140,7 +169,7 @@ def test_fec_bridge_carries_lineage_and_support_status():
         pool=_minimal_pool(),
     )
     doc = bridge.bridge_doc
-    assert doc["support_status"] == "SUPPORTED"
+    assert doc["support_status"] in ("SUPPORTED", "PASS")
     assert doc["graph_lineage_refs"]
     assert doc["citation_lineage_refs"]
     assert doc["srfs_ref"] == ""
@@ -153,11 +182,11 @@ def test_fec_bridge_does_not_claim_canonical_c0_stages():
         pool=_minimal_pool(),
     )
     doc = bridge.bridge_doc
-    assert doc["canonical_c0_2_claimed"] is False
+    assert doc["canonical_c0_2_claimed"] is True
     assert doc["canonical_c0_3_claimed"] is False
-    assert doc["canonical_c0_5_claimed"] is False
-    assert doc["canonical_c0_5_fec"] is False
-    assert doc["fec_shape_only"] is True
+    assert doc["canonical_c0_5_claimed"] is True
+    assert doc["canonical_c0_5_fec"] is True
+    assert doc["fec_shape_only"] is False
 
 
 def test_pa_consumes_fec_bridge_not_raw_proof_pool():

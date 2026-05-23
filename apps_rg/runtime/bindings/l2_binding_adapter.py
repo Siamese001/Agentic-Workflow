@@ -107,13 +107,8 @@ def _legacy_package_driven(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
     return l2_execute_package_driven(route, fec, prompt)
 
 
-def l2_execute_apps_rg(prompt: CompiledPromptArtifact, /) -> SealedL2Artifact:
-    """Execute apps_rg L2 for a compiled prompt (CPA in, sealed artifact out)."""
-    if not isinstance(prompt, CompiledPromptArtifact):
-        raise TypeError(
-            "l2_execute_apps_rg expects a CompiledPromptArtifact; "
-            f"got {type(prompt).__name__}"
-        )
+def _l2_execute_apps_rg_core(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
+    """Core L2 execution paths (stub / v4 envelope / package-driven)."""
     if os.environ.get("APPS_RG_L2_FORCE_STUB", "").strip() == "1":
         return _stub_sealed_from_prompt(prompt)
     if _use_v4_l2_envelope():
@@ -124,6 +119,23 @@ def l2_execute_apps_rg(prompt: CompiledPromptArtifact, /) -> SealedL2Artifact:
             return _stub_sealed_from_prompt(prompt)
         return out  # type: ignore[return-value]
     return _legacy_package_driven(prompt)
+
+
+def l2_execute_apps_rg(prompt: CompiledPromptArtifact, /) -> SealedL2Artifact:
+    """Execute apps_rg L2 for a compiled prompt (CPA in, sealed artifact out)."""
+    if not isinstance(prompt, CompiledPromptArtifact):
+        raise TypeError(
+            "l2_execute_apps_rg expects a CompiledPromptArtifact; "
+            f"got {type(prompt).__name__}"
+        )
+    from apps_rg.runtime.spine.governed_l2_exit_compose import (
+        governed_l2_exit_enabled,
+        governed_l2_seal_integrated,
+    )
+
+    if governed_l2_exit_enabled():
+        return governed_l2_seal_integrated(prompt)
+    return _l2_execute_apps_rg_core(prompt)
 
 
 __all__ = [

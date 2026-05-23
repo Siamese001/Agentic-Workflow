@@ -152,6 +152,10 @@ class ValidatedRequest:
     # concrete type is ``AppsRgU0ReflectionReceipt``. Default ``None`` keeps
     # the field additive — pre-harness call sites are unaffected.
     reflection_receipt: Any = None
+    # W1 spine U0 identity stamps (REQ-U0-IDENTITY-STAMP-001)
+    session_id: str = ""
+    trace_root: str = ""
+    caller_scope_baseline: str = ""
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref
