@@ -103,7 +103,7 @@ python -m pytest tests/_apps_contract/test_pa_e0_examples_ssot.py tests/_apps_co
 | **W4** | Lane repair orchestration | **DONE** |
 | **W5** | C0 / utilization policy (optional) | **DONE** |
 | **W6** | Repair-focused test matrix + CI slice | **DONE** (67 passed) |
-| **W7** | Live proof Brown & Brown | **DEFERRED** (run when qwen vLLM available) |
+| **W7** | Live proof Brown & Brown | **PARTIAL** ([exec_summary_20260523_163635](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_163635) — repair-target X2 PASS; X3_BLOCK on synthesis_quality + mechanical_opener) |
 | **W8** | Closeout receipt | **DONE** |
 
 ---
