@@ -18,6 +18,7 @@ from typing import Any
 import yaml
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
+from apps_rg.prompt_assembly.e0_examples import example_after_text, resolve_e0_for_section
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
 from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
 
@@ -320,28 +321,9 @@ SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
     "infrastructure, with quantitative actuarial and distributed systems depth reinforcing regulated platform delivery."
 )
 
-_EXEC_SUMMARY_EXAMPLES_YAML = (
-    _repo_root() / "apps_rg" / "prompt_assembly" / "examples" / "executive_summary_examples.yaml"
-)
-_examples_by_id_cache: dict[str, dict[str, Any]] | None = None
-
-
-def _executive_summary_examples_by_id() -> dict[str, dict[str, Any]]:
-    global _examples_by_id_cache
-    if _examples_by_id_cache is not None:
-        return _examples_by_id_cache
-    raw = yaml.safe_load(_EXEC_SUMMARY_EXAMPLES_YAML.read_text(encoding="utf-8")) or {}
-    rows = raw.get("examples") if isinstance(raw, dict) else []
-    _examples_by_id_cache = {
-        str(row["id"]): row for row in (rows or []) if isinstance(row, dict) and row.get("id")
-    }
-    return _examples_by_id_cache
-
-
 def load_executive_summary_example_after(example_id: str) -> str:
     """Return the ``after`` prose for a multishot example id (style-only; not proof)."""
-    row = _executive_summary_examples_by_id().get(example_id) or {}
-    return str(row.get("after") or "").strip()
+    return example_after_text("executive_summary", example_id)
 
 
 def format_srfs_style_only_quality_oneshot_block() -> str:
@@ -466,7 +448,11 @@ def build_executive_summary_assembly_input(
         s0_system_preamble=slots.get("S0", ""),
         d0_fences=slots.get("D0"),
         i0_instructions=slots.get("I0", "").rstrip() + "\n",
-        e0_examples=slots.get("E0"),
+        e0_examples=resolve_e0_for_section(
+            "executive_summary",
+            slots.get("E0"),
+            allow_template_fallback=False,
+        ),
         y0_style_preferences=slots.get("Y0"),
         c0_candidate_facts=EvidenceSource(
             source_type="selected_facts",

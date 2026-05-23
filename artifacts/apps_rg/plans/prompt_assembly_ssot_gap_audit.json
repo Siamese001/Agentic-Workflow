@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-05-23T16:22:20.570986+00:00",
+  "bom_id": "bom::apps_rg::resume_generation::v1",
+  "executive_summary_example_authority": {
+    "gold_example_id": "exec_summary_gold_base_resume_001",
+    "gold_authority_label": "E0_STYLE_EXAMPLE_NOT_PROOF",
+    "gold_examples_path": "apps_rg/prompt_assembly/examples/executive_summary_examples.yaml",
+    "note": "Superseded by section_example_authority.executive_summary \u2014 compile hydrates from examples_path.\n"
+  },
+  "w9_lanes": [
+    {
+      "section": "executive_summary",
+      "template_id": "executive_summary.generate_scratch_v1",
+      "pa_module": "executive_summary_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml",
+      "registry_e0_required": true,
+      "registry_e0_optional": false,
+      "bom_e0_globally_required": true,
+      "examples_file": "apps_rg/prompt_assembly/examples/executive_summary_examples.yaml",
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 13,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "resolve_e0_for_section (e0_examples.py)",
+      "examples_wired_at_compile": true,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": true
+    },
+    {
+      "section": "headline",
+      "template_id": "headline_tailor_v1",
+      "pa_module": "headline_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/headline_tailor_v1.yaml",
+      "registry_e0_required": true,
+      "registry_e0_optional": false,
+      "bom_e0_globally_required": true,
+      "examples_file": null,
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 0,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "slots.get(E0) from template only",
+      "examples_wired_at_compile": false,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": null
+    },
+    {
+      "section": "competencies",
+      "template_id": "competency_selector_v2",
+      "pa_module": "competencies_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/competency_selector_v2.yaml",
+      "registry_e0_required": true,
+      "registry_e0_optional": false,
+      "bom_e0_globally_required": true,
+      "examples_file": "apps_rg/prompt_assembly/examples/competencies_examples.yaml",
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 5,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "resolve_e0_for_section (e0_examples.py)",
+      "examples_wired_at_compile": true,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": null
+    },
+    {
+      "section": "unify_bullets",
+      "template_id": "unify_bullet_tailor_v1",
+      "pa_module": "unify_bullets_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
+      "registry_e0_required": true,
+      "registry_e0_optional": false,
+      "bom_e0_globally_required": true,
+      "examples_file": "apps_rg/prompt_assembly/examples/unify_examples.yaml",
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 5,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "resolve_e0_for_section (e0_examples.py)",
+      "examples_wired_at_compile": true,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": null
+    },
+    {
+      "section": "unify_narrative",
+      "template_id": "unify_position_narrative_v1",
+      "pa_module": "unify_narrative_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/unify_position_narrative_v1.yaml",
+      "registry_e0_required": true,
+      "registry_e0_optional": false,
+      "bom_e0_globally_required": true,
+      "examples_file": "apps_rg/prompt_assembly/examples/unify_examples.yaml",
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 5,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "resolve_e0_for_section (e0_examples.py)",
+      "examples_wired_at_compile": true,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": null
+    },
+    {
+      "section": "ibm_bullets",
+      "template_id": "ibm_bullet_tailor_v1",
+      "pa_module": "ibm_bullets_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
+      "registry_e0_required": false,
+      "registry_e0_optional": true,
+      "bom_e0_globally_required": true,
+      "examples_file": null,
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 0,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "slots.get(E0) from template only",
+      "examples_wired_at_compile": false,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": null
+    },
+    {
+      "section": "ibm_narrative",
+      "template_id": "ibm_position_narrative_v1",
+      "pa_module": "ibm_narrative_pa",
+      "template_path": "apps_rg/prompt_assembly/templates/ibm_position_narrative_v1.yaml",
+      "registry_e0_required": false,
+      "registry_e0_optional": true,
+      "bom_e0_globally_required": true,
+      "examples_file": null,
+      "inline_positive_example_ids": [],
+      "examples_yaml_ids_count": 0,
+      "shared_ids_inline_and_yaml": [],
+      "compile_path": "slots.get(E0) from template only",
+      "examples_wired_at_compile": false,
+      "dual_authority_risk": false,
+      "wired_loader_exists_exec_only": null
+    }
+  ],
+  "gaps": [
+    {
+      "gap_id": "PA-DOCS-STALE-PATH",
+      "severity": "P3",
+      "summary": "Documented path missing on disk: apps_rg/prompt_assembly/rg_prompt_profile.yaml"
+    },
+    {
+      "gap_id": "PA-DOCS-STALE-PATH",
+      "severity": "P3",
+      "summary": "Documented path missing on disk: apps_rg/prompt_assembly/rg_style_profile.yaml"
+    },
+    {
+      "gap_id": "PA-DOCS-STALE-PATH",
+      "severity": "P3",
+      "summary": "Documented path missing on disk: apps_rg/prompt_assembly/rg_evidence_profile.yaml"
+    },
+    {
+      "gap_id": "PA-DUAL-CONTRACT-TREES",
+      "severity": "P2",
+      "summary": "section_contracts/ (E3) and section_prompt_contracts/ (W9 runtime) coexist"
+    }
+  ],
+  "gap_count": 4,
+  "p0_count": 0
+}

@@ -12,15 +12,26 @@ All declarative PA artifacts live under `apps_rg/prompt_assembly/`:
 
 | Location | Purpose |
 |----------|---------|
-| `apps_rg/prompt_assembly/prompt_bom.yaml` | Bill of materials — defines 8-slot authority model |
+| `apps_rg/prompt_assembly/prompt_bom.yaml` | Bill of materials — 8-slot authority + `section_example_authority` |
 | `apps_rg/prompt_assembly/prompt_registry.yaml` | Template registry — maps template_id to template files |
-| `apps_rg/prompt_assembly/templates/` | 8 declarative YAML templates (E3/E4/E5) |
-| `apps_rg/prompt_assembly/rg_prompt_profile.yaml` | Power verbs, forbidden phrases, prompt profile |
-| `apps_rg/prompt_assembly/rg_style_profile.yaml` | Voice/tone and anti-patterns |
-| `apps_rg/prompt_assembly/rg_evidence_profile.yaml` | C0 extraction and citation rules |
-| `apps_rg/prompt_assembly/rg_output_schema.json` | R0 schema contract |
+| `apps_rg/prompt_assembly/templates/` | Declarative slot-body YAML (E3/E4/E5 + W9 section templates) |
+| `apps_rg/prompt_assembly/examples/` | E0 voice SSOT catalogs (hydrated at compile via `e0_examples.py`) |
+| `apps_rg/prompt_assembly/e0_examples.py` | Build E0 slot bodies from examples YAML at compile time |
+| `apps_rg/prompt_assembly/pa_core_law_v1.yaml` | Shared PA truth/targeting contracts (referenced by templates) |
+| `apps_rg/prompt_assembly/forbidden_ai_phrases.yaml` | HARD_BLOCK / SOFT_WARN phrase catalog |
+| `apps_rg/prompt_assembly/jd_calibration_contract.yaml` | JD targeting calibration rules |
+| `apps_rg/prompt_assembly/section_prompt_contracts/` | W9 runtime lane contracts (dispatch SSOT) |
+| `apps_rg/rg_output_schema.json` | R0 schema contract (app root) |
 | `apps_rg/prompt_assembly/compiler.py` | Local PA compiler (no runtime wiring) |
 | `apps_rg/prompt_assembly/contracts.py` | Typed contracts: `PromptAssemblyInput`, `CompiledPromptArtifact`, `EvidenceSource` |
+
+### E0 compile hydration (2026-05-23)
+
+W9 lanes with `examples/*.yaml` must **not** duplicate positive few-shot prose in template `slot_bodies.E0`.
+`apps_rg/runtime/sections/*_pa.py` calls `resolve_e0_for_section()` so the model sees YAML gold.
+Executive summary also merges `transformation_example` blocks from the section template supplement.
+
+Gate: `ops_scripts/ci/check_prompt_assembly_ssot.py` · audit: `ops_scripts/apps_rg/prompt_assembly_ssot_gap_audit.py`
 
 ---
 

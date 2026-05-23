@@ -114,13 +114,17 @@ def test_template_yaml_excludes_two_sentence_mandate_and_em_dash():
 
 
 def test_template_includes_many_shot_examples_and_deliberation_guards():
+    from apps_rg.prompt_assembly.e0_examples import build_executive_summary_e0
+
     raw = _TEMPLATE.read_text(encoding="utf-8")
-    assert "<many_shot_examples>" in raw
-    assert raw.count("<positive_example ") >= 1
-    assert "exec_summary_gold_base_resume_001" in raw
-    assert "E0_STYLE_EXAMPLE_NOT_PROOF" in raw
-    assert raw.count("<negative_example ") >= 3
+    assert "hydrated at compile" in raw
     assert raw.count("<transformation_example ") >= 2
+    e0 = build_executive_summary_e0()
+    assert "<many_shot_examples>" in e0
+    assert e0.count("<positive_example ") >= 4
+    assert "exec_summary_gold_base_resume_001" in e0
+    assert "E0_STYLE_EXAMPLE_NOT_PROOF" in e0
+    assert e0.count("<negative_example ") >= 3
     assert "<internal_deliberation_controls>" in raw
     assert "chain-of-thought" in raw.lower() or "chain of thought" in raw.lower()
     assert "Do **not** output chain-of-thought" in raw or "not output chain-of-thought" in raw
@@ -130,13 +134,16 @@ def test_template_includes_many_shot_examples_and_deliberation_guards():
 
 
 def test_template_yaml_includes_north_star_synthesis_contract():
+    from apps_rg.prompt_assembly.e0_examples import build_executive_summary_e0
+
     raw = _TEMPLATE.read_text(encoding="utf-8")
+    e0 = build_executive_summary_e0()
     assert "<north_star_synthesis_contract>" in raw
     assert "SelectedRoleFactSet (SRFS)" in raw
     assert "<composition_heuristics>" in raw
-    assert "exec_summary_pos_outcomes_led_001" in raw
-    assert "credential_dump_exec_summary" in raw
-    assert "mechanism_inventory_exec_summary" in raw
+    assert "exec_summary_pos_outcomes_led_001" in e0
+    assert "exec_summary_neg_credential_dump_001" in e0
+    assert "exec_summary_neg_mechanism_inventory_001" in e0
 
 
 def test_template_yaml_includes_source_fact_id_spacing_examples():
@@ -220,6 +227,10 @@ def test_compiled_srfs_appendix_contains_pool_and_blocking_rules():
 
 def test_non_srfs_compiled_prompt_includes_north_star_synthesis_contract():
     payload = _minimal_payload()
+    payload["evidence_capsule_active"] = True
+    payload["evidence_capsule"] = {
+        "c0_block": "SELECTED_FACT_PLAN (capsule):\n- es_pa_test_fact_001: fact\n",
+    }
     out = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     content = out.artifact.messages[0]["content"]
     assert "<north_star_synthesis_contract>" in content
@@ -243,10 +254,14 @@ def test_srfs_lane_retry_is_x2_aligned_not_five_part_slots():
     assert "do not expand Sentence 4" not in src
 
 
-def test_offline_qwen_stub_classifies_as_plumbing_not_product_proof():
+def test_offline_qwen_stub_classifies_as_plumbing_not_product_proof(monkeypatch: pytest.MonkeyPatch):
     from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
     from apps_rg.runtime.section_proof.mock_runtime_proof_policy import infer_product_quality_blocked_or_mock
 
+    monkeypatch.setattr(
+        "apps_rg.runtime.product_output_policy.product_fail_closed_runtime",
+        lambda: False,
+    )
     status, reason = infer_product_quality_blocked_or_mock(
         runtime_generation_status=OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,
         x2_failed_gate_ids=[],

@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Any
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
+from apps_rg.prompt_assembly.e0_examples import resolve_e0_for_section
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
 from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 from apps_rg.runtime.sections.executive_summary_pa import (
@@ -94,7 +95,7 @@ def compile_unify_bullets_prompt(
         trace_root=f"unify_bullets:{run_id}",
         s0_system_preamble=slots["S0"],
         d0_fences=slots["D0"],
-        e0_examples=slots["E0"],
+        e0_examples=resolve_e0_for_section("unify_bullets", slots.get("E0")),
         y0_style_preferences=slots["Y0"],
         i0_instructions=_legacy_i0(runtime_payload),
         c0_candidate_facts=EvidenceSource(

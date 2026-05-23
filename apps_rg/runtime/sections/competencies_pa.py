@@ -19,6 +19,7 @@ from typing import Any
 import yaml
 
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
+from apps_rg.prompt_assembly.e0_examples import resolve_e0_for_section
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
 from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 
@@ -240,7 +241,7 @@ def build_competencies_assembly_input(
         s0_system_preamble=slots.get("S0", ""),
         d0_fences=slots.get("D0"),
         i0_instructions=slots.get("I0", ""),
-        e0_examples=slots.get("E0"),
+        e0_examples=resolve_e0_for_section("competencies", slots.get("E0")),
         y0_style_preferences=slots.get("Y0"),
         c0_candidate_facts=EvidenceSource(
             source_type="candidate_facts",

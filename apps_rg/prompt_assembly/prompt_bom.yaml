@@ -157,15 +157,35 @@ template_registry_refs:
   - final_unify_v2
 
 # =============================================================================
-# Executive summary — example authority (voice SSOT; not runtime proof)
+# Section example authority (E0 voice SSOT — hydrated at compile via e0_examples.py)
 # =============================================================================
+section_example_authority:
+  executive_summary:
+    examples_path: apps_rg/prompt_assembly/examples/executive_summary_examples.yaml
+    gold_example_id: exec_summary_gold_base_resume_001
+    positive_compile_ids:
+      - exec_summary_gold_base_resume_001
+      - exec_summary_pos_credibility_implied_001
+      - exec_summary_pos_outcomes_led_001
+      - exec_summary_pos_svp_it_strategy_001
+    template_supplement_path: apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml
+    template_supplement_tags:
+      - transformation_example
+  competencies:
+    examples_path: apps_rg/prompt_assembly/examples/competencies_examples.yaml
+  unify:
+    examples_path: apps_rg/prompt_assembly/examples/unify_examples.yaml
+    lanes:
+      - unify_bullets
+      - unify_narrative
+
+# Legacy alias (readers may still reference this key)
 executive_summary_example_authority:
   gold_example_id: exec_summary_gold_base_resume_001
   gold_authority_label: E0_STYLE_EXAMPLE_NOT_PROOF
   gold_examples_path: apps_rg/prompt_assembly/examples/executive_summary_examples.yaml
   note: >
-    Gold paragraph teaches density/register/synthesis only. Proof substrate remains
-    selected facts + claim_ledger + source_fact_ids at runtime.
+    Superseded by section_example_authority.executive_summary — compile hydrates from examples_path.
 
 # =============================================================================
 # Hash Fields for Determinism

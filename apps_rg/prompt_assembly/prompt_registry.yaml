@@ -277,8 +277,8 @@ templates:
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
-    required_slots: [S0, D0, I0, C0, U0, R0]
-    optional_slots: [E0, Y0, H0, M0]
+    required_slots: [S0, D0, I0, C0, U0, E0, R0]
+    optional_slots: [Y0, H0, M0]
     output_contract:
       format: json
       schema_ref: rg_output_schema.json
@@ -292,8 +292,8 @@ templates:
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
-    required_slots: [S0, D0, I0, C0, U0, R0]
-    optional_slots: [E0, Y0, H0, M0]
+    required_slots: [S0, D0, I0, C0, U0, E0, R0]
+    optional_slots: [Y0, H0, M0]
     output_contract:
       format: json
       schema_ref: rg_output_schema.json
@@ -307,8 +307,8 @@ templates:
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
-    required_slots: [S0, D0, I0, C0, U0, R0]
-    optional_slots: [E0, Y0, H0, M0]
+    required_slots: [S0, D0, I0, C0, U0, E0, R0]
+    optional_slots: [Y0, H0, M0]
     output_contract:
       format: json
       schema_ref: rg_output_schema.json
@@ -337,8 +337,8 @@ templates:
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
-    required_slots: [S0, D0, I0, C0, U0, R0]
-    optional_slots: [E0, Y0, H0, M0]
+    required_slots: [S0, D0, I0, C0, U0, E0, R0]
+    optional_slots: [Y0, H0, M0]
     generation_order: 1
     emits_dependency_for: [unify_position_narrative_v1]
     output_contract:
@@ -354,8 +354,8 @@ templates:
     allowed_stage: L2_EXEC
     w9_classification: ACTIVE
     runtime_dispatch_reachable: true
-    required_slots: [S0, D0, I0, C0, U0, R0]
-    optional_slots: [E0, Y0, H0, M0]
+    required_slots: [S0, D0, I0, C0, U0, E0, R0]
+    optional_slots: [Y0, H0, M0]
     generation_order: 2
     depends_on:
       - template_id: unify_bullet_tailor_v1

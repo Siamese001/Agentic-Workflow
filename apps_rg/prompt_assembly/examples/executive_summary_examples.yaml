@@ -68,6 +68,20 @@ examples:
       STYLE VARIANT — passes x2_exec_summary_no_credential_dump: implies credibility without
       AWS/Databricks/FSA/Basel/CCAR label stacks or a trailing cert sentence.
 
+  - id: exec_summary_pos_svp_it_strategy_001
+    category: positive_variant
+    authority: E0_STYLE_EXAMPLE_NOT_PROOF
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one enterprise direction when facts support platform and governance themes. Scales engineering and platform delivery with quantified margin and revenue outcomes woven into a single narrative arc rather than stacked bullets. Leads platform lifecycle and operating-model design when selected facts support scale and governance themes. Delivers proof-backed outcomes across regulated enterprise programs when ALLOWED_SOURCE_FACT_IDS support commercial and delivery metrics.
+    claim_ledger_grounded: false
+    annotation: >
+      STYLE VARIANT — SVP IT strategy register (targeting shapes emphasis only). Four dense
+      sentences; JD/briefing may tilt emphasis but must not add proof.
+
   - id: exec_summary_neg_credential_dump_001
     category: negative
     section: executive_summary

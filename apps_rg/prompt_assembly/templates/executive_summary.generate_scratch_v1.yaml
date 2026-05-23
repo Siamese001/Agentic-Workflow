@@ -1,4 +1,4 @@
-A apps_rg Executive Summary Generate Scratch Template v1 (core-law by reference)
+# apps_rg Executive Summary Generate Scratch Template v1 (core-law by reference)
 # Purpose: Polished SVP executive paragraph from selected facts; JD + briefing = targeting only.
 # Canonical run: python -m apps_rg --section executive_summary
 # Slot SSOT: this file only. Do NOT load strategic_tailor_v1 slot_bodies for executive_summary.
@@ -101,53 +101,8 @@ slot_bodies:
     # U0 filled by executive_summary_pa from runtime payload.
 
   E0: |
-    <many_shot_examples>
-    <!-- Live L2 examples - STYLE_EXAMPLE_NOT_PROOF unless same substance in ALLOWED_SOURCE_FACT_IDS -->
-
-    <positive_example id="exec_summary_gold_base_resume_001" authority="E0_STYLE_EXAMPLE_NOT_PROOF">
-    STYLE_EXAMPLE_NOT_PROOF - density and synthesis register only.
-    Engineering executive building production-grade AI platforms for regulated enterprise environments, with governed
-    runtime architecture spanning orchestration, retrieval, policy enforcement, and traceable execution. Leads platform
-    lifecycle and commercialization, converting complex capabilities into reusable services adopted across programs.
-    Delivers quantified business outcomes when selected facts support them, with quantitative depth woven into platform
-    delivery rather than listed as credentials.
-    </positive_example>
-
-    <positive_example id="exec_summary_pos_credibility_implied_001" authority="E0_STYLE_EXAMPLE_NOT_PROOF">
-    STYLE_EXAMPLE_NOT_PROOF - credibility without cert labels.
-    Engineering executive building governed agentic AI platforms for regulated enterprise delivery with traceable
-    execution and policy discipline. Leads platform lifecycle and commercialization when facts support scale themes.
-    Quantitative actuarial and cloud platform depth inform governance decisions without naming individual certifications.
-    </positive_example>
-
-    <positive_example id="exec_summary_pos_outcomes_led_001" authority="E0_STYLE_EXAMPLE_NOT_PROOF">
-    STYLE_EXAMPLE_NOT_PROOF - outcomes-led ordering variant.
-    Delivered proof-backed revenue and margin outcomes by productizing platform capabilities adopted across enterprise
-    programs when facts support those metrics. Engineering executive building governed AI platforms for regulated
-    environments; leads architecture, operating model, and engineering scale-out when evidenced.
-    </positive_example>
-
-    <positive_example id="exec_summary_pos_svp_it_strategy_001" authority="E0_STYLE_EXAMPLE_NOT_PROOF">
-    STYLE_EXAMPLE_NOT_PROOF - SVP IT strategy register (targeting shapes emphasis only).
-    Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one
-    enterprise direction when facts support platform and governance themes. Scales engineering and platform delivery
-    with quantified margin and revenue outcomes woven into a single narrative arc rather than stacked bullets.
-    </positive_example>
-
-    <negative_example id="credential_dump_exec_summary">
-    Bad: trailing certification inventory listing AWS, Databricks, FSA labels as a closing sentence.
-    Why bad: credential dump (see PRODUCT_SHAPE style gates).
-    </negative_example>
-
-    <negative_example id="mechanism_inventory_exec_summary">
-    Bad: mechanism comma-chain listing routing, orchestration, GraphRAG, sandboxing, policy, traces in one sentence.
-    Why bad: mechanism inventory (see PRODUCT_SHAPE style gates).
-    </negative_example>
-
-    <negative_example id="mechanism_in_opening_exec_summary">
-    Bad: mechanism inventory in sentence 1 (routing, orchestration, GraphRAG in the opener).
-    Why bad: violates north_star sentence-1 thesis rule.
-    </negative_example>
+    <!-- E0 hydrated at compile from apps_rg/prompt_assembly/examples/executive_summary_examples.yaml -->
+    <!-- See apps_rg/prompt_assembly/e0_examples.py - transformation_example blocks merged from this template at compile. -->
 
     <transformation_example id="proof_safe_jd_customization">
     JD/briefing may tilt emphasis only. Bad: claiming JD skills as proof. Good: emphasize evidenced themes only.
@@ -156,8 +111,6 @@ slot_bodies:
     <transformation_example id="no_target_company_employer">
     Bad: Engineering executive at TargetCo delivering outcomes. Good: TargetCo is targeting only; outcomes from facts.
     </transformation_example>
-
-    </many_shot_examples>
 
   Y0: |
     # Y0 advisory - sovereign law via pa_core_law_v1; prefer concrete metrics from allowed facts when available.

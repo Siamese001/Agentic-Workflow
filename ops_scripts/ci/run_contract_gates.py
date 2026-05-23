@@ -1017,6 +1017,10 @@ def main():
             "PA-RG1 apps_rg PA boundary anti-bypass (advisory — baseline clean 2026-05-09)",
             "ops_scripts/ci/check_apps_rg_pa_boundary.py",
         ),
+        (
+            "PA-SSOT prompt assembly E0 examples hydration (advisory)",
+            "ops_scripts/ci/check_prompt_assembly_ssot.py",
+        ),
         # L5CR1 — emit-contract l5_certification_ref field presence scan.
         # AST-based; checks all 18 (file, class) pairs from plan §7.
         # Advisory by default; fail-closed via L5_CERT_REF_GATE_FAIL_CLOSED=1.
@@ -1043,6 +1047,13 @@ def main():
         (
             "APPS-IMPORT apps_rg --help importable (advisory)",
             "ops_scripts/ci/check_apps_rg_import.py",
+        ),
+        # APPS-RG-SINGLE-SPINE — W1 ratchet: no second pipeline in product paths (d8f4a2).
+        # Fail-closed by default. Bypass: APPS_RG_SINGLE_SPINE_GATE_BYPASS=1.
+        # Advisory: APPS_RG_SINGLE_SPINE_GATE_ADVISORY=1.
+        (
+            "APPS-RG-SINGLE-SPINE apps_rg one spine product-path ratchet (fail-closed)",
+            "ops_scripts/ci/check_apps_rg_single_spine.py",
         ),
         (
             "APPS-DRYRUN apps_rg --dry-run smoke (advisory)",
