@@ -201,14 +201,10 @@ Complete breakdown of every pre-commit hook (T0-T21) with rationale, effectivene
 - **Cost**: Minimal (path check)
 - **Optimization**: None needed
 
-### T7.7: Windsurf Governance Health Check (P1)
-- **Script**: `ops_scripts/ci/check_windsurf_governance.py`
-- **Trigger**: Files matching `^\.windsurf/`
-- **What it does**: Validates Windsurf rules/skills/workflows governance health
-- **Rationale**: Prevents governance drift in Windsurf configuration
-- **Effectiveness**: High - maintains Windsurf integrity
-- **Cost**: Medium (file content analysis)
-- **Optimization**: None needed (file-triggered)
+### T7.7: Windsurf Governance Health Check (P1) — **REMOVED 2026-04**
+- **Script**: ~~`ops_scripts/ci/check_windsurf_governance.py`~~ (deleted; never re-homed)
+- **GitHub Action**: ~~`.github/workflows/_deleted/windsurf-governance-health.yml`~~ (removed W1 windsurf-gha-cutover-d9f2a7)
+- **Replacement**: Cursor governance hooks + `contract-gates.yml`; see [windsurf_gha_cutover_closeout.md](cursor/windsurf_gha_cutover_closeout.md)
 
 ### T8: Reject Tracked Generated Artifacts
 - **Script**: `ops_scripts/hooks/reject_tracked_generated_artifacts.py`

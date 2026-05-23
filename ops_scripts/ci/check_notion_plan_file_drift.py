@@ -38,11 +38,19 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from ops_scripts.ci._governance_paths import (  # noqa: E402
+    CURSOR_SCRIPTS_DIR,
+    PLANS_DIR,
+    governance_artifact_log,
+)
 
 import sys as _sys
 
-_sys.path.insert(0, str(Path(REPO_ROOT) / ".windsurf" / "scripts"))
+_sys.path.insert(0, str(CURSOR_SCRIPTS_DIR))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
@@ -59,14 +67,14 @@ NOTION_MAX_PAGES = 20  # 2000 rows safety cap
 
 CLOSED_STATUSES = {"Done", "Closed", "Cancelled", "Archived"}
 
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "plan_file_drift.jsonl"
+AUDIT_LOG = governance_artifact_log("plan_file_drift.jsonl")
 
 
 def _log(record: dict[str, Any]) -> None:
     try:
-        AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
-        with AUDIT_LOG.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+        from ops_scripts.ci._governance_paths import append_governance_artifact_jsonl  # noqa: PLC0415
+
+        append_governance_artifact_jsonl("plan_file_drift.jsonl", record)
     except OSError:
         pass  # fail-open; audit log is best-effort
 

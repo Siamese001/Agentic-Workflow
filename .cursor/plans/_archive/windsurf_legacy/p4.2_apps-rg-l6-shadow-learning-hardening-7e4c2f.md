@@ -1,0 +1,747 @@
+---
+slug: apps-rg-l6-shadow-learning-hardening-7e4c2f
+status: Not Started
+dod_exempt: false
+final: true
+---
+
+> [!IMPORTANT]
+> PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER
+> MASTER_PLAN_REF: .windsurf/plans/apps-rg-master-governed-runtime-hardening.md
+> DISPOSITION: MERGED_INTO_MASTER_WITH_CORE_SPLIT
+> SUPERSEDED_BY_PHASES: Phase 0, Phase 1, Phase 2, Phase 12, Phase 13
+> RETAINED_SCOPE:
+> - no direct semantic cache write gate
+> - delete/quarantine duplicate app-local L6 runtime
+> - canonical RuntimeExhaustBundle handoff
+> - ObserverLaw prohibitions
+> - future-run-only promotion tests
+> MOVED_SCOPE:
+> - G29 and FutureRunPromotionRequest proof fields move to Core G29 plan Phase 4B
+> DEFERRED_SCOPE:
+> - Any LLM judge calibration or learning activation outside future-run promotion
+> CONFLICTS_RESOLVED:
+> - apps_rg must not own a duplicate L6 runtime engine
+
+## Portfolio Consolidation Notes
+This plan has been merged into the master consolidation with core work split to the Core G29 plan. The original wave detail is preserved below. Implementation ownership:
+- Phase 0-2: Master plan (cache write removal, L6 quarantine)
+- Phase 4B: Core G29 plan (G29 gate ID, promotion proof fields)
+- Phase 12: Master plan (L6 canonical handoff verification)
+
+---
+
+# apps_rg L6 Shadow Learning Hardening
+
+**Plan type**: platform_core_change + app_boundary_enforcement  
+**Tier**: T3 — cross-layer, >5 files, architectural invariant enforcement  
+**Precedent**: audit findings G1–G6 from apps_rg Exit/L6/UWG audit session 2026-05-13  
+**Revision**: 2026-05-13 — G1 reclassified CRITICAL/BLOCKER; W2.P1 changed from deprecate to delete; W2 tests replaced; W3 canonical ExhaustBundle source fixed to `agentic_core/runtime/exhaust/`; W1 proposal semantics tightened to proposed_state_diff-only with X3C/UWG/L4 lifecycle.  
+**W0 completed 2026-05-13** — `check_no_direct_semantic_cache_write.py` exits 1 on unmodified codebase; identifies `section_agentic_pipeline.py:72`; 1 XFAIL + 1 PASSED.
+
+---
+
+## 1. Problem Statement
+
+The apps_rg runtime has six audit findings. G1 and G2 are CRITICAL/BLOCKER findings. G3 is a
+representation/false-proof gap. G4–G6 are lower-priority migration, stub, and observability gaps.
+This plan remediates all findings in priority order with CI enforcement that prevents regression.
+
+### Finding Summary
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| G2 | **CRITICAL** | `section_agentic_pipeline.py` calls `write_section_to_semantic_cache()` directly — UWG bypassed |
+| G1 | **CRITICAL / BLOCKER** | `apps_rg/runtime/l6_shadow_learning.py` is a duplicate app-local L6 runtime engine outside canonical core. Contains its own `RuntimeExhaustBundle`, `ProposalPacket`, and `L6ShadowLearningProducer` — each duplicating a canonical core type. Zero callers makes it dormant, not acceptable. Must be deleted. |
+| G3 | Medium | Section pipeline labels step "L6 Observe" — is only `print()` + span label, not real L6 |
+| G4 | Low | `build_apps_rg_l6_proposer()` intentionally raises `RuntimeError` — migration gate, no fallback |
+| G5 | Low | `CompletedRunEvaluator._extract_entity_aliases()` hardcoded zeros — documented stub |
+| G6 | Low | `_emit_section_span()` uses `print()` instead of real OTel bridge |
+
+### Constraints (hard rules, non-negotiable)
+
+- `agentic_core/` MUST NOT gain any apps_rg-specific literals, branches, or logic.
+- No second L6 runtime engine. Canonical engine is `agentic_core/L6_learning/package_driven_l6_binding.py`.
+- `apps_rg/` may own only: profile YAML/JSON, calibration refs, taxonomy/schema dataclasses.
+- Section pipeline MUST NOT write semantic cache directly (ever). UWG is the only write-admission path.
+- L6 MUST NOT rescue, mutate, or reroute the current run.
+- L6 MUST NOT emit X3.
+- L6 MUST NOT write L4 directly.
+- No silent patching of prompts, rubrics, policy, cache, memory, index, benchmarks, judges, or provider config.
+
+---
+
+## 2. Wave Structure
+
+| Wave | Phase IDs | Focus | Est. Tokens | Status |
+|------|-----------|-------|-------------|--------|
+| W0 | W0.P1 | Baseline proof — verify G2 is reproducible in CI | ~2k | ✅ Done |
+| W1 | W1.P1–P3 | Block G2: remove direct cache write, replace with inert proposal receipt | ~8k | Not Started |
+| W2 | W2.P1–P2 | Eliminate duplicate L6 runtime surface: delete `l6_shadow_learning.py`, migrate schema-only types, fix G3 label | ~6k | Not Started |
+| W3 | W3.P1–P2 | RuntimeExhaustBundle handoff validation: verify Exit → L6 boundary | ~6k | Not Started |
+| W4 | W4.P1–P2 | G29 + ObserverLaw hardening: firewall contract + all 7 prohibition proofs | ~5k | Not Started |
+| W5 | W5.P1–P2 | Promotion/UWG proof: full proof-field schema + gate | ~5k | Not Started |
+| W6 | W6.P1–P3 | CI / 99-proof closeout: all 10 gates registered + DoD verification | ~4k | Not Started |
+
+---
+
+## 3. Phase-Level Summary
+
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|----------|-------|---------------|-------------|-------------|--------|
+| W0.P1 | Baseline negative CI | `ops_scripts/ci/check_no_direct_semantic_cache_write.py` (new) | Needs AST import-path analysis | ~2k | ✅ Done |
+| W1.P1 | Remove direct cache call | `apps_rg/runtime/section_agentic_pipeline.py` | Must not break section pipeline execution | ~3k | Not Started |
+| W1.P2 | Inert cache write proposal | `apps_rg/runtime/bindings/exit_binding.py`, `apps_rg/runtime/schemas/__init__.py` | Schema extension only, no runtime activation | ~3k | Not Started |
+| W1.P3 | Test W1 | `tests/governance/test_apps_rg_uwg_cache_write_sovereignty.py` (new) | AST + import negative tests | ~2k | Not Started |
+| W2.P1 | Delete duplicate L6 engine + migrate schema types | `apps_rg/runtime/l6_shadow_learning.py` (delete), `apps_rg/runtime/schemas/__init__.py` (absorb), `apps_rg/config/domain_contract/` (quarantine) | Must verify no callers; migrate only schema-only types | ~3k | Not Started |
+| W2.P2 | Fix fake L6 span label | `apps_rg/runtime/section_agentic_pipeline.py` | Label rename only, no logic change | ~2k | Not Started |
+| W2.P3 | CI: no apps_rg runtime L6 engine exists | `ops_scripts/ci/check_no_apps_rg_runtime_l6_engine.py` (new) | AST scan for runtime engine classes in apps_rg/runtime/ | ~1k | Not Started |
+| W3.P1 | Exit → RuntimeExhaustBundle | `apps_rg/runtime/bindings/exit_binding.py` | Must use canonical `agentic_core.runtime.exhaust.runtime_exhaust_bundle.build_runtime_exhaust_bundle` — not the duplicate in `l6_shadow_learning.py` (deleted in W2) | ~3k | Not Started |
+| W3.P2 | Test handoff contract | `tests/governance/test_apps_rg_l6_handoff_contract.py` (new) | Verify sealed bundle shape at boundary | ~3k | Not Started |
+| W4.P1 | G29 LearningFirewall gate | `agentic_core/L6_learning/promotion_gauntlet.py`, new `ops_scripts/ci/check_g29_firewall.py` | Gate must be core-owned, app-agnostic | ~3k | Not Started |
+| W4.P2 | ObserverLaw 7-prohibition test | `tests/runtime/test_l6_observer_law_prohibitions.py` (new) | Covers all 7 ObserverLawReceipt assertions | ~2k | Not Started |
+| W5.P1 | FutureRunPromotionRequest proof fields | `agentic_core/L6_learning/__init__.py` | Add 3 missing required fields | ~2k | Not Started |
+| W5.P2 | Promotion UWG admission test | `tests/governance/test_l6_promotion_uwg_required.py` (new) | Gauntlet → UWG → future-run-only path | ~3k | Not Started |
+| W6.P1 | Register all 10 CI gates | `ops_scripts/ci/run_contract_gates.py` | Ordering after existing L6 gates | ~2k | Not Started |
+| W6.P2 | DoD verification smoke runs | — | Dry-run passes with no direct cache write | ~1k | Not Started |
+| W6.P3 | Plan closeout + memory writeback | — | Memory MCP entity update | ~1k | Not Started |
+
+---
+
+## 4. Wave Specifications
+
+---
+
+### W0 — Baseline Proof
+
+**Objective**: Prove G2 is detectable by a CI gate *before* W1 lands. The gate runs, finds the
+violation, and exits non-zero (advisory). This establishes a negative-control baseline that W1 will
+flip to green.
+
+**Files touched**:
+
+- `ops_scripts/ci/check_no_direct_semantic_cache_write.py` *(new)*
+
+**What the gate does**:
+
+1. Walk the AST of every `*.py` under `apps_rg/runtime/` and `agentic_core/`.
+2. Flag any `import` of `apps_rg.cache.r1b_semantic` (or `from apps_rg.cache.r1b_semantic import ...`) outside the allowed caller set.
+3. Allowed callers: `apps_rg/cache/r1b_semantic.py` itself (definition), and any file whose path starts with `apps_rg/cache/` or `agentic_core/runtime/uwg/` (UWG admission surface only).
+4. Any other import of `write_section_to_semantic_cache` = violation.
+5. Exit 1 on violation; exit 0 when clean.
+6. Bypass: `DIRECT_CACHE_WRITE_BYPASS=1`.
+7. Report: `artifacts/ci/direct_semantic_cache_write.json`.
+
+**Tests added**:
+
+- `tests/governance/test_apps_rg_uwg_cache_write_sovereignty.py` — negative-control test:
+  - `test_section_pipeline_currently_violates_gate()`: runs the gate against the UNFIXED codebase,
+    asserts exit code is non-zero (proving the gate is not a no-op).
+  - This test is marked `@pytest.mark.xfail(strict=True, reason="W0 baseline: violation expected until W1 lands")`.
+  - W1.P3 will un-xfail it.
+
+**Acceptance criteria**:
+- Gate runs and exits 1 on the unmodified codebase.
+- Gate identifies `apps_rg/runtime/section_agentic_pipeline.py` as the violating file.
+- `xfail` test passes (failure confirmed as expected).
+
+**Rollback note**: W0 adds a new gate file only. Removing `check_no_direct_semantic_cache_write.py`
+fully reverts W0. No existing code is changed.
+
+---
+
+### W1 — Block Direct Semantic Cache Bypass
+
+**Objective**: Remove the direct `write_section_to_semantic_cache()` call from the section
+pipeline. Replace it with an inert `SectionCacheWriteProposal` that is placed on the
+`ExitBindingResult` for future UWG admission. The section pipeline no longer writes anything
+durable.
+
+**Files touched**:
+
+| File | Change |
+|------|--------|
+| `apps_rg/runtime/section_agentic_pipeline.py` | Remove `from apps_rg.cache.r1b_semantic import write_section_to_semantic_cache`; replace `_write_section_to_semantic_cache()` body with inert proposal builder; return `SectionCacheWriteProposal` not a cache key |
+| `apps_rg/runtime/schemas/__init__.py` | Add `SectionCacheWriteProposal` dataclass (frozen, inert — fields: `section_id`, `cache_key`, `content_digest`, `metadata_ref`, `proposal_status="PENDING_UWG"`) |
+| `apps_rg/runtime/bindings/exit_binding.py` | `ExitBindingResult` gains optional `cache_write_proposals: tuple[SectionCacheWriteProposal, ...]` field (default empty tuple); Exit binding does NOT write these — it merely surfaces them |
+| `tests/governance/test_apps_rg_uwg_cache_write_sovereignty.py` | Remove `xfail`; add positive-control tests (see below) |
+
+**What the section pipeline produces instead of a direct write**:
+
+```python
+# BEFORE (violation):
+cache_key = _write_section_to_semantic_cache(section_spec, content, ctx)
+
+# AFTER (inert proposed_state_diff evidence only):
+cache_proposal = SectionCacheWriteProposal(
+    section_id=section_spec.section_id,
+    cache_key=_compute_cache_key(section_spec, content, ctx),
+    content_digest=hashlib.sha256(content.encode()).hexdigest()[:32],
+    metadata_ref=f"section://{section_spec.section_id}",
+    proposal_status="PENDING_UWG",
+    # proposed_state_diff evidence only — not a write request
+)
+ctx.cache_write_proposal = cache_proposal
+```
+
+`SectionCacheWriteProposal` is **proposed_state_diff evidence only**. It is NOT a write request.
+The lifecycle is:
+
+```
+Section pipeline → SectionCacheWriteProposal (inert)
+    ↓ surfaced on ExitBindingResult.cache_write_proposals
+Exit binding → surfaces proposal; does NOT activate it
+    ↓ Exit emits X3Disposition
+X3C (future) → may produce CommitRequest candidate from proposal
+    ↓
+UWG → admits CommitRequest; issues UWG receipt
+    ↓
+L4/cache surface → persists after UWG receipt
+```
+
+Exit MUST NOT activate the proposal. Exit MUST NOT call `write_section_to_semantic_cache`.
+X3C is the only surface that may produce a `CommitRequest` from a `SectionCacheWriteProposal`.
+UWG is the only surface that may admit it. L4/cache surface is the only surface that may
+persist it after UWG receipt. Nothing is written to `artifacts/apps_rg/semantic_cache/` at
+runtime via this path.
+
+**Tests added** (in `test_apps_rg_uwg_cache_write_sovereignty.py`, replacing xfail):
+
+- `test_gate_clean_after_w1()`: runs `check_no_direct_semantic_cache_write` gate, asserts exit 0.
+- `test_section_pipeline_produces_inert_proposal_not_cache_write()`: instantiates
+  `execute_section_full_pipeline()` in dry-run mode; asserts `ctx.cache_write_proposal` is a
+  `SectionCacheWriteProposal` with `proposal_status="PENDING_UWG"`.
+- `test_semantic_cache_dir_not_written_during_section_pipeline()`: after pipeline execution,
+  asserts `artifacts/apps_rg/semantic_cache/` was not mutated (directory either absent or
+  unchanged from before the call).
+- `test_cache_write_proposal_is_frozen()`: asserts `SectionCacheWriteProposal` is a frozen
+  dataclass (immutable after construction).
+- `test_r1b_semantic_not_imported_in_section_pipeline()`: AST-walks
+  `section_agentic_pipeline.py`; asserts no `ImportFrom` node references `r1b_semantic`.
+
+**Acceptance criteria**:
+- `check_no_direct_semantic_cache_write.py` exits 0 against the patched codebase.
+- All 5 new governance tests pass.
+- `execute_section_full_pipeline()` dry-run completes without writing any file under
+  `artifacts/apps_rg/semantic_cache/`.
+- `ExitBindingResult.cache_write_proposals` is a `tuple[SectionCacheWriteProposal, ...]`
+  not a `list` (immutability signal).
+
+**Rollback note**: Revert `section_agentic_pipeline.py` to its pre-W1 state and delete the
+`SectionCacheWriteProposal` dataclass. The `ExitBindingResult` field is additive; removing it
+is safe. No tests outside W1 depend on this field.
+
+---
+
+### W2 — Eliminate Duplicate L6 Runtime Surface (G1 — CRITICAL)
+
+**Objective**: Permanently remove the duplicate L6 runtime engine in `apps_rg/runtime/`. The
+module contains three canonical-type duplicates that create a shadow runtime path:
+
+| Duplicate in `l6_shadow_learning.py` | Canonical location |
+|--------------------------------------|--------------------|
+| `RuntimeExhaustBundle` (dataclass) | `agentic_core/runtime/exhaust/runtime_exhaust_bundle.py` |
+| `ProposalPacket` (dataclass) | `agentic_core/L6_learning/__init__.py` |
+| `L6ShadowLearningProducer` (engine class) | `agentic_core/L6_learning/package_driven_l6_binding.py` |
+
+Schema-only types (`SectionCompletedEvalRecord`, `AggregateCompletedEvalRecord`) already exist
+in `apps_rg/runtime/schemas/__init__.py`. They do not move — they are already in the right place.
+
+#### W2.P1 — Delete `apps_rg/runtime/l6_shadow_learning.py`
+
+**Pre-deletion verification** (must complete before deletion):
+1. Confirm zero importers of `l6_shadow_learning` in `apps_rg/runtime/` (already confirmed by
+   audit — zero callers).
+2. Confirm `SectionCompletedEvalRecord` and `AggregateCompletedEvalRecord` are already present
+   in `apps_rg/runtime/schemas/__init__.py` (confirmed — both exist there).
+3. Confirm no test file imports from `apps_rg.runtime.l6_shadow_learning`.
+
+**Action**: Delete `apps_rg/runtime/l6_shadow_learning.py`.
+
+If any test fixture is found to import from this module, move only that fixture's referenced
+schema types to `apps_rg/runtime/schemas/__init__.py` (they may already be there) before
+deletion. The engine classes (`L6ShadowLearningProducer`, `produce_l6_shadow_learning`,
+`create_runtime_exhaust_bundle`) are NOT migrated — they are duplicate implementations with
+no authorized callers and must be deleted with the file.
+
+**Non-action**: The convenience function `produce_l6_shadow_learning` and factory
+`create_runtime_exhaust_bundle` are NOT moved to any other apps_rg location. They conflict
+with canonical core factories and have no migration path within apps_rg scope.
+
+**Quarantine option** (if deletion is blocked by git history tooling): Move to
+`archives/apps_rg/l6_shadow_learning_deleted_2026-05-13.py` with a tombstone header. The
+`archives/` directory is gitignored from production imports (gate: `check_no_archives_imports.py`).
+Prefer outright deletion.
+
+#### W2.P2 — Fix Fake L6 Span Label (G3)
+
+**File touched**: `apps_rg/runtime/section_agentic_pipeline.py`
+
+**Change**: Rename `_emit_section_span` call sites from stage label `"Exit/L6"` → `"Exit_observe"`;
+rename `[L6-SHADOW]` print prefix → `[SECTION-OBSERVE]`. Add docstring clarification to
+`_emit_section_span`:
+```
+# NOTE: This is telemetry span emission only. It is NOT L6 learning.
+# Real L6 (CompletedRunEvaluator → RCA → ProposalPacket) runs post-Exit
+# via agentic_core.L6_learning.package_driven_l6_binding, not here.
+```
+
+#### W2.P3 — CI Gate: No apps_rg Runtime L6 Engine
+
+**File**: `ops_scripts/ci/check_no_apps_rg_runtime_l6_engine.py` *(new)*
+
+What it checks:
+1. AST-scan all `*.py` under `apps_rg/runtime/` (excluding `schemas/` and `bindings/`
+   exit_binding builder).
+2. Flag any class definition whose name contains `L6`, `Shadow`, `ShadowLearning`,
+   `Evaluator`, `Producer`, or `Binding` and lives in `apps_rg/runtime/` (not `agentic_core/`).
+3. Flag any `from apps_rg.runtime import` or `import apps_rg.runtime` that resolves to a
+   name containing `l6`, `shadow_learning`, `exhaust_bundle`.
+4. Flag any re-definition of `RuntimeExhaustBundle` or `ProposalPacket` outside
+   their canonical modules.
+5. Exit 1 on violation. Bypass: `APPS_RG_L6_ENGINE_BYPASS=1`.
+
+**Tests added** (`tests/governance/test_apps_rg_l6_surface_ownership.py` — new file):
+- `test_no_apps_rg_runtime_l6_engine_module()`: asserts `apps_rg/runtime/l6_shadow_learning.py`
+  does not exist on disk after W2.P1 deletion.
+- `test_l6_shadow_learning_not_importable_from_runtime()`: attempts
+  `import apps_rg.runtime.l6_shadow_learning`; asserts `ModuleNotFoundError` is raised.
+- `test_apps_rg_l6_schema_only_surfaces_are_config_or_schemas()`: asserts that the only
+  L6-named types importable from `apps_rg` are `SectionCompletedEvalRecord` and
+  `AggregateCompletedEvalRecord` from `apps_rg.runtime.schemas`, and that neither
+  `L6ShadowLearningProducer` nor `produce_l6_shadow_learning` is importable from any
+  `apps_rg.*` path.
+- `test_package_driven_l6_only_runtime_engine()`: imports
+  `agentic_core.L6_learning.package_driven_l6_binding`; asserts `PackageDrivenL6Binding`
+  exists; then confirms no other class in `agentic_core/L6_learning/` has `Binding` in its
+  name (single runtime engine invariant).
+- `test_no_fake_l6_label_in_section_pipeline()`: AST-walks `section_agentic_pipeline.py`;
+  asserts no string literal `"L6"` appears inside an `_emit_section_span` argument list.
+- `test_l6_label_not_used_as_substitute_for_contracts()`: asserts
+  `apps_rg.runtime.section_agentic_pipeline` does not export `CompletedEvalRecord`,
+  `RCAPacket`, or `RuntimeExhaustBundle`.
+
+**Acceptance criteria**:
+- `apps_rg/runtime/l6_shadow_learning.py` does not exist.
+- `import apps_rg.runtime.l6_shadow_learning` raises `ModuleNotFoundError`.
+- No L6 engine class defined under `apps_rg/runtime/`.
+- `check_no_apps_rg_runtime_l6_engine.py` exits 0.
+- 6 new governance tests pass.
+- No `"L6"` span label in `_emit_section_span` calls.
+
+**Rollback note**: W2.P1 deletion is the highest-risk step. If a downstream test breaks,
+restore from git (`git checkout HEAD apps_rg/runtime/l6_shadow_learning.py`) and add the
+missing schema to `apps_rg/runtime/schemas/__init__.py` before re-attempting deletion.
+W2.P2/P3 are purely additive and independently rollback-safe.
+
+---
+
+### W3 — RuntimeExhaustBundle Handoff Validation
+
+**Objective**: Prove that Exit produces a well-formed `RuntimeExhaustBundle` that can be handed
+to `PackageDrivenL6Binding.process_completed_run()` without core containing any apps_rg literals.
+This is a contract validation wave — it adds a typed builder in `apps_rg/` that assembles the
+bundle from Exit outputs, with no logic leaking into `agentic_core/`.
+
+**Files touched**:
+
+| File | Change |
+|------|--------|
+| `apps_rg/runtime/bindings/exit_binding.py` | Add `build_exhaust_bundle_from_exit(exit_result: ExitBindingResult) -> RuntimeExhaustBundle` — thin mapper to canonical factory |
+| `apps_rg/runtime/schemas/__init__.py` | No change required — `RuntimeExhaustBundle` lives in `agentic_core/runtime/exhaust/runtime_exhaust_bundle.py` and is built through `build_runtime_exhaust_bundle` |
+| `tests/governance/test_apps_rg_l6_handoff_contract.py` *(new)* | Contract tests (see below) |
+
+**`build_exhaust_bundle_from_exit` spec**:
+
+Canonical import: `from agentic_core.runtime.exhaust.runtime_exhaust_bundle import build_runtime_exhaust_bundle`
+
+This is **not** a new function — it is a call to the existing core factory. The apps_rg exit
+binding adds a thin wrapper that maps `ExitBindingResult` fields to the factory's keyword
+arguments:
+
+```python
+def build_exhaust_bundle_from_exit(
+    exit_result: ExitBindingResult,
+    learning_profile_ref: str = "",
+    meta_feedback_profile_ref: str = "",
+) -> RuntimeExhaustBundle:
+    """Map apps_rg ExitBindingResult to canonical RuntimeExhaustBundle.
+    
+    apps_rg owns this mapper. Core owns the bundle schema and factory.
+    Called ONLY post-Exit (exit_disposition_ref is required by the factory).
+    Raises ValueError if exit_disposition_ref is empty (factory guard).
+    """
+    from agentic_core.runtime.exhaust.runtime_exhaust_bundle import build_runtime_exhaust_bundle
+    return build_runtime_exhaust_bundle(
+        request_id=exit_result.disposition.request_id,
+        run_id=exit_result.disposition.run_id,
+        trace_root=exit_result.disposition.trace_id,
+        gate_mesh_result_ref=exit_result.gate_mesh_digest or "",
+        exit_disposition_ref=exit_result.disposition_digest,  # required — factory raises if empty
+        sealed_result_ref=exit_result.sealed_digest_ref or "",
+        learning_profile_ref=learning_profile_ref,
+        meta_feedback_profile_ref=meta_feedback_profile_ref,
+    )
+```
+
+The factory's `__post_init__` enforces `created_after_exit=True` and `current_run_closed=True`
+at construction — this is the primary boundary guard. The wrapper does NOT use the deleted
+`create_runtime_exhaust_bundle` from `l6_shadow_learning.py`.
+
+Fields populated:
+- `request_id` ← `exit_result.disposition.request_id`
+- `run_id` ← `exit_result.disposition.run_id`
+- `trace_root` ← `exit_result.disposition.trace_id`
+- `gate_mesh_result_ref` ← `exit_result.gate_mesh_digest` (G24–G27 digest ref, not dict)
+- `exit_disposition_ref` ← `exit_result.disposition_digest` (**required** — factory raises if empty)
+- `sealed_result_ref` ← `exit_result.sealed_digest_ref`
+- `learning_profile_ref`, `meta_feedback_profile_ref` ← profile ref strings from apps_rg L6 profile config
+- All other fields default to empty/tuple — acknowledged as stubs for future wiring
+
+**Tests added**:
+
+- `test_build_exhaust_bundle_populates_required_fields()`: calls `build_exhaust_bundle_from_exit` with a
+  synthetic `ExitBindingResult`; asserts `run_id`, `trace_root`, and `exit_disposition_ref` are
+  non-empty strings.
+- `test_exhaust_bundle_is_frozen()`: asserts `RuntimeExhaustBundle` is a frozen dataclass
+  (raises `FrozenInstanceError` on attribute assignment).
+- `test_exhaust_bundle_uses_canonical_factory()`: asserts `build_exhaust_bundle_from_exit`
+  in `apps_rg/runtime/bindings/exit_binding.py` calls
+  `agentic_core.runtime.exhaust.runtime_exhaust_bundle.build_runtime_exhaust_bundle` (not
+  any apps_rg-local factory, not the deleted `create_runtime_exhaust_bundle`).
+- `test_canonical_exhaust_bundle_raises_without_exit_ref()`: calls
+  `build_runtime_exhaust_bundle` directly with empty `exit_disposition_ref`; asserts
+  `ValueError` is raised (factory boundary guard).
+- `test_canonical_exhaust_bundle_raises_if_not_after_exit()`: constructs
+  `RuntimeExhaustBundle(created_after_exit=False, ...)` directly; asserts `ValueError`.
+- `test_build_exhaust_bundle_contains_no_apps_rg_literals_in_core()`: reads source of
+  `agentic_core/runtime/exhaust/runtime_exhaust_bundle.py`; asserts no string `"apps_rg"`
+  appears outside comments.
+- `test_exhaust_bundle_builder_only_in_apps_rg()`: asserts `build_exhaust_bundle_from_exit`
+  is defined only under `apps_rg/`.
+- `test_l6_runs_only_after_exit_boundary()`: reuses the AST sentinel from
+  `test_apps_rg_l6_learning_loop.py` pattern — asserts `system_learning` and
+  `package_driven_l6_binding` are not imported inside the `governed_run` `with` block in
+  `apps_rg/__main__.py`.
+
+**Acceptance criteria**:
+- `build_exhaust_bundle_from_exit` exists in `apps_rg/runtime/bindings/exit_binding.py`.
+- Returns a `RuntimeExhaustBundle` with all required fields populated (stubs acknowledged).
+- `agentic_core/runtime/exhaust/runtime_exhaust_bundle.py` contains no `"apps_rg"` string in
+  executable lines.
+- 5 new tests pass.
+
+**Rollback note**: `build_exhaust_bundle_from_exit` is a new export appended to `exit_binding.py`. Removing
+it is fully safe — no existing callers. W3 tests are independent.
+
+---
+
+### W4 — G29 Learning Firewall + ObserverLaw Hardening
+
+**Objective**: Establish a named gate identifier `G29` (Learning Firewall) that must be satisfied
+before any `FutureRunPromotionRequest` proceeds. Prove all 7 ObserverLaw prohibitions are checked.
+
+#### W4.P1 — G29 LearningFirewall Gate
+
+G29 does not yet exist as a named constant. This wave introduces it.
+
+**Files touched**:
+
+| File | Change |
+|------|--------|
+| `agentic_core/L6_learning/promotion_gauntlet.py` | Add `GATE_ID = "G29"` class constant to `PromotionGauntlet`; add `gate_id: str = "G29"` to `L6GauntletResult` (already in `__init__.py`); emit `gate_id` in result |
+| `agentic_core/L6_learning/__init__.py` | Add `gate_id: str = ""` field to `L6GauntletResult` |
+| `ops_scripts/ci/check_g29_firewall.py` *(new)* | CI gate (see spec below) |
+| `apps_rg/config/domain_contract/l6_learning_profile.json` *(new if absent)* | Profile asserting `g29_required: true` |
+
+**`check_g29_firewall.py` spec**:
+
+1. AST-scan `agentic_core/L6_learning/` and all callers of `run_gauntlet` or
+   `validate_promotion` across the repo.
+2. Assert every callsite that constructs a `FutureRunPromotionRequest` either:
+   a. Passes through `PromotionGauntlet.run_gauntlet()`, OR
+   b. Is a test with explicit `@pytest.mark.skip` + reason.
+3. Assert `PromotionGauntlet.GATE_ID == "G29"` (import check).
+4. Assert no code path exists where `uwg_review_status="APPROVED"` is set before gauntlet runs
+   (static: grep for `uwg_review_status="APPROVED"` outside `universal_write_gate.py`).
+5. Exit 0 = all clean. Exit 1 = violation. Bypass: `G29_FIREWALL_BYPASS=1`.
+
+**Tests added** (`tests/runtime/test_l6_learning_firewall.py` — extend existing file):
+
+- `test_g29_gate_id_is_canonical()`: asserts `PromotionGauntlet.GATE_ID == "G29"`.
+- `test_g29_result_carries_gate_id()`: runs `PromotionGauntlet().run_gauntlet(...)` with a valid
+  request; asserts `result.gate_id == "G29"`.
+- `test_no_promotion_without_gauntlet()`: constructs a `FutureRunPromotionRequest` with
+  `uwg_review_status="PENDING"` and asserts it cannot be passed to a hypothetical activator
+  without gauntlet pass (structural: asserts `gauntlet_result.passed` is checked before any
+  `uwg_review_status` mutation).
+
+#### W4.P2 — ObserverLaw 7-Prohibition Tests
+
+**File touched**: `tests/runtime/test_l6_observer_law_prohibitions.py` *(new)*
+
+**Tests** (one per prohibition — parameterized for brevity):
+
+```python
+PROHIBITIONS = [
+    ("x3_emitted",                   "no_x3_emission"),
+    ("cache_write_attempted",        "no_cache_write"),
+    ("vector_store_write_attempted", "no_vector_store_write"),
+    ("l4_write_attempted",           "no_l4_write"),
+    ("current_run_reroute_attempted","no_reroute_attempt"),
+    ("current_run_reexecute_attempted","no_reexecute_attempt"),
+    ("mutation_attempted",           "no_current_run_mutation"),
+]
+```
+
+- `test_observer_law_blocks_each_prohibition(violation_key, receipt_field)`: constructs
+  `ObserverLawValidator`; passes `l6_outputs` with `violation_key=True`; asserts `receipt_field`
+  on returned `ObserverLawReceipt` is `False` and `evidence_refs` is non-empty.
+- `test_observer_law_clean_run_all_true()`: passes all-False `l6_outputs`; asserts every
+  assertion field is `True` and `evidence_refs` is empty.
+- `test_observer_law_receipt_is_frozen()`: asserts `ObserverLawReceipt` is frozen.
+
+**Acceptance criteria**:
+- `PromotionGauntlet.GATE_ID == "G29"`.
+- `L6GauntletResult.gate_id` populated on all gauntlet runs.
+- All 7 ObserverLaw prohibition tests pass.
+- `check_g29_firewall.py` exits 0 on the W4-patched codebase.
+
+**Rollback note**: Adding `GATE_ID` and `gate_id` fields are additive. Removing them is safe.
+`check_g29_firewall.py` can be deleted. All tests are new files.
+
+---
+
+### W5 — Promotion / UWG Proof
+
+**Objective**: Harden `FutureRunPromotionRequest` to require all proof fields for mission-critical
+promotion types; prove no proposal can activate without gauntlet → UWG → future-run-start chain.
+
+#### W5.P1 — FutureRunPromotionRequest Proof Field Hardening
+
+Current `FutureRunPromotionRequest` has `replay_proof_ref`, `regression_proof_ref`,
+`safety_proof_ref`, `calibration_proof_ref` — all default `""`. The gauntlet already checks
+these at run-time. This wave adds three missing fields:
+
+**File touched**: `agentic_core/L6_learning/__init__.py`
+
+**Changes to `FutureRunPromotionRequest`**:
+
+```python
+# New fields (all default ""):
+completed_eval_record_ref: str = ""    # ref to CompletedEvalRecord evidence
+rca_packet_ref: str = ""               # ref to RCAPacket
+audit_manifest_ref: str = ""           # signed audit manifest ref (for Fort Knox path)
+```
+
+Add corresponding gauntlet checks in `PromotionGauntlet.run_gauntlet()`:
+
+```python
+# Check 7: completed_eval_record_ref required
+if not promotion_request.completed_eval_record_ref:
+    failures.append("COMPLETED_EVAL_RECORD_REQUIRED: Missing eval record ref")
+
+# Check 8: rca_packet_ref required
+if not promotion_request.rca_packet_ref:
+    failures.append("RCA_PACKET_REQUIRED: Missing RCA packet ref")
+```
+
+`audit_manifest_ref` is advisory (warning, not failure) until Fort Knox proof path is wired.
+
+**File touched**: `agentic_core/L6_learning/promotion_gauntlet.py`
+
+#### W5.P2 — Promotion UWG Admission Test
+
+**File touched**: `tests/governance/test_l6_promotion_uwg_required.py` *(new)*
+
+**Tests**:
+
+- `test_promotion_requires_eval_record_ref()`: builds `FutureRunPromotionRequest` with empty
+  `completed_eval_record_ref`; runs gauntlet; asserts `passed=False` and failures contain
+  `"COMPLETED_EVAL_RECORD_REQUIRED"`.
+- `test_promotion_requires_rca_packet_ref()`: same for `rca_packet_ref`.
+- `test_promotion_with_all_refs_passes_gauntlet()`: builds well-formed request with all refs
+  populated; runs gauntlet; asserts `passed=True`.
+- `test_no_auto_activate_ever()`: asserts `auto_activate=False` is the only allowed default;
+  asserts gauntlet fails immediately when `auto_activate=True`.
+- `test_uwg_review_status_pending_required()`: asserts gauntlet fails when
+  `uwg_review_status="PRE_APPROVED"`.
+- `test_activation_only_future_run()`: asserts gauntlet fails when
+  `target_future_run_window="CURRENT_RUN"`.
+- `test_proposal_inert_until_uwg()`: constructs `ProposalPacket` with `safety_review_status=
+  "PENDING_UWG"`; asserts `is_inert() is True`; asserts `is_inert()` returns `False` only when
+  `safety_review_status="ACTIVATED"`.
+- `test_cache_memory_prompt_policy_rubric_require_uwg()`: for each `ProposalType` that touches
+  a durable surface (`CACHE_THRESHOLD`, `PROMPT_IMPROVEMENT`, `RUBRIC_IMPROVEMENT`,
+  `RETRIEVAL_PROFILE`, `CHUNKING_PROFILE`, `FRESHNESS_TTL`), asserts the corresponding
+  `ProposalPacket` has `safety_review_status="PENDING_UWG"` and `activation_trigger=
+  "FUTURE_RUN_START"` on construction.
+
+**Acceptance criteria**:
+- `FutureRunPromotionRequest` has `completed_eval_record_ref`, `rca_packet_ref`,
+  `audit_manifest_ref` fields.
+- Gauntlet fails when either ref is absent (checks 7+8 added).
+- 8 new tests pass.
+
+**Rollback note**: `FutureRunPromotionRequest` field additions are additive (default `""`).
+Removing the two new gauntlet checks loosens the gate — acceptable rollback. All tests are new.
+
+---
+
+### W6 — CI / 99-Proof Closeout
+
+**Objective**: Register all 10 new CI gates; run DoD smoke-run; confirm zero regressions; update
+plan status and memory.
+
+#### W6.P1 — Register All 10 CI Gates
+
+**File touched**: `ops_scripts/ci/run_contract_gates.py`
+
+Gates to register (in order, after existing L6/AEH gates):
+
+| Gate ID | File | Description | Fail-closed env var |
+|---------|------|-------------|---------------------|
+| `L6-W1` | `check_no_direct_semantic_cache_write.py` | No direct cache write outside UWG | `DIRECT_CACHE_WRITE_FAIL_CLOSED=1` |
+| `L6-W2a` | `check_no_fake_l6_span_label.py` *(new, small)* | No "L6" span label used as learning substitute | `FAKE_L6_SPAN_FAIL_CLOSED=1` |
+| `L6-W2b` | `check_package_driven_l6_only.py` *(new)* | Only `package_driven_l6_binding` is a runtime L6 engine | `PACKAGE_DRIVEN_L6_ONLY_FAIL_CLOSED=1` |
+| `L6-W2c` | `check_apps_rg_l6_profile_only.py` *(new)* | `apps_rg/` imports no `agentic_core.L6_learning` runtime class except via profile resolver | `APPS_RG_L6_PROFILE_ONLY_FAIL_CLOSED=1` |
+| `L6-W3` | *(no separate gate — covered by W1+W3 tests)* | — | — |
+| `L6-W4a` | `check_g29_firewall.py` | G29 required before promotion | `G29_FIREWALL_FAIL_CLOSED=1` |
+| `L6-W4b` | `check_no_l6_current_run_mutation.py` *(new)* | Static: no L6 code path mutates current run | `L6_MUTATION_FAIL_CLOSED=1` |
+| `L6-W4c` | `check_no_l6_x3_emit.py` *(new)* | Static: L6 never calls X3 emit path | `L6_X3_EMIT_FAIL_CLOSED=1` |
+| `L6-W4d` | `check_no_l6_direct_l4_write.py` *(new)* | Static: L6 never calls L4 write path directly | `L6_L4_WRITE_FAIL_CLOSED=1` |
+
+**Notes on new small gate files**:
+
+- `check_no_fake_l6_span_label.py`: AST-scan `apps_rg/runtime/section_agentic_pipeline.py`;
+  assert no call to `_emit_section_span` passes a stage string containing `"L6"`.
+- `check_package_driven_l6_only.py`: grep `agentic_core/L6_learning/` for class definitions
+  ending in `Binding` or `Engine`; assert only `PackageDrivenL6Binding` exists as a runtime
+  binding class.
+- `check_apps_rg_l6_profile_only.py`: AST-scan all `apps_rg/` Python files; assert no
+  `ImportFrom` imports `CompletedRunEvaluator`, `RCASynthesizer`, `FutureRunProposalBuilder`,
+  or `PromotionGauntlet` directly (these are core-owned; apps_rg accesses L6 only through
+  profile config, not by importing core engine classes).
+- `check_no_l6_current_run_mutation.py`: AST-scan `agentic_core/L6_learning/`; assert no
+  function in that package accepts or returns `X3Disposition` as a non-read-only type, and no
+  write to `current_run_*` attributes.
+- `check_no_l6_x3_emit.py`: grep `agentic_core/L6_learning/` for `emit_x3`, `X3Disposition(`,
+  or `exit_status=`; assert zero matches.
+- `check_no_l6_direct_l4_write.py`: grep `agentic_core/L6_learning/` for `L4`, `l4_write`,
+  `state_write`; assert zero matches outside comments.
+
+All gates: advisory by default, fail-closed via env var, bypass via `*_BYPASS=1`.
+
+#### W6.P2 — DoD Smoke Run
+
+Run `python -m apps_rg --dry-run` with `APPS_RG_L2_FORCE_STUB=1`. Confirm:
+1. Exit code 0.
+2. No file written under `artifacts/apps_rg/semantic_cache/`.
+3. `07_Exit_disposition.json` present in run dir.
+4. No import of `write_section_to_semantic_cache` traceable from the section pipeline path.
+
+#### W6.P3 — Plan Closeout
+
+- Update plan status to Completed in Notion.
+- Write memory entity `apps-rg-l6-hardening-7e4c2f` with wave summary, gap closures, and
+  key invariants (G29=`PromotionGauntlet.GATE_ID`, UWG=only write path, apps_rg L6 = profile
+  config only).
+
+**Acceptance criteria**:
+- All 10 gates registered in `run_contract_gates.py`.
+- All gates exit 0 on the W1–W5 patched codebase (or advisory WARN — no ERROR).
+- `python -m apps_rg --dry-run` exits 0 with no semantic cache write.
+- Memory writeback complete.
+
+**Rollback note**: Removing gate registrations from `run_contract_gates.py` is safe. Gate files
+are new additions.
+
+---
+
+## 5. Complete File Inventory
+
+### New files (canonical paths per §31 SSOT routing)
+
+| Path | Type | Wave |
+|------|------|------|
+| `ops_scripts/ci/check_no_direct_semantic_cache_write.py` | CI gate | W0 |
+| `ops_scripts/ci/check_no_apps_rg_runtime_l6_engine.py` | CI gate | W2 |
+| `ops_scripts/ci/check_g29_firewall.py` | CI gate | W4 |
+| `ops_scripts/ci/check_no_fake_l6_span_label.py` | CI gate | W6 |
+| `ops_scripts/ci/check_package_driven_l6_only.py` | CI gate | W6 |
+| `ops_scripts/ci/check_apps_rg_l6_profile_only.py` | CI gate | W6 |
+| `ops_scripts/ci/check_no_l6_current_run_mutation.py` | CI gate | W6 |
+| `ops_scripts/ci/check_no_l6_x3_emit.py` | CI gate | W6 |
+| `ops_scripts/ci/check_no_l6_direct_l4_write.py` | CI gate | W6 |
+| `tests/governance/test_apps_rg_uwg_cache_write_sovereignty.py` | Tests | W0/W1 |
+| `tests/governance/test_apps_rg_l6_surface_ownership.py` | Tests | W2 (6 tests) |
+| `tests/governance/test_apps_rg_l6_handoff_contract.py` | Tests | W3 |
+| `tests/runtime/test_l6_observer_law_prohibitions.py` | Tests | W4 |
+| `tests/governance/test_l6_promotion_uwg_required.py` | Tests | W5 |
+| `apps_rg/config/domain_contract/l6_learning_profile.json` | Config | W4 (if absent) |
+
+### Deleted files
+
+| Path | Wave | Reason |
+|------|------|--------|
+| `apps_rg/runtime/l6_shadow_learning.py` | W2 | Duplicate runtime L6 engine with 3 canonical-type conflicts; zero callers; CRITICAL blocker |
+
+### Modified files
+
+| Path | Wave | Change summary |
+|------|------|----------------|
+| `apps_rg/runtime/section_agentic_pipeline.py` | W1, W2 | Remove direct cache write + `r1b_semantic` import; rename L6 label; replace write with `SectionCacheWriteProposal` |
+| `apps_rg/runtime/schemas/__init__.py` | W1 | Add frozen `SectionCacheWriteProposal` (proposed_state_diff evidence) |
+| `apps_rg/runtime/bindings/exit_binding.py` | W1, W3 | Add `cache_write_proposals` field to result; add `build_exhaust_bundle_from_exit` (calls canonical factory) |
+| `agentic_core/L6_learning/__init__.py` | W5 | Add 3 fields to `FutureRunPromotionRequest`; add `gate_id` to `L6GauntletResult` |
+| `agentic_core/L6_learning/promotion_gauntlet.py` | W4, W5 | Add `GATE_ID = "G29"`; add checks 7+8 |
+| `ops_scripts/ci/run_contract_gates.py` | W6 | Register 10 new gates |
+| `tests/runtime/test_l6_learning_firewall.py` | W4 | Extend with G29 tests |
+
+---
+
+## 6. Definition of Done
+
+| # | Criterion | Verification |
+|---|-----------|--------------|
+| DoD-1 | `check_no_direct_semantic_cache_write.py` exits 0 on final codebase | `python ops_scripts/ci/check_no_direct_semantic_cache_write.py` → exit 0 |
+| DoD-2 | Section pipeline dry-run writes zero files under `artifacts/apps_rg/semantic_cache/` | `python -m apps_rg --dry-run ...` + directory absence check |
+| DoD-3 | `SectionCacheWriteProposal.proposal_status == "PENDING_UWG"` on construction | Unit test `test_section_pipeline_produces_inert_proposal_not_cache_write` passes |
+| DoD-4 | `PromotionGauntlet.GATE_ID == "G29"` | `test_g29_gate_id_is_canonical` passes |
+| DoD-5 | All 7 ObserverLaw prohibitions individually tested | `test_l6_observer_law_prohibitions.py` 9-test sweep passes |
+| DoD-6 | `apps_rg/runtime/l6_shadow_learning.py` does not exist on disk | `test_no_apps_rg_runtime_l6_engine_module` passes; `check_no_apps_rg_runtime_l6_engine.py` exits 0 |
+| DoD-7 | No `"apps_rg"` string in executable lines of `agentic_core/L6_learning/` | `test_build_exhaust_bundle_contains_no_apps_rg_literals_in_core` passes |
+| DoD-8 | All 10 CI gates registered in `run_contract_gates.py` and exit 0 (or advisory WARN) | `python ops_scripts/ci/run_contract_gates.py` no ERROR |
+| DoD-9 | `FutureRunPromotionRequest` has `completed_eval_record_ref`, `rca_packet_ref`, `audit_manifest_ref` | `test_promotion_requires_eval_record_ref` + `test_promotion_requires_rca_packet_ref` pass |
+
+### Verification-vs-Deferral
+
+| Item | Decision |
+|------|----------|
+| Real `PackageDrivenL6Binding` wiring into apps_rg dispatch | Deferred — W3 validates the contract, not the live wiring. Full wiring is a separate plan. |
+| X3C CommitRequest production from `SectionCacheWriteProposal` | Deferred — X3C surface not yet wired. W1 stops at surfacing the inert proposal on `ExitBindingResult`. |
+| Fort Knox `audit_manifest_ref` enforcement (check 9 in gauntlet) | Deferred — advisory warning in W5, strict enforcement in Fort Knox phase |
+| `_extract_entity_aliases` stub implementation (G5) | Deferred — documented stub, not blocking readiness receipts |
+| Real OTel bridge in `_emit_section_span` (G6) | Deferred — print→bridge migration is a telemetry plan concern |
+| `build_apps_rg_l6_proposer()` RuntimeError migration (G4) | No action — intentional migration gate, covered by existing RuntimeError |
+
+---
+
+## 7. Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Removing `write_section_to_semantic_cache` call breaks downstream tests that assert cache exists | W0 gate will surface these tests; W1 uses dry-run mode for validation |
+| `agentic_core/L6_learning/__init__.py` field addition breaks existing `FutureRunPromotionRequest` construction sites | All new fields default `""` — no existing construction site breaks |
+| G29 gauntlet checks 7+8 cause existing test fixtures to fail | All existing gauntlet test fixtures pass empty refs → will now fail; W5 updates them |
+| Section pipeline `SectionAgenticContext` field addition (`cache_write_proposal`) collides with future W5+ work | Field is additive on a dataclass; W5 does not touch `SectionAgenticContext` |
+
+---
+
+## 8. Non-Goals
+
+- Implementing real L6 learning signal extraction (G5 stub remains).
+- Wiring `PackageDrivenL6Binding` into the live dispatch call path (future plan).
+- Adding `apps_rg`-specific logic to `agentic_core/`.
+- Migrating `system_learning/runtime_hitl_consumer.py` (separate governance surface).
+- Changing Fort Knox certification or runtime certification phases.

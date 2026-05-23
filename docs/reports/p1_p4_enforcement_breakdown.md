@@ -142,7 +142,7 @@
 
 ### 4. Config/Governance Checks
 
-##### `ops_scripts/ci/check_windsurf_governance.py` (T7.7)
+##### ~~`ops_scripts/ci/check_windsurf_governance.py`~~ (T7.7 — **REMOVED**, see windsurf-gha-cutover-d9f2a7)
 - **Severity:** P2 (HIGH)
 - **Purpose:** Validates governance configuration health
 - **Enforcement:** Governance violations → SeverityLevel.HIGH
@@ -252,7 +252,7 @@
 - T6: Hollow File Gate → `ops_scripts/ci/hollow_file_gate.py` (`.pre-commit-config.yaml:275`)
 - T7: Report Location SSOT Check → `ops_scripts/ci/check_report_location.py` (`.pre-commit-config.yaml:284`)
 - T7.5: Plan Location SSOT Gate → `ops_scripts/ci/plan_location_gate.py` (`.pre-commit-config.yaml:294`)
-- T7.7-P1: Windsurf Governance Health Check → `ops_scripts/ci/check_windsurf_governance.py` (`.pre-commit-config.yaml:307`)
+- T7.7-P1: Windsurf Governance Health Check — **removed** (was `check_windsurf_governance.py`; cutover plan windsurf-gha-cutover-d9f2a7)
 - T8: Reject Tracked Generated Artifacts → `ops_scripts/ci/reject_generated_artifacts_tracked.py` (`.pre-commit-config.yaml:320`)
 - T10: Module Collision Guard → `ops_scripts/ci/module_collision_guard.py` (`.pre-commit-config.yaml:331`)
 - T11.3: Pytest Config SSOT → `ops_scripts/ci/pytest_config_ssot.py` (`.pre-commit-config.yaml:410`)

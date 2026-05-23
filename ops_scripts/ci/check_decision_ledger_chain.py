@@ -48,7 +48,7 @@ LEDGER_FAMILY_GLOB = str(REPO_ROOT / "artifacts" / "ledgers" / "*.sqlite")
 BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_ledger_chain_bypass.jsonl"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_ledger_chain_violations.jsonl"
 
-# Extend sys.path to import author_gate_ledger_integrity from .windsurf/scripts
+# Extend sys.path to import author_gate_ledger_integrity from .cursor/scripts
 _SCRIPTS_DIR = REPO_ROOT / ".cursor" / "scripts"
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))

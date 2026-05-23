@@ -78,7 +78,10 @@ def _pfc1_gate_cmd() -> list[str]:
 # PRE-WRITE HOOKS INTEGRATION
 def validate_pre_write_hooks():
     """Validate all pre-write hook skills."""
-    skills_dir = ROOT / ".windsurf" / "skills"
+    # Cursor SSOT; Windsurf mirror retained for legacy hook parity only.
+    skills_dir = ROOT / ".cursor" / "skills"
+    if not skills_dir.is_dir():
+        skills_dir = ROOT / ".windsurf" / "skills"
     failed_skills: list[str] = []
     if not skills_dir.is_dir():
         print(f"❌ Skills directory missing: {skills_dir}")
@@ -1208,6 +1211,14 @@ def main():
         (
             "HK-CONS Hook consolidation growth check (advisory)",
             "ops_scripts/ci/check_hook_consolidation.py",
+        ),
+        (
+            "MIRROR-H Cursor .windsurf mirror health (advisory)",
+            "ops_scripts/ci/check_cursor_governance_mirror_health.py",
+        ),
+        (
+            "WIND-DEL .windsurf deletion readiness report (advisory)",
+            "ops_scripts/ci/check_windsurf_deletion_readiness.py",
         ),
         # GOV-1..GOV-4 — Agentic Core governance enforcement gates
         # Plan: agentic-core-governance-remediation-c4e8a2 W1.

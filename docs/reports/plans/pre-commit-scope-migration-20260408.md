@@ -15,7 +15,7 @@
 | T6.5 zero-loss-refactor-verifier | Detected hollow Python files after refactoring | Whole `agentic_core/` + `tools/generate/` | Full repo scan |
 | T7 check-report-location | Validated `docs/` staged files against SSOT report location rules | Staged `docs/` files | Redundant / low value |
 | T7.5 plan-location-gate | Blocked commits if plans were in wrong directory | Staged `.md` files | Location SSOT changed |
-| T7.7 windsurf-governance-health | Cross-ref archived files, RULES_INDEX accuracy, duplicate content in `.windsurf/` | All `.windsurf/` | `archives/` deleted; was ineffective at commit time |
+| T7.7 windsurf-governance-health | Cross-ref archived files, RULES_INDEX accuracy, duplicate content in `.windsurf/` | All `.windsurf/` | **Removed** from pre-commit and GHA (`windsurf-gha-cutover-d9f2a7`); script never re-homed |
 | T7.9 adg-grep-ban-gate | Blocked staged `.py` using grep/rg as ADG substitutes | Staged Python | `always_run: true` was bypassing file filter |
 | T7.10 no-unconditional-xfail-gate | Blocked `@pytest.mark.xfail` without `strict=True` | Staged Python | `always_run: true` without scope |
 | T7.11 hitl-decision-record-gate | Blocked plan docs without `HITL_DECISION_RECORD` section | Staged plan `.md` | Low signal; plan format rarely wrong |

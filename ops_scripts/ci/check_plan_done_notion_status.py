@@ -46,12 +46,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "plan_done_notion_status.json"
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 SKIP_SUBDIRS = {"_archive", "_orphan_review"}
 
 # Notion API
 try:
-    sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
     from _notion_constants import (  # type: ignore[import-not-found]
         NOTION_API_VERSION,
         NOTION_BASE,

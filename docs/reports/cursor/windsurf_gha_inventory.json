@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-05-23",
+  "plan_id": "windsurf-gha-cutover-d9f2a7",
+  "tombstone_script_present": false,
+  "tombstone_script_path": "ops_scripts/ci/check_windsurf_governance.py",
+  "branch_protection_audit": {
+    "status": "skipped",
+    "reason": "gh CLI not available in execution environment",
+    "manual_check": "Confirm no required check named 'Windsurf Governance Health Check'"
+  },
+  "workflows": [
+    {
+      "path": ".github/workflows/_deleted/windsurf-governance-health.yml",
+      "windsurf_coupling": "dedicated",
+      "delete_workflow": true,
+      "wave": "W1"
+    },
+    {
+      "path": ".github/workflows/_deleted/main_ci_pipeline.yml",
+      "windsurf_coupling": "none",
+      "delete_workflow": true,
+      "wave": "W1"
+    },
+    {
+      "path": ".github/workflows/author-gate-gates.yml",
+      "windsurf_coupling": "paths_and_runtime",
+      "delete_workflow": false,
+      "migrate_to_cursor": true,
+      "wave": "W2-W4"
+    },
+    {
+      "path": ".github/workflows/contract-gates.yml",
+      "windsurf_coupling": "via_run_contract_gates",
+      "delete_workflow": false,
+      "keep_gates": ["check_windsurf_config_schema.py", "check_mcp_editor_parity.py"]
+    },
+    {
+      "path": ".github/workflows/notion-plan-file-drift-nightly.yml",
+      "windsurf_coupling": "plan_root_comment",
+      "delete_workflow": false,
+      "migrate_to_cursor": true,
+      "wave": "W2-W3"
+    },
+    {
+      "path": ".github/workflows/adg-ci-gates.yml",
+      "windsurf_coupling": "artifacts/windsurf/",
+      "delete_workflow": false,
+      "note": "artifact namespace rename deferred"
+    },
+    {
+      "path": ".github/workflows/apps-e2e-harness-nightly.yml",
+      "windsurf_coupling": "schema_paths",
+      "delete_workflow": false,
+      "migrate_to_cursor": true,
+      "wave": "W2"
+    }
+  ],
+  "cursor_ssot_already_present": {
+    "plans": ".cursor/plans/",
+    "author_gate_schemas": ".cursor/schemas/decision_ledger.schema.sql",
+    "author_gate_scripts": ".cursor/scripts/post_commit_outcome_binder.py",
+    "ledger_state": ".cursor/state/refactor_decisions/"
+  }
+}

@@ -53,7 +53,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -61,7 +61,7 @@ from _notion_constants import (  # noqa: E402
     query_url,
 )
 
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "plan_notion_wave_freshness.json"
 
 _ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started"})

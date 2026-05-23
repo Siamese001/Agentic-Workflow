@@ -40,10 +40,7 @@ from ops_scripts.ci._adg_wiring_gate_base import (  # noqa: E402
     WiringGate,
     cli_exit,
 )
-from agentic_core.L0_routing.config.path_constants import (
-    ADR_DIR,
-    WINDSURF_PLANS_DIR,
-)
+from agentic_core.L0_routing.config.path_constants import ADR_DIR
 
 try:
     import yaml
@@ -58,7 +55,7 @@ REQUIRED_FIELDS = ("gate", "scope", "reason", "owner", "expires_on")
 PROVENANCE_KEYS = ("adr", "plan")
 
 ADR_GLOB = f"{ADR_DIR}/ADR-*.md"
-PLAN_GLOB = f"{WINDSURF_PLANS_DIR}/*-*.md"
+PLAN_GLOB = ".cursor/plans/*-*.md"
 
 
 def _load_waivers(path: Path) -> list[dict[str, Any]]:

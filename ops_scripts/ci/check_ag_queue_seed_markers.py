@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 
 # Prose patterns that signal a future Author-Gate decision in the plan text.
 # Skip occurrences surrounded by quotes, backticks, or parentheses (examples).

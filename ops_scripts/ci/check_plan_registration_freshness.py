@@ -44,7 +44,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HELPER_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_plan_registration.py"
+HELPER_PATH = REPO_ROOT / ".cursor" / "scripts" / "_plan_registration.py"
 
 _PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 _NOTION_VERSION = "2025-09-03"

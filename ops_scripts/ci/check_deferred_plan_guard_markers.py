@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 
 # Machine-readable guard marker
 _MARKER_RE = re.compile(r"^\s*DO_NOT_IMPLEMENT_GUARD\s*:", re.MULTILINE)

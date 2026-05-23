@@ -63,7 +63,7 @@ except ImportError:  # fail-open: tqdm unavailable in hook context
 
 FAIL_POLICY = "open"
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jsonl"
+CAPTURE_LOG_NAME = "deferred_scope_capture.jsonl"
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
 # Notion target
@@ -138,15 +138,17 @@ def _utc_today_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
-def _ensure_log_parent() -> None:
-    CAPTURE_LOG.parent.mkdir(parents=True, exist_ok=True)
+def _capture_log_path() -> Path:
+    from ops_scripts.ci._governance_paths import governance_artifact_log  # noqa: PLC0415
+
+    return governance_artifact_log(CAPTURE_LOG_NAME)
 
 
 def _append_log(record: dict[str, Any]) -> None:
-    _ensure_log_parent()
     try:
-        with CAPTURE_LOG.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+        from ops_scripts.ci._governance_paths import append_governance_artifact_jsonl  # noqa: PLC0415
+
+        append_governance_artifact_jsonl(CAPTURE_LOG_NAME, record)
     except OSError as exc:
         print(f"[deferred_scope_capture] log write failed: {exc}", file=sys.stderr)
 
@@ -402,12 +404,20 @@ def _notion_duplicate_exists(plan_file: str, wave: str, phase: str, token: str) 
 
 def _recent_duplicate(plan: str, wave: str, phase: str, window_minutes: int = DEDUP_WINDOW_MINUTES) -> bool:
     """Return True if the same (plan, wave, phase) was logged in the last hour."""
-    if not CAPTURE_LOG.exists():
+    capture_log = _capture_log_path()
+    if not capture_log.exists():
+        from ops_scripts.ci._governance_paths import read_governance_artifact_jsonl_paths  # noqa: PLC0415
+
+        paths = read_governance_artifact_jsonl_paths(CAPTURE_LOG_NAME)
+        if not paths:
+            return False
+        capture_log = paths[0]
+    if not capture_log.exists():
         return False
     cutoff = datetime.now(timezone.utc).timestamp() - window_minutes * 60
     key = f"{plan}|{wave}|{phase}"
     try:
-        with CAPTURE_LOG.open("r", encoding="utf-8") as fh:
+        with capture_log.open("r", encoding="utf-8") as fh:
             lines = fh.readlines()
         iterator = _tqdm(lines, desc="dedup-scan", unit="line", disable=True) if _tqdm else lines
         try:
@@ -601,7 +611,7 @@ def main() -> int:
         summary = ", ".join(f"{k}={v}" for k, v in sorted(summary_counts.items()))
         print(
             f"[deferred_scope_capture] markers={len(marker_bodies)} {summary} "
-            f"-> log: {CAPTURE_LOG.relative_to(REPO_ROOT)}",
+            f"-> log: {_capture_log_path().relative_to(REPO_ROOT)}",
             file=sys.stderr,
         )
 

@@ -46,7 +46,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_capture.jsonl"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "wave_marker_emission_gate.json"
 

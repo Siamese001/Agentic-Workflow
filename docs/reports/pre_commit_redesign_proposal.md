@@ -26,7 +26,7 @@
 - hollow-file-gate
 - check-report-location
 - plan-location-gate
-- windsurf-governance-health
+- windsurf-governance-health (**removed** — windsurf-gha-cutover-d9f2a7)
 - reject-generated-artifacts-tracked
 - check-tooling-apps-boundary
 - module-collision-guard
