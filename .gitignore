@@ -175,3 +175,9 @@ models--BAAI--bge-m3/
 
 # apps_rg run outputs — should not accumulate in scripts/ (W2 cleanup 2026-05-06)
 apps_rg/scripts/generated_resume_*.json
+
+# Accidental repo-root venv (2026-05-23) — not the canonical .venv/ under project policy
+.venv.broken_20260522/
+/bin/
+/pyvenv.cfg
+/uv.lock
