@@ -1,4 +1,4 @@
-"""Executive summary product shape: 4–5 sentences, quality gates, tokenizer, briefing, prompt authority."""
+"""Executive summary product shape: 5–6 sentences, max 140 words, quality gates, briefing, prompt authority."""
 
 from __future__ import annotations
 
@@ -19,19 +19,20 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
-    check_exec_summary_sentence_count_4_5,
+    check_exec_summary_sentence_count_5_6,
     check_prompt_template_authority,
     check_synthesis_quality,
     EXPECTED_PROMPT_ID,
 )
 
 
-def _four_good_sentences() -> str:
+def _five_good_sentences() -> str:
     return (
         "Engineering executive builds governed agentic AI platforms for regulated enterprise delivery. "
         "The leader scales deterministic routing, orchestration, and policy-gated execution across programs. "
         "Platform lifecycle work ties architecture decisions to commercial adoption and operating discipline. "
-        "Prior roles show measurable delivery outcomes grounded in selected executive facts."
+        "Delivery outcomes include measurable margin and cycle-time improvements grounded in selected facts. "
+        "Prior roles show quantitative platform depth across regulated enterprise programs."
     )
 
 
@@ -72,14 +73,17 @@ def test_jd_alignment_proof_flags_require_briefing_false():
     assert reason is not None
 
 
-def test_sentence_count_4_5_pass_and_legacy_2_3_fails():
-    good = _four_good_sentences()
-    assert check_exec_summary_sentence_count_4_5(good)[0] is True
+def test_sentence_count_5_6_pass_and_legacy_bands_fail():
+    good = _five_good_sentences()
+    assert check_exec_summary_sentence_count_5_6(good)[0] is True
     legacy = "One sentence here. Two sentences here."
-    assert check_exec_summary_sentence_count_4_5(legacy)[0] is False
-    assert check_exec_summary_sentence_count_4_5(legacy)[0] is False
+    assert check_exec_summary_sentence_count_5_6(legacy)[0] is False
+    four_only = _five_good_sentences().rsplit(". ", 1)[0] + "."
+    assert check_exec_summary_sentence_count_5_6(four_only)[0] is False
     six = " ".join([f"Sentence {i} states executive platform value." for i in range(6)])
-    assert check_exec_summary_sentence_count_4_5(six)[0] is False
+    assert check_exec_summary_sentence_count_5_6(six)[0] is True
+    seven = " ".join([f"Sentence {i} states executive platform value." for i in range(7)])
+    assert check_exec_summary_sentence_count_5_6(seven)[0] is False
 
 
 def test_mechanism_inventory_fails():
@@ -182,14 +186,14 @@ def test_style_exemplars_pass_no_credential_dump_gate():
         assert ok, f"{label}: {reason}"
 
 
-def test_synthesis_quality_requires_four_sentences():
+def test_synthesis_quality_requires_five_sentences():
     short = (
         "An experienced engineering executive with a strong background in platforms. "
         "This individual scaled teams and reduced errors by 40%. "
         "Additionally, their expertise provides leadership."
     )
     assert check_synthesis_quality(short)[0] is False
-    assert check_exec_summary_sentence_count_4_5(short)[0] is False
+    assert check_exec_summary_sentence_count_5_6(short)[0] is False
     assert check_exec_summary_meta_filler_patterns(short)[0] is False
     assert check_exec_summary_paragraph_max_words(short, {})[0] is True
 
@@ -210,8 +214,8 @@ def test_run_x2_gates_does_not_emit_retired_srfs_product_gate_ids():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     gates = run_x2_gates(
-        resume_display_text=_four_good_sentences(),
-        parsed_output={"resume_display_text": _four_good_sentences(), "jd_alignment": {}},
+        resume_display_text=_five_good_sentences(),
+        parsed_output={"resume_display_text": _five_good_sentences(), "jd_alignment": {}},
         claim_ledger=[{"claim_text": "c", "source_fact_ids": ["fact_engineering_platform_001"]}],
         text_claim_coverage={"sentences": [], "overall_pass": True},
         allowed_fact_ids={"fact_engineering_platform_001"},

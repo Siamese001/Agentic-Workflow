@@ -161,7 +161,7 @@ Rubric dimensions:
 6. synthesis_quality: **executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, visible process language
    (e.g. “selected facts”, “active-voice delivery”, “governance discipline” as filler), and excessive naked capability lists without narrative.
 
-**Target shape:** **4–5 dense sentences** (one executive paragraph); commercially aware technical platform story; metrics/credentials only when ledger-backed.
+**Target shape:** **5–6 dense sentences** (one executive paragraph, max 140 words); commercially aware technical platform story; metrics/credentials only when ledger-backed.
 
 Decisive failure triggers:
 - unsupported business metric or credential (including pasted gold-example numbers/titles not in ledger)

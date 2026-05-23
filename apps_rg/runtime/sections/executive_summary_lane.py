@@ -324,7 +324,7 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 
 
 def coerce_resume_display_sentence_count_band(resume: str) -> str:
-    """No post-hoc sentence-band coercion — X2 enforces 4–5 sentences."""
+    """No post-hoc sentence-band coercion — X2 enforces 5–6 sentences."""
     return resume
 
 
@@ -456,6 +456,8 @@ def _proof_pool_mode_from_payload(runtime_payload: dict[str, Any]) -> str:
 
 def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     """Offline SRFS stub: five-sentence arc, >=95 words when possible, X2 SRFS gates safe."""
+    from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MAX_WORDS
+
     facts = list(runtime_payload["selected_fact_plan"]["facts"])
     claims: list[dict[str, Any]] = []
     for f in facts:
@@ -533,7 +535,7 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 
     text = f"{s1} {s2} {s3} {s4} {s5}"
     wc = len(re.findall(r"\S+", text))
-    if wc > 160:
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s2 = (
             "Designs and operates governed runtime architectures that combine deterministic routing, multi-agent "
             "orchestration, graph-aware retrieval, validation controls, and traceability to improve reliability, "
@@ -549,21 +551,21 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
                 s4 += "."
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
-    if wc > 160:
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s4 = "Delivered measurable engineering outcomes grounded in selected executive facts."
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
-    if wc > 160:
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s3 = (
             "Leads platform lifecycle and commercialization, converting delivery into reusable services across programs."
         )
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
-    if wc > 160:
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s5 = "Brings disciplined ownership across programs grounded in selected executive facts."
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
-    if wc > 160:
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s4 = "Delivered measurable outcomes grounded in selected facts."
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
@@ -597,8 +599,8 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     if wc < 95:
         pool_small = True
 
-    # Padding for the 95-word floor can push the stub over 160 words; re-trim to satisfy the SRFS density gate.
-    if wc > 160:
+    # Padding for the 95-word floor can push the stub over 140 words; re-trim to satisfy paragraph max words.
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s2 = (
             "Designs governed runtime architectures combining deterministic routing, orchestration, retrieval, "
             "validation, and traceability to improve reliability and auditability."
@@ -610,7 +612,7 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         s5 = "Brings disciplined ownership across programs while respecting the offline contract proof pool."
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
-    if wc > 160:
+    if wc > EXEC_SUMMARY_MAX_WORDS:
         s1 = "Engineering executive building governed AI platforms for regulated enterprise environments."
         text = f"{s1} {s2} {s3} {s4} {s5}"
         wc = len(re.findall(r"\S+", text))
@@ -642,7 +644,7 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    """Offline-contract stub: four- or five-sentence executive paragraph (same product shape as live)."""
+    """Offline-contract stub: five- or six-sentence executive paragraph (same product shape as live)."""
     if _srfs_active_payload(runtime_payload):
         return _build_mock_output_srfs(runtime_payload)
     facts = list(runtime_payload["selected_fact_plan"]["facts"])
@@ -727,7 +729,7 @@ def _synthesis_shape_reject_reason(
         check_exec_summary_no_credential_dump,
         check_exec_summary_no_mechanism_inventory,
         check_exec_summary_paragraph_max_words,
-        check_exec_summary_sentence_count_4_5,
+        check_exec_summary_sentence_count_5_6,
         check_inferred_bridge_claims,
         check_north_star_style_example_echo_unsupported,
         check_cross_fact_display_conflation,
@@ -759,7 +761,7 @@ def _synthesis_shape_reject_reason(
     colon_ok, colon_reason = check_resume_display_colon_space_discipline(text)
     if not colon_ok and colon_reason:
         failures.append(colon_reason)
-    sent_ok, sent_reason = check_exec_summary_sentence_count_4_5(text)
+    sent_ok, sent_reason = check_exec_summary_sentence_count_5_6(text)
     if not sent_ok and sent_reason:
         failures.append(sent_reason)
     util_ok, util_reason = check_exec_summary_evidence_utilization(
@@ -868,7 +870,7 @@ def _build_synthesis_repair_user(
     length_note = ""
     if "exceeds maximum" in blob:
         length_note = (
-            "LENGTH: trim to one executive paragraph (4–5 sentences) without dropping supported proof; "
+            "LENGTH: trim to one executive paragraph (5–6 sentences, max 140 words) without dropping supported proof; "
             "do not remove claim_ledger rows. "
         )
     else:
@@ -886,7 +888,7 @@ def _build_synthesis_repair_user(
         utilization_note = (
             "EVIDENCE_WEAVE: add claim_ledger OBJECT rows (one per major sentence) with distinct source_fact_ids "
             "from selected_fact_plan; weave unused high-confidence facts into prose — no repeated sentence themes. "
-            "Prefer 5 sentences when the fact pool has 6+ facts. "
+            "Prefer 6 sentences when the fact pool has 7+ facts; use 5 when the pool is tighter. "
         )
     mechanism_note = ""
     if "mechanism_inventory" in blob or "mechanism inventory" in blob:
@@ -921,9 +923,9 @@ def _build_synthesis_repair_user(
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
         f"{mechanism_note}{meta_note}{filler_note}{conflation_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
-        "Rewrite resume_display_text as exactly 4 or 5 period-delimited sentences (one executive paragraph), "
-        "fit_to_evidence integrated narrative — not 2-3 compressed sentences; do not pad with filler. "
-        "Sentence 1 must be grammatically complete; vary openers (avoid five Led/Built/Delivered chains). "
+        "Rewrite resume_display_text as exactly 5 or 6 period-delimited sentences (one executive paragraph, max 140 words), "
+        "fit_to_evidence integrated narrative — not 4 compressed sentences; do not pad with filler. "
+        "Sentence 1 must be grammatically complete; vary openers (avoid six Led/Built/Delivered chains). "
         "No certification labels in display text. "
         "FORBIDDEN: \"this individual\", \"this executive\", \"the candidate\", "
         "Additionally/Furthermore as sentence openers, "

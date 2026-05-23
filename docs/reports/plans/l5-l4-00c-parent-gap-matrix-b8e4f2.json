@@ -2,6 +2,9 @@
   "matrix_version": "1.0.0",
   "generated_at_utc": "2026-05-23",
   "plan_id": "l5-l4-00c-parent-gap-b8e4f2",
+  "plan_status": "COMPLETED",
+  "completed_at_utc": "2026-05-23",
+  "notion_page_id": "36927693-f55c-81c1-9831-c33eea84babd",
   "evidence_report": "docs/reports/plans/l5-l4-00c-parent-gap-evidence-b8e4f2.md",
   "w1_decision": {
     "question": "00C GateVerdict schema SSOT: parent 00C §5 vs child 00C.7",
@@ -157,7 +160,7 @@
       "impl_refs": ["agentic_core/L4_state/uwg/durable_write_gateway.py:NON_AUTHORIZED_SOURCES"],
       "test_refs": ["tests/uwg/test_no_direct_l4_write.py"],
       "runtime_refs": ["docs/reports/plans/l4_uwg_runtime_proof.json"],
-      "gap_notes": "uwg_sole_admission_validator name DOC_ONLY; behavior proven."
+      "gap_notes": "CI alias verify_uwg_sole_admission_validator.py wired in run_contract_gates."
     },
     {
       "req_id": "REQ-UWG-CLEARED-COMMIT-001",
@@ -502,45 +505,41 @@
       "req_id": "REQ-GATE-G21-OUTPUT-001",
       "pack": "00C",
       "owner": "00C.5",
-      "status": "DRIFT",
-      "status_vs_00c7_ssot": "MET",
-      "parent_semantic": "Output (payload safety)",
+      "status": "MET",
+      "parent_semantic": "Output schema (payload safety)",
       "impl_refs": ["agentic_core/L5_safety/runtime_gates/g21_output_schema.py"],
       "test_refs": ["tests/unit/agentic_core/L5_safety/runtime_gates/test_g21_g24.py"],
-      "gap_notes": "Parent title implies single Output gate; implementation splits output schema (G21) and output quality (G22). 00C.5 child doctrine is authoritative for gate_id G21."
+      "gap_notes": "Parent §4 reconciled to 00C.5 gate_id titles; module g21_output_schema.py unchanged."
     },
     {
       "req_id": "REQ-GATE-G22-SECURITY-001",
       "pack": "00C",
       "owner": "00C.5",
-      "status": "DRIFT",
-      "status_vs_00c7_ssot": "MET",
-      "parent_semantic": "Security",
+      "status": "MET",
+      "parent_semantic": "Output quality",
       "impl_refs": ["agentic_core/L5_safety/runtime_gates/g22_output_quality.py"],
       "test_refs": ["tests/unit/agentic_core/L5_safety/runtime_gates/test_g21_g24.py"],
-      "gap_notes": "Parent §4 labels G22 Security; code G22 is OutputQualityGate. Security/leakage is G23. Do not relabel without FortKnox regen."
+      "gap_notes": "Parent §4 reconciled; G22 = OutputQualityGate per 00C.5."
     },
     {
       "req_id": "REQ-GATE-G23-REPLAY-001",
       "pack": "00C",
       "owner": "00C.5",
-      "status": "DRIFT",
-      "status_vs_00c7_ssot": "MET",
-      "parent_semantic": "Replay",
+      "status": "MET",
+      "parent_semantic": "Security / leakage",
       "impl_refs": ["agentic_core/L5_safety/runtime_gates/g23_security_leakage.py"],
       "test_refs": ["tests/unit/agentic_core/L5_safety/runtime_gates/test_g21_g24.py"],
-      "gap_notes": "Parent §4 labels G23 Replay; code G23 is SecurityLeakageGate. Replay/determinism is G24."
+      "gap_notes": "Parent §4 reconciled; G23 = SecurityLeakageGate per 00C.5."
     },
     {
       "req_id": "REQ-GATE-G24-AUDIT-001",
       "pack": "00C",
       "owner": "00C.5",
-      "status": "DRIFT",
-      "status_vs_00c7_ssot": "MET",
-      "parent_semantic": "Audit",
+      "status": "MET",
+      "parent_semantic": "Determinism / replay",
       "impl_refs": ["agentic_core/L5_safety/runtime_gates/g24_determinism_replay.py"],
       "test_refs": ["tests/unit/agentic_core/L5_safety/runtime_gates/test_g21_g24.py"],
-      "gap_notes": "Parent §4 labels G24 Audit; code G24 is DeterminismReplayGate. Audit/trace completeness is G28."
+      "gap_notes": "Parent §4 reconciled; G24 = DeterminismReplayGate; audit/trace is G28."
     },
     {
       "req_id": "REQ-GATE-G25-ANOMALY-001",

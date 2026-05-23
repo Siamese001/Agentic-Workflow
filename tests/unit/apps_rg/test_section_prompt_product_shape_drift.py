@@ -83,7 +83,7 @@ def test_product_shape_block_format() -> None:
     assert "Bounds gates" in block
     assert "Proof gates" in block
     assert "Style gates" in block
-    assert "x2_exec_summary_sentence_count_4_5" in block
+    assert "x2_exec_summary_sentence_count_5_6" in block
     assert "x2_exec_summary_paragraph_max_words" in block
     assert "fit_to_evidence" in block
 

@@ -54,7 +54,7 @@ LANE_CRITICAL_GATES: dict[str, frozenset[str]] = {
     ),
     "executive_summary": frozenset(
         {
-            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_sentence_count_5_6",
             "x2_exec_summary_jd_alignment_proof_flags",
             "x2_claim_ledger_claim_text_non_empty",
             "x2_first_person_zero",

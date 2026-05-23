@@ -31,7 +31,7 @@ def verify_certification_ref(ref: str) -> bool:
     Returns:
         ``True`` if *ref* is a non-empty string, ``False`` otherwise.
     """
-    return bool(ref) and isinstance(ref, str)
+    return isinstance(ref, str) and bool(ref.strip())
 
 
 __all__ = ["verify_certification_ref"]

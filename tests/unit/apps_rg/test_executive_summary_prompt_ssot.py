@@ -1,4 +1,4 @@
-"""Prompt/X2 SSOT alignment: executive summary 4–5 sentences; no legacy 2–3 default band."""
+"""Prompt/X2 SSOT alignment: executive summary 5–6 sentences; no legacy 4–5 default band."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import pytest
 
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_jd_alignment_proof_flags,
-    check_exec_summary_sentence_count_4_5,
+    check_exec_summary_sentence_count_5_6,
 )
 
 REPO = Path(__file__).resolve().parents[3]
@@ -31,8 +31,8 @@ def test_executive_summary_template_rejects_legacy_2_3_default_band():
     raw = TEMPLATE.read_text(encoding="utf-8")
     for pat in _LEGACY_DEFAULT_PATTERNS:
         assert pat.search(raw) is None, f"legacy 2-3 default still present: {pat.pattern}"
-    assert "4 or 5" in raw or "4–5" in raw
-    assert "legacy 2–3 retired" in raw or "not 2–3" in raw
+    assert "5 or 6" in raw or "5–6" in raw
+    assert "legacy 4–5 retired" in raw or "legacy 2–3" in raw
 
 
 def test_competency_pa_slots_category_band_matches_x2():
@@ -67,7 +67,7 @@ def test_lane_registry_exec_summary_critical_gates_include_proof_flags():
     from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
 
     spec = spec_for_lane("executive_summary")
-    assert "x2_exec_summary_sentence_count_4_5" in spec.critical_gates
+    assert "x2_exec_summary_sentence_count_5_6" in spec.critical_gates
     assert "x2_exec_summary_jd_alignment_proof_flags" in spec.critical_gates
 
 
@@ -75,8 +75,12 @@ def test_lane_registry_exec_summary_critical_gates_include_proof_flags():
     "text,expect_pass",
     [
         (
-            "One. Two. Three. Four.",
+            "One. Two. Three. Four. Five.",
             True,
+        ),
+        (
+            "One. Two. Three. Four.",
+            False,
         ),
         (
             "One. Two.",
@@ -85,5 +89,5 @@ def test_lane_registry_exec_summary_critical_gates_include_proof_flags():
     ],
 )
 def test_sentence_count_gates(text: str, expect_pass: bool):
-    ok, _ = check_exec_summary_sentence_count_4_5(text)
+    ok, _ = check_exec_summary_sentence_count_5_6(text)
     assert ok is expect_pass

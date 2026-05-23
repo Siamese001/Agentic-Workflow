@@ -55,6 +55,9 @@ FORBIDDEN_LEGACY_EXEC_SUMMARY: tuple[str, ...] = (
     r"section budget explicitly allows",
     r"95-160 words",
     r"hard minimum 95",
+    r"4\s*[-–]\s*5\s+sentences",
+    r"4 or 5 sentences",
+    r"max\s+220\s+words",
 )
 FORBIDDEN_LEGACY_HEADLINE: tuple[str, ...] = (
     r"8\s*[-–]\s*11",
@@ -75,6 +78,7 @@ RETIRED_EXEC_SUMMARY_X2_GATE_IDS: frozenset[str] = frozenset(
     {
         "x2_exec_summary_sentence_count_2_3",
         "x2_exec_summary_srfs_density_word_count",
+        "x2_exec_summary_sentence_count_4_5",
         "x2_exec_summary_srfs_sentence_count_4_5",
         "x2_exec_summary_srfs_sentence_responsibility_shape",
         "x2_exec_summary_paragraph_word_bounds",
@@ -147,7 +151,7 @@ def _exec_summary_shape() -> SectionProductShape:
             "fit_to_evidence; claim_ledger required; no inline source tags in display text"
         ),
         bounds_gate_ids=(
-            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_sentence_count_5_6",
             "x2_exec_summary_paragraph_max_words",
             "x2_exec_summary_evidence_utilization",
         ),
@@ -164,8 +168,8 @@ def _exec_summary_shape() -> SectionProductShape:
             "x2_exec_summary_no_credential_dump",
         ),
         required_any_text_patterns=(
-            r"4\s*[-–]\s*5",
-            r"4 or 5",
+            r"5\s*[-–]\s*6",
+            r"5 or 6",
         ),
         required_all_text_patterns=(
             "fit_to_evidence",

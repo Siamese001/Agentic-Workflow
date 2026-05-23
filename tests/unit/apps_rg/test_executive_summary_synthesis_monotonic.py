@@ -47,7 +47,7 @@ def test_monotonic_allows_shrink_when_prior_failed_sentence_count() -> None:
     )
     ok, _ = evaluate_synthesis_regen_monotonicity(
         prior_parsed=prior,
-        prior_reject_reason="resume_display_text must have 4-5 sentences; found 3",
+        prior_reject_reason="resume_display_text must have 5-6 sentences; found 4",
         new_parsed=post,
     )
     assert ok is True

@@ -54,7 +54,7 @@ def test_compiled_prompt_lists_x2_gates_only_under_product_shape():
     i0_seg = content[i0_idx:i0_end] if i0_idx >= 0 and i0_end > i0_idx else ""
     assert not _X2_GATE_ID.search(i0_seg), "I0 compiled segment must not enumerate x2_ gates"
     after_ps = content[ps_idx:]
-    assert "x2_exec_summary_sentence_count_4_5" in after_ps
+    assert "x2_exec_summary_sentence_count_5_6" in after_ps
 
 
 def test_srfs_oneshot_compact_skips_gate_catalog_and_full_exemplars():

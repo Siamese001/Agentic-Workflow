@@ -153,6 +153,7 @@ def _build_well_formed_packet():
             gate_verdict_refs=("gv:proof",),
             affected_state_surfaces=("memory",),
             expected_read_surface_refreshes=("memory_projection",),
+            l5_certification_ref="l5:proof:runtime_certification_binding:proof",
         )
     )
     return cr, [sd], rollback, refresh
@@ -679,6 +680,7 @@ def section_refresh_receipts() -> dict:
             read_surface_refresh_plan_ref="rfp:proof",
             audit_append_receipt_ref="aar:proof",
             committed_at="0",
+            l5_certification_ref="l5:proof:runtime_certification_binding:proof",
         )
     )
     vec = coord.issue_index_refresh(

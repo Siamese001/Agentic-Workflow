@@ -1,6 +1,6 @@
 {
   "schema_version": "00C.runtime_proof.v2",
-  "generated_at_utc": "2026-04-26T23:06:12.984945+00:00",
+  "generated_at_utc": "2026-05-23T18:35:23.755792+00:00",
   "doctrine_files": [
     "00C_Runtime_Gates_Current_Run_Mesh_detailed.md",
     "00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk_detailed.md",

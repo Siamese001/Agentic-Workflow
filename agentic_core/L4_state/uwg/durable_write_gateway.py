@@ -384,6 +384,7 @@ class DurableWriteGateway:
                 committed_at=str(audit_append_receipt.ledger_sequence),
                 state_diff_refs=tuple(sd.state_diff_id for sd in state_diffs),
                 affected_state_surfaces=target_surfaces,
+                l5_certification_ref=commit_request.l5_certification_ref,
             )
             commit_receipt = stamp_digest(commit_receipt)
             self._commits[commit_receipt.commit_receipt_id] = commit_receipt

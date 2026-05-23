@@ -26,7 +26,7 @@ slot_bodies:
     X2 gate IDs: appended PRODUCT_SHAPE at compile only.
     </authority_hierarchy>
     <product_shape_band>
-    resume_display_text: **4 or 5** period-delimited sentences, one paragraph (legacy 2–3 retired; not 2–3 default).
+    resume_display_text: **5 or 6** period-delimited sentences, one paragraph (legacy 4–5 retired).
     Never copy E0 style-example metrics or credentials unless the same substance is in ALLOWED_SOURCE_FACT_IDS.
     </product_shape_band>
       </system_authority>
@@ -66,13 +66,13 @@ slot_bodies:
     </north_star_synthesis_contract>
 
     <composition_heuristics>
-    **4 or 5** sentences, one paragraph; fit_to_evidence (max 220 words per appended PRODUCT_SHAPE).
+    **5 or 6** sentences, one paragraph; fit_to_evidence (max **140** words — hard X2 cap; ~23–28 words/sentence).
     Optional theme order: identity, platform/governance, scale/commercialization, outcomes, integrated credibility.
     Never one sentence per source fact; never Label: detail stitching; third person; no U+2014 em dash.
     Sentence 1 must be a complete clause (not a fragment ending on a relative clause alone).
-    Vary sentence openers; do not chain five sentences starting with Led/Successfully/Built/Delivered.
+    Vary sentence openers; do not chain six sentences starting with Led/Successfully/Built/Delivered.
     Do not mention certifications, AWS, Databricks, FSA, or credential inventories in resume_display_text.
-    Voice and failure-mode examples: E0 at L2 execute time (hydrated from executive_summary_examples.yaml; positives are 4-5 sentences; match that band).
+    Voice and failure-mode examples: E0 at L2 execute time (hydrated from executive_summary_examples.yaml; positives are 5-6 sentences; match that band).
     </composition_heuristics>
 
     <internal_deliberation_controls>

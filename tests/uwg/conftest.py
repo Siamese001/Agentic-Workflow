@@ -100,6 +100,7 @@ def well_formed_packet() -> Tuple[CommitRequest, List[StateDiff], RollbackPlan, 
             gate_verdict_refs=("gv:1",),
             affected_state_surfaces=("memory",),
             expected_read_surface_refreshes=("memory_projection",),
+            l5_certification_ref="l5:test:runtime_certification_binding:1",
         )
     )
     return cr, [sd], rollback, refresh

@@ -16,6 +16,21 @@ by another pack) are marked **OUT_OF_SCOPE** with a reference to the owning doct
 
 ---
 
+## Parent REQ-ID crosswalk (2026-05-23, plan `l5-l4-00c-parent-gap-b8e4f2`)
+
+Maps `00B_L4_State_Archive_and_UWG.md` §4 atomic rows to this matrix and CI aliases.
+
+| Parent REQ-ID | Doctrine owner | This matrix | CI / proof |
+|---|---|---|---|
+| `REQ-L4-*` (archive/read) | 00B parent + 00B.1–00B.5 | Sections below per child file | `tests/l4/`, `l4_uwg_runtime_proof.json` |
+| `REQ-UWG-SOLE-DURABLE-WRITE-001` | 00B.6 | UWG sole admission / `NON_AUTHORIZED_SOURCES` | `ops_scripts/ci/verify_uwg_sole_admission_validator.py` |
+| `REQ-UWG-CLEARED-COMMIT-001` | 00B.6 | Commit pipeline | `tests/uwg/test_commit_pipeline.py` |
+| `REQ-UWG-LOCK-RECEIPT-AUDIT-001` | 00B.6 | Receipt + audit ledger | `ops_scripts/ci/verify_uwg_receipt_parent_fields.py` |
+
+Gap matrix SSOT: [l5-l4-00c-parent-gap-matrix-b8e4f2.json](l5-l4-00c-parent-gap-matrix-b8e4f2.json).
+
+---
+
 ## Aggregate evidence
 
 | Metric | Value | Source |

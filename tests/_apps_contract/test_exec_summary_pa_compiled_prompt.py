@@ -75,7 +75,7 @@ def test_compiled_messages_include_only_payload_facts_and_jd_as_non_proof():
     assert "TARGET_TITLE (positioning only" in content
     cl = content.lower()
     assert "composition" in cl
-    assert "4 or 5" in cl or "4–5" in content or "4-5" in cl
+    assert "5 or 6" in cl or "5–6" in content or "5-6" in cl
     assert "2 or 3 sentences" not in cl
     assert "2–3 sentences" not in content
     assert "jd_used_as_proof" in content
@@ -213,7 +213,7 @@ def test_compiled_srfs_appendix_contains_pool_and_blocking_rules():
     assert "PRODUCT_SHAPE" in content
     assert "x2_exec_summary_paragraph_max_words" in content
     assert "72–220" not in content and "72-220" not in content
-    assert "x2_exec_summary_sentence_count_4_5" in content
+    assert "x2_exec_summary_sentence_count_5_6" in content
     assert "x2_exec_summary_no_credential_dump" in content
     assert "x2_exec_summary_no_mechanism_inventory" in content
     assert "srfs_governance_omission_explained" in content
@@ -246,7 +246,7 @@ def test_srfs_lane_retry_is_x2_aligned_not_five_part_slots():
     import apps_rg.runtime.sections.executive_summary_lane as lane
 
     src = Path(lane.__file__).read_text(encoding="utf-8")
-    assert "4 or 5" in src.lower()
+    assert "5 or 6" in src.lower()
     assert "claim_ledger" in src and "source_fact_id" in src
     assert "repair_messages2" not in src
     assert "result2 = call_qwen" not in src
@@ -277,7 +277,7 @@ def test_lane_repair_prompt_uses_sentence_roles_not_fixed_count():
     src = Path(lane.__file__).read_text(encoding="utf-8")
     assert "exactly TWO synthesized" not in src
     assert "jd_used_as_proof=false" in src
-    assert "4 or 5" in src.lower()
+    assert "5 or 6" in src.lower()
     assert "north_star_style_example_echo_unsupported" in src
     import apps_rg.runtime.sections.executive_summary_pa as pa
 

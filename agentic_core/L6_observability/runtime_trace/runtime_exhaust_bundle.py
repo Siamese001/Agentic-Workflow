@@ -144,6 +144,7 @@ class RuntimeExhaustCollector:
         *,
         now_epoch: float | None = None,
         bundle_id: str | None = None,
+        l5_certification_ref: str = "",
     ) -> RuntimeExhaustBundle:
         ts = now_epoch if now_epoch is not None else time.time()
         bid = bundle_id or f"bundle-{int(ts * 1000)}-{len(records)}"
@@ -155,9 +156,14 @@ class RuntimeExhaustCollector:
         run_ids_seen: dict[str, int] = {}
         newest_span_ts: float | None = None
 
+        resolved_l5_ref = l5_certification_ref
         for idx, rec in enumerate(records):
             self._records_processed += 1
             rec_id = str(rec.get("record_id", f"rec-{idx}"))
+            if not resolved_l5_ref:
+                rec_l5 = rec.get("l5_certification_ref")
+                if rec_l5:
+                    resolved_l5_ref = str(rec_l5)
 
             missing = tuple(
                 f for f in REQUIRED_LINEAGE_FIELDS
@@ -214,6 +220,7 @@ class RuntimeExhaustCollector:
             ingest_quality_score=quality,
             newest_span_age_seconds=newest_age,
             bundle_id=bid,
+            l5_certification_ref=resolved_l5_ref,
         )
 
     def _detect_defects(

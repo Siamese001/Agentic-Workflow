@@ -1,7 +1,7 @@
 version: "1.0"
 section: executive_summary
 description: >
-  Multishot examples for the executive_summary section.
+  Multishot examples for the executive_summary section (product band 5-6 sentences, max 140 words).
   Proof substrate is always selected base-résumé facts + claim_ledger in runtime artifacts;
   examples teach voice and structure only unless marked as STYLE_EXAMPLE_NOT_PROOF.
 
@@ -80,7 +80,7 @@ examples:
     claim_ledger_grounded: false
     annotation: >
       STYLE VARIANT — SVP IT strategy register (targeting shapes emphasis only). Four dense
-      sentences; JD/briefing may tilt emphasis but must not add proof.
+      sentences (expand to 5-6 in live runs); JD/briefing may tilt emphasis but must not add proof.
 
   - id: exec_summary_neg_credential_dump_001
     category: negative

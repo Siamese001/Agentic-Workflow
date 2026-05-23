@@ -194,7 +194,7 @@ def test_verify_certification_ref_non_empty_returns_true():
 def test_verify_certification_ref_whitespace_only_returns_false():
     from agentic_core.L5_safety.contracts.registry import verify_certification_ref
 
-    assert verify_certification_ref("   ") is True  # non-empty string passes structural check
+    assert verify_certification_ref("   ") is False
 
 
 def test_verify_certification_ref_exported_in_all():

@@ -7,9 +7,20 @@
 - [00B_L4_State_Archive_and_UWG.md](../../reference/00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG.md)
 - [00C_Runtime_Gates_Current_Run_Mesh.md](../../reference/00C_Runtime_Gates_Current_Run_Mesh/00C_Runtime_Gates_Current_Run_Mesh.md)
 
-**Review plan (SSOT):** [.cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md](../../../.cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md)  
+**Review plan (SSOT):** [.cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md](../../../.cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md) — **COMPLETED 2026-05-23**  
 **Gap matrix (W1):** [l5-l4-00c-parent-gap-matrix-b8e4f2.json](l5-l4-00c-parent-gap-matrix-b8e4f2.json)  
-**W1 decision:** [ADR-00C-7-gate-verdict-ssot-b8e4f2.md](../../adr/ADR-00C-7-gate-verdict-ssot-b8e4f2.md) — **00C.7 is SSOT**
+**W1 decision:** [ADR-00C-7-gate-verdict-ssot-b8e4f2.md](../../adr/ADR-00C-7-gate-verdict-ssot-b8e4f2.md) — **00C.7 is SSOT**  
+**Notion:** [l5-l4-00c-parent-gap-b8e4f2](https://www.notion.so/l5-l4-00c-parent-gap-b8e4f2-36927693f55c81c19831c33eea84babd) — Status **Completed**
+
+### Closeout (W1–W5)
+
+| Deliverable | Path |
+|-------------|------|
+| L5 integrated evidence | `agentic_core/L5_safety/certification/integrated_l5_evidence.py` |
+| 00C export profile | `agentic_core/L5_safety/runtime_gates/export_profile.py` |
+| CI validator aliases | `ops_scripts/ci/verify_l5_*`, `verify_uwg_*` |
+| Proof bundles | `l4_uwg_runtime_proof.json`, `runtime_gates_runtime_proof.json` |
+| Edge tests | `test_integrated_l5_evidence_edge.py`, `test_runtime_exhaust_l5_cert_ref.py`, `test_commit_l5_cert_ref_edge.py` |
 
 ---
 

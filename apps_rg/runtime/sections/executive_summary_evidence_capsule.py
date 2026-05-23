@@ -170,11 +170,11 @@ def build_capsule_document(
         "proof_pool_counts": pool_counts,
         "srfs_counts": pool_counts,
         "product_arc_markers": [
-            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_sentence_count_5_6",
             "x2_exec_summary_paragraph_max_words",
         ],
         "srfs_arc_markers": [
-            "x2_exec_summary_sentence_count_4_5",
+            "x2_exec_summary_sentence_count_5_6",
             "x2_exec_summary_paragraph_max_words",
         ],
     }
@@ -254,7 +254,7 @@ def format_evidence_capsule_c0_block(
             f"blocked={counts.get('blocked_facts', 0)} "
             f"confirmation={counts.get('facts_requiring_human_confirmation', 0)} "
             f"unsupported_jd={counts.get('unsupported_jd_needs', 0)}",
-            "PRODUCT_ARC_CONTRACT: 4-5 sentences, fit_to_evidence, max 220 words; responsibility separation per X2 gates. "
+            "PRODUCT_ARC_CONTRACT: 5-6 sentences, fit_to_evidence, max 140 words; responsibility separation per X2 gates. "
             "Style exemplar/appendix prose omitted from capsule (proof IDs unchanged).",
             "",
         ]

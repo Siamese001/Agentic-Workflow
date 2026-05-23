@@ -13,7 +13,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 
 EXEC_SUMMARY_CRITICAL_GATES = frozenset(
     {
-        "x2_exec_summary_sentence_count_4_5",
+        "x2_exec_summary_sentence_count_5_6",
         "x2_exec_summary_paragraph_max_words",
         "x2_exec_summary_jd_alignment_proof_flags",
         "x2_claim_ledger_claim_text_non_empty",

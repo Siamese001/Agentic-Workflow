@@ -11,10 +11,10 @@ from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
-EXEC_SUMMARY_MIN_SENTENCES = 4
-EXEC_SUMMARY_MAX_SENTENCES = 5
-EXEC_SUMMARY_MAX_WORDS = 220
-EXEC_SUMMARY_MAX_WORDS_PER_SENTENCE = 58
+EXEC_SUMMARY_MIN_SENTENCES = 5
+EXEC_SUMMARY_MAX_SENTENCES = 6
+EXEC_SUMMARY_MAX_WORDS = 140
+EXEC_SUMMARY_MAX_WORDS_PER_SENTENCE = 45
 EXPECTED_PROMPT_TEMPLATE_REF = "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml"
 EXPECTED_PROMPT_ID = "executive_summary.generate_scratch_v1"
 EXPECTED_PA_SHELL_TEMPLATE_ID = "strategic_tailor_v1"
@@ -1044,15 +1044,27 @@ def check_raw_json_no_selected_fact_plan_echo(raw_output: str | None) -> tuple[b
     return True, None
 
 
-def check_exec_summary_sentence_count_4_5(resume_display_text: str) -> tuple[bool, str | None]:
-    """Single product shape: 4–5 polished sentences (SRFS and non-SRFS)."""
+def check_exec_summary_sentence_count_5_6(resume_display_text: str) -> tuple[bool, str | None]:
+    """Single product shape: 5–6 polished sentences (SRFS and non-SRFS)."""
     sentences = [s for s in split_sentences(resume_display_text) if str(s).strip()]
     n = len(sentences)
     if n < EXEC_SUMMARY_MIN_SENTENCES:
-        return False, f"resume_display_text must have 4-5 sentences; found {n} (legacy 2-3 retired)"
+        return (
+            False,
+            f"resume_display_text must have {EXEC_SUMMARY_MIN_SENTENCES}-{EXEC_SUMMARY_MAX_SENTENCES} "
+            f"sentences; found {n} (legacy 4-sentence band retired)",
+        )
     if n > EXEC_SUMMARY_MAX_SENTENCES:
-        return False, f"resume_display_text must have at most 5 sentences; found {n}"
+        return (
+            False,
+            f"resume_display_text must have at most {EXEC_SUMMARY_MAX_SENTENCES} sentences; found {n}",
+        )
     return True, None
+
+
+def check_exec_summary_sentence_count_4_5(resume_display_text: str) -> tuple[bool, str | None]:
+    """Deprecated alias — product band is 5–6 sentences."""
+    return check_exec_summary_sentence_count_5_6(resume_display_text)
 
 
 def check_exec_summary_jd_alignment_proof_flags(
@@ -1206,7 +1218,7 @@ def check_exec_summary_paragraph_max_words(
     resume_display_text: str,
     parsed_output: dict[str, Any] | None = None,
 ) -> tuple[bool, str | None]:
-    """Overflow guard only — no paragraph word minimum (fit_to_evidence + 4–5 sentences)."""
+    """Overflow guard only — no paragraph word minimum (fit_to_evidence + 5–6 sentences)."""
     _ = parsed_output
     wc = _resume_word_count(resume_display_text)
     if wc > EXEC_SUMMARY_MAX_WORDS:
@@ -1582,13 +1594,13 @@ def run_x2_gates(
         [],
         colon_stitch_reason,
     )
-    sent45_ok, sent45_reason = check_exec_summary_sentence_count_4_5(resume_display_text)
+    sent56_ok, sent56_reason = check_exec_summary_sentence_count_5_6(resume_display_text)
     add(
-        "x2_exec_summary_sentence_count_4_5",
-        sent45_ok,
-        sent45_reason or "ok",
-        "4-5",
-        sent45_reason,
+        "x2_exec_summary_sentence_count_5_6",
+        sent56_ok,
+        sent56_reason or "ok",
+        f"{EXEC_SUMMARY_MIN_SENTENCES}-{EXEC_SUMMARY_MAX_SENTENCES}",
+        sent56_reason,
     )
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         resume_display_text,

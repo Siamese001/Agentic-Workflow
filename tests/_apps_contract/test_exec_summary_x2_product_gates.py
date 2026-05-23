@@ -10,7 +10,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_north_star_style_example_echo_unsupported,
     check_raw_json_no_selected_fact_plan_echo,
     check_resume_display_colon_space_discipline,
-    check_exec_summary_sentence_count_4_5,
+    check_exec_summary_sentence_count_5_6,
     check_synthesis_quality,
 )
 
@@ -58,11 +58,12 @@ def test_valid_synthesis_passes_shape_and_meta_gates():
         "The role combines architecture leadership with reliability engineering and platform modernization "
         "across regulated enterprise programs. "
         "Delivery cycles tightened as teams adopted repeatable production controls without weakening audit posture. "
-        "The executive thread ties platform modernization to governed agentic delivery at scale."
+        "The executive thread ties platform modernization to governed agentic delivery at scale. "
+        "Quantitative depth supports regulated program delivery when facts support that theme."
     )
     assert check_resume_display_colon_space_discipline(good)[0] is True
     assert check_exec_summary_meta_filler_patterns(good)[0] is True
-    assert check_exec_summary_sentence_count_4_5(good)[0] is True
+    assert check_exec_summary_sentence_count_5_6(good)[0] is True
     assert check_synthesis_quality(good)[0] is True
 
 
@@ -80,7 +81,8 @@ def test_valid_synthesis_coverage_and_material_clauses():
         "The role combines architecture leadership with reliability engineering and platform modernization "
         "across regulated enterprise programs. "
         "Delivery cycles tightened as teams adopted repeatable production controls without weakening audit posture. "
-        "The executive thread ties platform modernization to governed agentic delivery at scale."
+        "The executive thread ties platform modernization to governed agentic delivery at scale. "
+        "Quantitative depth supports regulated program delivery when facts support that theme."
     )
     ledger = [
         {
@@ -181,7 +183,7 @@ def test_x2_registers_harmonization_gate_ids():
 
     p = Path(__file__).resolve().parents[2] / "apps_rg" / "runtime" / "validators" / "executive_summary_x2.py"
     text = p.read_text(encoding="utf-8")
-    assert "x2_exec_summary_sentence_count_4_5" in text
+    assert "x2_exec_summary_sentence_count_5_6" in text
     assert "x2_exec_summary_no_credential_dump" in text
     assert "x2_no_selected_fact_plan_model_echo" in text
     assert "x2_north_star_style_echo_unsupported_zero" in text

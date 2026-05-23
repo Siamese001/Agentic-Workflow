@@ -99,7 +99,10 @@ class TestEntryPointPositive:
     def test_producer_is_agentic_core(self):
         for fn in (LATEST.glob("*.json")):
             env = json.loads(fn.read_text(encoding="utf-8"))
-            assert env["producer_component"].startswith("agentic_core."), f"{fn.name}"
+            body = env.get("payload", env)
+            if "producer_component" not in body:
+                continue
+            assert body["producer_component"].startswith("agentic_core."), f"{fn.name}"
 
     def test_run_returns_allow_for_seeded_safe_pair(self, tmp_path):
         result = _drive_allow_path(tmp_path)
@@ -122,6 +125,36 @@ class TestEntryPointPositive:
         assert bind_payload["cert_status"] == "certified"
         assert hitl_payload["req_id"] == "REQ-L5-HITL-RECLEAR-001"
         assert hitl_payload.get("not_applicable") is True
+
+    def test_exit_review_packet_threads_l5_cert_ref(self, tmp_path) -> None:
+        _drive_allow_path(tmp_path)
+        review = json.loads(
+            (tmp_path / "exit_review_packet.json").read_text(encoding="utf-8")
+        )
+        binding = json.loads(
+            (tmp_path / "runtime_certification_binding.json").read_text(encoding="utf-8")
+        )
+        bind_payload = binding.get("payload", binding)
+        refs = review.get("l5_certification_refs") or review.get("payload", {}).get(
+            "l5_certification_refs", []
+        )
+        assert refs, "exit_review_packet must carry l5_certification_refs"
+        assert refs[0] == f"l5:runtime_certification_binding:{bind_payload['binding_id']}"
+
+    def test_runtime_exhaust_bundle_carries_l5_cert_ref(self, tmp_path) -> None:
+        _drive_allow_path(tmp_path)
+        exhaust = json.loads(
+            (tmp_path / "runtime_exhaust_bundle.json").read_text(encoding="utf-8")
+        )
+        exhaust_body = exhaust.get("payload", exhaust)
+        bundle = exhaust_body.get("exhaust_bundle") or {}
+        assert bundle, "runtime_exhaust_bundle.exhaust_bundle must be populated"
+        binding = json.loads(
+            (tmp_path / "runtime_certification_binding.json").read_text(encoding="utf-8")
+        )
+        bind_payload = binding.get("payload", binding)
+        expected = f"l5:runtime_certification_binding:{bind_payload['binding_id']}"
+        assert bundle.get("l5_certification_ref") == expected
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -175,7 +208,9 @@ class TestFailClosed:
         We simulate "missing manifest" by pointing at a non-existent
         subdirectory under REPO_ROOT so .relative_to() works in the error
         notes."""
-        from scripts import compose_semantic_cache_subclaims as csc
+        import importlib
+
+        csc = importlib.import_module("tools.cert.compose_semantic_cache_subclaims")
         empty = REPO_ROOT / "artifacts" / "_w2_test_empty_dir_does_not_exist"
         monkeypatch.setattr(csc, "W2_INTEGRATED_LATEST", empty)
         monkeypatch.setattr(csc, "W2_VERIFIER_RESULTS", empty / "verifier_results.json")

@@ -27,6 +27,7 @@ class TestHappyPath:
         assert commit_receipt.audit_append_receipt_ref
         assert commit_receipt.read_surface_refresh_plan_ref == refresh.refresh_plan_id
         assert commit_receipt.deterministic_digest
+        assert commit_receipt.l5_certification_ref == cr.l5_certification_ref
 
     def test_commit_returns_refresh_receipts(self, gateway, well_formed_packet) -> None:
         cr, diffs, rollback, refresh = well_formed_packet

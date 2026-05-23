@@ -483,6 +483,7 @@ def _build_exit_review_packet(
     vr: ValidatedRequest,
     terminal: TerminalRetPacket,
     cached_payload: dict[str, Any],
+    l5_certification_refs: tuple[str, ...] = (),
 ) -> ExitReviewPacket:
     """Build a minimal ExitReviewPacket for the terminal cache-reuse path.
 
@@ -570,6 +571,7 @@ def _build_exit_review_packet(
         replay_guard_violations=[],
         isolation_anomalies=[],
         drift_warnings=[],
+        l5_certification_refs=l5_certification_refs,
     )
 
 
@@ -639,10 +641,12 @@ def _build_runtime_exhaust_bundle(
     """Aggregate the v6 sealed manifest plus an exhaust-collector bundle."""
     # Build a minimal exhaust record consistent with the v6 manifest so the
     # collector's gap report is empty for a clean run.
+    l5_ref = review.l5_certification_refs[0] if review.l5_certification_refs else ""
     record = {
         "record_id": review.replay_key or sealed_manifest.run_id,
         "trace_id": review.trace_root,
         "run_id": review.run_id,
+        "l5_certification_ref": l5_ref,
         "stage": "L0_terminal_cache_reuse",
         "policy_hash": review.policy_hash,
         "policy_hash_at_planning": review.policy_hash,
@@ -666,9 +670,10 @@ def _build_runtime_exhaust_bundle(
     }
     if _HAVE_EXHAUST_COLLECTOR:
         collector = RuntimeExhaustCollector()
-        bundle = collector.collect([record])
+        bundle = collector.collect([record], l5_certification_ref=l5_ref)
         bundle_payload["exhaust_bundle"] = {
             "bundle_id": bundle.bundle_id,
+            "l5_certification_ref": bundle.l5_certification_ref,
             "raw_evidence_refs": list(bundle.raw_evidence_refs),
             "lineage_manifest": dict(bundle.lineage_manifest),
             "stage_map": dict(bundle.stage_map),
@@ -829,9 +834,11 @@ def run_integrated_safe_reuse(
     from agentic_core.L5_safety.certification.integrated_l5_evidence import (
         binding_payload_from_identity,
         build_hitl_reclearance_not_applicable,
+        certification_ref_from_binding,
     )
 
     _binding_payload = binding_payload_from_identity(_identity.to_dict())
+    _l5_cert_ref = certification_ref_from_binding(_binding_payload)
     _emit("runtime_certification_binding.json", _binding_payload)
     _emit(
         "l5_hitl_reclearance.json",
@@ -1116,10 +1123,16 @@ def run_integrated_safe_reuse(
     _emit("terminal_ret_packet.json", dataclasses.asdict(terminal))
 
     # ── 8. ExitReviewPacket ──
-    review = _build_exit_review_packet(vr=vr, terminal=terminal, cached_payload=cached_payload)
+    review = _build_exit_review_packet(
+        vr=vr,
+        terminal=terminal,
+        cached_payload=cached_payload,
+        l5_certification_refs=(_l5_cert_ref,),
+    )
     _emit("exit_review_packet.json", {
         "source_type": review.source_type.value,
         "request_id": review.request_id, "run_id": review.run_id,
+        "l5_certification_refs": list(review.l5_certification_refs),
         "session_id": review.session_id, "trace_root": review.trace_root,
         "route_id": review.route_id, "policy_hash": review.policy_hash,
         # RTC-REQ-015: authority binding — blueprint_hash carries through

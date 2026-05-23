@@ -176,6 +176,18 @@ def build_hitl_reclearance_cleared(
     return result.to_dict()
 
 
+def certification_ref_from_binding(payload: Mapping[str, Any]) -> str:
+    """Canonical ref threaded into ExitReviewPacket.l5_certification_refs[0]."""
+
+    binding_id = str(payload.get("binding_id") or "").strip()
+    if not binding_id:
+        raise ValueError(
+            "runtime_certification_binding payload missing binding_id; "
+            "cannot populate l5_certification_refs",
+        )
+    return f"l5:runtime_certification_binding:{binding_id}"
+
+
 def binding_payload_from_identity(
     identity: Mapping[str, Any],
     *,

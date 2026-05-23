@@ -25,18 +25,19 @@ proof_points:
 
 length:
   display_text_sentence_band:
-    min: 4
-    max: 5
-  paragraph_max_words: 220
-  max_words_per_sentence: 58
+    min: 5
+    max: 6
+  paragraph_max_words: 140
+  max_words_per_sentence: 45
   length_policy: fit_to_evidence
   x2_bounds_gate_ids:
-    - x2_exec_summary_sentence_count_4_5
+    - x2_exec_summary_sentence_count_5_6
     - x2_exec_summary_paragraph_max_words
   note: >
-    Product shape: **4–5 period-delimited sentences** forming one polished executive
-    paragraph (fit_to_evidence; no paragraph word minimum). Legacy 2–3 sentence mode
-    is retired. SelectedRoleFactSet controls allowed facts only — not sentence count.
+    Product shape: **5–6 period-delimited sentences** forming one polished executive
+    paragraph (fit_to_evidence; max 140 words — binds with sentence band at ~23–28
+    words/sentence). Legacy 4–5 and 2–3 sentence modes are retired. SelectedRoleFactSet
+    controls allowed facts only — not sentence count.
 
 naturalness_guidance_ref: "forbidden_ai_phrases.yaml#generic_openers"
 naturalness_note: >
