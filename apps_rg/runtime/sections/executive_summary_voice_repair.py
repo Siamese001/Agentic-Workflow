@@ -111,7 +111,10 @@ def repair_generic_filler_prose(
     if out and out[0].islower():
         out = out[0].upper() + out[1:]
 
-    from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
+    from apps_rg.runtime.validators.executive_summary_sentence_utils import (
+        join_executive_summary_sentences,
+        split_sentences,
+    )
 
     meta_opener = re.compile(
         r"^(Additionally|Furthermore|Moreover),?\s+",
@@ -123,7 +126,7 @@ def repair_generic_filler_prose(
         if stripped:
             rebuilt.append(stripped)
     if rebuilt:
-        joined = " ".join(rebuilt)
+        joined = join_executive_summary_sentences(rebuilt)
         if joined != out:
             out = joined
             receipt["replacements"].append("meta_filler_opener_strip")

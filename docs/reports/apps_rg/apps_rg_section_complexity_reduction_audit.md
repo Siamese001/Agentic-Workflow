@@ -1,6 +1,6 @@
 # apps_rg Section Complexity Reduction Audit
 
-Generated: `2026-05-22T09:41:20.449529+00:00`
+Generated: `2026-05-23T21:39:44.031345+00:00`
 Proof inventory: `artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes`
 
 ## Goal
@@ -22,13 +22,13 @@ no bespoke repair stacks or duplicate quality authority.
 
 | Section | Status | Modules | LOC | Repair modules |
 |---------|--------|---------|-----|----------------|
-| headline | PARTIAL | 6 | 3239 | 0 |
-| executive_summary | PARTIAL | 18 | 10427 | 3 |
-| competencies | FAIL | 14 | 5828 | 1 |
-| unify_bullets | PARTIAL | 5 | 2203 | 0 |
+| headline | PARTIAL | 6 | 3299 | 0 |
+| executive_summary | PARTIAL | 18 | 10956 | 3 |
+| competencies | FAIL | 14 | 5892 | 1 |
+| unify_bullets | PARTIAL | 5 | 2215 | 0 |
 | unify_narrative | PARTIAL | 5 | 1969 | 0 |
-| ibm_bullets | PARTIAL | 5 | 1964 | 0 |
-| ibm_narrative | PARTIAL | 9 | 2663 | 1 |
+| ibm_bullets | PARTIAL | 5 | 2118 | 0 |
+| ibm_narrative | PARTIAL | 9 | 2753 | 1 |
 
 ## headline
 
@@ -36,9 +36,9 @@ no bespoke repair stacks or duplicate quality authority.
 
 ### Runtime modules (section-tagged)
 - `apps_rg/runtime/sections/headline_fact_id_resolution.py` (290 lines)
-- `apps_rg/runtime/sections/headline_lane.py` (1796 lines)
+- `apps_rg/runtime/sections/headline_lane.py` (1854 lines)
 - `apps_rg/runtime/sections/headline_pa.py` (275 lines)
-- `apps_rg/runtime/validators/headline_x2.py` (790 lines)
+- `apps_rg/runtime/validators/headline_x2.py` (792 lines)
 - `apps_rg/runtime/judges/headline_x1d.py` (83 lines)
 - `apps_rg/runtime/dispatch/headline_pa.py` (5 lines)
 
@@ -58,12 +58,11 @@ no bespoke repair stacks or duplicate quality authority.
 
 ### Duplicated invariants
 
-- lane_registry lists 8 critical gates not in product_shape SSOT (universal/style/C0)
+- lane_registry lists 7 critical gates not in product_shape SSOT (universal/style/C0)
 
 ### Rigor gates absent in production `x2_gate_outputs.json`
 - `x2_c0_metrics_artifact_present`
 - `x2_c0_support_status_gate`
-- `x2_headline_claim_ledger_no_silent_row_drop`
 - `x2_headline_claim_ledger_segment_decomposition`
 - `x2_headline_text_claim_coverage_integrity`
 
@@ -79,17 +78,17 @@ no bespoke repair stacks or duplicate quality authority.
 
 ### Runtime modules (section-tagged)
 - `apps_rg/runtime/sections/executive_summary_briefing.py` (136 lines)
-- `apps_rg/runtime/sections/executive_summary_composition.py` (517 lines)
-- `apps_rg/runtime/sections/executive_summary_evidence_capsule.py` (409 lines)
-- `apps_rg/runtime/sections/executive_summary_judge_remediation.py` (491 lines)
-- `apps_rg/runtime/sections/executive_summary_lane.py` (2242 lines)
-- `apps_rg/runtime/sections/executive_summary_pa.py` (486 lines)
+- `apps_rg/runtime/sections/executive_summary_composition.py` (555 lines)
+- `apps_rg/runtime/sections/executive_summary_evidence_capsule.py` (461 lines)
+- `apps_rg/runtime/sections/executive_summary_judge_remediation.py` (501 lines)
+- `apps_rg/runtime/sections/executive_summary_lane.py` (2464 lines)
+- `apps_rg/runtime/sections/executive_summary_pa.py` (582 lines)
 - `apps_rg/runtime/sections/executive_summary_proof_bundle.py` (253 lines)
-- `apps_rg/runtime/sections/executive_summary_repair_policy.py` (52 lines)
-- `apps_rg/runtime/sections/executive_summary_srfs_binding.py` (199 lines)
+- `apps_rg/runtime/sections/executive_summary_repair_policy.py` (54 lines)
 - `apps_rg/runtime/sections/executive_summary_synthesis_monotonic.py` (134 lines)
 - `apps_rg/runtime/sections/executive_summary_targeting_cap.py` (410 lines)
-- `apps_rg/runtime/sections/executive_summary_token_budget.py` (724 lines)
+- `apps_rg/runtime/sections/executive_summary_token_budget.py` (728 lines)
+- `apps_rg/runtime/sections/executive_summary_voice_repair.py` (284 lines)
 - … +6 more
 
 ### Repair stack
@@ -121,13 +120,15 @@ no bespoke repair stacks or duplicate quality authority.
 ### Rigor gates absent in production `x2_gate_outputs.json`
 - `x2_c0_metrics_artifact_present`
 - `x2_c0_support_status_gate`
+- `x2_exec_summary_cross_sentence_metric_dedup`
+- `x2_exec_summary_display_roundtrip_integrity`
 - `x2_exec_summary_evidence_utilization`
 - `x2_exec_summary_jd_alignment_proof_flags`
 - `x2_exec_summary_no_credential_dump`
 - `x2_exec_summary_no_mechanism_inventory`
 - `x2_exec_summary_paragraph_max_words`
 - `x2_exec_summary_prompt_template_authority`
-- `x2_exec_summary_sentence_count_4_5`
+- `x2_exec_summary_sentence_count_6`
 
 ### Collapse / delete candidates
 
@@ -148,9 +149,9 @@ no bespoke repair stacks or duplicate quality authority.
 - `apps_rg/runtime/sections/competencies_certification_contract.py` (300 lines)
 - `apps_rg/runtime/sections/competencies_lane.py` (80 lines)
 - `apps_rg/runtime/sections/competencies_lane_defaults.py` (28 lines)
-- `apps_rg/runtime/sections/competencies_lane_execution.py` (797 lines)
-- `apps_rg/runtime/sections/competencies_lane_runtime.py` (1448 lines)
-- `apps_rg/runtime/sections/competencies_pa.py` (295 lines)
+- `apps_rg/runtime/sections/competencies_lane_execution.py` (858 lines)
+- `apps_rg/runtime/sections/competencies_lane_runtime.py` (1450 lines)
+- `apps_rg/runtime/sections/competencies_pa.py` (296 lines)
 - `apps_rg/runtime/sections/competencies_rigor.py` (338 lines)
 - `apps_rg/runtime/sections/competencies_term_phrase.py` (12 lines)
 - `apps_rg/runtime/sections/competencies_v3_contract.py` (215 lines)
@@ -201,8 +202,8 @@ no bespoke repair stacks or duplicate quality authority.
 **Status:** PARTIAL
 
 ### Runtime modules (section-tagged)
-- `apps_rg/runtime/sections/unify_bullets_lane.py` (1196 lines)
-- `apps_rg/runtime/sections/unify_bullets_pa.py` (147 lines)
+- `apps_rg/runtime/sections/unify_bullets_lane.py` (1232 lines)
+- `apps_rg/runtime/sections/unify_bullets_pa.py` (123 lines)
 - `apps_rg/runtime/validators/unify_bullets_x2.py` (766 lines)
 - `apps_rg/runtime/judges/unify_bullets_x1d.py` (89 lines)
 - `apps_rg/runtime/dispatch/unify_bullets_pa.py` (5 lines)
@@ -241,8 +242,8 @@ no bespoke repair stacks or duplicate quality authority.
 **Status:** PARTIAL
 
 ### Runtime modules (section-tagged)
-- `apps_rg/runtime/sections/unify_narrative_lane.py` (1136 lines)
-- `apps_rg/runtime/sections/unify_narrative_pa.py` (179 lines)
+- `apps_rg/runtime/sections/unify_narrative_lane.py` (1176 lines)
+- `apps_rg/runtime/sections/unify_narrative_pa.py` (139 lines)
 - `apps_rg/runtime/validators/unify_narrative_x2.py` (565 lines)
 - `apps_rg/runtime/judges/unify_narrative_x1d.py` (84 lines)
 - `apps_rg/runtime/dispatch/unify_narrative_pa.py` (5 lines)
@@ -277,9 +278,9 @@ no bespoke repair stacks or duplicate quality authority.
 **Status:** PARTIAL
 
 ### Runtime modules (section-tagged)
-- `apps_rg/runtime/sections/ibm_bullets_lane.py` (1022 lines)
-- `apps_rg/runtime/sections/ibm_bullets_pa.py` (122 lines)
-- `apps_rg/runtime/validators/ibm_bullets_x2.py` (727 lines)
+- `apps_rg/runtime/sections/ibm_bullets_lane.py` (1175 lines)
+- `apps_rg/runtime/sections/ibm_bullets_pa.py` (108 lines)
+- `apps_rg/runtime/validators/ibm_bullets_x2.py` (742 lines)
 - `apps_rg/runtime/judges/ibm_bullets_x1d.py` (88 lines)
 - `apps_rg/runtime/dispatch/ibm_bullets_pa.py` (5 lines)
 
@@ -317,11 +318,11 @@ no bespoke repair stacks or duplicate quality authority.
 ### Runtime modules (section-tagged)
 - `apps_rg/runtime/sections/ibm_narrative_lane.py` (55 lines)
 - `apps_rg/runtime/sections/ibm_narrative_lane_defaults.py` (28 lines)
-- `apps_rg/runtime/sections/ibm_narrative_lane_execution.py` (776 lines)
-- `apps_rg/runtime/sections/ibm_narrative_lane_runtime.py` (566 lines)
+- `apps_rg/runtime/sections/ibm_narrative_lane_execution.py` (843 lines)
+- `apps_rg/runtime/sections/ibm_narrative_lane_runtime.py` (570 lines)
 - `apps_rg/runtime/sections/ibm_narrative_metric_trim.py` (94 lines)
 - `apps_rg/runtime/sections/ibm_narrative_pa.py` (264 lines)
-- `apps_rg/runtime/validators/ibm_narrative_x2.py` (794 lines)
+- `apps_rg/runtime/validators/ibm_narrative_x2.py` (813 lines)
 - `apps_rg/runtime/judges/ibm_narrative_x1d.py` (81 lines)
 - `apps_rg/runtime/dispatch/ibm_narrative_pa.py` (5 lines)
 
@@ -346,6 +347,7 @@ no bespoke repair stacks or duplicate quality authority.
 - `x2_ibm_narrative_claim_ledger_clause_decomposition`
 - `x2_ibm_narrative_no_meta_disclaimer_in_display`
 - `x2_ibm_narrative_requires_finalized_bullets`
+- `x2_ibm_narrative_word_budget`
 
 ### Collapse / delete candidates
 

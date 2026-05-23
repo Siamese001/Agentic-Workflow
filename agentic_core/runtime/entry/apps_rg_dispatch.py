@@ -71,8 +71,8 @@ def run_ag2_retrieval_and_prompt(
     validated_request: Any,
 ) -> Any:
     """AG-2 slice: C0 then PA, both consuming ``ValidatedRequest`` (AST-scanned)."""
-    from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
-    from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
+    from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg  # guardian: allow-layer-violation -- AG-2 slice binds app C0/PA from core entry shim
+    from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg  # guardian: allow-layer-violation -- AG-2 slice binds app C0/PA from core entry shim
 
     fec = c0_retrieve_apps_rg(route, validated_request)
     return pa_compose_apps_rg(route, plan, fec, validated_request)
@@ -80,6 +80,8 @@ def run_ag2_retrieval_and_prompt(
 
 def apps_rg_dispatch(envelope: Any) -> Any:
     """Agent entry: delegate to app-owned ``apps_rg.runtime.dispatch``."""
-    from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_dispatch as _app_dispatch
+    from apps_rg.runtime.dispatch.apps_rg_dispatch import (  # guardian: allow-layer-violation -- core entry delegates to app-owned dispatch
+        apps_rg_dispatch as _app_dispatch,
+    )
 
     return _app_dispatch(envelope)

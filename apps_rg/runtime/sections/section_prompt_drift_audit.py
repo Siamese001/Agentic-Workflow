@@ -131,7 +131,9 @@ def audit_contract_template_ref(shape: SectionProductShape) -> list[DriftViolati
 
 def audit_critical_gates_registered(shape: SectionProductShape) -> list[DriftViolation]:
     try:
-        from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
+        from tests.unit.apps_rg.section_rigor.lane_registry import (  # guardian: allow-layer-violation -- drift audit cross-checks lane rigor SSOT in tests
+            spec_for_lane,
+        )
     except ImportError:
         return []
     try:

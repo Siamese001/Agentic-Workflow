@@ -222,7 +222,7 @@ def run_full_resume_coherence_judges(
                 )
             output.judge_id = f"x1d_{key}_full_resume_coherence"
             outputs.append(output)
-        except Exception as exc:  # guardian: full-resume judge must not crash assembly
+        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: full-resume judge must not crash assembly
             out = _make_blocked_output(
                 key,
                 input_hash,

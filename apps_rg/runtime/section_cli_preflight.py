@@ -13,6 +13,7 @@ from apps_rg.runtime.providers.competencies_live_provider_gate import competenci
 from apps_rg.runtime.qwen_transport_diag import run_http_models_preflight
 
 _ENV_SKIP_QWEN_HEALTH = "APPS_RG_SKIP_QWEN_VLLM_HEALTH"
+_ENV_VLLM_AUTO_START = "APPS_RG_VLLM_AUTO_START"
 _DEFAULT_CONTAINER = "local-qwen-vllm"
 
 
@@ -34,6 +35,28 @@ def should_skip_qwen_vllm_health_gate() -> bool:
 def _qwen_container_name() -> str:
     name = str(os.environ.get("APPS_RG_QWEN_VLLM_CONTAINER_NAME", _DEFAULT_CONTAINER) or "").strip()
     return name or _DEFAULT_CONTAINER
+
+
+def _try_start_qwen_container(container: str) -> tuple[bool, str]:
+    """Opt-in ``docker start`` when preflight finds the container stopped."""
+    if not shutil.which("docker"):
+        return False, "docker CLI not on PATH"
+    try:
+        proc = subprocess.run(
+            ["docker", "start", container],
+            capture_output=True,
+            text=True,
+            timeout=60.0,
+            shell=False,
+        )
+    except subprocess.TimeoutExpired:
+        return False, f"docker start timed out for container {container!r}"
+    except OSError as exc:
+        return False, f"{type(exc).__name__}: {exc}"
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or "").strip()
+        return False, detail or f"docker start failed for container {container!r}"
+    return True, ""
 
 
 def _docker_container_running(container: str) -> tuple[bool, str]:
@@ -106,6 +129,12 @@ def require_qwen_vllm_cli_health(
 
     container = _qwen_container_name()
     ok_docker, docker_err = _docker_container_running(container)
+    if not ok_docker and _truthy_env(_ENV_VLLM_AUTO_START):
+        started, start_err = _try_start_qwen_container(container)
+        if started:
+            ok_docker, docker_err = _docker_container_running(container)
+        else:
+            docker_err = f"{docker_err}; auto_start_failed: {start_err}".strip("; ")
     if not ok_docker:
         raise SectionCliConfigError(
             f"qwen vLLM docker container health check failed ({container!r}): {docker_err}"
@@ -119,4 +148,5 @@ def require_qwen_vllm_cli_health(
 __all__ = [
     "require_qwen_vllm_cli_health",
     "should_skip_qwen_vllm_health_gate",
+    "_try_start_qwen_container",
 ]

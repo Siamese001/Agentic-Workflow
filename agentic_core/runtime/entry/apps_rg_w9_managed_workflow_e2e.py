@@ -55,14 +55,16 @@ from agentic_core.runtime.contracts.sealed_workflow_types import (
     SealedSectionArtifact,
     SealedWorkflowPackage,
 )
-from apps_rg.runtime.bindings.exit_binding import build_apps_rg_exit_harness
+from apps_rg.runtime.bindings.exit_binding import (  # guardian: allow-layer-violation -- W9 e2e binds app Exit harness from core entry
+    build_apps_rg_exit_harness,
+)
 from agentic_core.runtime.exit.exit_disposition import (
     ExitDispositionReceipt,
     RuntimeExhaustBundle,
     X3D_ALLOW_FINISH,
 )
 from agentic_core.runtime.gates.gate_types import GateMeshResult
-from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg  # guardian: allow-layer-violation -- W9 e2e binds app U0 from core entry
 
 # ── W9 schema version ─────────────────────────────────────────────────────────
 

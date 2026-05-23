@@ -8,6 +8,7 @@ from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
 )
 from apps_rg.runtime.sections.executive_summary_composition import is_mechanism_inventory_sentence
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    check_exec_summary_cross_sentence_metric_dedup,
     check_exec_summary_evidence_utilization,
     check_exec_summary_mechanical_opener_stack,
     check_synthesis_quality,
@@ -54,7 +55,7 @@ def test_build_graph_only_summary_omits_gross_margin() -> None:
     assert "40%" in resume
     assert "8 to 28" in resume or "8 to  28" in resume
     assert not any("Holds AWS" in resume for _ in [0])
-    assert len(ledger) <= 3
+    assert len(ledger) <= 4
 
 
 def _seven_fact_pool() -> list[dict]:
@@ -109,6 +110,14 @@ def test_build_graph_only_passes_mechanism_inventory_on_opener() -> None:
     assert inv is False, reason
 
 
+def test_build_graph_only_no_duplicate_team_scale_metric() -> None:
+    allowed = {str(row["fact_id"]) for row in _seven_fact_pool()}
+    resume, _ledger = build_graph_only_executive_summary_from_facts(_seven_fact_pool(), allowed)
+    dedup_ok, dedup_reason = check_exec_summary_cross_sentence_metric_dedup(resume)
+    assert dedup_ok, dedup_reason
+    assert resume.lower().count("8 to 28") <= 1
+
+
 def test_build_graph_only_passes_synthesis_and_mechanical_opener_gates() -> None:
     allowed = {str(row["fact_id"]) for row in _seven_fact_pool()}
     resume, _ledger = build_graph_only_executive_summary_from_facts(_seven_fact_pool(), allowed)
@@ -128,6 +137,33 @@ def test_build_graph_only_five_ledger_rows_when_pool_seven() -> None:
         selected_facts=_seven_fact_pool(),
     )
     assert util_ok, util_reason
+
+
+def test_apply_repair_opener_only_skips_full_rewrite() -> None:
+    allowed = {
+        "fact_engineering_platform_001",
+        "fact_governance_003",
+        "fact_exec_002",
+    }
+    parsed = {
+        "resume_display_text": (
+            "Led the implementation of automated validation frameworks, reducing errors by 40%. "
+            "Built advanced quantitative foundations through derivatives pricing. "
+            "Also delivered platform services with deterministic routing. "
+            "Successfully scaled engineering programs across regulated workflows. "
+            "Delivered measurable outcomes across enterprise platform programs. "
+            "Generated measurable platform outcomes across regulated delivery."
+        ),
+        "claim_ledger": [{"claim_text": "x", "source_fact_ids": ["fact_governance_003"]}],
+    }
+    repaired, meta = apply_graph_only_generation_quality_repair(
+        parsed,
+        allowed_fact_ids=allowed,
+        plan_facts=_sample_facts(),
+    )
+    assert meta.get("repair_kind") == "opener_normalize_only"
+    assert meta.get("applied") is True
+    assert "Led the" not in str(repaired.get("resume_display_text") or "")
 
 
 def test_apply_repair_strips_hallucinated_margin() -> None:

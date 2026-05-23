@@ -1604,6 +1604,7 @@ def run_executive_summary_execution(
     runtime_generation_status = result.runtime_generation_status
     write_json(artifact_dir / "provider_response.json", provider_result_data)
     parse_error = ""
+    _composition_plan_early: dict[str, Any] | None = None
     if result.runtime_generation_status == "REAL_LLM":
         parsed, parse_error = parse_model_json(raw_output)
         if parsed:
@@ -1621,6 +1622,28 @@ def run_executive_summary_execution(
             prune_exec_summary_claim_ledger_orphans(parsed, allowed_fact_ids)
             from apps_rg.runtime.section_repair_policy import graph_only_reformat_allowed
 
+            _pp_meta_early = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
+            _painting_early = bool(
+                _pp_meta_early.get("graph_skills_proof_pool")
+                or pool.proof_source == "augmented_skills_graph"
+            )
+            if _painting_early:
+                from apps_rg.runtime.sections.executive_summary_composition import (
+                    build_executive_summary_composition_plan,
+                )
+
+                _composition_plan_early = build_executive_summary_composition_plan(
+                    selected_facts=list(selected_fact_plan.get("facts") or []),
+                    allowed_fact_ids=allowed_fact_ids,
+                    target_role=str(
+                        getattr(args, "target_role", None)
+                        or getattr(args, "target_title", None)
+                        or ""
+                    ),
+                    target_company=str(args.target_company or ""),
+                    proof_pool_metadata=_pp_meta_early,
+                )
+
             if pool.proof_source == "augmented_skills_graph" and graph_only_reformat_allowed():
                 from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
                     apply_graph_only_generation_quality_repair,
@@ -1636,6 +1659,12 @@ def run_executive_summary_execution(
                     parsed,
                     allowed_fact_ids=allowed_fact_ids,
                     plan_facts=_plan_facts,
+                    composition_plan=_composition_plan_early,
+                    target_role=str(
+                        getattr(args, "target_role", None)
+                        or getattr(args, "target_title", None)
+                        or ""
+                    ),
                 )
                 write_json(artifact_dir / "graph_only_generation_quality_repair.json", graph_quality_meta)
                 if graph_quality_meta.get("applied") and not graph_quality_meta.get(
@@ -1691,7 +1720,7 @@ def run_executive_summary_execution(
 
         parsed["resume_display_text"] = resume_display_text
         _plan_facts = list(selected_fact_plan.get("facts") or [])
-        composition_plan = build_executive_summary_composition_plan(
+        composition_plan = _composition_plan_early if _composition_plan_early is not None else build_executive_summary_composition_plan(
             selected_facts=_plan_facts,
             allowed_fact_ids=allowed_fact_ids,
             target_role=str(

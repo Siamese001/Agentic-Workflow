@@ -8,7 +8,14 @@ from pathlib import Path
 import pytest
 
 from apps_rg.runtime.sections.executive_summary_briefing import prepare_briefing_for_executive_summary
-from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
+from apps_rg.runtime.validators.executive_summary_sentence_utils import (
+    join_executive_summary_sentences,
+    split_sentences,
+)
+from apps_rg.runtime.validators.executive_summary_x2 import (
+    check_exec_summary_cross_sentence_metric_dedup,
+    check_exec_summary_display_roundtrip_integrity,
+)
 from apps_rg.runtime.dispatch.executive_summary_pa import (
     SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR,
     load_executive_summary_example_after,
@@ -35,6 +42,19 @@ def _six_good_sentences() -> str:
         "Prior roles show quantitative platform depth across regulated enterprise programs. "
         "Governed runtime delivery stays audit-ready without weakening commercial velocity."
     )
+
+
+def test_split_sentences_roundtrip_preserves_basel_after_period_boundary() -> None:
+    text = (
+        "Platform commercialization generated $22M in IP-led revenue while scaling teams. "
+        "Basel III and CCAR data lineage, cataloging, and automated validation frameworks "
+        "cut regulatory reporting errors by 40%."
+    )
+    joined = join_executive_summary_sentences(split_sentences(text))
+    assert "Basel III" in joined
+    assert "\x1f" not in joined
+    ok, reason = check_exec_summary_display_roundtrip_integrity(joined)
+    assert ok, reason
 
 
 def test_split_sentences_handles_us_and_regulatory_prose():

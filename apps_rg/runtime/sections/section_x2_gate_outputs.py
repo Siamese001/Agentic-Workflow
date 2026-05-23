@@ -30,7 +30,7 @@ def _load_runtime_payload(artifact_dir: Path) -> dict[str, Any] | None:
         return None
     try:
         raw = json.loads(rp_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: missing runtime payload is non-fatal
         return None
     return raw if isinstance(raw, dict) else None
 

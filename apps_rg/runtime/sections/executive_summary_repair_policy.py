@@ -39,7 +39,8 @@ def synthesis_regen_max_attempts() -> int:
 
 # Post-X1D same-authority regen when X2 passed but judge quorum/median signals synthesis gap.
 JUDGE_REGEN_MAX_ATTEMPTS = 1
-RELEASE_JUDGE_REGENERATION_ENABLED = False
+# Opt-in via APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=1 after X2 pass (bounded, same-authority).
+RELEASE_JUDGE_REGENERATION_ENABLED = True
 
 
 def judge_regeneration_enabled() -> bool:

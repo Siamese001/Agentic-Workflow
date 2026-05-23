@@ -27,7 +27,7 @@ def load_ledger(artifact_dir: Path) -> dict[str, Any] | None:
         return None
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none-swallow -- P2 burndown: missing repair ledger is non-fatal
         return None
     return doc if isinstance(doc, dict) else None
 

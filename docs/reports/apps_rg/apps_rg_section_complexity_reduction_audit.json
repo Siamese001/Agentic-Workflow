@@ -1,6 +1,6 @@
 {
   "audit_id": "apps_rg_section_complexity_reduction_audit",
-  "generated_at_utc": "2026-05-22T09:41:20.449529+00:00",
+  "generated_at_utc": "2026-05-23T21:39:44.031345+00:00",
   "proof_inventory_root": "artifacts/apps_rg/runtime_proofs/full_resume_0e41a1c13cfe/lanes",
   "sections_reviewed": [
     "headline",
@@ -22,7 +22,7 @@
         },
         {
           "path": "apps_rg/runtime/sections/headline_lane.py",
-          "lines": 1796
+          "lines": 1854
         },
         {
           "path": "apps_rg/runtime/sections/headline_pa.py",
@@ -30,7 +30,7 @@
         },
         {
           "path": "apps_rg/runtime/validators/headline_x2.py",
-          "lines": 790
+          "lines": 792
         },
         {
           "path": "apps_rg/runtime/judges/headline_x1d.py",
@@ -41,7 +41,7 @@
           "lines": 5
         }
       ],
-      "runtime_module_line_total": 3239,
+      "runtime_module_line_total": 3299,
       "repair_modules": [],
       "repair_stack_documented": [
         "normalize_claim_ledger_string_fact_ids",
@@ -79,6 +79,7 @@
           "x2_headline_claim_ledger_rows_present",
           "x2_headline_claim_ledger_segment_decomposition",
           "x2_headline_exactly_one_line",
+          "x2_headline_executive_length",
           "x2_headline_pipe_four_segments",
           "x2_headline_raw_model_schema_valid",
           "x2_headline_segments_quality",
@@ -90,10 +91,10 @@
         "lane_registry_critical_gates": [
           "x2_c0_metrics_artifact_present",
           "x2_c0_support_status_gate",
-          "x2_headline_claim_ledger_no_silent_row_drop",
           "x2_headline_claim_ledger_rows_present",
           "x2_headline_claim_ledger_segment_decomposition",
           "x2_headline_exactly_one_line",
+          "x2_headline_executive_length",
           "x2_headline_pipe_four_segments",
           "x2_headline_raw_model_schema_valid",
           "x2_headline_segments_quality",
@@ -110,7 +111,6 @@
         "rigor_minus_shape": [
           "x2_c0_metrics_artifact_present",
           "x2_c0_support_status_gate",
-          "x2_headline_claim_ledger_no_silent_row_drop",
           "x2_json_parse_valid",
           "x2_no_em_dash",
           "x2_no_first_person",
@@ -121,7 +121,7 @@
         "competencies_rigor_constants": null
       },
       "duplicated_invariants": [
-        "lane_registry lists 8 critical gates not in product_shape SSOT (universal/style/C0)"
+        "lane_registry lists 7 critical gates not in product_shape SSOT (universal/style/C0)"
       ],
       "gates_permanent_noop_or_skipped": [
         "x2_headline_source_fact_ids_within_srfs_slice: legacy proof bundle artifact (gate retired)"
@@ -130,7 +130,6 @@
       "rigor_critical_absent_in_runtime_x2": [
         "x2_c0_metrics_artifact_present",
         "x2_c0_support_status_gate",
-        "x2_headline_claim_ledger_no_silent_row_drop",
         "x2_headline_claim_ledger_segment_decomposition",
         "x2_headline_text_claim_coverage_integrity"
       ],
@@ -171,10 +170,10 @@
         "ALIGN lane_registry with runtime X2 enumeration OR drop rigor-only ghosts"
       ],
       "complexity_hotspots": [
-        "6 section-tagged modules (3239 LOC)",
+        "6 section-tagged modules (3299 LOC)",
         "0 repair-tagged modules",
         "3 parallel dispatch-quality paths",
-        "5 rigor-critical gates absent in production x2 bundle",
+        "4 rigor-critical gates absent in production x2 bundle",
         "63 proof files per lane (~58 non-release)"
       ],
       "recommended_migration_steps": [
@@ -192,23 +191,23 @@
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_composition.py",
-          "lines": 517
+          "lines": 555
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_evidence_capsule.py",
-          "lines": 409
+          "lines": 461
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_judge_remediation.py",
-          "lines": 491
+          "lines": 501
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_lane.py",
-          "lines": 2242
+          "lines": 2464
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_pa.py",
-          "lines": 486
+          "lines": 582
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_proof_bundle.py",
@@ -216,11 +215,7 @@
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_repair_policy.py",
-          "lines": 52
-        },
-        {
-          "path": "apps_rg/runtime/sections/executive_summary_srfs_binding.py",
-          "lines": 199
+          "lines": 54
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_synthesis_monotonic.py",
@@ -232,19 +227,23 @@
         },
         {
           "path": "apps_rg/runtime/sections/executive_summary_token_budget.py",
-          "lines": 724
+          "lines": 728
+        },
+        {
+          "path": "apps_rg/runtime/sections/executive_summary_voice_repair.py",
+          "lines": 284
         },
         {
           "path": "apps_rg/runtime/validators/executive_summary_sentence_utils.py",
-          "lines": 69
+          "lines": 80
         },
         {
           "path": "apps_rg/runtime/validators/executive_summary_x2.py",
-          "lines": 2004
+          "lines": 2039
         },
         {
           "path": "apps_rg/runtime/judges/executive_summary_judge_packet.py",
-          "lines": 407
+          "lines": 381
         },
         {
           "path": "apps_rg/runtime/judges/executive_summary_judge_profile.py",
@@ -259,11 +258,11 @@
           "lines": 37
         }
       ],
-      "runtime_module_line_total": 10427,
+      "runtime_module_line_total": 10956,
       "repair_modules": [
         "apps_rg/runtime/sections/exec_summary_graph_only_quality.py",
         "apps_rg/runtime/sections/executive_summary_repair_policy.py",
-        "apps_rg/runtime/sections/executive_summary_srfs_binding.py"
+        "apps_rg/runtime/sections/executive_summary_voice_repair.py"
       ],
       "repair_stack_documented": [
         "RELEASE: SRFS emergency finalizer DISABLED",
@@ -306,13 +305,15 @@
           "x2_claim_ledger_claim_text_non_empty",
           "x2_claim_ledger_orphan_zero",
           "x2_em_dash_count_zero",
+          "x2_exec_summary_cross_sentence_metric_dedup",
+          "x2_exec_summary_display_roundtrip_integrity",
           "x2_exec_summary_evidence_utilization",
           "x2_exec_summary_jd_alignment_proof_flags",
           "x2_exec_summary_no_credential_dump",
           "x2_exec_summary_no_mechanism_inventory",
           "x2_exec_summary_paragraph_max_words",
           "x2_exec_summary_prompt_template_authority",
-          "x2_exec_summary_sentence_count_4_5",
+          "x2_exec_summary_sentence_count_6",
           "x2_first_person_zero"
         ],
         "lane_registry_critical_gates": [
@@ -321,13 +322,15 @@
           "x2_claim_ledger_claim_text_non_empty",
           "x2_claim_ledger_orphan_zero",
           "x2_em_dash_count_zero",
+          "x2_exec_summary_cross_sentence_metric_dedup",
+          "x2_exec_summary_display_roundtrip_integrity",
           "x2_exec_summary_evidence_utilization",
           "x2_exec_summary_jd_alignment_proof_flags",
           "x2_exec_summary_no_credential_dump",
           "x2_exec_summary_no_mechanism_inventory",
           "x2_exec_summary_paragraph_max_words",
           "x2_exec_summary_prompt_template_authority",
-          "x2_exec_summary_sentence_count_4_5",
+          "x2_exec_summary_sentence_count_6",
           "x2_first_person_zero",
           "x2_json_parse_valid",
           "x2_x1d_required_judges_present",
@@ -352,12 +355,14 @@
       "gates_permanent_noop_or_skipped": [
         "x2_exec_summary_paragraph_word_bounds (RETIRED \u2014 not emitted by run_x2_gates)",
         "x2_exec_summary_sentence_count_2_3 (RETIRED \u2014 not emitted by run_x2_gates)",
+        "x2_exec_summary_sentence_count_4_5 (RETIRED \u2014 not emitted by run_x2_gates)",
+        "x2_exec_summary_sentence_count_5_6 (RETIRED \u2014 not emitted by run_x2_gates)",
         "x2_exec_summary_srfs_density_word_count (RETIRED \u2014 not emitted by run_x2_gates)",
         "x2_exec_summary_srfs_sentence_count_4_5 (RETIRED \u2014 not emitted by run_x2_gates)",
         "x2_exec_summary_srfs_sentence_responsibility_shape (RETIRED \u2014 not emitted by run_x2_gates)",
         "x2_executive_summary_source_fact_ids_within_srfs_slice (RETIRED W3 \u2014 use x2_executive_summary_active_proof_pool_source_fact_ids)",
-        "x2_srfs_* (PASS-skip when srfs_integration inactive \u2014 W4 burndown)",
-        "x2_source_sensitive_phrases_supported \u2192 skipped when no selected_role_fact_set (W4)",
+        "x2_srfs_* omitted when srfs_integration inactive (W4 \u2014 not emitted)",
+        "x2_source_sensitive_phrases_supported omitted without selected_facts (W4)",
         "x2_exec_summary_sentence_count_2_3: legacy proof bundle artifact (gate retired)",
         "x2_exec_summary_srfs_sentence_count_4_5: legacy proof bundle artifact (gate retired)",
         "x2_exec_summary_srfs_sentence_responsibility_shape: legacy proof bundle artifact (gate retired)",
@@ -370,13 +375,15 @@
       "rigor_critical_absent_in_runtime_x2": [
         "x2_c0_metrics_artifact_present",
         "x2_c0_support_status_gate",
+        "x2_exec_summary_cross_sentence_metric_dedup",
+        "x2_exec_summary_display_roundtrip_integrity",
         "x2_exec_summary_evidence_utilization",
         "x2_exec_summary_jd_alignment_proof_flags",
         "x2_exec_summary_no_credential_dump",
         "x2_exec_summary_no_mechanism_inventory",
         "x2_exec_summary_paragraph_max_words",
         "x2_exec_summary_prompt_template_authority",
-        "x2_exec_summary_sentence_count_4_5"
+        "x2_exec_summary_sentence_count_6"
       ],
       "rigor_critical_failed": [],
       "proof_artifacts_non_release": [
@@ -419,10 +426,10 @@
         "ALIGN lane_registry with runtime X2 enumeration OR drop rigor-only ghosts"
       ],
       "complexity_hotspots": [
-        "18 section-tagged modules (10427 LOC)",
+        "18 section-tagged modules (10956 LOC)",
         "3 repair-tagged modules",
         "6 parallel dispatch-quality paths",
-        "9 rigor-critical gates absent in production x2 bundle",
+        "11 rigor-critical gates absent in production x2 bundle",
         "78 proof files per lane (~73 non-release)"
       ],
       "recommended_migration_steps": [
@@ -454,15 +461,15 @@
         },
         {
           "path": "apps_rg/runtime/sections/competencies_lane_execution.py",
-          "lines": 797
+          "lines": 858
         },
         {
           "path": "apps_rg/runtime/sections/competencies_lane_runtime.py",
-          "lines": 1448
+          "lines": 1450
         },
         {
           "path": "apps_rg/runtime/sections/competencies_pa.py",
-          "lines": 295
+          "lines": 296
         },
         {
           "path": "apps_rg/runtime/sections/competencies_rigor.py",
@@ -493,7 +500,7 @@
           "lines": 5
         }
       ],
-      "runtime_module_line_total": 5828,
+      "runtime_module_line_total": 5892,
       "repair_modules": [
         "apps_rg/runtime/sections/competencies_capability_projection.py"
       ],
@@ -649,7 +656,7 @@
         "ALIGN lane_registry with runtime X2 enumeration OR drop rigor-only ghosts"
       ],
       "complexity_hotspots": [
-        "14 section-tagged modules (5828 LOC)",
+        "14 section-tagged modules (5892 LOC)",
         "1 repair-tagged modules",
         "4 parallel dispatch-quality paths",
         "7 rigor-critical gates absent in production x2 bundle",
@@ -668,11 +675,11 @@
       "runtime_modules": [
         {
           "path": "apps_rg/runtime/sections/unify_bullets_lane.py",
-          "lines": 1196
+          "lines": 1232
         },
         {
           "path": "apps_rg/runtime/sections/unify_bullets_pa.py",
-          "lines": 147
+          "lines": 123
         },
         {
           "path": "apps_rg/runtime/validators/unify_bullets_x2.py",
@@ -687,7 +694,7 @@
           "lines": 5
         }
       ],
-      "runtime_module_line_total": 2203,
+      "runtime_module_line_total": 2215,
       "repair_modules": [],
       "repair_stack_documented": [
         "repair_protected_unify_bullet_metrics",
@@ -807,7 +814,7 @@
         "ALIGN lane_registry with runtime X2 enumeration OR drop rigor-only ghosts"
       ],
       "complexity_hotspots": [
-        "5 section-tagged modules (2203 LOC)",
+        "5 section-tagged modules (2215 LOC)",
         "0 repair-tagged modules",
         "2 parallel dispatch-quality paths",
         "4 rigor-critical gates absent in production x2 bundle",
@@ -824,11 +831,11 @@
       "runtime_modules": [
         {
           "path": "apps_rg/runtime/sections/unify_narrative_lane.py",
-          "lines": 1136
+          "lines": 1176
         },
         {
           "path": "apps_rg/runtime/sections/unify_narrative_pa.py",
-          "lines": 179
+          "lines": 139
         },
         {
           "path": "apps_rg/runtime/validators/unify_narrative_x2.py",
@@ -977,15 +984,15 @@
       "runtime_modules": [
         {
           "path": "apps_rg/runtime/sections/ibm_bullets_lane.py",
-          "lines": 1022
+          "lines": 1175
         },
         {
           "path": "apps_rg/runtime/sections/ibm_bullets_pa.py",
-          "lines": 122
+          "lines": 108
         },
         {
           "path": "apps_rg/runtime/validators/ibm_bullets_x2.py",
-          "lines": 727
+          "lines": 742
         },
         {
           "path": "apps_rg/runtime/judges/ibm_bullets_x1d.py",
@@ -996,7 +1003,7 @@
           "lines": 5
         }
       ],
-      "runtime_module_line_total": 1964,
+      "runtime_module_line_total": 2118,
       "repair_modules": [],
       "repair_stack_documented": [
         "foundation proof model constrained rewrite",
@@ -1111,7 +1118,7 @@
         "ALIGN lane_registry with runtime X2 enumeration OR drop rigor-only ghosts"
       ],
       "complexity_hotspots": [
-        "5 section-tagged modules (1964 LOC)",
+        "5 section-tagged modules (2118 LOC)",
         "0 repair-tagged modules",
         "2 parallel dispatch-quality paths",
         "4 rigor-critical gates absent in production x2 bundle",
@@ -1135,11 +1142,11 @@
         },
         {
           "path": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
-          "lines": 776
+          "lines": 843
         },
         {
           "path": "apps_rg/runtime/sections/ibm_narrative_lane_runtime.py",
-          "lines": 566
+          "lines": 570
         },
         {
           "path": "apps_rg/runtime/sections/ibm_narrative_metric_trim.py",
@@ -1151,7 +1158,7 @@
         },
         {
           "path": "apps_rg/runtime/validators/ibm_narrative_x2.py",
-          "lines": 794
+          "lines": 813
         },
         {
           "path": "apps_rg/runtime/judges/ibm_narrative_x1d.py",
@@ -1162,7 +1169,7 @@
           "lines": 5
         }
       ],
-      "runtime_module_line_total": 2663,
+      "runtime_module_line_total": 2753,
       "repair_modules": [
         "apps_rg/runtime/sections/ibm_narrative_metric_trim.py"
       ],
@@ -1206,7 +1213,8 @@
           "x2_ibm_narrative_claim_ledger_clause_decomposition",
           "x2_ibm_narrative_exactly_one_sentence",
           "x2_ibm_narrative_no_meta_disclaimer_in_display",
-          "x2_ibm_narrative_requires_finalized_bullets"
+          "x2_ibm_narrative_requires_finalized_bullets",
+          "x2_ibm_narrative_word_budget"
         ],
         "lane_registry_critical_gates": [
           "x2_c0_metrics_artifact_present",
@@ -1216,6 +1224,7 @@
           "x2_ibm_narrative_exactly_one_sentence",
           "x2_ibm_narrative_no_meta_disclaimer_in_display",
           "x2_ibm_narrative_requires_finalized_bullets",
+          "x2_ibm_narrative_word_budget",
           "x2_json_parse_valid",
           "x2_no_em_dash",
           "x2_no_first_person",
@@ -1249,7 +1258,8 @@
         "x2_c0_support_status_gate",
         "x2_ibm_narrative_claim_ledger_clause_decomposition",
         "x2_ibm_narrative_no_meta_disclaimer_in_display",
-        "x2_ibm_narrative_requires_finalized_bullets"
+        "x2_ibm_narrative_requires_finalized_bullets",
+        "x2_ibm_narrative_word_budget"
       ],
       "rigor_critical_failed": [],
       "proof_artifacts_non_release": [
@@ -1288,10 +1298,10 @@
         "ALIGN lane_registry with runtime X2 enumeration OR drop rigor-only ghosts"
       ],
       "complexity_hotspots": [
-        "9 section-tagged modules (2663 LOC)",
+        "9 section-tagged modules (2753 LOC)",
         "1 repair-tagged modules",
         "3 parallel dispatch-quality paths",
-        "5 rigor-critical gates absent in production x2 bundle",
+        "6 rigor-critical gates absent in production x2 bundle",
         "62 proof files per lane (~57 non-release)"
       ],
       "recommended_migration_steps": [
@@ -1302,22 +1312,22 @@
     }
   ],
   "complexity_hotspots_global": [
-    "headline: 6 section-tagged modules (3239 LOC)",
+    "headline: 6 section-tagged modules (3299 LOC)",
     "headline: 0 repair-tagged modules",
     "headline: 3 parallel dispatch-quality paths",
-    "headline: 5 rigor-critical gates absent in production x2 bundle",
+    "headline: 4 rigor-critical gates absent in production x2 bundle",
     "headline: 63 proof files per lane (~58 non-release)",
-    "executive_summary: 18 section-tagged modules (10427 LOC)",
+    "executive_summary: 18 section-tagged modules (10956 LOC)",
     "executive_summary: 3 repair-tagged modules",
     "executive_summary: 6 parallel dispatch-quality paths",
-    "executive_summary: 9 rigor-critical gates absent in production x2 bundle",
+    "executive_summary: 11 rigor-critical gates absent in production x2 bundle",
     "executive_summary: 78 proof files per lane (~73 non-release)",
-    "competencies: 14 section-tagged modules (5828 LOC)",
+    "competencies: 14 section-tagged modules (5892 LOC)",
     "competencies: 1 repair-tagged modules",
     "competencies: 4 parallel dispatch-quality paths",
     "competencies: 7 rigor-critical gates absent in production x2 bundle",
     "competencies: 65 proof files per lane (~60 non-release)",
-    "unify_bullets: 5 section-tagged modules (2203 LOC)",
+    "unify_bullets: 5 section-tagged modules (2215 LOC)",
     "unify_bullets: 0 repair-tagged modules",
     "unify_bullets: 2 parallel dispatch-quality paths",
     "unify_bullets: 4 rigor-critical gates absent in production x2 bundle",
@@ -1327,15 +1337,15 @@
     "unify_narrative: 2 parallel dispatch-quality paths",
     "unify_narrative: 2 rigor-critical gates absent in production x2 bundle",
     "unify_narrative: 62 proof files per lane (~57 non-release)",
-    "ibm_bullets: 5 section-tagged modules (1964 LOC)",
+    "ibm_bullets: 5 section-tagged modules (2118 LOC)",
     "ibm_bullets: 0 repair-tagged modules",
     "ibm_bullets: 2 parallel dispatch-quality paths",
     "ibm_bullets: 4 rigor-critical gates absent in production x2 bundle",
     "ibm_bullets: 60 proof files per lane (~55 non-release)",
-    "ibm_narrative: 9 section-tagged modules (2663 LOC)",
+    "ibm_narrative: 9 section-tagged modules (2753 LOC)",
     "ibm_narrative: 1 repair-tagged modules",
     "ibm_narrative: 3 parallel dispatch-quality paths",
-    "ibm_narrative: 5 rigor-critical gates absent in production x2 bundle",
+    "ibm_narrative: 6 rigor-critical gates absent in production x2 bundle",
     "ibm_narrative: 62 proof files per lane (~57 non-release)"
   ],
   "delete_or_collapse_candidates": [

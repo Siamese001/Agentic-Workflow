@@ -86,7 +86,9 @@ def _load_declarative_contract(section_id: str) -> dict[str, Any] | None:
 
 
 def _rigor_critical_gates(section_id: str) -> frozenset[str]:
-    from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
+    from tests.unit.apps_rg.section_rigor.lane_registry import (  # guardian: allow-layer-violation -- ops audit reads lane rigor registry from tests
+        spec_for_lane,
+    )
 
     return spec_for_lane(section_id).critical_gates
 

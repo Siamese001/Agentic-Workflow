@@ -206,7 +206,7 @@ def x2_gate_graph_only_proof_pool(
         )
     try:
         validate_evidence_authority_block(ea, section_id=label)
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: authority validation returns structured fail
         return False, authority, EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH, str(exc)
     return True, authority, EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH, "ok"
 

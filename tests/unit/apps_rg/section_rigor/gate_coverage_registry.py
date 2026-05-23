@@ -98,9 +98,24 @@ def uncovered_critical_gates(repo_root) -> list[tuple[str, str]]:
     return missing
 
 
+from tests.unit.apps_rg.section_rigor.rigor_gate_maps import (  # noqa: E402
+    C0_SIDECAR_GATE_IDS,
+    RETIRED_GATE_REFS,
+    RetiredGateRef,
+    gate_accounting_status,
+    is_gate_verdict_known,
+    validate_retired_gate_ref,
+)
+
 __all__ = [
     "LANE_CRITICAL_GATES",
     "SECTION_DEDICATED_TEST_FRAGMENTS",
+    "C0_SIDECAR_GATE_IDS",
+    "RETIRED_GATE_REFS",
+    "RetiredGateRef",
+    "gate_accounting_status",
+    "is_gate_verdict_known",
     "uncovered_critical_gates",
+    "validate_retired_gate_ref",
     "weak_fail_gate_ids_by_lane",
 ]

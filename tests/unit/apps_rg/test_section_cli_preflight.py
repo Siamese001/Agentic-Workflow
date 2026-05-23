@@ -102,3 +102,28 @@ def test_health_gate_fails_when_restart_not_ready(monkeypatch: pytest.MonkeyPatc
                 "probe_error": "probe_budget_exhausted",
             },
         )
+
+
+def test_health_gate_auto_starts_container_when_opt_in(monkeypatch: pytest.MonkeyPatch) -> None:
+    _clear_health_skip_env(monkeypatch)
+    monkeypatch.setenv("APPS_RG_VLLM_AUTO_START", "1")
+    calls: list[str] = []
+
+    def _docker_state(_container: str) -> tuple[bool, str]:
+        calls.append("inspect")
+        return len(calls) >= 2, ""
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.section_cli_preflight._docker_container_running",
+        _docker_state,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.section_cli_preflight._try_start_qwen_container",
+        lambda _c: (True, ""),
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.section_cli_preflight._http_models_health_check",
+        lambda: (True, ""),
+    )
+    require_qwen_vllm_cli_health(lane_provider="qwen_vllm")
+    assert calls.count("inspect") >= 2

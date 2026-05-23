@@ -26,6 +26,17 @@ For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
 - Start: `docker start local-qwen-vllm`
 - Stop: `docker stop local-qwen-vllm`
 - Health: `curl http://localhost:8000/v1/models` should return JSON with `Qwen/Qwen2.5-32B-Instruct-AWQ` in `data[0].id`
+- Interactive helper (Windows): `ops_scripts/apps_rg/Fix-AppsRgWslRuntime.ps1` starts the container and probes health.
+
+### apps_rg section CLI — opt-in auto-start (Wave D)
+
+When `python -m apps_rg --section …` uses live `qwen_vllm`, preflight fails closed if Docker reports the container stopped. Set:
+
+| Env | Role |
+|-----|------|
+| `APPS_RG_VLLM_AUTO_START=1` | Run `docker start local-qwen-vllm` once when inspect shows not running, then re-check before failing. |
+
+Default is **off** (fail-fast preserves operator intent). Implementation: `apps_rg/runtime/section_cli_preflight.py`.
 
 ### Auto-restart on host reboot (added 2026-05-06)
 

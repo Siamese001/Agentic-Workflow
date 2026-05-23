@@ -207,6 +207,12 @@ def build_executive_summary_composition_plan(
 
 def normalize_exec_summary_recruiter_openers(resume_display_text: str) -> str:
     """Deterministic voice repair: replace thin recruiter openers without weakening X2."""
+    from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MECHANICAL_OPENERS
+    from apps_rg.runtime.validators.executive_summary_sentence_utils import (
+        join_executive_summary_sentences,
+        split_sentences,
+    )
+
     text = str(resume_display_text or "").strip()
     if not text:
         return text
@@ -214,10 +220,26 @@ def normalize_exec_summary_recruiter_openers(resume_display_text: str) -> str:
     replacements = (
         ("engineering executive with expertise in", "Engineering executive building"),
         ("engineering executive with expertise", "Engineering executive building"),
+        ("technology strategy executive with extensive experience in", "Technology strategy executive who operationalizes"),
     )
     for old, new in replacements:
         if low.startswith(old):
-            return new + text[len(old) :]
+            text = new + text[len(old) :]
+            low = text.lower()
+            break
+    rebuilt: list[str] = []
+    for sent in split_sentences(text):
+        words = sent.split()
+        while words and words[0].lower().strip(",.;:") in EXEC_SUMMARY_MECHANICAL_OPENERS:
+            words = words[1:]
+        if not words:
+            continue
+        clause = " ".join(words).strip()
+        if clause and clause[0].islower():
+            clause = clause[0].upper() + clause[1:]
+        rebuilt.append(clause)
+    if rebuilt:
+        return join_executive_summary_sentences(rebuilt)
     return text
 
 
@@ -398,7 +420,7 @@ def resolve_composition_plan(
         if path.is_file():
             try:
                 doc = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow
+            except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- P2 burndown: optional composition plan artifact
                 return None
             return doc if isinstance(doc, dict) else None
     return None

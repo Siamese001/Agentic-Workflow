@@ -227,7 +227,9 @@ def _invariant_layers(section_id: str) -> dict[str, Any]:
         section_product_shape,
         shape_to_dict,
     )
-    from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
+    from tests.unit.apps_rg.section_rigor.lane_registry import (  # guardian: allow-layer-violation -- ops audit reads lane rigor registry from tests
+        spec_for_lane,
+    )
 
     contract = _load_yaml(_CONTRACT_DIR / f"{section_id}.contract.yaml")
     declarative_path = _DECLARATIVE_MAP.get(section_id)
@@ -360,7 +362,9 @@ def _noop_and_skipped_gates(section_id: str) -> tuple[list[str], list[str]]:
 
 
 def _rigor_runtime_gap(section_id: str) -> tuple[list[str], list[str]]:
-    from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
+    from tests.unit.apps_rg.section_rigor.lane_registry import (  # guardian: allow-layer-violation -- ops audit reads lane rigor registry from tests
+        spec_for_lane,
+    )
 
     lane_dir = _DEFAULT_PROOF_ROOT / section_id
     critical = spec_for_lane(section_id).critical_gates
@@ -662,6 +666,49 @@ def write_reports(audit: dict[str, Any]) -> tuple[Path, Path]:
         lines.append(f"- {n}")
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return json_path, md_path
+
+
+def export_complexity_baseline_snapshot() -> dict[str, Any]:
+    """W1.2 / W5.0 — machine-readable LOC/module ratchet baseline."""
+    import hashlib
+
+    script_path = Path(__file__).resolve()
+    digest = hashlib.sha256(script_path.read_bytes()).hexdigest()[:16]
+    generated_at = datetime.now(timezone.utc).isoformat()
+    sections_out: list[dict[str, Any]] = []
+    modules_out: list[dict[str, Any]] = []
+    for section_id in _SECTIONS:
+        modules = _section_py_modules(section_id)
+        tagged_loc = sum(m["lines"] for m in modules)
+        sections_out.append(
+            {
+                "section_id": section_id,
+                "tagged_runtime_loc": tagged_loc,
+                "module_count": len(modules),
+                "loc": tagged_loc,
+            }
+        )
+        for mod in modules:
+            modules_out.append(
+                {
+                    "section_id": section_id,
+                    "module_path": mod["path"],
+                    "loc": mod["lines"],
+                }
+            )
+    return {
+        "baseline_id": "apps_rg_complexity_baseline",
+        "linked_plan_id": "apps-rg-complexity-test-radar-605dcc",
+        "audit_script_version": "section_complexity_reduction_audit",
+        "audit_script_digest": digest,
+        "generated_at": generated_at,
+        "sections": sections_out,
+        "modules": modules_out,
+        "thresholds": {
+            "loc_increase_max": 0,
+            "module_count_increase_max": 0,
+        },
+    }
 
 
 def main() -> int:

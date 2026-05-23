@@ -44,7 +44,7 @@ def _get_bge_model() -> Any:
             return None
         try:
             _bge_model = load_bge_sentence_transformer(settings)
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: BGE optional when embeddings off-path  # guardian: allow-return-none-swallow -- P2 burndown: pseudo-digest fallback when load fails
             from apps_rg.runtime.embedding_settings import AppsRgEmbeddingFailClosedError
             from apps_rg.runtime.product_output_policy import require_live_bge_embeddings
 

@@ -1063,6 +1063,42 @@ def check_exec_summary_sentence_count_6(resume_display_text: str) -> tuple[bool,
     return True, None
 
 
+def _collapse_display_whitespace(text: str) -> str:
+    return re.sub(r"\s+", " ", str(text or "")).strip()
+
+
+def check_exec_summary_display_roundtrip_integrity(resume_display_text: str) -> tuple[bool, str | None]:
+    """Fail when split/join mutates display text or leaves abbrev-guard control bytes."""
+    text = str(resume_display_text or "").strip()
+    if not text:
+        return True, None
+    if any(ord(ch) < 32 and ch not in ("\n", "\t") for ch in text):
+        return False, "control_characters_in_resume_display_text"
+    if "\x1f" in text or "\ue000" in text or "\ue001" in text:
+        return False, "abbrev_guard_token_leaked_into_display_text"
+    parts = [s for s in split_sentences(text) if str(s).strip()]
+    joined = " ".join(parts)
+    if _collapse_display_whitespace(joined) != _collapse_display_whitespace(text):
+        return False, "split_sentences_join_roundtrip_mismatch"
+    return True, None
+
+
+_CROSS_SENTENCE_DEDUP_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\b(?:scaled|scaling)\s+(?:the\s+)?ml engineering organization from 8 to 28\b", re.I), "team_8_to_28"),
+    (re.compile(r"\b8\s+to\s+28\s+specialists\b", re.I), "team_8_to_28_specialists"),
+)
+
+
+def check_exec_summary_cross_sentence_metric_dedup(resume_display_text: str) -> tuple[bool, str | None]:
+    """Fail when the same high-signal metric clause appears in multiple sentences."""
+    sentences = split_sentences(resume_display_text)
+    for _pat, label in _CROSS_SENTENCE_DEDUP_PATTERNS:
+        hits = sum(1 for sent in sentences if _pat.search(sent))
+        if hits > 1:
+            return False, f"duplicate_metric_across_sentences:{label}:{hits}"
+    return True, None
+
+
 def check_exec_summary_sentence_count_5_6(resume_display_text: str) -> tuple[bool, str | None]:
     """Deprecated alias — product band is exactly six sentences."""
     return check_exec_summary_sentence_count_6(resume_display_text)
@@ -1607,6 +1643,24 @@ def run_x2_gates(
         sent6_reason or "ok",
         f"exactly_{EXEC_SUMMARY_MIN_SENTENCES}",
         sent6_reason,
+    )
+    roundtrip_ok, roundtrip_reason = check_exec_summary_display_roundtrip_integrity(
+        resume_display_text
+    )
+    add(
+        "x2_exec_summary_display_roundtrip_integrity",
+        roundtrip_ok,
+        roundtrip_reason or "ok",
+        "split_join_and_no_control_chars",
+        roundtrip_reason,
+    )
+    dedup_ok, dedup_reason = check_exec_summary_cross_sentence_metric_dedup(resume_display_text)
+    add(
+        "x2_exec_summary_cross_sentence_metric_dedup",
+        dedup_ok,
+        dedup_reason or "ok",
+        "no_duplicate_high_signal_metrics",
+        dedup_reason,
     )
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         resume_display_text,

@@ -250,7 +250,7 @@ def reconcile_grade_only_judge_result(
             if score < threshold:
                 out["score"] = threshold
                 out["pass"] = True
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: optional score coercion on judge packet
             pass
     return out
 

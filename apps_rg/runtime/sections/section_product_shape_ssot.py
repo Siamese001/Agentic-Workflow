@@ -165,6 +165,8 @@ def _exec_summary_shape() -> SectionProductShape:
             "x2_claim_ledger_claim_text_non_empty",
             "x2_claim_ledger_orphan_zero",
             "x2_exec_summary_prompt_template_authority",
+            "x2_exec_summary_display_roundtrip_integrity",
+            "x2_exec_summary_cross_sentence_metric_dedup",
         ),
         style_gate_ids=(
             "x2_first_person_zero",

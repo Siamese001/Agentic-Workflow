@@ -244,7 +244,7 @@ def maybe_upsert_c02_fact_vectors(
         receipt["upserted_count"] = count
         receipt["status"] = "PASS" if count else "EMPTY"
         receipt["reason"] = "upsert_ok" if count else "no_eligible_atoms"
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: upsert failure recorded in receipt  # guardian: allow-log-and-swallow -- P2 burndown: upsert failure recorded in receipt
         receipt["status"] = "FAIL"
         receipt["reason"] = f"{type(exc).__name__}:{exc}"
         _logger.warning("C0.2 fact_vectors upsert failed: %s", exc)
@@ -261,8 +261,8 @@ def _write_receipt(artifact_dir: Path | None, receipt: dict[str, Any]) -> None:
             json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
-    except OSError:
-        pass  # guardian: allow-silent-swallow -- ingest receipt is best-effort
+    except OSError:  # guardian: allow-silent-swallow -- P2 burndown: ingest receipt is best-effort
+        pass
 
 
 __all__ = [

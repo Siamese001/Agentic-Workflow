@@ -104,7 +104,7 @@ def lane_run_dir_meets_product_bar(run_dir: Path) -> tuple[bool, str]:
                 )
                 if not ok_ing:
                     return False, ing_reason
-        except (json.JSONDecodeError, OSError):
+        except (json.JSONDecodeError, OSError):  # guardian: allow-silent-swallow -- P2 burndown: optional ingest receipt probe
             pass
 
     run_posix = run_dir.as_posix()

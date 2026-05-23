@@ -322,8 +322,8 @@ def c0_retrieve_apps_rg(
         if _art_hint:
             try:
                 write_embedding_settings_receipt(_art_hint, emb_settings)
-            except OSError:
-                pass  # guardian: allow-silent-swallow -- receipt write is best-effort on C0 preflight
+            except OSError:  # guardian: allow-silent-swallow -- P2 burndown: receipt write is best-effort on C0 preflight
+                pass
         if not emb_settings.embeddings_enabled:
             raise C0EvidenceGapError(
                 "Chroma path is configured (parameter or CHROMA_PERSIST_DIR) but "
