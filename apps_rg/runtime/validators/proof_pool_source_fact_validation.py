@@ -44,12 +44,26 @@ def proof_source_from_metadata(metadata: dict[str, Any] | None) -> str:
     )
 
 
-def is_id_in_active_proof_pool(fid: str, allowed_fact_ids: set[str]) -> bool:
+def is_id_in_active_proof_pool(
+    fid: str,
+    allowed_fact_ids: set[str],
+    alias_map: dict[str, str] | None = None,
+) -> bool:
     s = str(fid).strip()
     if not s:
         return False
     base = source_fact_base_id(s.split("_metric_", 1)[0])
-    return s in allowed_fact_ids or base in allowed_fact_ids
+    if s in allowed_fact_ids or base in allowed_fact_ids:
+        return True
+    amap = alias_map or {}
+    ledger = amap.get(base) or amap.get(s)
+    if ledger and (ledger in allowed_fact_ids or source_fact_base_id(ledger) in allowed_fact_ids):
+        return True
+    reverse = {v: k for k, v in amap.items()}
+    surface = reverse.get(base) or reverse.get(s)
+    if surface and (surface in allowed_fact_ids or source_fact_base_id(surface) in allowed_fact_ids):
+        return True
+    return False
 
 
 def validate_active_proof_pool_source_fact_ids(
@@ -75,7 +89,17 @@ def validate_active_proof_pool_source_fact_ids(
         )
     else:
         pool_ref = ""
-    pool_digest = proof_pool_digest or str((proof_pool_metadata or {}).get("proof_pool_digest") or "")
+    meta = proof_pool_metadata or {}
+    pool_digest = (
+        proof_pool_digest
+        or str(meta.get("canonical_evidence_set_digest") or "")
+        or str(meta.get("proof_pool_digest") or "")
+    )
+    alias_map = dict(meta.get("id_alias_map") or {})
+    if not alias_map:
+        canon = meta.get("canonical_section_evidence_set")
+        if isinstance(canon, dict):
+            alias_map = dict(canon.get("id_alias_map") or {})
 
     seen: set[str] = set()
     checked: list[str] = []
@@ -105,7 +129,7 @@ def validate_active_proof_pool_source_fact_ids(
             else:
                 jd_or_briefing.append(s)
             continue
-        if not is_id_in_active_proof_pool(s, allowed_fact_ids):
+        if not is_id_in_active_proof_pool(s, allowed_fact_ids, alias_map=alias_map):
             unsupported.append(s)
 
     ok = not unsupported and not rejected_non_proof and bool(checked or allowed_fact_ids)
@@ -118,7 +142,6 @@ def validate_active_proof_pool_source_fact_ids(
     elif not checked:
         decisive = "no_source_fact_ids_collected"
 
-    meta = proof_pool_metadata or {}
     skills_status = str(meta.get("skills_authority_status") or meta.get("skills_source_authority_status") or "")
     skills_src = str(meta.get("skills_authority_source_type") or meta.get("skills_source_type") or "")
     claim_src = str(meta.get("claim_evidence_source_type") or "")
@@ -133,6 +156,8 @@ def validate_active_proof_pool_source_fact_ids(
         "proof_source": proof_source,
         "proof_pool_ref": pool_ref,
         "proof_pool_digest": pool_digest,
+        "canonical_evidence_set_digest": pool_digest,
+        "id_alias_map": alias_map,
         "claim_evidence_source_type": claim_src or None,
         "claim_evidence_source_ref": meta.get("claim_evidence_source_ref"),
         "skills_authority_source_type": skills_src or None,

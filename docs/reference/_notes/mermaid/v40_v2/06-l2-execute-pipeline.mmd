@@ -1,0 +1,5 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart LR
+  E1["E1"] --> E2["E2"] --> E3["E3"] --> E4["E4"]
+  E4 -->|retry| E3
+  E4 --> E5["E5"] --> OUT["Exit/L3"]

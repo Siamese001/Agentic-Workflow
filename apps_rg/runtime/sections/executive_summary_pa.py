@@ -118,6 +118,43 @@ def format_allowed_source_fact_ids_contract(allowed_ids: list[str]) -> str:
     return "\n".join(lines)
 
 
+def is_strategy_executive_target_title(target_title: str) -> bool:
+    """True when TARGET_TITLE signals IT strategy / innovation SVP-style positioning."""
+    blob = str(target_title or "").strip().lower()
+    if not blob:
+        return False
+    markers = (
+        "it strategy",
+        "strategy & innovation",
+        "strategy and innovation",
+        "technology strategy",
+        "chief information",
+        "cio",
+        "cito",
+        "enterprise architecture",
+        "digital innovation",
+    )
+    return any(m in blob for m in markers) or (
+        "svp" in blob and ("strategy" in blob or "innovation" in blob)
+    )
+
+
+def format_strategy_executive_targeting_appendix(target_title: str) -> str:
+    """Extra U0/JD framing for SVP IT strategy lanes (targeting only — never proof)."""
+    if not is_strategy_executive_target_title(target_title):
+        return ""
+    return (
+        "STRATEGY_EXECUTIVE_FRAMING (targeting only — NOT PROOF):\n"
+        "- Open as a technology strategy / enterprise technology executive (not a narrow engineering-manager label).\n"
+        "- Weave allowed facts into one causal arc: platform + governance + commercialization + scale.\n"
+        "- Use JD_TEXT/BRIEFING only to tilt emphasis among evidenced themes (federated architecture, innovation, "
+        "post-merger integration, AI/data roadmap) — never cite JD/briefing as proof; jd_used_as_proof=false.\n"
+        "- Avoid bullet-stack sequencing; connect outcomes to enterprise IT direction when facts support it.\n"
+        "- NEVER name TARGET_COMPANY in resume_display_text (no at/for/with Company, no align-with-Company closers).\n"
+        "- Weave team-scale facts (e.g. 8-to-28 engineering growth) into prose when present in ALLOWED_SOURCE_FACT_IDS.\n"
+    )
+
+
 def format_jd_targeting_block(
     *,
     target_title: str,
@@ -381,6 +418,9 @@ def build_executive_summary_assembly_input(
         briefing=briefing,
         graph_proof_pool_mode=True,
     )
+    strategy_appendix = format_strategy_executive_targeting_appendix(t_title)
+    if strategy_appendix:
+        jd_block = jd_block + "\n\n" + strategy_appendix
 
     allowed_ids = _ordered_allowed_source_fact_ids(runtime_payload, facts)
     if not allowed_ids:
@@ -393,10 +433,17 @@ def build_executive_summary_assembly_input(
     else:
         c0_content = format_selected_facts_for_c0(facts, allowed_ids)
 
+    strategy_voice = ""
+    if is_strategy_executive_target_title(t_title):
+        strategy_voice = (
+            " SVP IT strategy voice: integrated enterprise technology narrative; "
+            "technology strategy executive opener; JD/briefing shape emphasis only."
+        )
     u0 = (
         f"Task: executive summary for {t_title!r} at {t_company!r} (targeting context only).\n"
         "Proof: C0 selected facts + ALLOWED_SOURCE_FACT_IDS only. Follow I0 proof_law_v1, composition_heuristics, "
         "and E0 examples for voice.\n"
+        f"{strategy_voice}"
         "Return bare JSON (see R0 keys). resume_display_text: 4 or 5 sentences, one paragraph. "
         "claim_ledger rows: non-empty claim_text + source_fact_ids from allowlist. "
         "Do not emit selected_fact_plan."

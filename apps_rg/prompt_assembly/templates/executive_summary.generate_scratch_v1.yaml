@@ -1,4 +1,4 @@
-# apps_rg Executive Summary Generate Scratch Template v1 (core-law by reference)
+A apps_rg Executive Summary Generate Scratch Template v1 (core-law by reference)
 # Purpose: Polished SVP executive paragraph from selected facts; JD + briefing = targeting only.
 # Canonical run: python -m apps_rg --section executive_summary
 # Slot SSOT: this file only. Do NOT load strategic_tailor_v1 slot_bodies for executive_summary.
@@ -59,6 +59,7 @@ slot_bodies:
 
     <north_star_synthesis_contract>
     Open with a differentiated executive thesis (avoid Seasoned/Proven/Results-driven, "proven track record", and thin "expertise in" openers).
+    For SVP IT strategy / innovation targets: prefer technology strategy or enterprise technology executive framing over a narrow engineering-manager label.
     Weave platform, governance, scale, and commercial outcomes into one causal arc - not a checklist or metric-dump.
     Anti-stacking: no comma-chain mechanism inventories; no "Architected X, reducing Y, while leading Z..." glue chains.
     Sentence 1: thesis and domain only - max two mechanism terms in any later sentence, only when verbatim in facts.
@@ -68,6 +69,9 @@ slot_bodies:
     **4 or 5** sentences, one paragraph; fit_to_evidence (max 220 words per appended PRODUCT_SHAPE).
     Optional theme order: identity, platform/governance, scale/commercialization, outcomes, integrated credibility.
     Never one sentence per source fact; never Label: detail stitching; third person; no U+2014 em dash.
+    Sentence 1 must be a complete clause (not a fragment ending on a relative clause alone).
+    Vary sentence openers; do not chain five sentences starting with Led/Successfully/Built/Delivered.
+    Do not mention certifications, AWS, Databricks, FSA, or credential inventories in resume_display_text.
     Voice and failure-mode examples: E0 at L2 execute time.
     </composition_heuristics>
 
@@ -121,6 +125,13 @@ slot_bodies:
     Delivered proof-backed revenue and margin outcomes by productizing platform capabilities adopted across enterprise
     programs when facts support those metrics. Engineering executive building governed AI platforms for regulated
     environments; leads architecture, operating model, and engineering scale-out when evidenced.
+    </positive_example>
+
+    <positive_example id="exec_summary_pos_svp_it_strategy_001" authority="E0_STYLE_EXAMPLE_NOT_PROOF">
+    STYLE_EXAMPLE_NOT_PROOF - SVP IT strategy register (targeting shapes emphasis only).
+    Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one
+    enterprise direction when facts support platform and governance themes. Scales engineering and platform delivery
+    with quantified margin and revenue outcomes woven into a single narrative arc rather than stacked bullets.
     </positive_example>
 
     <negative_example id="credential_dump_exec_summary">

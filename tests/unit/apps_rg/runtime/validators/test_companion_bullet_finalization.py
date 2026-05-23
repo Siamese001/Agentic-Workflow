@@ -31,6 +31,23 @@ def test_unify_companion_accepts_review_judge_blocked_x3() -> None:
     assert reason == "ok"
 
 
+def test_unify_companion_accepts_review_judge_soft_fail_when_product_pass() -> None:
+    l2 = {
+        "section_id": "unify_bullets",
+        "product_quality_status": "PASS",
+        "runtime_generation_status": "REAL_LLM",
+        "bullets": _bullets(UNIFY_BULLET_IDS),
+    }
+    status, reason = evaluate_companion_bullet_lane_finalized(
+        upstream_section_id="unify_bullets",
+        l2_data=l2,
+        x3_code="X3_REVIEW_JUDGE_SOFT_FAIL",
+        expected_bullet_ids=UNIFY_BULLET_IDS,
+    )
+    assert status == ACCEPTED_FINALIZED_COMPANION_STATUS
+    assert reason == "ok"
+
+
 def test_unify_companion_rejects_x3_block() -> None:
     l2 = {
         "section_id": "unify_bullets",

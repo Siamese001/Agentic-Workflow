@@ -39,11 +39,12 @@ def synthesis_regen_max_attempts() -> int:
 
 # Post-X1D same-authority regen when X2 passed but judge quorum/median signals synthesis gap.
 JUDGE_REGEN_MAX_ATTEMPTS = 1
+RELEASE_JUDGE_REGENERATION_ENABLED = False
 
 
 def judge_regeneration_enabled() -> bool:
     raw = os.environ.get("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", "0").strip().lower()
-    return raw in ("1", "true", "yes", "on")
+    return RELEASE_JUDGE_REGENERATION_ENABLED and raw in ("1", "true", "yes", "on")
 
 
 def judge_safe_prefilter_enabled() -> bool:

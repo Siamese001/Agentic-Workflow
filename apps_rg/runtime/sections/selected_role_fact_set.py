@@ -459,6 +459,37 @@ def merge_normalized_srfs_reporting_into_dict(
     )
 
     merge_c0_metrics_into_section_metric_receipt(receipt, runtime_payload)
+    art = runtime_payload.get("artifact_dir")
+    if art:
+        from pathlib import Path
+
+        from apps_rg.runtime.evidence.canonical_evidence_digest_chain import (
+            DIGEST_CHAIN_ARTIFACT,
+            build_canonical_evidence_digest_chain,
+            emit_canonical_evidence_digest_chain,
+        )
+
+        ad = Path(str(art))
+        if (ad / "x2_gate_outputs.json").is_file():
+            if not (ad / DIGEST_CHAIN_ARTIFACT).is_file():
+                emit_canonical_evidence_digest_chain(ad, section_id=section_id)
+            chain = build_canonical_evidence_digest_chain(ad, section_id=section_id)
+            receipt["canonical_evidence_set_digest"] = chain.get("c05_canonical_evidence_digest")
+            receipt["fec_allowed_fact_ids_digest"] = chain.get("c06_final_evidence_contract_digest")
+            receipt["c07_runtime_bound_evidence_digest"] = chain.get("c07_runtime_bound_evidence_digest")
+            receipt["pa_c0_slot_digest"] = chain.get("pa_c0_slot_digest")
+            receipt["provider_request_allowed_ids_digest"] = chain.get(
+                "provider_request_allowed_ids_digest"
+            )
+            receipt["claim_ledger_source_fact_ids_digest"] = chain.get(
+                "claim_ledger_source_fact_ids_digest"
+            )
+            receipt["x2_active_pool_digest"] = chain.get("x2_active_pool_digest")
+            receipt["section_receipt_digest"] = chain.get("section_receipt_digest")
+            receipt["canonical_evidence_digest_chain_ref"] = DIGEST_CHAIN_ARTIFACT
+            receipt["canonical_evidence_invariants_pass"] = (chain.get("invariants") or {}).get(
+                "all_pass"
+            )
 
 
 def resolve_srfs_section_proof_bundle(

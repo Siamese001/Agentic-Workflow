@@ -1,0 +1,13 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart TB
+  subgraph sgL5["L5"]
+    L5N["Certify"]
+    L5X["No route/X3/L4"]
+  end
+  subgraph sgG00C["00C"]
+    G00CN["GateVerdict"]
+    G00CX["No X3/L4"]
+  end
+  SPINE["Spine"]
+  L5N -.-> SPINE
+  G00CN -.-> SPINE

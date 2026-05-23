@@ -1,4 +1,4 @@
-"""Canonical competencies lane runtime execution (W11-M4C / legacy burndown Phase D).
+ov"Canonical competencies lane runtime execution (W11-M4C / legacy burndown Phase D).
 
 ``apps_rg.runtime.sections.competencies_lane_runtime`` retains shared compile/repair helpers and
 compat re-exports; product entry is ``python -m apps_rg --section competencies``.
@@ -9,6 +9,8 @@ import argparse
 import json
 from pathlib import Path
 from typing import Any
+
+from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 
 
 def _hydrate_dispatch_helpers() -> None:
@@ -327,6 +329,17 @@ def run_competencies_lane_execution(
             allowed_fact_ids=allowed_fact_ids,
         )
         dedupe_structured_competency_terms(parsed)
+        from apps_rg.runtime.sections.competencies_lane_runtime import (
+            expand_structured_competencies_min_two_terms,
+        )
+
+        expand_structured_competencies_min_two_terms(
+            parsed,
+            bullet_rows=bullet_rows,
+            allowed_fact_ids=allowed_fact_ids,
+            resume_support_blob_lower=c0_proof_blob,
+            bullet_texts_lower=bullet_lowers,
+        )
         rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         prune_claim_ledger_bullet_paste(parsed)
         from apps_rg.runtime.sections.competencies_capability_projection import (

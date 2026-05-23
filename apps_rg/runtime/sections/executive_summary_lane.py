@@ -887,8 +887,9 @@ def _build_synthesis_repair_user(
     meta_note = ""
     if "meta or filler" in blob or "this individual" in blob or "additionally" in blob:
         meta_note = (
-            "VOICE: third-person executive (Engineering executive who… / Led… / Built…); "
-            "no Additionally/Furthermore openers; no \"with extensive experience\" opener. "
+        "VOICE: third-person executive (Technology strategy executive who… / Enterprise technology leader who… / Led…); "
+        "avoid narrow 'engineering executive' opener when TARGET_TITLE is SVP IT strategy; "
+        "no Additionally/Furthermore openers; no \"with extensive experience\" opener. "
         )
     filler_note = ""
     if "generic_filler" in blob or "proven track record" in blob or "bridge phrases" in blob:
@@ -902,9 +903,13 @@ def _build_synthesis_repair_user(
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "Rewrite resume_display_text as exactly 4 or 5 period-delimited sentences (one executive paragraph), "
         "fit_to_evidence integrated narrative — not 2-3 compressed sentences; do not pad with filler. "
+        "Sentence 1 must be grammatically complete; vary openers (avoid five Led/Built/Delivered chains). "
+        "No certification labels in display text. "
         "FORBIDDEN: \"this individual\", \"this executive\", \"the candidate\", "
         "Additionally/Furthermore as sentence openers, "
-        "\"An experienced engineering executive with a strong background\", recruiter filler. "
+        "\"An experienced engineering executive with a strong background\", "
+        "\"An experienced technology strategy executive with a demonstrated ability\", recruiter filler. "
+        "NEVER name TARGET_COMPANY in resume_display_text. "
         "Do NOT use label: detail stitching; no credential/certification dump. "
         "Do NOT end on Fellow of the Society of Actuaries, AWS Certified, Databricks, or credential inventories. "
         "Prioritize platform, governance, commercial, and scale facts from selected_fact_plan. "
@@ -1694,6 +1699,7 @@ def run_executive_summary_execution(
             allowed_fact_ids=allowed_fact_ids,
             plan_facts=list(selected_fact_plan.get("facts") or []),
             artifact_dir=artifact_dir,
+            target_company=str(getattr(args, "target_company", "") or ""),
         )
         from apps_rg.runtime.sections.executive_summary_voice_repair import (
             finalize_executive_summary_coherence,
@@ -2003,6 +2009,7 @@ def run_executive_summary_execution(
                         allowed_fact_ids=allowed_fact_ids,
                         plan_facts=list(selected_fact_plan.get("facts") or []),
                         artifact_dir=artifact_dir,
+                        target_company=str(getattr(args, "target_company", "") or ""),
                     )
                     resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
                     claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
@@ -2085,10 +2092,24 @@ def run_executive_summary_execution(
                         write_json(artifact_dir / "l2_output.json", l2_output)
                     else:
                         raw_output = _pre_raw
+                        parsed = _pre_parsed
                         parsed_for_x2 = _pre_parsed
                         resume_display_text = _pre_resume
                         claim_ledger = _pre_ledger
                         x2 = _pre_x2
+                        coverage = build_sentence_claim_coverage(
+                            resume_display_text, claim_ledger, allowed_fact_ids
+                        )
+                        (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+                        (artifact_dir / "resume_display_text.txt").write_text(
+                            resume_display_text + "\n", encoding="utf-8"
+                        )
+                        write_json(artifact_dir / "claim_ledger.json", claim_ledger)
+                        write_json(artifact_dir / "text_claim_coverage.json", coverage)
+                        l2_output["resume_display_text"] = resume_display_text
+                        l2_output["claim_ledger"] = claim_ledger
+                        l2_output["text_claim_coverage"] = coverage
+                        write_json(artifact_dir / "l2_output.json", l2_output)
                         _j_receipt["reverted"] = "post_regen_x2_failed"
                         write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
 

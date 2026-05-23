@@ -28,6 +28,7 @@ def append_section_input_usage_x2_gates(
     allowed_fact_ids: set[str],
     claim_ledger: list[dict[str, Any]],
     text_claim_coverage: dict[str, Any] | None,
+    runtime_payload: dict[str, Any] | None = None,
 ) -> None:
     """Append standard input-authority gates (mutates ``gates``)."""
 
@@ -217,6 +218,26 @@ def append_section_input_usage_x2_gates(
         {"ledger_summary": led_summary, "runtime_summary": summary, "coverage_overall_pass": cov_pass},
         "ledger_matches_claim_scan_and_coverage_pass",
         None if acct_ok else "section_input_usage_ledger counts mismatch or text_claim_coverage failed",
+    )
+
+    from apps_rg.runtime.evidence.canonical_evidence_x2 import (
+        append_canonical_evidence_invariant_x2_gates,
+    )
+
+    rp = dict(runtime_payload or {})
+    rp.setdefault("allowed_fact_ids", sorted(allowed_fact_ids))
+    if artifacts_dir is not None and not rp.get("canonical_evidence_set_digest"):
+        rt_path = artifacts_dir / "runtime_payload.json"
+        if rt_path.is_file():
+            loaded = _load_json(rt_path)
+            if isinstance(loaded, dict):
+                rp.update(loaded)
+    append_canonical_evidence_invariant_x2_gates(
+        gates,
+        runtime_payload=rp,
+        allowed_fact_ids=set(allowed_fact_ids),
+        claim_ledger=claim_ledger,
+        artifacts_dir=artifacts_dir,
     )
 
 

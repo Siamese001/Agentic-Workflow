@@ -44,6 +44,39 @@ def test_trigger_quorum_two_judges_shared_synthesis_tag() -> None:
     assert receipt.get("trigger_mode") == "quorum_soft_fail"
 
 
+def test_trigger_solitary_severe_soft_fail() -> None:
+    judges = [
+        _soft_fail_judge(
+            "anthropic_claude",
+            findings=[
+                "Summary reads as stacked bullets; poor ATS alignment to enterprise architecture and IT strategy",
+            ],
+            score=0.7,
+        ),
+        {
+            "provider_key": "gemini_pro",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "normalized_score": 1.0,
+            "normalized_threshold": 0.8,
+        },
+        {
+            "provider_key": "openai_chatgpt",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "normalized_score": 0.82,
+            "normalized_threshold": 0.8,
+        },
+    ]
+    ok, receipt = evaluate_judge_remediation_trigger(
+        judges, runtime_generation_status="REAL_LLM", x2_passed=True
+    )
+    assert ok is True
+    assert receipt.get("trigger_mode") == "solitary_severe_soft_fail"
+
+
 def test_trigger_skipped_when_x2_not_passed() -> None:
     ok, receipt = evaluate_judge_remediation_trigger(
         [], runtime_generation_status="REAL_LLM", x2_passed=False

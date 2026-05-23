@@ -1,4 +1,4 @@
-# Core pytest configuration - sys.path setup MUST be first
+A Core pytest configuration - sys.path setup MUST be first
 import sys
 import warnings
 from pathlib import Path
@@ -66,6 +66,18 @@ def test_data_path():
 def temp_project_dir(tmp_path):
     """Fixture for temporary project directory."""
     return tmp_path / "project"
+
+
+# Broken WSL symlinks at repo root (lib64, lib) break pytest directory collection on Windows.
+_WIN_BROKEN_REPO_SYMLINK_DIRS = frozenset({"lib64", "lib"})
+
+
+def pytest_ignore_collect(collection_path, config):  # noqa: ARG001
+    """Skip inaccessible repo-root symlink dirs (WinError 1920) during collection."""
+    name = getattr(collection_path, "name", None) or str(collection_path).replace("\\", "/").rstrip("/").split("/")[-1]
+    if name in _WIN_BROKEN_REPO_SYMLINK_DIRS:
+        return True
+    return None
 
 
 # Test collection configuration

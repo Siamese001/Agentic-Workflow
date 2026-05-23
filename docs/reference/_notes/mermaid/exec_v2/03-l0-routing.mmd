@@ -1,0 +1,6 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart TB
+  L0R["L0"] --> R1 & R5 & R2 & R34
+  R1 & R5 -->|RET| EXIT["Exit"]
+  R2 & R34 --> C0["C0"] --> PA["PA"] --> L3O["L3"]
+  R1 -.-> NOTE["R1/R5 skip L3/L2"] -.-> EXIT

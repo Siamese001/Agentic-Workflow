@@ -1,0 +1,8 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart TB
+  IN["Inputs"] --> NORM["Review"] --> X1["X1"] --> X2X3["X2+X3"]
+  X2X3 --> X3A["Deny"] & X3B["HITL"] & X3C["Commit"] & X3D["Allow"] & X3E["Abstain"]
+  X3D --> RESP["Response"]
+  X3C --> UWG["UWG"] --> L4["L4"]
+  X3B --> HITL["HITL"]
+  X2X3 --> EXH["Exhaust"] --> L6["L6"]

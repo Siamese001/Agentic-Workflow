@@ -358,6 +358,20 @@ def run_ibm_bullets_x2_gates(
     base_resume: dict[str, Any] | None = None,
     runtime_payload: dict[str, Any] | None = None,
 ) -> list[X2GateResult]:
+    if runtime_payload:
+        allowed_fact_ids = {
+            str(x) for x in (runtime_payload.get("allowed_fact_ids") or allowed_fact_ids)
+        }
+        proof_pool_digest = str(
+            runtime_payload.get("canonical_evidence_set_digest") or proof_pool_digest
+        )
+        meta = dict(proof_pool_metadata or {})
+        meta.setdefault(
+            "canonical_evidence_set_digest",
+            runtime_payload.get("canonical_evidence_set_digest"),
+        )
+        meta.setdefault("id_alias_map", (runtime_payload.get("canonical_section_evidence_set") or {}).get("id_alias_map"))
+        proof_pool_metadata = meta
     gates: list[X2GateResult] = []
 
     def add(
@@ -708,6 +722,7 @@ def run_ibm_bullets_x2_gates(
         text_claim_coverage=(parsed_output or {}).get("text_claim_coverage")
         if isinstance(parsed_output, dict)
         else None,
+        runtime_payload=runtime_payload,
     )
 
     return gates

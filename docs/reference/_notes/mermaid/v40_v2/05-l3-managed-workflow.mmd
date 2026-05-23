@@ -1,0 +1,6 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart LR
+  RC["Route"] --> L31["DAG"] --> L32["Ledger"] --> L33["Step"] --> L2["L2"]
+  L2 --> MERGE["Merge"] --> MORE{"More?"}
+  MORE -->|yes| L33
+  MORE -->|no| EXIT["Exit"]

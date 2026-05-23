@@ -1,0 +1,9 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart TB
+  U0["U0"] --> L1["L1"] --> L0["L0"] --> L3["L3"] --> L2["L2"]
+  L2 --> BR["Bridge"] --> EXIT["Exit"]
+  L1 <--> L4R["L4 read"]
+  EXIT --> UWG["UWG"] --> L4W["L4 write"]
+  EXIT --> L0
+  EXIT --> HITL["HITL"] --> UWG
+  EXIT --> L6["L6"] --> L7["L7 seal"]

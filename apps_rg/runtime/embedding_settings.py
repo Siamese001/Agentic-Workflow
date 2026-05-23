@@ -1,4 +1,4 @@
-"""apps_rg SSOT embedding / BGE / Chroma vector-DB settings (fail-closed).
+av"apps_rg SSOT embedding / BGE / Chroma vector-DB settings (fail-closed).
 
 Terminology:
 - embedding_model: BGE via explicit local SentenceTransformer path (never HF hub slug at runtime).
@@ -398,6 +398,13 @@ def load_bge_sentence_transformer(settings: AppsRgEmbeddingSettings) -> Any:
     try:
         from sentence_transformers import SentenceTransformer  # type: ignore[import]
     except ImportError as exc:
+        detail = str(exc)
+        if "Application Control policy" in detail or "torch._C" in detail:
+            raise AppsRgEmbeddingFailClosedError(
+                "PyTorch blocked by Windows Smart App Control (unsigned .pyd). "
+                "Use WSL: tools/apps_rg/Invoke-AppsRgSectionWsl.ps1, or disable SAC: "
+                "docs/guides/windows_smart_app_control_apps_rg.md"
+            ) from exc
         raise AppsRgEmbeddingFailClosedError(
             "sentence-transformers required for BGE but not installed"
         ) from exc

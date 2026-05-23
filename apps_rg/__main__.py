@@ -1,4 +1,4 @@
-"""apps_rg entry point — resume generation CLI.
+ ""apps_rg entry point — resume generation CLI.
 
 Usage:
     python -m apps_rg --target-company <co> --target-role <role> [options]
@@ -558,6 +558,15 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
     Returns exit code (0 = success, 7 = cursor-prompts sentinel).
     """
+    _argv = list(argv) if argv is not None else None
+    from apps_rg.runtime.windows_sac_delegate import (
+        delegate_apps_rg_to_wsl,
+        should_delegate_apps_rg_to_wsl,
+    )
+
+    if should_delegate_apps_rg_to_wsl(_argv):
+        return delegate_apps_rg_to_wsl(_argv)
+
     parser = _build_parser()
     args = parser.parse_args(argv)
     if getattr(args, "executive_summary", False):

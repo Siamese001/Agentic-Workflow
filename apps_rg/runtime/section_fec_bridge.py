@@ -403,6 +403,7 @@ def wire_section_fec_bridge_for_lane(
     from apps_rg.runtime.c0.product_runtime_guards import assert_canonical_product_section_env
 
     assert_canonical_product_section_env(section_id)
+    runtime_payload["artifact_dir"] = str(Path(artifact_dir).resolve())
     if section_c0_evidence_room_enabled(section_id):
         bridge = run_section_c0_evidence_room(
             artifact_dir=artifact_dir,
@@ -432,6 +433,16 @@ def wire_section_fec_bridge_for_lane(
         runtime_payload=runtime_payload,
         front_spine=front_spine,
     )
+    from apps_rg.runtime.evidence.canonical_section_evidence_set import (
+        apply_canonical_section_evidence_materialization,
+    )
+
+    apply_canonical_section_evidence_materialization(
+        pool=pool,
+        runtime_payload=runtime_payload,
+        bridge=bridge,
+    )
+    emit_section_fec_bridge_artifacts(artifact_dir, bridge)
     return bridge
 
 

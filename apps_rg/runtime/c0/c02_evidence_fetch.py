@@ -137,6 +137,8 @@ def fetch_c02_evidence_atoms(
     for mrow in _load_manifest_rows(root):
         atom = _atom_from_manifest_row(mrow, section_id=section_id)
         if atom and atom["fact_id"] not in seen:
+            if atom["fact_id"] not in pool.allowed_fact_ids:
+                continue
             atoms.append(atom)
             seen.add(atom["fact_id"])
     rejected: list[dict[str, str]] = []

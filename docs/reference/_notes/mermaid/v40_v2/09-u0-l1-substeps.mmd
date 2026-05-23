@@ -1,0 +1,10 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart LR
+  subgraph U0["U0"]
+    U01[".1"] --> U02[".2"] --> U03[".3"] --> U04[".4"] --> U05[".5"]
+  end
+  subgraph L1["L1"]
+    L11[".1"] --> L12[".2"] --> L13[".3"] --> L14[".4"] --> L15[".5"] --> L16[".6"]
+  end
+  U05 --> L11
+  L16 --> L0OUT["L0"]

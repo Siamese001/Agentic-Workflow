@@ -1,0 +1,20 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart TB
+  subgraph sgL5["L5 Policy"]
+    L5N["Certify authority/policy"]
+    L5X["No route/exec/X3/L4"]
+  end
+  subgraph sgL7["L7 Audit"]
+    L7T["Tap all stages"]
+    L7S["Seal bundle"]
+    L7X["No route/judge/L4"]
+  end
+  subgraph sgG00C["00C Gates"]
+    G00CN["GateVerdict"]
+    G00CX["No X3/L4"]
+  end
+  SPINE["Spine"]
+  L5N -.-> SPINE
+  G00CN -.-> SPINE
+  L7T -.-> SPINE
+  SPINE --> L7S

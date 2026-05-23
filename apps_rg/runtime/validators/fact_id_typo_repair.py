@@ -35,6 +35,28 @@ def _strip_interior_whitespace_in_fact_token(s: str) -> str:
     return base + (sep + metric_tail if sep else "")
 
 
+_BUL_UNIFY_SURFACE_RE = re.compile(
+    r"^bul_unify_\.?(\d{1,3})(?:_metric_([0-9a-f]+))?$",
+    re.IGNORECASE,
+)
+
+
+def repair_unify_bullet_surface_id(fid: str, allowed_fact_ids: set[str] | None = None) -> str:
+    """Repair model typos like ``bul_unify_.003`` → ``bul_unify_003`` against allowlist."""
+    raw = str(fid).strip()
+    match = _BUL_UNIFY_SURFACE_RE.match(raw)
+    if match:
+        base = f"bul_unify_{match.group(1).zfill(3)}"
+        metric_tail = match.group(2)
+        if metric_tail:
+            metric_id = f"{base}_metric_{metric_tail}"
+            if allowed_fact_ids and metric_id in allowed_fact_ids:
+                return metric_id
+        if not allowed_fact_ids or base in allowed_fact_ids:
+            return base
+    return repair_fact_id_against_allowlist(raw, allowed_fact_ids)
+
+
 def repair_fact_id_against_allowlist(fid: str, allowed_fact_ids: set[str] | None = None) -> str:
     """Repair common model typos; optionally map to a unique allowlist member by fingerprint."""
     s = _collapse_fact_id_double_underscores(
@@ -58,4 +80,4 @@ def repair_fact_id_against_allowlist(fid: str, allowed_fact_ids: set[str] | None
     return s
 
 
-__all__ = ["repair_fact_id_against_allowlist"]
+__all__ = ["repair_fact_id_against_allowlist", "repair_unify_bullet_surface_id"]

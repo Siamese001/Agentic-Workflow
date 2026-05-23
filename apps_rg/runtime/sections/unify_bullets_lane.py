@@ -66,7 +66,10 @@ from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
 from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
-from apps_rg.runtime.validators.fact_id_typo_repair import repair_fact_id_against_allowlist
+from apps_rg.runtime.validators.fact_id_typo_repair import (
+    repair_fact_id_against_allowlist,
+    repair_unify_bullet_surface_id,
+)
 from apps_rg.runtime.validators.unify_bullets_x2 import (
     DEFAULT_DISTRIBUTION,
     INTENSITY_BY_BULLET_SSOT,
@@ -285,7 +288,9 @@ def _normalize_unify_source_fact_id_list(
         if remap:
             canon = _remap_unify_id(canon, remap, allowed)
         elif allowed:
-            canon = repair_fact_id_against_allowlist(canon, allowed)
+            canon = repair_unify_bullet_surface_id(canon, allowed)
+        else:
+            canon = repair_unify_bullet_surface_id(canon, None)
         out.append(canon)
     return out
 
@@ -325,6 +330,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
     for idx, bullet in enumerate((parsed.get("bullets") or [])[:6]):
         row = dict(bullet)
         bid = str(row.get("bullet_id", "")).strip()
+        bid = repair_unify_bullet_surface_id(bid, allowed if allowed else None)
         row["bullet_id"] = BULLET_ID_ALIASES.get(bid, bid)
         if legacy_remap:
             row["bullet_id"] = legacy_remap.get(row["bullet_id"], row["bullet_id"])

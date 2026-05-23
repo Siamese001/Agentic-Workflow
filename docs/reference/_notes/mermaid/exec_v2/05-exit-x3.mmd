@@ -1,0 +1,6 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart TB
+  IN["Handoff"] --> X1["X1"] & X2["X2"]
+  X1 & X2 --> X3["X3"]
+  X3 --> DENY["Deny"] & HITL["HITL"] & COMMIT["Commit"] & ALLOW["Allow"] & ABSTAIN["Abstain"]
+  HITL & COMMIT --> UWG["UWG"] --> L4["L4"]

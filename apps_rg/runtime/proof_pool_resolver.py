@@ -172,11 +172,37 @@ def _sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in plan.items() if not str(k).startswith("_")}
 
 
+def _stamp_ibm_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any], list[str], set[str]]:
+    """Map ledger ``fact_*`` rows to canonical ``bul_ibm_*`` ids for IBM bullet X2 gates."""
+    from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
+
+    facts = list(plan.get("facts") or [])
+    if not facts or str(facts[0].get("fact_id") or "").startswith("bul_ibm_"):
+        ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+        return plan, ordered, allowed
+    for idx, fact in enumerate(facts[: len(IBM_BULLET_IDS)]):
+        if idx >= len(IBM_BULLET_IDS):
+            break
+        ledger_id = str(fact.get("fact_id") or fact.get("candidate_fact_id") or "").strip()
+        if ledger_id:
+            fact["ledger_candidate_fact_id"] = ledger_id
+        fact["fact_id"] = IBM_BULLET_IDS[idx]
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    stamped = {
+        **plan,
+        "facts": facts,
+        "required_fact_ids": [str(f["fact_id"]) for f in facts],
+    }
+    return stamped, ordered, allowed
+
+
 def _stamp_unify_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any], list[str], set[str]]:
-    """Map ledger ``fact_*`` rows to canonical ``bul_unify_*`` ids for X2 bullet gates."""
+    """Map ledger ``fact_*`` rows to canonical surface ids (``bul_unify_*`` / ``bul_ibm_*``)."""
     from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
     section_id = str(plan.get("section_id") or "")
+    if section_id == "ibm_bullets":
+        return _stamp_ibm_canonical_bullet_ids(plan)
     if section_id not in ("unify_bullets", "unify_narrative"):
         facts = list(plan.get("facts") or [])
         ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)

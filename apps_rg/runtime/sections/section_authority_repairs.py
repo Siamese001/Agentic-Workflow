@@ -36,6 +36,32 @@ def _sentence_fails_credential_dump(sentence: str) -> bool:
     return False
 
 
+def strip_target_company_tailoring_sentences(
+    resume_display_text: str,
+    target_company: str,
+) -> tuple[str, list[str]]:
+    """Remove sentences that name TARGET_COMPANY as employer/alignment (x2_target_company_as_experience_zero)."""
+    company = str(target_company or "").strip()
+    if not company:
+        return resume_display_text, []
+    co_pat = re.escape(company)
+    employer_hit = re.compile(rf"\b(?:at|for|with)\s+{co_pat}\b", re.IGNORECASE)
+    align_hit = re.compile(rf"align\s+with\s+{co_pat}\b", re.IGNORECASE)
+    sents = split_sentences(str(resume_display_text or "").strip())
+    if not sents:
+        return resume_display_text, []
+    kept: list[str] = []
+    removed: list[str] = []
+    for sent in sents:
+        if employer_hit.search(sent) or align_hit.search(sent):
+            removed.append(sent[:120])
+        else:
+            kept.append(sent)
+    if not kept or len(kept) == len(sents):
+        return resume_display_text, removed
+    return " ".join(kept).strip(), removed
+
+
 def strip_exec_summary_credential_dump_sentences(resume_display_text: str) -> tuple[str, list[str]]:
     """Remove credential-inventory sentences so x2_exec_summary_no_credential_dump can pass."""
     sents = split_sentences(str(resume_display_text or "").strip())
@@ -85,6 +111,7 @@ def apply_exec_summary_display_authority_repairs(
     allowed_fact_ids: set[str] | None = None,
     plan_facts: list[dict[str, Any]] | None = None,
     artifact_dir: Path | None = None,
+    target_company: str = "",
 ) -> dict[str, Any]:
     """In-place repair of resume_display_text for rigor-critical X2 gates."""
     if not isinstance(parsed, dict):
@@ -100,6 +127,15 @@ def apply_exec_summary_display_authority_repairs(
             {
                 "operation": "strip_credential_dump_sentences",
                 "reason": f"removed_{len(removed)}_sentences",
+            }
+        )
+    co_repaired, co_removed = strip_target_company_tailoring_sentences(text, target_company)
+    if co_removed and co_repaired != text:
+        text = co_repaired
+        clog.append(
+            {
+                "operation": "strip_target_company_tailoring_sentences",
+                "reason": f"removed_{len(co_removed)}_sentences",
             }
         )
         if artifact_dir is not None:

@@ -159,7 +159,20 @@ def run_section_c0_evidence_room(
         from apps_rg.runtime.c0.c04_exec_summary_shaping import shape_executive_summary_c04
 
         c04 = shape_executive_summary_c04(c04, bindings=bindings, atoms=atoms)
-    allowed = list(c04.get("allowed_fact_ids") or [])
+    from apps_rg.runtime.evidence.canonical_section_evidence_set import (
+        apply_canonical_section_evidence_materialization,
+        build_canonical_section_evidence_set,
+        canonical_evidence_set_digest,
+        materialize_fec_allowed_from_c04,
+    )
+
+    canonical = build_canonical_section_evidence_set(pool)
+    allowed, fec_materialization_receipt = materialize_fec_allowed_from_c04(
+        c04_allowed=list(c04.get("allowed_fact_ids") or []),
+        canonical=canonical,
+    )
+    runtime_payload["canonical_section_evidence_set"] = canonical.as_dict()
+    runtime_payload["fec_materialization_receipt"] = fec_materialization_receipt
     app_payload: dict[str, Any] = {}
     if front_spine is not None and front_spine.validated_request is not None:
         app_payload = dict(getattr(front_spine.validated_request, "app_payload", None) or {})
@@ -296,9 +309,13 @@ def run_section_c0_evidence_room(
         "validated_request_ref": "validated_request.json",
         "l1_plan_contract_ref": "l1_plan_contract.json",
         "proof_pool_ref": pool.proof_pool_ref,
-        "proof_pool_digest": pool.proof_pool_digest,
+        "proof_pool_digest": canonical.pool_digest,
+        "canonical_evidence_set_digest": canonical.pool_digest,
+        "fec_allowed_fact_ids_digest": canonical_evidence_set_digest(allowed),
         "source_fact_ids": allowed,
         "allowed_fact_ids": allowed,
+        "id_alias_map": dict(canonical.alias_map),
+        "fec_materialization_receipt": fec_materialization_receipt,
         "evidence_items": evidence_items,
         "citation_lineage_refs": [
             str(b.get("lineage_refs", [""])[0]) for b in bindings if b.get("lineage_refs")
@@ -361,17 +378,24 @@ def run_section_c0_evidence_room(
     from apps_rg.runtime.section_fec_bridge import emit_section_fec_bridge_artifacts
 
     bridge = SectionFecBridge(section_id=section_id, bridge_doc=bridge_doc)
-    emit_section_fec_bridge_artifacts(artifact_dir, bridge)
-    runtime_payload["section_fec_bridge"] = bridge_doc
+    apply_canonical_section_evidence_materialization(
+        pool=pool,
+        runtime_payload=runtime_payload,
+        bridge=bridge,
+        fec_allowed=allowed,
+        fec_materialization_receipt=fec_materialization_receipt,
+    )
+    runtime_payload["section_fec_bridge"] = bridge.bridge_doc
     runtime_payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
     runtime_payload["final_evidence_contract_ref"] = FEC_BRIDGE_ARTIFACT
     runtime_payload["c0_fec_bridge_receipt_ref"] = FEC_BRIDGE_RECEIPT
-    runtime_payload["canonical_final_evidence_contract_snapshot"] = bridge_doc[
+    runtime_payload["canonical_final_evidence_contract_snapshot"] = bridge.bridge_doc.get(
         "final_evidence_contract_snapshot"
-    ]
+    )
     runtime_payload["raw_proof_pool_direct_to_pa"] = False
     runtime_payload["product_visible"] = True
     runtime_payload["c0_authority_mode"] = authority["c0_authority_mode"]
+    emit_section_fec_bridge_artifacts(artifact_dir, bridge)
     return bridge
 
 

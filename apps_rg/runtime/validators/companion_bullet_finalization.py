@@ -15,6 +15,8 @@ COMPANION_FINALIZED_X3_CODES: frozenset[str] = frozenset(
     {
         "X3_ALLOW",
         "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",
+        # Deterministic X2/product_quality passed; judge soft-fail must not block narrative LLM.
+        "X3_REVIEW_JUDGE_SOFT_FAIL",
     }
 )
 

@@ -159,6 +159,20 @@ def evaluate_judge_remediation_trigger(
         shared_tags = set.intersection(*tag_sets) if len(tag_sets) > 1 else tag_sets[0]
 
     quorum = len(soft_fails) >= min_fail and bool(shared_tags)
+    solitary_severe = False
+    if len(soft_fails) == 1:
+        solo = soft_fails[0]
+        solo_tags = tag_sets[0] if tag_sets else set()
+        try:
+            solo_ns = float(solo.get("normalized_score"))
+            solo_nt = float(solo.get("normalized_threshold", 0.8))
+            solitary_severe = solo_ns < solo_nt and bool(
+                solo_tags & {"synthesis", "executive_signal", "jd_emphasis"}
+            )
+        except (TypeError, ValueError):
+            solitary_severe = False
+    receipt["solitary_severe_soft_fail"] = solitary_severe
+
     median = _median_normalized_score(x1d_judges)
     receipt["median_normalized_score"] = median
     median_fail = median is not None and median < median_threshold
@@ -176,11 +190,13 @@ def evaluate_judge_remediation_trigger(
     receipt["quorum_soft_fail"] = quorum
     receipt["median_fail"] = median_fail
 
-    triggered = quorum or median_fail or decisive_trigger
+    triggered = quorum or median_fail or decisive_trigger or solitary_severe
     receipt["triggered"] = triggered
     if triggered:
         if quorum:
             receipt["trigger_mode"] = "quorum_soft_fail"
+        elif solitary_severe:
+            receipt["trigger_mode"] = "solitary_severe_soft_fail"
         elif median_fail:
             receipt["trigger_mode"] = "median_normalized_below_threshold"
         else:
@@ -242,6 +258,8 @@ def build_judge_remediation_user_message(
         f"- synthesis: {' | '.join(feedback['synthesis'][:6]) or 'improve integrated narrative; reduce bullet-stack'}\n"
         f"- jd_emphasis: {' | '.join(feedback['jd_emphasis'][:4]) or 'shape emphasis from JD/briefing only; jd_used_as_proof=false'}\n"
         f"- executive_signal: {' | '.join(feedback['executive_signal'][:4]) or 'elevate SVP platform/governance/commercial signal from allowed facts'}\n"
+        "- opener: technology strategy / enterprise technology executive (not narrow engineering-manager label) when TARGET_TITLE is SVP IT strategy.\n"
+        "- NEVER name TARGET_COMPANY in resume_display_text (no 'at/for/with TargetCo', no 'align with TargetCo'); company is targeting-only.\n"
         f"{unused_note}"
         f"{prefer_five}"
         "Integrate metrics into narrative; no Additionally/Furthermore; no credential dump.\n"

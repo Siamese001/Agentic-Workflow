@@ -1,0 +1,5 @@
+%%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"wrappingWidth": 90, "padding": 4, "nodeSpacing": 28, "rankSpacing": 24}}}%%
+flowchart LR
+  RC["Route"] --> C0P["C0 pre"] --> C0F["C0 fetch"] --> C0E["C0 contract"]
+  C0E --> PAB["PA bound"] --> PAC["PA compose"] --> PAS["PA sign"]
+  PAS --> OUT["Prompt"]
