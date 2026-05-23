@@ -53,7 +53,7 @@ def test_compiled_prompt_lists_x2_headline_gates_only_under_product_shape():
     import os
 
     from apps_rg.runtime.product_evidence_authority import build_evidence_authority
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         activate_fixture_dev_bypass,
         deactivate_fixture_dev_bypass,
     )

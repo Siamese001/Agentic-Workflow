@@ -457,7 +457,7 @@ def _markdown_table(rows: list[dict[str, Any]]) -> str:
 def main() -> int:
     import os
 
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         activate_fixture_dev_bypass,
         deactivate_fixture_dev_bypass,
     )

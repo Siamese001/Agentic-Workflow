@@ -1,4 +1,4 @@
-ov"Canonical competencies lane runtime execution (W11-M4C / legacy burndown Phase D).
+"""Canonical competencies lane runtime execution (W11-M4C / legacy burndown Phase D).
 
 ``apps_rg.runtime.sections.competencies_lane_runtime`` retains shared compile/repair helpers and
 compat re-exports; product entry is ``python -m apps_rg --section competencies``.
@@ -49,7 +49,7 @@ def run_competencies_lane_execution(
     print_output: bool = True,
 ) -> dict[str, Any]:
     _ensure_helpers_hydrated()
-    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="competencies",
@@ -101,12 +101,12 @@ def run_competencies_lane_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_section_fec_bridge_for_lane,
+        wire_spine_c0_fec_for_section,
     )
 
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="competencies",
         front_spine=front_spine,
@@ -165,7 +165,7 @@ def run_competencies_lane_execution(
     runtime_generation_status = "BLOCKED"
     live_preflight_blocked = False
 
-    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
         finalize_section_l2_after_output,
         prepare_section_l2_before_provider,
@@ -441,7 +441,7 @@ def run_competencies_lane_execution(
         jd_alignment=jd_alignment_final,
         extra_section_fields={"competency_group_fact_support": competency_group_fact_support},
     )
-    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+    from apps_rg.runtime.c0.section_proof_loader import apply_proof_pool_to_usage_ledger
 
     write_json(
         artifact_dir / "section_input_usage_ledger.json",
@@ -567,7 +567,10 @@ def run_competencies_lane_execution(
         regen_authoritative_on_x2_pass=True,
     )
 
-    x3 = aggregate_x3(
+    from apps_rg.runtime.exit import competencies_x3 as _competencies_x3_mod
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+
+    x3 = _competencies_x3_mod.aggregate_x3(
         resume_display_text=display_text or raw_output,
         claim_ledger=claim_ledger,
         x2_gates=x2,
@@ -582,18 +585,6 @@ def run_competencies_lane_execution(
         x3,
         live_preflight_blocked=live_preflight_blocked,
     )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
-    finalize_section_l2_after_output(
-        artifact_dir,
-        "competencies",
-        runtime_payload,
-        section_output_ref="competencies_section_output.json",
-    )
-    finalize_section_exit_after_l2(artifact_dir, "competencies", runtime_payload)
-    finalize_section_runtime_exhaust_before_l6(
-        artifact_dir, "competencies", runtime_payload, repo_root=REPO_ROOT
-    )
-
     bundle = compute_lane_proof_bundle(
         args,
         section_id="competencies",
@@ -601,6 +592,25 @@ def run_competencies_lane_execution(
         x1d_judges=x1d,
         x2_gates=x2,
         x3=x3,
+    )
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id="competencies",
+        runtime_payload=runtime_payload,
+        x3_result=x3,
+        x3_doc_extra={
+            "proof_eligible": bool(bundle.get("proof_eligible")),
+            "judge_proof_eligible": bundle.get("judge_proof_eligible"),
+        },
+    )
+    finalize_section_l2_after_output(
+        artifact_dir,
+        "competencies",
+        runtime_payload,
+        section_output_ref="competencies_section_output.json",
+    )
+    finalize_section_runtime_exhaust_before_l6(
+        artifact_dir, "competencies", runtime_payload, repo_root=REPO_ROOT
     )
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason

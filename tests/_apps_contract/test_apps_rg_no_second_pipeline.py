@@ -40,7 +40,7 @@ def test_scan_detects_synthetic_forbidden_bridge_import(tmp_path: Path) -> None:
     """Negative control: gate must catch a forbidden bridge import."""
     bad = tmp_path / "synthetic_product.py"
     bad.write_text(
-        "from apps_rg.runtime.section_fec_bridge import wire_section_fec_bridge_for_lane\n",
+        "from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section\n",
         encoding="utf-8",
     )
     findings = scan_file(bad, tmp_path)
@@ -75,32 +75,14 @@ def test_scan_detects_x3_without_exit_eval_pipeline(tmp_path: Path) -> None:
     assert "LANE_AGGREGATE_X3_AS_AUTHORITY" in codes
 
 
-def test_current_repo_product_path_baseline_has_violations() -> None:
-    """Honest baseline: second pipeline still present until W2 (expected FAIL for gate)."""
-    findings = scan_product_paths(REPO)
-    errors = findings_with_errors(findings)
-    assert errors, (
-        "W1 baseline expects product-path violations until spine-only W2 lands; "
-        "if empty, second pipeline may already be removed — tighten this test."
-    )
-    codes = {f.code for f in errors}
-    assert "FORBIDDEN_BRIDGE_IMPORT" in codes or "SUSPICIOUS_BRIDGE_IMPORT" in codes
-    assert "FORBIDDEN_LANE_FROM_CLI" in codes
-    assert "X3_WITHOUT_SPINE_EXIT_RECEIPT" in codes or "LANE_AGGREGATE_X3_AS_AUTHORITY" in codes
-
-
-@pytest.mark.xfail(
-    reason="CURRENT_VIOLATION_BASELINE: product paths still use second pipeline (W2)",
-    strict=True,
-)
 def test_product_paths_pass_single_spine_gate_when_clean() -> None:
-    """Passes only after W2 removes bridges; xfail documents current violation."""
+    """Product paths must have zero single-spine ERROR findings (d8f4a2 W2+)."""
     errors = findings_with_errors(scan_product_paths(REPO))
-    assert not errors
+    assert not errors, f"single-spine violations: {errors[:5]}"
 
 
-def test_ci_gate_script_exits_nonzero_on_current_baseline() -> None:
-    """Gate must fail closed on real repo (honest W1 receipt)."""
+def test_ci_gate_script_exits_zero_when_clean() -> None:
+    """Gate must pass when second pipeline is removed."""
     import os
 
     env = dict(os.environ)
@@ -115,9 +97,9 @@ def test_ci_gate_script_exits_nonzero_on_current_baseline() -> None:
         check=False,
         env=env,
     )
-    assert completed.returncode != 0, (
-        "Expected non-zero exit while second pipeline exists; "
-        f"stdout={completed.stdout[-500:]!r} stderr={completed.stderr[-500:]!r}"
+    assert completed.returncode == 0, (
+        f"Expected zero exit when product paths are clean; "
+        f"stdout={completed.stdout[-800:]!r} stderr={completed.stderr[-800:]!r}"
     )
 
 

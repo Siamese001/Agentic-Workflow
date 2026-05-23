@@ -16,8 +16,8 @@ from apps_rg.runtime.bindings.section_lane_c0_metrics import (
 )
 from apps_rg.runtime.bindings.c0_metrics_writer import SCHEMA_VERSION
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
-from apps_rg.runtime.section_fec_bridge import wire_section_fec_bridge_for_lane
-from apps_rg.runtime.section_front_spine_bridge import build_section_front_spine_from_args
+from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section
+from apps_rg.runtime.spine.front_contracts import build_section_front_spine_from_args
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 
 REPO = Path(__file__).resolve().parents[2]
@@ -88,7 +88,7 @@ def test_wire_section_fec_bridge_emits_c0_metrics_all_lanes(
     )
     pool = _minimal_pool(section_id)
     payload: dict = {"run_id": f"wire_{section_id}", "section_id": section_id}
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=lane_dir,
         section_id=section_id,
         front_spine=spine,

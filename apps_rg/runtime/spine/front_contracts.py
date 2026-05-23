@@ -1,8 +1,8 @@
-"""One-spine front bridge — U0/L1/L0 contracts before section proof_pool (Wave 3).
+"""Spine front contracts — U0/L1/L0 before C0 (apps-rg-spine-only-unification-d8f4a2).
 
-Product-visible section lanes must emit ValidatedRequest, L1PlanContract, and RouteContract
-via apps_rg bindings before ``resolve_section_proof_pool`` may run. Downstream remains
-``section_lane_modular`` (no claim of full C0/PA/L2/Exit migration).
+Product-visible section runs emit ValidatedRequest, L1PlanContract, and RouteContract
+via apps_rg bindings before proof-pool/C0 retrieval. Single spine entry:
+``apps_rg.runtime.spine.apps_rg_spine_run``.
 """
 from __future__ import annotations
 
@@ -38,18 +38,14 @@ DOWNSTREAM_MISSING_CANONICAL_CONTRACTS: tuple[str, ...] = tuple(
 
 OBSERVED_CHAIN_WITH_FRONT_BRIDGE: tuple[str, ...] = (
     "CLI",
-    "canonical_dispatch.section_branch",
-    "section_front_spine_bridge",
+    "apps_rg_spine_run",
     "U0",
     "L1",
     "L0",
-    "proof_pool_resolver",
-    "section_c03_graph_binding",
-    "section_PA",
-    "section_L2",
-    "section_X2",
-    "section_X1D",
-    "section_X3",
+    "c0_retrieve_apps_rg",
+    "pa_compose_apps_rg",
+    "l2_execute_apps_rg",
+    "ExitEvalPipeline",
     "section_L6_shadow",
 )
 
@@ -71,7 +67,7 @@ class SectionFrontSpineBridge:
     non_product_certified: bool = False
     observed_chain: tuple[str, ...] = OBSERVED_CHAIN_WITH_FRONT_BRIDGE
     missing_downstream_contracts: tuple[str, ...] = DOWNSTREAM_MISSING_CANONICAL_CONTRACTS
-    spine_lane_mode: str = "section_lane_modular"
+    spine_lane_mode: str = "section_spine_run"
     is_canonical_c0_path: bool = False
     whole_run_envelope: bool = False
 
@@ -263,8 +259,8 @@ def build_section_front_spine_receipt(bridge: SectionFrontSpineBridge) -> dict[s
     return {
         "schema_version": "section_front_spine_receipt_v1",
         "generated_at_utc": ts,
-        "plan_slug": "one-canonical-spine",
-        "wave": 3,
+        "plan_slug": "apps-rg-spine-only-unification-d8f4a2",
+        "wave": "W2",
         "section_id": bridge.section_id,
         "product_visible": bridge.product_visible,
         "fixture_dev_only": fixture_dev,
@@ -325,7 +321,7 @@ def emit_section_front_spine_receipts(
     run_id = str(getattr(vr_payload, "run_id", "") or "")
     vr_doc = {
         "contract_type": "ValidatedRequest",
-        "contract_version": "apps_rg_section_front_bridge_v1",
+        "contract_version": "apps_rg_spine_front_contracts_v1",
         "producer_stage": "U0",
         "consumer_stage": "L1",
         "request_id": request_id,
@@ -339,7 +335,7 @@ def emit_section_front_spine_receipts(
 
     l1_doc = {
         "contract_type": "L1PlanContract",
-        "contract_version": "apps_rg_section_front_bridge_v1",
+        "contract_version": "apps_rg_spine_front_contracts_v1",
         "producer_stage": "L1",
         "consumer_stage": "L0",
         "request_id": request_id,
@@ -356,7 +352,7 @@ def emit_section_front_spine_receipts(
     route_body = route_payload if isinstance(route_payload, dict) else {}
     route_doc = {
         "contract_type": "RouteContract",
-        "contract_version": "apps_rg_section_front_bridge_v1",
+        "contract_version": "apps_rg_spine_front_contracts_v1",
         "producer_stage": "L0",
         "consumer_stage": "section_lane_modular",
         "request_id": request_id,

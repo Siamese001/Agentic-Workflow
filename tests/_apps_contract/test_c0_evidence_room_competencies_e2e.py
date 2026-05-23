@@ -18,11 +18,11 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
 from apps_rg.runtime.c0.constants import FORBIDDEN_PROOF_SOURCE_TYPES
 from apps_rg.runtime.c0.evidence_room import C0_ROOM_RECEIPT
-from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
+from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_ARTIFACT,
     FEC_BRIDGE_RECEIPT,
-    wire_section_fec_bridge_for_lane,
+    wire_spine_c0_fec_for_section,
 )
 from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
@@ -69,7 +69,7 @@ def test_competencies_c0_evidence_room_e2e_real_proof_pool_and_fec(tmp_path: Pat
     )
     assert pool.allowed_fact_ids_ordered, "proof pool must resolve real allowed facts"
     runtime_payload: dict = {"run_id": "c0_e2e_proof", "section_id": "competencies"}
-    bridge = wire_section_fec_bridge_for_lane(
+    bridge = wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="competencies",
         front_spine=front_spine,
@@ -117,7 +117,7 @@ def test_competencies_c0_evidence_room_e2e_real_proof_pool_and_fec(tmp_path: Pat
     assert snap.get("final_evidence_digest")
 
     pa_fields = __import__(
-        "apps_rg.runtime.section_fec_bridge",
+        "apps_rg.runtime.spine.c0_fec_compose",
         fromlist=["pa_consumption_receipt_fields"],
     ).pa_consumption_receipt_fields(runtime_payload)
     assert pa_fields["canonical_c0_5_claimed"] is True

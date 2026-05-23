@@ -24,10 +24,10 @@ from apps_rg.runtime.evidence.canonical_section_evidence_set import (
     validate_downstream_subset,
 )
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
-from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
+from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_ARTIFACT,
-    wire_section_fec_bridge_for_lane,
+    wire_spine_c0_fec_for_section,
 )
 from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
@@ -181,7 +181,7 @@ def test_generated_lane_c0_fec_single_reality_e2e(
         "selected_fact_plan": dict(pool.selected_fact_plan or {}),
         "proof_pool_metadata": dict(pool.proof_pool_metadata or {}),
     }
-    bridge = wire_section_fec_bridge_for_lane(
+    bridge = wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id=section_id,
         front_spine=front_spine,
@@ -222,7 +222,7 @@ def test_executive_summary_prompt_c0_ids_subset_of_fec_after_wire(tmp_path: Path
         "selected_fact_plan": dict(pool.selected_fact_plan or {}),
         "proof_pool_metadata": dict(pool.proof_pool_metadata or {}),
     }
-    bridge = wire_section_fec_bridge_for_lane(
+    bridge = wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id=section_id,
         front_spine=front_spine,

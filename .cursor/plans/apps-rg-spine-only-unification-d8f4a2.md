@@ -24,8 +24,8 @@ dod_exempt: false
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
+CURRENT_WAVE: W5
+LAST_COMPLETED_WAVE: W4
 NOTION_PLANS_ROW: page_id=36927693-f55c-8190-b30b-de1f6534e2a7
 LAST_UPDATED: 2026-05-23
 PLAN_CREATED: slug=apps-rg-spine-only-unification-d8f4a2 path=.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md status=Not Started
@@ -171,7 +171,7 @@ run_canonical_apps_rg_from_cli_primitives(...)
 3. **Contract tests:** [test_apps_rg_no_second_pipeline.py](../tests/_apps_contract/test_apps_rg_no_second_pipeline.py)
 4. **Plan supersession marker** on `one-canonical-spine-e8b4a1.md` — STATUS SUPERSEDED.
 
-**W1 status:** CI ratchet landed; gate **fails closed** on current baseline (second pipeline still present). `test_product_paths_pass_single_spine_gate_when_clean` is **xfail** until W2.
+**W1 status:** CI ratchet landed. **W2–W4 (2026-05-23):** `apps_rg_spine_run` + `section_cli_runners`; bridge modules deleted; `ExitEvalPipeline` via `section_x3_finalize`; gate **PASS** (0 product-path violations).
 
 **DoD W1:** ADR + gate + tests on disk; `run_contract_gates` includes APPS-RG-SINGLE-SPINE; no `agentic_core` edits.
 
@@ -224,9 +224,21 @@ run_canonical_apps_rg_from_cli_primitives(...)
 
 ---
 
+## Open scope (2026-05-23)
+
+See [spine_unification_open_scope_20260523.md](../docs/reports/apps_rg/spine_unification_open_scope_20260523.md).
+
+| Priority | Item |
+|----------|------|
+| P1 | **W5** — multi-section L3 loop + assembly + full-resume X1D in `apps_rg_spine_run` |
+| P1 | **W7** — core prerequisite gate + judges (author-gate) |
+| P1 | **W2 gap** — section lanes still use proof-pool→FEC compose, not full `run_ag2_retrieval_and_prompt` in spine entry |
+| P2 | Delete/migrate `c03_graphrag_bound`, mirror receipts (`section_l2_spine_receipt`, etc.) |
+| P0 (other) | Track C `X3_ALLOW`, post-spine live exec-summary proof |
+
 ## Review checklist
 
-- [ ] Confirm: **zero** bridge modules after W3 (not feature-flagged)
+- [x] Confirm: **zero** forbidden bridge **modules** after W3 (logic moved to `spine/`; legacy FEC alias kept)
 - [ ] Confirm: full resume = assembly + full-resume X1D + package Exit (not judge-only)
 - [ ] Authorize W1 CI ratchet (will fail until W2)
 - [ ] Pick first gold lane: `executive_summary` vs `headline`

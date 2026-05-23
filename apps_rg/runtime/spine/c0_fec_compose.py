@@ -1,8 +1,7 @@
-"""One-spine C0/FEC bridge — RouteContract + proof_pool → section PA (Wave 4).
+"""Spine C0/FEC compose — RouteContract + proof pool → section PA (d8f4a2).
 
-Product-visible section PA must consume ``final_evidence_contract_bridge.json`` (apps_rg
-``section_fec_bridge`` mode) or a canonical spine ``FinalEvidenceContract``. Raw
-``proof_pool_metadata`` is not an authority surface for PA in product-visible runs.
+Product-visible section PA consumes ``final_evidence_contract.json`` (spine C0 compose)
+or canonical ``FinalEvidenceContract``. Raw ``proof_pool_metadata`` is not PA authority.
 """
 from __future__ import annotations
 
@@ -14,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     SectionFrontSpineBridge,
     fixture_dev_bypass_active,
 )
@@ -23,25 +22,21 @@ from apps_rg.runtime.section_spine_terminology import (
     section_lane_spine_classification,
 )
 
-FEC_BRIDGE_ARTIFACT = "final_evidence_contract_bridge.json"
-FEC_BRIDGE_RECEIPT = "c0_fec_bridge_receipt.json"
-FEC_BRIDGE_MODE_SECTION = "section_fec_bridge"
+FEC_BRIDGE_ARTIFACT = "final_evidence_contract.json"
+FEC_BRIDGE_RECEIPT = "c0_fec_compose_receipt.json"
+FEC_BRIDGE_MODE_SECTION = "spine_c0_fec_compose"
 
 OBSERVED_CHAIN_WITH_FEC_BRIDGE: tuple[str, ...] = (
     "CLI",
-    "canonical_dispatch.section_branch",
-    "section_front_spine_bridge",
+    "apps_rg_spine_run",
     "U0",
     "L1",
     "L0",
-    "proof_pool_resolver",
-    "section_fec_bridge",
-    "section_c03_graph_binding",
-    "section_PA",
-    "section_L2",
-    "section_X2",
-    "section_X1D",
-    "section_X3",
+    "c0_retrieve_apps_rg",
+    "spine_c0_fec_compose",
+    "pa_compose_apps_rg",
+    "l2_execute_apps_rg",
+    "ExitEvalPipeline",
     "section_L6_shadow",
 )
 
@@ -151,7 +146,7 @@ def _build_pa_proof_authority_metadata(
     return out
 
 
-def build_section_fec_bridge(
+def build_spine_c0_fec_artifact(
     *,
     section_id: str,
     front_spine: SectionFrontSpineBridge,
@@ -249,7 +244,7 @@ def build_section_fec_bridge(
     )
 
 
-def build_section_fec_bridge_receipt(bridge: SectionFecBridge) -> dict[str, Any]:
+def build_spine_c0_fec_receipt(bridge: SectionFecBridge) -> dict[str, Any]:
     doc = bridge.bridge_doc
     spine = section_lane_spine_classification()
     route_ok = bool(str(doc.get("route_contract_ref") or "").strip())
@@ -286,19 +281,22 @@ def build_section_fec_bridge_receipt(bridge: SectionFecBridge) -> dict[str, Any]
     }
 
 
-def emit_section_fec_bridge_artifacts(
+def emit_spine_c0_fec_artifacts(
     artifact_dir: Path,
     bridge: SectionFecBridge,
 ) -> dict[str, Path]:
     artifact_dir.mkdir(parents=True, exist_ok=True)
     paths: dict[str, Path] = {}
     p_bridge = artifact_dir / FEC_BRIDGE_ARTIFACT
-    p_bridge.write_text(
-        json.dumps(bridge.bridge_doc, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
-    paths["final_evidence_contract_bridge"] = p_bridge
-    receipt = build_section_fec_bridge_receipt(bridge)
+    payload = json.dumps(bridge.bridge_doc, indent=2, ensure_ascii=False) + "\n"
+    p_bridge.write_text(payload, encoding="utf-8")
+    paths["final_evidence_contract"] = p_bridge
+    # Backward-compat alias for certification / metrics readers (same bytes, spine SSOT name).
+    p_legacy = artifact_dir / "final_evidence_contract_bridge.json"
+    if p_legacy.name != p_bridge.name:
+        p_legacy.write_text(payload, encoding="utf-8")
+        paths["final_evidence_contract_bridge"] = p_legacy
+    receipt = build_spine_c0_fec_receipt(bridge)
     p_receipt = artifact_dir / FEC_BRIDGE_RECEIPT
     p_receipt.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     paths["c0_fec_bridge_receipt"] = p_receipt
@@ -384,7 +382,7 @@ def resolve_pa_proof_authority_for_compile(
     )
 
 
-def wire_section_fec_bridge_for_lane(
+def wire_spine_c0_fec_for_section(
     *,
     artifact_dir: Path,
     section_id: str,
@@ -393,7 +391,7 @@ def wire_section_fec_bridge_for_lane(
     runtime_payload: dict[str, Any],
 ) -> SectionFecBridge:
     """Emit front-spine + FEC bridge artifacts and attach bridge to runtime_payload."""
-    from apps_rg.runtime.section_front_spine_bridge import emit_section_front_spine_receipts
+    from apps_rg.runtime.spine.front_contracts import emit_section_front_spine_receipts
 
     emit_section_front_spine_receipts(artifact_dir, front_spine)
     from apps_rg.runtime.c0.evidence_room import (
@@ -413,12 +411,12 @@ def wire_section_fec_bridge_for_lane(
             runtime_payload=runtime_payload,
         )
     else:
-        bridge = build_section_fec_bridge(
+        bridge = build_spine_c0_fec_artifact(
             section_id=section_id,
             front_spine=front_spine,
             pool=pool,
         )
-    emit_section_fec_bridge_artifacts(artifact_dir, bridge)
+    emit_spine_c0_fec_artifacts(artifact_dir, bridge)
     runtime_payload["section_fec_bridge"] = bridge.bridge_doc
     runtime_payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
     runtime_payload["final_evidence_contract_ref"] = FEC_BRIDGE_ARTIFACT
@@ -442,7 +440,6 @@ def wire_section_fec_bridge_for_lane(
         runtime_payload=runtime_payload,
         bridge=bridge,
     )
-    emit_section_fec_bridge_artifacts(artifact_dir, bridge)
     return bridge
 
 
@@ -508,12 +505,12 @@ __all__ = [
     "SectionFecBridge",
     "SectionFecBridgePreconditionError",
     "assert_section_pa_fec_preconditions",
-    "build_section_fec_bridge",
-    "build_section_fec_bridge_receipt",
-    "emit_section_fec_bridge_artifacts",
+    "build_spine_c0_fec_artifact",
+    "build_spine_c0_fec_receipt",
+    "emit_spine_c0_fec_artifacts",
     "fec_bridge_kill_switch_enabled",
     "merge_compiled_prompt_artifact_fec_fields",
     "pa_consumption_receipt_fields",
     "resolve_pa_proof_authority_for_compile",
-    "wire_section_fec_bridge_for_lane",
+    "wire_spine_c0_fec_for_section",
 ]

@@ -364,7 +364,7 @@ def run_unify_bullets_x2_gates(
     dist = rewrite_distribution or (parsed_output or {}).get("rewrite_distribution") or {}
     intensity_counts = _count_intensities(bullets)
 
-    from apps_rg.runtime.sections.graph_story_authority import (
+    from apps_rg.runtime.c0.graph_story_authority import (
         x2_gate_base_resume_story_forbidden,
         x2_gate_graph_only_proof_pool,
     )

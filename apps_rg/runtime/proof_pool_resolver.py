@@ -674,7 +674,7 @@ def resolve_section_proof_pool(
     legacy_broad_skills_ledger: bool = False,
 ) -> SectionProofPool:
     """Resolve claim-support proof pool for a canonical section lane."""
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         assert_proof_pool_front_spine_preconditions,
     )
 

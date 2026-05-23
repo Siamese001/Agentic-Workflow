@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.section_fec_bridge import SectionFecBridge
+from apps_rg.runtime.spine.c0_fec_compose import SectionFecBridge
 
 PROOF_CLASS_INCOMPLETE = "INCOMPLETE_PROOF"
 X2_BLOCK_ID_NAMESPACE_SPLIT = "X2_BLOCK_ID_NAMESPACE_SPLIT"

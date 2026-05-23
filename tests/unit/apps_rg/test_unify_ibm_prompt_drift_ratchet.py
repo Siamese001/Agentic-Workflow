@@ -91,7 +91,7 @@ def test_yaml_specs_trimmed_sovereign_oath_no_x2_in_oath_block():
 
 
 def test_compiled_unify_bullets_lists_x2_only_under_product_shape():
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         activate_fixture_dev_bypass,
         deactivate_fixture_dev_bypass,
     )
@@ -125,7 +125,7 @@ def test_compiled_unify_bullets_lists_x2_only_under_product_shape():
 
 
 def test_compiled_ibm_narrative_core_law_and_product_shape():
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         activate_fixture_dev_bypass,
         deactivate_fixture_dev_bypass,
     )

@@ -174,19 +174,19 @@ def test_resolve_product_pool_has_evidence_authority(repo_root: Path | None = No
 def test_load_section_proof_for_lane_enforces_law(monkeypatch: pytest.MonkeyPatch) -> None:
     bad = _valid_pool(meta={"proof_pool_type": "base_resume_fallback", "fallback_used": True})
     monkeypatch.setattr(
-        "apps_rg.runtime.proof_pool_lane_integration.resolve_section_proof_pool",
+        "apps_rg.runtime.c0.section_proof_loader.resolve_section_proof_pool",
         lambda **_kw: bad,
     )
     monkeypatch.setattr(
-        "apps_rg.runtime.proof_pool_lane_integration.build_section_front_spine_from_args",
+        "apps_rg.runtime.c0.section_proof_loader.build_section_front_spine_from_args",
         lambda **_kw: MagicMock(),
     )
     monkeypatch.setattr(
-        "apps_rg.runtime.proof_pool_lane_integration.load_lane_base_resume_json",
+        "apps_rg.runtime.c0.section_proof_loader.load_lane_base_resume_json",
         lambda **_kw: ({}, Path("x"), "h"),
     )
 
-    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 
     args = SimpleNamespace(
         base_resume_ref="",
@@ -474,7 +474,7 @@ def test_legacy_broad_skills_resolver_functions_deleted() -> None:
 
 
 def test_x2_gate_rejects_srfs_in_evidence_authority_not_pool_type() -> None:
-    from apps_rg.runtime.sections.graph_story_authority import x2_gate_graph_only_proof_pool
+    from apps_rg.runtime.c0.graph_story_authority import x2_gate_graph_only_proof_pool
 
     ok, obs, exp, _ = x2_gate_graph_only_proof_pool(
         {
@@ -557,7 +557,7 @@ def test_normalized_reporting_never_marks_srfs_authority() -> None:
 
 
 def test_x2_gate_ignores_proof_pool_type_without_evidence_authority() -> None:
-    from apps_rg.runtime.sections.graph_story_authority import x2_gate_graph_only_proof_pool
+    from apps_rg.runtime.c0.graph_story_authority import x2_gate_graph_only_proof_pool
 
     ok, obs, exp, _ = x2_gate_graph_only_proof_pool(
         {

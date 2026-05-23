@@ -22,7 +22,7 @@ from apps_rg.runtime.c0.product_runtime_guards import (
 )
 from apps_rg.runtime.c0_mandatory_policy import apps_rg_c0_dense_sparse_mandatory
 from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.spine.c0_fec_compose import (
     SectionFecBridgePreconditionError,
     assert_section_pa_fec_preconditions,
 )
@@ -87,7 +87,7 @@ class TestForbiddenProductEnv:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setattr(
-            "apps_rg.runtime.section_fec_bridge.fixture_dev_bypass_active",
+            "apps_rg.runtime.spine.c0_fec_compose.fixture_dev_bypass_active",
             lambda: False,
         )
         payload = {

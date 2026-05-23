@@ -14,7 +14,7 @@ from apps_rg.runtime.c0.c03_graph_ref_policy import (
     resolve_role_family_projection,
 )
 from apps_rg.runtime.c0.c04_exec_summary_shaping import shape_executive_summary_c04
-from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
+from apps_rg.runtime.spine.c0_fec_compose import resolve_pa_proof_authority_for_compile
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_jd_alignment_proof_flags,
     check_exec_summary_no_mechanism_inventory,

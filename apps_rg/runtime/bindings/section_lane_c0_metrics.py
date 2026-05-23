@@ -29,7 +29,7 @@ from apps_rg.runtime.c0.c0_section_authority import proof_support_target
 from apps_rg.runtime.bindings.c0_minimum_safety import is_c0_minimum_safe
 from apps_rg.runtime.c0_mandatory_policy import is_c03_mandatory_section
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
-from apps_rg.runtime.section_front_spine_bridge import SectionFrontSpineBridge
+from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
 
 _logger = logging.getLogger(__name__)
 

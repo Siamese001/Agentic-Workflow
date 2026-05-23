@@ -117,7 +117,7 @@ def finalize_section_compiled_with_proof_pool(
 ) -> SectionCompiledPrompt:
     """Append INPUT_AUTHORITY using FEC bridge PA authority (not raw proof_pool_metadata)."""
     from apps_rg.runtime.product_evidence_authority import validate_compiled_prompt_story_authority
-    from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
+    from apps_rg.runtime.spine.c0_fec_compose import resolve_pa_proof_authority_for_compile
 
     ids = sorted(str(x) for x in (runtime_payload.get("allowed_fact_ids") or []))
     pp_meta, _fec = resolve_pa_proof_authority_for_compile(runtime_payload)

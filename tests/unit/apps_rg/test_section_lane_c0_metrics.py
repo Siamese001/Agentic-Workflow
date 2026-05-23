@@ -22,7 +22,7 @@ from apps_rg.runtime.bindings.section_lane_c0_metrics import (
     validate_c0_metrics_document,
 )
 from apps_rg.runtime.sections.section_x2_gate_outputs import write_section_x2_gate_outputs
-from apps_rg.runtime.section_fec_bridge import FEC_BRIDGE_MODE_SECTION
+from apps_rg.runtime.spine.c0_fec_compose import FEC_BRIDGE_MODE_SECTION
 
 
 def _minimal_bridge_doc() -> dict:

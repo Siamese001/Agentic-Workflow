@@ -27,7 +27,7 @@ def _rel(p: Path) -> str:
 
 def _capture_fail_closed_proof() -> dict[str, Any]:
     from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
-    from apps_rg.runtime.section_front_spine_bridge import SectionFrontSpinePreconditionError
+    from apps_rg.runtime.spine.front_contracts import SectionFrontSpinePreconditionError
 
     try:
         resolve_section_proof_pool(section="competencies", repo_root=REPO, product_visible=True)

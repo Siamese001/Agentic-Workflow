@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
-from apps_rg.runtime.section_exit_spine_receipt import (
+from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
+from apps_rg.runtime.spine.exit_artifacts import (
     EXIT_DISPOSITION_RECEIPT_ARTIFACT,
     EXIT_REVIEW_PACKET_ARTIFACT,
     EXIT_SPINE_RECEIPT_ARTIFACT,
@@ -16,8 +16,8 @@ from apps_rg.runtime.section_exit_spine_receipt import (
     build_exit_disposition_receipt_for_section,
     exit_spine_kill_switch_enabled,
 )
-from apps_rg.runtime.section_fec_bridge import wire_section_fec_bridge_for_lane
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.c0_fec_compose import wire_spine_c0_fec_for_section
+from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     build_section_front_spine_from_args,
     deactivate_fixture_dev_bypass,
@@ -91,7 +91,7 @@ def test_full_l2_then_exit_chain(tmp_path: Path, section_id: str):
     )
     pool = _minimal_pool(section_id)
     payload: dict = {"allowed_fact_ids": list(pool.allowed_fact_ids_ordered), "run_id": "w6_unit"}
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=tmp_path,
         section_id=section_id,
         front_spine=spine,

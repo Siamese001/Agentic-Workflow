@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.section_front_spine_bridge import fixture_dev_bypass_active
+from apps_rg.runtime.spine.front_contracts import fixture_dev_bypass_active
 from apps_rg.runtime.section_l2_spine_receipt import (
     L2_EXECUTION_PACKET_ARTIFACT,
     SEALED_L2_ARTIFACT,
@@ -31,20 +31,15 @@ X1D_JUDGE_OUTPUTS_ARTIFACT = "x1d_llm_judge_outputs.json"
 
 OBSERVED_CHAIN_WITH_EXIT_RECEIPTS: tuple[str, ...] = (
     "CLI",
-    "canonical_dispatch.section_branch",
-    "section_front_spine_bridge",
+    "apps_rg_spine_run",
     "U0",
     "L1",
     "L0",
-    "proof_pool_resolver",
-    "section_fec_bridge",
-    "section_PA",
-    "section_L2_execution_packet",
-    "section_L2_provider",
-    "section_L2_sealed",
-    "section_Exit_review_packet",
-    "section_Exit_x1_x2",
-    "section_Exit_disposition_receipt",
+    "c0_retrieve_apps_rg",
+    "pa_compose_apps_rg",
+    "l2_execute_apps_rg",
+    "ExitEvalPipeline",
+    "exit_disposition_receipt",
     "section_L6_shadow",
 )
 
@@ -125,6 +120,7 @@ def build_exit_review_packet_for_section(
     fec_ref = str(
         runtime_payload.get("fec_bridge_ref")
         or runtime_payload.get("final_evidence_contract_ref")
+        or "final_evidence_contract.json"
         or "final_evidence_contract_bridge.json"
     )
     section_x3 = _load_json(artifact_dir, SECTION_X3_DISPOSITION_ARTIFACT)

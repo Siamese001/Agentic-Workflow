@@ -47,7 +47,7 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     classify_ledger_parse_state,
     normalize_exec_summary_claim_ledger,
 )
-from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3
+from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3 as _aggregate_ibm_bullets_x3
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
@@ -583,7 +583,7 @@ def run_ibm_bullets_execution(
 ) -> dict[str, Any]:
     """Single end-to-end ibm_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
-    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="ibm_bullets",
@@ -643,12 +643,12 @@ def run_ibm_bullets_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_section_fec_bridge_for_lane,
+        wire_spine_c0_fec_for_section,
     )
 
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="ibm_bullets",
         front_spine=front_spine,
@@ -690,7 +690,7 @@ def run_ibm_bullets_execution(
     parse_error = ""
     runtime_generation_status = "BLOCKED"
 
-    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
         finalize_section_l2_after_output,
         prepare_section_l2_before_provider,
@@ -734,7 +734,7 @@ def run_ibm_bullets_execution(
                 record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
         if parsed is not None:
             parsed = normalize_parsed_output(parsed, runtime_payload)
-            from apps_rg.runtime.sections.graph_story_authority import forbid_base_resume_bullet_hydration
+            from apps_rg.runtime.c0.graph_story_authority import forbid_base_resume_bullet_hydration
 
             forbid_base_resume_bullet_hydration(
                 section_id="ibm_bullets",
@@ -844,7 +844,7 @@ def run_ibm_bullets_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=l2_output.get("jd_alignment"),
     )
-    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+    from apps_rg.runtime.c0.section_proof_loader import apply_proof_pool_to_usage_ledger
 
     write_json(
         artifact_dir / "section_input_usage_ledger.json",
@@ -947,8 +947,14 @@ def run_ibm_bullets_execution(
         l2_output=l2_output,
     )
 
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+
     display_for_x3 = bullets_display_text(bullets)
-    x3 = aggregate_x3(
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id="ibm_bullets",
+        runtime_payload=runtime_payload,
+        aggregate_x3_fn=_aggregate_ibm_bullets_x3,
         resume_display_text=display_for_x3,
         claim_ledger=claim_ledger,
         x2_gates=x2,
@@ -958,9 +964,7 @@ def run_ibm_bullets_execution(
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
     )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
     finalize_section_l2_after_output(artifact_dir, "ibm_bullets", runtime_payload)
-    finalize_section_exit_after_l2(artifact_dir, "ibm_bullets", runtime_payload)
     finalize_section_runtime_exhaust_before_l6(
         artifact_dir, "ibm_bullets", runtime_payload, repo_root=REPO_ROOT
     )

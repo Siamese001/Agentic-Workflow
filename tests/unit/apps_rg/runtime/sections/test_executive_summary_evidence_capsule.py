@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
 )

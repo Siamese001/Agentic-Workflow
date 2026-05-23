@@ -15,7 +15,7 @@ from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prom
 from apps_rg.runtime.dispatch.unify_narrative_pa import compile_unify_narrative_prompt
 from apps_rg.runtime.product_evidence_authority import build_evidence_authority
 from apps_rg.runtime.sections.competencies_pa import compile_competencies_prompt
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
 )

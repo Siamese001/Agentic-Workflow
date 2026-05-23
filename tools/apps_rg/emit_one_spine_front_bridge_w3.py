@@ -10,7 +10,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from apps_rg.runtime.section_front_spine_bridge import (  # noqa: E402
+from apps_rg.runtime.spine.front_contracts import (  # noqa: E402
     DOWNSTREAM_MISSING_CANONICAL_CONTRACTS,
     FRONT_SPINE_CONTRACTS,
     OBSERVED_CHAIN_WITH_FRONT_BRIDGE,

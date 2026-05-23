@@ -241,7 +241,7 @@ def compile_headline_prompt(
     forbidden_employer_lines: str,
     run_id: str,
 ) -> SectionCompiledPrompt:
-    from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
+    from apps_rg.runtime.spine.c0_fec_compose import resolve_pa_proof_authority_for_compile
 
     assembly = build_headline_assembly_input(
         runtime_payload,

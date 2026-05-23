@@ -7,13 +7,13 @@ from types import SimpleNamespace
 import pytest
 
 from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_MODE_SECTION,
     SectionFecBridgePreconditionError,
     build_section_fec_bridge,
-    wire_section_fec_bridge_for_lane,
+    wire_spine_c0_fec_for_section,
 )
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     build_section_front_spine_from_args,
     deactivate_fixture_dev_bypass,
@@ -93,7 +93,7 @@ def test_fec_bridge_builds_per_section(section_id: str):
         repo_root=REPO,
     )
     pool = _minimal_pool(section_id)
-    bridge = build_section_fec_bridge(
+    bridge = build_spine_c0_fec_artifact(
         section_id=section_id,
         front_spine=spine,
         pool=pool,
@@ -113,7 +113,7 @@ def test_wire_emits_artifacts(tmp_path: Path, section_id: str):
     )
     pool = _minimal_pool(section_id)
     payload: dict = {"allowed_fact_ids": list(pool.allowed_fact_ids_ordered)}
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=tmp_path,
         section_id=section_id,
         front_spine=spine,
@@ -147,7 +147,7 @@ def test_finalize_section_compile_blocked_without_fec_bridge():
 
 
 def test_fixture_bypass_allows_raw_proof_pool_non_product():
-    from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
+    from apps_rg.runtime.spine.c0_fec_compose import resolve_pa_proof_authority_for_compile
 
     activate_fixture_dev_bypass(non_product_certified=True)
     try:

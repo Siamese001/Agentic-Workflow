@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.section_exit_spine_receipt import EXIT_DISPOSITION_RECEIPT_ARTIFACT
-from apps_rg.runtime.section_front_spine_bridge import fixture_dev_bypass_active
+from apps_rg.runtime.spine.exit_artifacts import EXIT_DISPOSITION_RECEIPT_ARTIFACT
+from apps_rg.runtime.spine.front_contracts import fixture_dev_bypass_active
 from apps_rg.runtime.section_l2_spine_receipt import SEALED_L2_ARTIFACT
 from apps_rg.runtime.section_spine_terminology import CANONICAL_SPINE_CHAIN
 

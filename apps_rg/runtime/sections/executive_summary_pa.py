@@ -492,7 +492,7 @@ def format_graph_only_quality_guardrails_block() -> str:
 
 def _proof_pool_metadata_for_compile(runtime_payload: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     from apps_rg.runtime.c0.product_runtime_guards import product_fec_bridge_mandatory
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         assert_section_pa_fec_preconditions,
         resolve_pa_proof_authority_for_compile,
     )

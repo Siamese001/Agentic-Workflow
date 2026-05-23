@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.section_exit_spine_receipt import emit_section_exit_spine_artifacts
+from apps_rg.runtime.spine.exit_artifacts import emit_section_exit_spine_artifacts
 
 
 def finalize_section_exit_after_l2(

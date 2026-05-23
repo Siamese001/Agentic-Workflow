@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_MODE_SECTION,
     SectionFecBridgePreconditionError,
     assert_section_pa_fec_preconditions,
@@ -16,7 +16,7 @@ from apps_rg.runtime.section_fec_bridge import (
     fec_bridge_kill_switch_enabled,
     resolve_pa_proof_authority_for_compile,
 )
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     SectionFrontSpineBridge,
     activate_fixture_dev_bypass,
     build_section_front_spine_from_args,
@@ -113,7 +113,7 @@ def test_fec_bridge_requires_route_contract_ref_at_build():
         route=None,
     )
     with pytest.raises(SectionFecBridgePreconditionError, match="RouteContract"):
-        build_section_fec_bridge(
+        build_spine_c0_fec_artifact(
             section_id="executive_summary",
             front_spine=broken,
             pool=_minimal_pool(),
@@ -121,7 +121,7 @@ def test_fec_bridge_requires_route_contract_ref_at_build():
 
 
 def test_fec_bridge_references_route_and_proof_pool():
-    bridge = build_section_fec_bridge(
+    bridge = build_spine_c0_fec_artifact(
         section_id="executive_summary",
         front_spine=_front_spine(),
         pool=_minimal_pool(),
@@ -134,7 +134,7 @@ def test_fec_bridge_references_route_and_proof_pool():
 
 
 def test_fec_bridge_carries_lineage_and_support_status():
-    bridge = build_section_fec_bridge(
+    bridge = build_spine_c0_fec_artifact(
         section_id="executive_summary",
         front_spine=_front_spine(),
         pool=_minimal_pool(),
@@ -147,7 +147,7 @@ def test_fec_bridge_carries_lineage_and_support_status():
 
 
 def test_fec_bridge_does_not_claim_canonical_c0_stages():
-    bridge = build_section_fec_bridge(
+    bridge = build_spine_c0_fec_artifact(
         section_id="executive_summary",
         front_spine=_front_spine(),
         pool=_minimal_pool(),
@@ -161,7 +161,7 @@ def test_fec_bridge_does_not_claim_canonical_c0_stages():
 
 
 def test_pa_consumes_fec_bridge_not_raw_proof_pool():
-    bridge = build_section_fec_bridge(
+    bridge = build_spine_c0_fec_artifact(
         section_id="executive_summary",
         front_spine=_front_spine(),
         pool=_minimal_pool(),
@@ -224,7 +224,7 @@ def test_fixture_dev_bypass_allows_raw_proof_pool_non_product():
 
 
 def test_raw_proof_pool_direct_flag_blocked():
-    bridge = build_section_fec_bridge(
+    bridge = build_spine_c0_fec_artifact(
         section_id="executive_summary",
         front_spine=_front_spine(),
         pool=_minimal_pool(),

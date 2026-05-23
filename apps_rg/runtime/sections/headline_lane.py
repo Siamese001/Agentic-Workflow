@@ -48,7 +48,7 @@ from apps_rg.runtime.claim_ledger.headline_claim_ledger import (
     normalize_headline_claim_ledger,
 )
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
-from apps_rg.runtime.exit.headline_x3 import aggregate_x3
+from apps_rg.runtime.exit.headline_x3 import aggregate_x3 as _aggregate_headline_x3
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
@@ -983,7 +983,7 @@ def run_headline_execution(
     trace_runtime_path: str = TRACE_RUNTIME_PATH_DEFAULT,
     print_output: bool = True,
 ) -> dict[str, Any]:
-    from apps_rg.runtime.proof_pool_lane_integration import (
+    from apps_rg.runtime.c0.section_proof_loader import (
         apply_proof_pool_to_usage_ledger,
         load_section_proof_for_lane,
     )
@@ -1038,12 +1038,12 @@ def run_headline_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_section_fec_bridge_for_lane,
+        wire_spine_c0_fec_for_section,
     )
 
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="headline",
         front_spine=front_spine,
@@ -1102,7 +1102,7 @@ def run_headline_execution(
     headline_proof_shape_retry_reason = ""
     headline_repair_receipt: dict[str, Any] | None = None
 
-    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
         finalize_section_l2_after_output,
         prepare_section_l2_before_provider,
@@ -1550,7 +1550,13 @@ def run_headline_execution(
         runtime_generation_status, x2, artifact_dir=artifact_dir
     )
 
-    x3 = aggregate_x3(
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id="headline",
+        runtime_payload=runtime_payload,
+        aggregate_x3_fn=_aggregate_headline_x3,
         resume_display_text=headline_line or raw_output,
         claim_ledger=claim_ledger,
         x2_gates=x2,
@@ -1560,9 +1566,7 @@ def run_headline_execution(
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
     )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
     finalize_section_l2_after_output(artifact_dir, "headline", runtime_payload)
-    finalize_section_exit_after_l2(artifact_dir, "headline", runtime_payload)
     finalize_section_runtime_exhaust_before_l6(
         artifact_dir, "headline", runtime_payload, repo_root=REPO_ROOT
     )

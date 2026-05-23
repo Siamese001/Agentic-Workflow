@@ -273,7 +273,7 @@ def test_first_wave_sections_in_matrix(section_id: str) -> None:
 
 
 def test_executive_summary_merge_emits_native_c03_when_front_spine() -> None:
-    from apps_rg.runtime.section_front_spine_bridge import SectionFrontSpineBridge
+    from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
 
     repo = Path(__file__).resolve().parents[3]
     front = SectionFrontSpineBridge(

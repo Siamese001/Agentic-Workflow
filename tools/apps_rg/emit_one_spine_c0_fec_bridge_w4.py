@@ -26,8 +26,8 @@ def _rel(p: Path) -> str:
 
 
 def _capture_pa_fail_closed() -> dict[str, Any]:
-    from apps_rg.runtime.section_fec_bridge import SectionFecBridgePreconditionError
-    from apps_rg.runtime.section_fec_bridge import assert_section_pa_fec_preconditions
+    from apps_rg.runtime.spine.c0_fec_compose import SectionFecBridgePreconditionError
+    from apps_rg.runtime.spine.c0_fec_compose import assert_section_pa_fec_preconditions
 
     payload = {"product_visible": True, "raw_proof_pool_direct_to_pa": False}
     try:

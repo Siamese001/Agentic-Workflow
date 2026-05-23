@@ -127,7 +127,7 @@ def build_competencies_assembly_input(
 ) -> PromptAssemblyInput:
     from apps_rg.fact_inventory.augmented_skills_graph import build_verified_skill_inventory_projection
 
-    from apps_rg.runtime.section_fec_bridge import resolve_pa_proof_authority_for_compile
+    from apps_rg.runtime.spine.c0_fec_compose import resolve_pa_proof_authority_for_compile
 
     slots = load_competencies_template_slots()
     plan = runtime_payload.get("selected_fact_plan") or {}

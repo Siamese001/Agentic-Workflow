@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.section_front_spine_bridge import fixture_dev_bypass_active
+from apps_rg.runtime.spine.front_contracts import fixture_dev_bypass_active
 from apps_rg.runtime.section_spine_terminology import is_spine_final_evidence_contract
 
 ONE_SPINE_CERTIFICATION_RECEIPT_ARTIFACT = "one_spine_certification_receipt.json"
@@ -60,14 +60,18 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _fec_present(artifact_dir: Path) -> tuple[bool, str]:
-    bridge = artifact_dir / "final_evidence_contract_bridge.json"
-    if bridge.is_file():
-        return True, "final_evidence_contract_bridge.json"
-    canonical = artifact_dir / CANONICAL_FEC_ALTERNATIVE
-    if canonical.is_file():
-        doc = _load_json(canonical)
-        if is_spine_final_evidence_contract(doc):
-            return True, CANONICAL_FEC_ALTERNATIVE
+    """Spine SSOT ``final_evidence_contract.json`` first; legacy bridge basename accepted."""
+    for name in (CANONICAL_FEC_ALTERNATIVE, "final_evidence_contract_bridge.json"):
+        path = artifact_dir / name
+        if not path.is_file():
+            continue
+        if name == CANONICAL_FEC_ALTERNATIVE:
+            doc = _load_json(path)
+            if doc and not is_spine_final_evidence_contract(doc):
+                # FEC compose may store bridge-shaped doc at spine path — still counts.
+                if not isinstance(doc, dict):
+                    continue
+        return True, name
     return False, ""
 
 

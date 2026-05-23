@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     SectionFrontSpineBridge,
     SectionFrontSpinePreconditionError,
     activate_fixture_dev_bypass,
@@ -152,7 +152,7 @@ def test_bridge_emits_three_contracts():
 
 
 def test_receipt_records_observed_chain_and_missing_downstream(tmp_path: Path):
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         build_section_front_spine_receipt,
         emit_section_front_spine_receipts,
     )

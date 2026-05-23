@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.section_fec_bridge import FEC_BRIDGE_ARTIFACT
-from apps_rg.runtime.section_front_spine_bridge import fixture_dev_bypass_active
+from apps_rg.runtime.spine.c0_fec_compose import FEC_BRIDGE_ARTIFACT
+from apps_rg.runtime.spine.front_contracts import fixture_dev_bypass_active
 from apps_rg.runtime.section_spine_terminology import CANONICAL_SPINE_CHAIN
 
 L2_EXECUTION_PACKET_ARTIFACT = "l2_execution_packet.json"

@@ -5,7 +5,7 @@ from apps_rg.runtime.proof_pool_resolver import (
     PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
     SectionProofPool,
 )
-from apps_rg.runtime.sections.graph_story_authority import (
+from apps_rg.runtime.c0.graph_story_authority import (
     forbid_base_resume_bullet_hydration,
     require_augmented_skills_graph_pool,
     verbatim_base_resume_bullet_ids,
@@ -99,7 +99,7 @@ def test_verbatim_detection_finds_match() -> None:
 
 
 def test_x2_gate_graph_only_rejects_srfs() -> None:
-    from apps_rg.runtime.sections.graph_story_authority import x2_gate_graph_only_proof_pool
+    from apps_rg.runtime.c0.graph_story_authority import x2_gate_graph_only_proof_pool
 
     ok, obs, exp, _detail = x2_gate_graph_only_proof_pool(
         {
@@ -118,7 +118,7 @@ def test_x2_gate_graph_only_rejects_srfs() -> None:
 
 
 def test_x2_gate_graph_only_passes() -> None:
-    from apps_rg.runtime.sections.graph_story_authority import x2_gate_graph_only_proof_pool
+    from apps_rg.runtime.c0.graph_story_authority import x2_gate_graph_only_proof_pool
 
     ok, _, _, _ = x2_gate_graph_only_proof_pool(
         {

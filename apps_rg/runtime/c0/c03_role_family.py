@@ -12,7 +12,7 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     infer_projection_role_family_key,
 )
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.section_front_spine_bridge import SectionFrontSpineBridge
+from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
 
 REPO_DEFAULT_ROLE = "SVP_ENGINEERING_AI_PLATFORM"
 

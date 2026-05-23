@@ -10,7 +10,7 @@ import pytest
 
 from apps_rg.runtime.c03_graphrag_bound import build_executive_summary_c03_graphrag_bound
 from apps_rg.runtime.integrated_product_proof_gate import validate_integrated_product_proof
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
 )

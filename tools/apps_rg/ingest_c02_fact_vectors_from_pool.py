@@ -12,7 +12,7 @@ if str(REPO) not in sys.path:
 
 from apps_rg.runtime.c0.c02_evidence_fetch import fetch_c02_evidence_atoms
 from apps_rg.runtime.c0.c02_fact_vector_ingest import maybe_upsert_c02_fact_vectors
-from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
     JD_TEXT_DEFAULT,

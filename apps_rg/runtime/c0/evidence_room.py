@@ -25,7 +25,7 @@ from apps_rg.runtime.c0.c0_section_authority import (
 from apps_rg.runtime.c0.product_runtime_guards import ENV_APPS_RG_C0_EVIDENCE_ROOM
 from apps_rg.runtime.c0.constants import C0_SECTIONS_ENABLED, REPO_ROOT
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_ARTIFACT,
     FEC_BRIDGE_MODE_SECTION,
     FEC_BRIDGE_RECEIPT,
@@ -35,7 +35,7 @@ from apps_rg.runtime.section_fec_bridge import (
     _extract_support_status,
     _utc_now,
 )
-from apps_rg.runtime.section_front_spine_bridge import SectionFrontSpineBridge
+from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
 
 C0_ROOM_RECEIPT = "c0_evidence_room_receipt.json"
 
@@ -375,7 +375,7 @@ def run_section_c0_evidence_room(
         "c07": c07,
     }
     _emit_room_artifacts(artifact_dir, bundle)
-    from apps_rg.runtime.section_fec_bridge import emit_section_fec_bridge_artifacts
+    from apps_rg.runtime.spine.c0_fec_compose import emit_spine_c0_fec_artifacts
 
     bridge = SectionFecBridge(section_id=section_id, bridge_doc=bridge_doc)
     apply_canonical_section_evidence_materialization(
@@ -395,7 +395,7 @@ def run_section_c0_evidence_room(
     runtime_payload["raw_proof_pool_direct_to_pa"] = False
     runtime_payload["product_visible"] = True
     runtime_payload["c0_authority_mode"] = authority["c0_authority_mode"]
-    emit_section_fec_bridge_artifacts(artifact_dir, bridge)
+    emit_spine_c0_fec_artifacts(artifact_dir, bridge)
     return bridge
 
 

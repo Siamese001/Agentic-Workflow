@@ -26,6 +26,7 @@ FORBIDDEN_IMPORT_MODULE_PREFIXES: tuple[str, ...] = (
     "apps_rg.runtime.c03_graphrag_bound",
     "apps_rg.runtime.section_exit_spine_receipt",
     "apps_rg.runtime.section_runtime_exhaust_spine_receipt",
+    "apps_rg.runtime.proof_pool_lane_integration",
 )
 
 # String tokens that must not appear as import targets in product paths.
@@ -36,11 +37,11 @@ FORBIDDEN_IMPORT_MODULE_EXACT: frozenset[str] = frozenset(
         "apps_rg.runtime.c03_graphrag_bound",
         "apps_rg.runtime.section_exit_spine_receipt",
         "apps_rg.runtime.section_runtime_exhaust_spine_receipt",
+        "apps_rg.runtime.proof_pool_lane_integration",
     }
 )
 
 FORBIDDEN_SOURCE_SUBSTRINGS: tuple[tuple[str, str], ...] = (
-    ("section_c03_graph_binding", "FORBIDDEN_BINDING_KIND section_c03_graph_binding in product path"),
     ("wire_section_fec_bridge_for_lane", "FORBIDDEN_BRIDGE_CALL wire_section_fec_bridge_for_lane"),
     ("build_section_fec_bridge", "FORBIDDEN_BRIDGE_CALL build_section_fec_bridge"),
 )
@@ -208,7 +209,11 @@ def _scan_x3_without_spine_exit(rel: str, source: str) -> list[SingleSpineFindin
     )
     if not writes_x3:
         return []
-    has_spine_exit = "ExitEvalPipeline" in source
+    has_spine_exit = (
+        "ExitEvalPipeline" in source
+        or "finalize_section_lane_x3" in source
+        or "section_x3_finalize" in source
+    )
     has_mirror = any(h in source for h in MIRROR_EXIT_HELPERS) or (
         "section_exit_spine_receipt" in source
     )
@@ -238,7 +243,9 @@ def _scan_x3_without_spine_exit(rel: str, source: str) -> list[SingleSpineFindin
                 message="Mirror exit receipts are not substitutes for ExitEvalPipeline exit_disposition_receipt.json",
             )
         )
-    if "aggregate_x3(" in source and not has_spine_exit:
+    if "aggregate_x3(" in source and not has_spine_exit and not rel.startswith(
+        "apps_rg/runtime/spine/"
+    ):
         line = source.find("aggregate_x3(")
         findings.append(
             SingleSpineFinding(

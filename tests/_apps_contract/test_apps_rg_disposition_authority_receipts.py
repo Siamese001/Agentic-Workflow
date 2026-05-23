@@ -10,7 +10,7 @@ from apps_rg.runtime.disposition_authority import (
     apply_lane_x3_authority_fields,
 )
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
-from apps_rg.runtime.section_exit_spine_receipt import (
+from apps_rg.runtime.spine.exit_artifacts import (
     EXIT_DISPOSITION_RECEIPT_ARTIFACT,
     build_exit_disposition_receipt_for_section,
     build_exit_review_packet_for_section,

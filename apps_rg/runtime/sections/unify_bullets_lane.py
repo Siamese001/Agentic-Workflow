@@ -54,7 +54,7 @@ from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
 )
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
 from apps_rg.runtime.sections.unify_bullets_pa import compile_unify_bullets_prompt
-from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3
+from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3 as _aggregate_unify_bullets_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
 from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
@@ -612,7 +612,7 @@ def run_unify_bullets_execution(
 ) -> dict[str, Any]:
     """Single end-to-end unify_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
-    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="unify_bullets",
@@ -661,12 +661,12 @@ def run_unify_bullets_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_section_fec_bridge_for_lane,
+        wire_spine_c0_fec_for_section,
     )
 
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="unify_bullets",
         front_spine=front_spine,
@@ -706,7 +706,7 @@ def run_unify_bullets_execution(
     parse_error = ""
     runtime_generation_status = "BLOCKED"
 
-    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
         finalize_section_l2_after_output,
         prepare_section_l2_before_provider,
@@ -750,7 +750,7 @@ def run_unify_bullets_execution(
                 record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
         if parsed is not None:
-            from apps_rg.runtime.sections.graph_story_authority import forbid_base_resume_bullet_hydration
+            from apps_rg.runtime.c0.graph_story_authority import forbid_base_resume_bullet_hydration
             from apps_rg.runtime.sections.unify_canonical_hydration import (
                 should_hydrate_unify_bullets_from_canonical,
             )
@@ -867,7 +867,7 @@ def run_unify_bullets_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=l2_output.get("jd_alignment"),
     )
-    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+    from apps_rg.runtime.c0.section_proof_loader import apply_proof_pool_to_usage_ledger
 
     write_json(
         artifact_dir / "section_input_usage_ledger.json",
@@ -979,7 +979,7 @@ def run_unify_bullets_execution(
     )
 
     display_for_x3 = display_for_coverage
-    x3 = aggregate_x3(
+    x3 = _aggregate_unify_bullets_x3(
         resume_display_text=display_for_x3,
         claim_ledger=claim_ledger,
         x2_gates=x2,
@@ -1004,12 +1004,19 @@ def run_unify_bullets_execution(
     )
     write_json(artifact_dir / "l2_output.json", l2_output)
 
-    x3_record = dict(x3.to_dict())
-    x3_record["proof_eligible"] = proof_bundle["proof_eligible"]
-    x3_record["judge_proof_eligible"] = proof_bundle["judge_proof_eligible"]
-    write_json(artifact_dir / "x3_disposition.json", x3_record)
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id="unify_bullets",
+        runtime_payload=runtime_payload,
+        x3_result=x3,
+        x3_doc_extra={
+            "proof_eligible": proof_bundle["proof_eligible"],
+            "judge_proof_eligible": proof_bundle["judge_proof_eligible"],
+        },
+    )
     finalize_section_l2_after_output(artifact_dir, "unify_bullets", runtime_payload)
-    finalize_section_exit_after_l2(artifact_dir, "unify_bullets", runtime_payload)
     finalize_section_runtime_exhaust_before_l6(
         artifact_dir, "unify_bullets", runtime_payload, repo_root=REPO_ROOT
     )

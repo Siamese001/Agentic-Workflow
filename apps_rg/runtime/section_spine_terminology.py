@@ -201,7 +201,7 @@ def enrich_section_graph_binding_doc(doc: dict[str, Any]) -> dict[str, Any]:
 
 
 def section_lane_spine_classification() -> dict[str, Any]:
-    from apps_rg.runtime.section_front_spine_bridge import (
+    from apps_rg.runtime.spine.front_contracts import (
         DOWNSTREAM_MISSING_CANONICAL_CONTRACTS,
         FRONT_SPINE_CONTRACTS,
     )

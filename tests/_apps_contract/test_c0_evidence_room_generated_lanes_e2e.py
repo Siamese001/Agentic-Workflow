@@ -17,11 +17,11 @@ from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
 from apps_rg.runtime.c0.constants import FORBIDDEN_PROOF_SOURCE_TYPES
 from apps_rg.runtime.c0.evidence_room import C0_ROOM_RECEIPT
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
-from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
-from apps_rg.runtime.section_fec_bridge import (
+from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
+from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_ARTIFACT,
     FEC_BRIDGE_RECEIPT,
-    wire_section_fec_bridge_for_lane,
+    wire_spine_c0_fec_for_section,
 )
 from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
@@ -80,7 +80,7 @@ def test_generated_lane_c0_evidence_room_e2e(
     )
     assert pool.allowed_fact_ids_ordered, f"{section_id}: proof pool must resolve allowed facts"
     runtime_payload: dict = {"run_id": f"c0_e2e_{section_id}", "section_id": section_id}
-    bridge = wire_section_fec_bridge_for_lane(
+    bridge = wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id=section_id,
         front_spine=front_spine,

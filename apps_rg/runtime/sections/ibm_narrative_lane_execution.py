@@ -44,7 +44,7 @@ def run_ibm_narrative_lane_execution(
 ) -> dict[str, Any]:
     """Single end-to-end ibm_narrative run: artifacts + X1D/X2/X3/L6."""
     _ensure_helpers_hydrated()
-    from apps_rg.runtime.proof_pool_lane_integration import load_section_proof_for_lane
+    from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
     from apps_rg.runtime.sections import selected_role_fact_set as _srfs
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
@@ -110,12 +110,12 @@ def run_ibm_narrative_lane_execution(
         artifact_dir=str(artifact_dir.resolve()),
         run_id=str(runtime_payload.get("run_id") or ""),
     )
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_section_fec_bridge_for_lane,
+        wire_spine_c0_fec_for_section,
     )
 
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="ibm_narrative",
         front_spine=front_spine,
@@ -169,7 +169,7 @@ def run_ibm_narrative_lane_execution(
     preflight_blocked = bool(preflight_art.get("preflight_blocked"))
     write_json(artifact_dir / "ibm_narrative_judge_preflight.json", preflight_art)
 
-    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
+    from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
         finalize_section_l2_after_output,
         prepare_section_l2_before_provider,
@@ -417,7 +417,7 @@ def run_ibm_narrative_lane_execution(
         briefing_text=str(runtime_payload.get("briefing") or ""),
         jd_alignment=(parsed or {}).get("jd_alignment") if isinstance(parsed, dict) else None,
     )
-    from apps_rg.runtime.proof_pool_lane_integration import apply_proof_pool_to_usage_ledger
+    from apps_rg.runtime.c0.section_proof_loader import apply_proof_pool_to_usage_ledger
 
     write_json(
         artifact_dir / "section_input_usage_ledger.json",
@@ -532,7 +532,14 @@ def run_ibm_narrative_lane_execution(
         runtime_generation_status, x2, artifact_dir=artifact_dir
     )
 
-    x3 = aggregate_x3(
+    from apps_rg.runtime.exit.ibm_narrative_x3 import aggregate_x3 as _aggregate_ibm_narrative_x3
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id="ibm_narrative",
+        runtime_payload=runtime_payload,
+        aggregate_x3_fn=_aggregate_ibm_narrative_x3,
         resume_display_text=narrative or raw_output,
         claim_ledger=claim_ledger,
         x2_gates=x2,
@@ -542,9 +549,7 @@ def run_ibm_narrative_lane_execution(
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
     )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
     finalize_section_l2_after_output(artifact_dir, "ibm_narrative", runtime_payload)
-    finalize_section_exit_after_l2(artifact_dir, "ibm_narrative", runtime_payload)
     finalize_section_runtime_exhaust_before_l6(
         artifact_dir, "ibm_narrative", runtime_payload, repo_root=REPO_ROOT
     )

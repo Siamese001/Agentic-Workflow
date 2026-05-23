@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
-from apps_rg.runtime.sections.graph_story_authority import (
+from apps_rg.runtime.c0.graph_story_authority import (
     change_log_has_base_resume_hydration,
     verbatim_base_resume_bullet_ids,
 )

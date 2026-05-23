@@ -14,7 +14,7 @@ Rollup after exec-summary repair hardening and plan/Notion sync.
 | Plan | Wave | Next |
 |------|------|------|
 | [apps-rg-proof-pool-c0-ssot-a7f3e2](../../.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md) | W3 / Track C | Track B DONE; Track C X2 PASS — unanimous X1D `X3_ALLOW` still open |
-| [apps-rg-spine-only-unification-d8f4a2](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) | W2 | `apps_rg_spine_run` + delete second pipeline (W3+) |
+| [apps-rg-spine-only-unification-d8f4a2](../../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) | W4 done / W5–W7 open | See [spine_unification_open_scope_20260523.md](spine_unification_open_scope_20260523.md) |
 
 ## Superseded / review-only
 

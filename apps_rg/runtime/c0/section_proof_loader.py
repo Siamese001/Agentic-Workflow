@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool, resolve_section_proof_pool
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
-from apps_rg.runtime.section_front_spine_bridge import (
+from apps_rg.runtime.spine.front_contracts import (
     SectionFrontSpineBridge,
     build_section_front_spine_from_args,
 )
@@ -27,7 +27,7 @@ def load_section_proof_for_lane(
         repo_root=repo_root,
     )
     if artifact_dir is not None:
-        from apps_rg.runtime.section_front_spine_bridge import emit_section_front_spine_receipts
+        from apps_rg.runtime.spine.front_contracts import emit_section_front_spine_receipts
 
         emit_section_front_spine_receipts(artifact_dir, front_spine)
     base_ref = str(getattr(args, "base_resume_ref", "") or "").strip() or None
@@ -45,7 +45,7 @@ def load_section_proof_for_lane(
         product_visible=True,
     )
     from apps_rg.runtime.product_evidence_authority import enforce_product_evidence_authority_for_cli
-    from apps_rg.runtime.sections.graph_story_authority import require_augmented_skills_graph_pool
+    from apps_rg.runtime.c0.graph_story_authority import require_augmented_skills_graph_pool
 
     pool = enforce_product_evidence_authority_for_cli(pool)
     require_augmented_skills_graph_pool(pool, section_id=section_id)

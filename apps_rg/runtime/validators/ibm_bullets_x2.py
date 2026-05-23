@@ -393,7 +393,7 @@ def run_ibm_bullets_x2_gates(
             )
         )
 
-    from apps_rg.runtime.sections.graph_story_authority import (
+    from apps_rg.runtime.c0.graph_story_authority import (
         x2_gate_base_resume_story_forbidden,
         x2_gate_graph_only_proof_pool,
     )

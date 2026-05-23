@@ -69,7 +69,7 @@ from apps_rg.runtime.judges.executive_summary_judge_packet import (
     write_executive_summary_judge_packet,
 )
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
-from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
+from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3 as _aggregate_executive_summary_x3
 from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source
@@ -1252,7 +1252,7 @@ def run_executive_summary_execution(
 ) -> dict[str, Any]:
     """Single end-to-end executive_summary run (qwen_vllm): artifacts + X2/X1D/X3."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
-    from apps_rg.runtime.proof_pool_lane_integration import (
+    from apps_rg.runtime.c0.section_proof_loader import (
         apply_proof_pool_to_usage_ledger,
         load_section_proof_for_lane,
     )
@@ -1308,12 +1308,12 @@ def run_executive_summary_execution(
     )
     if briefing_trunc_meta is not None:
         write_json(artifact_dir / "briefing_selection_receipt.json", briefing_trunc_meta)
-    from apps_rg.runtime.section_fec_bridge import (
+    from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_section_fec_bridge_for_lane,
+        wire_spine_c0_fec_for_section,
     )
 
-    wire_section_fec_bridge_for_lane(
+    wire_spine_c0_fec_for_section(
         artifact_dir=artifact_dir,
         section_id="executive_summary",
         front_spine=front_spine,
@@ -2169,7 +2169,13 @@ def run_executive_summary_execution(
     attach_ledger_summary_to_l2(l2_output, artifact_dir)
     write_json(artifact_dir / "l2_output.json", l2_output)
 
-    x3 = aggregate_x3(
+    from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id="executive_summary",
+        runtime_payload=runtime_payload,
+        aggregate_x3_fn=_aggregate_executive_summary_x3,
         resume_display_text=resume_display_text,
         claim_ledger=claim_ledger,
         x2_gates=x2,
@@ -2179,8 +2185,6 @@ def run_executive_summary_execution(
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
     )
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
-    from apps_rg.runtime.section_exit_lane_integration import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import finalize_section_l2_after_output
     from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
         finalize_section_runtime_exhaust_before_l6,
@@ -2188,7 +2192,6 @@ def run_executive_summary_execution(
     )
   # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
     finalize_section_l2_after_output(artifact_dir, "executive_summary", runtime_payload)
-    finalize_section_exit_after_l2(artifact_dir, "executive_summary", runtime_payload)
     finalize_section_runtime_exhaust_before_l6(
         artifact_dir, "executive_summary", runtime_payload, repo_root=REPO_ROOT
     )
