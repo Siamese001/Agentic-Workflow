@@ -1,4 +1,4 @@
-av"apps_rg SSOT embedding / BGE / Chroma vector-DB settings (fail-closed).
+"""apps_rg SSOT embedding / BGE / Chroma vector-DB settings (fail-closed).
 
 Terminology:
 - embedding_model: BGE via explicit local SentenceTransformer path (never HF hub slug at runtime).

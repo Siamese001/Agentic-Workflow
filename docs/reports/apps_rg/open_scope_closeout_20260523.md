@@ -23,9 +23,11 @@ Rollup after exec-summary repair hardening and plan/Notion sync.
 | [apps-rg-v40-spine-gap-c4a8f1](../../.cursor/plans/apps-rg-v40-spine-gap-c4a8f1.md) | **SUPERSEDED** | Gap inventory kept in [apps_rg_v40_spine_gap_analysis_20260523.md](apps_rg_v40_spine_gap_analysis_20260523.md); execution → spine-only unification |
 | [one-canonical-spine-e8b4a1](../../.cursor/plans/one-canonical-spine-e8b4a1.md) | CLOSED (bridge path) | Superseded by spine-only (no bridges) |
 
-## Uncommitted workspace (not in exec-summary commit)
+## Committed 2026-05-23 (second wave)
 
-Hygiene/docstrings: `apps_rg/__main__.py`, `embedding_settings.py`, `conftest.py`, IBM/unify test fixes. Spine CI scaffolding: `check_apps_rg_single_spine.py`, `test_apps_rg_no_second_pipeline.py`. Stage in dedicated commits when those plans execute.
+- Track C synthesis gates + voice repair + unit tests
+- W23 hygiene (`__main__.py`, IBM metric scrub, proof-pool audit)
+- Spine W1 CI ratchet (ADR, scan, gate, contract tests) — gate fails until W2 deletes second pipeline
 
 ## Track C follow-up (proof-pool)
 

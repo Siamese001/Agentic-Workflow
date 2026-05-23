@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -40,8 +41,17 @@ def _load(p: Path) -> dict | list | None:
         return None
 
 
+def _proof_base_for_lane(lane: str) -> Path:
+    modular = os.environ.get("APPS_RG_MODULAR_R4_SECTIONS_ROOT", "").strip()
+    if modular:
+        cand = (ROOT / modular / lane / "real").resolve()
+        if cand.is_dir():
+            return cand
+    return PROOFS / lane / "real"
+
+
 def _latest_run_dir(lane: str) -> Path | None:
-    base = PROOFS / lane / "real"
+    base = _proof_base_for_lane(lane)
     if not base.is_dir():
         return None
     dirs = [d for d in base.iterdir() if d.is_dir()]
@@ -261,7 +271,15 @@ def main() -> None:
 
     out_path = ROOT / "artifacts" / "apps_rg" / "plans" / "proof_pool_c0_ssot_gap_audit.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    modular_root = os.environ.get("APPS_RG_MODULAR_R4_SECTIONS_ROOT", "").strip() or None
+    prior: dict = {}
+    if out_path.is_file():
+        loaded = _load(out_path)
+        if isinstance(loaded, dict):
+            prior = loaded
+
     payload = {
+        "status": prior.get("status", "AUDIT_ONLY"),
         "proof_classification": {
             "w1": "CONTRACT_TEST_PROOF",
             "windows_w23_sweep": "FRESH_RUNTIME_EVIDENCE_ACCEPTED",
@@ -271,10 +289,29 @@ def main() -> None:
                 "BAAI/bge-m3 snapshot under WSL HF_HOME; not a product regression."
             ),
         },
+        "audit_proof_root": modular_root or prior.get("audit_proof_root"),
         "lanes": rows,
+        "lane_summary": [
+            {
+                "lane": r.get("lane"),
+                "x2_all_pass": r.get("x2_all_pass"),
+                "lane_proof_ok": r.get("lane_proof_ok"),
+                "x3": r.get("x3_outcome"),
+            }
+            for r in rows
+            if r.get("run_dir")
+        ],
         "all_lanes_proof_ok": all(r.get("lane_proof_ok") for r in rows if r.get("run_dir")),
         "release_eligible_proof_claimed": False,
     }
+    pc_prior = prior.get("proof_classification")
+    if isinstance(pc_prior, dict):
+        payload["proof_classification"].update(
+            {k: v for k, v in pc_prior.items() if k not in payload["proof_classification"]}
+        )
+    for key in ("rca_remediation_completion", "executive_summary_prior_rca_relationship"):
+        if key in prior:
+            payload[key] = prior[key]
     out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(payload, indent=2))
     print(f"\nWrote {out_path}")

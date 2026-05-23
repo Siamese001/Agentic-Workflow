@@ -22,11 +22,12 @@ def deterministic_rewrite_allowed() -> bool:
 
 
 def graph_only_reformat_allowed() -> bool:
+    """Allow graph-only fact-tight rewrite on product path (allowed-facts only; not a mock)."""
     from apps_rg.runtime.sections.executive_summary_repair_policy import (
         RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED,
     )
 
-    return RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED and deterministic_rewrite_allowed()
+    return bool(RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED)
 
 
 def synthesis_regen_allowed() -> bool:

@@ -1,4 +1,4 @@
-a""IBM bullet metric anchor repair from graph plan (not base-resume hydration)."""
+"""IBM bullet metric anchor repair from graph plan (not base-resume hydration)."""
 
 from __future__ import annotations
 

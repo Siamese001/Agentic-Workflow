@@ -21,10 +21,12 @@ Collapse `python -m apps_rg --section <lane>` onto one product-visible spine cha
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: COMPLETED
+PLAN_STATUS: SUPERSEDED
 CURRENT_WAVE: W9
 LAST_COMPLETED_WAVE: W9
-LAST_UPDATED: 2026-05-19
+LAST_UPDATED: 2026-05-23
+SUPERSEDED_BY: apps-rg-spine-only-unification-d8f4a2
+SUPERSESSION_REASON: Bridge/FEC/lane-body second pipeline retained; replaced by spine-only unification (no bridges).
 TARGETED_ONE_SPINE_PROOF: PASS
 FINAL_ONE_SPINE_STATUS: CLOSED
 FULL_APPS_CONTRACT_SUITE_CERTIFIED: false

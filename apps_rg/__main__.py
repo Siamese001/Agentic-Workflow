@@ -1,4 +1,4 @@
- ""apps_rg entry point — resume generation CLI.
+"""apps_rg entry point — resume generation CLI.
 
 Usage:
     python -m apps_rg --target-company <co> --target-role <role> [options]

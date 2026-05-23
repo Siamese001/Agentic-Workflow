@@ -1,4 +1,4 @@
-A Core pytest configuration - sys.path setup MUST be first
+"""Core pytest configuration - sys.path setup MUST be first."""
 import sys
 import warnings
 from pathlib import Path

@@ -126,6 +126,20 @@ ACTION_VERB_OPENERS = (
     "drove", "driven", "managed", "oversaw", "directed",
 )
 
+# Executive-summary mechanical chains (prompt + X1D); includes leading fillers.
+EXEC_SUMMARY_MECHANICAL_OPENERS = (
+    "led",
+    "successfully",
+    "also",
+    "built",
+    "delivered",
+    "designed",
+    "implemented",
+    "architected",
+    "productized",
+    "scaled",
+)
+
 # Phrases that must have direct source support
 SOURCE_SENSITIVE_PHRASES = [
     "regulated enterprise workflows",
@@ -235,6 +249,90 @@ def has_jd_phrase_copy(text: str, jd_text: str, max_words: int = 4) -> tuple[boo
     return False, None
 
 
+def check_exec_summary_mechanical_opener_stack(
+    text: str,
+    *,
+    min_hits: int = 3,
+) -> tuple[bool, str | None]:
+    """Fail when too many sentences start with resume bullet-chain openers."""
+    sentences = split_sentences(text)
+    if len(sentences) < min_hits:
+        return True, None
+    hits = 0
+    for sentence in sentences:
+        first = sentence.split()[0].lower().strip(",.;:") if sentence.split() else ""
+        if first in EXEC_SUMMARY_MECHANICAL_OPENERS:
+            hits += 1
+    if hits >= min_hits:
+        return (
+            False,
+            f"mechanical_opener_stack:{hits}_sentences_with_{','.join(EXEC_SUMMARY_MECHANICAL_OPENERS[:5])}_style_openers",
+        )
+    return True, None
+
+
+def _source_fact_base_id(fid: str) -> str:
+    s = str(fid or "").strip()
+    if "_metric_" in s:
+        return s.split("_metric_", 1)[0]
+    return s
+
+
+def check_cross_fact_display_conflation(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    """Detect platform + governance (+ margin) merged into one display sentence."""
+    text = str(resume_display_text or "")
+    if not text.strip():
+        return True, None
+    gov_ids = {"fact_governance_003"}
+    plat_ids = {"fact_engineering_platform_001", "fact_engineering_platform_006"}
+    margin_markers = re.compile(
+        r"(?:gross\s+margins?|margin\s+expansion|regulatory\s+reporting\s+errors?|40\s*%)",
+        re.IGNORECASE,
+    )
+    platform_markers = re.compile(
+        r"\b(governed\s+enterprise\s+ai\s+platform|agentic\s+ai\s+platform|enterprise\s+ai\s+platform)\b",
+        re.IGNORECASE,
+    )
+    for sentence in split_sentences(text):
+        sl = sentence.lower()
+        if not margin_markers.search(sentence):
+            continue
+        has_platform = bool(platform_markers.search(sentence))
+        ledger_bases: set[str] = set()
+        for row in claim_ledger:
+            if not isinstance(row, dict):
+                continue
+            ct = str(row.get("claim_text") or "").strip()
+            if ct and ct not in sentence:
+                continue
+            for raw in row.get("source_fact_ids") or []:
+                ledger_bases.add(_source_fact_base_id(str(raw)))
+        row_has_gov = bool(ledger_bases & gov_ids) or (
+            "reporting error" in sl and "40" in sl
+        )
+        row_has_plat = bool(ledger_bases & plat_ids) or has_platform
+        if row_has_gov and row_has_plat and margin_markers.search(sentence):
+            return (
+                False,
+                "cross_fact_display_conflation:platform_and_governance_metrics_in_one_sentence",
+            )
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        bases = {_source_fact_base_id(str(x)) for x in (row.get("source_fact_ids") or [])}
+        if bases & gov_ids and bases & plat_ids:
+            ct = str(row.get("claim_text") or "")
+            if margin_markers.search(ct) and platform_markers.search(ct):
+                return (
+                    False,
+                    "cross_fact_display_conflation:ledger_row_merges_platform_and_governance",
+                )
+    return True, None
+
+
 def detect_bullet_like_stacking(text: str) -> tuple[bool, str | None, int]:
     """Heuristic for one-fact-per-sentence action-verb stacking.
     
@@ -302,6 +400,10 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     is_stacking, reason, _ = detect_bullet_like_stacking(text)
     if is_stacking:
         return False, f"Sentence stacking detected: {reason}"
+
+    mech_ok, mech_reason = check_exec_summary_mechanical_opener_stack(text)
+    if not mech_ok and mech_reason:
+        return False, mech_reason
 
     if len(sentences) >= 4:
         short_action_sentences = 0
@@ -1011,19 +1113,37 @@ def _pool_too_small_excused(parsed_output: dict[str, Any] | None) -> bool:
     return bool(str(sc.get("selected_fact_pool_too_small_reason") or "").strip())
 
 
+def _is_cert_fact_id_for_utilization(fact_id: str) -> bool:
+    """Credential inventory facts are optional in exec summary; omit from utilization pool size."""
+    base = str(fact_id or "").strip().split("_metric_", 1)[0]
+    return base.startswith("fact_certs_")
+
+
 def _selected_fact_pool_size(
     parsed_output: dict[str, Any] | None,
     *,
     selected_facts: list[dict[str, Any]] | None = None,
 ) -> int:
     if selected_facts is not None:
-        return sum(1 for f in selected_facts if isinstance(f, dict) and str(f.get("fact_id") or "").strip())
+        return sum(
+            1
+            for f in selected_facts
+            if isinstance(f, dict)
+            and str(f.get("fact_id") or "").strip()
+            and not _is_cert_fact_id_for_utilization(str(f.get("fact_id") or ""))
+        )
     if not isinstance(parsed_output, dict):
         return 0
     plan = parsed_output.get("selected_fact_plan")
     if isinstance(plan, dict):
         facts = plan.get("facts") or []
-        return sum(1 for f in facts if isinstance(f, dict) and str(f.get("fact_id") or "").strip())
+        return sum(
+            1
+            for f in facts
+            if isinstance(f, dict)
+            and str(f.get("fact_id") or "").strip()
+            and not _is_cert_fact_id_for_utilization(str(f.get("fact_id") or ""))
+        )
     return 0
 
 
@@ -1605,6 +1725,26 @@ def run_x2_gates(
     # New synthesis quality gate
     synthesis_ok, synthesis_reason = check_synthesis_quality(resume_display_text)
     add("x2_executive_summary_synthesis_quality", synthesis_ok, synthesis_reason, None, synthesis_reason)
+
+    mech_stack_ok, mech_stack_reason = check_exec_summary_mechanical_opener_stack(resume_display_text)
+    add(
+        "x2_exec_summary_mechanical_opener_stack_zero",
+        mech_stack_ok,
+        mech_stack_reason or "ok",
+        None,
+        mech_stack_reason,
+    )
+
+    conf_ok, conf_reason = check_cross_fact_display_conflation(
+        resume_display_text, claim_ledger
+    )
+    add(
+        "x2_exec_summary_cross_fact_conflation_zero",
+        conf_ok,
+        conf_reason or "ok",
+        None,
+        conf_reason,
+    )
 
     north_ok, north_reason = check_north_star_style_example_echo_unsupported(
         resume_display_text, selected_facts

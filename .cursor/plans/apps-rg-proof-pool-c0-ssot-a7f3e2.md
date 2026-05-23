@@ -23,7 +23,7 @@ Close gaps between **resolver allowlist** (PA/L2/X2 enforcement), **C0 evidence 
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W3
+CURRENT_WAVE: Track-C5-live
 LAST_COMPLETED_WAVE: Track-C-code-unit
 LAST_UPDATED: 2026-05-23
 NOTION_STATUS: In Progress
@@ -43,7 +43,7 @@ PLAN_CREATED: slug=apps-rg-proof-pool-c0-ssot-a7f3e2 path=.cursor/plans/apps-rg-
 | Track | Scope | Status |
 |-------|--------|--------|
 | **Track B** | W23 debugger RCAs RCA-1…4 (bullets, modular sweep, competencies, IBM anchors) + audit script | **DONE** (2026-05-23 modular sweep) |
-| **Track C** | Executive-summary synthesis RCA (X2 pass + X1D soft-fail; graph-only regen; regen authority) | **PARTIAL** (X2/product quality PASS on [exec_summary_20260523_164959](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260523_164959); `X3_ALLOW` pending unanimous judges — see [exec-summary-e0-repair-hardening-c4e8f1](exec-summary-e0-repair-hardening-c4e8f1.md)) |
+| **Track C** | Executive-summary synthesis RCA (X2 pass + X1D soft-fail; graph-only regen; regen authority) | **PARTIAL** — code **DONE** ([track_c_exec_summary_remediation_receipt.md](docs/reports/apps_rg/track_c_exec_summary_remediation_receipt.md)); live 3× `X3_ALLOW` pending (Track C5) |
 | **W0–W4** | Proof-pool / FEC / digest SSOT convergence (this plan’s original waves) | **W0 design open**; W1+ pending |
 
 **Cross-link:** Track B **does not** fix Track C. Fresh audit shows `executive_summary` with `x2_all_pass: true`, `lane_proof_ok: true`, `x3_outcome: X3_REVIEW_JUDGE_SOFT_FAIL` (`rca_fix_reference: RCA-6-related-not-fixed`). Same root class as Brown & Brown runs (proof-safe prose, judges &lt; 4.0).

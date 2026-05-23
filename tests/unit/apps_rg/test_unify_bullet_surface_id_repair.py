@@ -1,4 +1,4 @@
-b""Unify bullet surface id typo repair (bul_unify_.003 → bul_unify_003)."""
+"""Unify bullet surface id typo repair (bul_unify_.003 -> bul_unify_003)."""
 
 from __future__ import annotations
 

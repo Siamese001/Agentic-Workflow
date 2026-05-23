@@ -2,11 +2,45 @@
 
 **Plan SSOT:** [.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md](../../.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md)  
 **Audit JSON:** [proof_pool_c0_ssot_gap_audit.json](../../artifacts/apps_rg/plans/proof_pool_c0_ssot_gap_audit.json)  
-**Generated:** 2026-05-23
+**Generated:** 2026-05-23  
+**Track B completion (modular W23 sweep):** incorporated in [proof_pool_c0_ssot_gap_audit.json](../../artifacts/apps_rg/plans/proof_pool_c0_ssot_gap_audit.json) → `rca_remediation_completion`
 
 ---
 
 ## Executive summary
+
+Legacy proof-pool **authority** (SRFS-as-proof, broad skills ledger, base-resume fallback) is **retired**. W1 digest chain is populated on fresh modular runs (RCA-9 fix). **Track B (2026-05-23)** closed P0 RCA-1/2/4 on live evidence under `artifacts/apps_rg/plans/w23_lane_sweep/modular_lanes/`; **RCA-3** lifted competencies to `x2_all_pass`. **`all_lanes_proof_ok` remains false** — narratives, headline X2, and judge/X3 layers still block release.
+
+**Executive summary (prior RCA):** modular sweep shows `x2_all_pass` + `lane_proof_ok` + `X3_REVIEW_JUDGE_SOFT_FAIL` — same synthesis-quality gap as Brown & Brown runs; **not** fixed by unify/IBM modular fixes.
+
+---
+
+## Track B — RCA remediation completion (2026-05-23)
+
+| RCA | Fix | Proven |
+|-----|-----|--------|
+| **RCA-1** | `repair_unify_bullet_surface_id()` (`bul_unify_.003` → `bul_unify_003`) | [unify_bullets_20260523_125754](artifacts/apps_rg/plans/w23_lane_sweep/modular_lanes/unify_bullets/real/unify_bullets_20260523_125754) — `product_quality_status: PASS` |
+| **RCA-2** | Modular sweep env + upstream-first order | [companion ACCEPTED_FINALIZED](artifacts/apps_rg/plans/w23_lane_sweep/modular_lanes/unify_narrative/real/unify_narrative_20260523_125925/companion_unify_bullets_context.json) |
+| **RCA-3** | Competencies expand **after** final dedupe | competencies `x2_all_pass` (X3 still BLOCK) |
+| **RCA-4** | `inject_ibm_locked_metric_anchors()` + scrub | [ibm_bullets_20260523_131013](artifacts/apps_rg/plans/w23_lane_sweep/modular_lanes/ibm_bullets/real/ibm_bullets_20260523_131013) — product PASS |
+
+**Modular lane summary (audit):**
+
+| Lane | x2_all_pass | lane_proof_ok | x3 |
+|------|-------------|---------------|-----|
+| executive_summary | true | true | X3_REVIEW_JUDGE_SOFT_FAIL |
+| headline | false | false | X3_BLOCK |
+| competencies | true | true | X3_BLOCK |
+| unify_bullets | true | true | X3_REVIEW_JUDGE_SOFT_FAIL |
+| unify_narrative | false | false | X3_BLOCK |
+| ibm_bullets | true | true | X3_BLOCK |
+| ibm_narrative | false | false | X3_BLOCK |
+
+**STATUS:** PARTIAL — P0 fixes proven; `release_eligible_proof_claimed: false`.
+
+---
+
+## Executive summary (historical pre–Track B)
 
 Legacy proof-pool **authority** (SRFS-as-proof, broad skills ledger, base-resume fallback) is **retired**. The remaining problem is **split SSOT**: the C0 evidence room FEC often advertises **more (or different) fact IDs** than the resolver pool that PA, L2, and X2 enforce.
 

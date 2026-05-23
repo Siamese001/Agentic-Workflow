@@ -1,4 +1,4 @@
- ""Unit tests: SVP IT strategy targeting appendix (executive_summary PA)."""
+"""Unit tests: SVP IT strategy targeting appendix (executive_summary PA)."""
 
 from __future__ import annotations
 

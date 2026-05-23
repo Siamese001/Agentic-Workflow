@@ -404,6 +404,33 @@ IBM_LOCKED_METRIC_CANONICAL: dict[str, str] = {
     "bul_ibm_005": "$15M",
 }
 
+_IBM_FOREIGN_METRIC_SCRUB_RE = (
+    re.compile(r"\b99\.9\s*%", re.IGNORECASE),
+    re.compile(r"\b30\s*%", re.IGNORECASE),
+    re.compile(r"\b25\s*%", re.IGNORECASE),
+    re.compile(r"\b50\s*%", re.IGNORECASE),
+    re.compile(r"\$15\s*m(?:illion)?\b", re.IGNORECASE),
+    re.compile(r"\$10\s*m(?:illion)?\b", re.IGNORECASE),
+    re.compile(r"\b40\s*%", re.IGNORECASE),
+)
+
+
+def _scrub_foreign_ibm_metric_tokens(text: str, own_root: str) -> str:
+    """Remove locked IBM metric tokens owned by other bullets (granularity gate hygiene)."""
+    from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_METRIC_ANCHOR_RULES
+
+    out = str(text or "")
+    for needles, root in IBM_METRIC_ANCHOR_RULES:
+        if root == own_root:
+            continue
+        for needle in needles:
+            out = re.sub(re.escape(needle), "", out, flags=re.IGNORECASE)
+    for pat in _IBM_FOREIGN_METRIC_SCRUB_RE:
+        out = pat.sub("", out)
+    out = re.sub(r"\s{2,}", " ", out).strip()
+    out = re.sub(r"\s+([,.])", r"\1", out)
+    return out.strip(" ,.")
+
 
 def inject_ibm_locked_metric_anchors(
     parsed: dict[str, Any],
@@ -428,12 +455,20 @@ def inject_ibm_locked_metric_anchors(
             continue
         text = str(bullet.get("bullet_text") or "").strip()
         tl = text.lower()
-        if any(n.lower() in tl for n in needles):
-            continue
         token = IBM_LOCKED_METRIC_CANONICAL[root]
+        has_own = any(n.lower() in tl for n in needles)
+        foreign = any(
+            n.lower() in tl
+            for other_needles, other_root in IBM_METRIC_ANCHOR_RULES
+            if other_root != root
+            for n in other_needles
+        )
+        if has_own and not foreign:
+            continue
+        cleaned = _scrub_foreign_ibm_metric_tokens(text, root)
         bullet["bullet_text"] = (
-            f"{text} Delivered {token} outcomes at enterprise scale."
-            if text
+            f"{cleaned} Delivered {token} outcomes at enterprise scale."
+            if cleaned
             else f"Delivered {token} outcomes at enterprise scale."
         )
         bullet["has_metric"] = True

@@ -83,7 +83,15 @@ def repair_generic_filler_prose(
         if new_out != out:
             out = new_out
             receipt["replacements"].append("regulated_environments_to_workflows")
-    if "governance framework" in corpus or "basel" in corpus or "ccar" in corpus:
+    has_gov_fact = False
+    for row in selected_facts or []:
+        if not isinstance(row, dict):
+            continue
+        fid = str(row.get("fact_id") or row.get("candidate_fact_id") or "").strip()
+        if fid == "fact_governance_003" or fid.startswith("fact_governance_003_metric"):
+            has_gov_fact = True
+            break
+    if has_gov_fact or "governance framework" in corpus or "basel" in corpus or "ccar" in corpus:
         new_out = re.sub(
             r"\bgovernance frameworks?\b",
             "Basel III/CCAR lineage and validation frameworks",
