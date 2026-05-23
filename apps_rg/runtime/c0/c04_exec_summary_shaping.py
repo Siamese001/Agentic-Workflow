@@ -31,6 +31,17 @@ def shape_executive_summary_c04(
     background = list(strata.get(STRATUM_BACKGROUND) or [])
     reordered_must: list[str] = []
     demoted: list[str] = []
+    cert_demoted: list[str] = []
+    for fid in list(must):
+        if str(fid).startswith("fact_certs_"):
+            cert_demoted.append(fid)
+            if fid not in background:
+                background.append(fid)
+    for fid in cert_demoted:
+        if fid in must:
+            must.remove(fid)
+        if fid in supporting:
+            supporting.remove(fid)
     for fid in must:
         b = binding_by_fact.get(fid) or {}
         if b.get("mechanism_overloaded") and fid.startswith("fact_engineering_platform"):
@@ -66,6 +77,7 @@ def shape_executive_summary_c04(
         )
     out["exec_summary_compression"] = {
         "schema_version": "c04_exec_summary_compression_v1",
+        "demoted_cert_facts_to_background": cert_demoted,
         "demoted_overloaded_to_supporting": demoted,
         "compression_applied": bool(compression_rows),
         "facts": compression_rows,

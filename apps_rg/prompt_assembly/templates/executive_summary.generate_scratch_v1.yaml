@@ -72,7 +72,7 @@ slot_bodies:
     Sentence 1 must be a complete clause (not a fragment ending on a relative clause alone).
     Vary sentence openers; do not chain five sentences starting with Led/Successfully/Built/Delivered.
     Do not mention certifications, AWS, Databricks, FSA, or credential inventories in resume_display_text.
-    Voice and failure-mode examples: E0 at L2 execute time.
+    Voice and failure-mode examples: E0 at L2 execute time (hydrated from executive_summary_examples.yaml; positives are 4-5 sentences; match that band).
     </composition_heuristics>
 
     <internal_deliberation_controls>

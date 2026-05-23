@@ -426,8 +426,11 @@ def build_executive_summary_assembly_input(
         "Proof: C0 selected facts + ALLOWED_SOURCE_FACT_IDS only. Follow I0 proof_law_v1, composition_heuristics, "
         "and E0 examples for voice.\n"
         f"{strategy_voice}"
-        "Return bare JSON (see R0 keys). resume_display_text: 4 or 5 sentences, one paragraph. "
-        "claim_ledger rows: non-empty claim_text + source_fact_ids from allowlist. "
+        "Return bare JSON (see R0 keys). resume_display_text: 4 or 5 sentences, one paragraph "
+        "(match E0 many-shot band from examples YAML — do not compress to 3). "
+        "claim_ledger rows: non-empty claim_text + source_fact_ids from allowlist; "
+        "when ALLOWED_SOURCE_FACT_IDS count is 6 or more, emit at least 5 claim_ledger rows "
+        "unless gap_notes document intentional omissions. "
         "Do not emit selected_fact_plan."
     )
     product_patch = (

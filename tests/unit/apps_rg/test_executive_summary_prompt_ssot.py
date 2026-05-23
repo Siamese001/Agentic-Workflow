@@ -41,16 +41,19 @@ def test_competency_pa_slots_category_band_matches_x2():
     assert "6 to 8" in raw or "6–8" in raw
 
 
+def _jd_alignment_fixture() -> dict:
+    return {
+        "targeting_only": True,
+        "jd_used_as_proof": False,
+        "briefing_used_as_proof": False,
+        "companion_context_used_as_proof": False,
+        "graph_targeting": {"targeting_degraded_explicit": True},
+    }
+
+
 def test_x2_jd_alignment_proof_flags_require_explicit_false_booleans():
     ok, _ = check_exec_summary_jd_alignment_proof_flags(
-        {
-            "jd_alignment": {
-                "targeting_only": True,
-                "jd_used_as_proof": False,
-                "briefing_used_as_proof": False,
-                "companion_context_used_as_proof": False,
-            }
-        }
+        {"jd_alignment": _jd_alignment_fixture()}
     )
     assert ok is True
     bad, reason = check_exec_summary_jd_alignment_proof_flags(

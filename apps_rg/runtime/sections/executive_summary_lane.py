@@ -730,6 +730,8 @@ def _synthesis_shape_reject_reason(
         check_exec_summary_sentence_count_4_5,
         check_inferred_bridge_claims,
         check_north_star_style_example_echo_unsupported,
+        check_cross_fact_display_conflation,
+        check_exec_summary_mechanical_opener_stack,
         check_resume_display_colon_space_discipline,
         check_synthesis_quality,
         FIRST_PERSON_PATTERN,
@@ -742,6 +744,15 @@ def _synthesis_shape_reject_reason(
     syn_ok, syn_reason = check_synthesis_quality(text)
     if not syn_ok and syn_reason:
         failures.append(syn_reason)
+    mech_stack_ok, mech_stack_reason = check_exec_summary_mechanical_opener_stack(text)
+    if not mech_stack_ok and mech_stack_reason:
+        failures.append(mech_stack_reason)
+    if isinstance(parsed, dict):
+        conf_ok, conf_reason = check_cross_fact_display_conflation(
+            text, list(parsed.get("claim_ledger") or [])
+        )
+        if not conf_ok and conf_reason:
+            failures.append(conf_reason)
     meta_ok, meta_reason = check_exec_summary_meta_filler_patterns(text)
     if not meta_ok and meta_reason:
         failures.append(meta_reason)
@@ -897,9 +908,18 @@ def _build_synthesis_repair_user(
             'FORBIDDEN PHRASES: "proven track record", "results-driven", "seasoned executive", '
             '"dynamic leader", "strategic leader" — use fact-backed outcomes instead. '
         )
+    conflation_note = ""
+    if "cross_fact_display_conflation" in blob or "mechanical_opener_stack" in blob:
+        conflation_note = (
+            "ATTRIBUTION: one major proof theme per sentence — do NOT merge governed AI platform "
+            "(fact_engineering_platform_001) with Basel/CCAR 40% reporting-error reduction "
+            "(fact_governance_003) or margin expansion (fact_engineering_platform_006) in one causal line. "
+            "Weave team 8-to-28 scale (fact_exec_002) into commercialization when selected. "
+            "Vary sentence openers; no Led/Successfully/Also/Built chains. "
+        )
     return (
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
-        f"{mechanism_note}{meta_note}{filler_note}"
+        f"{mechanism_note}{meta_note}{filler_note}{conflation_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "Rewrite resume_display_text as exactly 4 or 5 period-delimited sentences (one executive paragraph), "
         "fit_to_evidence integrated narrative — not 2-3 compressed sentences; do not pad with filler. "
@@ -1065,14 +1085,18 @@ def retry_qwen_for_synthesis(
         final_text, current_parsed, selected_facts=selected_facts
     )
     best_wc = len(re.findall(r"\S+", str(best_parsed.get("resume_display_text") or "")))
-    if not final_ok and _regen_candidate_preferred(
-        new_fail_count=best_fail_count,
-        new_ledger_rows=best_ledger_rows,
-        new_word_count=best_wc,
-        best_fail_count=final_fail_count,
-        best_ledger_rows=len(list(current_parsed.get("claim_ledger") or [])),
-        best_word_count=len(re.findall(r"\S+", final_text)),
-        monotonicity_accepted=True,
+    if (
+        not final_ok
+        and best_fail_count == 0
+        and _regen_candidate_preferred(
+            new_fail_count=best_fail_count,
+            new_ledger_rows=best_ledger_rows,
+            new_word_count=best_wc,
+            best_fail_count=final_fail_count,
+            best_ledger_rows=len(list(current_parsed.get("claim_ledger") or [])),
+            best_word_count=len(re.findall(r"\S+", final_text)),
+            monotonicity_accepted=True,
+        )
     ):
         current_raw = best_raw
         current_parsed = best_parsed
@@ -1609,12 +1633,19 @@ def run_executive_summary_execution(
                     plan_facts=_plan_facts,
                 )
                 write_json(artifact_dir / "graph_only_generation_quality_repair.json", graph_quality_meta)
-                if graph_quality_meta.get("repaired"):
+                if graph_quality_meta.get("applied") and not graph_quality_meta.get(
+                    "skipped_x2_regression"
+                ):
                     record_repair(
                         artifact_dir,
                         kind=KIND_DETERMINISTIC_REWRITE,
                         operation="graph_only_generation_quality_repair",
-                        reason=str(graph_quality_meta.get("reason") or "repaired")[:240],
+                        reason=str(
+                            graph_quality_meta.get("cross_fact_conflation_reason")
+                            or graph_quality_meta.get("mechanical_opener_stack_reason")
+                            or graph_quality_meta.get("x2_regression_check")
+                            or "graph_only_synthesis_violations"
+                        )[:240],
                         replaced_l2=True,
                     )
                 raw_output = _graph_quality_to_raw(parsed)

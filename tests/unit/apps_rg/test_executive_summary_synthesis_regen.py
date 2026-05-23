@@ -71,6 +71,17 @@ def test_regen_candidate_preferred_accepts_mono_ok_weave_gain() -> None:
     )
 
 
+def test_build_synthesis_repair_user_includes_conflation_guidance() -> None:
+    msg = _build_synthesis_repair_user(
+        "cross_fact_display_conflation:platform_and_governance",
+        attempt_index=1,
+        prior_word_count=80,
+        prior_ledger_rows=5,
+    )
+    assert "fact_governance_003" in msg
+    assert "Led/Successfully/Also/Built" in msg
+
+
 def test_shape_failure_count_increases_with_more_issues() -> None:
     bad = {
         "resume_display_text": "I am bad. Short. Short.",
