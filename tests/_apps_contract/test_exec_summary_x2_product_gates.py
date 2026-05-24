@@ -104,6 +104,24 @@ def test_valid_synthesis_coverage_and_material_clauses():
             "claim_text": "delivery cycles repeatable production controls audit posture",
             "source_fact_ids": ["fact_test_001"],
         },
+        {
+            "claim_text": (
+                "platform modernization governed agentic delivery at scale executive thread"
+            ),
+            "source_fact_ids": ["fact_test_001"],
+        },
+        {
+            "claim_text": (
+                "Quantitative depth supports regulated program delivery when facts support that theme"
+            ),
+            "source_fact_ids": ["fact_test_001"],
+        },
+        {
+            "claim_text": (
+                "Governed runtime delivery stays audit-ready without weakening commercial velocity"
+            ),
+            "source_fact_ids": ["fact_test_001"],
+        },
     ]
     cov = build_sentence_claim_coverage(good, ledger, allowed)
     assert cov["overall_pass"] is True

@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+    all_model_backed_judges_pass,
+    any_model_backed_soft_fail,
     build_judge_remediation_user_message,
     evaluate_judge_remediation_trigger,
+    rerun_soft_failed_judges,
 )
+from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_attempts
 
 
 def _soft_fail_judge(provider_key: str, *, findings: list[str], score: float = 0.5) -> dict:
@@ -85,6 +91,51 @@ def test_trigger_skipped_when_x2_not_passed() -> None:
     assert receipt.get("reason") == "requires_real_llm_and_x2_pass"
 
 
+def test_judge_regen_max_attempts_default_three(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS", raising=False)
+    assert judge_regen_max_attempts() == 3
+
+
+def test_all_model_backed_judges_pass_helpers() -> None:
+    passing = [
+        {
+            "provider_key": "gemini_pro",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "decisive_failure": False,
+        },
+        {
+            "provider_key": "openai_chatgpt",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "decisive_failure": False,
+        },
+    ]
+    assert all_model_backed_judges_pass(passing) is True
+    assert any_model_backed_soft_fail(passing) is False
+    mixed = [
+        *passing,
+        _soft_fail_judge("anthropic_claude", findings=["weak synthesis"]),
+    ]
+    assert all_model_backed_judges_pass(mixed) is False
+    assert any_model_backed_soft_fail(mixed) is True
+
+
+def test_judge_remediation_user_message_includes_x2_floor() -> None:
+    msg = build_judge_remediation_user_message(
+        x1d_judges=[_soft_fail_judge("anthropic_claude", findings=["weak synthesis"])],
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+        prior_word_count=110,
+        prior_ledger_rows=6,
+    )
+    assert "X2_FLOOR" in msg
+    assert "110" in msg
+    assert "6" in msg
+
+
 def test_remediation_user_message_lists_unused_facts() -> None:
     msg = build_judge_remediation_user_message(
         x1d_judges=[_soft_fail_judge("anthropic_claude", findings=["weak synthesis"])],
@@ -93,4 +144,61 @@ def test_remediation_user_message_lists_unused_facts() -> None:
     )
     assert "Unused allowed facts" in msg
     assert "fact_003" in msg
-    assert "prefer 5" in msg.lower()
+    assert "exactly 6 sentences" in msg.lower()
+
+
+def test_remediation_user_message_includes_x2_phrase_guards() -> None:
+    msg = build_judge_remediation_user_message(
+        x1d_judges=[_soft_fail_judge("anthropic_claude", findings=["weak synthesis"])],
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+    )
+    assert "X2_PHRASE_GUARDS" in msg
+
+
+def test_rerun_soft_failed_judges_uses_post_x2_packet_when_x2_gates_provided(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    captured: dict[str, str] = {}
+
+    def _fake_run_llm_judges(**kwargs):
+        captured["judge_packet_ref"] = str(kwargs.get("judge_packet_ref") or "")
+        return []
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.judges.executive_summary_x1d.run_llm_judges",
+        _fake_run_llm_judges,
+    )
+    prior = [
+        _soft_fail_judge("anthropic_claude", findings=["weak synthesis"]),
+        {
+            "provider_key": "gemini_pro",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "normalized_score": 0.9,
+            "normalized_threshold": 0.8,
+        },
+    ]
+    rerun_soft_failed_judges(
+        resume_display_text="Six sentence summary here for testing.",
+        claim_ledger=[],
+        judge_packet={"allowed_fact_ids": ["f1"]},
+        judge_packet_ref=str(tmp_path / "executive_summary_judge_packet.json"),
+        compiled_prompt=None,
+        artifact_dir=tmp_path,
+        judge_keys=["anthropic_claude", "gemini_pro"],
+        judge_mode="mocked",
+        prior_judges=prior,
+        x2_gates=[{"gate_id": "x2_shape", "pass": True}],
+        allowed_fact_packet=[{"fact_id": "f1", "claim_text": "Led platform work."}],
+        allowed_fact_ids={"f1"},
+        target_title="SVP",
+        target_company="Acme",
+        jd_text="jd",
+        briefing_text="brief",
+        parsed_output={"resume_display_text": "text", "claim_ledger": []},
+    )
+    assert captured["judge_packet_ref"].endswith("executive_summary_judge_packet_post_x2.json")
+    assert (tmp_path / "executive_summary_judge_packet_post_x2.json").is_file()

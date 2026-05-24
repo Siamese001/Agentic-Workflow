@@ -23,6 +23,7 @@ These are **generic** and belong here:
 - Generic Exit profile enforcer — consumes Exit profiles, emits X3
 - Generic UWG write admission — validates CommitRequest, writes L4
 - Generic L6 completed-run consumer — consumes meta-feedback profiles
+- **Multi-provider judge panel harness** — `runtime/judges/panel/` (`JudgePanelRunner`, `CanonicalJudgeContract`, transport preflight, gate-closure reconcile algorithm). Apps register `JudgeProviderAdapter` implementations and supply rubric/gate-closure maps; core enforces one contract hash and provider-neutral pass math.
 
 ### Vocabulary — Exit vs 00C vs L5 vs UWG vs L6 (SSOT)
 

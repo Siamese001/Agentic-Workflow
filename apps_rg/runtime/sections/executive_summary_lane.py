@@ -861,6 +861,7 @@ def _build_synthesis_repair_user(
     prior_word_count: int,
     prior_ledger_rows: int,
     last_monotonicity_rejected: bool = False,
+    strategy_executive: bool = False,
 ) -> str:
     blob = str(reject_reason or "").lower()
     attempt_note = ""
@@ -920,9 +921,16 @@ def _build_synthesis_repair_user(
             "Weave team 8-to-28 scale (fact_exec_002) into commercialization when selected. "
             "Vary sentence openers; no Led/Successfully/Also/Built chains. "
         )
+    svp_note = ""
+    if strategy_executive:
+        from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+            format_synthesis_repair_directive,
+        )
+
+        svp_note = format_synthesis_repair_directive(strategy_executive=True)
     return (
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
-        f"{mechanism_note}{meta_note}{filler_note}{conflation_note}"
+        f"{mechanism_note}{meta_note}{filler_note}{conflation_note}{svp_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "Rewrite resume_display_text as exactly 6 period-delimited sentences (one executive paragraph, max 140 words), "
         "fit_to_evidence integrated narrative — not 4 compressed sentences; do not pad with filler. "
@@ -949,6 +957,7 @@ def retry_qwen_for_synthesis(
     parsed: dict[str, Any],
     *,
     selected_facts: list[dict[str, Any]] | None = None,
+    strategy_executive: bool = False,
     artifact_dir: Path | None = None,
     run_id: str | None = None,
 ) -> tuple[str, dict[str, Any], str]:
@@ -1013,6 +1022,7 @@ def retry_qwen_for_synthesis(
             prior_word_count=prior_wc,
             prior_ledger_rows=prior_ledger_rows,
             last_monotonicity_rejected=last_mono_rejected,
+            strategy_executive=strategy_executive,
         )
         repair_messages = [
             *baseline_messages,
@@ -1657,12 +1667,22 @@ def run_executive_summary_execution(
     if result.runtime_generation_status == "REAL_LLM":
         parsed, parse_error = parse_model_json(raw_output)
         if parsed:
+            from apps_rg.runtime.sections.executive_summary_pa import (
+                is_strategy_executive_target_title,
+            )
+
+            _target_role_for_regen = str(
+                runtime_payload.get("target_role")
+                or runtime_payload.get("target_title")
+                or ""
+            ).strip()
             raw_output, parsed, parse_error = retry_qwen_for_synthesis(
                 messages,
                 provider_payload,
                 raw_output,
                 parsed,
                 selected_facts=list(selected_fact_plan.get("facts") or []),
+                strategy_executive=is_strategy_executive_target_title(_target_role_for_regen),
                 artifact_dir=artifact_dir,
                 run_id=str(runtime_payload.get("run_id") or "") or None,
             )
@@ -2093,65 +2113,144 @@ def run_executive_summary_execution(
             compiled_prompt=compiled_prompt,
             prior_judges=x1d,
         )
+        from apps_rg.runtime.sections.executive_summary_repair_policy import (
+            judge_regeneration_enabled,
+        )
+
+        if isinstance(_x1d_refresh_receipt, dict):
+            _x1d_refresh_receipt = {
+                **_x1d_refresh_receipt,
+                "rescore_only": not judge_regeneration_enabled(),
+            }
         write_json(artifact_dir / "post_x2_x1d_refresh_receipt.json", _x1d_refresh_receipt)
         write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
     if runtime_generation_status == "REAL_LLM" and not x2_failed_initial and parsed_for_x2:
         from apps_rg.runtime.section_repair_policy import judge_remediation_regen_allowed
         from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+            all_model_backed_judges_pass,
+            build_judge_remediation_user_message,
             evaluate_judge_remediation_trigger,
+            repair_judge_regen_after_x2_fail,
             rerun_soft_failed_judges,
             rerun_x2_after_judge_remediation,
             retry_qwen_for_judge_remediation,
         )
+        from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_attempts
         from apps_rg.runtime.validators.executive_summary_x2 import collect_unused_allowed_fact_ids
 
-        if judge_remediation_regen_allowed():
-            trigger_ok, trigger_receipt = evaluate_judge_remediation_trigger(
-                x1d,
-                runtime_generation_status=runtime_generation_status,
-                x2_passed=True,
-            )
-            write_json(artifact_dir / "judge_remediation_trigger.json", trigger_receipt)
-            if (
+        def _maybe_soft_judge_rescore(
+            *,
+            regen_enabled: bool,
+            trigger_receipt: dict[str, Any],
+            trigger_ok: bool,
+        ) -> None:
+            nonlocal x1d
+            if not (
                 not trigger_ok
                 and trigger_receipt.get("reason") == "two_or_more_judges_already_pass_skip_regen"
             ):
-                from apps_rg.runtime.sections.executive_summary_judge_remediation import (
-                    _is_model_backed_soft_fail,
-                )
+                return
+            from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+                _is_model_backed_soft_fail,
+            )
 
-                _soft_only = [j for j in x1d if _is_model_backed_soft_fail(j)]
-                if len(_soft_only) == 1:
-                    x1d = rerun_soft_failed_judges(
-                        resume_display_text=resume_display_text,
-                        claim_ledger=claim_ledger,
-                        judge_packet=judge_packet,
-                        judge_packet_ref=judge_packet_ref,
-                        compiled_prompt=compiled_prompt,
-                        artifact_dir=artifact_dir,
-                        judge_keys=judge_keys,
-                        judge_mode=judge_mode,
-                        prior_judges=x1d,
+            _soft_only = [j for j in x1d if _is_model_backed_soft_fail(j)]
+            if len(_soft_only) != 1:
+                return
+            x1d = rerun_soft_failed_judges(
+                resume_display_text=resume_display_text,
+                claim_ledger=claim_ledger,
+                judge_packet=judge_packet,
+                judge_packet_ref=judge_packet_ref,
+                compiled_prompt=compiled_prompt,
+                artifact_dir=artifact_dir,
+                judge_keys=judge_keys,
+                judge_mode=judge_mode,
+                prior_judges=x1d,
+                x2_gates=x2,
+                allowed_fact_packet=selected_facts_for_x2,
+                allowed_fact_ids=allowed_fact_ids,
+                target_title=_args_target_title(args),
+                target_company=str(args.target_company),
+                jd_text=_args_jd_text(args),
+                briefing_text=str(args.briefing),
+                parsed_output=parsed_for_x2,
+            )
+            write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+            write_json(
+                artifact_dir / "soft_judge_only_rerun_receipt.json",
+                {
+                    "schema": "executive_summary_soft_judge_only_rerun_v1",
+                    "reason": "skip_regen_two_judges_pass",
+                    "rerun_provider": _soft_only[0].get("provider_key"),
+                    "rescore_only": not regen_enabled,
+                },
+            )
+
+        if judge_remediation_regen_allowed():
+            _max_judge_cycles = judge_regen_max_attempts()
+            _regen_messages = list(messages)
+            _cycles_receipt: dict[str, Any] = {
+                "schema": "executive_summary_judge_remediation_cycles_v1",
+                "max_cycles": _max_judge_cycles,
+                "cycles": [],
+                "stopped_reason": "",
+            }
+
+            for _cycle_idx in range(_max_judge_cycles):
+                if all_model_backed_judges_pass(x1d):
+                    _cycles_receipt["stopped_reason"] = "all_model_backed_judges_pass"
+                    break
+
+                trigger_ok, trigger_receipt = evaluate_judge_remediation_trigger(
+                    x1d,
+                    runtime_generation_status=runtime_generation_status,
+                    x2_passed=True,
+                )
+                trigger_receipt["cycle"] = _cycle_idx + 1
+                write_json(
+                    artifact_dir / f"judge_remediation_trigger_cycle_{_cycle_idx + 1}.json",
+                    trigger_receipt,
+                )
+                if _cycle_idx == 0:
+                    write_json(artifact_dir / "judge_remediation_trigger.json", trigger_receipt)
+
+                if not trigger_ok:
+                    if _cycle_idx == 0:
+                        _maybe_soft_judge_rescore(
+                            regen_enabled=True,
+                            trigger_receipt=trigger_receipt,
+                            trigger_ok=trigger_ok,
+                        )
+                    _cycles_receipt["stopped_reason"] = str(
+                        trigger_receipt.get("reason") or "trigger_not_ok"
                     )
-                    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
-                    write_json(
-                        artifact_dir / "soft_judge_only_rerun_receipt.json",
-                        {
-                            "schema": "executive_summary_soft_judge_only_rerun_v1",
-                            "reason": "skip_regen_two_judges_pass",
-                            "rerun_provider": _soft_only[0].get("provider_key"),
-                        },
-                    )
-            if trigger_ok:
+                    break
+
                 _pre_raw = raw_output
                 _pre_parsed = dict(parsed_for_x2)
                 _pre_resume = resume_display_text
                 _pre_ledger = list(claim_ledger)
                 _pre_x2 = list(x2)
+                _pre_wc = len(re.findall(r"\S+", _pre_resume))
+                _pre_ledger_rows = len(_pre_ledger)
                 unused_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
+                from apps_rg.runtime.sections.executive_summary_pa import (
+                    is_strategy_executive_target_title,
+                )
+
+                _strategy_exec_regen = is_strategy_executive_target_title(
+                    str(
+                        runtime_payload.get("target_role")
+                        or runtime_payload.get("target_title")
+                        or getattr(args, "target_role", "")
+                        or getattr(args, "target_title", "")
+                        or ""
+                    ).strip()
+                )
                 raw_output, parsed_regen, _j_receipt = retry_qwen_for_judge_remediation(
-                    messages,
+                    _regen_messages,
                     provider_payload,
                     raw_output,
                     parsed_for_x2,
@@ -2163,7 +2262,15 @@ def run_executive_summary_execution(
                     composition_plan=_composition_plan_refresh,
                     artifact_dir=artifact_dir,
                     run_id=str(runtime_payload.get("run_id") or "") or None,
+                    max_attempts=1,
+                    prior_word_count=_pre_wc,
+                    prior_ledger_rows=_pre_ledger_rows,
                 )
+                _cycle_record: dict[str, Any] = {
+                    "cycle": _cycle_idx + 1,
+                    "trigger_mode": trigger_receipt.get("trigger_mode"),
+                    "accepted": bool(_j_receipt.get("accepted")),
+                }
                 if _j_receipt.get("accepted") or _j_receipt.get("prefilter_applied"):
                     from apps_rg.runtime.section_repair_ledger import (
                         KIND_REGEN_LLM,
@@ -2229,7 +2336,73 @@ def run_executive_summary_execution(
                         proof_pool_ref=str(pool.proof_pool_ref or ""),
                         proof_pool_digest=str(pool.proof_pool_digest or ""),
                     )
-                    if not [g for g in x2_regen if not g["pass"]]:
+                    _x2_failed = [g for g in x2_regen if not g["pass"]]
+                    if _x2_failed:
+                        _raw_x2r, _parsed_x2r, _x2_repair_rcpt = repair_judge_regen_after_x2_fail(
+                            _regen_messages,
+                            provider_payload,
+                            baseline_parsed=_pre_parsed,
+                            regen_raw=raw_output,
+                            regen_parsed=parsed,
+                            failed_x2_gates=x2_regen,
+                            selected_fact_plan=selected_fact_plan,
+                            allowed_fact_ids=allowed_fact_ids,
+                            strategy_executive=_strategy_exec_regen,
+                            artifact_dir=artifact_dir,
+                            run_id=str(runtime_payload.get("run_id") or "") or None,
+                        )
+                        _cycle_record["x2_repair"] = _x2_repair_rcpt
+                        if _x2_repair_rcpt.get("accepted"):
+                            parsed_regen = _parsed_x2r
+                            raw_output = _raw_x2r
+                            parsed = parsed_regen
+                            parsed = apply_exec_summary_display_authority_repairs(
+                                parsed,
+                                allowed_fact_ids=allowed_fact_ids,
+                                plan_facts=list(selected_fact_plan.get("facts") or []),
+                                artifact_dir=artifact_dir,
+                                target_company=str(getattr(args, "target_company", "") or ""),
+                            )
+                            parsed, _finalize_receipt = finalize_executive_summary_coherence(
+                                parsed,
+                                selected_facts=list(selected_fact_plan.get("facts") or []),
+                            )
+                            resume_display_text = str(
+                                parsed.get("resume_display_text") or resume_display_text
+                            )
+                            claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
+                            coverage = build_sentence_claim_coverage(
+                                resume_display_text, claim_ledger, allowed_fact_ids
+                            )
+                            parsed_for_x2 = enrich_parsed_for_x2(
+                                parsed,
+                                coverage=coverage,
+                                input_payload_hash=input_payload_hash,
+                                allowed_fact_ids=allowed_fact_ids,
+                                runtime_payload=runtime_payload,
+                            )
+                            x2_regen = rerun_x2_after_judge_remediation(
+                                resume_display_text=resume_display_text,
+                                parsed_for_x2=parsed_for_x2,
+                                claim_ledger=claim_ledger,
+                                text_claim_coverage=coverage,
+                                allowed_fact_ids=allowed_fact_ids,
+                                args=args,
+                                temperature=temperature,
+                                runtime_generation_status=runtime_generation_status,
+                                artifact_dir=artifact_dir,
+                                model_name=model_name,
+                                prompt_hash=prompt_hash,
+                                compiled_prompt=compiled_prompt,
+                                raw_output=raw_output,
+                                selected_facts=selected_facts_for_x2,
+                                x1d_judges=x1d,
+                                proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
+                                proof_pool_ref=str(pool.proof_pool_ref or ""),
+                                proof_pool_digest=str(pool.proof_pool_digest or ""),
+                            )
+                            _x2_failed = [g for g in x2_regen if not g["pass"]]
+                    if not _x2_failed:
                         record_repair(
                             artifact_dir,
                             kind=KIND_REGEN_LLM,
@@ -2260,6 +2433,14 @@ def run_executive_summary_execution(
                             judge_keys=judge_keys,
                             judge_mode=judge_mode,
                             prior_judges=x1d,
+                            x2_gates=x2,
+                            allowed_fact_packet=selected_facts_for_x2,
+                            allowed_fact_ids=allowed_fact_ids,
+                            target_title=_args_target_title(args),
+                            target_company=str(args.target_company),
+                            jd_text=_args_jd_text(args),
+                            briefing_text=str(args.briefing),
+                            parsed_output=parsed_for_x2,
                         )
                         write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
                         write_x2_gate_outputs(
@@ -2277,6 +2458,27 @@ def run_executive_summary_execution(
                         l2_output["claim_ledger"] = claim_ledger
                         l2_output["text_claim_coverage"] = coverage
                         write_json(artifact_dir / "l2_output.json", l2_output)
+                        _regen_messages.append({"role": "assistant", "content": raw_output or ""})
+                        _regen_messages.append(
+                            {
+                                "role": "user",
+                                "content": build_judge_remediation_user_message(
+                                    x1d_judges=x1d,
+                                    unused_fact_ids=unused_ids,
+                                    allowed_fact_count=len(allowed_fact_ids),
+                                    composition_plan=_composition_plan_refresh,
+                                    prior_word_count=len(
+                                        re.findall(r"\S+", resume_display_text or "")
+                                    ),
+                                    prior_ledger_rows=len(claim_ledger),
+                                ),
+                            }
+                        )
+                        _cycle_record["all_judges_pass"] = all_model_backed_judges_pass(x1d)
+                        _cycles_receipt["cycles"].append(_cycle_record)
+                        if all_model_backed_judges_pass(x1d):
+                            _cycles_receipt["stopped_reason"] = "all_model_backed_judges_pass"
+                            break
                     else:
                         raw_output = _pre_raw
                         parsed = _pre_parsed
@@ -2302,6 +2504,37 @@ def run_executive_summary_execution(
                             g["gate_id"] for g in x2_regen if not g["pass"]
                         ]
                         write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
+                        _cycle_record["reverted"] = (
+                            "post_regen_x2_failed_after_x2_repair"
+                            if _cycle_record.get("x2_repair")
+                            else "post_regen_x2_failed"
+                        )
+                        _cycles_receipt["cycles"].append(_cycle_record)
+                        if _cycle_idx + 1 >= _max_judge_cycles:
+                            _cycles_receipt["stopped_reason"] = str(_cycle_record["reverted"])
+                            break
+                        continue
+                else:
+                    _cycle_record["skipped"] = "regen_not_accepted"
+                    _cycles_receipt["cycles"].append(_cycle_record)
+                    _cycles_receipt["stopped_reason"] = "regen_not_accepted"
+                    break
+
+            if not _cycles_receipt.get("stopped_reason") and _cycles_receipt["cycles"]:
+                _cycles_receipt["stopped_reason"] = "max_cycles_reached"
+            write_json(artifact_dir / "judge_remediation_cycles.json", _cycles_receipt)
+        else:
+            _trigger_ok0, _trigger0 = evaluate_judge_remediation_trigger(
+                x1d,
+                runtime_generation_status=runtime_generation_status,
+                x2_passed=True,
+            )
+            write_json(artifact_dir / "judge_remediation_trigger.json", _trigger0)
+            _maybe_soft_judge_rescore(
+                regen_enabled=False,
+                trigger_receipt=_trigger0,
+                trigger_ok=_trigger_ok0,
+            )
 
     _graph_only_repaired = False
     _repair_meta_path = artifact_dir / "graph_only_generation_quality_repair.json"

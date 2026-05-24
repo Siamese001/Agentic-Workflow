@@ -39,7 +39,25 @@ def _resolved_apps_rg_google_judge_max_output_tokens() -> int:
 GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS = _resolved_apps_rg_google_judge_max_output_tokens()
 # Back-compat alias for tests and external imports (same resolution as Google AI judge path).
 GEMINI_JUDGE_MAX_OUTPUT_TOKENS = GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
-ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS = int(os.environ.get("APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS", "1024"))
+UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV = "APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS"
+
+
+def _resolved_x1d_judge_max_output_tokens(*, attempt: int = 1) -> int:
+    """Unified judge output token budget (transport parity)."""
+    raw = (
+        os.environ.get(UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV, "").strip()
+        or os.environ.get("APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
+        or os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
+        or "4096"
+    )
+    try:
+        base = max(512, int(raw))
+    except ValueError:
+        base = 4096
+    return min(8192, base * min(max(1, attempt), 2))
+
+
+ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS = _resolved_x1d_judge_max_output_tokens(attempt=1)
 
 
 def _resolved_openai_judge_max_completion_tokens(*, attempt: int = 1) -> int:
@@ -118,6 +136,13 @@ JUDGE_COMPACT_SYSTEM = (
     "You are a strict executive resume judge. Output a single compact JSON object only. "
     "No markdown fences, no explanatory prose, no nested finding objects."
 )
+
+
+def build_x1d_judge_system_prompt(*, compact: bool = True) -> str:
+    """Canonical system prompt shared by all proof judge providers."""
+    if compact:
+        return f"{JUDGE_COMPACT_SYSTEM}\n\n{JUDGE_COMPACT_OUTPUT}\n\n{JUDGE_SCORE_SCHEMA}"
+    return f"You are a strict executive resume judge. Return JSON only.\n\n{JUDGE_SCORE_SCHEMA}"
 
 GEMINI_JUDGE_RESPONSE_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -816,6 +841,30 @@ def _openai_reasoning_effort_supported(model: str) -> bool:
     return mid.startswith("o3") or mid.startswith("o4")
 
 
+def _x1d_provider_request_receipt_fields(
+    judge_receipt: dict[str, Any] | None,
+    *,
+    provider_name: str,
+    model_env_source: str,
+    input_hash: str,
+    max_tokens: int,
+    response_format: str,
+) -> dict[str, Any]:
+    receipt = judge_receipt or {}
+    return {
+        "provider_name": provider_name,
+        "model_env_source": model_env_source,
+        "canonical_contract_hash": receipt.get("canonical_contract_hash"),
+        "packet_hash": receipt.get("packet_hash") or input_hash,
+        "schema_hash": hashlib.sha256(
+            json.dumps(GEMINI_JUDGE_RESPONSE_SCHEMA, sort_keys=True).encode()
+        ).hexdigest()[:16],
+        "max_tokens": max_tokens,
+        "temperature": 0.1,
+        "response_format": response_format,
+    }
+
+
 def _call_openai(
     api_key: str,
     prompt: str,
@@ -828,17 +877,10 @@ def _call_openai(
     model_requested: str | None = None,
     judge_receipt: dict[str, Any] | None = None,
     attempt: int = 1,
+    model_env_source: str = "openai",
 ) -> JudgeOutput:
     """Call OpenAI API with full artifact preservation."""
-    compact = attempt >= 2
-    system_content = (
-        f"{JUDGE_COMPACT_SYSTEM}\n\n{JUDGE_COMPACT_OUTPUT}\n\n{JUDGE_SCORE_SCHEMA}"
-        if compact
-        else (
-            "You are a strict executive resume judge. Return JSON only.\n\n"
-            f"{JUDGE_SCORE_SCHEMA}"
-        )
-    )
+    system_content = build_x1d_judge_system_prompt(compact=True)
     # Build request payload
     payload: dict[str, Any] = {
         "model": model,
@@ -862,6 +904,7 @@ def _call_openai(
     
     # Write request artifact
     req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
+    max_tokens = _resolved_openai_judge_max_completion_tokens(attempt=attempt)
     req_doc: dict[str, Any] = {
         "payload": payload,
         "input_hash": input_hash,
@@ -871,7 +914,15 @@ def _call_openai(
         "reasoning_effort": reasoning_effort,
         "judge_attempt": attempt,
         "judge_max_attempts": _x1d_judge_max_attempts(),
-        "compact_system_prompt": compact,
+        "compact_system_prompt": True,
+        **_x1d_provider_request_receipt_fields(
+            judge_receipt,
+            provider_name="openai",
+            model_env_source=model_env_source,
+            input_hash=input_hash,
+            max_tokens=max_tokens,
+            response_format="json_object" if not model.startswith("gpt-5") else "gpt5_completion",
+        ),
     }
     if judge_receipt:
         req_doc["judge_receipt"] = judge_receipt
@@ -1036,6 +1087,9 @@ def _call_anthropic(
     allow_model_fallback: bool | None = None,
     model_requested: str | None = None,
     judge_receipt: dict[str, Any] | None = None,
+    attempt: int = 1,
+    packet_hash: str | None = None,
+    canonical_contract_hash: str | None = None,
 ) -> JudgeOutput:
     """Call Anthropic API with full artifact preservation and model fallback handling."""
     original_model = model
@@ -1047,10 +1101,11 @@ def _call_anthropic(
     else:
         allow_fallback = bool(allow_model_fallback)
     
+    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
     payload = {
         "model": model,
-        "max_tokens": ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS,
-        "system": JUDGE_COMPACT_SYSTEM,
+        "max_tokens": max_tokens,
+        "system": build_x1d_judge_system_prompt(compact=True),
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
@@ -1060,6 +1115,14 @@ def _call_anthropic(
     req_doc = {
         "payload": payload,
         "input_hash": input_hash,
+        "packet_hash": packet_hash,
+        "canonical_contract_hash": canonical_contract_hash,
+        "provider_name": "anthropic",
+        "model_env_source": model_source,
+        "max_tokens": max_tokens,
+        "temperature": 0.1,
+        "response_format": "system_json_instruction",
+        "judge_attempt": attempt,
         "original_model": original_model,
         "resolved_model": model,
         "resolved_model_source": model_source,
@@ -1150,6 +1213,7 @@ def _call_anthropic(
     try:
         data = json.loads(raw_response)
         text = _extract_anthropic_message_text(data)
+        stop_reason = str(data.get("stop_reason") or "")
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
         parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {
@@ -1157,12 +1221,79 @@ def _call_anthropic(
             "detail": str(exc),
             "raw_response_ref": str(raw_path),
         })
+        if attempt < 2 and canonical_contract_hash and packet_hash:
+            retry_path = _artifact_path(provider_key, "anthropic_judge_retry_receipt", artifact_base=artifact_base)
+            _write_artifact(
+                retry_path,
+                {
+                    "reason": "parse_error_retry",
+                    "canonical_contract_hash": canonical_contract_hash,
+                    "packet_hash": packet_hash,
+                    "attempt": attempt,
+                },
+            )
+            return _call_anthropic(
+                api_key,
+                prompt,
+                model,
+                input_hash,
+                provider_key,
+                model_source=model_source,
+                artifact_base=artifact_base,
+                allow_model_fallback=allow_model_fallback,
+                model_requested=model_requested,
+                judge_receipt=judge_receipt,
+                attempt=2,
+                packet_hash=packet_hash,
+                canonical_contract_hash=canonical_contract_hash,
+            )
         return _make_blocked_output(
             provider_key,
             input_hash,
             "BLOCKED_RESPONSE_PARSE_ERROR",
             "BLOCKED_RESPONSE_PARSE_ERROR",
             f"Anthropic response parse error: {exc}",
+            raw_response_ref=str(raw_path),
+            model_name=model,
+            original_model=original_model,
+            fallback_model=fallback_model,
+        )
+
+    if stop_reason == "max_tokens":
+        if attempt < 2 and canonical_contract_hash and packet_hash:
+            retry_path = _artifact_path(provider_key, "anthropic_judge_retry_receipt", artifact_base=artifact_base)
+            _write_artifact(
+                retry_path,
+                {
+                    "reason": "max_tokens_truncation",
+                    "stop_reason": stop_reason,
+                    "canonical_contract_hash": canonical_contract_hash,
+                    "packet_hash": packet_hash,
+                    "attempt": attempt,
+                    "next_max_tokens": _resolved_x1d_judge_max_output_tokens(attempt=2),
+                },
+            )
+            return _call_anthropic(
+                api_key,
+                prompt,
+                model,
+                input_hash,
+                provider_key,
+                model_source=model_source,
+                artifact_base=artifact_base,
+                allow_model_fallback=allow_model_fallback,
+                model_requested=model_requested,
+                judge_receipt=judge_receipt,
+                attempt=2,
+                packet_hash=packet_hash,
+                canonical_contract_hash=canonical_contract_hash,
+            )
+        return _make_blocked_output(
+            provider_key,
+            input_hash,
+            "JUDGE_PROVIDER_BLOCKED",
+            "MODEL_BACKED_INCONCLUSIVE",
+            f"Anthropic truncated (stop_reason={stop_reason}); not a content-quality judge verdict",
             raw_response_ref=str(raw_path),
             model_name=model,
             original_model=original_model,
@@ -1199,8 +1330,8 @@ def _call_anthropic_fallback(
     """Fallback call for Anthropic when original model not found."""
     payload = {
         "model": model,
-        "max_tokens": ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS,
-        "system": JUDGE_COMPACT_SYSTEM,
+        "max_tokens": _resolved_x1d_judge_max_output_tokens(attempt=1),
+        "system": build_x1d_judge_system_prompt(compact=True),
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
@@ -1415,6 +1546,7 @@ def _call_gemini(
     """Call Gemini API with full artifact preservation."""
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
+        "systemInstruction": {"parts": [{"text": build_x1d_judge_system_prompt(compact=True)}]},
         "generationConfig": _gemini_generation_config(),
     }
 
@@ -1438,6 +1570,14 @@ def _call_gemini(
         "gemini_max_retries_configured": retries,
         "input_hash": input_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        **_x1d_provider_request_receipt_fields(
+            judge_receipt,
+            provider_name="gemini",
+            model_env_source=model_source,
+            input_hash=input_hash,
+            max_tokens=GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
+            response_format="responseSchema",
+        ),
     }
     if judge_receipt:
         artifact_body["judge_receipt"] = judge_receipt
@@ -1578,6 +1718,7 @@ def run_llm_judges(
     When ``judge_packet`` is provided (executive_summary GRADE_ONLY path), judges grade the packet
     candidate and use enhanced proof model resolution — not the generator ``compiled_prompt``.
     """
+    from apps_rg.runtime.judges.executive_summary_judge_packet import judge_contract_hash as _exec_contract_hash
     from apps_rg.runtime.judges.executive_summary_judge_packet import judge_packet_hash as _exec_hash
     from apps_rg.runtime.judges.executive_summary_judge_packet import (
         render_judge_prompt_from_packet as _exec_render_packet,
@@ -1616,15 +1757,35 @@ def run_llm_judges(
         prompt = _build_judge_user_prompt(resume_display_text, claim_ledger)
 
     base_receipt: dict[str, Any] | None = None
-    if use_grade_only_packet:
+    contract_hash: str | None = None
+    if use_grade_only_packet and judge_packet:
+        if str(judge_packet.get("judge_packet_version", "")).startswith("executive_summary"):
+            contract_hash = _exec_contract_hash(judge_packet)
         base_receipt = {
             "judge_packet_hash": input_hash,
+            "packet_hash": input_hash,
+            "canonical_contract_hash": contract_hash,
             "judge_packet_ref": judge_packet_ref,
             "candidate_output_ref": "candidate_output.resume_display_text",
             "allowed_fact_packet_ref": "allowed_fact_packet",
             "rubric_ref": judge_packet.get("rubric_ref") if judge_packet else None,
             "deterministic_gate_summary": judge_packet.get("deterministic_gate_summary"),
         }
+
+    if use_grade_only_packet and judge_packet is not None and mode != "mocked":
+        from apps_rg.runtime.judges.x1d_panel_bridge import run_grade_only_judges_via_core_panel
+
+        return run_grade_only_judges_via_core_panel(
+            judge_keys=judge_keys,
+            judge_packet=judge_packet,
+            user_prompt=prompt,
+            input_hash=input_hash,
+            section_id=sid,
+            mode=mode,
+            artifact_base=artifact_base,
+            judge_packet_ref=judge_packet_ref,
+            contract_hash=contract_hash,
+        )
 
     outputs: list[JudgeOutput] = []
     proof_eligible_judge = False
@@ -1717,6 +1878,7 @@ def run_llm_judges(
                         model_requested=model_requested,
                         judge_receipt=receipt,
                         attempt=attempt,
+                        model_env_source=model_source,
                     ),
                     provider_key=key,
                 )
@@ -1733,6 +1895,9 @@ def run_llm_judges(
                         allow_model_fallback=not use_grade_only_packet,
                         model_requested=model_requested,
                         judge_receipt=receipt,
+                        attempt=1,
+                        packet_hash=input_hash,
+                        canonical_contract_hash=contract_hash,
                     ),
                     provider_key=key,
                 )

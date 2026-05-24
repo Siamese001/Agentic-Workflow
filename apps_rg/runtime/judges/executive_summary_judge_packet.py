@@ -50,7 +50,9 @@ Rubric dimensions (SRFS executive summary — product shape **exactly 6 sentence
    scale/commercialization, outcomes, implied credibility). **Not** a fixed S1–S5 slot checklist. Fewer than six sentences
    is a decisive failure (aligned with x2_exec_summary_sentence_count_6). **Concise alone is insufficient** when
    evidence_utilization lists unused high-confidence facts or prose reads as stacked bullets. Credential facts are
-   **optional** — omit rather than inventory AWS/Databricks/FSA/Basel/CCAR labels.
+   **optional** — omit rather than inventory AWS/Databricks/FSA/Basel/CCAR labels. For SVP IT strategy targets, penalize
+   metric-inventory S3–S5 and reward connective emphasis on enterprise architecture, innovation programs, and multi-year
+   IT strategy (JD targeting only — never JD-as-proof). Sentence 6 must integrate the arc, not recap prior sentences thinly.
 7. evidence_utilization: penalize under-use of allowed_fact_packet when unused_fact_ids is non-empty and synthesis is thin.
 8. deterministic_alignment: **only** penalize gates that show `"pass": false` in deterministic_gate_summary.
 
@@ -92,12 +94,19 @@ Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS la
 3. resume_voice: credible executive prose; no recruiter filler or meta narration.
 4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
-6. synthesis_quality: **six dense executive sentences** (same band as X2); integrated narrative flow;
-   penalize orphan source_fact_ids not in allowed_fact_packet and bare credential inventory.
-7. deterministic_alignment: respect deterministic_gate_summary — penalize failed density, orphans, or scope violations.
+6. synthesis_quality: **exactly six** integrated sentences (X2 band); reward connective SVP IT strategy emphasis when
+   ledger-backed; penalize thin recap S6 and bullet-stacked prose. **Do not** soft-penalize credential/metric inventory,
+   unused_fact_ids weave targets, or mechanism dumps when the mapped deterministic gate shows `"pass": true`.
+7. evidence_utilization: when `x2_exec_summary_evidence_utilization` is `"pass": true`, unused_fact_ids are optional weave
+   targets — not proof gaps. Penalize under-use only when that gate is `"pass": false` or synthesis is decisively thin.
+8. deterministic_alignment: **only** penalize gates that show `"pass": false` in deterministic_gate_summary. Never cite
+   retired five-part/S1–S5 arc mandates when gates passed.
 
-Decisive failure triggers:
-- unsupported business metric or credential
+Residual quality (always in scope — not closed by X2 alone):
+- executive clarity, narrative coherence, commercial fit, usefulness, unsupported phrasing outside ledger scope.
+
+Decisive failure triggers (must align with deterministic_gate_summary failures when cited):
+- unsupported business metric or credential (when x2 gates failed or decisive unsupported claim)
 - JD or briefing used as proof
 - first-person narrative
 - obvious rewrite recommendation that invents new claims
@@ -247,38 +256,122 @@ def build_deterministic_gate_summary_from_x2_gates(
     return summary
 
 
-def reconcile_grade_only_judge_result(
+def reconcile_judge_result_against_deterministic_gate_closures(
     result: dict[str, Any],
     deterministic_gate_summary: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Downgrade decisive_failure when judges cite retired arc criteria but X2 snapshot gates all pass."""
+    """Suppress only findings mapped to passed deterministic gates; emit reconciliation receipt."""
     if not isinstance(result, dict) or not isinstance(deterministic_gate_summary, dict):
         return result
-    gate_entries = [
-        v for v in deterministic_gate_summary.values() if isinstance(v, dict) and "pass" in v
-    ]
-    if not gate_entries or not all(bool(v.get("pass")) for v in gate_entries):
-        return result
-    blob = json.dumps(result, ensure_ascii=False).lower()
-    if not any(frag in blob for frag in _RETIRED_JUDGE_CRITERIA_FRAGMENTS):
-        return result
-    out = dict(result)
-    if out.get("decisive_failure"):
-        out["decisive_failure"] = False
-        findings = list(out.get("findings") or [])
-        findings.append(
-            "Reconciled: judge cited retired five-part/S1-S5 criteria; deterministic_gate_summary all pass."
+
+    original_score = result.get("score")
+    original_verdict = bool(result.get("pass"))
+    original_findings = [str(f) for f in (result.get("findings") or []) if str(f).strip()]
+
+    from apps_rg.runtime.judges.executive_summary_x1d_gate_closure_map import (
+        RECONCILIATION_POLICY_VERSION,
+        finding_is_contract_invalid_under_gate_closures,
+    )
+
+    suppressed: list[dict[str, Any]] = []
+    preserved: list[str] = []
+    for finding in original_findings:
+        invalid, gate_id, evidence_ref = finding_is_contract_invalid_under_gate_closures(
+            finding, deterministic_gate_summary
         )
-        out["findings"] = findings
+        if invalid and gate_id and evidence_ref:
+            suppressed.append(
+                {
+                    "finding": finding,
+                    "finding_code": None,
+                    "suppressing_gate_id": gate_id,
+                    "suppressing_gate_pass_evidence_ref": evidence_ref,
+                }
+            )
+        else:
+            preserved.append(finding)
+
+    out = dict(result)
+    out["findings"] = preserved
+    if suppressed:
+        out["reconciliation_receipt"] = {
+            "original_score": original_score,
+            "original_verdict": original_verdict,
+            "original_findings": original_findings,
+            "suppressed_findings": suppressed,
+            "preserved_findings": preserved,
+            "final_score": out.get("score"),
+            "final_verdict": out.get("pass"),
+            "reconciliation_policy_version": RECONCILIATION_POLICY_VERSION,
+        }
+
+    if not preserved and suppressed:
+        out["decisive_failure"] = False
         try:
             score = float(out.get("score", 0.0))
             threshold = float(out.get("threshold", 4.0))
             if score < threshold:
                 out["score"] = threshold
                 out["pass"] = True
-        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: optional score coercion on judge packet
+                if isinstance(out.get("reconciliation_receipt"), dict):
+                    out["reconciliation_receipt"]["final_score"] = out["score"]
+                    out["reconciliation_receipt"]["final_verdict"] = out["pass"]
+        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: optional score coercion
             pass
+    elif preserved:
+        out["pass"] = bool(out.get("pass")) and not bool(out.get("decisive_failure"))
+        if isinstance(out.get("reconciliation_receipt"), dict):
+            out["reconciliation_receipt"]["final_score"] = out.get("score")
+            out["reconciliation_receipt"]["final_verdict"] = out.get("pass")
+
     return out
+
+
+def reconcile_grade_only_judge_result(
+    result: dict[str, Any],
+    deterministic_gate_summary: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Retired-criteria reconcile, then deterministic gate-closure reconcile."""
+    if not isinstance(result, dict) or not isinstance(deterministic_gate_summary, dict):
+        return result
+    gate_entries = [
+        v for v in deterministic_gate_summary.values() if isinstance(v, dict) and "pass" in v
+    ]
+    out = dict(result)
+    if gate_entries and all(bool(v.get("pass")) for v in gate_entries):
+        blob = json.dumps(result, ensure_ascii=False).lower()
+        if any(frag in blob for frag in _RETIRED_JUDGE_CRITERIA_FRAGMENTS):
+            if out.get("decisive_failure"):
+                out["decisive_failure"] = False
+                findings = list(out.get("findings") or [])
+                findings.append(
+                    "Reconciled: judge cited retired five-part/S1-S5 criteria; deterministic_gate_summary all pass."
+                )
+                out["findings"] = findings
+    return reconcile_judge_result_against_deterministic_gate_closures(
+        out, deterministic_gate_summary
+    )
+
+
+def build_canonical_judge_contract(packet: dict[str, Any]) -> dict[str, Any]:
+    """Stable canonical contract layer (transport wrappers may differ)."""
+    return {
+        "judge_packet_version": packet.get("judge_packet_version"),
+        "section": packet.get("section"),
+        "judge_task": packet.get("judge_task"),
+        "grading_instruction": packet.get("grading_instruction") or GRADE_ONLY_INSTRUCTION,
+        "proof_boundary": packet.get("proof_boundary") or {},
+        "deterministic_gate_summary": packet.get("deterministic_gate_summary") or {},
+        "rubric": packet.get("rubric") or GRAPH_ONLY_GRADE_ONLY_RUBRIC,
+        "required_output_schema": packet.get("required_output_schema") or REQUIRED_JUDGE_OUTPUT_SCHEMA,
+        "judge_rubric_mode": packet.get("judge_rubric_mode"),
+    }
+
+
+def judge_contract_hash(packet: dict[str, Any]) -> str:
+    canonical = build_canonical_judge_contract(packet)
+    blob = json.dumps(canonical, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
 def build_executive_summary_judge_packet(
@@ -353,13 +446,39 @@ def judge_packet_hash(packet: dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
+def write_canonical_judge_contract_artifact(path: Path, packet: dict[str, Any]) -> str:
+    """Persist canonical contract + stable digest for transport-parity receipts."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    body = {
+        "judge_contract_hash": judge_contract_hash(packet),
+        "canonical_judge_contract": build_canonical_judge_contract(packet),
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(body, f, indent=2, ensure_ascii=False, default=str)
+    return str(path)
+
+
 def write_executive_summary_judge_packet(path: Path, packet: dict[str, Any]) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     enriched = dict(packet)
     enriched["judge_packet_hash"] = judge_packet_hash(packet)
+    enriched["judge_contract_hash"] = judge_contract_hash(packet)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(enriched, f, indent=2, ensure_ascii=False, default=str)
+    write_canonical_judge_contract_artifact(path.parent / "canonical_judge_contract.json", packet)
     return str(path)
+
+
+def _evidence_utilization_prompt_block(packet: dict[str, Any]) -> str:
+    summary = packet.get("deterministic_gate_summary") or {}
+    util = summary.get("x2_exec_summary_evidence_utilization")
+    eu = packet.get("evidence_utilization") or {}
+    if isinstance(util, dict) and util.get("pass") and (eu.get("unused_fact_ids") or []):
+        return (
+            "EVIDENCE_UTILIZATION (X2 gate pass:true — unused_fact_ids are optional weave targets, "
+            "not defects or proof gaps; do not penalize under-use):"
+        )
+    return "EVIDENCE_UTILIZATION (deterministic — align with deterministic_gate_summary):"
 
 
 def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
@@ -369,6 +488,7 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
         "",
         f"JUDGE_TASK: {packet.get('judge_task', 'GRADE_ONLY')}",
         f"SECTION: {packet.get('section', 'executive_summary')}",
+        f"JUDGE_CONTRACT_HASH: {judge_contract_hash(packet)}",
         "",
         "PROOF_BOUNDARY:",
         json.dumps(packet.get("proof_boundary") or {}, indent=2),
@@ -388,8 +508,8 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
         "ALLOWED_FACT_PACKET (graph proof pool):",
         json.dumps(packet.get("allowed_fact_packet") or [], separators=(",", ":")),
         "",
-        "EVIDENCE_UTILIZATION (deterministic — unused facts are weave targets, not proof gaps):",
-        json.dumps(packet.get("evidence_utilization") or {}, indent=2),
+        _evidence_utilization_prompt_block(packet),
+        json.dumps(eu if (eu := packet.get("evidence_utilization")) else {}, indent=2),
         "",
         "CANDIDATE_OUTPUT:",
         json.dumps(packet.get("candidate_output") or {}, indent=2),

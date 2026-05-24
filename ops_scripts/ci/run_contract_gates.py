@@ -562,11 +562,14 @@ def main():
         ("RE1 REQ coverage contracts (Pact-style)", "ops_scripts/ci/check_req_coverage_contracts.py"),
         ("RE2 orphan observability nodes", "ops_scripts/ci/check_orphan_observability_nodes.py"),
         ("RE3 closure lifecycle (experimental→stable)", "ops_scripts/ci/check_closure_lifecycle.py"),
-        # Three-bucket OTEL view gates (plan: three-bucket-otel-view-5db409, ADR-074).
-        # Both are advisory (Tier B) until the runtime store is populated and the
-        # GenAI semconv migration completes. Strict mode envvars to flip:
-        #   RUNTIME_PROOF_VIEW_STRICT=1
-        #   GENAI_SEMCONV_STRICT=1
+        # ADR-081 plane-2 manifest (quick strict on latest snapshot after Redis ingest).
+        (
+            "3B0 ADG three-graph manifest quick (strict)",
+            "ops_scripts/ci/run_adg_three_graph_quick_gate.py",
+        ),
+        # Three-bucket OTEL view gates — thin wrappers; same scripts as
+        # ops_scripts/ci/adg_gate_manifest.yaml (3B* kept for contract visibility).
+        # Strict mode envvars: RUNTIME_PROOF_VIEW_STRICT=1, GENAI_SEMCONV_STRICT=1
         ("3B1 runtime proof view well-formed", "ops_scripts/ci/check_runtime_proof_view_well_formed.py"),
         ("3B2 OTel GenAI semconv coverage", "ops_scripts/ci/check_otel_genai_semconv_coverage.py"),
         # W5 of three-bucket-gap-remediation-069806: per-class threshold gate
@@ -591,7 +594,10 @@ def main():
         # Aggregate three-bucket certification gate (plan three-bucket-otel-view-5db409 W7).
         # Advisory by default; flip via ADG_CERTIFIED_STRICT=1 once the consumer-mode
         # gate is permanently strict-mode and runtime evidence is consistently flowing.
-        ("3B6 ADG_CERTIFIED aggregate gate", "ops_scripts/ci/check_adg_certified.py"),
+        (
+            "3B6 ADG_CERTIFIED aggregate gate (rollup strict)",
+            "ops_scripts/ci/check_adg_certified.py --rollup --strict --write-verdict",
+        ),
         # W6.P1 (plan apps-eval-harness-deferred-e4a1b7): apps_* eval-harness
         # parity gate. Advisory by default — flip fail-closed via
         # APP_DOMAIN_HARNESS_PARITY_FAIL_CLOSED=1 once calibrated.
@@ -1094,6 +1100,12 @@ def main():
             "APPS-EXIT-PATH apps_rg exit path construction (advisory)",
             "ops_scripts/ci/check_apps_rg_exit_path_construction.py",
         ),
+        # SECTION-X2-X1D — all GENERATED_LANES: SSOT vs run_*_x2_gates vs X1D rubrics (+ exec synthesis/judge packet).
+        # Fail-closed by default; advisory SECTION_X2_X1D_DRIFT_ADVISORY=1; bypass SECTION_X2_X1D_DRIFT_BYPASS=1.
+        (
+            "SECTION-X2-X1D generated-lane X2/X1D contract drift (fail-closed)",
+            "ops_scripts/ci/check_section_x2_x1d_drift.py",
+        ),
         # APPS-RG-L2-V4-ENVELOPE — apps_rg L2 v4 envelope feature flag bridge validation.
         # Validates W7B feature flag integration: _use_v4_l2_envelope helper,
         # feature flag bridge delegation, legacy path preservation, boundary checks,
@@ -1231,6 +1243,10 @@ def main():
         (
             "GOV-2 Agentic core static boundary (advisory)",
             "ops_scripts/ci/check_agentic_core_static_boundary.py",
+        ),
+        (
+            "GOV-JPH Judge panel harness boundary (strict)",
+            "ops_scripts/ci/check_judge_panel_harness_boundary.py",
         ),
         (
             "GOV-3 Core Addition Author-Gate (fail-closed)",

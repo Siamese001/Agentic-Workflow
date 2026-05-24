@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from apps_rg.runtime.sections.executive_summary_synthesis_contract import SENTENCE_ARC_SVP_STRATEGY
 from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
 
 COMPOSITION_STYLE = "executive_painting"
@@ -48,56 +49,6 @@ SENTENCE_ARC_DEFAULT: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "integrated_capstone",
         "guidance": "Integrated credibility or enterprise-direction capstone from allowed facts only.",
-    },
-)
-
-SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
-    {
-        "brushstroke_id": "B1_executive_identity",
-        "arc_role": "strategy_thesis",
-        "guidance": (
-            "Technology strategy / enterprise technology executive thesis; avoid narrow engineering-manager label."
-        ),
-    },
-    {
-        "brushstroke_id": "B2_governed_platform_system",
-        "arc_role": "platform_arc",
-        "guidance": (
-            "Connect governed AI platform and runtime architecture to enterprise IT direction; "
-            "one causal clause, not a mechanism comma-list."
-        ),
-    },
-    {
-        "brushstroke_id": "B2_governed_platform_system",
-        "arc_role": "scale_operating_model",
-        "guidance": (
-            "Sentences 3–4: weave platform scale, operating model, and innovation delivery as one arc "
-            "(team growth, lifecycle, federated architecture) using allowed facts only."
-        ),
-    },
-    {
-        "brushstroke_id": "B3_control_evidence_discipline",
-        "arc_role": "governance_innovation",
-        "guidance": (
-            "Regulatory lineage, validation, or governance themes that support IT strategy and innovation "
-            "posture — substantive synthesis, not a control checklist."
-        ),
-    },
-    {
-        "brushstroke_id": "B4_business_role_fit",
-        "arc_role": "commercial_strategy",
-        "guidance": (
-            "Sentence 5: commercialization, margin, or revenue outcomes plus quantitative depth implied in "
-            "delivery context — never a certification or AWS/Databricks/FSA inventory."
-        ),
-    },
-    {
-        "brushstroke_id": "B4_business_role_fit",
-        "arc_role": "enterprise_capstone",
-        "guidance": (
-            "Sentence 6: fact-backed capstone on enterprise technology direction (platform + governance + "
-            "commercialization); no JD/briefing echo, no at/for TARGET_COMPANY, no generic filler."
-        ),
     },
 )
 

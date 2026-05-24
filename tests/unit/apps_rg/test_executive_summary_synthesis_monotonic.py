@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+    format_x2_gate_failures_reject_reason,
+    gate_ids_from_x2_reject_reason,
+)
 from apps_rg.runtime.sections.executive_summary_synthesis_monotonic import (
     evaluate_synthesis_regen_monotonicity,
 )
@@ -70,6 +74,94 @@ def test_monotonic_waives_shrink_when_ledger_rows_gain_on_utilization_repair() -
     )
     assert ok is True
     assert detail.get("shrink_waived") is True
+
+
+def test_gate_ids_from_x2_reject_reason_parses_gate_id_segments() -> None:
+    reason = format_x2_gate_failures_reject_reason(
+        [
+            {"gate_id": "x2_exec_summary_sentence_count_6", "pass": False, "reason": "found 4"},
+            {"gate_id": "x2_no_inferred_bridge_claims", "pass": False, "reason": "bridge"},
+        ]
+    )
+    ids = gate_ids_from_x2_reject_reason(reason)
+    assert "x2_exec_summary_sentence_count_6" in ids
+    assert "x2_no_inferred_bridge_claims" in ids
+
+
+def test_judge_x2_repair_allows_fact_regression_when_fixing_bridge_and_synthesis() -> None:
+    """RCA: Brown & Brown cycle-2 blocked 7→6 facts with sentence/synthesis/bridge X2 fails."""
+    baseline_text = (
+        "Technology strategy executive who operationalizes governed agentic AI platforms for regulated "
+        "enterprise workflows, ensuring traceable execution and enterprise scale. "
+        "Platform commercialization generated twenty-two million in IP-led revenue and expanded margins. "
+        "Implemented Basel III and CCAR data lineage frameworks, cutting regulatory reporting errors. "
+        "Re-architected risk analytics with containerized microservices, enabling real-time stress testing. "
+        "Quantitative foundation through derivatives pricing supports enterprise technology direction. "
+        "Governed delivery stays audit-ready while preserving commercial velocity for enterprise programs."
+    )
+    repair_text = (
+        "Technology strategy executive operationalizes governed agentic AI for regulated enterprise "
+        "workflows with traceable execution at scale. "
+        "Platform commercialization generated proof-backed revenue while expanding gross margins materially. "
+        "Basel III and CCAR lineage frameworks reduced regulatory reporting errors for finance stakeholders. "
+        "Containerized microservices re-architecture accelerated stress testing for leadership decisions. "
+        "Derivatives pricing and capital modeling depth inform governance trade-offs across programs. "
+        "Integrated governance, innovation, and commercial posture align enterprise technology direction."
+    )
+    prior_ledger = []
+    for i in range(6):
+        fids = [f"fact_{i:03d}"]
+        if i == 0:
+            fids.append("fact_extra_001")
+        prior_ledger.append({"claim_text": f"claim {i}", "source_fact_ids": fids})
+    prior = {"resume_display_text": baseline_text, "claim_ledger": prior_ledger}
+    post_ledger = [
+        {"claim_text": f"claim {i}", "source_fact_ids": [f"fact_{i:03d}"]} for i in range(6)
+    ]
+    post = {"resume_display_text": repair_text, "claim_ledger": post_ledger}
+    reject = format_x2_gate_failures_reject_reason(
+        [
+            {"gate_id": "x2_exec_summary_sentence_count_6", "pass": False, "reason": "fail"},
+            {"gate_id": "x2_executive_summary_synthesis_quality", "pass": False, "reason": "fail"},
+            {"gate_id": "x2_no_inferred_bridge_claims", "pass": False, "reason": "fail"},
+        ]
+    )
+    gate_ids = gate_ids_from_x2_reject_reason(reject)
+    ok, detail = evaluate_synthesis_regen_monotonicity(
+        prior_parsed=prior,
+        prior_reject_reason=reject,
+        new_parsed=post,
+        failed_gate_ids=gate_ids,
+        repair_context="judge_x2_repair",
+    )
+    assert ok is True, detail
+    assert detail.get("allow_substance_regression") is True
+    assert detail.get("shrink_waived") is True
+
+
+def test_synthesis_regen_still_rejects_fact_regression_without_judge_x2_context() -> None:
+    text = (
+        "One two three four five six seven eight. "
+        "Two two three four five six seven eight. "
+        "Three two three four five six seven eight. "
+        "Four two three four five six seven eight."
+    )
+    prior = _parsed(text, ledger_rows=5)
+    post = _parsed(text, ledger_rows=5, fact_prefix="fact_alt_")
+    # force fewer unique facts
+    post["claim_ledger"] = post["claim_ledger"][:3]
+    ok, detail = evaluate_synthesis_regen_monotonicity(
+        prior_parsed=prior,
+        prior_reject_reason="meta filler",
+        new_parsed=post,
+        repair_context="synthesis_regen",
+    )
+    assert ok is False
+    assert detail["rejection_reasons"]
+    assert any(
+        r in ("unique_source_fact_ids_regressed", "claim_ledger_row_count_regressed")
+        for r in detail["rejection_reasons"]
+    )
 
 
 def test_monotonic_rejects_ledger_row_regression() -> None:

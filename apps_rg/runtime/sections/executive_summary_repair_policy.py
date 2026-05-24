@@ -38,14 +38,43 @@ def synthesis_regen_max_attempts() -> int:
 
 
 # Post-X1D same-authority regen when X2 passed but judge quorum/median signals synthesis gap.
-JUDGE_REGEN_MAX_ATTEMPTS = 1
+# Mission-critical section: default 3 Qwen cycles (re-judge soft fails after each); cap 5.
+JUDGE_REGEN_MAX_ATTEMPTS = 3
+JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 5
 # Opt-in via APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=1 after X2 pass (bounded, same-authority).
 RELEASE_JUDGE_REGENERATION_ENABLED = True
 
 
+def _truthy_env(raw: str) -> bool:
+    return str(raw or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def judge_regen_max_attempts() -> int:
+    """Bounded judge-regen cycles per run (one Qwen rewrite + re-judge soft fails each)."""
+    raw = os.environ.get(
+        "APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS",
+        str(JUDGE_REGEN_MAX_ATTEMPTS),
+    ).strip()
+    try:
+        n = int(raw)
+    except ValueError:
+        n = JUDGE_REGEN_MAX_ATTEMPTS
+    return max(1, min(n, JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP))
+
+
 def judge_regeneration_enabled() -> bool:
-    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", "0").strip().lower()
-    return RELEASE_JUDGE_REGENERATION_ENABLED and raw in ("1", "true", "yes", "on")
+    if not RELEASE_JUDGE_REGENERATION_ENABLED:
+        return False
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", "").strip().lower()
+    if raw in ("0", "false", "no", "off"):
+        return False
+    if raw in ("1", "true", "yes", "on"):
+        return True
+    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+    if product_fail_closed_runtime():
+        return True
+    return _truthy_env(raw)
 
 
 def judge_safe_prefilter_enabled() -> bool:

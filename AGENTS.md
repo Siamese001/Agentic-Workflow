@@ -80,7 +80,7 @@ Lookup: `.cursor/rules/cursor-config-lookup.mdc` · docs mirror `docs/cursor/`. 
 
 ## Core vs apps (summary)
 
-Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. Detail: [agents-tier1-companion.md](.cursor/skills/mcp-integration/agents-tier1-companion.md) · `agentic_core/AGENTS.md` · `.cursor/rules/agentic-core-static.mdc`.
+Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. **Multi-provider X1D proof panels:** `agentic_core/runtime/judges/panel/` (`JudgePanelRunner`, transport preflight); `apps_rg` wires adapters via `x1d_panel_bridge` (see plan [core-judge-panel-harness-f3c8d1](.cursor/plans/core-judge-panel-harness-f3c8d1.md)). Detail: [agents-tier1-companion.md](.cursor/skills/mcp-integration/agents-tier1-companion.md) · [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.cursor/rules/agentic-core-static.mdc`.
 
 ## Rules & skills SSOT (Cursor)
 

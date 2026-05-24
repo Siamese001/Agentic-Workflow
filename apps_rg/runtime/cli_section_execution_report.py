@@ -39,10 +39,28 @@ def section_lane_process_exit_code(
     *,
     result: dict[str, Any],
     allow_non_allow_exit_zero_effective: bool,
+    section_id: str | None = None,
 ) -> int:
     """Match ``apps_rg.__main__`` section-only exit policy (no mutation of X3)."""
     if allow_non_allow_exit_zero_effective:
         return 0
+    fault = str(result.get("fault") or "").strip()
+    if fault == "temperature_range":
+        return 2
+    sid = str(section_id or "").strip().lower()
+    if sid == "executive_summary":
+        ad_raw = str(result.get("artifact_dir") or "").strip()
+        if ad_raw:
+            from apps_rg.runtime.sections.executive_summary_operator_disposition import (
+                resolve_from_artifact_dir,
+            )
+
+            ad = Path(ad_raw)
+            cli_path_pass = ad.is_dir() and (
+                (ad / "x3_disposition.json").is_file() or (ad / "run_manifest.json").is_file()
+            )
+            op = resolve_from_artifact_dir(ad, cli_path_pass=cli_path_pass, fault=fault)
+            return int(op.process_exit_code)
     status = str(result.get("exit_status") or "unknown")
     authorized = bool(result.get("outcome_authorized"))
     if status != "success" or not authorized:
@@ -176,6 +194,36 @@ def build_section_cli_execution_report_payload(
         allow_non_allow_exit_zero_effective=allow_non_allow_exit_zero_effective,
     )
 
+    operator_fields: dict[str, Any] = {}
+    lane_section = str(manifest_loaded.get("section_id") or "").strip().lower()
+    if lane_section == "executive_summary" and artifact_dir is not None and cli_path_pass:
+        from apps_rg.runtime.sections.executive_summary_operator_disposition import (
+            compute_executive_summary_operator_disposition,
+        )
+
+        fault_s = str(result.get("fault") or "").strip()
+        op = compute_executive_summary_operator_disposition(
+            artifact_dir=artifact_dir,
+            x3_loaded=x3_loaded,
+            manifest_loaded=manifest_loaded,
+            cli_path_pass=cli_path_pass,
+            fault=fault_s,
+        )
+        operator_status = (
+            "CERTIFIED"
+            if op.certified
+            else ("DRAFT_READY" if op.draft_ready else "NOT_READY")
+        )
+        operator_fields = {
+            "draft_ready": op.draft_ready,
+            "certified": op.certified,
+            "disposition_tier": op.disposition_tier,
+            "operator_disposition": op.disposition_tier,
+            "operator_status": operator_status,
+        }
+        if not allow_non_allow_exit_zero_effective:
+            expected_nz = bool(op.expected_nonzero_exit)
+
     l2_present = artifact_dir is not None and (artifact_dir / "l2_output.json").is_file()
     readiness_present = artifact_dir is not None and (artifact_dir / "clean_x3_allow_readiness.json").is_file()
 
@@ -207,7 +255,6 @@ def build_section_cli_execution_report_payload(
     command_execution_status = "PASS" if cli_path_pass else "FAIL"
     command_status = command_execution_status
 
-    lane_section = str(manifest_loaded.get("section_id") or "").strip().lower()
     ibm_reads_readiness = lane_section == "ibm_narrative"
     core_artifacts_ok = bool(cli_path_pass and l2_present)
     artifact_collection_status = (
@@ -316,7 +363,7 @@ def build_section_cli_execution_report_payload(
         f"Lane command surface (legacy composite): {composite_status}."
     )
 
-    return {
+    payload_out: dict[str, Any] = {
         "status": runtime_proof_row_status,
         "lane_command_surface_status": composite_status,
         "runtime_generation_status_report": runtime_generation_status_report,
@@ -358,6 +405,8 @@ def build_section_cli_execution_report_payload(
         "x3_disposition_ref": _X3_DISPOSITION_REF,
         "run_manifest_ref": _RUN_MANIFEST_REF,
     }
+    payload_out.update(operator_fields)
+    return payload_out
 
 
 def _payload_to_stdout_lines(payload: dict[str, Any]) -> list[str]:
@@ -390,6 +439,15 @@ def _payload_to_stdout_lines(payload: dict[str, Any]) -> list[str]:
         f"PRODUCT_QUALITY_STATUS: {payload['product_quality_status']}",
         f"RUNTIME_PROOF_SEMANTICS_NOTE: {payload['runtime_proof_cross_surface_note']}",
     ]
+    if payload.get("operator_status"):
+        base.extend(
+            [
+                f"OPERATOR_STATUS: {payload['operator_status']}",
+                f"DRAFT_READY: {str(payload.get('draft_ready', False)).lower()}",
+                f"CERTIFIED: {str(payload.get('certified', False)).lower()}",
+                f"DISPOSITION_TIER: {payload.get('disposition_tier', 'unknown')}",
+            ]
+        )
     note = payload.get("mock_judge_accounting_note")
     if isinstance(note, str) and note.strip():
         base.append(f"MOCK_JUDGES_ACCOUNTING_NOTE: {note.strip()}")
