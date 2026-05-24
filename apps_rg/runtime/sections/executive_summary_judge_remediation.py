@@ -149,19 +149,6 @@ def evaluate_judge_remediation_trigger(
         receipt["reason"] = "requires_real_llm_and_x2_pass"
         return False, receipt
 
-    pass_count = sum(
-        1
-        for j in x1d_judges
-        if j.get("evaluator_mode") == "MODEL_BACKED"
-        and j.get("provider_status") == "MODEL_BACKED_PASS"
-        and j.get("pass") is True
-        and not j.get("decisive_failure")
-    )
-    receipt["model_backed_pass_count"] = pass_count
-    if pass_count >= 2:
-        receipt["reason"] = "two_or_more_judges_already_pass_skip_regen"
-        return False, receipt
-
     soft_fails = [j for j in x1d_judges if _is_model_backed_soft_fail(j)]
     receipt["soft_fail_count"] = len(soft_fails)
     min_fail = _env_int("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MIN_FAIL_COUNT", 2)
@@ -200,6 +187,20 @@ def evaluate_judge_remediation_trigger(
             decisive_dims.append(j.get("provider_key") or "unknown")
     decisive_trigger = bool(decisive_dims)
     receipt["decisive_synthesis_providers"] = decisive_dims
+
+    pass_count = sum(
+        1
+        for j in x1d_judges
+        if j.get("evaluator_mode") == "MODEL_BACKED"
+        and j.get("provider_status") == "MODEL_BACKED_PASS"
+        and j.get("pass") is True
+        and not j.get("decisive_failure")
+    )
+    receipt["model_backed_pass_count"] = pass_count
+    # Majority pass must not suppress regen when a lone severe synthesis gap or decisive failure remains.
+    if pass_count >= 2 and not solitary_severe and not decisive_trigger and not quorum:
+        receipt["reason"] = "two_or_more_judges_already_pass_skip_regen"
+        return False, receipt
     receipt["quorum_shared_tags"] = sorted(shared_tags)
     receipt["quorum_soft_fail"] = quorum
     receipt["median_fail"] = median_fail

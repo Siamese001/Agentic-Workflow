@@ -77,6 +77,41 @@ def test_trigger_solitary_severe_soft_fail() -> None:
     assert receipt.get("trigger_mode") == "solitary_severe_soft_fail"
 
 
+def test_trigger_solitary_severe_not_suppressed_when_two_judges_pass() -> None:
+    """Two passing judges must not skip regen when the lone soft-fail is synthesis-severe."""
+    judges = [
+        _soft_fail_judge(
+            "anthropic_claude",
+            findings=[
+                "Summary reads as stacked bullets; poor ATS alignment to enterprise architecture and IT strategy",
+            ],
+            score=0.7,
+        ),
+        {
+            "provider_key": "gemini_pro",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "normalized_score": 1.0,
+            "normalized_threshold": 0.8,
+        },
+        {
+            "provider_key": "openai_chatgpt",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "normalized_score": 0.82,
+            "normalized_threshold": 0.8,
+        },
+    ]
+    ok, receipt = evaluate_judge_remediation_trigger(
+        judges, runtime_generation_status="REAL_LLM", x2_passed=True
+    )
+    assert ok is True
+    assert receipt.get("trigger_mode") == "solitary_severe_soft_fail"
+    assert receipt.get("model_backed_pass_count") == 2
+
+
 def test_trigger_skipped_when_x2_not_passed() -> None:
     ok, receipt = evaluate_judge_remediation_trigger(
         [], runtime_generation_status="REAL_LLM", x2_passed=False
@@ -93,4 +128,4 @@ def test_remediation_user_message_lists_unused_facts() -> None:
     )
     assert "Unused allowed facts" in msg
     assert "fact_003" in msg
-    assert "prefer 5" in msg.lower()
+    assert "exactly 6 sentences" in msg.lower()
