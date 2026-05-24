@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import importlib
 from pathlib import Path
 
 import pytest
 
-from tools.generate.integration import optional_three_bucket as mod
+mod = importlib.import_module("tools.generate.integration.optional_three_bucket")
 
 
 @pytest.fixture(autouse=True)

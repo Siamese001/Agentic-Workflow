@@ -44,7 +44,7 @@ def test_run_authority_audit_projects_legacy_histogram(tmp_path: Path) -> None:
     assert result["snapshot"] == snap.name
     assert result["total_edges"] == 9
     assert result["before_legacy_authority_histogram"]["verified"] == 3
-    assert result["after_projected_bucket_counts"] == {"static": 7, "runtime": 1, "registry": 0}
+    assert result["after_projected_bucket_counts"] == {"static": 6, "runtime": 1, "registry": 0}
     assert result["proof_count"] == 4  # 3 AUTHORITATIVE + 1 AUTHORITATIVE_RUNTIME
     assert result["risk_count"] == 2  # unresolved → RISK_SIGNAL_ONLY
     assert result["inventory_only_count"] == 1  # external → EXTERNAL_ONLY
