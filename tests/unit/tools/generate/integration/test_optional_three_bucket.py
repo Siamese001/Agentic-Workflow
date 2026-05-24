@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from tools.generate.integration import optional_three_bucket as mod
@@ -31,3 +33,22 @@ def test_master_flag_enables_audit_bundle(monkeypatch: pytest.MonkeyPatch) -> No
     assert mod.registry_lift_enabled() is True
     assert mod.three_bucket_reports_enabled() is True
     assert mod.any_three_bucket_stage_enabled() is True
+
+
+def test_reports_only_flag_does_not_enable_runtime_or_registry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ADG_THREE_BUCKET_REPORTS", "1")
+    assert mod.runtime_view_enabled() is False
+    assert mod.registry_lift_enabled() is False
+    assert mod.three_bucket_reports_enabled() is True
+    assert "reports" in mod.format_mode_banner()
+
+
+def test_enrichment_skipped_when_all_stages_disabled(tmp_path: Path) -> None:
+    snap = tmp_path / "adg_indexed_stub.sqlite"
+    snap.write_bytes(b"")
+    result = mod.run_optional_three_bucket_enrichment(snap)
+    assert result.skipped_reason is not None
+    assert result.runtime_rows_written == 0
+    assert result.registry_edges_inserted == 0
