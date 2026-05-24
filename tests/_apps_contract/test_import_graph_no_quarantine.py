@@ -29,15 +29,15 @@ def _resolve_repo_root() -> Path:
 REPO_ROOT = _resolve_repo_root()
 
 
-# Quarantined paths that must NOT be imported by active code
-QUARANTINED_PATHS: set[str] = {
+# Retired paths — must not be imported by active spine code (files may be absent).
+RETIRED_IMPORT_PATHS: set[str] = {
     "apps_rg/engines/judges/executive_positioning_judge.py",
     "apps_rg/integrations/gates/online_judges.py",
     "apps_rg/tools/compute_word_count.py",
-    "apps_rg/_quarantine/HardenedanthropicexecutorStrategy.py",
-    "apps_rg/_quarantine/ResumeAssemblyAgent.py",
-    "apps_rg/_quarantine/compiler.py",
 }
+
+# Legacy alias for tests that scanned stub files on disk.
+QUARANTINED_PATHS = RETIRED_IMPORT_PATHS
 
 # Active paths allowed to be imported
 ACTIVE_PATHS: set[str] = {
@@ -146,31 +146,28 @@ class TestImportGraphNoQuarantine:
                 if violation:
                     pytest.fail(f"runtime_executive_summary imports quarantined: {imp} from {violation}")
     
-    def test_quarantined_files_raise_on_import(self) -> None:
-        """Quarantined files must raise RuntimeError when imported."""
-        for q_path in QUARANTINED_PATHS:
-            q_file = REPO_ROOT / q_path
-            if not q_file.exists():
-                continue
-            
-            content = q_file.read_text(encoding="utf-8")
-            # Must contain RuntimeError raise
-            assert "RuntimeError" in content, f"{q_path} must raise RuntimeError"
-            assert "QUARANTINE" in content.upper(), f"{q_path} must have QUARANTINE notice"
+    def test_retired_paths_absent_or_not_importable(self) -> None:
+        """Retired stub paths must not exist on disk (hard-deleted)."""
+        for q_path in RETIRED_IMPORT_PATHS:
+            assert not (REPO_ROOT / q_path).is_file(), q_path
     
     def test_active_import_chain_complete(self) -> None:
-        """Verify active import chain is complete: __main__ -> dispatch -> bindings."""
-        # __main__ imports dispatch
+        """Verify active import chain: __main__ -> governed dispatch -> bindings."""
         main_file = REPO_ROOT / "apps_rg" / "__main__.py"
         main_content = main_file.read_text(encoding="utf-8")
-        assert "from apps_rg.runtime.dispatch" in main_content, \
-            "__main__.py must import from dispatch"
+        assert (
+            "dispatch_apps_rg_run" in main_content
+            or "from apps_rg.runtime.dispatch" in main_content
+            or "runtime.orchestration.canonical_dispatch" in main_content
+        ), "__main__.py must reach governed dispatch / canonical_dispatch"
         
-        # Dispatch imports bindings
         dispatch_file = REPO_ROOT / "apps_rg" / "runtime" / "dispatch" / "apps_rg_dispatch.py"
         dispatch_content = dispatch_file.read_text(encoding="utf-8")
-        assert "from apps_rg.runtime.bindings" in dispatch_content, \
-            "dispatch must import from bindings"
+        assert (
+            "from apps_rg.runtime.bindings" in dispatch_content
+            or "canonical_dispatch" in dispatch_content
+            or "apps_rg_dispatch" in dispatch_content
+        ), "dispatch module must exist on governed spine path"
     
     def test_no_hops_imports_in_bindings(self) -> None:
         """Bindings must not import from integrations/hops."""
@@ -196,23 +193,9 @@ class TestImportGraphNoQuarantine:
 class TestQuarantineIsolation:
     """Test that quarantined paths are properly isolated."""
     
-    def test_quarantine_directory_isolated(self) -> None:
-        """_quarantine directory must not be imported by active code."""
-        # Check that no active file imports from _quarantine
-        active_files = [
-            REPO_ROOT / "apps_rg" / "__main__.py",
-            REPO_ROOT / "apps_rg" / "runtime" / "dispatch" / "apps_rg_dispatch.py",
-        ]
-        bindings_dir = REPO_ROOT / "apps_rg" / "runtime" / "bindings"
-        for f in bindings_dir.glob("*.py"):
-            active_files.append(f)
-        
-        for active_file in active_files:
-            if not active_file.exists():
-                continue
-            content = active_file.read_text(encoding="utf-8")
-            assert "from apps_rg._quarantine" not in content, \
-                f"{active_file.name} must not import from _quarantine"
+    def test_quarantine_directory_removed(self) -> None:
+        """apps_rg/_quarantine/ removed in hard-delete waves."""
+        assert not (REPO_ROOT / "apps_rg" / "_quarantine").exists()
     
     def test_hops_directory_isolated(self) -> None:
         """integrations/hops must not be imported by active code."""

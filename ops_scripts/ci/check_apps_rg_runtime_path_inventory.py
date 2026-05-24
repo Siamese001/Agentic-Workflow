@@ -56,14 +56,21 @@ CANONICAL_QUARANTINED_PATHS: set[str] = {
     "apps_rg/tools/compute_word_count.py",
 }
 
-# Quarantine directory - all files here are quarantined
-QUARANTINE_DIRS: tuple[str, ...] = (
-    "apps_rg/_quarantine/",
-    "apps_rg/integrations/hops/",
-    "apps_rg/engines/",
-    "apps_rg/tools/",
-    "apps_rg/reasoning/",
+# Non-product directories — must not be imported by ACTIVE spine (__main__/dispatch/bindings).
+NON_PRODUCT_DIRS: tuple[str, ...] = (
+    "apps_rg/runtime/dry_run/",
+    "apps_rg/runtime/internal/",
 )
+
+# Removed trees — must not exist on disk (hard-delete / W4 closeout).
+REMOVED_PATH_PREFIXES: tuple[str, ...] = (
+    "apps_rg/reasoning/",
+    "apps_rg/_quarantine/",
+    "apps_rg/runtime/entry/",
+)
+
+# Legacy name used by classification helper (non-product + removed stubs only).
+QUARANTINE_DIRS: tuple[str, ...] = NON_PRODUCT_DIRS
 
 # LEGACY paths - exist but have no active imports
 # CI FAIL if any of these become reachable from executable entry
@@ -136,21 +143,15 @@ def _extract_imports(file_path: Path) -> list[str]:
 
 
 def _is_quarantined_path(rel_path: str, file_path: Path) -> bool:
-    """Check if path is quarantined."""
-    # Check explicit quarantine notices
+    """Check if path is non-product quarantined (dry_run/internal), not live engines/hops."""
     if rel_path in CANONICAL_QUARANTINED_PATHS:
         return True
-    # Check quarantine directories
-    for q_dir in QUARANTINE_DIRS:
-        if rel_path.startswith(q_dir):
-            # Exception: tools/__init__.py and __init__.py files are not quarantined
-            if rel_path.endswith("__init__.py"):
-                continue
-            # Verify it has quarantine notice or is in quarantine folder
-            if q_dir == "apps_rg/_quarantine/":
-                return True
-            if _has_quarantine_notice(file_path):
-                return True
+    for prefix in REMOVED_PATH_PREFIXES:
+        if rel_path.startswith(prefix):
+            return True
+    for q_dir in NON_PRODUCT_DIRS:
+        if rel_path.startswith(q_dir) and not rel_path.endswith("__init__.py"):
+            return True
     return False
 
 
