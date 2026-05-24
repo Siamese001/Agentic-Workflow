@@ -75,8 +75,8 @@ _emit_captures_evaluation_metric("p4", "shadow_eval_runner", "eval_metric")
 _emit_stores_embedding("p4", "shadow_eval_runner", "embedding_store")
 _emit_updates_meta_learning_state("p4", "shadow_eval_runner", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "shadow_eval_runner", "exec_snapshot_link")
-from ..runners.offline_eval_runner import OfflineEvaluationRunner
-from ..runners.replay_eval_runner import ReplayEvaluationRunner, SystemConfig
+from .offline_eval_runner import OfflineEvaluationRunner
+from .replay_eval_runner import ReplayEvaluationRunner, SystemConfig
 from ..schemas.evaluation_dataset_schema import EvaluationDataset
 from ..schemas.evaluation_result_schema import DeltaReport, EvaluationReport
 from .drift_monitor import AnswerQualityMonitor, RetrievalDriftMonitor

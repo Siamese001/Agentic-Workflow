@@ -66,7 +66,7 @@ claimed_routes:
       - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.RiskScoringAdapter.run
       - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.DecisionAssemblyAdapter.run
       - apps_underwriting_ai.integrations.underwriting_c0_adapter.UnderwritingC0Adapter.run
-      - apps_underwriting_ai.runtime.dispatch.underwriting_dispatch.run_underwriting_dispatch
+      - apps_underwriting_ai.runtime.profile_builder.build_app_runtime_contract
       - apps_underwriting_ai.runtime.bindings.pa_binding.pa_compose_underwriting
 
     exit_points:
@@ -75,7 +75,7 @@ claimed_routes:
       - apps_underwriting_ai.integrations.underwriting_c0_adapter.FinalEvidenceContract
       - apps_underwriting_ai.types.underwriting_types.DecisionPacket
       - apps_underwriting_ai.types.underwriting_types.UnderwritingResult
-      - apps_underwriting_ai.runtime.dispatch.underwriting_dispatch.DispatchResult
+      - apps_underwriting_ai.runtime.bindings.exit_binding.UWExitResult
 
     l2_receipts:
       - L2.E1.underwriting_execution_context_bound

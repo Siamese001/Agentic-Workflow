@@ -1,1 +1,0 @@
-"""ADG MCP client package."""

@@ -383,21 +383,6 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
     # ============================================
     # L4: STATE AGENTS
     # ============================================
-    "IntelligenceLibrarianAgent": AgentClassification(
-        file_path="apps_lic/reasoning/IntelligenceLibrarianAgent.py",
-        class_name="IntelligenceLibrarianAgent",
-        current_layer="L4",
-        canonical_role=CanonicalAgentRole.OBSERVER,
-        status=AgentStatus.OBSOLETE,
-        is_shim=True,
-        implements_l2_contract=False,
-        notes=(
-            "RETIRED 2026-02-08 per original shim declaration. Registry previously "
-            "pointed to phantom path agentic_core/L4_state/engines/IntelligenceLibrarianAgent.py "
-            "which does not exist on disk (W1 fix, 2026-04-24). Archive-eligible 2026-05-09 "
-            "after 90-day cooling per constitutional \u00a73. AGENT-DELETION-AUTHORIZED."
-        ),
-    ),
     # ============================================
     # APPS_LIC: Additional Agents
     "LicHealingOrchestrator": AgentClassification(
@@ -1024,16 +1009,6 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         is_shim=False,
         implements_l2_contract=True,
         notes="LIC message compliance safety agent (L5). WAVE 8: Now L2 contract compliant.",
-    ),
-    "MessageArchitectAgent": AgentClassification(
-        file_path="apps_lic/reasoning/MessageArchitectAgent.py",
-        class_name="MessageArchitectAgent",
-        current_layer="L2",
-        canonical_role=CanonicalAgentRole.EXECUTION,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="LIC message architect execution agent. WAVE 6: Now L2 contract compliant.",
     ),
     "OutreachValidationExecutorAgent": AgentClassification(
         file_path="apps_lic/reasoning/OutreachValidationExecutorAgent.py",

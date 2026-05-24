@@ -50,17 +50,17 @@ def _load_yaml(rel: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 class TestIngestionRetirement:
-    def test_retirement_notice_file_exists(self) -> None:
-        p = _APP_ROOT / "engines" / "ingestion_retirement_notice.py"
-        assert p.exists(), "ingestion_retirement_notice.py must exist"
+    def test_retirement_guards_module_exists(self) -> None:
+        p = _APP_ROOT / "engines" / "retirement_guards.py"
+        assert p.exists(), "retirement_guards.py must exist"
 
     def test_retirement_reason_string_present(self) -> None:
-        import apps_repo_brief.engines.ingestion_retirement_notice as m
+        import apps_repo_brief.engines.retirement_guards as m
         assert hasattr(m, "_RETIREMENT_REASON")
         assert "repo_brief_docs" in m._RETIREMENT_REASON
 
     def test_ingestion_engine_retired_raises(self) -> None:
-        from apps_repo_brief.engines.ingestion_retirement_notice import ingestion_engine_retired
+        from apps_repo_brief.engines.retirement_guards import ingestion_engine_retired
         with pytest.raises(RuntimeError, match="IngestionEngine"):
             ingestion_engine_retired()
 
@@ -127,22 +127,22 @@ class TestC0Adapter:
 
 class TestSpineRestructureNotices:
     def test_brief_assembly_engine_retired_raises(self) -> None:
-        from apps_repo_brief.engines.spine_restructure_notices import brief_assembly_engine_retired
+        from apps_repo_brief.engines.retirement_guards import brief_assembly_engine_retired
         with pytest.raises(RuntimeError, match="BriefAssemblyEngine"):
             brief_assembly_engine_retired()
 
     def test_style_gate_validator_retired_raises(self) -> None:
-        from apps_repo_brief.engines.spine_restructure_notices import style_gate_validator_retired
+        from apps_repo_brief.engines.retirement_guards import style_gate_validator_retired
         with pytest.raises(RuntimeError, match="StyleGateValidator"):
             style_gate_validator_retired()
 
     def test_brief_assembly_split_owner(self) -> None:
-        from apps_repo_brief.engines.spine_restructure_notices import BRIEF_ASSEMBLY_ENGINE_OWNER
+        from apps_repo_brief.engines.retirement_guards import BRIEF_ASSEMBLY_ENGINE_OWNER
         assert "PA" in BRIEF_ASSEMBLY_ENGINE_OWNER
         assert "L2" in BRIEF_ASSEMBLY_ENGINE_OWNER
 
     def test_style_gate_split_owner(self) -> None:
-        from apps_repo_brief.engines.spine_restructure_notices import STYLE_GATE_VALIDATOR_OWNER
+        from apps_repo_brief.engines.retirement_guards import STYLE_GATE_VALIDATOR_OWNER
         assert "L2.E4" in STYLE_GATE_VALIDATOR_OWNER
         assert "Exit" in STYLE_GATE_VALIDATOR_OWNER
 

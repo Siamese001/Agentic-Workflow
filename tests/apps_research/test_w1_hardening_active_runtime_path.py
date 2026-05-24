@@ -91,11 +91,12 @@ class TestNoParallelRetiredDispatchPath:
             "use apps_research.runtime.profile_builder + AppIngressRunner"
         )
 
-    def test_runtime_entry_dispatch_is_tombstone_only(self):
-        import pytest as _pytest
-
-        with _pytest.raises(ImportError, match="RETIRED"):
-            import apps_research.runtime.entry.dispatch  # noqa: F401
+    def test_runtime_entry_dispatch_module_removed(self):
+        dispatch_path = Path("apps_research/runtime/entry/dispatch.py")
+        assert not dispatch_path.is_file(), (
+            "apps_research.runtime.entry.dispatch tombstone removed; "
+            "use apps_research.runtime.profile_builder + AppIngressRunner"
+        )
 
 
 class TestContractHandoffProof:
