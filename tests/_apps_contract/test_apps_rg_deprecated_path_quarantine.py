@@ -17,7 +17,6 @@ from apps_rg.l2_recipe.r4_generation_mode import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 QUARANTINE_REGISTRY: dict[str, str] = {
-    "apps_rg/runtime/dry_run/": "KEEP_APPS_RG",
     "apps_rg/runtime/internal/lane_batch.py": "TEST_SUPPORT_ONLY",
     "apps_rg/runtime/internal/": "TEST_SUPPORT_ONLY",
 }
@@ -26,6 +25,11 @@ QUARANTINE_REGISTRY: dict[str, str] = {
 def test_reasoning_package_removed() -> None:
     """apps_rg/reasoning/ deleted — product uses apps_rg/runtime section lanes."""
     assert not (REPO_ROOT / "apps_rg" / "reasoning").exists()
+
+
+def test_runtime_dry_run_directory_removed() -> None:
+    """apps_rg/runtime/dry_run/ deleted — demo harness lives under tests/fixtures/."""
+    assert not (REPO_ROOT / "apps_rg" / "runtime" / "dry_run").exists()
 
 NON_PRODUCT_PROOF_ENV: dict[str, str] = {
     "APPS_RG_R4_GENERATION_MODE": MODE_MODULAR_SECTION_LANES,

@@ -11,7 +11,7 @@ import pytest
 from apps_rg.runtime.non_product_proof_stamp import DEMO_HARNESS_ENV
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MODULE = "apps_rg.runtime.dry_run.executive_summary_demo"
+MODULE = "tests.fixtures.apps_rg.demo_harness_fixture"
 
 
 def test_demo_harness_module_fails_without_env() -> None:

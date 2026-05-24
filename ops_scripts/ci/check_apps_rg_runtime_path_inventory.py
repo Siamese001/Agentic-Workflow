@@ -58,7 +58,6 @@ CANONICAL_QUARANTINED_PATHS: set[str] = {
 
 # Non-product directories — must not be imported by ACTIVE spine (__main__/dispatch/bindings).
 NON_PRODUCT_DIRS: tuple[str, ...] = (
-    "apps_rg/runtime/dry_run/",
     "apps_rg/runtime/internal/",
 )
 

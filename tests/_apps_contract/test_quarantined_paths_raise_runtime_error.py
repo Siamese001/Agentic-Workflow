@@ -25,6 +25,7 @@ REMOVED_MODULES: tuple[tuple[str, str], ...] = (
 REMOVED_PATHS: tuple[str, ...] = (
     "apps_rg/reasoning/",
     "apps_rg/_quarantine/",
+    "apps_rg/runtime/dry_run/",
     "apps_rg/runtime/entry/dispatch.py",
     "apps_rg/engines/judges/executive_positioning_judge.py",
     "apps_rg/integrations/gates/online_judges.py",

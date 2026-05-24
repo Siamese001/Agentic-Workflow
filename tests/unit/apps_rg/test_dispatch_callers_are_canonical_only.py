@@ -26,7 +26,6 @@ FORBIDDEN_CANONICAL_CALLER_SUFFIXES = (
     "apps_rg/runtime/package/",
     "apps_rg/runtime/reports/",
     "apps_rg/runtime/assembly/",
-    "apps_rg/runtime/dry_run/",
 )
 
 

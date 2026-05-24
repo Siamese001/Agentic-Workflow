@@ -64,7 +64,7 @@ DISALLOWED_DOC_CI_COMMAND_SUBSTRINGS: tuple[str, ...] = (
     "python -m apps_rg.runtime._offline.",
     "python -m apps_rg.runtime.internal.",
     "python -m apps_rg.runtime.dispatch.",
-    "python -m apps_rg.runtime.dry_run.",
+    "python -m tests.fixtures.apps_rg.demo_harness_fixture",
     "python ops_scripts/apps_rg/narrative_pass.py",
     "python ops_scripts/apps_rg/generate_resume.py",
     "python ops_scripts/ci/prove_apps_rg_e2e_runtime.py",

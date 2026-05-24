@@ -167,6 +167,7 @@ def build_matrix() -> dict:
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "adg_snapshot": ADG_DB.name if ADG_DB.is_file() else "missing",
         "plan_id": "apps-rg-quarantine-ssot-fanin-delete-c7e4a1",
+        "follow_up_plan_id": "apps-rg-dry-run-migrate-delete-b9e4f2",
         "rows": [asdict(r) for r in rows],
         "delete_ready_ids": [r.id for r in rows if r.verdict == "DELETE_READY"],
     }

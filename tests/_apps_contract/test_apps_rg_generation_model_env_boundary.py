@@ -38,9 +38,9 @@ PRODUCT_GENERATION_ROOTS: tuple[Path, ...] = (
 
 # Explicitly classified non-generation (must not fail W2 if they reference spine vars).
 CLASSIFIED_NON_GENERATION_PREFIXES: tuple[str, ...] = (
-    "apps_rg/runtime/dry_run/",
     "apps_rg/runtime/judges/",
     "apps_rg/runtime/dispatch/",
+    "tests/fixtures/apps_rg/",
 )
 
 

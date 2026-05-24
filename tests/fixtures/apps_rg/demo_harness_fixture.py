@@ -1,4 +1,8 @@
-"""Executive summary demo harness — non-product; requires ``APPS_RG_ALLOW_DEMO_HARNESS=1``."""
+"""Demo harness fixture — non-product; requires ``APPS_RG_ALLOW_DEMO_HARNESS=1``.
+
+Migrated from removed ``apps_rg.runtime.dry_run.executive_summary_demo`` (plan
+apps-rg-dry-run-migrate-delete-b9e4f2). Test-only entry via ``python -m`` subprocess.
+"""
 from __future__ import annotations
 
 import json

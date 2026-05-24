@@ -80,7 +80,7 @@ def test_demo_harness_fail_closed_without_env() -> None:
     env = os.environ.copy()
     env.pop(DEMO_HARNESS_ENV, None)
     proc = subprocess.run(
-        [sys.executable, "-m", "apps_rg.runtime.dry_run.executive_summary_demo"],
+        [sys.executable, "-m", "tests.fixtures.apps_rg.demo_harness_fixture"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
@@ -93,7 +93,7 @@ def test_demo_harness_fail_closed_without_env() -> None:
 def test_demo_harness_emits_non_product_when_enabled(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(DEMO_HARNESS_ENV, "1")
     out = tmp_path / "demo_out"
-    from apps_rg.runtime.dry_run.executive_summary_demo import run_demo_harness
+    from tests.fixtures.apps_rg.demo_harness_fixture import run_demo_harness
 
     result = run_demo_harness(output_dir=out)
     assert result["proof_classification"] == DEMO_HARNESS_PROOF_CLASSIFICATION

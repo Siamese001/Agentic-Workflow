@@ -33,7 +33,8 @@ NON_PRODUCT_PROOF_MARKERS: frozenset[str] = frozenset(
         "APPS_RG_L2_FORCE_STUB",
         "RETIRED_APPS_RG_R4_GENERATION_MODE",
         "--mock-judges",
-        "apps_rg/runtime/dry_run/",
+        "tests/fixtures/apps_rg/",
+        "APPS_RG_ALLOW_DEMO_HARNESS",
         "contract_harness/",
     }
 )
@@ -77,6 +78,7 @@ def test_runtime_proof_layout_distinguishes_contract_harness() -> None:
 def test_non_product_markers_registry_for_report() -> None:
     """Markers listed for w6_w9 report — must not be treated as product proof."""
     joined = " ".join(NON_PRODUCT_PROOF_MARKERS)
-    assert "dry_run" in joined
+    assert "fixtures/apps_rg" in joined
+    assert "DEMO_HARNESS" in joined
     assert "contract_harness" in joined
     assert "stub" in joined.lower()

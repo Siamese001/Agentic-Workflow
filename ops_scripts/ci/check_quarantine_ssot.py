@@ -11,12 +11,12 @@ REMOVED_PATHS = (
     "apps_rg/reasoning",
     "apps_rg/_quarantine",
     "apps_rg/runtime/entry",
+    "apps_rg/runtime/dry_run",
     "apps_rg/engines/judges",
     "apps_rg/integrations/gates",
 )
 
 NON_PRODUCT_DIRS = (
-    "apps_rg/runtime/dry_run",
     "apps_rg/runtime/internal",
 )
 
