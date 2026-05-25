@@ -27,16 +27,16 @@ only.
 
 from __future__ import annotations
 
-from system_learning.runtime_adg.materializer import (  # noqa: F401
+from agentic_core.L6_system_learning.materializer import (  # noqa: F401
     RuntimeADGMaterializer,
 )
-from system_learning.runtime_adg.snapshot import (  # noqa: F401
+from agentic_core.L6_system_learning.snapshot import (  # noqa: F401
     RuntimeADGEdge,
     RuntimeADGNode,
     RuntimeADGSnapshot,
     create_runtime_adg_snapshot,
 )
-from system_learning.runtime_adg.store import (  # noqa: F401
+from agentic_core.L6_system_learning.store import (  # noqa: F401
     FileBackedRuntimeADGStore,
     InMemoryRuntimeADGStore,
 )

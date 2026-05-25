@@ -268,8 +268,8 @@ class CleanLayerVisitor(ast.NodeVisitor):
             return "TOOLS"
         elif "ops_scripts" in rel_path:
             return "OPS"
-        elif "system_learning" in rel_path:
-            return "LEARNING"
+        elif "system_learning" in rel_path or "L6_system_learning" in rel_path:
+            return "L6"
         else:
             return None
 

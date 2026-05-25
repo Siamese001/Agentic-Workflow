@@ -41,7 +41,7 @@ def _wrap_sync(fn: Callable, cls: type, method_name: str) -> Callable:
     @functools.wraps(fn)
     def wrapper(self, *args: Any, **kwargs: Any) -> Any:
         # Lazy import: avoid circular imports at class-definition time.
-        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.runtime_span_emitter import (  # noqa: PLC0415
             get_current_adapter,
             seal_step,
         )
@@ -67,7 +67,7 @@ def _wrap_async(fn: Callable, cls: type, method_name: str) -> Callable:
 
     @functools.wraps(fn)
     async def wrapper(self, *args: Any, **kwargs: Any) -> Any:
-        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.runtime_span_emitter import (  # noqa: PLC0415
             get_current_adapter,
             seal_step,
         )

@@ -61,12 +61,12 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any, Final
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     ContractSpanBinding,
     PhaseAStatus,
     R3_FORBIDDEN_CONTRACTS,
 )
-from system_learning.runtime_adg.span_contracts import (
+from agentic_core.L6_system_learning.span_contracts import (
     SIGNAL_THRESHOLD,
     _CategoryContract,
     _TIER1_CONTRACTS,

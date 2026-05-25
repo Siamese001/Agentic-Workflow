@@ -10,12 +10,12 @@ from pathlib import Path
 
 import pytest
 
-from system_learning.runtime_adg.snapshot import (
+from agentic_core.L6_system_learning.snapshot import (
     RuntimeADGEdge,
     RuntimeADGNode,
     create_runtime_adg_snapshot,
 )
-from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
 
 def _make_node(node_id: str = "n1", name: str = "test.span") -> RuntimeADGNode:
@@ -52,7 +52,7 @@ def _stub_bridge(monkeypatch: pytest.MonkeyPatch) -> None:
     which tries to import a missing `tools.implement_unified_memory` module.
     That path is unrelated to runtime ADG correctness; short-circuit it.
     """
-    from system_learning.stores import version_store as vs_mod
+    from agentic_core.L6_system_learning.stores import version_store as vs_mod
 
     class _NullBridge:
         def persist_active_version(self, *_args, **_kwargs) -> None:

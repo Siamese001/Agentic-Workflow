@@ -146,6 +146,92 @@ def repair_generic_filler_prose(
     return out.strip(), receipt
 
 
+def strip_unsupported_source_sensitive_prose(
+    parsed: dict[str, Any],
+    *,
+    selected_facts: list[dict[str, Any]] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Rewrite or drop SOURCE_SENSITIVE phrases unsupported by allowed facts."""
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        SOURCE_SENSITIVE_PHRASES,
+        _sensitive_phrase_present,
+        check_source_sensitive_phrases,
+    )
+
+    out = dict(parsed)
+    text = str(out.get("resume_display_text") or "")
+    receipt: dict[str, Any] = {
+        "schema": "executive_summary_source_sensitive_strip_v1",
+        "repaired": False,
+        "replacements": [],
+    }
+    if not text:
+        return out, receipt
+
+    facts = list(selected_facts or [])
+    supported: set[str] = set()
+    corpus_parts: list[str] = []
+    for row in facts:
+        if not isinstance(row, dict):
+            continue
+        corpus_parts.append(str(row.get("claim_text") or ""))
+        corpus_parts.append(str(row.get("achievement_summary") or ""))
+    corpus = " ".join(corpus_parts).lower()
+    for phrase in SOURCE_SENSITIVE_PHRASES:
+        if _sensitive_phrase_present(corpus, phrase):
+            supported.add(phrase)
+
+    rewritten = text
+    if "regulated environments" not in supported:
+        if "regulated enterprise workflows" in supported or "regulated enterprise" in corpus:
+            new = re.sub(
+                r"\bregulated environments\b",
+                "regulated enterprise workflows",
+                rewritten,
+                flags=re.IGNORECASE,
+            )
+            if new != rewritten:
+                rewritten = new
+                receipt["replacements"].append("regulated_environments_to_workflows")
+        else:
+            new = re.sub(
+                r"\bregulated environments\b",
+                "enterprise programs",
+                rewritten,
+                flags=re.IGNORECASE,
+            )
+            if new != rewritten:
+                rewritten = new
+                receipt["replacements"].append("regulated_environments_neutralized")
+
+    if "governance framework" not in supported:
+        if "basel" in corpus or "ccar" in corpus or "lineage" in corpus:
+            new = re.sub(
+                r"\bgovernance frameworks?\b",
+                "Basel III/CCAR lineage and validation frameworks",
+                rewritten,
+                flags=re.IGNORECASE,
+            )
+            if new != rewritten:
+                rewritten = new
+                receipt["replacements"].append("governance_framework_to_basel")
+
+    for phrase in ("compliance", "audit"):
+        if phrase not in supported and _sensitive_phrase_present(rewritten.lower(), phrase):
+            new = re.sub(rf"\b{re.escape(phrase)}\b", "controls", rewritten, flags=re.IGNORECASE)
+            if new != rewritten:
+                rewritten = new
+                receipt["replacements"].append(f"{phrase}_to_controls")
+
+    ok, reason = check_source_sensitive_phrases(rewritten, facts)
+    receipt["post_check_ok"] = ok
+    receipt["post_check_reason"] = reason or ""
+    if rewritten != text:
+        out["resume_display_text"] = rewritten.strip()
+        receipt["repaired"] = True
+    return out, receipt
+
+
 def reconcile_claim_ledger_after_voice_repair(parsed: dict[str, Any]) -> dict[str, Any]:
     """Keep claim_ledger aligned with repaired display text (materialized_or_gap gate)."""
     from apps_rg.runtime.validators.executive_summary_x2 import (
@@ -281,4 +367,5 @@ __all__ = [
     "finalize_executive_summary_coherence",
     "reconcile_claim_ledger_after_voice_repair",
     "repair_generic_filler_prose",
+    "strip_unsupported_source_sensitive_prose",
 ]

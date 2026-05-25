@@ -5,18 +5,18 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.eval_readiness_classifier import (
+from agentic_core.L6_system_learning.eval_readiness_classifier import (
     EvalReadinessClassifier,
     ReadinessVerdict,
 )
-from system_learning.engines.observer_compliance_recorder import (
+from agentic_core.L6_system_learning.observer_compliance_recorder import (
     ObserverComplianceRecorder,
 )
-from system_learning.engines.schema_normalizer import (
+from agentic_core.L6_system_learning.schema_normalizer import (
     REQUIRED_FIELDS,
     SchemaNormalizer,
 )
-from system_learning.engines.v7_kpi_board import (
+from agentic_core.L6_system_learning.v7_kpi_board import (
     UnifiedKPIBoard,
     V7KPIName,
 )

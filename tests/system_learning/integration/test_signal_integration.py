@@ -9,8 +9,8 @@ import time
 import unittest
 from unittest.mock import Mock, patch
 
-from system_learning.adapters.system_learning_memory_bridge import SystemLearningMemoryBridge
-from system_learning.config.feature_flags import get_feature_flags, reset_feature_flags
+from agentic_core.L6_system_learning.system_learning_memory_bridge import SystemLearningMemoryBridge
+from agentic_core.L6_system_learning.feature_flags import get_feature_flags, reset_feature_flags
 
 
 class TestSignalIntegration(unittest.TestCase):

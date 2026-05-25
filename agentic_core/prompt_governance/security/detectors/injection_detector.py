@@ -326,7 +326,7 @@ class InjectionDetector:
     def _emit_detection_counts(self) -> None:
         """Emit injection detection counts to system learning."""
         try:
-            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
             bridge = get_sl_memory_bridge()
 
@@ -409,7 +409,7 @@ class InjectionDetector:
     ) -> None:
         """Emit context-aware injection detection data."""
         try:
-            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
             bridge = get_sl_memory_bridge()
 

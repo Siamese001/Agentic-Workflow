@@ -1933,7 +1933,7 @@ def run_promotion_gauntlet_proof() -> bool:
     Uses entirely synthetic (no-ChromaDB) candidates and clusters.
     Returns True if all verification checks pass.
     """
-    from agentic_core.L6_observability.utils.evaluation.governed_handoff import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full promotion gauntlet path end-to-end
+    from ops_scripts.reports.governed_handoff import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full promotion gauntlet path end-to-end
         BUS_ROLLOUT_SIGNAL,
         GovernedHandoffAgent,
     )
@@ -2264,7 +2264,7 @@ def run_promotion_commit_proof() -> bool:
 
     Returns True if all 10 PCR checks pass.
     """
-    from agentic_core.L6_observability.utils.evaluation.governed_handoff import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full governed commit path
+    from ops_scripts.reports.governed_handoff import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full governed commit path
         BUS_ROLLOUT_SIGNAL,
         GovernedHandoffAgent,
         HandoffRecord,
@@ -2895,7 +2895,7 @@ def run_exec_pilot_proof() -> bool:
     from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
         HybridSearchResult,
     )
-    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+    from ops_scripts.reports.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
         get_async_eval_ingester,
         reset_async_eval_ingester,
     )
@@ -3190,7 +3190,7 @@ def run_rfp_pilot_proof() -> bool:
     from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
         HybridSearchResult,
     )
-    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+    from ops_scripts.reports.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
         get_async_eval_ingester,
         reset_async_eval_ingester,
     )
@@ -3456,7 +3456,7 @@ def run_rg_pilot_proof() -> bool:
     from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
         HybridSearchResult,
     )
-    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+    from ops_scripts.reports.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
         get_async_eval_ingester,
         reset_async_eval_ingester,
     )

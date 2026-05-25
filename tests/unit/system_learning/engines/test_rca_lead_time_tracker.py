@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.rca_lead_time_tracker import RCALeadTimeTracker
-from system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
+from agentic_core.L6_system_learning.rca_lead_time_tracker import RCALeadTimeTracker
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIBoard, V6KPIName
 
 
 def test_initial_state_clean():

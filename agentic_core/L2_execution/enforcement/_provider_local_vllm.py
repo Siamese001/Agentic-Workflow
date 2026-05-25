@@ -106,10 +106,18 @@ class LocalVLLMProvider:
             get_qwen_inference_gateway,
         )
 
-        composed = self._compose_prompt(system_prompt, user_prompt)
+        raw_messages = kwargs.get("messages")
+        if raw_messages is not None:
+            msg_tuple = tuple(dict(m) for m in raw_messages)
+            composed = ""
+        else:
+            msg_tuple = None
+            composed = self._compose_prompt(system_prompt, user_prompt)
+
         request = QwenInferenceRequest(
             app_name=self._app_name,
             prompt=composed,
+            messages=msg_tuple,
             max_tokens=int(kwargs.get("max_tokens", 2048)),
             temperature=float(kwargs.get("temperature", 0.1)),
             use_cache=bool(kwargs.get("use_cache", True)),
@@ -134,7 +142,7 @@ class LocalVLLMProvider:
                 f"LocalVLLMProvider inference failed: {response.error_message or 'unknown error'}",
             )
 
-        return {
+        out: dict[str, Any] = {
             "content": response.response or "",
             "tokens_used": response.tokens_used,
             "model": response.model_used,
@@ -144,6 +152,9 @@ class LocalVLLMProvider:
             "confidence": response.confidence,
             "_reasoning_transport_observed": observed_transport,
         }
+        if msg_tuple is not None:
+            out["messages"] = list(msg_tuple)
+        return out
 
     def reasoning_transport_kw_forwarded(self) -> frozenset[str]:
         """Names forwarded into ``QwenInferenceRequest`` (transport proof surface)."""

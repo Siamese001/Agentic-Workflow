@@ -14,7 +14,7 @@ import importlib.util
 
 import pytest
 
-from system_learning.v6_contract_map import (
+from agentic_core.L6_system_learning.v6_contract_map import (
     V6_CONTRACT_MAP,
     V6PhaseContract,
     all_modules,
@@ -61,17 +61,17 @@ class TestContractMapDrift:
 
 class TestPhaseForModule:
     def test_known_module_resolves_to_correct_phase(self):
-        phases = phase_for_module("system_learning.engines.rca_engine")
+        phases = phase_for_module("agentic_core.L6_system_learning.engines.rca_engine")
         assert "S3B" in phases
 
     def test_shared_module_appears_in_multiple_phases(self):
         # meta_learning_replay_binding is named in both S1B (lineage binder)
         # and S4D (replay binding).
         phases = phase_for_module(
-            "system_learning.engines.meta_learning_replay_binding"
+            "agentic_core.L6_system_learning.engines.meta_learning_replay_binding"
         )
         assert "S1B" in phases
         assert "S4D" in phases
 
     def test_unknown_module_returns_empty(self):
-        assert phase_for_module("system_learning.engines.does_not_exist") == ()
+        assert phase_for_module("agentic_core.L6_system_learning.engines.does_not_exist") == ()

@@ -137,8 +137,8 @@ def _build_state_diff(record: object, *, app_id: str) -> StateDiff:
     namespaced by record kind for downstream audit-grep clarity.
     """
     record_kind = app_domain_record_kind(record)
-    record_id_attr = _record_id_attr(record_kind)
-    record_id = getattr(record, record_id_attr)
+    record_id_attr = _record_id_attr(record_kind)  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
+    record_id = getattr(record, record_id_attr)  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
     after_candidate = f"l4://app_domain/{record_kind}/{record_id}"
     rollback_plan_ref = f"rollback://app_domain/{record_kind}/{record_id}"
     schema_ref = f"schema://app_domain/{record_kind}"

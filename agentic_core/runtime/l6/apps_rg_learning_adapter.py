@@ -54,7 +54,7 @@ def _get_l6_profile_defaults(app_id: str) -> dict:
         return profile.typed_payload.get("writeback_config", {})
     except (UnknownAppError, MissingProfileError, InvalidProfileError):
         return {}
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P1 ADG burndown
         return {}
 
 

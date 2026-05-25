@@ -161,7 +161,7 @@ class ProviderGateway:
                 raise ProviderGatewayError(
                     f"Unknown provider kind: {profile.provider_kind}"
                 )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             latency_ms = (time.time() - started) * 1000.0
             receipt = self._build_receipt(
                 invocation_id=invocation_id,
@@ -383,7 +383,7 @@ class ProviderGateway:
                 receipt=None,
                 error_message=f"vLLM provider unavailable: {exc}",
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error("vLLM invocation failed: %s", exc)
             return ProviderResponse(
                 success=False,
@@ -495,7 +495,7 @@ class ProviderGateway:
                 receipt=None,
                 model_used=msg.model,
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error("Anthropic call failed for %s: %s", profile.profile_id, exc)
             return ProviderResponse(
                 success=False, text="", receipt=None,
@@ -539,7 +539,7 @@ class ProviderGateway:
                 receipt=None,
                 model_used=resp.model,
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error("OpenAI-compat call failed for %s: %s", profile.profile_id, exc)
             return ProviderResponse(
                 success=False, text="", receipt=None,

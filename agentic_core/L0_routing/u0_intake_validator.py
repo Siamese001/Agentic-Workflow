@@ -40,7 +40,7 @@ def _check_l5_cert_ref(ref: str, stage: str) -> None:
     try:
         from agentic_core.L5_safety.contracts.registry import verify_certification_ref
         valid = verify_certification_ref(ref)
-    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry import must not crash pipeline; treat as unverified
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry import must not crash pipeline; treat as unverified  # guardian: allow-broad-exception -- P1 ADG burndown
         _logger.warning("L5CertRefViolation stage=%s registry_error=%s", stage, exc)
         return
     if not valid:

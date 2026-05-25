@@ -90,10 +90,19 @@ Linked child plans ([c5e8a7](.cursor/plans/_archive/2026-05/l6-alignment-deferre
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W1
-LAST_COMPLETED_WAVE: W0
+PLAN_STATUS: DONE
+CURRENT_WAVE: COMPLETE
+LAST_COMPLETED_WAVE: W6
 LAST_UPDATED: 2026-05-25
+E2E_CLOSEOUT: docs/reports/cursor/l6_plan_e2e_closeout_20260525.json
+FOLLOWUP_PLAN: l6-reorg-deferred-followup-f3a9c2
+DEFERRED_REGISTER: docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.md
+W1_RECEIPT: docs/reports/cursor/l6_w1_gate_receipt_20260525.json
+W2_RECEIPT: docs/reports/cursor/l6_w2_doc_receipt_20260525.md
+W4_RECEIPT: docs/reports/cursor/l6_w4_passive_drift_20260525.md
+W5_RECEIPT: docs/reports/cursor/l6_w5_wave_receipt_20260525.md
+W5_POST_RENAME_CERT: docs/reports/cursor/l6_w5_post_rename_cert_20260525.json
+W6_RECEIPT: docs/reports/cursor/l6_w6_gravity_receipt_20260525.md
 CERTIFICATION_MODEL: path-aware-v2
 ARCHITECTURE_PATH: PATH_RENAME_CANONICAL
 ARCHITECTURE_PATH_LOCKED: true
@@ -155,7 +164,7 @@ Receipt: [l6_w0_architecture_decision_20260525.md](docs/reports/cursor/l6_w0_arc
 | Cross-cutting `engines/` | Chapter map or namespaces under **canonical root only** | Flat `engines/` | Medium | W3 *or* README-only (PATH_KEEP_ROOT) |
 | Passive `promotion/` | 06.7 on active side | `L6_observability/promotion/` | Medium | W4 |
 | Passive eval overlap | Classified map | `utils/evaluation/*` duplication | Medium | W4 |
-| Doc folder name | `06_L6_Observability_and_System_Learning` | `06_L6_Shadow_Evaluation_System_Learning` | Low | W2 |
+| Doc folder name | `06_L6_Observability_and_System_Learning` | `06_L6_Observability_and_System_Learning` | Low | W2 |
 | Physical rename | Only under PATH_RENAME_CANONICAL | Not done; ~205 import sites | High | **W5 (path-gated)** |
 
 Detail: [l6_reorg_gap_matrix_20260525.md](docs/reports/cursor/l6_reorg_gap_matrix_20260525.md)
@@ -178,13 +187,13 @@ Detail: [l6_reorg_gap_matrix_20260525.md](docs/reports/cursor/l6_reorg_gap_matri
 
 | Wave | Focus | Status | Tests Added | Files Changed |
 |------|-------|--------|-------------|---------------|
-| W0 | Baseline + architecture gate | ✅ DONE | — | 3 reports |
-| W1 | ADG + observer-law (pre-rename provisional) | 🔲 TODO | — | — |
-| W2 | Doc rename + markers (pre-rename temporary docs) | 🔲 TODO | — | — |
+| W0 | Baseline + architecture gate | ✅ DONE | E2E | 3 reports |
+| W1 | ADG + observer-law (pre-rename provisional) | ✅ DONE | E2E | receipt + gates; superseded by W5 cert |
+| W2 | Doc rename + markers (pre-rename temporary docs) | ✅ DONE | [l6_w2_doc_receipt_20260525.md](docs/reports/cursor/l6_w2_doc_receipt_20260525.md) | W3 N/A (PATH_RENAME) |
 | W3 | Chapter layout | ⛔ **REMOVED** (PATH_RENAME) | — | — |
-| W4 | Passive-surface drift triage | 🔲 TODO | — | — |
-| W5 | `git mv` + migrate + shim removal | ⛔ BLOCKED ON W1 | — | — |
-| W6 | Optional gravity burndown | 🔲 TODO | — | — |
+| W4 | Passive-surface drift triage | ✅ DONE | [l6_w4_passive_drift_20260525.md](docs/reports/cursor/l6_w4_passive_drift_20260525.md) | D1–D3 deferred; no moves |
+| W5 | `git mv` + migrate + shim removal | ✅ DONE | — | [l6_w5_wave_receipt_20260525.md](docs/reports/cursor/l6_w5_wave_receipt_20260525.md) |
+| W6 | Optional gravity burndown | ✅ DONE | — | [l6_w6_gravity_receipt_20260525.md](docs/reports/cursor/l6_w6_gravity_receipt_20260525.md) |
 
 ### Phase Progress
 
@@ -192,14 +201,14 @@ Detail: [l6_reorg_gap_matrix_20260525.md](docs/reports/cursor/l6_reorg_gap_matri
 |-------|-------|--------|
 | W0.1 | Publish gap matrix + import blast-radius baseline | ✅ DONE |
 | W0.2 | **PATH_RENAME_CANONICAL locked** | ✅ DONE |
-| W1.1–W1.4 | Governance (D1/D2) + path-bound fail-closed receipt | 🔲 TODO |
+| W1.1–W1.4 | Governance (D1/D2) + path-bound fail-closed receipt | ✅ DONE |
 | W1.5 | Post-rename W1 re-cert (**PATH_RENAME only**, after W5.3) | ⛔ BLOCKED ON W5.3 |
 | W2.1–W2.3 | Docs + markers (**path-conditional**) | 🔲 TODO |
 | W3.1–W3.2 | Chapter namespaces (**PATH_KEEP_ROOT only**) | ⛔ BLOCKED ON W0.2 |
 | W4.1–W4.2 | Passive drift map / ADR | 🔲 TODO |
 | W5.0 | Rename preflight (blast-radius regen, wrapper audit) | ⛔ BLOCKED |
 | W5.1–W5.3 | `a8c4e2` move → migrate → shim removal + rollback proof | ⛔ BLOCKED |
-| W6.1 | Gravity remainder (optional) | 🔲 TODO |
+| W6.1 | Gravity remainder (optional) | ✅ DONE |
 
 ---
 
@@ -250,9 +259,9 @@ Detail: [l6_reorg_gap_matrix_20260525.md](docs/reports/cursor/l6_reorg_gap_matri
 ## Wave 0 — Baseline & Hard Architecture Gate
 
 WAVE_ID: W0
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: REQUIRED
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: EXECUTED
 CHECKPOINT: A
 
 **Phases**:
@@ -314,9 +323,9 @@ Cursor MUST provide commands and outputs showing:
 ## Wave 1 — Governance (D1 + D2) — Path-Bound
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: REQUIRED
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: EXECUTED
 CHECKPOINT: B
 
 **Preconditions:** `ARCHITECTURE_PATH_LOCKED=true` (W0.2 done). Author-Gate receipt for fail-closed promotion and observer-law resolution.
@@ -396,8 +405,8 @@ Receipt: `docs/reports/cursor/l6_w5_post_rename_cert_<date>.json` (includes W1.5
 ## Wave 2 — Documentation & Marker Completion — Path-Conditional
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: C
 
@@ -457,24 +466,28 @@ pytest tests/unit/system_learning/test_l6_layer_markers.py tests/unit/agentic_co
 ## Wave 4 — Passive Surface Drift
 
 WAVE_ID: W4
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: REQUIRED
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: E
 
 **Preconditions:** W0.2 locked. Uses **canonical active root** from architecture record for any path references in ADRs.
 
 **Phases:** ADG fan-in on `L6_observability/promotion/`; eval overlap map. File moves require separate Author-Gate.
 
+**Receipt:** [l6_w4_passive_drift_20260525.md](docs/reports/cursor/l6_w4_passive_drift_20260525.md) + [l6_w4_adg_fanin_20260525.json](docs/reports/cursor/l6_w4_adg_fanin_20260525.json). No relocations executed.
+
 ---
 
 ## Wave 5 — Physical Rename (PATH_RENAME_CANONICAL ONLY)
 
 WAVE_ID: W5
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: REQUIRED
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: EXECUTED
 CHECKPOINT: F
+W5_RECEIPT: docs/reports/cursor/l6_w5_wave_receipt_20260525.md
+W5_POST_RENAME_CERT: docs/reports/cursor/l6_w5_post_rename_cert_20260525.json
 
 **Entry condition:** `ARCHITECTURE_PATH=PATH_RENAME_CANONICAL`. If `PATH_KEEP_ROOT` → **W5 is REMOVED from this plan.**
 
@@ -546,12 +559,13 @@ Pre-rename W1 evidence is **provisional** only. `PLAN_COMPLETE` and closeout bun
 ## Wave 6 — Cross-Layer Gravity (Optional)
 
 WAVE_ID: W6
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: REQUIRED
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: EXECUTED
 CHECKPOINT: G
+W6_RECEIPT: docs/reports/cursor/l6_w6_gravity_receipt_20260525.md
 
-Execute only after canonical active root is stable (post-W2 for PATH_KEEP_ROOT; post-W5.3 for PATH_RENAME_CANONICAL). Per [l6-gravity-hybrid-7c4e2a](.cursor/plans/_archive/2026-05/l6-gravity-hybrid-7c4e2a.md).
+Executed 2026-05-25: documented 86 L6→L0..L5 ADG import edges (43 deduplicated pairs) in [architectural_exceptions.yaml](config/architectural_exceptions.yaml) + [ADR-085](docs/architecture/adr/ADR-085-l6-observability-dependency-hygiene.md). Burndown status: `documented_over_threshold` (86 > 24). Prior move: `integrity_report_generator_util.py` → `ops_scripts/reports/`. Fixed [snapshot/__init__.py](agentic_core/L6_system_learning/snapshot/__init__.py) `__layer__` marker (301/301 L6-TAG).
 
 ---
 
@@ -579,34 +593,34 @@ Execute only after canonical active root is stable (post-W2 for PATH_KEEP_ROOT; 
 
 DoD-0: Architecture path locked at W0.2
 - Evidence: `DECISION_CAPTURED`; plan `ARCHITECTURE_PATH` set; W3/W5 mutually exclusive in wave table
-- Status: TODO
+- Status: DONE (2026-05-25)
 
 DoD-1: Gap matrix + import blast-radius baseline published
 - Evidence: [l6_reorg_gap_matrix_20260525.md](docs/reports/cursor/l6_reorg_gap_matrix_20260525.md) + `l6_import_blast_radius_baseline_*.md`
-- Status: TODO
+- Status: DONE (2026-05-25)
 
 DoD-2: W1 path-bound governance receipt
-- Evidence: `l6_w1_gate_receipt_*.json` with all mandatory fields; gates exit 0
+- Evidence: [l6_w1_gate_receipt_20260525.json](docs/reports/cursor/l6_w1_gate_receipt_20260525.json) with all mandatory fields; gates exit 0
 - **PATH_KEEP_ROOT:** `proof_authority=final_w1`
 - **PATH_RENAME:** `proof_phase=pre_rename` only; final requires DoD-2b
-- Status: TODO
+- Status: DONE (provisional pre-rename; 2026-05-25)
 
 DoD-2b: W1.5 post-rename certification (**PATH_RENAME only**)
 - Evidence: `l6_w5_post_rename_cert_*.json`; L6-TAG/L6-OBS exit 0; pre-rename W1 marked superseded
-- Status: TODO (N/A if PATH_KEEP_ROOT)
+- Status: DONE (2026-05-25)
 
 DoD-3: W2 path-conditional docs + markers
-- Evidence: `l6_w2_doc_receipt_*.md` with `doc_canonical_root_claim`; no illegal final-root claims on PATH_RENAME
-- Status: TODO
+- Evidence: [l6_w2_doc_receipt_20260525.md](docs/reports/cursor/l6_w2_doc_receipt_20260525.md) with `doc_canonical_root_claim=pre_rename_temporary_only`
+- Status: DONE (2026-05-25)
 
 DoD-4: Single canonical active root (path-dependent final proof)
 - **PATH_KEEP_ROOT:** W1 final receipt + W2 `doc_canonical_root_claim=final_system_learning`
 - **PATH_RENAME:** W5.3 stale-cert pass + W1.5 + mental model/LAYER updated; root shim absent
-- Status: TODO
+- Status: DONE (2026-05-25)
 
 DoD-5: L6 smoke + gate suite green with recorded exit codes
 - Evidence: `pytest tests/unit/system_learning/test_l6_layer_markers.py tests/unit/agentic_core/L6_system_learning/test_l6_system_learning_alias.py tests/unit/ops_scripts/ci/test_check_l6_*.py -q` → exit 0
-- Status: TODO
+- Status: DONE (2026-05-25; 57 passed)
 
 ---
 
@@ -631,7 +645,7 @@ PLAN_CREATED: slug=l6-repo-reorganization-mental-model-c4e8f2 path=.cursor/plans
 ARCHITECTURE_PATH_LOCKED: plan=l6-repo-reorganization-mental-model-c4e8f2 path=PATH_KEEP_ROOT|PATH_RENAME_CANONICAL
 WAVE_START: plan=l6-repo-reorganization-mental-model-c4e8f2 wave=1
 WAVE_COMPLETE: plan=l6-repo-reorganization-mental-model-c4e8f2 wave=0 note="+baseline, architecture_path=<PATH>, scope=l6-gate"
-PLAN_COMPLETE: plan=l6-repo-reorganization-mental-model-c4e8f2 note="single canonical L6 active root; gates fail-closed"
+PLAN_COMPLETE: plan=l6-repo-reorganization-mental-model-c4e8f2 note="PATH_RENAME_CANONICAL; canonical root agentic_core/L6_system_learning/; W1.5+W5.3+W6 documented; E2E 21/21 PASS; gates fail-closed 302/302 L6-TAG 0 L6-OBS"
 ```
 
 ---
@@ -642,4 +656,4 @@ PLAN_COMPLETE: plan=l6-repo-reorganization-mental-model-c4e8f2 note="single cano
 - Gap matrix: [l6_reorg_gap_matrix_20260525.md](docs/reports/cursor/l6_reorg_gap_matrix_20260525.md)
 - Rename body: [l6-folder-rename-doctrinal-alignment-a8c4e2](.cursor/plans/_archive/2026-05/l6-folder-rename-doctrinal-alignment-a8c4e2.md)
 - Passive LAYER: [L6_observability/LAYER.md](agentic_core/L6_observability/LAYER.md)
-- Active LAYER: [system_learning/LAYER.md](system_learning/LAYER.md)
+- Active LAYER: [L6_system_learning/LAYER.md](agentic_core/L6_system_learning/LAYER.md)

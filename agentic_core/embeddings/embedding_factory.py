@@ -610,7 +610,7 @@ def guard_embedding_instantiation(module_name: str, class_name: str) -> None:
         "agentic_core.embeddings.embedding_factory",
         "data.sdks_mcps.client_wrappers",
         "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent",
-        "system_learning.engines.embedding_service_factory",
+        "agentic_core.L6_system_learning.engines.embedding_service_factory",
         # Operational ingestion bridge — pass-through to this factory.
         # See tools/ingestion/_embedding_factory_bridge.py for the rationale.
         "tools.ingestion._embedding_factory_bridge",

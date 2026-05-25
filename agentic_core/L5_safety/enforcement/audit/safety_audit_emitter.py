@@ -245,7 +245,7 @@ def emit_safety_audit_record(
 
     # Emit safety audit to system learning for RCA clustering
     try:
-        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+        from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
         bridge = get_sl_memory_bridge()
 

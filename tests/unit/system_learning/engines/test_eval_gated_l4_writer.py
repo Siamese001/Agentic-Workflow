@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.eval_freshness_gate import (
+from agentic_core.L6_system_learning.eval_freshness_gate import (
     EvalFreshnessGate,
     EvalFreshnessViolation,
 )
-from system_learning.engines.eval_gated_l4_writer import (
+from agentic_core.L6_system_learning.eval_gated_l4_writer import (
     EvalGatedL4StateWriter,
 )
 

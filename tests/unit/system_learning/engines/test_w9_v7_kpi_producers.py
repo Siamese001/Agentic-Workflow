@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from system_learning.engines.v6_kpi_board import V6KPIName
-from system_learning.engines.v7_kpi_board import UnifiedKPIBoard, V7KPIName
-from system_learning.engines.v7_kpi_producers import (
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIName
+from agentic_core.L6_system_learning.v7_kpi_board import UnifiedKPIBoard, V7KPIName
+from agentic_core.L6_system_learning.v7_kpi_producers import (
     AbstainCalibrationTracker,
     CitationDriftTracker,
     ExemplarHitTracker,

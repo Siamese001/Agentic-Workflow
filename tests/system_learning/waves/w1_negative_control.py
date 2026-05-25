@@ -39,7 +39,7 @@ from pathlib import Path
 
 import numpy as np
 
-from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError, EmbeddingServiceFactory
+from agentic_core.L6_system_learning.embedding_service_factory import EmbeddingIntegrityError, EmbeddingServiceFactory
 
 # REMOVED: _emit_emits_metric_event("w1_negative_control", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("w1_negative_control", "p4obs", "metric_2")

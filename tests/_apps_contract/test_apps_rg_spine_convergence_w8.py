@@ -13,7 +13,7 @@ REPO = Path(__file__).resolve().parents[2]
 
 @pytest.mark.apps_contract
 def test_apps_rg_spine_span_checklist_has_eight_layers() -> None:
-    from system_learning.runtime_adg.span_contracts import (
+    from agentic_core.L6_system_learning.span_contracts import (
         APPS_RG_SPINE_SPAN_CHECKLIST,
         apps_rg_spine_span_checklist_report,
     )

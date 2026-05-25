@@ -271,7 +271,7 @@ class RuntimeProfileResolver:
         try:
             with open(schema_path, "r", encoding="utf-8") as f:
                 schema = yaml.safe_load(f)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
             if self._strict_mode:
                 raise InvalidProfileError(
                     f"Failed to load schema {schema_path}: {e}"

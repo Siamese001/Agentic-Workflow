@@ -1,0 +1,218 @@
+"""ConfigStore types -- Wave 7.0.17.B.
+
+Frozen, schema-locked artifacts for the meta-control config store.
+NO file IO.  NO mutation logic.  NO automatic application.
+
+Canonicalization policy for payload dicts:
+  - Keys are sorted recursively at every nesting level.
+  - List values are NOT reordered (order is semantically significant).
+  - All serialization uses compact separators (",", ":").
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from dataclasses import dataclass
+from typing import Any, Literal
+
+from agentic_core.L0_routing.types.determinism_types import (
+    SemanticClockSnapshot,
+    validate_semantic_clock,
+)
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    _emit_records_execution_trace,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "config_store_types")
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    _emit_records_execution_trace,
+)
+
+
+def _get_MUTABLE_COMPONENTS():
+    from .meta_learning_types import MUTABLE_COMPONENTS
+
+    return MUTABLE_COMPONENTS
+
+
+def canonical_json(obj: Any) -> str:
+    """Deterministic JSON: sorted keys recursively, compact separators."""
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"))
+
+
+def stable_sha256(text: str) -> str:
+    """Deterministic SHA-256 hex digest of a UTF-8 encoded string."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def validate_component_allowed(component: str) -> None:
+    """Raise ValueError if *component* is not in MUTABLE_COMPONENTS (L7 SSOT)."""
+    _MUTABLE_COMPONENTS = _get_MUTABLE_COMPONENTS()
+    if component not in _MUTABLE_COMPONENTS:
+        raise ValueError(f"COMPONENT_NOT_MUTABLE: {component!r} not in {_MUTABLE_COMPONENTS!r}")
+
+
+@dataclass(frozen=True)
+class ConfigSnapshotArtifact:
+    """Frozen, schema-locked versioned config snapshot."""
+
+    artifact_type: Literal["META_CONTROL_CONFIG_SNAPSHOT"]
+    app_id: str
+    target_component: Literal["routing_thresholds", "tool_policies", "prompt_templates"]
+    config_version: int
+    payload: dict[str, Any]
+    semantic_clock: SemanticClockSnapshot
+    trace_id: str
+
+    def __post_init__(self) -> None:
+        validate_semantic_clock(self.semantic_clock, "ConfigSnapshotArtifact")
+        if self.artifact_type != "META_CONTROL_CONFIG_SNAPSHOT":
+            raise ValueError(
+                f"artifact_type must be 'META_CONTROL_CONFIG_SNAPSHOT', got {self.artifact_type!r}",
+            )
+        if not self.app_id:
+            raise ValueError("APP_ID_EMPTY")
+        validate_component_allowed(self.target_component)
+        if self.config_version < 1:
+            raise ValueError(f"CONFIG_VERSION_BELOW_1: {self.config_version}")
+
+    def to_dict(self) -> dict[str, Any]:
+        """Canonical, deterministic serialization."""
+        return {
+            "app_id": self.app_id,
+            "artifact_type": self.artifact_type,
+            "config_version": self.config_version,
+            "payload": self.payload,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "target_component": self.target_component,
+            "trace_id": self.trace_id,
+        }
+
+    def to_json(self) -> str:
+        """Deterministic JSON string."""
+        return canonical_json(self.to_dict())
+
+
+def build_config_snapshot(
+    *,
+    app_id: str,
+    target_component: str,
+    config_version: int,
+    payload: dict[str, Any],
+    semantic_clock: SemanticClockSnapshot,
+) -> ConfigSnapshotArtifact:
+    """Build a ConfigSnapshotArtifact with deterministic trace_id."""
+    validate_semantic_clock(semantic_clock, "build_config_snapshot")
+    if not app_id:
+        raise ValueError("APP_ID_EMPTY")
+    validate_component_allowed(target_component)
+    if config_version < 1:
+        raise ValueError(f"CONFIG_VERSION_BELOW_1: {config_version}")
+
+    canonical_payload: dict[str, Any] = json.loads(canonical_json(payload))
+
+    temp = {
+        "app_id": app_id,
+        "artifact_type": "META_CONTROL_CONFIG_SNAPSHOT",
+        "config_version": config_version,
+        "payload": canonical_payload,
+        "semantic_clock": semantic_clock.to_dict(),
+        "target_component": target_component,
+    }
+    trace_id = stable_sha256(canonical_json(temp))
+
+    return ConfigSnapshotArtifact(
+        artifact_type="META_CONTROL_CONFIG_SNAPSHOT",
+        app_id=app_id,
+        target_component=target_component,
+        config_version=config_version,
+        payload=canonical_payload,
+        semantic_clock=semantic_clock,
+        trace_id=trace_id,
+    )
+
+
+@dataclass(frozen=True)
+class ConfigDeltaArtifact:
+    """Frozen, schema-locked computed diff between two config versions."""
+
+    artifact_type: Literal["META_CONTROL_CONFIG_DELTA"]
+    app_id: str
+    target_component: Literal["routing_thresholds", "tool_policies", "prompt_templates"]
+    from_version: int
+    to_version: int
+    change_spec: dict[str, Any]
+    semantic_clock: SemanticClockSnapshot
+    trace_id: str
+
+    def __post_init__(self) -> None:
+        validate_semantic_clock(self.semantic_clock, "ConfigDeltaArtifact")
+        if self.artifact_type != "META_CONTROL_CONFIG_DELTA":
+            raise ValueError(f"artifact_type must be 'META_CONTROL_CONFIG_DELTA', got {self.artifact_type!r}")
+        if not self.app_id:
+            raise ValueError("APP_ID_EMPTY")
+        validate_component_allowed(self.target_component)
+        if self.to_version != self.from_version + 1:
+            raise ValueError(
+                f"VERSION_GAP: to_version({self.to_version}) != from_version({self.from_version}) + 1",
+            )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Canonical, deterministic serialization."""
+        return {
+            "app_id": self.app_id,
+            "artifact_type": self.artifact_type,
+            "change_spec": self.change_spec,
+            "from_version": self.from_version,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "target_component": self.target_component,
+            "to_version": self.to_version,
+            "trace_id": self.trace_id,
+        }
+
+    def to_json(self) -> str:
+        """Deterministic JSON string."""
+        return canonical_json(self.to_dict())
+
+
+def build_config_delta(
+    *,
+    app_id: str,
+    target_component: str,
+    from_version: int,
+    to_version: int,
+    change_spec: dict[str, Any],
+    semantic_clock: SemanticClockSnapshot,
+) -> ConfigDeltaArtifact:
+    """Build a ConfigDeltaArtifact with deterministic trace_id."""
+    validate_semantic_clock(semantic_clock, "build_config_delta")
+    if not app_id:
+        raise ValueError("APP_ID_EMPTY")
+    validate_component_allowed(target_component)
+    if to_version != from_version + 1:
+        raise ValueError(f"VERSION_GAP: to_version({to_version}) != from_version({from_version}) + 1")
+
+    canonical_spec: dict[str, Any] = json.loads(canonical_json(change_spec))
+
+    temp = {
+        "app_id": app_id,
+        "artifact_type": "META_CONTROL_CONFIG_DELTA",
+        "change_spec": canonical_spec,
+        "from_version": from_version,
+        "semantic_clock": semantic_clock.to_dict(),
+        "target_component": target_component,
+        "to_version": to_version,
+    }
+    trace_id = stable_sha256(canonical_json(temp))
+
+    return ConfigDeltaArtifact(
+        artifact_type="META_CONTROL_CONFIG_DELTA",
+        app_id=app_id,
+        target_component=target_component,
+        from_version=from_version,
+        to_version=to_version,
+        change_spec=canonical_spec,
+        semantic_clock=semantic_clock,
+        trace_id=trace_id,
+    )

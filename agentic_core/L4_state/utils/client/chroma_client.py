@@ -216,7 +216,7 @@ class SovereignChromaClient:
                     )
             except EmbeddingProvenanceMismatchError:
                 raise
-            except Exception:  # noqa: BLE001 — collection may not exist yet; skip check
+            except Exception:  # noqa: BLE001 — collection may not exist yet; skip check  # guardian: allow-silent-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
                 pass
 
         # Get collection

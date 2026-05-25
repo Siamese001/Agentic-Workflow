@@ -69,15 +69,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     AppRouteContract,
     RouteShape,
 )
-from system_learning.runtime_adg.formal_exception_evidence import (
+from agentic_core.L6_system_learning.formal_exception_evidence import (
     CC_SHARED_05_CONTROL_ID,
     collect_cc_shared_05_evidence,
 )
-from system_learning.runtime_adg.manifest_hash import compute_manifest_hash
+from agentic_core.L6_system_learning.manifest_hash import compute_manifest_hash
 from tools.runtime_cert.negative_controls import (
     CC_EVAL_01,
     CC_EVAL_02,

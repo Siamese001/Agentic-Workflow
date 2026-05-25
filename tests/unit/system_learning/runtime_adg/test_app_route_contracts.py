@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     AppRouteContract,
     BUILD_TIME_COMPILER_CONTRACTS,
     BUILD_TIME_COMPILER_FORBIDDEN_CONTRACTS,

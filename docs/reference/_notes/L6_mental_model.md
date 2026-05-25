@@ -1,6 +1,6 @@
 # L6 Mental Model — Observability + System Learning
 
-> **Doctrine:** L6 is **one layer with two physical surfaces**. `agentic_core/L6_observability/` is the *passive* surface (exhaust capture). `system_learning/` is the *active* surface (learn from exhaust). The latter sits at repo root without an `L6_` prefix — that's a known doctrinal/code-layout drift tracked by plan `l6-folder-rename-doctrinal-alignment-a8c4e2` (Deferred).
+> **Doctrine:** L6 is **one layer with two physical surfaces**. `agentic_core/L6_observability/` is the *passive* surface (exhaust capture). `agentic_core/L6_system_learning/` is the *active* surface (learn from exhaust). Physical rename completed W5 (`l6-repo-reorganization-mental-model-c4e8f2`).
 
 ## Top-level shape
 
@@ -17,7 +17,7 @@ L6 (one layer, two surfaces)
 │   ├── types/              span / event / decision-event schemas
 │   └── utils/              shared helpers
 │
-└── 2. SYSTEM LEARNING ─ active ─  system_learning/   (root — no L6_ prefix yet)
+└── 2. SYSTEM LEARNING ─ active ─  agentic_core/L6_system_learning/
     │
     ├── 06.1 Exhaust Ingest & Normalization
     │   ├── adapters/             intake adapters (healing-outcome, exemplar-seeder, ...)
@@ -77,23 +77,23 @@ L6 (one layer, two surfaces)
 
 | Path | Role |
 |---|---|
-| `system_learning/__init__.py` | Public surface — entrypoints for L0..L5 to read L6 outputs (read-only). |
-| `system_learning/_tracing.py` | Internal tracing helpers for system-learning code paths. |
-| `system_learning/v6_contract_map.py` | v6 contract surface map; couples to `agentic_core/L3_orchestration/exit_eval/v6/`. |
-| `system_learning/config/` | Static config (rubric paths, embedding model IDs, store URIs). |
-| `system_learning/runtime/` | Runtime helpers shared across stages. |
-| `system_learning/types/` | Cross-stage data contracts (Pydantic / TypedDict shapes). |
-| `system_learning/logs/` | Local log staging (gitignored). |
+| `agentic_core/L6_system_learning/__init__.py` | Public surface — entrypoints for L0..L5 to read L6 outputs (read-only). |
+| `agentic_core/L6_system_learning/_tracing.py` | Internal tracing helpers for system-learning code paths. |
+| `agentic_core/L6_system_learning/v6_contract_map.py` | v6 contract surface map; couples to `agentic_core/L3_orchestration/exit_eval/v6/`. |
+| `agentic_core/L6_system_learning/config/` | Static config (rubric paths, embedding model IDs, store URIs). |
+| `agentic_core/L6_system_learning/runtime/` | Runtime helpers shared across stages. |
+| `agentic_core/L6_system_learning/types/` | Cross-stage data contracts (Pydantic / TypedDict shapes). |
+| `agentic_core/L6_system_learning/logs/` | Local log staging (gitignored). |
 
-## Why `system_learning/` is doctrinally L6
+## Why `agentic_core/L6_system_learning/` is doctrinally L6
 
-1. **ADG layer-resolution heuristic already tags it.** Run `mcp1_adg_nodes_by_layer(layer="L6")` — `system_learning/*` modules appear alongside `agentic_core/L6_observability/*`.
-2. **No write-path back to L0..L5.** Observer-law enforcement (`system_learning/enforcement/`, `system_learning/invariants/`) hard-blocks any reverse coupling. The only path *out* of L6 back into runtime is the **UWG promotion gate** (06.7), which is itself an HITL-gated boundary, not a direct write.
-3. **Doc folder.** `docs/reference/06_L6_Shadow_Evaluation_System_Learning/` (06.1–06.9) is the canonical L6 chapter set. The L6_ prefix on the doc folder confirms layer membership.
+1. **ADG layer-resolution heuristic tags it.** Run `adg_nodes_by_layer(layer="L6")` — `agentic_core/L6_system_learning/*` modules appear alongside `agentic_core/L6_observability/*`.
+2. **No write-path back to L0..L5.** Observer-law enforcement (`agentic_core/L6_system_learning/enforcement/`, `agentic_core/L6_system_learning/invariants/`) hard-blocks any reverse coupling. The only path *out* of L6 back into runtime is the **UWG promotion gate** (06.7), which is itself an HITL-gated boundary, not a direct write.
+3. **Doc folder.** `docs/reference/06_L6_Observability_and_System_Learning/` (06.1–06.9) is the canonical L6 chapter set. The L6_ prefix on the doc folder confirms layer membership.
 
 ## Observability vs System Learning — the boundary
 
-| Concern | Observability (`agentic_core/L6_observability/`) | System Learning (`system_learning/`) |
+| Concern | Observability (`agentic_core/L6_observability/`) | System Learning (`agentic_core/L6_system_learning/`) |
 |---|---|---|
 | Posture | Passive — emit and store | Active — read, fuse, propose |
 | Latency | Synchronous to runtime (must not block) | Asynchronous batch / streaming |
@@ -103,7 +103,7 @@ L6 (one layer, two surfaces)
 
 ## Pointers
 
-- Full doctrinal chapters: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\06_L6_Shadow_Evaluation_System_Learning`
+- Full doctrinal chapters: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\06_L6_Observability_and_System_Learning`
 - ADG canonical invariants (Static vs Runtime ADG distinction): `.windsurf/rules/adg-canonical-invariants.md` §8
 - Promotion-gate rule: `.windsurf/rules/evaluation-promotion-gate.md`
 - Folder-rename plan (Deferred): `.windsurf/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
@@ -114,10 +114,10 @@ L6 (one layer, two surfaces)
 | Wave | Mechanism | Status | Notes |
 |---|---|---|---|
 | W1 | In-tree `__layer__ = "L6"` markers on root + 27 subpackage `__init__.py` files | ✅ Landed | 28/28 smoke tests pass. Root declares `__l6_surface__ = "active"`. Each subpackage declares `__l6_chapter__` per the chapter map above. |
-| W2 | Forward-import alias `agentic_core.L6_system_learning` (re-exports `system_learning` via `sys.modules` rebind) | ✅ Landed | 31/31 smoke tests pass. Both paths first-class; `is`-comparison verified state-shared (no double-load); zero DeprecationWarning. |
-| W3 | `LAYER.md` declarations on both surfaces | ✅ Landed | `system_learning/LAYER.md` (active) + `agentic_core/L6_observability/LAYER.md` (passive). |
+| W2 | Forward-import alias `agentic_core.L6_system_learning` (re-exports `system_learning` via `sys.modules` rebind) | ✅ Superseded (W5) | Pre-W5 alias removed; canonical package is `agentic_core/L6_system_learning/`. |
+| W3 | `LAYER.md` declarations on both surfaces | ✅ Landed | `agentic_core/L6_system_learning/LAYER.md` (active) + `agentic_core/L6_observability/LAYER.md` (passive). |
 | W4 | Observer-law CI gate `check_l6_observer_law.py` | ✅ Landed (advisory) | 8/8 unit tests pass. **2 real findings** surfaced: `system_learning/ports/{meta_outcome_bus_hook,outcome_write_back_hook}.py` import `agentic_core.L3_orchestration.healers.healing_tier_dispatcher`. Remediation deferred. Promotion to fail-closed gated on baseline clean. Bypass: `L6_OBSERVER_LAW_BYPASS=1`. |
-| W5 | ADG layer-tag consistency CI gate `check_l6_layer_tag_consistency.py` | ✅ Landed (advisory) | 6/6 unit tests pass. **292 modules** under `system_learning/` are NOT tagged `layer=L6` in current snapshot — the ADG layer-resolution heuristic does not yet recognize `system_learning/*` as L6. Remediation deferred (heuristic update is the canonical fix, NOT moving the files). Bypass: `L6_LAYER_TAG_BYPASS=1`. |
+| W5 | Physical rename + post-rename governance (`PATH_RENAME_CANONICAL`) | ✅ Landed (2026-05-25) | Canonical active root `agentic_core/L6_system_learning/`; L6-TAG **300/300** fail-closed; L6-OBS **0** findings. Receipt: `docs/reports/cursor/l6_w5_post_rename_cert_20260525.json`. |
 | W6 | Mental-model doc updated with Alignment Status table (this section) | ✅ Landed | You are reading it. |
 
 ### Files added/modified by the plan

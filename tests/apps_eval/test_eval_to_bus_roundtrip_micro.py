@@ -16,7 +16,7 @@ from apps_eval.integrations.meta_bus_publisher import (
     KIND_RETRIEVAL,
     KIND_SUITE,
 )
-from system_learning.meta_learning.meta_learning_bus import (
+from agentic_core.L6_system_learning.meta_learning_bus import (
     MetaLearningChangePackage,
     get_process_bus,
 )

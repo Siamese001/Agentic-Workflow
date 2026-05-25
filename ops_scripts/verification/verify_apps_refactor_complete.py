@@ -462,7 +462,7 @@ class AppsRefactorVerifier:
         ):
             if shim_path.exists():
                 content = shim_path.read_text(encoding="utf-8")
-                is_shim = "system_learning.scripts" in content and "Backward-compatibility" in content
+                is_shim = "agentic_core.L6_system_learning.scripts" in content and "Backward-compatibility" in content
             else:
                 is_shim = False
 
@@ -481,7 +481,7 @@ class AppsRefactorVerifier:
         test_bridge = self.root / "tests" / "unit" / "test_meta_learning_bridge.py"
         if test_bridge.exists():
             content = test_bridge.read_text(encoding="utf-8")
-            uses_canonical = "system_learning.scripts.meta_learning_bridge" in content
+            uses_canonical = "agentic_core.L6_system_learning.scripts.meta_learning_bridge" in content
 
             self.results.append(
                 VerificationResult(

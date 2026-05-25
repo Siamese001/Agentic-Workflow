@@ -2,7 +2,7 @@
 
 > **Status update (2026-04-26 22:00 UTC) — all 11 gaps closed.** Tests: **133/133 passing** (was 74 baseline). Proof harness: `invariants_ok=True, determinism_ok=True`. See §15 for the closure roll-up; original gap analysis preserved below for traceability.
 
-Re-ingested from all 14 files in this folder. Honest about gaps — uncovered requirements flagged ⚠️ explicitly. Same treatment as L6 matrix at `docs/reference/06_L6_Shadow_Evaluation_System_Learning/v6_coverage_matrix.md`.
+Re-ingested from all 14 files in this folder. Honest about gaps — uncovered requirements flagged ⚠️ explicitly. Same treatment as L6 matrix at `docs/reference/06_L6_Observability_and_System_Learning/v6_coverage_matrix.md`.
 
 ## Doctrine corpus (14 files, ~480 KB)
 

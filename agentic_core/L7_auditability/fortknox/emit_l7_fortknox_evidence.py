@@ -101,7 +101,7 @@ def _read_envelope(p: Path) -> Mapping[str, Any] | None:
         return None
     try:
         env = json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return None
     return env if isinstance(env, dict) else None
 

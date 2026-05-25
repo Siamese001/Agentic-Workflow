@@ -17,22 +17,20 @@ import logging
 from typing import Any
 
 # Import TemplateCategory at module level since it's used in class definition
-from agentic_core.prompt_governance.core.template_catalog import TemplateCategory
+from agentic_core.prompt_governance.core import TemplateCategory
 
 _LOG = logging.getLogger(__name__)
 
 
 # Lazy imports to avoid L_SHARED->L_PG gravity violations
 def _get_prompt_renderer():
-    from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
-        SovereignPromptRenderer,
-    )
+    from agentic_core.prompt_governance.core import SovereignPromptRenderer
 
     return SovereignPromptRenderer
 
 
 def _get_template_catalog():
-    from agentic_core.prompt_governance.core.template_catalog import (
+    from agentic_core.prompt_governance.core import (
         TEMPLATE_CATALOG,
         TemplateCatalogEntry,
         TemplateCategory,

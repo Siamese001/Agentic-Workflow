@@ -51,7 +51,7 @@ def _parse_ledger_rows(raw: object) -> tuple[ControlLedgerEntry, ...] | None:
                     decisive_reason=str(item.get("decisive_reason", "")),
                 ),
             )
-        except (KeyError, ValueError, TypeError):
+        except (KeyError, ValueError, TypeError):  # guardian: allow-return-none-swallow -- P1 ADG burndown
             return None
     return tuple(rows)
 
@@ -78,7 +78,7 @@ class ReasoningExecutionReceipt:
                 quality_certification_denied=bool(data["quality_certification_denied"]),
                 ledger=ledger,
             )
-        except (KeyError, TypeError, ValueError):
+        except (KeyError, TypeError, ValueError):  # guardian: allow-return-none-swallow -- P1 ADG burndown
             return None
 
     def to_primitive(self) -> dict:

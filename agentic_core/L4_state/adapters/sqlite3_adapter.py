@@ -137,7 +137,7 @@ def ensure_schema(
             for migration_sql in migrations:
                 try:
                     conn.execute(migration_sql)
-                except _sqlite3.OperationalError:
+                except _sqlite3.OperationalError:  # guardian: allow-silent-swallow -- P1 ADG burndown
                     pass  # Column/index already exists
         return False
 

@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import subprocess
 import sys
 from pathlib import Path
 
@@ -14,24 +13,20 @@ def main() -> int:
     if not test.is_file():
         print(f"FAIL: missing {test}", file=sys.stderr)
         return 2
-    proc = subprocess.run(
-        [sys.executable, str(test)],
-        cwd=repo,
-        check=False,
-    )
-    smoke = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            "from agentic_core.L2_execution.regen import SameAuthorityRegenRunner, IncrementalRepairContract",
-        ],
-        cwd=repo,
-        check=False,
-    )
-    if smoke.returncode != 0:
+    import pytest
+
+    rc = pytest.main([str(test), "-q", "--no-header"])
+    try:
+        from agentic_core.L2_execution.regen import (  # noqa: F401
+            IncrementalRepairContract,
+            SameAuthorityRegenRunner,
+        )
+    except ImportError:
         print("FAIL: regen package smoke import", file=sys.stderr)
-        return smoke.returncode
-    return proc.returncode
+        return 1
+    if isinstance(rc, int) and rc != 0:
+        return rc
+    return 0
 
 
 if __name__ == "__main__":

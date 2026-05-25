@@ -25,7 +25,7 @@ import pytest
 
 EXPECTED_FOLDERS = frozenset(
     {
-        "docs/reference/06_L6_Shadow_Evaluation_System_Learning",
+        "docs/reference/06_L6_Observability_and_System_Learning",
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance",
         "docs/reference/00A_L5_Governance_Safety",
         "docs/reference/00B_L4_State_Archive_and_UWG",

@@ -412,8 +412,8 @@ def _infer_layer(path: str) -> str:
     for prefix in ("apps_shared", "apps_lic", "apps_rg"):
         if path.startswith(prefix) or f"/{prefix}" in path or f"\\{prefix}" in path:
             return "L_APP"
-    if "system_learning" in path:
-        return "L_SL"
+    if "system_learning" in path or "L6_system_learning" in path:
+        return "L6"
     if "ops_scripts" in path:
         return "L_OPS"
     if path.startswith("tools") or "/tools/" in path:

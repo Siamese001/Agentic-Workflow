@@ -19,8 +19,10 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     GEMINI_JUDGE_RESPONSE_SCHEMA,
     JUDGE_COMPACT_OUTPUT,
     JUDGE_COMPACT_SYSTEM,
+    JUDGE_GRADE_ONLY_AUTHORITY,
     JUDGE_REQUIRED_FIELDS,
     JUDGE_SCORE_SCHEMA,
+    build_x1d_judge_system_prompt,
     _make_model_backed_output,
     run_llm_judges,
 )
@@ -78,7 +80,7 @@ def test_unified_token_env_wired() -> None:
 
 def test_token_budget_spread_across_providers() -> None:
     budgets = {k: resolved_provider_max_output_tokens(k) for k in PROOF_JUDGE_PROVIDER_KEYS}
-    assert budgets["anthropic_claude"] == budgets["gemini_pro"], budgets
+    assert len(set(budgets.values())) == 1, budgets
 
 
 # --- System / JSON format -----------------------------------------------------
@@ -416,6 +418,19 @@ def test_shared_judge_contract_strings_defined() -> None:
     assert "score_scale" in JUDGE_SCORE_SCHEMA.lower()
     assert "0_to_5" in GENERIC_REQUIRED_SCHEMA
     assert JUDGE_COMPACT_SYSTEM
+    assert "retired" in JUDGE_GRADE_ONLY_AUTHORITY.lower()
+    system = build_x1d_judge_system_prompt(compact=True)
+    assert JUDGE_GRADE_ONLY_AUTHORITY in system
+
+
+def test_gemini_retry_attempt_token_budget_matches_openai() -> None:
+    g1 = resolved_provider_max_output_tokens("gemini_pro", attempt=1)
+    g2 = resolved_provider_max_output_tokens("gemini_pro", attempt=2)
+    o1 = resolved_provider_max_output_tokens("openai_chatgpt", attempt=1)
+    o2 = resolved_provider_max_output_tokens("openai_chatgpt", attempt=2)
+    assert g1 == o1
+    assert g2 == o2
+    assert g2 >= g1
 
 
 def test_unified_env_constant_documented() -> None:

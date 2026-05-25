@@ -269,7 +269,7 @@ class GraphAwareIndexer:
             ).hexdigest()[:16]
 
         # Lazy import to avoid L3->L4 violation
-        from agentic_core.knowledge.enrichment.semantic_enricher import SemanticEnricher
+        from agentic_core.knowledge.enrichment import SemanticEnricher
 
         # Try semantic enrichment; fall back to metadata on failure (fail-open)
         enrichment_source = "metadata_fallback"

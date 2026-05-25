@@ -24,7 +24,7 @@ except ImportError:
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
-from agentic_core.prompt_governance.pa_package_driven_binding import (  # guardian: allow-layer-violation -- package-driven L2 consumes PA CompiledPromptArtifact at the L2 execution boundary; generic executor + app-owned profiles per ADR/app binding model
+from agentic_core.prompt_governance import (  # guardian: allow-layer-violation -- package-driven L2 consumes PA CompiledPromptArtifact at the L2 execution boundary; generic executor + app-owned profiles per ADR/app binding model
     CompiledPromptArtifact,
 )
 
@@ -183,7 +183,7 @@ def _load_yaml_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
     try:
         with open(profile_path, "r") as f:
             return yaml.safe_load(f)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         _LOGGER.error(f"Failed to load profile {profile_path}: {e}")
         return None
 

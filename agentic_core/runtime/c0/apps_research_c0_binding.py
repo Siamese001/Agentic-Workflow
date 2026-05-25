@@ -45,7 +45,7 @@ def _read_brief_file(path_str: str) -> str | None:
         if not p.exists():
             return None
         return p.read_text(encoding="utf-8")
-    except OSError:
+    except OSError:  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return None
 
 

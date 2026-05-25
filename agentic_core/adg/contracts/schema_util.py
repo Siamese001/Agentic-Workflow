@@ -19,8 +19,36 @@ Naming convention:
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
+
+_LAYER_MARKER_RE = re.compile(r'^\s*__layer__\s*=\s*["\']([^"\']+)["\']', re.M)
+
+
+def _repo_root_from_schema_util() -> Path:
+    return Path(__file__).resolve().parents[3]
+
+
+def _layer_from_init_markers(norm: str) -> str | None:
+    if not norm.endswith(".py"):
+        return None
+    parts = norm.split("/")[:-1]
+    root = _repo_root_from_schema_util()
+    for depth in range(len(parts), 0, -1):
+        init_rel = "/".join(parts[:depth]) + "/__init__.py"
+        init_path = root / init_rel
+        if not init_path.is_file():
+            continue
+        try:
+            text = init_path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        match = _LAYER_MARKER_RE.search(text)
+        if match:
+            return match.group(1)
+    return None
 
 
 # Local stub to avoid L_TOOLS->L_RUNTIME dependency while maintaining ADG instrumentation
@@ -767,7 +795,8 @@ LAYER_PREFIXES: dict[str, str] = {
     "agentic_core/gateway": "L_SHARED",
     "agentic_core/tracing": "L_SHARED",
     "agentic_core/visualization": "L_SHARED",
-    "system_learning": "L_SL",
+    "agentic_core/L6_system_learning": "L6",
+    "system_learning": "L6",
     "tools": "L_TOOLS",
     "ops_scripts": "L_OPS",
     "infrastructure": "L_INFRA",
@@ -804,9 +833,9 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_APP", "L2"),
         ("L_APP", "L1"),
         ("L_APP", "L0"),
-        ("L_SL", "L2"),
-        ("L_SL", "L1"),
-        ("L_SL", "L0"),
+        ("L6", "L2"),
+        ("L6", "L1"),
+        ("L6", "L0"),
         ("L_TOOLS", "L5"),
         ("L_TOOLS", "L4"),
         ("L_TOOLS", "L3"),
@@ -827,7 +856,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L5", "L_SHARED"),
         ("L6", "L_SHARED"),
         ("L_APP", "L_SHARED"),
-        ("L_SL", "L_SHARED"),
+        ("L6", "L_SHARED"),
         ("L_TOOLS", "L_SHARED"),
         ("L_OPS", "L_SHARED"),
         ("L_RUNTIME", "L_SHARED"),
@@ -841,10 +870,9 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L2", "L6"),
         # L3 orchestration can access L6 (orchestration telemetry)
         ("L3", "L6"),
-        # L5 safety can access L_SL (safety requires learning)
-        ("L5", "L_SL"),
-        # L6 observability can access L_SL (observability requires learning)
-        ("L6", "L_SL"),
+        # L5 safety can access L6 system_learning (safety requires learning)
+        ("L5", "L6"),
+        # L6 observability and L6 system_learning are sibling surfaces (same layer)
         # L_RUNTIME lifecycle infrastructure can be imported from all layers
         # (lifecycle_trace_contract, execution_trace, healer_exceptions)
         ("L0", "L_RUNTIME"),
@@ -855,7 +883,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L5", "L_RUNTIME"),
         ("L6", "L_RUNTIME"),
         ("L_APP", "L_RUNTIME"),
-        ("L_SL", "L_RUNTIME"),
+        ("L6", "L_RUNTIME"),
         ("L_TEST", "L_RUNTIME"),
         # Wave 1: High-frequency cross-layer patterns (architecturally justified)
         # L_APP can import L_TOOLS (apps need tooling for execution/debugging)
@@ -873,10 +901,10 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L0", "L2"),
         # L0 routing can import L4 (routing needs state layer)
         ("L0", "L4"),
-        # L_SHARED can import L_SL (shared interfaces need system learning)
-        ("L_SHARED", "L_SL"),
-        # L_SL can import L3 (system learning needs orchestration)
-        ("L_SL", "L3"),
+        # L_SHARED can import L6 system_learning
+        ("L_SHARED", "L6"),
+        # L6 system_learning can import L3 (orchestration)
+        ("L6", "L3"),
         # L_TEST can import all layers (tests need full access for validation)
         ("L_TEST", "L0"),
         ("L_TEST", "L1"),
@@ -886,7 +914,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_TEST", "L5"),
         ("L_TEST", "L6"),
         ("L_TEST", "L_APP"),
-        ("L_TEST", "L_SL"),
+        ("L_TEST", "L6"),
         ("L_TEST", "L_TOOLS"),
         ("L_TEST", "L_OPS"),
         ("L_TEST", "L_RUNTIME"),
@@ -899,7 +927,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         # L1 cognition can import L2 (cognition needs execution layer)
         ("L1", "L2"),
         # L4 state can import L_SL (state needs system learning)
-        ("L4", "L_SL"),
+        ("L4", "L6"),
         # L5 safety can import L_TOOLS (safety needs tooling)
         ("L5", "L_TOOLS"),
         # L_SHARED can import L6 (shared needs observability)
@@ -911,7 +939,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         # L_SHARED can import L_TOOLS (shared needs tooling)
         ("L_SHARED", "L_TOOLS"),
         # L_SL can import L_TOOLS (system learning needs tooling)
-        ("L_SL", "L_TOOLS"),
+        ("L6", "L_TOOLS"),
         # L_TOOLS can import L_PG (tools need prompt governance)
         ("L_TOOLS", "L_PG"),
         # Wave 4: Low-frequency edge case patterns (architecturally justified)
@@ -924,15 +952,15 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         # L0 routing can import L_TOOLS (routing needs tooling)
         ("L0", "L_TOOLS"),
         # L0 routing can import L_SL (routing needs system learning)
-        ("L0", "L_SL"),
+        ("L0", "L6"),
         # L2 execution can import L3 (execution needs orchestration)
         ("L2", "L3"),
         # L2 execution can import L_SL (execution needs system learning)
-        ("L2", "L_SL"),
+        ("L2", "L6"),
         # L3 orchestration can import L_TOOLS (orchestration needs tooling)
         ("L3", "L_TOOLS"),
         # L3 orchestration can import L_SL (orchestration needs system learning)
-        ("L3", "L_SL"),
+        ("L3", "L6"),
         # L4 state can import L6 (state needs observability)
         ("L4", "L6"),
         # L5 safety can import L_OPS (safety needs operations)
@@ -942,13 +970,13 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         # L_SHARED can import L_PG (shared needs prompt governance)
         ("L_SHARED", "L_PG"),
         # L_SL can import L_APP (system learning needs app context)
-        ("L_SL", "L_APP"),
+        ("L6", "L_APP"),
         # L_SL can import L4 (system learning needs state)
-        ("L_SL", "L4"),
+        ("L6", "L4"),
         # Single-occurrence edge cases
         ("L0", "L6"),
         ("L1", "L6"),
-        ("L1", "L_SL"),
+        ("L1", "L6"),
         ("L2", "L_OPS"),
         ("L2", "L_INFRA"),
         ("L2", "L_APP"),
@@ -962,9 +990,8 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_SHARED", "L_TEST"),
         ("L_SHARED", "L_OPS"),
         ("L_PG", "L5"),
-        ("L_PG", "L_SL"),
-        ("L_SL", "L6"),
-        ("L_SL", "L_PG"),
+        ("L_PG", "L6"),
+        ("L6", "L_PG"),
         ("L_TOOLS", "L_SHARED"),
         ("L_OPS", "L_SHARED"),
         ("L_OPS", "L_TOOLS"),
@@ -985,7 +1012,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_INFRA", "L_SHARED"),
         ("L_INFRA", "L_RUNTIME"),
         ("L_INFRA", "L_PG"),
-        ("L_INFRA", "L_SL"),
+        ("L_INFRA", "L6"),
         ("L_INFRA", "L_TOOLS"),
         ("L_INFRA", "L_OPS"),
         ("L_INFRA", "L_APP"),
@@ -1002,18 +1029,18 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_RUNTIME", "L4"),
         ("L_RUNTIME", "L5"),
         # L_OPS scripts orchestrate system-learning workflows and apps.
-        ("L_OPS", "L_SL"),
+        ("L_OPS", "L6"),
         ("L_OPS", "L_APP"),
         ("L_OPS", "L_RUNTIME"),
         # L_APP scripts may integrate system-learning.
-        ("L_APP", "L_SL"),
+        ("L_APP", "L6"),
         # L4 state may reference L5 error/hardening types and tools utilities.
         ("L4", "L5"),
         ("L4", "L_TOOLS"),
-        # L_SL (system_learning) may use L5 safety enforcement.
-        ("L_SL", "L5"),
+        # L6 system_learning may use L5 safety enforcement.
+        ("L6", "L5"),
         # L_TOOLS may use system_learning ports.
-        ("L_TOOLS", "L_SL"),
+        ("L_TOOLS", "L6"),
         # L_PG prompt-governance may use runtime detection and L4 state.
         ("L_PG", "L_RUNTIME"),
         ("L_PG", "L4"),
@@ -1048,6 +1075,9 @@ def verify_layer_graph_consistency(module_layer_map: dict[str, str]) -> list[str
 def module_path_to_layer(rel_path: str) -> str:
     """Map a repo-relative module path (forward slashes) to a layer label."""
     norm = rel_path.replace("\\", "/")
+    marker_layer = _layer_from_init_markers(norm)
+    if marker_layer:
+        return marker_layer
     for prefix, layer in sorted(LAYER_PREFIXES.items(), key=lambda kv: -len(kv[0])):
         if norm.startswith(prefix):
             return layer

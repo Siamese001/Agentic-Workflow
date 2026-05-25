@@ -199,7 +199,7 @@ def _get_meta_learning_bus():
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L1_COGNITION, "_get_meta_learning_bus")
-    from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
+    from agentic_core.L6_system_learning.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
 
     return MetaLearningBus, MetaLearningBusConfig
 

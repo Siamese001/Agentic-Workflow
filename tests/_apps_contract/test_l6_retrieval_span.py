@@ -350,7 +350,7 @@ class TestL6IsPostRuntime:
         # Assert: No L6 imports or invocations
         forbidden_patterns = [
             "from system_learning",
-            "import system_learning",
+            "import agentic_core.L6_system_learning",
             "L6_observability",
             "meta_feedback",
             "regret_tracker",

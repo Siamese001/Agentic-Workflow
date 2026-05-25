@@ -314,9 +314,11 @@ class TestArchiveOldArtifactsIntegration:
         assert current_sqlite.exists(), "current run sqlite must NOT be archived"
         assert current_zip.exists(), "current run zip must NOT be archived"
         assert current_snap.exists(), "current run snapshot must NOT be archived"
-        # older run should be gone (archived/deleted)
-        assert not older_run.exists(), "older run sqlite must be archived/removed"
-        assert not older_zip.exists(), "older run zip must be archived/removed"
+        archive_dir = adg_dir / "_archive" / "2026-04"
+        assert not older_run.exists(), "older run sqlite must leave artifacts/adg root"
+        assert (archive_dir / f"{older_run.name}.gz").is_file(), "older sqlite gzipped in _archive"
+        assert not older_zip.exists(), "older run zip must leave artifacts/adg root"
+        assert (archive_dir / f"{older_zip.name}.gz").is_file(), "older zip gzipped in _archive"
 
     def test_archive_skipped_breadcrumb_pattern_recognized(self, adg_dir: Path) -> None:
         """archive_skipped_<ts>.txt is in the whitelist so it gets archived

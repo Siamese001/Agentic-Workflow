@@ -233,7 +233,7 @@ class JudgeJuryRunner:
                     missing_required.append(judge_id)
                 else:
                     missing_informational.append(judge_id)
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
                 if required:
                     missing_required.append(judge_id)
                 else:

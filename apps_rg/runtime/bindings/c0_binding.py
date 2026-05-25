@@ -45,7 +45,7 @@ from agentic_core.runtime.gates.gate_types import (
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchResult,
 )
-from agentic_core.knowledge.retrieval.c0_sparse_exact_seam import (
+from agentic_core.knowledge.retrieval import (
     SparseLexicalLaneStatus,
     SparseLexicalQuerySpec,
     dedupe_hybrid_by_chunk_id,

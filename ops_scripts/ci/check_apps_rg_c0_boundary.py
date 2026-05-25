@@ -72,7 +72,7 @@ PYTHON_SET_METHODS = {
 FORBIDDEN_L4_UWG_IMPORTS = {
     "agentic_core.L4_state",
     "agentic_core.runtime.exit.unified_write_gateway",
-    "system_learning.L6_observability",  # L6 is post-runtime only
+    "agentic_core.L6_system_learning.L6_observability",  # L6 is post-runtime only
 }
 
 

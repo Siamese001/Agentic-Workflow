@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 
 from agentic_core.L6_observability.runtime_trace import snapshot_to_spans
-from system_learning.runtime_adg.snapshot import (
+from agentic_core.L6_system_learning.snapshot import (
     RuntimeADGEdge,
     RuntimeADGNode,
     create_runtime_adg_snapshot,

@@ -163,7 +163,7 @@ def _iter_runtime_snapshots(
         return explicit_payloads
 
     try:
-        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+        from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
     except ImportError as exc:  # guardian: allow-log-and-swallow -- soft-dep on system_learning
         logger.warning("runtime_view_builder.import_store_failed: %s", exc)
         return []

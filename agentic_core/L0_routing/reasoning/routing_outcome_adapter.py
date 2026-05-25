@@ -20,7 +20,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from system_learning.meta_learning_bus import (
+from agentic_core.L6_system_learning.meta_learning_bus import (
     MetaLearningBus,
     MetaLearningChangePackage,
 )

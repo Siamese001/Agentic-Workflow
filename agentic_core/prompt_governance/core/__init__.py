@@ -8,12 +8,19 @@ from .prompt_assembler import (
     PromptComponents,
     PromptTemplate,
     SecurityIntegrityError,
+    assemble_prompt,
 )
 from .sovereign_prompt_renderer import (
     SovereignPromptRenderer,
     TemplateSchema,
     TemplateValidationError,
     get_sovereign_prompt_renderer,
+)
+from .template_catalog import (
+    TEMPLATE_CATALOG,
+    TemplateCatalogEntry,
+    TemplateCategory,
+    TemplateStatus,
 )
 
 __all__ = [
@@ -26,8 +33,13 @@ __all__ = [
     "PromptComponents",
     "PromptTemplate",
     "SecurityIntegrityError",
+    "assemble_prompt",
     "SovereignPromptRenderer",
     "TemplateSchema",
     "TemplateValidationError",
     "get_sovereign_prompt_renderer",
+    "TEMPLATE_CATALOG",
+    "TemplateCatalogEntry",
+    "TemplateCategory",
+    "TemplateStatus",
 ]

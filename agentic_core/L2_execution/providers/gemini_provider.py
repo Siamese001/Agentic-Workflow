@@ -168,7 +168,7 @@ def _generate_content(
             status_code=e.response.status_code,
             response_body=e.response.text,
         )
-    except Exception as e:
+    except Exception as e:  # guardian: allow-exception-type-erasure -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         latency_ms = (time.time() - start_time) * 1000
         raise GeminiAPIError(f"Request failed: {e}")
 

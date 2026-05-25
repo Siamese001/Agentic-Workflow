@@ -352,7 +352,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             return []
 
         try:
-            from system_learning.engines.openai_embedder import BGEEmbedder
+            from agentic_core.L6_system_learning.openai_embedder import BGEEmbedder
 
             _embedder = BGEEmbedder()
             vecs = _embedder.embed_batch([text])

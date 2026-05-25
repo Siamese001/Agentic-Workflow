@@ -372,7 +372,7 @@ class HealingMemoryRetriever:
 
         # Track retrieval quality metrics for system learning
         try:
-            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
             bridge = get_sl_memory_bridge()
 
@@ -428,7 +428,7 @@ def build_retriever(
     if base_path is None:
         return NullHealingMemoryRetriever()
     try:
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from agentic_core.L6_system_learning.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
         store = LocalFAISSStore(base_path=Path(base_path))
         disk_dir = Path(base_path) / index_id

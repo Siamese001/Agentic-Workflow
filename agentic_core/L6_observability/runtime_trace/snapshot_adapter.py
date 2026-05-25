@@ -24,7 +24,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+from agentic_core.L6_system_learning.snapshot import RuntimeADGSnapshot
 
 # Runtime ADG edge → contract edge kind translation.
 _EDGE_KIND_TRANSLATION: dict[str, str] = {

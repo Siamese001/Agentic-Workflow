@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from apps_rg.runtime.judges.executive_summary_x1d import (
-    GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
     PROVIDERS,
     _invoke_judge_with_bounded_retries,
-    _resolved_openai_judge_max_completion_tokens,
     _resolved_x1d_judge_max_output_tokens,
 )
 from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
@@ -26,15 +24,11 @@ def _transport_receipt(
     finish_reason: str | None = "stop",
     parse_status: str = "ok",
 ) -> TransportReceipt:
-    if ctx.provider_key == "openai_chatgpt":
-        max_tokens = _resolved_openai_judge_max_completion_tokens(attempt=attempt)
-        json_lock = "json_object"
-    elif ctx.provider_key == "anthropic_claude":
-        max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
-        json_lock = "json_object"
-    else:
-        max_tokens = GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
+    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    if ctx.provider_key == "gemini_pro":
         json_lock = "responseSchema"
+    else:
+        json_lock = "json_object"
     return TransportReceipt(
         provider_key=ctx.provider_key,
         contract_hash=contract.contract_hash(),
@@ -93,21 +87,10 @@ class AppsRgX1dPanelAdapter:
         return self._ctx.provider_key
 
     def declared_policy(self, *, attempt: int = 1) -> DeclaredTransportPolicy:
-        if self.provider_key == "openai_chatgpt":
-            return DeclaredTransportPolicy(
-                max_output_tokens=_resolved_openai_judge_max_completion_tokens(attempt=attempt),
-                json_output_lock="json_object",
-                temperature=0.1,
-            )
-        if self.provider_key == "anthropic_claude":
-            return DeclaredTransportPolicy(
-                max_output_tokens=_resolved_x1d_judge_max_output_tokens(attempt=attempt),
-                json_output_lock="json_object",
-                temperature=0.1,
-            )
+        json_lock = "responseSchema" if self.provider_key == "gemini_pro" else "json_object"
         return DeclaredTransportPolicy(
-            max_output_tokens=GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
-            json_output_lock="responseSchema",
+            max_output_tokens=_resolved_x1d_judge_max_output_tokens(attempt=attempt),
+            json_output_lock=json_lock,
             temperature=0.1,
         )
 
@@ -164,6 +147,7 @@ class AppsRgX1dPanelAdapter:
                 artifact_base=ctx.artifact_base,
                 model_requested=ctx.model_requested,
                 judge_receipt=ctx.judge_receipt,
+                attempt=attempt_no,
             )
 
         try:
@@ -171,7 +155,7 @@ class AppsRgX1dPanelAdapter:
                 _dispatch,
                 provider_key=ctx.provider_key,
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: normalize provider failures to AdapterInvokeError
             raise AdapterInvokeError(str(exc)) from exc
 
         out = ctx.last_judge_output
@@ -187,7 +171,7 @@ def _is_hard_blocked(out) -> bool:
     return status.startswith("BLOCKED_") and "RETRIABLE" not in status.upper()
 
 
-def build_panel_adapter(ctx: X1dPanelProviderContext) -> AppsRgX1dPanelAdapter:
+def build_panel_adapter(ctx: X1dPanelProviderContext) -> AppsRgX1dPanelAdapter:  # guardian: allow-broad-exception -- P2 ADG burndown
     if ctx.provider_key not in PROVIDERS:
         raise KeyError(f"unknown provider key: {ctx.provider_key}")
     return AppsRgX1dPanelAdapter(ctx)

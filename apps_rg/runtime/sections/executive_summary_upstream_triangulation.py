@@ -118,11 +118,11 @@ def consensus_failed_dimensions(
 
 
 def dimension_major_fail_on_judge(judge: dict[str, Any], dimension_id: str) -> bool:
-    dv = judge.get("dimension_verdicts") if isinstance(judge.get("dimension_verdicts"), dict) else {}
-    row = dv.get(dimension_id) if isinstance(dv, dict) else None
-    if not isinstance(row, dict):
-        return False
-    return row.get("pass") is False and str(row.get("severity") or "").lower() == "major"
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        dimension_major_fail_on_judge as _dim_major_fail,
+    )
+
+    return _dim_major_fail(judge, dimension_id)
 
 
 def solitary_dimension_severe_soft_fail(soft_judge: dict[str, Any]) -> tuple[bool, list[str]]:

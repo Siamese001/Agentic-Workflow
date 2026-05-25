@@ -30,7 +30,7 @@ class OTelLoaderBundle:
         )
 
     def _create_runtime_adg_store(self):
-        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+        from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
         return FileBackedRuntimeADGStore(self._config.runtime_adg_dir)
 

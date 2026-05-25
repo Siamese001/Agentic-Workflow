@@ -35,27 +35,27 @@ from typing import Any
 # (cached by ``__getattr__``).
 _LAZY_SYMBOLS: dict[str, tuple[str, str]] = {
     "get_sl_memory_bridge": (
-        "system_learning.adapters.system_learning_memory_bridge",
+        "agentic_core.L6_system_learning.adapters.system_learning_memory_bridge",
         "get_sl_memory_bridge",
     ),
     "get_process_bus": (
-        "system_learning.meta_learning.meta_learning_bus",
+        "agentic_core.L6_system_learning.meta_learning.meta_learning_bus",
         "get_process_bus",
     ),
     "MetaLearningChangePackage": (
-        "system_learning.meta_learning.meta_learning_bus",
+        "agentic_core.L6_system_learning.meta_learning.meta_learning_bus",
         "MetaLearningChangePackage",
     ),
     "MetaLearningBus": (
-        "system_learning.ports.meta_learning_bus",
+        "agentic_core.L6_system_learning.ports.meta_learning_bus",
         "MetaLearningBus",
     ),
     "get_current_adapter": (
-        "system_learning.runtime_adg.runtime_span_emitter",
+        "agentic_core.L6_system_learning.runtime_adg.runtime_span_emitter",
         "get_current_adapter",
     ),
     "seal_step": (
-        "system_learning.runtime_adg.runtime_span_emitter",
+        "agentic_core.L6_system_learning.runtime_adg.runtime_span_emitter",
         "seal_step",
     ),
 }

@@ -226,7 +226,7 @@ class CircuitBreaker:
     def _emit_state_transition_event(self, new_state: str) -> None:
         """Emit circuit breaker state transition to system learning."""
         try:
-            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
             bridge = get_sl_memory_bridge()
             bridge.persist_circuit_breaker_event(

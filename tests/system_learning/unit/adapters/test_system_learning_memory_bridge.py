@@ -9,6 +9,6 @@ pytestmark = pytest.mark.unit
 
 def test_module_importable():
     """Module system_learning_memory_bridge must be importable."""
-    import system_learning.adapters.system_learning_memory_bridge
+    import agentic_core.L6_system_learning.system_learning_memory_bridge
 
     assert system_learning.adapters.system_learning_memory_bridge is not None

@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 def test_semantic_edge_extraction() -> bool:
     """Test that semantic edges are extracted from span attributes."""
     try:
-        from system_learning.runtime_adg.materializer import (
+        from agentic_core.L6_system_learning.materializer import (
             _extract_semantic_edges,
         )
 
@@ -125,7 +125,7 @@ def test_semantic_edge_extraction() -> bool:
 def test_materializer_with_semantic_edges() -> bool:
     """Test that materializer includes semantic edges in snapshot."""
     try:
-        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
         materializer = RuntimeADGMaterializer()
 
@@ -195,7 +195,7 @@ def test_materializer_with_semantic_edges() -> bool:
 def test_snapshot_validation() -> bool:
     """Test snapshot validation method."""
     try:
-        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
         materializer = RuntimeADGMaterializer()
 
@@ -248,7 +248,7 @@ def test_snapshot_validation() -> bool:
 def test_all_13_edge_types() -> bool:
     """Test that all 13 required edge types can be extracted."""
     try:
-        from system_learning.runtime_adg.materializer import _extract_semantic_edges
+        from agentic_core.L6_system_learning.materializer import _extract_semantic_edges
 
         # Create spans with attributes for all edge types
         spans = [
@@ -353,7 +353,7 @@ def test_all_13_edge_types() -> bool:
 def test_empty_snapshot_validation() -> bool:
     """Test validation of empty snapshot."""
     try:
-        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
         materializer = RuntimeADGMaterializer()
 
@@ -381,7 +381,7 @@ def test_empty_snapshot_validation() -> bool:
 def test_hash_consistency_validation() -> bool:
     """Test that snapshot hash validation works."""
     try:
-        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
         materializer = RuntimeADGMaterializer()
 

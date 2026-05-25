@@ -370,27 +370,55 @@ def reconcile_judge_result_against_deterministic_gate_closures(
     return out
 
 
+def _strip_retired_criteria_findings(findings: list[str]) -> tuple[list[str], list[str]]:
+    """Remove legacy SRFS slot findings that must not drive fail (Gemini/OpenAI/Anthropic)."""
+    preserved: list[str] = []
+    stripped: list[str] = []
+    for finding in findings:
+        text = str(finding).strip()
+        if not text:
+            continue
+        lower = text.lower()
+        if any(frag in lower for frag in _RETIRED_JUDGE_CRITERIA_FRAGMENTS):
+            stripped.append(text)
+        else:
+            preserved.append(text)
+    return preserved, stripped
+
+
 def reconcile_grade_only_judge_result(
     result: dict[str, Any],
     deterministic_gate_summary: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Retired-criteria reconcile, then deterministic gate-closure reconcile."""
-    if not isinstance(result, dict) or not isinstance(deterministic_gate_summary, dict):
+    if not isinstance(result, dict):
         return result
-    gate_entries = [
-        v for v in deterministic_gate_summary.values() if isinstance(v, dict) and "pass" in v
-    ]
     out = dict(result)
-    if gate_entries and all(bool(v.get("pass")) for v in gate_entries):
-        blob = json.dumps(result, ensure_ascii=False).lower()
-        if any(frag in blob for frag in _RETIRED_JUDGE_CRITERIA_FRAGMENTS):
-            if out.get("decisive_failure"):
-                out["decisive_failure"] = False
-                findings = list(out.get("findings") or [])
-                findings.append(
-                    "Reconciled: judge cited retired five-part/S1-S5 criteria; deterministic_gate_summary all pass."
-                )
-                out["findings"] = findings
+    original_findings = [str(f) for f in (out.get("findings") or []) if str(f).strip()]
+    preserved, stripped_retired = _strip_retired_criteria_findings(original_findings)
+    if stripped_retired:
+        out["findings"] = preserved
+        receipt = dict(out.get("reconciliation_receipt") or {})
+        receipt["stripped_retired_criteria_findings"] = stripped_retired
+        receipt["original_findings"] = original_findings
+        out["reconciliation_receipt"] = receipt
+        if not preserved and out.get("decisive_failure"):
+            out["decisive_failure"] = False
+    if isinstance(deterministic_gate_summary, dict):
+        gate_entries = [
+            v for v in deterministic_gate_summary.values() if isinstance(v, dict) and "pass" in v
+        ]
+        if gate_entries and all(bool(v.get("pass")) for v in gate_entries):
+            blob = json.dumps(out, ensure_ascii=False).lower()
+            if any(frag in blob for frag in _RETIRED_JUDGE_CRITERIA_FRAGMENTS):
+                if out.get("decisive_failure"):
+                    out["decisive_failure"] = False
+                    findings = list(out.get("findings") or [])
+                    findings.append(
+                        "Reconciled: judge cited retired five-part/S1-S5 criteria; "
+                        "deterministic_gate_summary all pass."
+                    )
+                    out["findings"] = findings
     return reconcile_judge_result_against_deterministic_gate_closures(
         out, deterministic_gate_summary
     )

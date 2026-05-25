@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     CertificationLevel,
     ContractSpanBinding,
     PhaseAStatus,
@@ -308,7 +308,7 @@ def test_manifest_hash_computed_when_absent_and_path_exists():
         # Use build_r3_grounded_read_contract with hash="" — but that raises
         # because manifest_hash is required at STATIC_EVIDENCE+ levels.
         # We patch the contract with hash="" via from_dict to bypass __post_init__.
-        from system_learning.runtime_adg.app_route_contracts import AppRouteContract
+        from agentic_core.L6_system_learning.app_route_contracts import AppRouteContract
         contract_dict = _contract(manifest_hash=_MANIFEST_HASH).to_dict()
         contract_dict["manifest_hash"] = ""
         contract_dict["certification_level"] = "STATIC_EVIDENCE"
@@ -332,7 +332,7 @@ def test_manifest_hash_computed_when_absent_and_path_exists():
 
 def test_invalid_route_shape_raises():
     """T9: contract with route_shape != R3_grounded_read raises ValueError."""
-    from system_learning.runtime_adg.app_route_contracts import (
+    from agentic_core.L6_system_learning.app_route_contracts import (
         build_build_time_compiler_contract,
     )
     btc_contract = build_build_time_compiler_contract(
@@ -523,7 +523,7 @@ def test_artifact_and_contract_ids_collected():
 
 def test_invalid_app_name_raises():
     """extract_r3_evidence raises ValueError if app_name doesn't start with apps_."""
-    from system_learning.runtime_adg.app_route_contracts import AppRouteContract
+    from agentic_core.L6_system_learning.app_route_contracts import AppRouteContract
     contract_dict = _contract().to_dict()
     contract_dict["app_name"] = "apps_research"  # valid — just verify no raise
     valid = AppRouteContract.from_dict(contract_dict)

@@ -13,7 +13,7 @@ import os
 
 import pytest
 
-from system_learning.runtime_adg.materializer import (
+from agentic_core.L6_system_learning.materializer import (
     _TRUNCATED_SUFFIX,
     _cap_attributes_json,
     _extract_node,

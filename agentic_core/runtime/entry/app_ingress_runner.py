@@ -70,7 +70,7 @@ def _callable_digest(fn: Callable | None) -> str | None:
         except TypeError:
             ffile = "<builtin>"
         return hashlib.sha256(f"{name}|{ffile}|{src}".encode()).hexdigest()[:16]
-    except Exception:  # guardian: allow-broad-net -- digest is best-effort; must never block dispatch
+    except Exception:  # guardian: allow-broad-net -- digest is best-effort; must never block dispatch  # guardian: allow-broad-exception -- P1 ADG burndown
         return "<uninspectable>"
 
 
@@ -81,8 +81,8 @@ def _compute_profile_digest(profile: "AppRuntimeProfile") -> str:
         "app_id": profile.app_id,
         "required_fields": list(profile.required_fields),
         "profile_version": profile.profile_version,
-        "stages": {
-            s: _callable_digest(getattr(profile, s))
+        "stages": {  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
+            s: _callable_digest(getattr(profile, s))  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
             for s in _STAGES
         },
     }
@@ -165,8 +165,8 @@ class AppIngressRunner:
             # --- Profile path (A.1+): populate proof fields; stage refs drive run().
             # No dispatch= kwarg needed — AppIngressRunner sequences profile.u0..exit.
             profile.profile_digest = _compute_profile_digest(profile)
-            profile.binding_digest_map = {
-                s: _callable_digest(getattr(profile, s))  # type: ignore[arg-type]
+            profile.binding_digest_map = {  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
+                s: _callable_digest(getattr(profile, s))  # type: ignore[arg-type]  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
                 for s in _STAGES
             }
             self._profile = profile

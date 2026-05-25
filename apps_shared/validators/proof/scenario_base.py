@@ -709,7 +709,7 @@ class ScenarioContext:
             self.layer_status["PromptAssembly"] = "SKIPPED"
             return "SKIPPED", sp
         try:
-            from agentic_core.prompt_governance.orchestrator import assemble_prompt
+            from agentic_core.prompt_governance import assemble_prompt
         except ImportError as exc:
             ended = _utcnow_iso()
             sp = self.emit_span(

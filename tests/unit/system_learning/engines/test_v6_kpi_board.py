@@ -13,7 +13,7 @@ import math
 
 import pytest
 
-from system_learning.engines.v6_kpi_board import (
+from agentic_core.L6_system_learning.v6_kpi_board import (
     HEALTH_REQUIRED_KPIS,
     ThresholdDirection,
     V6_KPI_SPECS,

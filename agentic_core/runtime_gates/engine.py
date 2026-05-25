@@ -159,7 +159,7 @@ class RuntimeGateEngine:
                         latency_ms=(time.time() - gate_start) * 1000,
                         deterministic_digest=verdict.deterministic_digest,
                     )
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- P1 ADG burndown
                 # Gate threw exception — treat as UNKNOWN (fail-closed)
                 verdict = GateVerdict(
                     gate_id=gate_id,

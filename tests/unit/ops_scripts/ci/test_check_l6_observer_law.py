@@ -34,7 +34,7 @@ def test_is_forbidden_ignores_l6_imports() -> None:
 
 def test_is_forbidden_ignores_non_layer_modules() -> None:
     assert GATE._is_forbidden("os") is None
-    assert GATE._is_forbidden("system_learning.engines.foo") is None
+    assert GATE._is_forbidden("agentic_core.L6_system_learning.engines.foo") is None
 
 
 def test_scan_file_detects_writer_import(tmp_path: Path) -> None:
@@ -72,6 +72,23 @@ def test_scan_file_clean_for_type_only_import(tmp_path: Path) -> None:
 def test_main_bypass_short_circuits(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("L6_OBSERVER_LAW_BYPASS", "1")
     assert GATE.main() == 0
+
+
+def test_scan_file_ignores_type_checking_imports(tmp_path: Path) -> None:
+    src = tmp_path / "tc.py"
+    src.write_text(
+        "from typing import TYPE_CHECKING\n"
+        "if TYPE_CHECKING:\n"
+        "    from agentic_core.L3_orchestration.healers.healing_tier_dispatcher import X\n",
+        encoding="utf-8",
+    )
+    original_root = GATE.REPO_ROOT
+    GATE.REPO_ROOT = tmp_path
+    try:
+        findings = GATE._scan_file(src)
+    finally:
+        GATE.REPO_ROOT = original_root
+    assert findings == []
 
 
 def test_main_advisory_default(monkeypatch: pytest.MonkeyPatch) -> None:

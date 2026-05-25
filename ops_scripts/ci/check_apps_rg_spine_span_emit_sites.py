@@ -17,7 +17,7 @@ EMIT_NEEDLE = "emit_spine_span_event"
 
 
 def _check_row(row: object) -> tuple[bool, str]:
-    from system_learning.runtime_adg.span_contracts import AppsRgSpineSpanRow
+    from agentic_core.L6_system_learning.span_contracts import AppsRgSpineSpanRow
 
     if not isinstance(row, AppsRgSpineSpanRow):
         return False, "invalid_row"
@@ -49,7 +49,7 @@ def main() -> int:
         print("[APPS-RG-SPINE-SPAN-EMIT-SITES] BYPASS")
         return 0
 
-    from system_learning.runtime_adg.span_contracts import APPS_RG_SPINE_SPAN_CHECKLIST
+    from agentic_core.L6_system_learning.span_contracts import APPS_RG_SPINE_SPAN_CHECKLIST
 
     rows: list[dict[str, object]] = []
     errors: list[str] = []

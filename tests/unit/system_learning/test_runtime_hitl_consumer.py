@@ -17,7 +17,7 @@ from agentic_core.L5_safety.exit_control.hitl_classes import HitlClass
 from apps_eval.engines.hitl_decision_quality_engine import (
     HitlDecisionQualityEngine,
 )
-from system_learning.runtime_hitl_consumer import (
+from agentic_core.L6_system_learning.runtime_hitl_consumer import (
     ConsumerThresholds,
     DraftKind,
     DraftProposal,

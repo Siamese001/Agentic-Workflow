@@ -37,7 +37,7 @@ import pytest
 
 # Module-level imports for test classes
 try:
-    from system_learning.runtime_adg import (
+    from agentic_core.L6_system_learning.runtime_adg import (
         FileBackedRuntimeADGStore,
         InMemoryRuntimeADGStore,
         L6MetaLearningBridge,
@@ -54,7 +54,7 @@ except ImportError:
     RUNTIME_ADG_AVAILABLE = False
 
 try:
-    from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
+    from agentic_core.L6_system_learning.auto_persistence import AutoPersistenceTracingAdapter
 
     AUTO_PERSISTENCE_AVAILABLE = True
 except ImportError:
@@ -71,7 +71,7 @@ def ssot_project_root():
 
 @pytest.fixture
 def runtime_adg_classes():
-    from system_learning.runtime_adg import (
+    from agentic_core.L6_system_learning.runtime_adg import (
         FileBackedRuntimeADGStore,
         InMemoryRuntimeADGStore,
         L6MetaLearningBridge,

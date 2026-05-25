@@ -208,12 +208,12 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
     REPO_ROOT = repo_root
     adapter = None
     try:
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from agentic_core.L6_system_learning.healing_outcome_aggregator import HealingOutcomeAggregator
+        from agentic_core.L6_system_learning.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from agentic_core.L6_system_learning.in_memory_healing_outcome_intake_store import (
             InMemoryHealingOutcomeIntakeStore,
         )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from agentic_core.L6_system_learning.healing_outcome_types import HealingOutcomeEvent
 
         healing_actions = state_mgr.state.get("healing_actions", [])
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
@@ -330,7 +330,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         state_mgr.state["meta_learning"]["bge_arch_counts"] = _bge_arch_counts
         state_mgr.state["meta_learning"]["bge_model"] = "BAAI/bge-m3-v1"
         try:
-            from system_learning.engines.healing_success_rate_store import get_default_store as _get_sr_store
+            from agentic_core.L6_system_learning.healing_success_rate_store import get_default_store as _get_sr_store
 
             _sr_store = _get_sr_store()
             for _action in healing_actions:
@@ -347,7 +347,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         cognitive_dispositions = state_mgr.state.get("cognitive_dispositions", [])
         if cognitive_dispositions:
             try:
-                from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+                from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
                 bridge = get_sl_memory_bridge()
 
@@ -374,12 +374,12 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         except (ImportError, AttributeError, KeyError) as _adg_err:
             logging.debug("[MetaLearning] ADG behavioral score emission failed (non-fatal): %s", _adg_err)
         try:
-            from system_learning.meta_learning_bus import (
+            from agentic_core.L6_system_learning.meta_learning_bus import (
                 get_process_bus as _get_proc_bus,
             )
 
-            from system_learning.engines.bus_consumer import drain_and_apply as _drain_apply
-            from system_learning.engines.healing_success_rate_store import get_default_store as _get_bus_store
+            from agentic_core.L6_system_learning.bus_consumer import drain_and_apply as _drain_apply
+            from agentic_core.L6_system_learning.healing_success_rate_store import get_default_store as _get_bus_store
 
             _drain_apply(_get_proc_bus(), _get_bus_store())
         except (
@@ -391,7 +391,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         adapter = HealingOutcomeIntakeAdapter(store=store)
         # Wave 3: one-shot historical backfill from .healing_backups (sentinel-guarded)
         try:
-            from system_learning.engines.historical_backfill_engine import run_backfill as _run_backfill
+            from agentic_core.L6_system_learning.historical_backfill_engine import run_backfill as _run_backfill
 
             _bf_result = _run_backfill(REPO_ROOT)
             if not _bf_result.get("skipped"):
@@ -439,7 +439,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             except (OSError, TypeError) as _w2_err:
                 logging.warning("[MetaLearning] Wave2 JSONL corpus append failed (non-fatal): %s", _w2_err)
             try:
-                from system_learning.stores.version_store import FileBackedVersionStore as _FBVS
+                from agentic_core.L6_system_learning.version_store import FileBackedVersionStore as _FBVS
 
                 _intake_dir = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
                 _file_store = _FBVS(_intake_dir)
@@ -449,8 +449,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         try:
             import json as _json_w4
 
-            from system_learning.stores.version_store import FileBackedVersionStore as _FBVS4
-            from system_learning.types.healing_outcome_types import HealingOutcomeEvent as _HOE4
+            from agentic_core.L6_system_learning.version_store import FileBackedVersionStore as _FBVS4
+            from agentic_core.L6_system_learning.healing_outcome_types import HealingOutcomeEvent as _HOE4
 
             _intake_dir4 = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
             _idx_path4 = _intake_dir4 / "_index.json"
@@ -494,8 +494,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             logging.warning("[MetaLearning] Wave4 prior record merge failed (non-fatal): %s", _w4_err)
         if _faiss_vectors:
             try:
-                from system_learning.engines.local_faiss_store import LocalFAISSStore as _FAISSStore
-                from system_learning.engines.local_faiss_store import ManifestIntegrityError as _MIE
+                from agentic_core.L6_system_learning.local_faiss_store import LocalFAISSStore as _FAISSStore
+                from agentic_core.L6_system_learning.local_faiss_store import ManifestIntegrityError as _MIE
 
                 _dim = len(_faiss_vectors[0])
                 _faiss_idx = "healing_context_v1"
@@ -598,8 +598,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
     try:
         import time as _time_mod
 
-        from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
-        from system_learning.pipelines.pipeline_factory import build_pipeline_config, build_pipeline_deps
+        from agentic_core.L6_system_learning.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
+        from agentic_core.L6_system_learning.pipeline_factory import build_pipeline_config, build_pipeline_deps
 
         _apply_proposals = state_mgr.state.get("apply_proposals", False)
         _now_utc = int(_time_mod.time())
@@ -641,7 +641,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
 
     # Wave B-5: Collect Execute_SSOT phase outcomes for system learning
     try:
-        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+        from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
         bridge = get_sl_memory_bridge()
 

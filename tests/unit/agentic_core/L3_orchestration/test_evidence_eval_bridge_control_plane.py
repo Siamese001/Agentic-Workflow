@@ -13,7 +13,7 @@ from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import
 )
 from agentic_core.L5_safety.enforcement.exit_control_gate import ExitControlGate
 from agentic_core.L5_safety.types.exit_disposition_types import ExitGateResult
-from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+from ops_scripts.reports.async_eval_packet import (
     get_async_eval_ingester,
     get_shadow_eval_ingester,
     reset_async_eval_ingester,

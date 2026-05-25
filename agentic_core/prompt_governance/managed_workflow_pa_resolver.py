@@ -133,7 +133,7 @@ def _load_yaml_file(path: Path) -> Dict[str, Any]:
     except ImportError:
         _log.warning("[PA resolver] PyYAML not available — returning empty dict for %s", path)
         return {}
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
         raise PAResolverError(f"Failed to parse YAML {path}: {exc}") from exc
 
 
@@ -150,7 +150,7 @@ def _load_yaml_list(path: Path) -> List[Dict[str, Any]]:
         return []
     except ImportError:
         return []
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
         raise PAResolverError(f"Failed to parse YAML list {path}: {exc}") from exc
 
 

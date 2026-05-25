@@ -52,6 +52,7 @@ _EXEC_SUMMARY_OUTPUT_SCHEMA_JSON = json.dumps(
     {
         "type": "object",
         "required": [
+            "executive_strategy_thesis",
             "resume_display_text",
             "claim_ledger",
             "jd_alignment",
@@ -60,6 +61,7 @@ _EXEC_SUMMARY_OUTPUT_SCHEMA_JSON = json.dumps(
             "self_check",
         ],
         "properties": {
+            "executive_strategy_thesis": {"type": "string", "minLength": 1},
             "resume_display_text": {"type": "string"},
             "claim_ledger": {
                 "type": "array",
@@ -304,16 +306,16 @@ def format_srfs_forbidden_phrase_guardrails_block() -> str:
     )
 
 
-# Base-resume executive summary: style / density target only for SRFS appendix reinforcement (NOT runtime proof).
+# Judge-aligned SVP style anchor for SRFS appendix (NOT runtime proof — matches exec_summary_pos_svp_it_strategy_001 register).
 SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
-    "Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous "
-    "systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine "
-    "deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, "
-    "replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and "
-    "deployment speed. Standardized AI lifecycle practices across intake, validation, execution, monitoring, and "
-    "remediation, reducing lab-to-production cycle time from six months to three weeks. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating "
-    "capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready "
-    "infrastructure, with quantitative actuarial and distributed systems depth reinforcing regulated platform delivery."
+    "Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one "
+    "enterprise IT direction for regulated programs. Designs and operates platform runtime with deterministic controls "
+    "and traceable execution so innovation scales without sacrificing audit-ready delivery. Leads operating-model and "
+    "engineering scale-out across platform lifecycle work, converting complex delivery into reusable services adopted "
+    "across enterprise programs. Applies governance and quantitative depth to balance innovation velocity with lineage "
+    "discipline when selected facts support regulated analytics themes. Generated proof-backed revenue and margin outcomes "
+    "by productizing platform capabilities rather than listing credentials or certification labels. Closes the arc with "
+    "enterprise technology direction grounded in allowed platform and governance facts, not JD phrasing or employer copy."
 )
 
 def load_executive_summary_example_after(example_id: str) -> str:
@@ -330,8 +332,8 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "- Proof: C0 HIGH facts + ALLOWED_SOURCE_FACT_IDS only (pa_proof_binding_v1).\n"
         "- JD_TEXT/BRIEFING: targeting-only (pa_targeting_only_v1).\n"
         "- Product shape and X2 gate IDs: see appended PRODUCT_SHAPE (do not restate here).\n"
-        "- Voice/density: use E0 many_shot_examples (exec_summary_pos_* / negatives); do not copy exemplar metrics.\n"
-        "- Optional themes: identity, platform/governance, scale, outcomes (see I0 north_star_synthesis_contract).\n"
+        "- Voice/density: use E0 many_shot_examples (judge-aligned SVP positives / negatives); do not copy exemplar metrics.\n"
+        "- Thesis-first arc: see I0 judge_alignment_contract and executive_strategy_thesis_first (not brushstroke slot-fill).\n"
         "- Credential policy: I0 credential_policy_v1; omit cert inventory tails.\n"
         "- Do not force every allowed fact_id into resume_display_text; document omissions in self_check/gap_notes.\n"
         + format_srfs_forbidden_phrase_guardrails_block()
@@ -421,9 +423,9 @@ def build_executive_summary_assembly_input(
     strategy_voice = ""
     if is_strategy_executive_target_title(t_title):
         strategy_voice = (
-            " SVP IT strategy voice: integrated enterprise technology narrative; "
-            "technology strategy executive opener; sentences 3–6 follow injected six_sentence_arc; "
-            "JD/briefing shape emphasis only."
+            " SVP IT strategy voice: emit executive_strategy_thesis first, then six-sentence display serving that thesis; "
+            "use injected narrative_arc_weights as thematic emphasis only (not one fact per sentence index); "
+            "JD/briefing shape executive concepts only (no JD-as-proof)."
         )
     composition_block = ""
     _pp_for_plan = runtime_payload.get("proof_pool_metadata")
@@ -447,14 +449,14 @@ def build_executive_summary_assembly_input(
     composition_block = format_composition_plan_for_pa(_composition_plan)
     u0 = (
         f"Task: executive summary for {t_title!r} at {t_company!r} (targeting context only).\n"
-        "Proof: C0 selected facts + ALLOWED_SOURCE_FACT_IDS only. Follow I0 proof_law_v1, composition_heuristics, "
-        "and E0 examples for voice.\n"
+        "Proof: C0 selected facts + ALLOWED_SOURCE_FACT_IDS only. Follow I0 judge_alignment_contract, "
+        "executive_strategy_thesis_first, narrative_arc_contract, and E0 examples for voice.\n"
         f"{strategy_voice}"
-        "Return bare JSON (see R0 keys). resume_display_text: exactly 6 sentences, one paragraph (max 140 words) "
-        "(match E0 many-shot band from examples YAML — do not compress to 3). "
-        "claim_ledger rows: non-empty claim_text + source_fact_ids from allowlist; "
-        "when ALLOWED_SOURCE_FACT_IDS count is 6 or more, emit at least 5 claim_ledger rows "
-        "unless gap_notes document intentional omissions. "
+        "Return bare JSON (see R0 keys). Required: executive_strategy_thesis (one third-person sentence, ledger-backed), then "
+        "resume_display_text: exactly six period-terminated sentences, one paragraph (max 140 words) - third person only (no I/my/we). "
+        "One integrated SVP arc with connective S3-S5; not six Led/Built bullets; never Towers Perrin/ING/Aetna employer inventory line. "
+        "claim_ledger: 3-6 rows supporting the thesis (non-empty claim_text + source_fact_ids from allowlist); "
+        "do not emit one row per sentence by default; document intentional fact omissions in gap_notes. "
         "Do not emit selected_fact_plan."
     )
     product_patch = (
@@ -488,6 +490,7 @@ def build_executive_summary_assembly_input(
             "executive_summary",
             slots.get("E0"),
             allow_template_fallback=False,
+            strategy_executive=is_strategy_executive_target_title(t_title),
         ),
         y0_style_preferences=slots.get("Y0"),
         c0_candidate_facts=EvidenceSource(

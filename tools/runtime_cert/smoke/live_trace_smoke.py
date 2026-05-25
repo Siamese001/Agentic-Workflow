@@ -51,10 +51,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     build_r3_grounded_read_contract,
 )
-from system_learning.runtime_adg.manifest_hash import (
+from agentic_core.L6_system_learning.manifest_hash import (
     compute_manifest_hash_for_app,
 )
 from tools.runtime_cert.extractors.r3_evidence import (

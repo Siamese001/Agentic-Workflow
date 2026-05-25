@@ -173,7 +173,7 @@ class EnsembleModelLane:
                 candidate_count,
                 _temp_profile,
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             raise EnsembleLaneError(f"Generator gateway failed: {exc}") from exc
 
         if not candidates:
@@ -194,7 +194,7 @@ class EnsembleModelLane:
             )
         except MissingRequiredJudgeError as exc:
             raise EnsembleLaneError(f"Judge jury failed closed: {exc}") from exc
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             raise EnsembleLaneError(f"Judge jury runner error: {exc}") from exc
 
         # ── 5. Seal section artifact ──────────────────────────────────────

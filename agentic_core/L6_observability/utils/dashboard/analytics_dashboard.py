@@ -125,7 +125,7 @@ class AnalyticsDashboard:
         """Initialize component integrations."""
         try:
             # Advanced analytics
-            from system_learning.runtime_adg.advanced_analytics import get_global_analytics
+            from agentic_core.L6_system_learning.advanced_analytics import get_global_analytics
 
             self._analytics_engine = get_global_analytics()
 
@@ -312,9 +312,7 @@ class AnalyticsDashboard:
 
     def _dashboard_loop(self) -> None:
         """Main dashboard update loop."""
-        while (
-            self._dashboard_active and not self._shutdown_requested
-        ):  # guardian: allow-retry-without-backoff -- periodic dashboard refresh loop; internal time.sleep provides pacing
+        while self._dashboard_active and not self._shutdown_requested:  # guardian: allow-retry-without-backoff -- refresh loop; wait() paces iterations
             try:
                 start_time = time.time()
 
@@ -330,7 +328,7 @@ class AnalyticsDashboard:
                 if self._stop_event.wait(timeout=sleep_time):
                     break
 
-            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
+            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:  # guardian: allow-retry-without-backoff -- periodic refresh loop; wait() paces retries
                 Logger.error(f"[DASHBOARD] Dashboard loop error: {e}")
                 if self._stop_event.wait(timeout=5.0):
                     break

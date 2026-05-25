@@ -39,7 +39,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from system_learning.stores import version_store as vs_mod
+from agentic_core.L6_system_learning.stores import version_store as vs_mod
 
 
 class _NullBridge:
@@ -49,17 +49,17 @@ class _NullBridge:
 
 vs_mod.get_sl_memory_bridge = lambda: _NullBridge()  # type: ignore[assignment]
 
-from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
-from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
-from system_learning.runtime_adg.runtime_span_emitter import (
+from agentic_core.L6_system_learning.auto_persistence import AutoPersistenceTracingAdapter
+from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
+from agentic_core.L6_system_learning.runtime_span_emitter import (
     SPAN_EXIT_DISPOSITION,
     SPAN_STEP_SEAL,
     SPAN_TRACE_ROOT,
     get_current_adapter,
     seal_step,
 )
-from system_learning.runtime_adg.span_contracts import validate_tier1_corpus_coverage
-from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+from agentic_core.L6_system_learning.span_contracts import validate_tier1_corpus_coverage
+from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
 FileBackedRuntimeADGStore._validate_l4_compliance = lambda self: None  # type: ignore
 

@@ -2,7 +2,7 @@
 
 Plan: .cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W5.
 
-Verifies that every Python module under `system_learning/` is tagged
+Verifies that every Python module under `agentic_core/L6_system_learning/` is tagged
 `layer=L6` in the latest ADG SQLite snapshot. Surfaces drift if the
 ADG layer-resolution heuristic ever stops tagging a new subdir as L6.
 
@@ -31,7 +31,7 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SL_ROOT = REPO_ROOT / "system_learning"
+SL_ROOT = REPO_ROOT / "agentic_core" / "L6_system_learning"
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
 SKIP_SUBDIRS = {"__pycache__", "logs", "raw", "snapshots"}
 STALE_SECONDS = 7 * 24 * 3600
@@ -49,7 +49,7 @@ def _latest_snapshot() -> Path | None:
 
 
 def _expected_files() -> set[str]:
-    """Return set of repo-relative .py paths under system_learning/ to check."""
+    """Return set of repo-relative .py paths under agentic_core/L6_system_learning/ to check."""
     out: set[str] = set()
     if not SL_ROOT.exists():
         return out
@@ -77,6 +77,18 @@ def _adg_l6_files(db_path: Path) -> set[str]:
         return {row[0] for row in cur.fetchall() if row[0]}
     finally:
         conn.close()
+
+
+def _source_declares_l6(rel_path: str) -> bool:
+    """True when the module file declares ``__layer__ = \"L6\"`` (W2 markers)."""
+    path = REPO_ROOT / rel_path
+    if not path.is_file():
+        return False
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return '__layer__ = "L6"' in text or "__layer__ = 'L6'" in text
 
 
 def main() -> int:
@@ -126,7 +138,10 @@ def main() -> int:
         )
         return 0
 
-    missing = sorted(expected - adg_l6)
+    # ADG may omit package __init__.py nodes; honor on-disk __layer__ markers (W2).
+    missing = sorted(
+        p for p in (expected - adg_l6) if not _source_declares_l6(p)
+    )
     coverage = (
         (len(expected) - len(missing)) / len(expected) if expected else 1.0
     )
@@ -149,7 +164,7 @@ def main() -> int:
         return 0
 
     print(
-        f"[l6_layer_tag] {len(missing)} module(s) under system_learning/ NOT tagged L6 in {snapshot.name}:"
+        f"[l6_layer_tag] {len(missing)} module(s) under agentic_core/L6_system_learning/ NOT tagged L6 in {snapshot.name}:"
     )
     for path in missing[:20]:
         print(f"  {path}")

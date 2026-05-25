@@ -50,8 +50,8 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 # Import the factory to patch it
-import system_learning.engines.embedding_service_factory as factory_module
-from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+import agentic_core.L6_system_learning.embedding_service_factory as factory_module
+from agentic_core.L6_system_learning.embedding_service_factory import EmbeddingServiceFactory
 
 # REMOVED: _emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_2")

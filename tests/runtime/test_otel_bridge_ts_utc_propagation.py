@@ -80,7 +80,7 @@ def test_bridge_to_materializer_ts_propagation() -> None:
     from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
         AdgEmissionToOtelBridge,
     )
-    from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+    from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
     bridge = AdgEmissionToOtelBridge(root_trace_id="test-trace-002")
     bridge.emit(_make_record(

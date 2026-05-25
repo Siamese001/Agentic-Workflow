@@ -144,7 +144,7 @@ def _drain_runtime_store_recent(window_seconds: float = 30.0) -> list[dict[str, 
     emission. Not a production query path.
     """
     try:
-        from system_learning.runtime_adg.store import (  # noqa: WPS433
+        from agentic_core.L6_system_learning.store import (  # noqa: WPS433
             FileBackedRuntimeADGStore,
         )
     except ImportError:
@@ -253,7 +253,7 @@ def exercise_runtime_span_emitter(n: int = 5) -> EmitterStats:
         from agentic_core.L6_observability.otel_runtime_ingest import (
             emit_spans_to_runtime_adg,
         )
-        from system_learning.runtime_adg.runtime_span_emitter import (
+        from agentic_core.L6_system_learning.runtime_span_emitter import (
             emit_exit_disposition,
             emit_trace_root,
             seal_step,
@@ -289,7 +289,7 @@ def exercise_runtime_span_emitter(n: int = 5) -> EmitterStats:
         # on every span.
         if not stats.gen_ai_attr_present:
             try:
-                import system_learning.runtime_adg.runtime_span_emitter as mod  # noqa: WPS433
+                import agentic_core.L6_system_learning.runtime_span_emitter as mod  # noqa: WPS433
 
                 stats.gen_ai_attr_present = bool(getattr(mod, "_GEN_AI_OPERATION", ""))
             except ImportError:

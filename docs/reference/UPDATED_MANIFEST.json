@@ -641,72 +641,72 @@
       "sha256": "737c560fd9d2e31bcc00eaf85c5f9c425d1efd87c0fea2a82fe88d3d78be37e1"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.1_L6_Runtime_Exhaust_Ingest_and_Normalization.md",
+      "path": "06_L6_Observability_and_System_Learning/06.1_L6_Runtime_Exhaust_Ingest_and_Normalization.md",
       "size": 11406,
       "sha256": "0df2d911abdf780f9537ea35734cfbcb1a38382faddb2b3068f52b61d3271fd9"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.2_L6_Observer_Law_Isolation_Eval_Readiness.md",
+      "path": "06_L6_Observability_and_System_Learning/06.2_L6_Observer_Law_Isolation_Eval_Readiness.md",
       "size": 9374,
       "sha256": "320966c008e6207db0b568488a6aae36791c63c7348746b45acfb7d8b8dbf02e"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.2_L6_Observer_Law_Surface_Isolation_and_Eval_Readiness.md",
+      "path": "06_L6_Observability_and_System_Learning/06.2_L6_Observer_Law_Surface_Isolation_and_Eval_Readiness.md",
       "size": 7321,
       "sha256": "01592933bb1935081126440eb8daa23f8e3dc90d7019ce17b8ee19d2c8b89550"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.3_L6_Outcome_Trajectory_and_Governance_Evaluation.md",
+      "path": "06_L6_Observability_and_System_Learning/06.3_L6_Outcome_Trajectory_and_Governance_Evaluation.md",
       "size": 7270,
       "sha256": "87892cbb19447ad4411e4f4a4b8b45d3b32ecb173c96c0804028402918dc7155"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.3_L6_Outcome_Trajectory_Governance_Eval.md",
+      "path": "06_L6_Observability_and_System_Learning/06.3_L6_Outcome_Trajectory_Governance_Eval.md",
       "size": 9317,
       "sha256": "85b182415ba23d5742445e83009c94ad17ddba58242f80a3740dca7e3818c6e7"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.4_L6_Human_Calibration_and_Eval_Record_Seal.md",
+      "path": "06_L6_Observability_and_System_Learning/06.4_L6_Human_Calibration_and_Eval_Record_Seal.md",
       "size": 8470,
       "sha256": "207098dd0bd898b541f60fbf24b469db82a343202852a9879295af00463b1042"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.5_L6_Signal_Fusion_RCA_and_Pattern_Synthesis.md",
+      "path": "06_L6_Observability_and_System_Learning/06.5_L6_Signal_Fusion_RCA_and_Pattern_Synthesis.md",
       "size": 8833,
       "sha256": "8c5c181e9a1d11b3600f91e32ca52b184f98f121ca2e9edb2e2c235f6ffc488f"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.6_L6_Proposal_Drafting_and_Admission_Gate.md",
+      "path": "06_L6_Observability_and_System_Learning/06.6_L6_Proposal_Drafting_and_Admission_Gate.md",
       "size": 8516,
       "sha256": "4f2bb3b205552cf1475e233b166292c09081a6a51abe0256301d24beb40dfe17"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_and_Future_Run_Publish.md",
+      "path": "06_L6_Observability_and_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_and_Future_Run_Publish.md",
       "size": 7307,
       "sha256": "f214f0c6d8b84f4be0d79ccd119dc80d2ee2677133d1448a9e8b0353becffb45"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_FutureRun.md",
+      "path": "06_L6_Observability_and_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_FutureRun.md",
       "size": 9348,
       "sha256": "45e41ee3119953a7cdbe23587febebbfe1273ba620ef7308e6af453e822d1e41"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.8_L6_Observability_KPI_Tests_and_Anti_Bypass.md",
+      "path": "06_L6_Observability_and_System_Learning/06.8_L6_Observability_KPI_Tests_and_Anti_Bypass.md",
       "size": 11308,
       "sha256": "f358f744dd1d6e65929733b1a924eac1b8fb681e3b0e93c800ee7f05183f1014"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md",
+      "path": "06_L6_Observability_and_System_Learning/06.9_L6_Memory_Promotion_Interface.md",
       "size": 4862,
       "sha256": "ee9ed6c43457612ade7f35c0a0a768e097e523b1f86f4fde8c51878ac2e05503"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06_Shadow_Evaluation_System_Learning.md",
+      "path": "06_L6_Observability_and_System_Learning/06_Shadow_Evaluation_System_Learning.md",
       "size": 15476,
       "sha256": "4c4847c25a8464856dede8b7157b44fc7aa913668677a02d1a5e1af4afb40de2"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/v6_coverage_matrix.md",
+      "path": "06_L6_Observability_and_System_Learning/v6_coverage_matrix.md",
       "size": 34629,
       "sha256": "f8a7e45b929523e92dd30f2f1bd310cff797a7e3c5b5506627a0c2e7dcff8bd1"
     },

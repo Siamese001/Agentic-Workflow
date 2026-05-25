@@ -12,13 +12,13 @@ import time
 import pytest
 
 from agentic_core.L6_observability import otel_runtime_ingest
-from system_learning.runtime_adg.store import _deserialise_snapshot
+from agentic_core.L6_system_learning.store import _deserialise_snapshot
 
 
 @pytest.fixture
 def fresh_store() -> None:
     """Reset the module-level singleton to a clean InMemoryRuntimeADGStore."""
-    from system_learning.runtime_adg.store import InMemoryRuntimeADGStore
+    from agentic_core.L6_system_learning.store import InMemoryRuntimeADGStore
 
     otel_runtime_ingest._STORE = InMemoryRuntimeADGStore()  # type: ignore[assignment]
     otel_runtime_ingest._MATERIALIZER = None

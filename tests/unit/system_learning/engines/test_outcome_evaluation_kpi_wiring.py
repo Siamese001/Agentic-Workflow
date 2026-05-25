@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.outcome_evaluation_engine import OutcomeEvaluationEngine
-from system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
+from agentic_core.L6_system_learning.outcome_evaluation_engine import OutcomeEvaluationEngine
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIBoard, V6KPIName
 
 
 def test_initial_counters_zero():

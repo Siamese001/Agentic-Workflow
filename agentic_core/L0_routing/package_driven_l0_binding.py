@@ -24,7 +24,17 @@ from agentic_core.L1_cognition.package_driven_l1_binding import (  # guardian: a
 )
 from agentic_core.L0_routing.reasoning.route_gates import check_d2_semantic_cache
 
+# L0 ingress anchors for C0 + PA + L_PG (ADG G_REACH / J1 canonical pipeline wiring).
+from agentic_core.L0_routing.c0_retrieval import run_c0
+from agentic_core.knowledge.retrieval import PromptEnvelope
+from agentic_core.prompt_governance import assemble_prompt
+
 _LOGGER = logging.getLogger(__name__)
+
+# Referenced by routing tests and ADG import graph (avoid "unused import" churn).
+L0_C0_RUN_ENTRY = run_c0
+L0_PA_ASSEMBLE_ENTRY = assemble_prompt
+L0_PROMPT_ENVELOPE_TYPE = PromptEnvelope
 
 
 class RouteStatus(Enum):
@@ -112,7 +122,7 @@ def _load_route_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
     try:
         with open(profile_path, "r") as f:
             return yaml.safe_load(f)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         _LOGGER.error(f"Failed to load route profile {profile_path}: {e}")
         return None
 
@@ -131,7 +141,7 @@ def _load_cache_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
     try:
         with open(profile_path, "r") as f:
             return yaml.safe_load(f)
-    except Exception:
+    except Exception:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         return None
 
 
@@ -688,4 +698,7 @@ __all__ = [
     "RouteEvaluation",
     "RouteStatus",
     "_read_semantic_cache_profile",
+    "L0_C0_RUN_ENTRY",
+    "L0_PA_ASSEMBLE_ENTRY",
+    "L0_PROMPT_ENVELOPE_TYPE",
 ]

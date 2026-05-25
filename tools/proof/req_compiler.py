@@ -67,7 +67,7 @@ DEFAULT_LAYER_DIRS: tuple[tuple[str, str, str], ...] = (
     ("docs/reference/03B_PA_Prompt_Assembly", "PA", "PAS"),
     ("docs/reference/04_L2_Execute", "L2", "L2E"),
     ("docs/reference/05_Exit_Evaluation_and_Control", "Exit", "EXT"),
-    ("docs/reference/06_L6_Shadow_Evaluation_System_Learning", "L6", "L6S"),
+    ("docs/reference/06_L6_Observability_and_System_Learning", "L6", "L6S"),
     ("docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance", "E2E", "E2E"),
 )
 

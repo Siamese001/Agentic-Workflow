@@ -139,7 +139,7 @@ def sample_snapshots(n: int = 5) -> list[dict[str, Any]]:
     the decoded hex is canonical bytes for `_deserialise_snapshot`. We
     unwrap both layers for an accurate schema view.
     """
-    from system_learning.runtime_adg.store import _deserialise_snapshot
+    from agentic_core.L6_system_learning.store import _deserialise_snapshot
 
     idx_path = _RUNTIME_ADG_DIR / "_index.json"
     if not idx_path.exists():
@@ -353,10 +353,10 @@ def main() -> int:
     # name_mismatch vs. emit_site_gap.
     print("Analyzing Tier 1 corpus coverage...")
     try:
-        from system_learning.runtime_adg.span_contracts import (
+        from agentic_core.L6_system_learning.span_contracts import (
             validate_tier1_corpus_coverage,
         )
-        from system_learning.runtime_adg.store import _deserialise_snapshot
+        from agentic_core.L6_system_learning.store import _deserialise_snapshot
 
         version_index = json.loads((_RUNTIME_ADG_DIR / "_index.json").read_text(encoding="utf-8"))
         corpus: list[Any] = []

@@ -66,7 +66,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 # Deferred imports for graceful degradation
 try:
-    from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+    from agentic_core.L6_system_learning.snapshot import RuntimeADGSnapshot
 
     SNAPSHOT_AVAILABLE = True
 except ImportError:

@@ -67,7 +67,7 @@ def _read_json(path: Path) -> dict[str, Any] | None:
         return None
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- P2 ADG burndown
         return None
     return raw if isinstance(raw, dict) else None
 

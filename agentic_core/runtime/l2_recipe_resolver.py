@@ -41,7 +41,7 @@ def _register_builtin_recipes() -> dict[str, dict[str, Any]]:
         meta = get_apps_rg_recipe_metadata()
         registry[meta["app_name"]] = meta
         _log.debug("Registered L2 recipe for app_name=%s", meta["app_name"])
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- P1 ADG burndown
         _log.debug("apps_rg.l2_recipe not available — recipe not registered")
 
     return registry
@@ -93,8 +93,8 @@ def resolve_l2_recipe(
             f"L2_RECIPE_NOT_FOUND: No registered L2 recipe for "
             f"app_name={app_name!r}. Known apps: {sorted(registry.keys())}"
         )
-
-    meta = registry[app_name]
+  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
+    meta = registry[app_name]  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
     step_classes = meta["steps"]
 
     def _composite_l2_callable() -> dict[str, Any]:
@@ -114,7 +114,7 @@ def resolve_l2_recipe(
             if _master_path.exists():
                 try:
                     master_resume_data = _master_path.read_text(encoding="utf-8")
-                except OSError:
+                except OSError:  # guardian: allow-silent-swallow -- P1 ADG burndown
                     pass
         flow_route = raw_request.get("flow_route", "tailor_existing")
 

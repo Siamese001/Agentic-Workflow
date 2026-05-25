@@ -574,7 +574,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                             message = f"{message} [SSOT-OVERRIDE canonical={_cp}]"
                         # else "H" — fall through to normal healer logic
                         try:
-                            from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                            from agentic_core.L6_system_learning.hitl_decision_logger import log_hitl_decision
 
                             log_hitl_decision(
                                 agent="LocationHealerAgent",
@@ -1238,7 +1238,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             approved, decision = hitl_approval_fn(file_path, msg)
             if not approved:
                 try:
-                    from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                    from agentic_core.L6_system_learning.hitl_decision_logger import log_hitl_decision
 
                     log_hitl_decision(
                         agent="LocationHealerAgent",
@@ -1266,7 +1266,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         if move_result.get("applied") and not dry_run:
             affected_paths.extend([file_path, target_path])
             try:
-                from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                from agentic_core.L6_system_learning.hitl_decision_logger import log_hitl_decision
 
                 log_hitl_decision(
                     agent="LocationHealerAgent",

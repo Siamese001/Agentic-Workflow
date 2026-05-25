@@ -29,17 +29,15 @@ import math
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.knowledge.retrieval.evidence_contract_builder import (
+from agentic_core.knowledge.retrieval import (
+    AssemblyStatusCode,
     EvidenceContract,
     EvidenceStatus,
-    RefinementDiagnostic,
-    VerifiedChunk,
-)
-from agentic_core.knowledge.retrieval.prompt_envelope import (
-    AssemblyStatusCode,
     PromptAssemblyStatus,
     PromptEnvelope,
     PromptEnvelopeFactory,
+    RefinementDiagnostic,
+    VerifiedChunk,
 )
 
 log = logging.getLogger(__name__)

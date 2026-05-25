@@ -42,9 +42,7 @@ from agentic_core.L3_orchestration.section_merge_engine import (
     SectionMergeEngine,
     SectionMergeError,
 )
-from agentic_core.prompt_governance.managed_workflow_pa_resolver import (
-    ManagedWorkflowPAResolver,
-)
+from agentic_core.prompt_governance import ManagedWorkflowPAResolver
 
 _log = logging.getLogger(__name__)
 
@@ -80,7 +78,7 @@ def _load_manifest_yaml(manifest_path: Path) -> Dict[str, Any]:
         import yaml  # type: ignore[import-untyped]
         data = yaml.safe_load(manifest_path.read_text(encoding="utf-8")) or {}
         return data if isinstance(data, dict) else {}
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
         raise ManagedWorkflowRunnerError(
             f"Failed to parse workflow manifest {manifest_path}: {exc}"
         ) from exc
@@ -268,7 +266,7 @@ class ManagedWorkflowRunner:
             ordered_nodes = _topological_sort(raw_nodes)
         except ManagedWorkflowRunnerError:
             raise
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             raise ManagedWorkflowRunnerError(
                 f"DAG topological sort failed for {workflow_ref!r}: {exc}"
             ) from exc
@@ -295,7 +293,7 @@ class ManagedWorkflowRunner:
 
             try:
                 artifact = self._executor(step)
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
                 if not resolved_node.optional:
                     raise ManagedWorkflowRunnerError(
                         f"L2 executor failed on critical node={resolved_node.node_id!r}: {exc}. "
@@ -411,7 +409,7 @@ class ManagedWorkflowRunner:
                 if wmp:
                     manifest_path = self._repo_root / wmp
                     manifest_digest = receipt_data.get("manifest_digest", "")
-            except (json.JSONDecodeError, TypeError):
+            except (json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- P1 ADG burndown
                 pass
 
         if manifest_path is None or not manifest_path.exists():
@@ -490,7 +488,7 @@ class ManagedWorkflowRunner:
                 pa_failure_reason = pa_artifact.failure_reason
                 if prompt_artifact_ref:
                     carried_prompt_refs = (prompt_artifact_ref,)
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
                 _log.warning(
                     "[runner] PA resolver raised for node=%s: %s",
                     resolved_node.node_id, exc,

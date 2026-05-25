@@ -4,6 +4,11 @@ from agentic_core.L2_execution.regen.delta_shape_guard import validate_delta_sha
 from agentic_core.L2_execution.regen.incremental_repair_contract import (
     IncrementalRepairContract,
 )
+from agentic_core.L2_execution.regen.judge_directed_regen import (
+    DEFAULT_STEP_ORDER,
+    JudgeDirectedRegenPlan,
+    JudgeDirectedRegenStep,
+)
 from agentic_core.L2_execution.regen.prefix_digest import (
     compute_delta_message_hash,
     compute_system_prefix_hash,
@@ -42,6 +47,9 @@ from agentic_core.L2_execution.regen.same_authority_thread import (
 )
 
 __all__ = [
+    "DEFAULT_STEP_ORDER",
+    "JudgeDirectedRegenPlan",
+    "JudgeDirectedRegenStep",
     "AnchorClassification",
     "ChatTurn",
     "DefectClass",

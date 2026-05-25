@@ -37,6 +37,7 @@ CURRENT_WAVE: —
 LAST_COMPLETED_WAVE: W3
 LAST_UPDATED: 2026-05-25
 PLAN_COMPLETE: plan=core-same-authority-incremental-regen-e7a4b1 note="W0–W3 DONE: core SameAuthorityRegenRunner + apps_rg delegation + Brown live proof; W4 orchestrator DEFERRED per PD-8"
+DEFERRED_SCOPE_FOLLOWUP: plan=exec-summary-judge-regen-loop-closure-d8f3a1 path=.cursor/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md note="W4 + DS-1..DS-8 loop closure (post-regen X2, lane unify, orchestrator, Brown re-proof)"
 EXECUTION_APPROVED: true
 WAVE_COMPLETE: plan=core-same-authority-incremental-regen-e7a4b1 wave=0 note="ADR-085 + envelope spec v1 + migration receipt + author gate dominance_fires"
 WAVE_COMPLETE: plan=core-same-authority-incremental-regen-e7a4b1 wave=1 note="append_same_authority_turn + vLLM messages[] + NC-1..NC-3 pytest"
@@ -495,9 +496,11 @@ Record: **exit code**, `run_dir`, and full artifact checklist (§Live Brown Proo
 
 ---
 
-## Out of Scope
+## Out of Scope (moved to follow-up)
 
-- W4 `JudgeDirectedRegenOrchestrator` on MVP path
+> **Follow-up plan:** [exec-summary-judge-regen-loop-closure-d8f3a1.md](exec-summary-judge-regen-loop-closure-d8f3a1.md) — Notion + disk; owns W4 and deferred scope register DS-1..DS-8.
+
+- W4 `JudgeDirectedRegenOrchestrator` on MVP path → **follow-up W3**
 - X3 policy / 2-of-3 judge quorum in core
 - Rubric / X2 gate definitions in core
 - L5 executing repair or emitting disposition

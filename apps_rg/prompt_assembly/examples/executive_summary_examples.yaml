@@ -158,6 +158,28 @@ examples:
       - meta_filler
       - selected_facts_phrase_leak
 
+  - id: exec_summary_neg_first_person_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      As an SVP IT Strategy leader, I align governed AI platforms and commercialization into one enterprise direction. I designed operational platforms with deterministic routing. I scaled the ML organization from 8 to 28 specialists. I implemented Basel III lineage frameworks. I generated $22M in platform revenue. I continue to drive innovation across programs.
+    annotation: >
+      VIOLATION: first-person voice (I/my) and "As an SVP" opener; fails x2_first_person_zero and executive register.
+
+  - id: exec_summary_neg_employer_inventory_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Technology strategy executive operationalizing governed AI platforms for regulated enterprises. Platform commercialization generated proof-backed revenue outcomes. Basel III lineage frameworks reduced reporting errors. HPC microservices accelerated stress testing. Built quantitative foundation through derivatives pricing and FSA credential across Towers Perrin, ING, and Aetna. Governed platform delivery connects execution discipline to measurable outcomes.
+    annotation: >
+      VIOLATION: employer/credential inventory in S5 (Towers Perrin/ING/Aetna line); sequential achievement stack without thesis.
+
   - id: exec_summary_neg_sentence_stack_001
     category: negative
     section: executive_summary

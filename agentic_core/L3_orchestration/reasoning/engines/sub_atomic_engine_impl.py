@@ -184,13 +184,13 @@ def _get_prompt_assembler():
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_prompt_assembler", "p0_governance")
-    from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
+    from agentic_core.prompt_governance.core import assemble_prompt
 
     return assemble_prompt
 
 
 def _get_injection_scanner():
-    from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+    from agentic_core.prompt_governance.security import scan_untrusted_text
 
     return scan_untrusted_text
 
@@ -234,7 +234,7 @@ class SubAtomicEngineImpl:
         injected_prompt = injection_mixin.inject_all_layers(prompt, goal=system_prompt or "Execute mutation")
         assemble_prompt = _get_prompt_assembler()
         scan_untrusted_text = _get_injection_scanner()
-        from agentic_core.prompt_governance.core.prompt_assembler import SecurityIntegrityError as _SecIntErr  # noqa: PLC0415
+        from agentic_core.prompt_governance.core import SecurityIntegrityError as _SecIntErr  # noqa: PLC0415
 
         try:
             full_prompt = assemble_prompt(

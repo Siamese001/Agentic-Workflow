@@ -4,32 +4,32 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.governance_v4.capability_token import (
+from agentic_core.L6_system_learning.capability_token import (
     CapabilityToken,
     CapabilityTokenMinter,
     PrincipalChain,
     SandboxEnvelopeMinter,
 )
-from system_learning.engines.governance_v4.egress_inspector import (
+from agentic_core.L6_system_learning.egress_inspector import (
     EgressInspector,
     EgressVerdict,
     HardConstraintEnforcer,
 )
-from system_learning.engines.governance_v4.identity_propagator import IdentityPropagator
-from system_learning.engines.governance_v4.mcp_connector_registry import (
+from agentic_core.L6_system_learning.identity_propagator import IdentityPropagator
+from agentic_core.L6_system_learning.mcp_connector_registry import (
     DataSensitivity,
     GrantType,
     McpConnectorRegistry,
 )
-from system_learning.engines.governance_v4.replay_envelope_writer import (
+from agentic_core.L6_system_learning.replay_envelope_writer import (
     ForensicReplayVerifier,
     ReplayEnvelopeWriter,
 )
-from system_learning.engines.governance_v4.risk_tier_classifier import (
+from agentic_core.L6_system_learning.risk_tier_classifier import (
     RiskTierBand,
     RiskTierClassifier,
 )
-from system_learning.engines.v7_kpi_board import UnifiedKPIBoard, V7KPIName
+from agentic_core.L6_system_learning.v7_kpi_board import UnifiedKPIBoard, V7KPIName
 
 
 # ---- capability_token ----------------------------------------------------

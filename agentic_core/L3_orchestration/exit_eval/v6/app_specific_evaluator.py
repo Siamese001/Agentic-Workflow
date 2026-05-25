@@ -243,7 +243,7 @@ class AppSpecificEvaluator:
                     if retry_score != GRADER_UNKNOWN_SENTINEL and retry_score > raw_score:
                         raw_score = retry_score
                         evidence = list(evidence) + [f"retry_on_low={retry_score:.3f}"] + list(retry_evidence or [])
-                except (ValueError, TypeError, RuntimeError) as retry_exc:
+                except (ValueError, TypeError, RuntimeError) as retry_exc:  # guardian: allow-log-and-swallow -- P1 ADG burndown
                     # guardian: allow-log-and-swallow -- retry is best-effort;
                     # failure preserves original score (fail-closed posture intact)
                     Logger.info(

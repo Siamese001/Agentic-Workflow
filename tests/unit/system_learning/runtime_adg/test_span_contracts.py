@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.runtime_adg.snapshot import (
+from agentic_core.L6_system_learning.snapshot import (
     RuntimeADGEdge,
     RuntimeADGNode,
     create_runtime_adg_snapshot,
 )
-from system_learning.runtime_adg.span_contracts import (
+from agentic_core.L6_system_learning.span_contracts import (
     Tier1Coverage,
     validate_tier1_coverage,
 )
@@ -153,7 +153,7 @@ class TestTier1Coverage:
 
 class TestCorpusTier1:
     def test_empty_corpus_all_gaps(self) -> None:
-        from system_learning.runtime_adg.span_contracts import validate_tier1_corpus_coverage
+        from agentic_core.L6_system_learning.span_contracts import validate_tier1_corpus_coverage
 
         rep = validate_tier1_corpus_coverage([])
         assert rep.snapshots_scanned == 0
@@ -163,7 +163,7 @@ class TestCorpusTier1:
     def test_distinguishes_gap_from_name_mismatch(self) -> None:
         """One snapshot has a signal-hit-but-no-attrs node — should classify as
         name_mismatch, not emit_site_gap."""
-        from system_learning.runtime_adg.span_contracts import validate_tier1_corpus_coverage
+        from agentic_core.L6_system_learning.span_contracts import validate_tier1_corpus_coverage
 
         # Signal hit for L0.route.select: name match + layer match, but no attrs.
         nodes = (_node("route.select", "{}", kind="test", layer="L0"),)
@@ -172,7 +172,7 @@ class TestCorpusTier1:
         assert rep.category_status["runtime.trace_root"] == "emit_site_gap"
 
     def test_corpus_satisfies_with_real_production_shape(self) -> None:
-        from system_learning.runtime_adg.span_contracts import validate_tier1_corpus_coverage
+        from agentic_core.L6_system_learning.span_contracts import validate_tier1_corpus_coverage
 
         nodes = (
             _node(

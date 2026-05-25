@@ -121,8 +121,9 @@ def test_template_includes_many_shot_examples_and_deliberation_guards():
     assert raw.count("<transformation_example ") >= 2
     e0 = build_executive_summary_e0()
     assert "<many_shot_examples>" in e0
-    assert e0.count("<positive_example ") >= 4
-    assert "exec_summary_gold_base_resume_001" in e0
+    assert e0.count("<positive_example ") >= 1
+    assert "exec_summary_pos_svp_it_strategy_001" in e0
+    assert "exec_summary_gold_base_resume_001" not in e0
     assert "E0_STYLE_EXAMPLE_NOT_PROOF" in e0
     assert e0.count("<negative_example ") >= 3
     assert "<internal_deliberation_controls>" in raw
@@ -133,13 +134,17 @@ def test_template_includes_many_shot_examples_and_deliberation_guards():
     assert "jd_used_as_proof_false" in raw
 
 
-def test_template_yaml_includes_north_star_synthesis_contract():
+def test_template_yaml_includes_judge_alignment_contract():
     from apps_rg.prompt_assembly.e0_examples import build_executive_summary_e0
 
     raw = _TEMPLATE.read_text(encoding="utf-8")
     e0 = build_executive_summary_e0()
-    assert "<north_star_synthesis_contract>" in raw
-    assert "SelectedRoleFactSet (SRFS)" in raw
+    assert "<judge_alignment_contract>" in raw
+    assert "<executive_strategy_thesis_first>" in raw
+    import apps_rg.runtime.sections.executive_summary_pa as pa
+
+    pa_src = Path(pa.__file__).read_text(encoding="utf-8")
+    assert "GRAPH_PROOF_POOL_APPENDIX" in pa_src
     assert "<composition_heuristics>" in raw
     assert "exec_summary_pos_outcomes_led_001" in e0
     assert "exec_summary_neg_credential_dump_001" in e0
@@ -225,7 +230,7 @@ def test_compiled_srfs_appendix_contains_pool_and_blocking_rules():
     assert "srfs_suggested_target_shape" not in content
 
 
-def test_non_srfs_compiled_prompt_includes_north_star_synthesis_contract():
+def test_non_srfs_compiled_prompt_includes_judge_alignment_contract():
     payload = _minimal_payload()
     payload["evidence_capsule_active"] = True
     payload["evidence_capsule"] = {
@@ -233,9 +238,9 @@ def test_non_srfs_compiled_prompt_includes_north_star_synthesis_contract():
     }
     out = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     content = out.artifact.messages[0]["content"]
-    assert "<north_star_synthesis_contract>" in content
-    assert "causal arc" in content.lower()
-    assert "metric-dump" in content.lower()
+    assert "<judge_alignment_contract>" in content
+    assert "executive_strategy_thesis" in content.lower()
+    assert "metric-dump" in content.lower() or "bullet stack" in content.lower()
     import apps_rg.runtime.dispatch.executive_summary_pa as pa
 
     assert pa.SRFS_STYLE_ONESHOT_MARKER not in content

@@ -447,7 +447,7 @@ class OpenTelemetryTracingAdapter:
         # Tier-1 emit fixture: lazy import so module-load stays cheap
         # and circular-import safe (runtime_span_emitter does not depend
         # on this module). All three calls fail-open by contract.
-        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.runtime_span_emitter import (  # noqa: PLC0415
             back_patch_trace_id,
             emit_exit_disposition,
             emit_trace_root,

@@ -41,7 +41,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from system_learning.runtime_adg.store import _deserialise_snapshot  # noqa: E402
+from agentic_core.L6_system_learning.store import _deserialise_snapshot  # noqa: E402
 
 
 @dataclass(frozen=True)

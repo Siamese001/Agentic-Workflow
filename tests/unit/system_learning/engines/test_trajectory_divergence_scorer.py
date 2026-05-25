@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from system_learning.engines.trajectory_divergence_scorer import (
+from agentic_core.L6_system_learning.trajectory_divergence_scorer import (
     DivergencePoint,
     TrajectorySpan,
     localize_first_divergence,

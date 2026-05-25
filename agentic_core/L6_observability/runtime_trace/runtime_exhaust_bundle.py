@@ -299,7 +299,7 @@ class RuntimeExhaustCollector:
         creating a hard dependency on system_learning.
         """
         try:
-            from system_learning.engines.v6_kpi_board import (  # noqa: PLC0415
+            from agentic_core.L6_system_learning.v6_kpi_board import (  # noqa: PLC0415
                 V6KPIName,
                 V6KPISample,
             )

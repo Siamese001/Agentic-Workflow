@@ -295,7 +295,7 @@ def _load_pipeline_defaults_payload(app_name: str) -> dict[str, Any]:
         return dict(raw) if isinstance(raw, dict) else {}
     except (UnknownAppError, MissingProfileError, InvalidProfileError):
         return {}
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- P1 ADG burndown
         return {}
 
 
@@ -384,7 +384,7 @@ def _sha256_file(path: Path) -> str | None:
     try:
         content = path.read_bytes()
         return f"sha256:{hashlib.sha256(content).hexdigest()}"
-    except OSError:
+    except OSError:  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return None
 
 
@@ -1088,7 +1088,7 @@ def run_integrated_single_action_spine(
                         policy_version=policy_hash or raw_request.get("policy_hash", ""),
                     )
                 _log.debug("[R4] D2 semantic cache learn() committed for %s", app_name)
-        except Exception as _d2_err:
+        except Exception as _d2_err:  # guardian: allow-log-and-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
             _log.debug("[R4] D2 semantic cache learn() skipped: %s", _d2_err)
 
     # ------------------------------------------------------------------

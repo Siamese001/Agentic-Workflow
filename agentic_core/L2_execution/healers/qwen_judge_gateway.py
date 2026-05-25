@@ -555,7 +555,7 @@ def _emit_judge_decision_marker(
         from tools.capture.append_marker import (  # noqa: PLC0415 — local import keeps cold module load cheap
             append_marker,
         )
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return
 
     payload = (
@@ -574,7 +574,7 @@ def _emit_judge_decision_marker(
         ok, msg = append_marker(payload, session_hint=request.app_name)
         if not ok:
             _LOGGER.info("judge_decision marker rejected: %s", msg)
-    except (OSError, PermissionError) as exc:
+    except (OSError, PermissionError) as exc:  # guardian: allow-log-and-swallow -- P1 ADG burndown
         _LOGGER.info("judge_decision marker emission failed: %s", exc)
 
 

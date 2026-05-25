@@ -13,6 +13,8 @@ overrides:
   "agentic_core/L4_state/*": "L4"
   "agentic_core/L5_safety/*": "L5"
   "agentic_core/L6_observability/*": "L6"
+  "agentic_core/L6_system_learning/*": "L6"
+  "system_learning/*": "L6"
 
   # Shared infrastructure and utilities
   "agentic_core/adg/*": "L_SHARED"

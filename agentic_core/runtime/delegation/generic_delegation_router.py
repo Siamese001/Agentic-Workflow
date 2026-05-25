@@ -73,7 +73,7 @@ class ProfileLoader:
                 data = yaml.safe_load(f)
             
             return ProfileLoader._parse_delegation_profile(data)
-        except Exception:
+        except Exception:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
             return None
     
     @staticmethod

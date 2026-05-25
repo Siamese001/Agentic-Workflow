@@ -64,10 +64,33 @@ def test_archive_old_artifacts_removes_yyyymmdd_hhmmss_files(tmp_path: Path, mon
 
     _archive_old_artifacts(adg_dir=adg_dir, current_ts=current_ts, keep_runs=1)
 
-    assert not old_anomaly.exists(), "old YYYYMMDD_HHMMSS anomaly watchlist should be purged"
-    assert not old_graph.exists(), "old YYYYMMDD_HHMMSS graph watchlist should be purged"
-    assert not old_gate.exists(), "old YYYYMMDD_HHMMSS gate results should be purged"
+    archive_dir = adg_dir / "_archive" / "2026-04"
+    assert not old_anomaly.exists(), "old anomaly watchlist should leave artifacts/adg root"
+    assert not old_graph.exists(), "old graph watchlist should leave artifacts/adg root"
+    assert not old_gate.exists(), "old gate results should leave artifacts/adg root"
+    assert (archive_dir / f"{old_gate.name}.gz").is_file(), "gate results archived under _archive"
     assert (adg_dir / f"adg_indexed_{current_ts}.sqlite").exists(), "current run must survive"
+
+
+def test_archive_orphan_run_without_zip_moves_to_archive(tmp_path: Path, monkeypatch) -> None:
+    """Runs without adg_run_<ts>.zip gzip loose files under _archive (not delete)."""
+    adg_dir = tmp_path / "adg"
+    adg_dir.mkdir(parents=True)
+    current_ts = "04202026_1530"
+    old_ts = "04202026_1510"
+    (adg_dir / f"adg_indexed_{current_ts}.sqlite").write_text("current", encoding="utf-8")
+    old_sqlite = adg_dir / f"adg_indexed_{old_ts}.sqlite"
+    old_sqlite.write_text("old", encoding="utf-8")
+
+    from tools.generate.reporting import analysis as reporting_analysis
+
+    monkeypatch.setattr(reporting_analysis, "_cleanup_validation_files", lambda *_a, **_k: None)
+
+    _archive_old_artifacts(adg_dir=adg_dir, current_ts=current_ts, keep_runs=1)
+
+    archive_dir = adg_dir / "_archive" / "2026-04"
+    assert not old_sqlite.exists()
+    assert (archive_dir / f"{old_sqlite.name}.gz").is_file()
 
 
 def test_archive_old_artifacts_removes_old_graphdb_workdir(tmp_path: Path, monkeypatch) -> None:
@@ -91,5 +114,7 @@ def test_archive_old_artifacts_removes_old_graphdb_workdir(tmp_path: Path, monke
 
     _archive_old_artifacts(adg_dir=adg_dir, current_ts=current_ts, keep_runs=1)
 
-    assert not old_workdir.exists()
+    archive_dir = adg_dir / "_archive" / "2026-04"
+    assert not old_workdir.exists(), "old graphdb workdir should leave artifacts/adg root"
+    assert (archive_dir / old_workdir.name).is_dir(), "graphdb workdir moved under _archive"
     assert current_workdir.exists()

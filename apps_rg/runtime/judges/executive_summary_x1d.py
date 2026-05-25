@@ -28,35 +28,21 @@ JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
 DEFAULT_THRESHOLD = 0.80
 VALID_SCORE_SCALES = frozenset({"0_to_1", "0_to_5"})
 JUDGE_REQUIRED_FIELDS = ("score_scale", "score", "threshold", "pass")
-def _resolved_apps_rg_google_judge_max_output_tokens() -> int:
-    raw = (
-        os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
-        or os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
-    )
-    default = os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "4096").strip()
-    use = raw or default
-    try:
-        return max(1, int(use))
-    except ValueError:
-        return 4096
-
-
-GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS = _resolved_apps_rg_google_judge_max_output_tokens()
-# Back-compat alias for tests and external imports (same resolution as Google AI judge path).
-GEMINI_JUDGE_MAX_OUTPUT_TOKENS = GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
 UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV = "APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS"
 
 
 def _resolved_x1d_judge_max_output_tokens(*, attempt: int = 1) -> int:
-    """Unified judge output token budget (transport parity).
+    """Unified judge output token budget (transport parity — Gemini, OpenAI, Anthropic).
 
-    Uses ``APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS`` only — not legacy per-provider
-    anthropic-only overrides (``APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS``) so
-    provider max-token maps stay within the 2x spread contract.
+    Prefers ``APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS``. Legacy per-provider envs
+    (``APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS``, ``APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS``)
+    are fallbacks only when the unified env is unset.
     """
     raw = (
         os.environ.get(UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV, "").strip()
+        or os.environ.get("APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS", "").strip()
         or os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
+        or os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
         or "4096"
     )
     try:
@@ -66,17 +52,15 @@ def _resolved_x1d_judge_max_output_tokens(*, attempt: int = 1) -> int:
     return min(8192, base * min(max(1, attempt), 2))
 
 
+GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS = _resolved_x1d_judge_max_output_tokens(attempt=1)
+# Back-compat alias for tests and external imports (same unified resolution).
+GEMINI_JUDGE_MAX_OUTPUT_TOKENS = GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
 ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS = _resolved_x1d_judge_max_output_tokens(attempt=1)
 
 
 def _resolved_openai_judge_max_completion_tokens(*, attempt: int = 1) -> int:
-    """Budget for gpt-5.x judge completions; escalates on retry (reasoning can consume the cap)."""
-    raw = os.environ.get("APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS", "4096").strip()
-    try:
-        base = max(512, int(raw))
-    except ValueError:
-        base = 4096
-    return min(8192, base * min(max(1, attempt), 2))
+    """OpenAI chat completions cap — same unified budget as Gemini/Anthropic judges."""
+    return _resolved_x1d_judge_max_output_tokens(attempt=attempt)
 
 
 def _x1d_judge_max_attempts() -> int:
@@ -147,11 +131,23 @@ JUDGE_COMPACT_SYSTEM = (
     "No markdown fences, no explanatory prose, no nested finding objects."
 )
 
+JUDGE_GRADE_ONLY_AUTHORITY = """
+GRADE_ONLY authority (all providers — Gemini, OpenAI, Anthropic):
+- Do NOT rewrite, replace, or edit candidate_output.resume_display_text.
+- deterministic_gate_summary is authoritative: if a gate shows "pass": true, do NOT fail or cite that axis.
+- Do NOT apply retired SRFS slot mandates as decisive failures: five-part S1–S5 arc, mandatory S5 credibility
+  sentence, S2 mechanism-only / S4 outcomes slot shapes, srfs_sentence_responsibility.
+- When x2_exec_summary_evidence_utilization.pass is true, unused_fact_ids are optional weave targets, not defects.
+""".strip()
+
 
 def build_x1d_judge_system_prompt(*, compact: bool = True) -> str:
     """Canonical system prompt shared by all proof judge providers."""
     if compact:
-        return f"{JUDGE_COMPACT_SYSTEM}\n\n{JUDGE_COMPACT_OUTPUT}\n\n{JUDGE_SCORE_SCHEMA}"
+        return (
+            f"{JUDGE_COMPACT_SYSTEM}\n\n{JUDGE_GRADE_ONLY_AUTHORITY}\n\n"
+            f"{JUDGE_COMPACT_OUTPUT}\n\n{JUDGE_SCORE_SCHEMA}"
+        )
     return f"You are a strict executive resume judge. Return JSON only.\n\n{JUDGE_SCORE_SCHEMA}"
 
 GEMINI_JUDGE_RESPONSE_SCHEMA: dict[str, Any] = {
@@ -470,11 +466,11 @@ def _build_judge_user_prompt(resume_display_text: str, claim_ledger: list[dict[s
     )
 
 
-def _gemini_generation_config() -> dict[str, Any]:
+def _gemini_generation_config(*, attempt: int = 1) -> dict[str, Any]:
     """Gemini generationConfig for compact schema-valid judge JSON."""
     return {
         "temperature": 0.1,
-        "maxOutputTokens": GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
+        "maxOutputTokens": _resolved_x1d_judge_max_output_tokens(attempt=attempt),
         "responseMimeType": "application/json",
         "responseSchema": GEMINI_JUDGE_RESPONSE_SCHEMA,
     }
@@ -1560,12 +1556,14 @@ def _call_gemini(
     artifact_base: Path | None = None,
     model_requested: str | None = None,
     judge_receipt: dict[str, Any] | None = None,
+    attempt: int = 1,
 ) -> JudgeOutput:
     """Call Gemini API with full artifact preservation."""
+    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "systemInstruction": {"parts": [{"text": build_x1d_judge_system_prompt(compact=True)}]},
-        "generationConfig": _gemini_generation_config(),
+        "generationConfig": _gemini_generation_config(attempt=attempt),
     }
 
     endpoint_version = "v1beta" if "preview" in model or model.startswith("gemini-2") or model.startswith("gemini-3") else "v1"
@@ -1588,12 +1586,13 @@ def _call_gemini(
         "gemini_max_retries_configured": retries,
         "input_hash": input_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "judge_attempt": attempt,
         **_x1d_provider_request_receipt_fields(
             judge_receipt,
             provider_name="gemini",
             model_env_source=model_source,
             input_hash=input_hash,
-            max_tokens=GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
+            max_tokens=max_tokens,
             response_format="responseSchema",
         ),
     }
@@ -1931,6 +1930,7 @@ def run_llm_judges(
                         artifact_base=artifact_base,
                         model_requested=model_requested,
                         judge_receipt=receipt,
+                        attempt=attempt,
                     ),
                     provider_key=key,
                 )

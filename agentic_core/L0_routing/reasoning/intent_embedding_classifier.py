@@ -112,7 +112,7 @@ class IntentEmbeddingClassifier:
         if self._embedder is not None:
             return self._embedder
         try:
-            from system_learning.engines.embedding_service_factory import (
+            from agentic_core.L6_system_learning.embedding_service_factory import (
                 EmbeddingServiceFactory,
             )
 

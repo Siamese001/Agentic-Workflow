@@ -59,7 +59,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Final, Iterable, Mapping
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     AppRouteContract,
     RouteShape,
 )
@@ -800,12 +800,12 @@ def load_contracts_from_manifests(repo_root: Path) -> tuple[AppRouteContract, ..
         )
         return ()
 
-    from system_learning.runtime_adg.app_route_contracts import (
+    from agentic_core.L6_system_learning.app_route_contracts import (
         build_build_time_compiler_contract,
         build_formal_exception_contract,
         build_r3_grounded_read_contract,
     )
-    from system_learning.runtime_adg.manifest_hash import (
+    from agentic_core.L6_system_learning.manifest_hash import (
         compute_manifest_hash_for_app,
     )
 

@@ -103,7 +103,7 @@ class JudgeRegistry:
         
         try:
             data = yaml.safe_load(yaml_path.read_text()) or []
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error("Failed to parse grader roster: %s", exc)
             return 0
         

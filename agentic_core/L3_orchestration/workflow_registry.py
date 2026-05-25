@@ -151,7 +151,7 @@ def _load_route_registry(registry_path: Path) -> List[Dict[str, Any]]:
         if not isinstance(routes, list):
             return []
         return [r for r in routes if isinstance(r, dict)]
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
         _log.warning("[workflow_registry] Failed to parse %s: %s", registry_path, exc)
         return []
 

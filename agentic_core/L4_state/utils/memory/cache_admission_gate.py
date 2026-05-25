@@ -208,7 +208,7 @@ def _get_determinism_fns():
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_determinism_fns", "p0_governance")
-    from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+    from agentic_core.L6_system_learning.determinism import deterministic_json, stable_sha256_json
 
     return deterministic_json, stable_sha256_json
 

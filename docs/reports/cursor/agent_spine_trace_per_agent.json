@@ -1,0 +1,2207 @@
+{
+  "generated_at": "2026-05-25T13:47:52Z",
+  "spine_seeds": [
+    "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py",
+    "agentic_core/L0_routing/intake/pipeline.py",
+    "agentic_core/L0_routing/reasoning/route_gates.py",
+    "agentic_core/L1_cognition/bridges/u0_to_l1_plan.py",
+    "agentic_core/runtime/l2_recipe_resolver.py",
+    "agentic_core/L2_execution/l2_package_driven_executor.py",
+    "agentic_core/L3_orchestration/managed_workflow_runner.py",
+    "agentic_core/L3_orchestration/exit_eval/v6/pipeline.py"
+  ],
+  "closure_module_count": 100,
+  "agent_count": 118,
+  "by_verdict": {
+    "APPS_RG_ONLY": 1,
+    "CORE_OFF_SPINE": 100,
+    "OPS_ONLY": 5,
+    "ORPHAN_NO_REF": 12
+  },
+  "spine_closure_agents": [],
+  "traces": [
+    {
+      "class_name": "AdversarialProbeAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.AdversarialProbeAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 1,
+      "importer_count_prod": 1,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "OPS_ONLY"
+    },
+    {
+      "class_name": "AdversarialRedTeamerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.AdversarialRedTeamerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/redteam/__init__.py",
+        "agentic_core/runtime/prove_requirements/tier1_step1_metadata.py",
+        "agentic_core/runtime/prove_requirements/tier2_step1_metadata.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ArchitectureGovernorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 30,
+      "importer_count_prod": 30,
+      "importer_count_ops_only": 11,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
+        "agentic_core/L0_routing/utils/subprocess_runner_util.py",
+        "agentic_core/L3_orchestration/enforcement/mission_runner.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ArchitectureGovernorValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ArchitectureGovernorValidatorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 1,
+      "importer_count_prod": 1,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/utils/architecture_governor_validator_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ASTValidatorAgent",
+      "file_path": "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
+      "module": "agentic_core.L1_cognition.reasoning.ASTValidatorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "AutonomousThreatEvolutionAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "AutonomyGuardianAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.AutonomyGuardianAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 11,
+      "importer_count_prod": 11,
+      "importer_count_ops_only": 4,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L0_routing/enforcement/safety_validators_seam.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "BenchmarkingAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.BenchmarkingAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/utils/benchmarking_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "BootstrapAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.BootstrapAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 8,
+      "importer_count_prod": 8,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/utils/bootstrap_util.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/agent_capability_supplement_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/colors.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "BoundaryTestingAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.BoundaryTestingAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/runtime/prove_requirements/tier1_step1_metadata.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ChaosEngineeringAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ChaosEngineeringAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/validators/chaos_healing_integration_types.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeDeduplicationAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeDeduplicationAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 11,
+      "importer_count_prod": 11,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/enforcement/safety_enforcement_seam.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/utils/code_deduplication_util.py",
+        "agentic_core/config/hygiene_registry_config.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeDetectorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeDetectorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 16,
+      "importer_count_prod": 16,
+      "importer_count_ops_only": 10,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L5_safety/config/structure_blueprint/classification.py",
+        "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+        "agentic_core/L5_safety/utils/code_detector_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeEnforcerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeEnforcerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 11,
+      "importer_count_prod": 11,
+      "importer_count_ops_only": 6,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/AgentFactory.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/utils/code_enforcer_util.py",
+        "agentic_core/prompt_governance/core/template_catalog.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeFormatterAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeFormatterAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeFormatterAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L5_safety/utils/code_formatter_util.py",
+        "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeHealerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeHealerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 14,
+      "importer_count_prod": 14,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeJanitorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeJanitorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 8,
+      "importer_count_prod": 8,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/utils/code_janitor_util.py",
+        "agentic_core/L5_safety/validators/CodeJanitorAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CodeValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CodeValidatorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 19,
+      "importer_count_prod": 19,
+      "importer_count_ops_only": 8,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/utils/subprocess_runner_util.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/enforcement/safety_strategy.py",
+        "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CognitiveDispositionAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CognitiveDispositionAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 12,
+      "importer_count_prod": 12,
+      "importer_count_ops_only": 4,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L0_routing/enforcement/safety_validators_seam.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/utils/cognitive_batch_processor_util.py",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ComplexityAnalyzerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/utils/complexity_analyzer_util.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ConstitutionalReviewerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ConstitutionalReviewerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/dev_tools/L0_routing/add_test_coverage_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CostGovernorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CostGovernorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CostGovernorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/utils/cost_governor_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CoverageAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/CoverageAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.CoverageAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 8,
+      "importer_count_prod": 8,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L3_orchestration/utils/coverage_util.py",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "CredentialScannerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.CredentialScannerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/engines/orchestrator_engine.py",
+        "agentic_core/L5_safety/utils/credential_scanner_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DagEngineAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DagEngineAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DagEngineAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/error_handler.py",
+        "ops_scripts/general/restore_void_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DAGMutatorAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DAGMutatorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/reasoning/engines/dag_manager.py",
+        "ops_scripts/general/generate_qwen_healing_report.py",
+        "ops_scripts/general/restore_void_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DDDAlignmentAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.DDDAlignmentAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/config/hygiene_registry_config.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/ci/check_hardcoded_exclusions.py",
+        "ops_scripts/general/fix_naming_issues.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DependencyPruningAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.DependencyPruningAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/utils/dependency_pruning_util.py",
+        "agentic_core/L5_safety/validators/dependency_healing_integration_types.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DocstringComplianceAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.DocstringComplianceAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/dev_tools/L0_routing/add_test_coverage_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DocumentationAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/DocumentationAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.DocumentationAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+        "agentic_core/L3_orchestration/utils/subatomic_agent_util.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/colors.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DomainPlannerAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DomainPlannerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/enforcement/DomainPlannerAdapter.py",
+        "ops_scripts/general/final_alignment_push.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DuplicateCodeDetectorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.DuplicateCodeDetectorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 6,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "ops_scripts/dev_tools/L0_routing_scripts/delete_duplicates_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/execute_safe_deletion_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/extract_unique_content_util.py",
+        "ops_scripts/dev_tools/l0_scripts/prove_violation_detection_util.py",
+        "ops_scripts/general/analyze_duplicates_detailed.py"
+      ],
+      "verdict": "OPS_ONLY"
+    },
+    {
+      "class_name": "DynamicSealAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.DynamicSealAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
+        "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "EmbeddingSovereignAgent",
+      "file_path": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
+      "module": "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 21,
+      "importer_count_prod": 21,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L1_cognition/reasoning/memory_embedder.py",
+        "agentic_core/L1_cognition/reasoning/meta_client.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/l2_capable_agent_registry.py",
+        "agentic_core/L2_execution/utils/__init__.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "FeasibilityAnalystAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DomainPlannerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "FileClassificationHealerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 13,
+      "importer_count_prod": 13,
+      "importer_count_ops_only": 4,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/file_classification/classification_core.py",
+        "agentic_core/L5_safety/reasoning/file_classification/naming_policy.py",
+        "agentic_core/L5_safety/reasoning/file_classification_validator.py",
+        "agentic_core/L5_safety/reasoning/hierarchy_healer.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "FileClassificationValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/file_classification_validator.py",
+      "module": "agentic_core.L5_safety.reasoning.file_classification_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "FilesystemSSOTReconcilerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py",
+      "module": "agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 16,
+      "importer_count_prod": 16,
+      "importer_count_ops_only": 7,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/territory_healing/territory_healer_adapters.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/reasoning/filesystem_ssot_validator.py",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "FilesystemSSOTValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/filesystem_ssot_validator.py",
+      "module": "agentic_core.L5_safety.reasoning.filesystem_ssot_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "FissionManagerAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.FissionManagerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/error_handler.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/fission_executor_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "GenerativeGuardAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.GenerativeGuardAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "ops_scripts/general/generate_qwen_healing_report.py",
+        "ops_scripts/general/restore_void_agents.py"
+      ],
+      "verdict": "OPS_ONLY"
+    },
+    {
+      "class_name": "GitHygieneAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.GitHygieneAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/config/hygiene_registry_config.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/colors.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "GospelSyncAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/GospelSyncAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.GospelSyncAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "GovernanceAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.GovernanceAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 13,
+      "importer_count_prod": 13,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/enforcement/mission_runner.py",
+        "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
+        "agentic_core/L4_state/utils/complexity_analyzer_util.py",
+        "agentic_core/L4_state/utils/layer_gravity_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "GravityLeakRepairAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 12,
+      "importer_count_prod": 12,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L4_state/utils/layer_gravity_util.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py",
+        "agentic_core/L5_safety/reasoning/gravity_validator.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "GravityLeakValidatorAgent",
+      "file_path": "agentic_core/L5_safety/validators/gravity_leak_validator.py",
+      "module": "agentic_core.L5_safety.validators.gravity_leak_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "GravityStateAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/GravityStateAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.GravityStateAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/utils/gravity_state_util.py",
+        "agentic_core/interfaces/state_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "GravityValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/gravity_validator.py",
+      "module": "agentic_core.L5_safety.reasoning.gravity_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/_ssot_reporting.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "HierarchyHealerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/hierarchy_healer.py",
+      "module": "agentic_core.L5_safety.reasoning.hierarchy_healer",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 16,
+      "importer_count_prod": 16,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/reasoning/territory_healing/territory_healer_adapters.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "HierarchyValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/hierarchy_validator.py",
+      "module": "agentic_core.L5_safety.reasoning.hierarchy_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 1,
+      "importer_count_prod": 1,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "ops_scripts/dev_tools/L0_routing_scripts/investigate_overlaps_util.py"
+      ],
+      "verdict": "OPS_ONLY"
+    },
+    {
+      "class_name": "HygieneGuardianAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.HygieneGuardianAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 21,
+      "importer_count_prod": 21,
+      "importer_count_ops_only": 10,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/enforcement/safety_validators_seam.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/enforcement/safety_strategy.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "IntegrityGateExecutorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 8,
+      "importer_count_prod": 8,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 1,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/config/strategist_bio_writer_config.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py",
+        "agentic_core/L5_safety/types/specificity_prose_types.py"
+      ],
+      "verdict": "APPS_RG_ONLY"
+    },
+    {
+      "class_name": "InterfaceBoundaryAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.InterfaceBoundaryAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "agentic_core/runtime/prove_requirements/tier1_step1_metadata.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "IOrchestratorAgent",
+      "file_path": "agentic_core/L3_orchestration/types/orchestrator_types.py",
+      "module": "agentic_core.L3_orchestration.types.orchestrator_types",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/engines/orchestrator_engine.py",
+        "agentic_core/L5_safety/utils/fca_safety_gates_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ITieredAgent",
+      "file_path": "agentic_core/interfaces/orchestrator_protocol.py",
+      "module": "agentic_core.interfaces.orchestrator_protocol",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 1,
+      "importer_count_prod": 1,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/interfaces/__init__.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "L2EmbeddingSovereignAgent",
+      "file_path": "agentic_core/L2_execution/utils/__init__.py",
+      "module": "agentic_core.L2_execution.utils.__init__",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 1,
+      "importer_count_prod": 1,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/utils/l2_agent_wrappers.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "L2ExecutionAgent",
+      "file_path": "agentic_core/L2_execution/types/l2_execution_contract.py",
+      "module": "agentic_core.L2_execution.types.l2_execution_contract",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/tool_intent_executor.py",
+        "agentic_core/L2_execution/types/__init__.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_w1_merge.py",
+        "agentic_core/L2_execution/utils/__init__.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "L2RedisSovereignAgent",
+      "file_path": "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+      "module": "agentic_core.L2_execution.utils.l2_agent_wrappers",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "L2SovereignMCPGatewayAgent",
+      "file_path": "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+      "module": "agentic_core.L2_execution.utils.l2_agent_wrappers",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "L2StructuredEngineAgent",
+      "file_path": "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+      "module": "agentic_core.L2_execution.utils.l2_agent_wrappers",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "L2SubAtomicRegistryAgent",
+      "file_path": "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+      "module": "agentic_core.L2_execution.utils.l2_agent_wrappers",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "L5SafetyExerciserAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.L5SafetyExerciserAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/dev_tools/L0_routing/add_test_coverage_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "LocationHealerAgent",
+      "file_path": "agentic_core/L5_safety/utils/location_healer_util.py",
+      "module": "agentic_core.L5_safety.utils.location_healer_util",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 20,
+      "importer_count_prod": 20,
+      "importer_count_ops_only": 4,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
+        "agentic_core/L3_orchestration/reasoning/territory_healing/territory_healer_adapters.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/L5_safety/reasoning/LocationHealerAgent.py",
+        "agentic_core/L5_safety/reasoning/hierarchy_healer.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "LocationValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/location_validator.py",
+      "module": "agentic_core.L5_safety.reasoning.location_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 10,
+      "importer_count_prod": 10,
+      "importer_count_ops_only": 6,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py",
+        "agentic_core/L5_safety/utils/location_healer_util.py",
+        "agentic_core/L5_safety/validators/mission_preflight_validator.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/investigate_overlaps_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "MetaLearningAgent",
+      "file_path": "agentic_core/L1_cognition/reasoning/MetaLearningAgent.py",
+      "module": "agentic_core.L1_cognition.reasoning.MetaLearningAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 11,
+      "importer_count_prod": 11,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L1_cognition/reasoning/CognitiveNode.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L6_system_learning/adapters/l1_meta_adapter.py",
+        "agentic_core/L6_system_learning/engines/meta_learning_replay_binding.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "NamingAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/NamingAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.NamingAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 28,
+      "importer_count_prod": 28,
+      "importer_count_ops_only": 12,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L2_execution/config/unified_workflow_config.py",
+        "agentic_core/L3_orchestration/enforcement/safety_strategy.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L3_orchestration/types/orchestrator_types.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "NervousSystemAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.NervousSystemAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/error_handler.py",
+        "ops_scripts/general/generate_qwen_healing_report.py",
+        "ops_scripts/general/restore_void_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "NeuralAutoImmuneAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ObservabilityProbeExecutorAgent",
+      "file_path": "agentic_core/L6_observability/reasoning/observability_probe_executor.py",
+      "module": "agentic_core.L6_observability.reasoning.observability_probe_executor",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/_ssot_reporting.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/ssot_adapters.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "OrchestrationHandshakeAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/reasoning/engines/rl_coordinator_orchestrator.py",
+        "agentic_core/L3_orchestration/utils/orchestration_handshake_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py",
+        "ops_scripts/general/restore_void_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "PascalSovereigntyAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.PascalSovereigntyAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/validators/PascalSovereigntyAgent.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/ci/check_hardcoded_exclusions.py",
+        "ops_scripts/general/run_sovereignty_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "PerformanceAnalystAgentSimple",
+      "file_path": "agentic_core/L6_observability/utils/engines/PerformanceAnalystAgentSimple.py",
+      "module": "agentic_core.L6_observability.utils.engines.PerformanceAnalystAgentSimple",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/colors.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "PolicyNeuralAutoImmuneAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.PolicyNeuralAutoImmuneAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "PreCommitSovereignAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.PreCommitSovereignAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "PredictiveCostAuditorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "RedisSovereignAgent",
+      "file_path": "agentic_core/L2_execution/reasoning/RedisSovereignAgent.py",
+      "module": "agentic_core.L2_execution.reasoning.RedisSovereignAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 12,
+      "importer_count_prod": 12,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L1_cognition/reasoning/meta_client.py",
+        "agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/l2_capable_agent_registry.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "RedSentinelAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.RedSentinelAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "ops_scripts/dev_tools/l0_scripts/rename_to_agent_suffix_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "OPS_ONLY"
+    },
+    {
+      "class_name": "RedTeamAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.RedTeamAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 8,
+      "importer_count_prod": 8,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+        "agentic_core/L5_safety/redteam/__init__.py",
+        "agentic_core/prompt_governance/core/template_catalog.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "RegressionOracleAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.RegressionOracleAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ReportLocationAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ReportLocationAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ReportLocationAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ResourceManagerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/ResourceManagerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.ResourceManagerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 9,
+      "importer_count_prod": 9,
+      "importer_count_ops_only": 7,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/autonomous_execution_engine.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/archive_duplicates_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/verify_all_checkpoint_files_util.py",
+        "ops_scripts/dev_tools/l0_scripts/migrate_imports_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "RiskAssessorAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DomainPlannerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "RootCustomsAgent",
+      "file_path": "agentic_core/L0_routing/reasoning/RootCustomsAgent.py",
+      "module": "agentic_core.L0_routing.reasoning.RootCustomsAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/utils/root_customs_util.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "RootHygieneHealerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "module": "agentic_core.L5_safety.reasoning.root_hygiene_healer",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/reasoning/root_hygiene_validator.py",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "ops_scripts/general/run_sovereignty_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "RootHygieneValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/root_hygiene_validator.py",
+      "module": "agentic_core.L5_safety.reasoning.root_hygiene_validator",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "SafetyDetectorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SafetyDetectorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/archive_duplicates_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/verify_all_checkpoint_files_util.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SafetyExecutorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SafetyExecutorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 7,
+      "importer_count_prod": 7,
+      "importer_count_ops_only": 6,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/archive_duplicates_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/verify_all_checkpoint_files_util.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_to_agent_suffix_util.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SafetyInspectorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SafetyInspectorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/enforcement/mission_runner.py",
+        "agentic_core/L3_orchestration/reasoning/engines/AgentFactory.py",
+        "agentic_core/L3_orchestration/types/telepathy_interface_types.py",
+        "agentic_core/prompt_governance/core/prompt_entry_types.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_to_agent_suffix_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SecurityManagerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SecurityManagerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 7,
+      "importer_count_prod": 7,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/archive_duplicates_util.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/verify_all_checkpoint_files_util.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SelfUpdatingSafetyEngineAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SelfUpdatingSafetyEngineAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SemanticGatekeeperAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.SemanticGatekeeperAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SovereignActionPlaneAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SovereignBaseAgent",
+      "file_path": "agentic_core/base_agents/SovereignBaseAgent.py",
+      "module": "agentic_core.base_agents.SovereignBaseAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 40,
+      "importer_count_prod": 40,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/reasoning/RootCustomsAgent.py",
+        "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
+        "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
+        "agentic_core/L1_cognition/reasoning/MetaLearningAgent.py",
+        "agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SovereignMCPGateway",
+      "file_path": "agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py",
+      "module": "agentic_core.L2_execution.reasoning.SovereignMCPGatewayAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+        "agentic_core/adg/contracts/schema.py",
+        "agentic_core/adg/contracts/schema_util.py",
+        "agentic_core/mixins/mcp_operation_mixin.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SovereignRAGManager",
+      "file_path": "agentic_core/knowledge/reasoning/SovereignRAGManagerAgent.py",
+      "module": "agentic_core.knowledge.reasoning.SovereignRAGManagerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/adg/applications/rag_sovereignty.py",
+        "agentic_core/adg/applications/rag_sovereignty_validator.py",
+        "agentic_core/knowledge/engine/rag_orchestrator.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SprawlInspectorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SprawlInspectorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_to_agent_suffix_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SSOTFolderCleanupAgent",
+      "file_path": "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
+      "module": "agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "ops_scripts/dev_tools/L0_routing/ssot_folder_cleanup_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StateManagementAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/StateManagementAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.StateManagementAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/utils/state_management_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StrategicRecommendationAgent",
+      "file_path": "agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py",
+      "module": "agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 3,
+      "importer_count_prod": 3,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/investigate_overlaps_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StrategyCoordinatorAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DomainPlannerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "StrategyScenarioSimulatorAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DomainPlannerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 0,
+      "importer_count_prod": 0,
+      "importer_count_ops_only": 0,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [],
+      "verdict": "ORPHAN_NO_REF"
+    },
+    {
+      "class_name": "StructuralEngineerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.StructuralEngineerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 9,
+      "importer_count_prod": 9,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/validation_orchestrator.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L4_state/utils/complexity_analyzer_util.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/validators/context_validator.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StructuralValidatorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.StructuralValidatorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 12,
+      "importer_count_prod": 12,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L4_state/utils/layer_gravity_util.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StructuredEngineAgent",
+      "file_path": "agentic_core/L2_execution/reasoning/StructuredEngineAgent.py",
+      "module": "agentic_core.L2_execution.reasoning.StructuredEngineAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 5,
+      "importer_count_prod": 5,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+        "agentic_core/runtime/utils/runtime_bootstrapper_util.py",
+        "agentic_core/runtime/utils/sovereign_dependency_error_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StructureEnforcerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.StructureEnforcerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 17,
+      "importer_count_prod": 17,
+      "importer_count_ops_only": 8,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L3_orchestration/enforcement/safety_strategy.py",
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "StructureHealerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.StructureHealerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 9,
+      "importer_count_prod": 9,
+      "importer_count_ops_only": 5,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/capability_token_types.py",
+        "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
+        "agentic_core/L6_observability/enforcement/agent_monitor.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/archive_duplicates_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SubAtomicAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.SubAtomicAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 13,
+      "importer_count_prod": 13,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/reasoning/engines/omni_context_engine.py",
+        "agentic_core/L3_orchestration/utils/subatomic_agent_util.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SubatomicHopAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.SubatomicHopAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/utils/subatomic_hop_util.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SubAtomicRegistryAgent",
+      "file_path": "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+      "module": "agentic_core.L2_execution.reasoning.SubAtomicRegistryAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 6,
+      "importer_count_prod": 6,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/utils/l2_agent_wrappers.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py",
+        "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "SystemArchitectAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/SystemArchitectAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.SystemArchitectAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 8,
+      "importer_count_prod": 8,
+      "importer_count_ops_only": 4,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/ssot_adapters.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "TerritoryChangeHandlerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.TerritoryChangeHandlerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/engines/rl_coordinator_orchestrator.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_to_agent_suffix_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "TestGeneratorAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.TestGeneratorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/engines/decomposition_orchestrator.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "ToolsmithAgent",
+      "file_path": "agentic_core/L2_execution/reasoning/ToolsmithAgent.py",
+      "module": "agentic_core.L2_execution.reasoning.ToolsmithAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 7,
+      "importer_count_prod": 7,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/utils/toolsmith_util.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/prompt_governance/core/template_catalog.py",
+        "ops_scripts/dev_tools/L0_routing_scripts/agent_capability_supplement_util.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "TypeHintFixerAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.TypeHintFixerAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/dev_tools/L0_routing/add_test_coverage_util.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_to_agent_suffix_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "TypeMechanicAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.TypeMechanicAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+        "agentic_core/L3_orchestration/utils/subatomic_agent_util.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "UnifiedAgent",
+      "file_path": "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.UnifiedAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 14,
+      "importer_count_prod": 14,
+      "importer_count_ops_only": 3,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L3_orchestration/reasoning/engines/orchestrator_engine.py",
+        "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
+        "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "UnusedCleanupAgent",
+      "file_path": "agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py",
+      "module": "agentic_core.L5_safety.reasoning.UnusedCleanupAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 2,
+      "importer_count_prod": 2,
+      "importer_count_ops_only": 1,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
+        "ops_scripts/general/generate_qwen_healing_report.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    },
+    {
+      "class_name": "DagRuntimeInspector",
+      "file_path": "agentic_core/L3_orchestration/reasoning/DagRuntimeInspectorAgent.py",
+      "module": "agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent",
+      "spine_module_in_closure": false,
+      "spine_reachable": "NO",
+      "importer_count_all": 4,
+      "importer_count_prod": 4,
+      "importer_count_ops_only": 2,
+      "importer_count_test": 0,
+      "apps_rg_importers": 0,
+      "sample_prod_importers": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L5_safety/reasoning/InspectorExecutor.py",
+        "ops_scripts/general/generate_qwen_healing_report.py",
+        "ops_scripts/general/restore_void_agents.py"
+      ],
+      "verdict": "CORE_OFF_SPINE"
+    }
+  ]
+}

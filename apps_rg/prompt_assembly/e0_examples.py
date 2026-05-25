@@ -24,11 +24,17 @@ SECTION_EXAMPLES: dict[str, str] = {
 # Lanes that share the unify examples catalog.
 _UNIFY_LANE_SECTIONS = frozenset({"unify_bullets", "unify_narrative"})
 
+# Primary judge-aligned positive (SVP integrated arc).
+_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED = ("exec_summary_pos_svp_it_strategy_001",)
+
 _EXEC_SUMMARY_POSITIVE_COMPILE_IDS = (
     "exec_summary_pos_svp_it_strategy_001",
     "exec_summary_pos_credibility_implied_001",
     "exec_summary_pos_outcomes_led_001",
 )
+
+# Retired from default E0 compile: exec_summary_gold_base_resume_001 (mechanism-heavy; steers bullet-stack drafts).
+_EXEC_SUMMARY_POSITIVE_RETIRED_FROM_COMPILE = ("exec_summary_gold_base_resume_001",)
 
 _EXEC_SUMMARY_TEMPLATE_SUPPLEMENT = (
     _PA_ROOT / "templates" / "executive_summary.generate_scratch_v1.yaml"
@@ -154,18 +160,31 @@ def _extract_template_supplement_blocks(template_path: Path, tags: tuple[str, ..
     return "\n\n".join(chunks)
 
 
-def build_executive_summary_e0(*, template_supplement: bool = True) -> str:
+def build_executive_summary_e0(
+    *,
+    template_supplement: bool = True,
+    strategy_executive: bool = False,
+) -> str:
     by_id = load_examples_by_id("executive_summary")
+    positive_ids = (
+        _EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED
+        if strategy_executive
+        else _EXEC_SUMMARY_POSITIVE_COMPILE_IDS
+    )
     parts = [
         "<many_shot_examples>",
         "<!-- E0 SSOT: executive_summary_examples.yaml (hydrated at compile) -->",
     ]
-    for eid in _EXEC_SUMMARY_POSITIVE_COMPILE_IDS:
+    if strategy_executive:
+        parts.append(
+            "<e0_lane_note>SVP IT strategy lane: single judge-aligned positive exemplar; negatives teach stack/recap failures.</e0_lane_note>"
+        )
+    for eid in positive_ids:
         row = by_id.get(eid)
         if row:
             parts.append(_render_positive_example(row))
     for eid, row in sorted(by_id.items()):
-        if eid in _EXEC_SUMMARY_POSITIVE_COMPILE_IDS:
+        if eid in positive_ids or eid in _EXEC_SUMMARY_POSITIVE_RETIRED_FROM_COMPILE:
             continue
         kind = _category_kind(str(row.get("category") or ""))
         if kind == "negative":
@@ -212,10 +231,11 @@ def resolve_e0_for_section(
     template_e0: str | None = None,
     *,
     allow_template_fallback: bool = False,
+    strategy_executive: bool = False,
 ) -> str:
     """Return compiled E0 body for a section/lane id."""
     if section == "executive_summary":
-        body = build_executive_summary_e0()
+        body = build_executive_summary_e0(strategy_executive=strategy_executive)
         if body.strip():
             return body
     if section in _UNIFY_LANE_SECTIONS:

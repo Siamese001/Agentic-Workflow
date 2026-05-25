@@ -286,7 +286,7 @@ def governed_pa_compose_integrated(
     secret_key: bytes | None = None,
 ) -> CompiledPromptArtifact:
     """Integrated apps_rg PA — core ``assemble_prompt`` (PA.0–PA.8)."""
-    from agentic_core.prompt_governance.orchestrator import assemble_prompt
+    from agentic_core.prompt_governance import assemble_prompt
 
     orch_fec = runtime_fec_to_orchestrator_contract(fec, route=route, plan=plan)
     orch_route = runtime_route_to_orchestrator_route(route)

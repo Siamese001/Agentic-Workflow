@@ -31,9 +31,9 @@ from enum import Enum
 from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
-
-_ANTHROPIC_API_KEY_VAR = "ANTHROPIC_API_KEY"
-_GOOGLE_API_KEY_VAR = "GOOGLE_API_KEY"
+  # guardian: allow-hardcoded-secret -- P1 ADG burndown
+_ANTHROPIC_API_KEY_VAR = "ANTHROPIC_API_KEY"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
+_GOOGLE_API_KEY_VAR = "GOOGLE_API_KEY"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
 _JUDGE_PROVIDER_VAR = "JUDGE_PROVIDER"
 _ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
 

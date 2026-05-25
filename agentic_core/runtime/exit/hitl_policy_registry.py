@@ -127,7 +127,7 @@ def load_hitl_policy_table(policy_yaml_path: "str | Path") -> dict[str, dict[str
 
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
         _LOG.warning(
             "[hitl_policy_registry] failed to parse %s: %s — "
             "all policy lookups will return UNKNOWN",

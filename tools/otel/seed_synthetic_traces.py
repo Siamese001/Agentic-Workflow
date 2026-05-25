@@ -47,7 +47,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from system_learning.runtime_adg.snapshot import (  # noqa: E402
+from agentic_core.L6_system_learning.snapshot import (  # noqa: E402
     RuntimeADGEdge,
     RuntimeADGNode,
     create_runtime_adg_snapshot,
@@ -303,7 +303,7 @@ def seed(
         return stats
 
     try:
-        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore  # noqa: PLC0415
+        from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore  # noqa: PLC0415
 
         store = FileBackedRuntimeADGStore()
         stats.store_kind = "FileBackedRuntimeADGStore"

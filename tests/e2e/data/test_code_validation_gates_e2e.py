@@ -47,7 +47,7 @@ def valid_function():
 """,
         "invalid_import": """
 # This should fail - importing from higher layer
-from system_learning.stores.version_store import FileBackedVersionStore
+from agentic_core.L6_system_learning.version_store import FileBackedVersionStore
 
 def bad_function():
     return FileBackedVersionStore()
@@ -294,7 +294,7 @@ class TestDeterminismValidationGate:
 
     def test_canonical_bytes_determinism(self) -> None:
         """Test that canonical byte serialization is deterministic."""
-        from system_learning.runtime_adg import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.runtime_adg import RuntimeADGMaterializer
 
         materializer = RuntimeADGMaterializer()
 
@@ -338,7 +338,7 @@ class TestDeterminismValidationGate:
 
     def test_snapshot_id_format_validation(self) -> None:
         """Test snapshot ID format validation (SHA-256 hex)."""
-        from system_learning.runtime_adg import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.runtime_adg import RuntimeADGMaterializer
 
         materializer = RuntimeADGMaterializer()
 

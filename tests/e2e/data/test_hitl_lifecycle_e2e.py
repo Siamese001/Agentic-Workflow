@@ -101,12 +101,12 @@ except ImportError:
 # HITL imports
 
 
-from system_learning.engines.hitl_decision_logger import (
+from agentic_core.L6_system_learning.hitl_decision_logger import (
     log_hitl_decision,
     log_routing_correction,
     reset_for_testing,
 )
-from system_learning.engines.rlhf_optimizer_impl import (
+from agentic_core.L6_system_learning.rlhf_optimizer_impl import (
     DefaultRLHFOptimizer,
 )
 
@@ -612,7 +612,7 @@ class TestHITLFullLifecycle:
         assert decision_n == 1
 
         # Verify decision count
-        from system_learning.engines.hitl_decision_logger import get_decision_count
+        from agentic_core.L6_system_learning.hitl_decision_logger import get_decision_count
 
         assert get_decision_count() == 1
 

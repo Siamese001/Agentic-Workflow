@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from system_learning.runtime_adg.manifest_hash import (
+from agentic_core.L6_system_learning.manifest_hash import (
     MANIFEST_FILENAME,
     MANIFEST_HASH_ALGORITHM,
     compute_manifest_hash,

@@ -10,7 +10,7 @@ pytestmark = pytest.mark.unit
 
 MODULE_CANDIDATES = [
     "agentic_core.system_learning.engines.l0_threshold_tuner",
-    "system_learning.engines.l0_threshold_tuner",
+    "agentic_core.L6_system_learning.engines.l0_threshold_tuner",
     "agentic_core.L0_routing.reasoning.l0_threshold_tuner",
 ]
 CLASS_CANDIDATES = ["L0ThresholdTuner", "L0ThresholdChangePackage"]

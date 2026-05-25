@@ -99,7 +99,7 @@ def test_rg_orchestrator_facade_uses_pep562_getattr() -> None:
 
 
 def test_system_learning_facade_module_source_has_no_top_level_upstream_import() -> None:
-    """W3.2/W3.3: facade source must not eagerly import system_learning at module top.
+    """W3.2/W3.3: facade source must not eagerly import agentic_core.L6_system_learning at module top.
 
     Source-level scan because once a lazy symbol is resolved it caches into
     globals(); a runtime check would falsely detect the cached entry.
@@ -109,7 +109,7 @@ def test_system_learning_facade_module_source_has_no_top_level_upstream_import()
     # Top-level imports start at column 0 (no leading whitespace). Any
     # ``from system_learning`` at column 0 violates the lazy contract.
     for line in src.splitlines():
-        if line.startswith("from system_learning") or line.startswith("import system_learning"):
+        if line.startswith("from system_learning") or line.startswith("import agentic_core.L6_system_learning"):
             pytest.fail(f"Top-level system_learning import in facade: {line!r}")
 
 

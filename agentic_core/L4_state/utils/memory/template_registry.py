@@ -8,9 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.prompt_governance.contracts.template_manifest_types import (
-    TemplateManifest,
-)
+from agentic_core.prompt_governance.contracts import TemplateManifest
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_authorize_and_execute,

@@ -680,8 +680,8 @@ def emit_alerts_to_registry(
             continue
         if alert.severity == "critical":
             try:
-                from system_learning.ports.meta_learning_bus import MetaLearningBus
-                from system_learning.ports.meta_learning_change_package import MetaLearningChangePackage
+                from agentic_core.L6_system_learning.meta_learning_bus import MetaLearningBus
+                from agentic_core.L6_system_learning.meta_learning_change_package import MetaLearningChangePackage
 
                 bus = MetaLearningBus.get_instance()
                 pkg = MetaLearningChangePackage.create(

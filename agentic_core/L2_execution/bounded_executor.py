@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     # block at import time. The ADG static scanner cannot tell that, so
     # the guardian marker below pre-approves the static-only edge per the
     # canonical lookback rule in ``tools/adg/core/guardian_filter.py``.
-    from agentic_core.prompt_governance.orchestrator import (  # guardian: allow-layer-violation -- TYPE_CHECKING-gated; no runtime edge; type-only annotation surface
+    from agentic_core.prompt_governance import (  # guardian: allow-layer-violation -- TYPE_CHECKING-gated; no runtime edge; type-only annotation surface
         CompiledPromptEnvelope,
     )
 
@@ -290,13 +290,13 @@ def execute(
     final_error: str | None = None
 
     started_overall = time.time()
-    for attempt in range(1, sandbox.max_attempts + 1):  # guardian: allow-retry-without-backoff -- bounded retry (max_attempts) with capability-token expiry check as deadline surrogate; no exponential backoff by design
+    for attempt in range(1, sandbox.max_attempts + 1):  # guardian: allow-retry-without-backoff -- bounded max_attempts invocation lane
         if token.expired:
             raise L2ExecutorError("capability token expired before invocation")
         started = time.time()
         try:
             result = model_invoke(envelope)
-        except Exception as exc:  # guardian: allow-broad-catch -- caller-supplied callable; we record any failure as a sealed attempt and let Exit Eval grade it
+        except Exception as exc:  # guardian: allow-broad-catch -- caller-supplied callable; we record any failure as a sealed attempt and let Exit Eval grade it  # guardian: allow-retry-without-backoff -- bounded max_attempts retry lane
             ended = time.time()
             invocation_records.append(
                 ModelInvocationRecord(

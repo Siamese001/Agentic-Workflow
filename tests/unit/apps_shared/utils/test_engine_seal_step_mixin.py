@@ -16,7 +16,7 @@ from typing import Any
 import pytest
 
 from apps_shared.utils.engine_seal_step_mixin import install_seal_step_autowrap
-from system_learning.runtime_adg.runtime_span_emitter import (
+from agentic_core.L6_system_learning.runtime_span_emitter import (
     SPAN_STEP_SEAL,
     reset_current_adapter,
     set_current_adapter,

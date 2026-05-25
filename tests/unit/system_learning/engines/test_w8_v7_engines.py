@@ -8,21 +8,21 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.incident_rca_engine import (
+from agentic_core.L6_system_learning.incident_rca_engine import (
     IncidentEvidence,
     IncidentRCAEngine,
     RootCauseClass,
     classify_defects,
     localize_first_bad_span,
 )
-from system_learning.engines.runtime_exhaust_collector import (
+from agentic_core.L6_system_learning.runtime_exhaust_collector import (
     REQUIRED_LINEAGE_FIELDS,
     ExhaustDefect,
     RuntimeExhaustCollector,
 )
-from system_learning.engines.v6_kpi_board import V6KPIName
-from system_learning.engines.v7_kpi_board import UnifiedKPIBoard
-from system_learning.engines.v7_promotion_schemas import (
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIName
+from agentic_core.L6_system_learning.v7_kpi_board import UnifiedKPIBoard
+from agentic_core.L6_system_learning.v7_promotion_schemas import (
     CONTAINMENT_TABLE,
     ActivationPolicySpec,
     EvidenceLink,
@@ -30,7 +30,7 @@ from system_learning.engines.v7_promotion_schemas import (
     PromotionPacket,
     validate_promotion_packet,
 )
-from system_learning.engines.v7_rule_drafter import (
+from agentic_core.L6_system_learning.v7_rule_drafter import (
     REQUIRED_DRAFT_FIELDS,
     DraftType,
     IncompleteDraftError,

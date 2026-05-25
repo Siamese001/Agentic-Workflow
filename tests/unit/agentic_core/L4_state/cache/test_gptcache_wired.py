@@ -720,7 +720,7 @@ def test_try_semantic_match_raises_not_implemented() -> None:
     import asyncio
 
     try:
-        from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
+        from agentic_core.L6_system_learning.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
     except ImportError:
         pytest.skip("EnhancedRagRetrievalCache not importable")
 
@@ -751,7 +751,7 @@ def test_store_semantic_entry_raises_not_implemented() -> None:
     import asyncio
 
     try:
-        from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
+        from agentic_core.L6_system_learning.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
     except ImportError:
         pytest.skip("EnhancedRagRetrievalCache not importable")
 
@@ -764,7 +764,7 @@ def test_enable_semantic_matching_hard_pinned_false() -> None:
     """Phase E: _enable_semantic_matching is always False regardless of constructor arg."""
     try:
         from unittest.mock import MagicMock as _MM
-        from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
+        from agentic_core.L6_system_learning.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
     except ImportError:
         pytest.skip("EnhancedRagRetrievalCache not importable")
 

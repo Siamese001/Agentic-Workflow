@@ -39,7 +39,7 @@ class OTelIngestService:
             }
 
         try:
-            from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+            from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
             mission = trace_data.get("mission") or trace_data.get("trace_id") or f"trace_{int(time.time())}"
 

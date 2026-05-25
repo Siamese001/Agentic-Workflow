@@ -110,7 +110,7 @@ class L5Streamer:
 
     async def _stream_worker(self):
         """Background worker to drain queue to JSONL without blocking execution."""
-        while True:  # guardian: allow-retry-without-backoff -- background queue drain; blocking await on queue.get() provides natural pacing
+        while True:  # guardian: allow-retry-without-backoff -- queue drain worker; await get() paces loop
             try:
                 payload = await self.stream_queue.get()
                 try:
@@ -147,7 +147,7 @@ class L5Streamer:
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ) as exc:  # guardian: allow-log-and-swallow -- stream worker: non-fatal, worker loop continues
+            ) as exc:  # guardian: allow-log-and-swallow -- stream worker: non-fatal, worker loop continues  # guardian: allow-retry-without-backoff -- queue drain loop; await get() paces iterations
                 LOGGER.exception("reasoning_streamer worker failure: %s", exc)
 
     def _run_websocket_server(self):

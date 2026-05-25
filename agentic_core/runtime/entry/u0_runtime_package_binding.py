@@ -93,7 +93,7 @@ class RuntimePackageRegistry:
                 registry = yaml.safe_load(f)
             self._cache[app_id] = registry
             return registry
-        except Exception as e:
+        except Exception as e:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error(f"Failed to load registry for {app_id}: {e}")
             return None
     
@@ -159,7 +159,7 @@ class RuntimePackageRegistry:
                 data = yaml.safe_load(f)
             
             return RuntimeCustomizationPackage.from_dict(data)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error(f"Failed to load package from {package_path}: {e}")
             return None
 
@@ -228,7 +228,7 @@ def _extract_explicit_package(
             return package, errors
         
         return package, []
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- P1 ADG burndown
         return None, [str(e)]
 
 

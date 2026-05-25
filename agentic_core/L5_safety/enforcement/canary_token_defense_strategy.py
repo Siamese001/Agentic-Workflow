@@ -13,7 +13,7 @@ import secrets
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+from agentic_core.prompt_governance.security import scan_untrusted_text
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,

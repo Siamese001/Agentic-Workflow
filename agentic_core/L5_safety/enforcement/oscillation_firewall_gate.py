@@ -216,7 +216,7 @@ class OscillationFirewall:
     """
 
     def __init__(self, config: OscillationFirewallConfig | None = None) -> None:
-        from system_learning.enforcement.oscillation_detector import OscillationDetector
+        from agentic_core.L6_system_learning.oscillation_detector import OscillationDetector
 
         cfg = config or OscillationFirewallConfig()
         self._config = cfg
@@ -261,7 +261,7 @@ class OscillationFirewall:
         Raises:
             OscillationFirewallTripped: if oscillation pattern is detected.
         """
-        from system_learning.enforcement.oscillation_detector import ParameterFrozenError
+        from agentic_core.L6_system_learning.oscillation_detector import ParameterFrozenError
 
         try:
             self._detector.record_change(self._ROUTING_PARAM, tier, cycle)

@@ -9,7 +9,7 @@ pytestmark = pytest.mark.unit
 
 class TestScoringReportStore:
     def test_importable(self):
-        from system_learning.ports.scoring_report_store import ScoringReportStore
+        from agentic_core.L6_system_learning.scoring_report_store import ScoringReportStore
 
         assert ScoringReportStore is not None
 

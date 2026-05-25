@@ -58,8 +58,8 @@ except ImportError:
     OpenTelemetryTracingAdapter = object  # type: ignore[misc, assignment]
 
 try:
-    from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
-    from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+    from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
+    from agentic_core.L6_system_learning.snapshot import RuntimeADGSnapshot
 
     MATERIALIZER_AVAILABLE = True
 except ImportError:

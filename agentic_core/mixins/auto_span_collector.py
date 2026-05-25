@@ -83,7 +83,7 @@ class AutoSpanCollector:
     def _initialize_runtime_adg_integration(self) -> None:
         """Initialize Runtime ADG integration if available."""
         try:
-            from system_learning.runtime_adg.auto_persistence import (
+            from agentic_core.L6_system_learning.auto_persistence import (
                 get_auto_persistence_tracer,
             )
 

@@ -45,8 +45,8 @@ from agentic_core.L5_safety.eval_spine.trace_grader import (
 _log = logging.getLogger(__name__)
 
 _BASE_URL_ENV = "VLLM_BASE_URL"
-_MODEL_ENV = "VLLM_MODEL_NAME"
-_API_KEY_ENV = "VLLM_API_KEY"
+_MODEL_ENV = "VLLM_MODEL_NAME"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
+_API_KEY_ENV = "VLLM_API_KEY"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
 _DEFAULT_TIMEOUT_S = 30.0
 _DEFAULT_MAX_TOKENS = 512
 

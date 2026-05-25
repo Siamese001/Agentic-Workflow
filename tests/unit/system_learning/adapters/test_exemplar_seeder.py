@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.adapters.exemplar_consult_adapter import reset_default_store
-from system_learning.adapters.exemplar_seeder import seed_from_cases
-from system_learning.engines.trajectory_exemplar_store import TrajectoryExemplarStore
+from agentic_core.L6_system_learning.exemplar_consult_adapter import reset_default_store
+from agentic_core.L6_system_learning.exemplar_seeder import seed_from_cases
+from agentic_core.L6_system_learning.trajectory_exemplar_store import TrajectoryExemplarStore
 
 
 @pytest.fixture(autouse=True)

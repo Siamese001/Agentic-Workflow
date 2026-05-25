@@ -9,6 +9,6 @@ pytestmark = pytest.mark.unit
 
 def test_module_importable():
     """Module apply_attempt_types must be importable."""
-    import system_learning.types.apply_attempt_types
+    import agentic_core.L6_system_learning.apply_attempt_types
 
     assert system_learning.types.apply_attempt_types is not None

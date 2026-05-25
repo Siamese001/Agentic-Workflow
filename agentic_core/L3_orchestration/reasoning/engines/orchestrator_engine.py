@@ -225,8 +225,8 @@ from tqdm import tqdm
 # guardian: allow-silent-degradation -- Optional runtime ADG
 try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
-    from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
-    from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+    from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
+    from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
     RUNTIME_ADG_AVAILABLE = True
 except ImportError:  # guardian: allow-silent-swallow -- Optional runtime ADG

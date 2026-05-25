@@ -9,6 +9,6 @@ pytestmark = pytest.mark.unit
 
 def test_module_importable():
     """Module app_signal_types must be importable."""
-    import system_learning.types.app_signal_types
+    import agentic_core.L6_system_learning.app_signal_types
 
     assert system_learning.types.app_signal_types is not None

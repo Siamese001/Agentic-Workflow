@@ -181,7 +181,7 @@ class GovernedExecutionSeam:
             from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (  # noqa: PLC0415
                 evaluate_and_emit,
             )
-            from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # noqa: PLC0415
+            from ops_scripts.reports.async_eval_packet import (  # noqa: PLC0415  # guardian: allow-layer-violation -- L_APP->L_OPS lazy eval ingest probe
                 get_async_eval_ingester,
             )
 

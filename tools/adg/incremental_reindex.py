@@ -45,6 +45,7 @@ __adg_consumer_mode__ = "inventory"
 
 
 import ast
+import importlib.util
 import logging
 import shutil
 import sqlite3
@@ -132,7 +133,7 @@ class IncrementalReindexer:
             logger.warning("reindex_file(%s) parse failed: %s", norm, exc)
             return delta
 
-        import_modules = _extract_import_modules(tree)
+        import_modules = _extract_import_modules(tree, norm)
 
         with sqlite3.connect(str(self._shadow), timeout=1.0) as conn:
             conn.row_factory = sqlite3.Row
@@ -150,8 +151,8 @@ class IncrementalReindexer:
                 node_id = _mint_node_id(conn)
                 layer = _infer_layer_for_path(norm)
                 conn.execute(
-                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) "
-                    "VALUES (?, ?, 'module', ?, ?)",
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, identity_kind, confidence, resolved_path) "
+                    "VALUES (?, ?, 'module', ?, 'module', 'HIGH', ?)",
                     (node_id, adg_name, layer, norm),
                 )
                 delta.created_node = True
@@ -160,7 +161,7 @@ class IncrementalReindexer:
             # 2. Capture current outgoing import edges to compute diff.
             existing_rows = conn.execute(
                 "SELECT e.id AS edge_id, n.resolved_path AS tgt_path "
-                "FROM edges e LEFT JOIN nodes n ON n.id = e.tgt_id "
+                "FROM edges e LEFT JOIN nodes n ON n.id = e.dst_id "
                 "WHERE e.src_id = ? AND e.relation_type = 'imports'",
                 (node_id,),
             ).fetchall()
@@ -189,7 +190,7 @@ class IncrementalReindexer:
                 conn.execute(
                     f"DELETE FROM edges WHERE id IN ("
                     f"  SELECT e.id FROM edges e "
-                    f"  LEFT JOIN nodes n ON n.id = e.tgt_id "
+                    f"  LEFT JOIN nodes n ON n.id = e.dst_id "
                     f"  WHERE e.src_id = ? AND e.relation_type = 'imports' "
                     f"    AND n.resolved_path IN ({placeholders})"
                     f")",
@@ -202,8 +203,9 @@ class IncrementalReindexer:
                 if tgt_row is None:
                     continue
                 conn.execute(
-                    "INSERT INTO edges (src_id, tgt_id, relation_type) VALUES (?, ?, 'imports')",
-                    (node_id, str(tgt_row["id"])),
+                    "INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol) "
+                    "VALUES (?, ?, 'imports', 'import', ?, 0, '')",
+                    (node_id, str(tgt_row["id"]), norm),
                 )
             conn.commit()
         return delta
@@ -212,8 +214,19 @@ class IncrementalReindexer:
 # ---------- AST helpers ----------
 
 
-def _extract_import_modules(tree: ast.AST) -> list[str]:
+def _dotted_module_name_for_path(norm_path: str) -> str:
+    """Map repo-relative ``*.py`` path to dotted module name (package for ``__init__.py``)."""
+    stem = norm_path.replace("\\", "/")
+    if stem.endswith("/__init__.py"):
+        return stem[: -len("/__init__.py")].replace("/", ".")
+    if stem.endswith(".py"):
+        return stem[: -3].replace("/", ".")
+    return stem.replace("/", ".")
+
+
+def _extract_import_modules(tree: ast.AST, source_path: str) -> list[str]:
     """Return a list of dotted module names imported by the file."""
+    package_name = _dotted_module_name_for_path(source_path)
     modules: list[str] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -221,8 +234,19 @@ def _extract_import_modules(tree: ast.AST) -> list[str]:
                 if alias.name:
                     modules.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
-            if node.module and node.level == 0:
+            if node.level == 0 and node.module:
                 modules.append(node.module)
+            elif node.level and node.level > 0:
+                rel = ("." * node.level) + (node.module or "")
+                try:
+                    modules.append(importlib.util.resolve_name(rel, package_name))
+                except (ImportError, ValueError, ModuleNotFoundError):
+                    logger.debug(
+                        "reindex_file(%s) unresolved relative import %r from %s",
+                        source_path,
+                        rel,
+                        package_name,
+                    )
     # Dedupe while preserving order.
     seen: set[str] = set()
     out: list[str] = []
@@ -284,13 +308,14 @@ def _infer_layer_for_path(norm_path: str) -> str:
         ("agentic_core/L4_state", "L4"),
         ("agentic_core/L5_safety", "L5"),
         ("agentic_core/L6_observability", "L6"),
+        ("agentic_core/L6_system_learning", "L6"),
+        ("system_learning/", "L6"),
         ("agentic_core/runtime", "L_RUNTIME"),
         ("agentic_core/", "L_AGENTIC_CORE"),
         ("apps_", "L_APPS"),
         ("tools/", "L_TOOLS"),
         ("tests/", "L_TESTS"),
         ("ops_scripts/", "L_OPS"),
-        ("system_learning/", "L_SYSTEM_LEARNING"),
         ("infrastructure/", "L_INFRASTRUCTURE"),
     ]
     for prefix, layer in prefix_to_layer:

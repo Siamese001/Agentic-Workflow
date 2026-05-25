@@ -114,7 +114,7 @@ def verify(
 
     # Lazy-import so the script starts even if system_learning has import-side
     # effects (it does — `_emit_engine_lifecycle` etc.).
-    from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+    from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
     store = FileBackedRuntimeADGStore(base_dir=base_dir)
     version_ids = store.list_snapshots()

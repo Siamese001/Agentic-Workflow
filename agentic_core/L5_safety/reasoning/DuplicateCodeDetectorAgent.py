@@ -422,9 +422,7 @@ class DuplicateCodeDetectorAgent(
     async def _scan_code_blocks(self) -> list[dict]:
         """Scan Python files for duplicate code blocks."""
         code_blocks = defaultdict(list)
-        for file_path in tqdm(
-            self._iter_files({".py"}), desc="Processing", unit="item"
-        ):  # guardian: allow-retry-without-backoff -- scanner iterates files, not retry attempts; per-file failures re-raise to caller
+        for file_path in tqdm(self._iter_files({".py"}), desc="Processing", unit="item"):
             try:
                 lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
                 for i in tqdm(
@@ -432,7 +430,7 @@ class DuplicateCodeDetectorAgent(
                     desc=f"Scanning {file_path.name}",
                     unit="line",
                     leave=False,
-                ):  # guardian: allow-retry-without-backoff -- inner sliding-window over lines, not retry attempts; deterministic bounded iteration; progress per §16
+                ):
                     block_content = "\n".join(lines[i : i + self.min_lines])
                     if not block_content.strip():
                         continue
@@ -442,7 +440,6 @@ class DuplicateCodeDetectorAgent(
                     except ValueError:
                         rel_path = file_path
                     code_blocks[block_hash].append((str(rel_path), i + 1))
-            # guardian: allow-silent-swallow
             except (
                 OSError,
                 ValueError,
@@ -450,7 +447,7 @@ class DuplicateCodeDetectorAgent(
                 KeyError,
                 AttributeError,
                 RuntimeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            ) as e:  # guardian: allow-broad-exception -- per-file scan boundary; re-raises to caller  # guardian: allow-retry-without-backoff -- file iterator, not retry loop
                 raise
         duplicates = [{"hash": h, "locations": locs} for h, locs in code_blocks.items() if len(locs) > 1]
         Logger.info(f"[DUPE SCAN] Found {len(duplicates)} duplicate code blocks")

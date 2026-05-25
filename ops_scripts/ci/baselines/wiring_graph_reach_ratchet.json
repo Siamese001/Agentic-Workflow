@@ -2,9 +2,9 @@
   "gate_id": "G_REACH_l0_reachability",
   "count": 2784,
   "seeded_at": "2026-04-23T15:00:00+00:00",
-  "snapshot": "adg_indexed_04232026_1828.sqlite",
+  "snapshot": "shadow_reach_proof.sqlite",
   "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline.",
-  "tightened_at": "2026-04-23T22:30:21.998576+00:00",
+  "tightened_at": "2026-05-25T14:04:20.460145+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:19:33.362026+00:00",
@@ -29,11 +29,17 @@
       "snapshot": "adg_indexed_04232026_1828.sqlite",
       "from": 1847,
       "to": 1790
+    },
+    {
+      "at": "2026-05-25T14:04:20.460145+00:00",
+      "snapshot": "shadow_reach_proof.sqlite",
+      "from": 2792,
+      "to": 2784
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-25T04:01:08.345221+00:00",
-  "last_run_snapshot": "adg_indexed_05242026_2005.sqlite",
+  "last_run_at": "2026-05-25T14:04:20.460145+00:00",
+  "last_run_snapshot": "shadow_reach_proof.sqlite",
   "loosen_history": [
     {
       "at": "2026-04-28T18:49:35+00:00",
@@ -69,7 +75,14 @@
       "from": 2783,
       "to": 2784,
       "reason": "ADR-081 post-regen absorb: +1 L0 reachability on adg_indexed_05242026_2005 snapshot."
+    },
+    {
+      "at": "2026-05-25T10:57:31.565645+00:00",
+      "snapshot": "adg_indexed_05252026_0634.sqlite",
+      "from": 2784,
+      "to": 2792,
+      "reason": "post-regen absorb adg_indexed_05252026_0634"
     }
   ],
-  "loosened_at": "2026-05-25T00:24:46+00:00"
+  "loosened_at": "2026-05-25T10:57:31.565645+00:00"
 }

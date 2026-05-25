@@ -17,7 +17,7 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.formal_exception_evidence import (
+from agentic_core.L6_system_learning.formal_exception_evidence import (
     CC_SHARED_05_CONTROL_ID,
     FULL_STACK_ENV_VALUE,
     FULL_STACK_ENV_VAR,

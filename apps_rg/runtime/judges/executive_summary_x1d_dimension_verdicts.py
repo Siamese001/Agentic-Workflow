@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
+from typing import Any, Callable
 
 EXEC_SUMMARY_RUBRIC_DIMENSION_IDS: tuple[str, ...] = (
     "factual_support",
@@ -315,6 +315,74 @@ def write_x1d_dimension_matrix_artifact(path: Any, judges: list[Any]) -> str:
     with open(p, "w", encoding="utf-8") as f:
         json.dump(body, f, indent=2, ensure_ascii=False, default=str)
     return str(p)
+
+
+DIMENSION_REGEN_FIX_INSTRUCTIONS: dict[str, str] = {
+    "executive_signal": (
+        "executive_signal: S1 = one SVP IT strategy thesis (technology strategy executive, not "
+        "narrow AI-platform opener); rewrite S2–S5 as one causal arc—no sequential achievement stack."
+    ),
+    "synthesis_quality": (
+        "synthesis_quality: connect S3–S6 with causal bridges; S6 = forward enterprise IT direction, "
+        "not a thin recap of S2–S5."
+    ),
+    "ats_alignment_without_keyword_stuffing": (
+        "ats_alignment_without_keyword_stuffing: shape emphasis toward enterprise architecture, "
+        "innovation, interoperability via allowed facts only (jd_used_as_proof=false)."
+    ),
+    "evidence_utilization": (
+        "evidence_utilization: weave unused allowed source_fact_ids into prose and claim_ledger rows."
+    ),
+    "resume_voice": (
+        "resume_voice: third person only; active voice; no Additionally/Furthermore openers."
+    ),
+    "anti_overfit": (
+        "anti_overfit: no target-company name or JD keyword echo in resume_display_text."
+    ),
+    "factual_support": (
+        "factual_support: every claim_ledger row must cite allowed source_fact_ids only."
+    ),
+}
+
+
+def dimension_major_fail_on_judge(judge: dict[str, Any], dimension_id: str) -> bool:
+    """True when a judge marked the dimension failed with major severity."""
+    dv = judge.get("dimension_verdicts") if isinstance(judge.get("dimension_verdicts"), dict) else {}
+    row = dv.get(dimension_id) if isinstance(dv, dict) else None
+    if not isinstance(row, dict):
+        return False
+    return row.get("pass") is False and str(row.get("severity") or "").lower() == "major"
+
+
+def major_failed_dimension_ids_from_judges(
+    judges: list[dict[str, Any]],
+    *,
+    judge_filter: Callable[[dict[str, Any]], bool] | None = None,
+) -> list[str]:
+    """Ordered dimension ids with major fail on at least one filtered judge."""
+    failed: list[str] = []
+    seen: set[str] = set()
+    for dim in EXEC_SUMMARY_RUBRIC_DIMENSION_IDS:
+        for j in judges:
+            if judge_filter is not None and not judge_filter(j):
+                continue
+            if dimension_major_fail_on_judge(j, dim) and dim not in seen:
+                seen.add(dim)
+                failed.append(dim)
+                break
+    return failed
+
+
+def collect_dimension_focused_regen_delta_lines(
+    soft_judges: list[dict[str, Any]],
+) -> list[str]:
+    """Compact, dimension-only delta lines for same-authority regen (512-token budget)."""
+    lines: list[str] = []
+    for dim in major_failed_dimension_ids_from_judges(soft_judges):
+        fix = DIMENSION_REGEN_FIX_INSTRUCTIONS.get(dim)
+        if fix:
+            lines.append(fix)
+    return lines
 
 
 def collect_dimension_remediation_lines(

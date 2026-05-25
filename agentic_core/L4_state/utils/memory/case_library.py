@@ -196,7 +196,7 @@ _emit_invokes_eval("p1", "case_library", "eval_call")
 _emit_proposal_commits_routing("p1", "case_library", "routing_commit")
 
 if TYPE_CHECKING:
-    from system_learning.types.case_memory_types import (
+    from agentic_core.L6_system_learning.case_memory_types import (
         CaseBundle,
     )
 
@@ -213,7 +213,7 @@ def _get_case_memory_types():
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_case_memory_types", "p0_governance")
-    from system_learning.types.case_memory_types import (
+    from agentic_core.L6_system_learning.case_memory_types import (
         BUNDLE_ARTIFACT_TYPES,
         CaseBundle,
         CaseRecord,

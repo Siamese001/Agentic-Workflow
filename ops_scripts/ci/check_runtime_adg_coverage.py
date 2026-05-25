@@ -46,7 +46,7 @@ if str(REPO_ROOT) not in sys.path:
 EMITTER_PATHS = [
     REPO_ROOT / "agentic_core" / "L6_observability" / "heal_router_otel.py",
     REPO_ROOT / "agentic_core" / "L6_observability" / "consensus_otel.py",
-    REPO_ROOT / "system_learning" / "_tracing.py",
+    REPO_ROOT / "agentic_core" / "L6_system_learning" / "_tracing.py",
 ]
 
 # Any of these tokens counts as "wired to runtime ADG".
@@ -88,7 +88,7 @@ def _print_tier2_spec_audit() -> None:
     at runtime by ``validate_tier2_corpus_coverage``.
     """
     try:
-        from system_learning.runtime_adg.span_contracts import (
+        from agentic_core.L6_system_learning.span_contracts import (
             tier2_stage_count,
             tier2_stage_names,
         )
@@ -121,7 +121,7 @@ _TIER1_COVERED_STAGES: tuple[str, ...] = (
 def _print_tier2_emitter_audit() -> None:
     """Print which Tier 2 stages have an emit helper available."""
     try:
-        from system_learning.runtime_adg.runtime_span_emitter_tier2 import TIER2_EMITTERS
+        from agentic_core.L6_system_learning.runtime_span_emitter_tier2 import TIER2_EMITTERS
     except ImportError as exc:  # pragma: no cover
         print(f"  [Tier 2 emitter audit] import failed: {exc}", file=sys.stderr)
         return
@@ -144,8 +144,8 @@ def _check_tier2_ssot_integrity() -> tuple[bool, list[str]]:
     problems: list[str] = []
     try:
         from agentic_core.L6_observability.semconv import runtime as R
-        from system_learning.runtime_adg import runtime_span_emitter_tier2 as T2
-        from system_learning.runtime_adg.span_contracts import (
+        from agentic_core.L6_system_learning.runtime_adg import runtime_span_emitter_tier2 as T2
+        from agentic_core.L6_system_learning.span_contracts import (
             tier2_stage_count,
             tier2_stage_names,
         )

@@ -1,12 +1,37 @@
 {
   "gate_id": "H1_new_orphans_delta_ratchet",
   "count": 0,
-  "seeded_at": "2026-04-23T16:16:04.450649+00:00",
-  "snapshot": "initial",
+  "seeded_at": "2026-05-25T10:58:42.675473+00:00",
+  "snapshot": "adg_indexed_05252026_1231.sqlite",
   "zero_run_streak": 3,
-  "last_run_at": "2026-04-23T22:15:59.166219+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1814.sqlite",
+  "last_run_at": "2026-05-25T17:01:35.679287+00:00",
+  "last_run_snapshot": "adg_indexed_05252026_1248.sqlite",
+  "loosen_history": [
+    {
+      "at": "2026-05-25T10:58:42.675473+00:00",
+      "snapshot": "adg_indexed_05252026_0634.sqlite",
+      "from": 0,
+      "to": 296,
+      "reason": "post-regen absorb: demote B->R floor after 0634 snapshot delta"
+    }
+  ],
+  "loosened_at": "2026-05-25T10:58:42.675473+00:00",
+  "tightened_at": "2026-05-25T16:45:37.053168+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-05-25T14:27:13.318631+00:00",
+      "snapshot": "adg_indexed_05252026_1012.sqlite",
+      "from": 296,
+      "to": 12
+    },
+    {
+      "at": "2026-05-25T16:45:37.053168+00:00",
+      "snapshot": "adg_indexed_05252026_1231.sqlite",
+      "from": 12,
+      "to": 0
+    }
+  ],
   "auto_promoted_tier": "B",
-  "auto_promoted_at": "2026-04-23T22:15:59.166219+00:00",
+  "auto_promoted_at": "2026-05-25T17:01:35.679287+00:00",
   "auto_promoted_after_streak": 3
 }

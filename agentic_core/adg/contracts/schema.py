@@ -19,8 +19,37 @@ Naming convention:
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
+
+_LAYER_MARKER_RE = re.compile(r'^\s*__layer__\s*=\s*["\']([^"\']+)["\']', re.M)
+
+
+def _repo_root_from_schema() -> Path:
+    return Path(__file__).resolve().parents[3]
+
+
+def _layer_from_init_markers(norm: str) -> str | None:
+    """Honor in-tree ``__layer__`` on nearest package ``__init__.py`` (plan W1 D2)."""
+    if not norm.endswith(".py"):
+        return None
+    parts = norm.split("/")[:-1]
+    root = _repo_root_from_schema()
+    for depth in range(len(parts), 0, -1):  # guardian: allow-retry-without-backoff -- __init__.py walk; continue skips missing paths only
+        init_rel = "/".join(parts[:depth]) + "/__init__.py"
+        init_path = root / init_rel
+        if not init_path.is_file():
+            continue
+        try:
+            text = init_path.read_text(encoding="utf-8")
+        except OSError:  # guardian: allow-retry-without-backoff -- __init__.py walk: missing file skip, not retry loop
+            continue
+        match = _LAYER_MARKER_RE.search(text)
+        if match:
+            return match.group(1)
+    return None
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
@@ -579,7 +608,8 @@ LAYER_PREFIXES: dict[str, str] = {
     "agentic_core/gateway": "L_SHARED",
     "agentic_core/tracing": "L_SHARED",
     "agentic_core/visualization": "L_SHARED",
-    "system_learning": "L_SL",
+    "agentic_core/L6_system_learning": "L6",
+    "system_learning": "L6",
     "tools": "L_TOOLS",
     "ops_scripts": "L_OPS",
     "tests": "L_TEST",
@@ -615,9 +645,9 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_APP", "L2"),
         ("L_APP", "L1"),
         ("L_APP", "L0"),
-        ("L_SL", "L2"),
-        ("L_SL", "L1"),
-        ("L_SL", "L0"),
+        ("L6", "L2"),
+        ("L6", "L1"),
+        ("L6", "L0"),
         ("L_TOOLS", "L5"),
         ("L_TOOLS", "L4"),
         ("L_TOOLS", "L3"),
@@ -638,7 +668,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L5", "L_SHARED"),
         ("L6", "L_SHARED"),
         ("L_APP", "L_SHARED"),
-        ("L_SL", "L_SHARED"),
+        ("L6", "L_SHARED"),
         ("L_TOOLS", "L_SHARED"),
         ("L_OPS", "L_SHARED"),
         ("L_RUNTIME", "L_SHARED"),
@@ -664,7 +694,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_TEST", "L5"),
         ("L_TEST", "L6"),
         ("L_TEST", "L_APP"),
-        ("L_TEST", "L_SL"),
+        ("L_TEST", "L6"),
         ("L_TEST", "L_TOOLS"),
         ("L_TEST", "L_OPS"),
         ("L_TEST", "L_RUNTIME"),
@@ -691,18 +721,18 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_RUNTIME", "L4"),
         ("L_RUNTIME", "L5"),
         # L_OPS scripts orchestrate system-learning workflows and apps.
-        ("L_OPS", "L_SL"),
+        ("L_OPS", "L6"),
         ("L_OPS", "L_APP"),
         ("L_OPS", "L_RUNTIME"),
         # L_APP scripts may integrate system-learning.
-        ("L_APP", "L_SL"),
+        ("L_APP", "L6"),
         # L4 state may reference L5 error/hardening types and tools utilities.
         ("L4", "L5"),
         ("L4", "L_TOOLS"),
-        # L_SL (system_learning) may use L5 safety enforcement.
-        ("L_SL", "L5"),
+        # L6 system_learning may use L5 safety enforcement.
+        ("L6", "L5"),
         # L_TOOLS may use system_learning ports.
-        ("L_TOOLS", "L_SL"),
+        ("L_TOOLS", "L6"),
         # L_PG prompt-governance may use runtime detection and L4 state.
         ("L_PG", "L_RUNTIME"),
         ("L_PG", "L4"),
@@ -737,6 +767,9 @@ def verify_layer_graph_consistency(module_layer_map: dict[str, str]) -> list[str
 def module_path_to_layer(rel_path: str) -> str:
     """Map a repo-relative module path (forward slashes) to a layer label."""
     norm = rel_path.replace("\\", "/")
+    marker_layer = _layer_from_init_markers(norm)
+    if marker_layer:
+        return marker_layer
     for prefix, layer in sorted(LAYER_PREFIXES.items(), key=lambda kv: -len(kv[0])):
         if norm.startswith(prefix):
             return layer

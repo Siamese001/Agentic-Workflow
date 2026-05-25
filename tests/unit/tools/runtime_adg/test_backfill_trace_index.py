@@ -7,12 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from system_learning.runtime_adg.snapshot import (
+from agentic_core.L6_system_learning.snapshot import (
     RuntimeADGEdge,
     RuntimeADGNode,
     create_runtime_adg_snapshot,
 )
-from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 from tools.runtime_adg.backfill_trace_index import apply_backfill, build_backfill
 
 
@@ -27,7 +27,7 @@ def populated_store(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         lambda self: None,
     )
     # Stub broken memory bridge dep (missing tools.implement_unified_memory).
-    from system_learning.stores import version_store as vs_mod
+    from agentic_core.L6_system_learning.stores import version_store as vs_mod
 
     class _NullBridge:
         def persist_active_version(self, *_args, **_kwargs) -> None:

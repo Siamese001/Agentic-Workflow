@@ -35,31 +35,25 @@ def _get_compiled_artifact():
     # Post-RH2B.2 merge: the narrow governance variant is now an alias for the
     # rich L2 CompiledPromptArtifact. The import path is preserved for
     # back-compat; it resolves to the canonical class.
-    from agentic_core.prompt_governance.contracts.compiled_artifact_types import CompiledPromptArtifact
+    from agentic_core.prompt_governance.contracts import CompiledPromptArtifact
 
     return CompiledPromptArtifact
 
 
 def _get_neutralizer():
-    from agentic_core.prompt_governance.security.assembly_injection_neutralizer import (
-        AssemblyInjectionNeutralizer,
-    )
+    from agentic_core.prompt_governance.security import AssemblyInjectionNeutralizer
 
     return AssemblyInjectionNeutralizer
 
 
 def _get_healer_reentry_validator():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
+    from agentic_core.prompt_governance.security import validate_healer_reentry
 
     return validate_healer_reentry
 
 
 def _get_context_contract_validator():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_context_contract,
-    )
+    from agentic_core.prompt_governance.security import validate_context_contract
 
     return validate_context_contract
 

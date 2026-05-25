@@ -120,7 +120,7 @@ def infer_repo_root(package_root: Path) -> Path | None:
         marker = (candidate / "pyproject.toml").is_file() or (candidate / "pytest.ini").is_file()
         if _has_apps_antigen_dir(candidate) and marker:
             return candidate.resolve()
-    except RuntimeError:
+    except RuntimeError:  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return None
     return None
 

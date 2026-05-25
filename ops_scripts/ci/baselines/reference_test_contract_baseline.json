@@ -228,7 +228,7 @@
     },
     "test_l6_rejects_raw_telemetry_as_memory": {
       "declared_in": [
-        "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
+        "docs/reference/06_L6_Observability_and_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
@@ -277,28 +277,28 @@
     },
     "test_memory_candidate_requires_eval_record": {
       "declared_in": [
-        "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
+        "docs/reference/06_L6_Observability_and_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_candidate_requires_privacy_scope": {
       "declared_in": [
-        "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
+        "docs/reference/06_L6_Observability_and_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_proposal_requires_gauntlet_before_uwg": {
       "declared_in": [
-        "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
+        "docs/reference/06_L6_Observability_and_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"
     },
     "test_memory_update_never_affects_completed_run": {
       "declared_in": [
-        "docs/reference/06_L6_Shadow_Evaluation_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
+        "docs/reference/06_L6_Observability_and_System_Learning/06.9_L6_Memory_Promotion_Interface.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".cursor/plans/gap-closure-test-impl-b77a11.md"

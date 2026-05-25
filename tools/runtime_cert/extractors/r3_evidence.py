@@ -56,11 +56,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     AppRouteContract,
     RouteShape,
 )
-from system_learning.runtime_adg.manifest_hash import compute_manifest_hash
+from agentic_core.L6_system_learning.manifest_hash import compute_manifest_hash
 from tools.runtime_cert.runtime_adg_query_adapter import NOT_CERTIFIED
 from tools.runtime_cert.trace_row_normalizer import (
     ATTRIBUTE_HARDENING_REQUIRED,

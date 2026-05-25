@@ -9,6 +9,6 @@ pytestmark = pytest.mark.unit
 
 def test_module_importable():
     """Module meta_prior_provider must be importable."""
-    import system_learning.ports.meta_prior_provider
+    import agentic_core.L6_system_learning.meta_prior_provider
 
     assert system_learning.ports.meta_prior_provider is not None

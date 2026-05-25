@@ -10,7 +10,7 @@ pytestmark = pytest.mark.unit
 
 MODULE_CANDIDATES = [
     "agentic_core.system_learning.types.rca_types",
-    "system_learning.types.rca_types",
+    "agentic_core.L6_system_learning.types.rca_types",
     "agentic_core.L0_routing.reasoning.rca_types",
 ]
 CLASS_CANDIDATES = ["RCAReport", "Finding", "RCAFinding"]

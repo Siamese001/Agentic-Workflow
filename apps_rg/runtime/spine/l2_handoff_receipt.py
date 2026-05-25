@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agentic_core.prompt_governance.prompt_assembly.l2_handoff import (
+from agentic_core.prompt_governance.prompt_assembly import (
     L2_MUST,
     L2_MUST_NOT,
     validate_l2_handoff,

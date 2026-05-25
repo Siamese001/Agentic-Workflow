@@ -335,16 +335,20 @@ def format_composition_plan_for_pa(plan: dict[str, Any]) -> str:
         bid = bs.get("brushstroke_id")
         req = bs.get("required_fact_ids") or []
         lines.append(f"- {bid}: facts={req or '[]'} — {bs.get('image_goal')}")
-    lines.append("six_sentence_arc (resume_display_text must follow index order):")
+    lines.append(
+        "narrative_arc_weights (thematic emphasis for judge-aligned synthesis — NOT one sentence per brushstroke index):"
+    )
     for row in plan.get("sentence_arc") or []:
         if not isinstance(row, dict):
             continue
         idx = row.get("sentence_index")
         lines.append(
-            f"  S{int(idx) + 1} [{row.get('brushstroke_id')}/{row.get('arc_role')}]: {row.get('guidance')}"
+            f"  S{int(idx) + 1} weight [{row.get('brushstroke_id')}/{row.get('arc_role')}]: {row.get('guidance')}"
         )
     lines.append(
-        "Bind each sentence to claim_ledger rows; prose is clean — no brushstroke labels in display text."
+        "S1 must echo executive_strategy_thesis. You may weave multiple brushstroke facts across S2–S5; "
+        "sentence order follows the thesis, not fact-pool or brushstroke index order. "
+        "Bind substantive claims to claim_ledger rows; prose is clean — no brushstroke labels in display text."
     )
     lines.append("</executive_summary_composition_plan>")
     return "\n".join(lines) + "\n"

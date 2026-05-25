@@ -25,7 +25,7 @@ from typing import Any
 
 def _load_prompt_envelope_cls() -> Any:
     """Runtime-load PromptEnvelope to avoid an L2 -> L_PG static import."""
-    module = importlib.import_module("agentic_core.knowledge.retrieval.prompt_envelope")
+    module = importlib.import_module("agentic_core.knowledge.retrieval")
     return module.PromptEnvelope
 
 

@@ -366,7 +366,7 @@ _BMG_HELPER = '''\
         """Retrieve similar healing patterns from BMG canon-healing-patterns index."""
         try:
             from pinecone import Pinecone
-            from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+            from agentic_core.L6_system_learning.embedding_service_factory import EmbeddingServiceFactory
             import os
             api_key = os.getenv("PINECONE_API_KEY", "")
             if not api_key:
@@ -696,7 +696,7 @@ def build_report() -> str:
     md.append("### BMG Retrieval Pattern")
     md.append("```python")
     md.append("from pinecone import Pinecone")
-    md.append("from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory")
+    md.append("from agentic_core.L6_system_learning.embedding_service_factory import EmbeddingServiceFactory")
     md.append('pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))')
     md.append('idx = pc.Index("canon-healing-patterns")  # dim=1536, cosine')
     md.append("emb = EmbeddingServiceFactory.get_service().embed(query)")

@@ -33,9 +33,7 @@ from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 from agentic_core.runtime.exit.apps_research_exit_binding import (
     exit_finalize_apps_research,
 )
-from agentic_core.prompt_governance.apps_research_pa_binding import (
-    pa_assemble_apps_research,
-)
+from agentic_core.prompt_governance.apps_research_pa_binding import pa_assemble_apps_research
 from agentic_core.L2_execution.apps_research_l2_binding import (
     APPS_RESEARCH_L2_CERT_REF,
     l2_execute_apps_research,

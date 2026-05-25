@@ -78,7 +78,7 @@ def run_proof(
         snapshot_to_spans,
         validate_trace,
     )
-    from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+    from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
 
     resolved_trace_id = trace_id or f"canary-{uuid.uuid4().hex[:12]}"
     result: dict[str, Any] = {

@@ -26,7 +26,7 @@ expected fail reason, replay check, and release-gate status are enforced.
 | `03B_PA_Prompt_Assembly/` | `REQ-PA-*` | `PA_Prompt_Assembly.md` |
 | `04_L2_Execute/` | `REQ-L2-*` | `04_L2_Execute.md` |
 | `05_Exit_Evaluation_and_Control/` | `REQ-EXIT-*` | `05_Live_Runtime_Exit_Control_&_Evaluation.md` |
-| `06_L6_Shadow_Evaluation_System_Learning/` | `REQ-L6-*` | `06_Shadow_Evaluation_System_Learning.md` |
+| `06_L6_Observability_and_System_Learning/` | `REQ-L6-*` | `06_Shadow_Evaluation_System_Learning.md` |
 | `99_End_to_End_Runtime_Proof_and_Acceptance/` | `REQ-E2E-*`, `REQ-TRACE-*`, `REQ-COMPILER-*` | `99_End_to_End_Runtime_Proof_and_Acceptance.md`, `99.11_*.md` |
 
 ## Status vocabulary (binding — defined in 00X §5)
@@ -88,7 +88,7 @@ The pack explicitly forbids these failure modes (see `00X §11`):
 - `03B_PA_Prompt_Assembly/` — PA (9 children)
 - `04_L2_Execute/` — L2 (12 children)
 - `05_Exit_Evaluation_and_Control/` — Exit (8 children + 4 supporting docs)
-- `06_L6_Shadow_Evaluation_System_Learning/` — L6 (9 canonical children + dedup'd duplicates)
+- `06_L6_Observability_and_System_Learning/` — L6 (9 canonical children + dedup'd duplicates)
 - `99_End_to_End_Runtime_Proof_and_Acceptance/` — E2E (10 children + the 99.11 compiler contract)
 
 ## Root files

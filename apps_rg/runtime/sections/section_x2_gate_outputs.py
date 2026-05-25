@@ -148,19 +148,24 @@ def write_section_x2_gate_outputs(
         write_json(artifact_dir / "x2_gate_outputs.json", payload_out)
 
 
-def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
+def write_x2_gate_outputs(
+    path: Path,
+    gates: list[dict[str, Any]],
+    *,
+    snapshot_label: str = "",
+) -> None:
     """Legacy path-only writer (no C0 augmentation — prefer write_section_x2_gate_outputs)."""
     failed = [g["gate_id"] for g in gates if not g.get("pass")]
-    write_json(
-        path,
-        {
-            "gates": gates,
-            "failed_gates": failed,
-            "x2_passed": sum(1 for g in gates if g.get("pass")),
-            "x2_failed": len(failed),
-            "total_x2_gates": len(gates),
-        },
-    )
+    payload: dict[str, Any] = {
+        "gates": gates,
+        "failed_gates": failed,
+        "x2_passed": sum(1 for g in gates if g.get("pass")),
+        "x2_failed": len(failed),
+        "total_x2_gates": len(gates),
+    }
+    if snapshot_label:
+        payload["snapshot_label"] = snapshot_label
+    write_json(path, payload)
 
 
 __all__ = ["write_section_x2_gate_outputs", "write_x2_gate_outputs"]

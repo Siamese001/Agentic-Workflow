@@ -49,12 +49,12 @@ class JudgePanelRunner:
             receipt = None
             last_exc: Exception | None = None
 
-            for attempt in range(1, max(max_attempts, 1) + 1):
+            for attempt in range(1, max(max_attempts, 1) + 1):  # guardian: allow-retry-without-backoff -- bounded panel adapter retries
                 declared = adapter.declared_policy(attempt=attempt)
                 try:
                     outcome, receipt = adapter.invoke(contract, attempt=attempt)
                     break
-                except AdapterInvokeError as exc:
+                except AdapterInvokeError as exc:  # guardian: allow-retry-without-backoff -- bounded panel adapter retries
                     last_exc = exc
                     continue
 

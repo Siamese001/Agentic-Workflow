@@ -68,7 +68,7 @@ def _errors_from_binding_checks() -> list[str]:
 
 
 def _emit_span_checklist() -> None:
-    from system_learning.runtime_adg.span_contracts import apps_rg_spine_span_checklist_report
+    from agentic_core.L6_system_learning.span_contracts import apps_rg_spine_span_checklist_report
 
     report = apps_rg_spine_span_checklist_report()
     SPAN_CHECKLIST_JSON.parent.mkdir(parents=True, exist_ok=True)

@@ -182,7 +182,7 @@ class TestExerciseRuntimeSpanEmitter:
 
     def test_module_level_gen_ai_discriminator_is_present(self):
         """W3 deliverable check — module-level _GEN_AI_OPERATION exists."""
-        import system_learning.runtime_adg.runtime_span_emitter as mod
+        import agentic_core.L6_system_learning.runtime_adg.runtime_span_emitter as mod
 
         assert hasattr(mod, "_GEN_AI_OPERATION")
         assert mod._GEN_AI_OPERATION  # non-empty

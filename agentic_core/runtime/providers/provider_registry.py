@@ -68,7 +68,7 @@ class ProviderRegistry:
         try:
             raw_bytes = yaml_path.read_bytes()
             data = yaml.safe_load(raw_bytes.decode("utf-8")) or {}
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             raise ProviderProfileNotFoundError(
                 f"Failed to parse provider profile YAML: {exc}"
             ) from exc

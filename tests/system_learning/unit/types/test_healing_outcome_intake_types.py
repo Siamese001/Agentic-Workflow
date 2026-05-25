@@ -9,6 +9,6 @@ pytestmark = pytest.mark.unit
 
 def test_module_importable():
     """Module healing_outcome_intake_types must be importable."""
-    import system_learning.types.healing_outcome_intake_types
+    import agentic_core.L6_system_learning.healing_outcome_intake_types
 
     assert system_learning.types.healing_outcome_intake_types is not None

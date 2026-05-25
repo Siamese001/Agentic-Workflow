@@ -25,7 +25,7 @@ from apps_eval.integrations.meta_bus_publisher import (
 )
 from apps_eval.integrations.tracing import eval_span, get_tracer
 from apps_eval.types.eval_types import ScenarioResult, SuiteResult
-from system_learning.meta_learning.meta_learning_bus import (
+from agentic_core.L6_system_learning.meta_learning_bus import (
     MetaLearningChangePackage,
     get_process_bus,
 )

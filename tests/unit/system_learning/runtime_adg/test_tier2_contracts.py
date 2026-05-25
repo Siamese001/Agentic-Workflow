@@ -15,14 +15,14 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg import runtime_span_emitter_tier2 as T2
-from system_learning.runtime_adg.runtime_span_emitter import (
+from agentic_core.L6_system_learning.runtime_adg import runtime_span_emitter_tier2 as T2
+from agentic_core.L6_system_learning.runtime_span_emitter import (
     emit_exit_disposition,
     emit_trace_root,
     seal_step,
 )
-from system_learning.runtime_adg.snapshot import RuntimeADGNode, RuntimeADGSnapshot
-from system_learning.runtime_adg.span_contracts import (
+from agentic_core.L6_system_learning.snapshot import RuntimeADGNode, RuntimeADGSnapshot
+from agentic_core.L6_system_learning.span_contracts import (
     SIGNAL_THRESHOLD,
     Tier2Coverage,
     tier2_stage_count,

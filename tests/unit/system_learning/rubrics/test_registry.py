@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from system_learning.rubrics import RubricRegistry, load_rubric_file
+from agentic_core.L6_system_learning.rubrics import RubricRegistry, load_rubric_file
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]

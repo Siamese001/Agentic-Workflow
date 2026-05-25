@@ -220,7 +220,7 @@ class CandidateGateRunner:
                 else:
                     try:
                         result = gate_fn(candidate, gate_cfg)
-                    except Exception as exc:
+                    except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
                         result = CandidateGateResult(
                             gate_id=gate_id,
                             candidate_id=candidate.candidate_id,

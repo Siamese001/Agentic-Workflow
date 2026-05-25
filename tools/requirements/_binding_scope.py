@@ -108,7 +108,7 @@ CRITICAL_REQ_IDS: tuple[str, ...] = (
     "10C-REQ-171", "10C-REQ-186", "10C-REQ-196", "10C-REQ-197",
     # 05_Exit_Evaluation_and_Control (5):
     "10C-REQ-095", "10C-REQ-096", "10C-REQ-097", "10C-REQ-098", "10C-REQ-172",
-    # 06_L6_Shadow_Evaluation_System_Learning (9):
+    # 06_L6_Observability_and_System_Learning (9):
     "10C-REQ-104", "10C-REQ-105", "10C-REQ-109", "10C-REQ-128", "10C-REQ-129",
     "10C-REQ-130", "10C-REQ-134", "10C-REQ-178", "10C-REQ-200",
     # Cross_Cutting_Observability_Replay_Audit (2):

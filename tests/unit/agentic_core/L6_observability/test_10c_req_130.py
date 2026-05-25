@@ -1,7 +1,7 @@
-"""Proof-evidence test for 10C-REQ-130 (06_L6_Shadow_Evaluation_System_Learning).
+"""Proof-evidence test for 10C-REQ-130 (06_L6_Observability_and_System_Learning).
 
 Severity      : CRITICAL
-Surface       : 06_L6_Shadow_Evaluation_System_Learning
+Surface       : 06_L6_Observability_and_System_Learning
 Layer owner   : L6 observability
 Artifact      : L6EvalRecord
 OTEL span     : l6.eval.record_sealed
@@ -38,7 +38,7 @@ from tests.fixtures.proof_evidence.runtime_artifact_validators import (
 )
 
 REQ_ID = "10C-REQ-130"
-OWNER_SURFACE = "06_L6_Shadow_Evaluation_System_Learning"
+OWNER_SURFACE = "06_L6_Observability_and_System_Learning"
 EXPECTED_SPAN = "l6.eval.record_sealed"
 ARTIFACT_TYPE = "L6EvalRecord"
 

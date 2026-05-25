@@ -105,7 +105,7 @@ def test_evaluate_hitl_called_after_governed_run_context() -> None:
 @pytest.mark.governance
 def test_runtime_hitl_consumer_consume_returns_list() -> None:
     """RuntimeHitlConsumer.consume() must return a list (may be empty for sparse data)."""
-    from system_learning.runtime_hitl_consumer import RuntimeHitlConsumer
+    from agentic_core.L6_system_learning.runtime_hitl_consumer import RuntimeHitlConsumer
     from apps_eval.engines.hitl_decision_quality_engine import (
         HitlQualityReport,
         HitlQualityBucket,
@@ -126,7 +126,7 @@ def test_runtime_hitl_consumer_consume_returns_list() -> None:
 @pytest.mark.governance
 def test_runtime_hitl_consumer_consume_and_submit_requires_sink() -> None:
     """consume_and_submit() must raise RuntimeError when no DraftSink configured."""
-    from system_learning.runtime_hitl_consumer import RuntimeHitlConsumer
+    from agentic_core.L6_system_learning.runtime_hitl_consumer import RuntimeHitlConsumer
     from apps_eval.engines.hitl_decision_quality_engine import HitlQualityReport
 
     report = HitlQualityReport(buckets=[], overall_score=1.0, total_entries=0, resolved_entries=0, pending_entries=0)
@@ -138,7 +138,7 @@ def test_runtime_hitl_consumer_consume_and_submit_requires_sink() -> None:
 @pytest.mark.governance
 def test_file_draft_sink_round_trip() -> None:
     """FileDraftSink.submit() writes a JSON file; list_drafts() reads it back."""
-    from system_learning.runtime_hitl_consumer import (
+    from agentic_core.L6_system_learning.runtime_hitl_consumer import (
         DraftKind,
         DraftProposal,
         FileDraftSink,
@@ -168,7 +168,7 @@ def test_file_draft_sink_round_trip() -> None:
 @pytest.mark.governance
 def test_draft_kind_taxonomy_stable() -> None:
     """DraftKind must contain the 5 canonical values — taxonomy must not silently shrink."""
-    from system_learning.runtime_hitl_consumer import DraftKind
+    from agentic_core.L6_system_learning.runtime_hitl_consumer import DraftKind
 
     required = {
         "TIMEOUT_TIGHTEN",
@@ -192,7 +192,7 @@ def test_draft_kind_taxonomy_stable() -> None:
 @pytest.mark.governance
 def test_hitl_decision_logger_appends_and_increments() -> None:
     """log_hitl_decision() must return an incrementing 1-based counter."""
-    from system_learning.engines.hitl_decision_logger import (
+    from agentic_core.L6_system_learning.hitl_decision_logger import (
         log_hitl_decision,
         get_decision_count,
         reset_for_testing,
@@ -223,7 +223,7 @@ def test_hitl_decision_logger_appends_and_increments() -> None:
 @pytest.mark.governance
 def test_hitl_decision_logger_routing_correction() -> None:
     """log_routing_correction() must return a positive decision number."""
-    from system_learning.engines.hitl_decision_logger import (
+    from agentic_core.L6_system_learning.hitl_decision_logger import (
         log_routing_correction,
         reset_for_testing,
     )

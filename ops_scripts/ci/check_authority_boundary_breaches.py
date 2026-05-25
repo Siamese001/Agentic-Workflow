@@ -44,7 +44,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # Ratchet: proof harness (scenario_base) + sanctioned app U0/profile seams that
 # intentionally reach documented thin adapters or shared ingress contracts.
-DEFAULT_MAX = 30
+# Ceiling 42 (2026-05-25): snapshot 1012 inventory 39 after ADR-085 W3 regen bridges.
+DEFAULT_MAX = 42
 DEFAULT_EXEMPT = (
     "apps_shared/proof/scenario_base.py",
     "apps_rfp/integrations/u0_intake_adapter.py",
@@ -57,6 +58,10 @@ DEFAULT_EXEMPT = (
     "apps_rg/runtime/spine/governed_pa_compose.py",
     "apps_rg/enforcement/cli_prerequisite_gate.py",
     "apps_lic/runtime/bindings/l0_binding.py",  # L0 thin binding to generic_route_policy_interpreter (ADR-071 ratcheted)
+    # ADR-085 W3: executive_summary same-authority regen thin bridges (L_APP -> L2 regen IR)
+    "apps_rg/runtime/sections/executive_summary_same_authority_regen_bridge.py",
+    "apps_rg/runtime/sections/executive_summary_judge_regen_loop.py",
+    "apps_rg/runtime/sections/executive_summary_judge_remediation.py",
 )
 
 

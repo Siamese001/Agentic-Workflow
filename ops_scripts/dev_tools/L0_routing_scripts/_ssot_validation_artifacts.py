@@ -480,7 +480,7 @@ def _record_healing_action(
     # System learning persistence — fire-and-forget, never raises
     # ------------------------------------------------------------------
     try:
-        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+        from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
         _bridge = get_sl_memory_bridge()
         # Build a compact error signature from agent + territory + outcome

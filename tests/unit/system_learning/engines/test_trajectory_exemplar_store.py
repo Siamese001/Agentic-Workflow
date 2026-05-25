@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.adapters.exemplar_consult_adapter import (
+from agentic_core.L6_system_learning.exemplar_consult_adapter import (
     consult,
     reset_default_store,
     seed_exemplars,
 )
-from system_learning.engines.trajectory_exemplar_store import (
+from agentic_core.L6_system_learning.trajectory_exemplar_store import (
     TrajectoryExemplar,
     TrajectoryExemplarStore,
 )

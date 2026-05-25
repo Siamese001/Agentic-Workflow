@@ -167,7 +167,7 @@ _emit_links_execution_to_snapshot("p4", "instructional_injection_mixin", "exec_s
 
 
 def _get_scan_untrusted_text():
-    from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+    from agentic_core.prompt_governance.security import scan_untrusted_text
 
     return scan_untrusted_text
 

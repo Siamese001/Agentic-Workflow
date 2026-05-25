@@ -364,7 +364,7 @@ def ensure_sl_adapter_registered() -> None:
         return
 
     try:
-        from system_learning.adapters.workflow_outcome_sl_adapter import register_with_workflow_bridge
+        from agentic_core.L6_system_learning.workflow_outcome_sl_adapter import register_with_workflow_bridge
     except ImportError as exc:  # guardian: allow-return-none-swallow allow-log-and-swallow -- SL adapter optional: bridge operates without system-learning registration
         logger.info("System learning adapter unavailable: %s", exc)
         return

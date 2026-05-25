@@ -508,7 +508,7 @@ class GovernedAppRunner:
         _pre_l5_async_qsize = 0
         _pre_l5_shadow_qsize = 0
         try:
-            from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # noqa: PLC0415
+            from ops_scripts.reports.async_eval_packet import (  # noqa: PLC0415
                 get_async_eval_ingester as _pre_l5_get_async,
                 get_shadow_eval_ingester as _pre_l5_get_shadow,
             )
@@ -558,7 +558,7 @@ class GovernedAppRunner:
         # this call caused the ingest. This is a stronger signal than the
         # prior "qsize() > 0" heuristic which could read stale state.
         try:
-            from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # noqa: PLC0415
+            from ops_scripts.reports.async_eval_packet import (  # noqa: PLC0415  # guardian: allow-layer-violation -- L_APP->L_OPS lazy ingest delta probe; sanctioned eval handoff seam
                 get_async_eval_ingester,
                 get_shadow_eval_ingester,
             )

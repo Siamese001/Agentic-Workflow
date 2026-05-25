@@ -185,8 +185,8 @@ def test_wave2_v15_route_id_starts_with_r3_for_grounded_route():
 # ---------------------------------------------------------------------------
 
 def test_wave6_bus_t_blocks_current_run_feedback():
-    from system_learning.buses import BusT, TelemetryRecord
-    from system_learning.buses._base import BusPublishError
+    from agentic_core.L6_system_learning.buses import BusT, TelemetryRecord
+    from agentic_core.L6_system_learning._base import BusPublishError
 
     bus = BusT()
     bus.set_current_run("run-1")
@@ -199,7 +199,7 @@ def test_wave6_bus_t_blocks_current_run_feedback():
 
 
 def test_wave6_bus_t_accepts_future_run():
-    from system_learning.buses import BusT, TelemetryRecord
+    from agentic_core.L6_system_learning.buses import BusT, TelemetryRecord
 
     bus = BusT()
     bus.set_current_run("run-1")
@@ -211,7 +211,7 @@ def test_wave6_bus_t_accepts_future_run():
 
 
 def test_wave6_bus_u_default_deny_without_uwg_receipt():
-    from system_learning.buses import BusU, PromotionRecord, UWGGateError
+    from agentic_core.L6_system_learning.buses import BusU, PromotionRecord, UWGGateError
 
     bus = BusU()
     rec = PromotionRecord(
@@ -224,7 +224,7 @@ def test_wave6_bus_u_default_deny_without_uwg_receipt():
 
 
 def test_wave6_bus_u_accepts_with_valid_receipt():
-    from system_learning.buses import (
+    from agentic_core.L6_system_learning.buses import (
         BusU,
         PromotionRecord,
         UWGReceipt,
@@ -246,7 +246,7 @@ def test_wave6_bus_u_accepts_with_valid_receipt():
 
 
 def test_wave6_bus_u_rejects_receipt_run_id_mismatch():
-    from system_learning.buses import (
+    from agentic_core.L6_system_learning.buses import (
         BusU,
         PromotionRecord,
         UWGGateError,

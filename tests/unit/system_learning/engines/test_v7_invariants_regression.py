@@ -27,22 +27,22 @@ import importlib
 
 import pytest
 
-from system_learning.engines.eval_record_signer import EvalRecordSigner
-from system_learning.engines.incident_rca_engine import (
+from agentic_core.L6_system_learning.eval_record_signer import EvalRecordSigner
+from agentic_core.L6_system_learning.incident_rca_engine import (
     IncidentEvidence,
     IncidentRCAEngine,
     RootCauseClass,
 )
-from system_learning.engines.observer_compliance_recorder import (
+from agentic_core.L6_system_learning.observer_compliance_recorder import (
     ObserverComplianceRecorder,
 )
-from system_learning.engines.v7_promotion_schemas import (
+from agentic_core.L6_system_learning.v7_promotion_schemas import (
     ActivationPolicySpec,
     EvidenceLink,
     PromotionPacket,
     validate_promotion_packet,
 )
-from system_learning.engines.v7_rule_drafter import (
+from agentic_core.L6_system_learning.v7_rule_drafter import (
     DraftType,
     IncompleteDraftError,
     V7RuleDrafter,
@@ -327,7 +327,7 @@ def test_invariant_10_packet_must_carry_gauntlet_receipt():
 
 
 def test_invariant_10_replay_localizer_returns_full_rate_when_no_failures():
-    from system_learning.engines.v7_kpi_producers import (
+    from agentic_core.L6_system_learning.v7_kpi_producers import (
         ReplayDivergenceLocalizer,
     )
     r = ReplayDivergenceLocalizer()
@@ -377,25 +377,25 @@ def test_invariant_12_packet_without_rollback_rejected():
 # cleanly. (The engine-name mapping uses the v7-aligned module names; legacy
 # v6 engines are also acceptable for steps that did not change in v7.)
 _OWNERSHIP_MAP: tuple[tuple[str, str], ...] = (
-    ("S1A", "system_learning.engines.runtime_exhaust_collector"),
-    ("S1B", "system_learning.engines.schema_normalizer"),
-    ("S1C", "system_learning.engines.observer_compliance_recorder"),
-    ("S1D", "system_learning.engines.eval_readiness_classifier"),
-    ("S2A", "system_learning.engines.outcome_evaluation_engine"),
-    ("S2B", "system_learning.engines.trajectory_evaluator"),
-    ("S2C", "system_learning.engines.governance_regression_checker"),
-    ("S2D", "system_learning.engines.human_calibration_engine"),
-    ("S2E", "system_learning.engines.eval_record_signer"),
-    ("S3A", "system_learning.engines.signal_fusion_engine"),
-    ("S3B", "system_learning.engines.incident_rca_engine"),
-    ("S3C", "system_learning.engines.pattern_synthesizer"),
-    ("S3D", "system_learning.engines.v7_rule_drafter"),
-    ("S3E", "system_learning.engines.proposal_admission_gate"),
-    ("S4A", "system_learning.engines.approval_gauntlet_engine"),
-    ("S4B", "system_learning.engines.approval_gauntlet_engine"),
-    ("S4C", "system_learning.engines.uwg_ink_path_monitor"),
-    ("S4D", "system_learning.engines.rollout_receipt_generator"),
-    ("S4E", "system_learning.engines.bus_u_publisher"),
+    ("S1A", "agentic_core.L6_system_learning.engines.runtime_exhaust_collector"),
+    ("S1B", "agentic_core.L6_system_learning.engines.schema_normalizer"),
+    ("S1C", "agentic_core.L6_system_learning.engines.observer_compliance_recorder"),
+    ("S1D", "agentic_core.L6_system_learning.engines.eval_readiness_classifier"),
+    ("S2A", "agentic_core.L6_system_learning.engines.outcome_evaluation_engine"),
+    ("S2B", "agentic_core.L6_system_learning.engines.trajectory_evaluator"),
+    ("S2C", "agentic_core.L6_system_learning.engines.governance_regression_checker"),
+    ("S2D", "agentic_core.L6_system_learning.engines.human_calibration_engine"),
+    ("S2E", "agentic_core.L6_system_learning.engines.eval_record_signer"),
+    ("S3A", "agentic_core.L6_system_learning.engines.signal_fusion_engine"),
+    ("S3B", "agentic_core.L6_system_learning.engines.incident_rca_engine"),
+    ("S3C", "agentic_core.L6_system_learning.engines.pattern_synthesizer"),
+    ("S3D", "agentic_core.L6_system_learning.engines.v7_rule_drafter"),
+    ("S3E", "agentic_core.L6_system_learning.engines.proposal_admission_gate"),
+    ("S4A", "agentic_core.L6_system_learning.engines.approval_gauntlet_engine"),
+    ("S4B", "agentic_core.L6_system_learning.engines.approval_gauntlet_engine"),
+    ("S4C", "agentic_core.L6_system_learning.engines.uwg_ink_path_monitor"),
+    ("S4D", "agentic_core.L6_system_learning.engines.rollout_receipt_generator"),
+    ("S4E", "agentic_core.L6_system_learning.engines.bus_u_publisher"),
 )
 
 
@@ -438,8 +438,8 @@ def test_v7_kpi_board_has_all_26_spec_rows():
 
     Spec table (lines 1212-1236) lists 26 distinct KPIs across V6 + V7.
     """
-    from system_learning.engines.v6_kpi_board import V6KPIName
-    from system_learning.engines.v7_kpi_board import V7KPIName
+    from agentic_core.L6_system_learning.v6_kpi_board import V6KPIName
+    from agentic_core.L6_system_learning.v7_kpi_board import V7KPIName
 
     spec_kpis_v6 = {
         "trace_ingest_freshness",

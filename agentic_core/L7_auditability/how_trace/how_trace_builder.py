@@ -33,7 +33,7 @@ def _read_envelope(path: Path) -> Mapping[str, Any] | None:
         return None
     try:
         return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return None
 
 

@@ -3652,7 +3652,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             if delta < 0.15:
                 top3 = sorted_scores[:3]
                 try:
-                    from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                    from agentic_core.L6_system_learning.hitl_decision_logger import log_hitl_decision
 
                     log_hitl_decision(
                         agent="FileClassificationAgent",

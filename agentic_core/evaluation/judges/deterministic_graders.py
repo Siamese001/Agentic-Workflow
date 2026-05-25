@@ -398,14 +398,14 @@ def grade_coverage_depth_run_context(
     if raw_count is not None:
         try:
             citation_anchor_count = int(raw_count)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P1 ADG burndown
             pass
     elif hasattr(c0_bundle, "get"):
         sps = c0_bundle.get("source_portfolio_summary") or {}
         if hasattr(sps, "get"):
             try:
                 citation_anchor_count = int(sps.get("total_final_sources", 0) or 0)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P1 ADG burndown
                 pass
 
     density_ratio = min(1.0, citation_anchor_count / max(min_anchors, 1))

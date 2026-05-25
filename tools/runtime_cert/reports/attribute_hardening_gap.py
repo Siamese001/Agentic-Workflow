@@ -49,7 +49,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Final, Iterable, Mapping
 
-from system_learning.runtime_adg.app_route_contracts import AppRouteContract
+from agentic_core.L6_system_learning.app_route_contracts import AppRouteContract
 from tools.runtime_cert.runtime_adg_query_adapter import NOT_CERTIFIED
 from tools.runtime_cert.trace_row_normalizer import (
     ATTRIBUTE_HARDENING_REQUIRED,

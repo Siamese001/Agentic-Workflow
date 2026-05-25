@@ -57,7 +57,7 @@ CLEAN_PARENTS = [
     REF / "02_L1_Reasoning_Plan" / "02_L1_Reasoning_Plan_Generation.md",
     REF / "03_L0_Route_Decision_and_L3_Orchestration" / "03_L0_Route_Decision_Switching_L3.md",
     REF / "03B_PA_Prompt_Assembly" / "PA_Prompt_Assembly.md",
-    REF / "06_L6_Shadow_Evaluation_System_Learning" / "06_Shadow_Evaluation_System_Learning.md",
+    REF / "06_L6_Observability_and_System_Learning" / "06_Shadow_Evaluation_System_Learning.md",
     REF / "99_End_to_End_Runtime_Proof_and_Acceptance" / "99_End_to_End_Runtime_Proof_and_Acceptance.md",
 ]
 

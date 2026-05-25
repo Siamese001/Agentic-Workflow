@@ -10,7 +10,7 @@ pytestmark = pytest.mark.unit
 
 MODULE_CANDIDATES = [
     "agentic_core.system_learning.engines.rag_optimizer",
-    "system_learning.engines.rag_optimizer",
+    "agentic_core.L6_system_learning.engines.rag_optimizer",
     "agentic_core.L0_routing.reasoning.rag_optimizer",
 ]
 CLASS_CANDIDATES = ["RAGOptimizer", "RAGChangePackage"]

@@ -36,7 +36,7 @@ WAVE2_MODULES = [
     "apps_shared.types.config_type_types",
     "apps_shared.utils.config_environment_util",
     "apps_shared.utils.request_type_util",
-    "system_learning.config.config_store",
+    "agentic_core.L6_system_learning.config.config_store",
     "apps_shared.config.pipeline_constants_config",  # the SSOT
 ]
 

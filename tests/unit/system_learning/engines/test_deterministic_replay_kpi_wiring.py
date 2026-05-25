@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.deterministic_replay_engine import (
+from agentic_core.L6_system_learning.deterministic_replay_engine import (
     DeterministicReplayEngine,
 )
-from system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIBoard, V6KPIName
 
 
 def test_initial_counters_zero():

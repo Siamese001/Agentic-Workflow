@@ -19,7 +19,7 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.runtime_span_emitter import (
+from agentic_core.L6_system_learning.runtime_span_emitter import (
     SPAN_EXIT_DISPOSITION,
     SPAN_STEP_SEAL,
     SPAN_TRACE_ROOT,
@@ -47,7 +47,7 @@ class TestContextVarAdapter:
         assert get_current_adapter() is a1
         t2 = set_current_adapter(a2)
         assert get_current_adapter() is a2
-        from system_learning.runtime_adg.runtime_span_emitter import reset_current_adapter
+        from agentic_core.L6_system_learning.runtime_span_emitter import reset_current_adapter
 
         reset_current_adapter(t2)
         assert get_current_adapter() is a1
@@ -63,7 +63,7 @@ class TestContextVarAdapter:
             with seal_step(a, step_id="s1", trace_id="t1") as bag:
                 bag["output"] = "work-done"
         finally:
-            from system_learning.runtime_adg.runtime_span_emitter import reset_current_adapter
+            from agentic_core.L6_system_learning.runtime_span_emitter import reset_current_adapter
 
             reset_current_adapter(token)
         assert len(adapter._completed_spans) == 1
@@ -73,7 +73,7 @@ class TestContextVarAdapter:
 
 class TestBackPatchTraceId:
     def test_patches_matching_spans_only(self) -> None:
-        from system_learning.runtime_adg.runtime_span_emitter import (
+        from agentic_core.L6_system_learning.runtime_span_emitter import (
             back_patch_trace_id,
             emit_trace_root,
         )
@@ -92,7 +92,7 @@ class TestBackPatchTraceId:
         assert adapter._completed_spans[1]["trace_id"] == "other"
 
     def test_fail_open_on_bad_adapter(self) -> None:
-        from system_learning.runtime_adg.runtime_span_emitter import back_patch_trace_id
+        from agentic_core.L6_system_learning.runtime_span_emitter import back_patch_trace_id
 
         assert back_patch_trace_id(None, "a", "b") == 0
 
@@ -102,7 +102,7 @@ class TestBackPatchTraceId:
         assert back_patch_trace_id(Bad(), "a", "b") == 0
 
     def test_fail_open_on_empty_old_id(self) -> None:
-        from system_learning.runtime_adg.runtime_span_emitter import back_patch_trace_id
+        from agentic_core.L6_system_learning.runtime_span_emitter import back_patch_trace_id
 
         adapter = _FakeAdapter()
         adapter._completed_spans.append({"trace_id": "", "name": "x"})
@@ -114,7 +114,7 @@ class TestTraceOrchestratorTier2PlusTier3:
 
     @pytest.fixture
     def adapter(self, monkeypatch, tmp_path):
-        from system_learning.stores import version_store as vs_mod
+        from agentic_core.L6_system_learning.stores import version_store as vs_mod
 
         class _NullBridge:
             def persist_active_version(self, *_a, **_k) -> None:
@@ -122,10 +122,10 @@ class TestTraceOrchestratorTier2PlusTier3:
 
         monkeypatch.setattr(vs_mod, "get_sl_memory_bridge", lambda: _NullBridge())
 
-        from system_learning.runtime_adg.auto_persistence import (
+        from agentic_core.L6_system_learning.auto_persistence import (
             AutoPersistenceTracingAdapter,
         )
-        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+        from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
         monkeypatch.setattr(
             FileBackedRuntimeADGStore,
@@ -192,7 +192,7 @@ class TestTier3SealStepFromNestedAgent:
 
     @pytest.fixture
     def adapter(self, monkeypatch, tmp_path):
-        from system_learning.stores import version_store as vs_mod
+        from agentic_core.L6_system_learning.stores import version_store as vs_mod
 
         class _NullBridge:
             def persist_active_version(self, *_a, **_k) -> None:
@@ -200,10 +200,10 @@ class TestTier3SealStepFromNestedAgent:
 
         monkeypatch.setattr(vs_mod, "get_sl_memory_bridge", lambda: _NullBridge())
 
-        from system_learning.runtime_adg.auto_persistence import (
+        from agentic_core.L6_system_learning.auto_persistence import (
             AutoPersistenceTracingAdapter,
         )
-        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+        from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
 
         monkeypatch.setattr(
             FileBackedRuntimeADGStore,
@@ -242,8 +242,8 @@ class TestTier3SealStepFromNestedAgent:
 
     def test_full_tier1_coverage_from_single_run(self, adapter) -> None:
         """With trace_root + exit (auto) + seal_step (nested), 3/5 categories satisfy."""
-        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
-        from system_learning.runtime_adg.span_contracts import (
+        from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.span_contracts import (
             validate_tier1_corpus_coverage,
         )
 

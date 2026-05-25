@@ -24,7 +24,7 @@ record_execution_trace("detection_signal_emitter", "detection_signal_emitter_tra
 
 
 if TYPE_CHECKING:
-    from system_learning.engines.l4_state_writer import L4StateWriter
+    from agentic_core.L6_system_learning.l4_state_writer import L4StateWriter
 
 
 def emit_detection_signal(

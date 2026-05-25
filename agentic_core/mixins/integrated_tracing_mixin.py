@@ -41,7 +41,7 @@ def _get_tracer():
 
 
 def _get_auto_persistence_adapter():
-    from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
+    from agentic_core.L6_system_learning.auto_persistence import AutoPersistenceTracingAdapter
 
     return AutoPersistenceTracingAdapter
 

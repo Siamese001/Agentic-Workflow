@@ -512,6 +512,7 @@ _GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
     "mutable_default_arg": ("guardian: allow-mutable-default",),
     # Star import (namespace pollution, breaks static analysis).
     "star_import_use": ("guardian: allow-star-import",),
+    "star_import": ("guardian: allow-star-import",),
     # Doc #7 — partial side effects: try-body writes, except swallows.
     "partial_side_effects": ("guardian: allow-partial-side-effects",),
     # Doc #11 — double logging: handler logs and re-raises.
@@ -695,7 +696,10 @@ _NON_EXCEPT_EDGE_KINDS = frozenset(
         "missing_hitl_on_irreversible",
         "hardcoded_secret",
         "star_import_use",
+        "star_import",
         "mutable_default_arg",
+        # Violation row is the for/while header (evidence for_retry|while_retry), not except.
+        "retry_without_backoff",
     }
 )
 

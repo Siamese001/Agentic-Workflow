@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
-from system_learning.engines.v6_kpi_producers import (
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIBoard, V6KPIName
+from agentic_core.L6_system_learning.v6_kpi_producers import (
     record_eval_coverage,
     record_eval_freshness_on_write,
     record_exemplar_hit_rate,

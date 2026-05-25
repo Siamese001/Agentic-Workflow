@@ -211,6 +211,38 @@ def test_make_model_backed_output_parity_explicit() -> None:
     assert statuses["gemini_pro"] == statuses["openai_chatgpt"] == statuses["anthropic_claude"]
 
 
+def test_reconcile_strips_retired_criteria_findings_gemini_openai_class() -> None:
+    """Retired five-part/S1-S5 findings must not survive reconcile (all providers)."""
+    gate_summary = {
+        "x2_exec_summary_sentence_count_6": {"pass": True, "detail": "ok"},
+        "x2_exec_summary_evidence_utilization": {"pass": True, "detail": "ok"},
+    }
+    body = {
+        "score_scale": "0_to_5",
+        "score": 3.2,
+        "threshold": 4.0,
+        "pass": False,
+        "decisive_failure": True,
+        "findings": [
+            "Missing mandatory S5 credibility sentence despite passing the deterministic gate.",
+            "Weak synthesis on executive_signal.",
+        ],
+        "cited_sentence_indexes": [1],
+        "remediation_suggestions": [],
+    }
+    reconciled = reconcile_grade_only_judge_result(body, gate_summary)
+    findings_blob = " ".join(reconciled.get("findings") or []).lower()
+    assert "mandatory s5" not in findings_blob
+    assert "weak synthesis" in findings_blob
+
+
+def test_build_x1d_judge_system_prompt_shared_by_gemini_openai_path() -> None:
+    system = build_x1d_judge_system_prompt(compact=True)
+    assert "GRADE_ONLY authority" in system
+    assert "deterministic_gate_summary" in system
+    assert "retired" in system.lower()
+
+
 # --- CI-shaped aggregate (feeds drift gate when wired) -----------------------
 
 

@@ -198,6 +198,52 @@ def _path_size_bytes(path: Path) -> int:
         return 0
 
 
+def _archive_loose_artifacts(
+    files: list[Path],
+    zip_files: list[Path],
+    archive_month_dir: Path,
+) -> tuple[int, int, int]:
+    """Move non-zip run artifacts into ``_archive/<YYYY-MM>/`` (gzip for files, move for dirs).
+
+    Returns:
+        Tuple of (archived_count, bytes_original, bytes_archived)
+    """
+    from tools.generate.archiving.zipper import _archive_individual_files
+
+    archived_count = 0
+    bytes_original = 0
+    bytes_archived = 0
+    zip_set = set(zip_files)
+    loose_files: list[Path] = []
+
+    for path in files:
+        if path in zip_set or not path.exists():
+            continue
+        if path.is_dir():
+            dest = archive_month_dir / path.name
+            try:
+                size = _path_size_bytes(path)
+                if dest.exists():
+                    shutil.rmtree(dest)
+                shutil.move(str(path), str(dest))
+                archived_count += 1
+                bytes_original += size
+                bytes_archived += size
+            except OSError as exc:
+                print(f"[ADG] Archive: failed to move directory {path.name}: {exc}")
+            continue
+        if path.is_file():
+            loose_files.append(path)
+
+    if loose_files:
+        file_archived, file_orig, file_arch = _archive_individual_files(loose_files, archive_month_dir)
+        archived_count += file_archived
+        bytes_original += file_orig
+        bytes_archived += file_arch
+
+    return archived_count, bytes_original, bytes_archived
+
+
 def _remove_artifact_path(path: Path) -> int:
     """Remove an archived artifact path (file, SQLite family, or directory)."""
     if path.is_dir():
@@ -334,43 +380,19 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             archived_count += zip_archived
             bytes_original += zip_bytes_original
             bytes_archived += zip_bytes_archived
-
-            for file_path in files:  # tqdm: inner cleanup, progress shown by outer run loop
-                if file_path not in zip_files and file_path.exists():
-                    file_size = _path_size_bytes(file_path)
-                    try:
-                        archived_count += _remove_artifact_path(file_path)
-                    except OSError as e:
-                        if "SQLite family locked" in str(e):
-                            print(f"[WARNING] Archive: locked SQLite family skipped {e}")
-                            print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
-                            print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
-                            continue
-                        print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
-                        continue
-                    bytes_original += file_size
         else:
             print(
-                f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files - DELETING (no longer archiving individual files)",
+                f"[ADG] Archive: Archiving orphaned run {ts} ({len(files)} loose artifacts, no run zip)",
             )
-            for file_path in files:  # tqdm: inner cleanup, progress shown by outer run loop
-                if file_path.exists():
-                    file_size = _path_size_bytes(file_path)
-                    bytes_original += file_size
-                    try:
-                        archived_count += _remove_artifact_path(file_path)
-                    except OSError as e:
-                        if "SQLite family locked" in str(e):
-                            print(f"[WARNING] Archive: locked SQLite family skipped {e}")
-                            print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
-                            print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
-                        elif "being used by another process" in str(e):
-                            print(f"[WARNING] Archive: locked file skipped {file_path.name}")
-                            print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
-                            print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
-                        else:
-                            print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
-                        continue
+
+        loose_archived, loose_orig, loose_arch = _archive_loose_artifacts(
+            files,
+            zip_files,
+            archive_month_dir,
+        )
+        archived_count += loose_archived
+        bytes_original += loose_orig
+        bytes_archived += loose_arch
 
     if bytes_original > 0:
         savings = bytes_original - bytes_archived

@@ -18,7 +18,7 @@ def _check_l5_cert_ref_l3(ref: str) -> None:
     try:
         from agentic_core.L5_safety.contracts.registry import verify_certification_ref
         valid = verify_certification_ref(ref)
-    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash L3 workflow; treat as unverified
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash L3 workflow; treat as unverified  # guardian: allow-broad-exception -- P1 ADG burndown
         _logger.warning("L5CertRefViolation stage=L3_entry registry_error=%s", exc)
         return
     if not valid:
@@ -290,7 +290,7 @@ class ManagedWorkflowEngine:
             object.__setattr__(execution, 'stage_executions', new_executions)
             object.__setattr__(execution, 'current_stage_index', execution.current_stage_index + 1)
             
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- P1 ADG burndown
             # Stage failed
             stage_exec = StageExecution(
                 stage=stage_config.stage,

@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     R3_GROUNDED_READ_CONTRACTS,
     build_r3_grounded_read_contract,
 )

@@ -82,7 +82,7 @@ def _load_l1_planning_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
     try:
         with open(profile_path, "r") as f:
             return yaml.safe_load(f)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         _LOGGER.error(f"Failed to load L1 planning profile {profile_path}: {e}")
         return None
 

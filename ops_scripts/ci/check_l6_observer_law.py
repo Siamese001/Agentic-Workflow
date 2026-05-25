@@ -2,7 +2,7 @@
 
 Plan: .cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W4.
 
-Forbids `system_learning/` (L6 active surface) from importing modules
+Forbids `agentic_core/L6_system_learning/` (L6 active surface) from importing modules
 that perform write-side actions on L0..L5 runtime layers. The L6
 observer-law doctrine (chapter 06.2) requires that L6 reads runtime
 exhaust but never writes back to runtime — the only path from L6 back
@@ -10,7 +10,7 @@ into runtime is the UWG promotion gate (chapter 06.7).
 
 Heuristic
 ---------
-For every .py file under system_learning/ (excluding __pycache__,
+For every .py file under agentic_core/L6_system_learning/ (excluding __pycache__,
 logs/, raw/, snapshots/), parse the AST for top-level `import` and
 `from ... import ...` statements. Flag any whose source module path
 matches:
@@ -47,7 +47,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SL_ROOT = REPO_ROOT / "system_learning"
+SL_ROOT = REPO_ROOT / "agentic_core" / "L6_system_learning"
 SKIP_SUBDIRS = {"__pycache__", "logs", "raw", "snapshots"}
 
 FORBIDDEN_LAYER_PREFIXES = (
@@ -97,6 +97,30 @@ def _is_forbidden(module_name: str) -> str | None:
     return None
 
 
+def _type_checking_line_numbers(tree: ast.Module) -> frozenset[int]:
+    """Lines inside ``if TYPE_CHECKING:`` blocks are typing-only (not runtime imports)."""
+    lines: set[int] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.If):
+            continue
+        test = node.test
+        is_tc = (
+            isinstance(test, ast.Name)
+            and test.id == "TYPE_CHECKING"
+        ) or (
+            isinstance(test, ast.Attribute)
+            and isinstance(test.value, ast.Name)
+            and test.value.id == "typing"
+            and test.attr == "TYPE_CHECKING"
+        )
+        if not is_tc:
+            continue
+        for child in ast.walk(node):
+            if isinstance(child, (ast.Import, ast.ImportFrom)) and hasattr(child, "lineno"):
+                lines.add(int(child.lineno))
+    return frozenset(lines)
+
+
 def _scan_file(path: Path) -> list[Finding]:
     try:
         source = path.read_text(encoding="utf-8")
@@ -108,8 +132,11 @@ def _scan_file(path: Path) -> list[Finding]:
         return []
     findings: list[Finding] = []
     rel = path.relative_to(REPO_ROOT).as_posix()
+    tc_lines = _type_checking_line_numbers(tree)
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
+            if node.lineno in tc_lines:
+                continue
             for alias in node.names:
                 reason = _is_forbidden(alias.name)
                 if reason:
@@ -119,6 +146,8 @@ def _scan_file(path: Path) -> list[Finding]:
                         )
                     )
         elif isinstance(node, ast.ImportFrom):
+            if node.lineno in tc_lines:
+                continue
             if node.module is None:
                 continue
             # Compose qualified module + last segment from the imported names

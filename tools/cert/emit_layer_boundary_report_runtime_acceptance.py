@@ -40,8 +40,8 @@ PROHIBITED_LAYER_PREFIXES: dict[str, str] = {
     "opentelemetry": "OTEL",
     "otel": "OTEL",
     # replay
-    "system_learning.replay": "replay",
-    "system_learning.runtime": "replay",
+    "agentic_core.L6_system_learning.replay": "replay",
+    "agentic_core.L6_system_learning.runtime": "replay",
     # apps runtime
     "apps_eval": "apps runtime",
     "apps_exec": "apps runtime",

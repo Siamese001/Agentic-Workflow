@@ -101,7 +101,7 @@ REQ-<NAMESPACE>-<SEMANTIC-NAME>-<3-DIGIT-SEQ>
 | `REQ-PA-*` | `03B_PA_Prompt_Assembly/` | `PA_Prompt_Assembly.md` | Authority-tiered PromptEnvelope |
 | `REQ-L2-*` | `04_L2_Execute/` | `04_L2_Execute.md` | Bounded execution, E1..E5, PTC, sealed_l2_artifact, proposed_state_diff |
 | `REQ-EXIT-*` | `05_Exit_Evaluation_and_Control/` | `05_Live_Runtime_Exit_Control_&_Evaluation.md` | ExitReviewPacket, X1A..X1J, X3A..X3E |
-| `REQ-L6-*` | `06_L6_Shadow_Evaluation_System_Learning/` | `06_Shadow_Evaluation_System_Learning.md` | Completed-run eval, RCA, proposal, gauntlet |
+| `REQ-L6-*` | `06_L6_Observability_and_System_Learning/` | `06_Shadow_Evaluation_System_Learning.md` | Completed-run eval, RCA, proposal, gauntlet |
 | `REQ-E2E-*` | `99_End_to_End_Runtime_Proof_and_Acceptance/` | `99_End_to_End_Runtime_Proof_and_Acceptance.md` | E2E proof scenarios |
 | `REQ-TRACE-*` | `99_End_to_End_Runtime_Proof_and_Acceptance/` | `99.4_E2E_OTEL_Trace_and_Span_Tree_Proof.md` | OTEL span-tree completeness rows |
 | `REQ-COMPILER-*` | `99_End_to_End_Runtime_Proof_and_Acceptance/` | `99.11_E2E_Requirements_To_Runtime_Evidence_Compiler.md` | Compiler contract rows |
@@ -236,7 +236,7 @@ A release MAY pass only when **every** row is `PASS` or `NOT_APPLICABLE` with ex
 - `03B_PA_Prompt_Assembly` owns prompt construction.
 - `04_L2_Execute` owns bounded execution and sealed artifacts.
 - `05_Exit_Evaluation_and_Control` owns current-run aggregation and exactly one X3 disposition.
-- `06_L6_Shadow_Evaluation_System_Learning` owns completed-run eval and future-run learning attempts through UWG.
+- `06_L6_Observability_and_System_Learning` owns completed-run eval and future-run learning attempts through UWG.
 - `99_End_to_End_Runtime_Proof_and_Acceptance` owns proof harnesses only.
 
 9.3 FORBIDDEN OUTPUT VOCABULARY — a pack that is not the owner of a runtime decision MUST NOT emit that decision in its REQ_ID rows. Specifically:

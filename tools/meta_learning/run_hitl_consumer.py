@@ -98,7 +98,7 @@ def run(
     from apps_eval.engines.hitl_decision_quality_engine import (  # noqa: PLC0415
         HitlDecisionQualityEngine,
     )
-    from system_learning.runtime_hitl_consumer import (  # noqa: PLC0415
+    from agentic_core.L6_system_learning.runtime_hitl_consumer import (  # noqa: PLC0415
         DEFAULT_DRAFT_DIR,
         FileDraftSink,
         RuntimeHitlConsumer,

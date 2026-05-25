@@ -5,24 +5,24 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.pattern_synthesizer import (
+from agentic_core.L6_system_learning.pattern_synthesizer import (
     FirstBadSpanLocalizer,
     IncidentRCA,
     PatternSynthesizer,
     RootCauseClass,
     TraceSpan,
 )
-from system_learning.engines.proposal_admission_gate import (
+from agentic_core.L6_system_learning.proposal_admission_gate import (
     AdmissionVerdict,
     ProposalAdmissionGate,
     ProposalDraft,
 )
-from system_learning.engines.signal_fusion_engine import (
+from agentic_core.L6_system_learning.signal_fusion_engine import (
     Signal,
     SignalFusionEngine,
     SignalSource,
 )
-from system_learning.engines.v7_kpi_board import UnifiedKPIBoard, V7KPIName
+from agentic_core.L6_system_learning.v7_kpi_board import UnifiedKPIBoard, V7KPIName
 
 
 # ---- signal_fusion_engine -------------------------------------------------

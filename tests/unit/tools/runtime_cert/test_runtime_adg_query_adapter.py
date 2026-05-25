@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.snapshot import (
+from agentic_core.L6_system_learning.snapshot import (
     RuntimeADGNode,
     attributes_to_json,
     create_runtime_adg_snapshot,

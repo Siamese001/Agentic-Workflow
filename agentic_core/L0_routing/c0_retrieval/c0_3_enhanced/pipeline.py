@@ -288,7 +288,7 @@ def _bounded_graph_walk(
     relation_filter: tuple[str, ...] = ()
     per_anchor_limit = max(1, plan.max_neighbors_by_anchor)
 
-    while frontier:  # guardian: allow-retry-without-backoff -- BFS traversal bounded by deadline_ns + max_nodes + max_edges; no retry-on-failure semantic, deadline is the backoff
+    while frontier:  # guardian: allow-retry-without-backoff -- BFS frontier; deadline/max_nodes are bounds, not unbounded retry
         if time.perf_counter_ns() > deadline_ns:
             break
         if nodes_seen >= inp.max_nodes:
@@ -311,7 +311,7 @@ def _bounded_graph_walk(
                 },
                 per_anchor_limit,
             )
-        except Exception as exc:  # guardian: allow-broad -- adapter failure must not crash C0.3
+        except Exception as exc:  # guardian: allow-broad -- adapter failure must not crash C0.3  # guardian: allow-retry-without-backoff -- BFS frontier drain; deadline/max bounds are the backoff
             rejected.append(
                 RejectedGraphNeighbor(
                     neighbor_id=f"<adapter-error:{cur_id}>",

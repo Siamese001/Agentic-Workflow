@@ -23,7 +23,7 @@ import pytest
 from apps_shared.utils.open_telemetry_tracing_adapter_util import (
     OpenTelemetryTracingAdapter,
 )
-from system_learning.runtime_adg.runtime_span_emitter import (
+from agentic_core.L6_system_learning.runtime_span_emitter import (
     SPAN_EXIT_DISPOSITION,
     SPAN_STEP_SEAL,
     SPAN_TRACE_ROOT,
@@ -120,7 +120,7 @@ class TestNoCircularImport:
         import importlib
 
         import apps_shared.utils.open_telemetry_tracing_adapter_util as m1
-        import system_learning.runtime_adg.runtime_span_emitter as m2
+        import agentic_core.L6_system_learning.runtime_span_emitter as m2
 
         importlib.reload(m2)
         importlib.reload(m1)

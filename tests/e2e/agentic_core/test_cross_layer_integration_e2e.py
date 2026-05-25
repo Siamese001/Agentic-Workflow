@@ -42,7 +42,7 @@ def _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0():
 from apps_shared.utils.open_telemetry_tracing_adapter_util import (
     OpenTelemetryTracingAdapter,
 )
-from system_learning.runtime_adg import (
+from agentic_core.L6_system_learning.runtime_adg import (
     FileBackedRuntimeADGStore,
     L6MetaLearningBridge,
     RuntimeADGMaterializer,

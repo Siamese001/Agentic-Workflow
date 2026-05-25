@@ -16,8 +16,8 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.app_route_contracts import R3_GROUNDED_READ_CONTRACTS
-from system_learning.runtime_adg.manifest_hash import compute_manifest_hash_for_app
+from agentic_core.L6_system_learning.app_route_contracts import R3_GROUNDED_READ_CONTRACTS
+from agentic_core.L6_system_learning.manifest_hash import compute_manifest_hash_for_app
 from tools.runtime_cert.runtime_adg_query_adapter import NOT_CERTIFIED, build_test_snapshot
 from tools.runtime_cert.smoke.live_trace_smoke import (
     LiveTraceSmokeReport,

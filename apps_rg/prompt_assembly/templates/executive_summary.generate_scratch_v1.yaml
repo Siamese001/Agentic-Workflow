@@ -1,14 +1,13 @@
-# apps_rg Executive Summary Generate Scratch Template v1 (core-law by reference)
-# Purpose: Polished SVP executive paragraph from selected facts; JD + briefing = targeting only.
+# apps_rg Executive Summary Generate Scratch Template v1 (judge-aligned base generation)
+# Purpose: SVP executive strategy narrative from selected facts; JD + briefing = targeting only.
 # Canonical run: python -m apps_rg --section executive_summary
-# Slot SSOT: this file only. Do NOT load strategic_tailor_v1 slot_bodies for executive_summary.
-# Marker: EXEC_SUMMARY_PROMPT_CORE_LAW_V3 - pa_core_law_v1 references; X2 gates in PRODUCT_SHAPE append only.
+# Marker: EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V6
 
 schema_version: "1.0"
 template_id: executive_summary.generate_scratch_v1
-version: "1.4"
+version: "1.7"
 allowed_stage: L2_EXEC
-description: Executive summary - dense voice; facts prove; JD + briefing target only
+description: Executive summary - SVP strategy narrative; facts prove; judges grade synthesis not slot-fill
 
 pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
 forbidden_slot_body_source: strategic_tailor_v1
@@ -18,15 +17,17 @@ slot_bodies:
     <instruction_hierarchy>
       <system_authority level="S0">
     <role>
-    Executive summary compiler: synthesize C0 selected facts into one third-person executive paragraph.
+    Executive strategy narrative author: produce one third-person SVP-level paragraph backed only by C0 facts.
     NO FABRICATION: governed by pa_truth_oath_v1 (pa_core_law_v1.yaml). Section bound: C0 + ALLOWED_SOURCE_FACT_IDS only.
+    Success = judges pass executive_signal and synthesis_quality (integrated thesis arc), not metric inventory coverage.
     </role>
     <authority_hierarchy>
     S0 > D0 > I0 > C0 > Y0 > U0 > E0 (many-shot) > R0. Core PA law: pa_core_law_v1 contracts (not restated here).
     X2 gate IDs: appended PRODUCT_SHAPE at compile only.
     </authority_hierarchy>
     <product_shape_band>
-    resume_display_text: **exactly 6** period-delimited sentences, one paragraph (legacy 4–5 and 5–6 retired).
+    resume_display_text: **exactly 6** period-delimited sentences, one paragraph (legacy 4-5 and 5-6 retired).
+    executive_strategy_thesis: one sentence, required before finalizing display prose (ledger-backed; see I0).
     Never copy E0 style-example metrics or credentials unless the same substance is in ALLOWED_SOURCE_FACT_IDS.
     </product_shape_band>
       </system_authority>
@@ -39,7 +40,23 @@ slot_bodies:
 
   I0: |
     <instructions>
-    <!-- EXEC_SUMMARY_PROMPT_CORE_LAW_V3 -->
+    <!-- EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V6 -->
+
+    <third_person_voice_contract>
+    **CRITICAL (X2 hard-fail):** `resume_display_text` and `executive_strategy_thesis` are third-person executive résumé prose only.
+    FORBIDDEN tokens anywhere in those fields: I, me, my, mine, we, our, us.
+    FORBIDDEN openers: "As an SVP", "As a", "In this role I", "My leadership", "I have", "I align".
+    GOOD S1 pattern: "Technology strategy executive who operationalizes ..." / "Enterprise technology leader who ..."
+    If any forbidden token would appear, rewrite before returning JSON; set self_check.no_first_person=false when any slip remains.
+    </third_person_voice_contract>
+
+    <six_sentence_period_contract>
+    **CRITICAL (X2 hard-fail):** `resume_display_text` must contain **exactly six** sentences separated by **periods** (`.`).
+    Count sentences by terminal periods only - not commas, semicolons, or "and" chains.
+    Do not pack multiple achievements into one long period-terminated sentence to cheat the count.
+    S3-S5 should open with connective bridges (e.g. "Building on that platform foundation,", "That operating model,", "Through that governance discipline,")
+    when weaving facts - not bare "Led/Built/Implemented" resume bullets.
+    </six_sentence_period_contract>
 
     <proof_law_v1>
     Implements pa_proof_binding_v1 + pa_targeting_only_v1 (full text: pa_core_law_v1.yaml). Do not restate core PA law in output.
@@ -55,54 +72,83 @@ slot_bodies:
     <credential_policy_v1>
     Certifications belong in Certifications/Competencies sections, not a trailing cert inventory.
     Allowed: one implied credibility clause inside a substantive sentence when a cert fact supports it.
+    FORBIDDEN in resume_display_text: employer-name inventory lines (e.g. three prior firms in one sentence),
+    AWS/Databricks/vendor cert label stacks, and Towers Perrin/ING/Aetna-style credential dumps unless one employer
+    is woven into a single strategy clause with allowed facts.
     </credential_policy_v1>
 
-    <north_star_synthesis_contract>
-    Open with a differentiated executive thesis (avoid Seasoned/Proven/Results-driven, "proven track record", and thin "expertise in" openers).
-    For SVP IT strategy / innovation targets: prefer technology strategy or enterprise technology executive framing over a narrow engineering-manager label.
-    Weave platform, governance, scale, and commercial outcomes into one causal arc - not a checklist or metric-dump.
-    Anti-stacking: no comma-chain mechanism inventories; no "Architected X, reducing Y, while leading Z..." glue chains.
-    Anti-inventory: S3–S5 must not read as sequential achievement bullets or employer/credential dumps; use connective tissue.
-    Sentence 1: thesis and domain only - max two mechanism terms in any later sentence, only when verbatim in facts.
-    JD/briefing may tilt emphasis toward enterprise architecture, innovation programs, and multi-year IT strategy (targeting only).
-    </north_star_synthesis_contract>
+    <judge_alignment_contract>
+    Grade target (X1D rubric): SVP platform/governance/commercialization **synthesis**, not bullet stacks.
+    - executive_signal: open as technology strategy / enterprise technology leader - not only an AI platform builder.
+    - synthesis_quality: six sentences = **one causal arc**; S2-S5 use connective tissue; metrics **serve** the thesis.
+    - S6: forward-looking enterprise technology direction - **not** a thin recap of S2-S5 and not generic "connect outcomes" filler.
+    - ats_alignment: JD/briefing shape **emphasis and vocabulary** among allowed facts only - translate platform/governance/commercial
+      facts into enterprise IT strategy, architecture modernization, innovation incubation, and regulated operating environments
+      without inventing insurance-domain or interoperability experience not in ALLOWED_SOURCE_FACT_IDS.
+    - anti_overfit: no unsupported metrics; no TARGET_COMPANY as candidate employment.
+    Proof completeness alone does not pass: a six-sentence metric checklist fails even when every claim is sourced.
+    </judge_alignment_contract>
 
-    <sentence_arc_contract>
-    Six sentences form one integrated arc (not six mini-bullets). When U0 injects six_sentence_arc, follow it index-for-index.
-    S1 — differentiated thesis (technology strategy framing for SVP IT strategy targets).
-    S2 — governed platform/runtime substance; max two mechanism terms, verbatim from facts only.
-    S3 — connect platform scale and operating model to innovation delivery (one causal thread, allowed facts only).
-    S4 — governance/lineage/regulatory discipline linked to IT strategy velocity (not a control checklist).
-    S5 — at most one high-signal metric woven into strategy context; never cert/AWS/Databricks/FSA or employer-history stacks.
-    S6 — integrative enterprise technology direction capstone from allowed facts; no JD echo, no TARGET_COMPANY, no thin S3–S5 recap.
-    </sentence_arc_contract>
+    <anti_achievement_stack_contract>
+    **Claude-fail pattern to avoid (even when X2 would pass):**
+    BAD: S1 repeats the thesis sentence verbatim, then S2-S5 each open with a new proof verb
+    (Designs..., Leads..., Implements..., Generates...) with no causal bridge, and S6 uses meta filler
+    ("culture of experimentation", "continuous learning", "responsible innovation") not tied to allowed facts.
+    GOOD: S1 paraphrases the thesis in fresh third-person prose; S2-S5 weave facts with connective openers
+    ("Building on that platform foundation,", "That operating model,", "Through that governance discipline,");
+    at most one metric-forward sentence; S6 projects enterprise IT direction from allowed platform/governance facts only.
+    Max two sentences may start with Led/Designed/Implemented/Built/Generated; the other four must use connective or thematic openers.
+    </anti_achievement_stack_contract>
+
+    <executive_strategy_thesis_first>
+    **Required workflow (do not skip):**
+    1. Read ALLOWED_SOURCE_FACT_IDS and C0 lines; read JD/briefing for targeting only.
+    2. Write `executive_strategy_thesis` (exactly one sentence): what kind of SVP technology leader is this candidate,
+       and how platform commercialization, governance, architecture, and innovation connect - using only allowed facts.
+    3. Write `resume_display_text` (exactly six period-terminated sentences) so **every** sentence advances that thesis.
+    Do **not** paste the thesis sentence verbatim into S1; S1 must be a fresh third-person paraphrase of the same idea.
+    Do **not** write one sentence per fact cluster by default. Do **not** preserve fact-pool sort order in prose.
+    Weave multiple allowed facts into one sentence when they share a causal thread.
+    When ALLOWED_SOURCE_FACT_IDS count is 6 or more, prefer 5-6 claim_ledger rows (thesis-supporting, not one row per sentence).
+    </executive_strategy_thesis_first>
+
+    <narrative_arc_contract>
+    Six sentences form one integrated arc (not six mini-bullets). U0 may inject narrative_arc_weights - use them as
+    **thematic emphasis**, not a mandatory one-fact-per-index slot map.
+    S1 - third-person paraphrase of executive_strategy_thesis (never "As an SVP..." / never TARGET_TITLE job-application phrasing).
+    S2 - governed platform/runtime substance serving the thesis; max two mechanism terms verbatim from facts only.
+    S3 - connective: platform scale, operating model, and innovation delivery in one causal thread (not a standalone win).
+    S4 - connective: governance/lineage/regulatory discipline linked to IT strategy velocity (not a control checklist).
+    S5 - at most one high-signal metric clause woven into strategy context; never a cert/employer-history inventory.
+    S6 - integrative capstone: forward enterprise technology direction from allowed facts; no JD echo, no TARGET_COMPANY,
+      no thin recap of prior sentences.
+    </narrative_arc_contract>
 
     <composition_heuristics>
-    **Exactly 6** sentences, one paragraph; fit_to_evidence (max **140** words — hard X2 cap only; no word-count floor).
-    Optional theme order: identity, platform/governance, scale/commercialization, outcomes, integrated credibility.
-    Never one sentence per source fact; never Label: detail stitching; third person; no U+2014 em dash.
-    Sentence 1 must be a complete clause (not a fragment ending on a relative clause alone).
-    Vary sentence openers; do not chain six sentences starting with Led/Successfully/Built/Delivered.
-    Do not inventory AWS, Databricks, or vendor certification labels. At most one FSA (Fellow of the Society of Actuaries)
-    rigor mention is allowed when woven into quantitative/actuarial narrative (C0.3 phase-1) — not a trailing cert laundry list.
-    Voice and failure-mode examples: E0 at L2 execute time (hydrated from executive_summary_examples.yaml; positives are 6 sentences; match that band).
+    **Exactly 6** sentences, one paragraph; fit_to_evidence (max **140** words - hard X2 cap only; no word-count floor).
+    Third person; no U+2014 em dash. Vary sentence openers; no six Led/Built/Delivered chains.
+    claim_ledger: 3-6 rows that **support the thesis** (not one row per sentence by default). Document intentional omissions in gap_notes.
+    Voice and failure-mode examples: E0 at L2 execute time (hydrated from executive_summary_examples.yaml).
     </composition_heuristics>
 
     <internal_deliberation_controls>
-    Pick a proof-safe narrative order internally; do not output chain-of-thought, branches, scores, or deliberation text.
+    Derive the executive thesis internally before writing JSON; do not output chain-of-thought, branches, scores, or deliberation text.
     </internal_deliberation_controls>
 
     <output_contract>
     Return RAW JSON ONLY: first character `{`, last character `}`. No markdown fences.
-    Required keys: resume_display_text, claim_ledger, jd_alignment, gap_notes, change_log, self_check.
+    Required keys: executive_strategy_thesis, resume_display_text, claim_ledger, jd_alignment, gap_notes, change_log, self_check.
     Do not emit selected_fact_plan - runtime materializes it.
     </output_contract>
 
     <self_check_requirements>
     Compact booleans/tokens only: no_first_person, no_inline_source_tags, no_fact_ids_in_display_text,
     jd_used_as_proof_false, every_material_claim_in_claim_ledger, metrics_copied_exactly,
-    no_keyword_stuffing, no_generic_recruiter_voice, composition_themes_used,
-    composition_themes_omitted_with_reason (optional sentence_roles_* aliases).
+    no_keyword_stuffing, no_generic_recruiter_voice,
+    executive_strategy_thesis_present, single_thesis_carried_through, no_sequential_achievement_stack,
+    no_employer_inventory_line, s1_not_verbatim_thesis_copy, s6_forward_synthesis_not_recap,
+    connective_s3_s5_prose, achievement_verb_opener_count_at_most_2,
+    composition_themes_used, composition_themes_omitted_with_reason (optional sentence_roles_* aliases).
     </self_check_requirements>
 
     </instructions>
@@ -115,10 +161,15 @@ slot_bodies:
 
   E0: |
     <!-- E0 hydrated at compile from apps_rg/prompt_assembly/examples/executive_summary_examples.yaml -->
-    <!-- See apps_rg/prompt_assembly/e0_examples.py - transformation_example blocks merged from this template at compile. -->
+    <!-- See apps_rg/prompt_assembly/e0_examples.py - strategy lanes may use judge-aligned positive subset only. -->
 
     <transformation_example id="proof_safe_jd_customization">
-    JD/briefing may tilt emphasis only. Bad: claiming JD skills as proof. Good: emphasize evidenced themes only.
+    JD/briefing may tilt emphasis only. Bad: claiming JD skills as proof. Good: translate evidenced themes into executive concepts.
+    </transformation_example>
+
+    <transformation_example id="targeting_concept_mapping">
+    Bad: "Experienced in insurance brokerage interoperability" without proof IDs. Good: "Governed platform and lineage discipline
+    for regulated enterprise programs" when only platform/governance facts exist - set gap_notes for missing JD proof themes.
     </transformation_example>
 
     <transformation_example id="no_target_company_employer">
@@ -137,6 +188,7 @@ output_contract:
   mime_type: application/json
   charset: utf-8
   required_fields:
+    - executive_strategy_thesis
     - resume_display_text
     - claim_ledger
     - jd_alignment
@@ -145,7 +197,7 @@ output_contract:
     - self_check
   summary_constraints:
     min_claims: 1
-    max_claims: 5
+    max_claims: 6
     require_citations: false
     require_role_identity_lead: true
     forbid_generic_openers: true
@@ -159,14 +211,17 @@ validation_rules:
   - rule: resume_display_text_present
     severity: error
     required_field: resume_display_text
+  - rule: executive_strategy_thesis_present
+    severity: error
+    required_field: executive_strategy_thesis
   - rule: claim_ledger_present
     severity: error
     required_field: claim_ledger
 
 w5_proof_targeting_harmonization: |
   Proof: graph/ledger selected facts; claim_ledger IDs stay in ALLOWED_SOURCE_FACT_IDS.
-  SelectedRoleFactSet (SRFS) when present filters selection only - not proof authority on the product graph path.
   Targeting: JD, briefing, title, company - never proof unless the fact token is in the section allowlist.
+  Generation: thesis-first narrative; brushstroke/composition weights are thematic, not one-sentence-per-fact slots.
 
 hash_fields:
   - template_id

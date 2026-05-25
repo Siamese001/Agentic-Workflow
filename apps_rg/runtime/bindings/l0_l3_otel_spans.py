@@ -35,7 +35,7 @@ def emit_l0_route_span(route: RouteContract) -> dict[str, Any] | None:
             "payload": payload,
             "payload_digest": d,
         }
-    except Exception:  # guardian: allow-return-none-swallow -- observability only
+    except Exception:  # guardian: allow-return-none-swallow -- observability only  # guardian: allow-broad-exception -- P2 ADG burndown
         return None
 
 
@@ -65,7 +65,7 @@ def emit_l3_orchestration_span(
             "payload": payload,
             "payload_digest": d,
         }
-    except Exception:  # guardian: allow-return-none-swallow -- observability only
+    except Exception:  # guardian: allow-return-none-swallow -- observability only  # guardian: allow-broad-exception -- P2 ADG burndown
         return None
 
 

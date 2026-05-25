@@ -915,7 +915,7 @@ def run_l6_shadow(sealed_dict: dict[str, Any] | None,
             return receipt
         # Try to import a real L6 collector entry point.
         try:
-            from system_learning.engines.runtime_exhaust_collector import (  # noqa: PLC0415, F401
+            from agentic_core.L6_system_learning.runtime_exhaust_collector import (  # noqa: PLC0415, F401
                 RuntimeExhaustCollector,
             )
             collector_available = True
@@ -969,7 +969,7 @@ def run_meta_learning_bus(sealed_dict: dict[str, Any] | None,
         "missing_fields": [],
     }
     try:
-        from system_learning.buses import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.buses import (  # noqa: PLC0415
             BusP,
             BusT,
             BusU,
@@ -988,7 +988,7 @@ def run_meta_learning_bus(sealed_dict: dict[str, Any] | None,
         bus_u.set_current_run(REQUEST_ID_HINT)
 
         # 1) Current-run feedback MUST be rejected on all three buses.
-        from system_learning.buses._base import BusPublishError  # noqa: PLC0415
+        from agentic_core.L6_system_learning._base import BusPublishError  # noqa: PLC0415
         rejected_count = 0
         for bus, rec_factory in (
             (bus_t, lambda: TelemetryRecord(

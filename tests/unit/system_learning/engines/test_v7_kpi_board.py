@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.v7_kpi_board import (
+from agentic_core.L6_system_learning.v7_kpi_board import (
     ALL_KPI_SPECS,
     UnifiedKPIBoard,
     V6KPIName,

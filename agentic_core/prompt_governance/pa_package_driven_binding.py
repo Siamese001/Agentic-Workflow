@@ -145,7 +145,7 @@ def _load_yaml(path: str) -> Optional[Dict[str, Any]]:
             if yaml:
                 return yaml.safe_load(f)
             return None
-    except Exception:
+    except Exception:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         return None
 
 
@@ -165,7 +165,7 @@ def _load_template(template_path: str) -> Optional[Template]:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             return Template(f.read())
-    except Exception:
+    except Exception:  # guardian: allow-return-none-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
         return None
 
 

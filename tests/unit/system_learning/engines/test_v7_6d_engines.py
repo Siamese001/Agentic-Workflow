@@ -4,17 +4,17 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.bus_u_publisher import (
+from agentic_core.L6_system_learning.bus_u_publisher import (
     ActivationPolicy,
     AliasActivator,
     BusUPublisher,
 )
-from system_learning.engines.rollout_receipt_generator import (
+from agentic_core.L6_system_learning.rollout_receipt_generator import (
     RollbackHandle,
     RollbackHandleValidator,
     RolloutReceiptGenerator,
 )
-from system_learning.engines.v7_kpi_board import UnifiedKPIBoard, V7KPIName
+from agentic_core.L6_system_learning.v7_kpi_board import UnifiedKPIBoard, V7KPIName
 
 
 def _make_handle(reachable=True, **overrides):

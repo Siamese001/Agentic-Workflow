@@ -289,6 +289,7 @@ def test_provider_prompt_requires_dense_paragraph_narrative_arc():
     assert (
         "enterprise ai platform leader" in cl
         or "executive identity" in cl
+        or "judge_alignment_contract" in cl
         or "north_star_synthesis_contract" in cl
         or "lead_with_seniority" in cl
         or "engineering executive" in cl

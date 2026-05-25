@@ -52,7 +52,7 @@ class _MissingOptionalDependency:
 
 
 try:
-    from system_learning.config.config_store import apply_change_package_readonly, load_current
+    from agentic_core.L6_system_learning.config_store import apply_change_package_readonly, load_current
 except ImportError as exc:
     apply_change_package_readonly = _MissingOptionalDependency(
         "apply_change_package_readonly",
@@ -61,7 +61,7 @@ except ImportError as exc:
     load_current = _MissingOptionalDependency("load_current", str(exc))
 
 try:
-    from system_learning.meta_learning.meta_apply import apply_meta_learning_rollout
+    from agentic_core.L6_system_learning.meta_apply import apply_meta_learning_rollout
 except ImportError as exc:
     apply_meta_learning_rollout = _MissingOptionalDependency(
         "apply_meta_learning_rollout",
@@ -69,12 +69,12 @@ except ImportError as exc:
     )
 
 try:
-    from system_learning.meta_learning.meta_apply_ops import apply_with_invariants
+    from agentic_core.L6_system_learning.meta_apply_ops import apply_with_invariants
 except ImportError as exc:
     apply_with_invariants = _MissingOptionalDependency("apply_with_invariants", str(exc))
 
 try:
-    from system_learning.types.config_store_types import (
+    from agentic_core.L6_system_learning.config_store_types import (
         ConfigDeltaArtifact,
         canonical_json,
         validate_component_allowed,

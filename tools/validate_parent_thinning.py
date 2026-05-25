@@ -98,7 +98,7 @@ NO_OVERLAP_ASSERTIONS = [
      REF / "04_L2_Execute",
      re.compile(r"(?i)L2\s+(?:mutates|writes\s+to)\s+L4")),
     ("L6 does not mutate current run",
-     REF / "06_L6_Shadow_Evaluation_System_Learning",
+     REF / "06_L6_Observability_and_System_Learning",
      re.compile(r"(?i)L6\s+(?:mutates|rescues)\s+(?:the\s+)?current\s+run")),
     ("Exit does not execute tools",
      REF / "05_Exit_Evaluation_and_Control",

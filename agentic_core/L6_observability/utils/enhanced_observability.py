@@ -242,9 +242,7 @@ class EnhancedObservability:
 
     def _monitoring_loop(self) -> None:
         """Main monitoring loop."""
-        while (
-            self._monitoring_active and not self._shutdown_requested
-        ):  # guardian: allow-retry-without-backoff -- periodic observability polling loop; internal time.sleep provides pacing
+        while self._monitoring_active and not self._shutdown_requested:  # guardian: allow-retry-without-backoff -- polling loop; wait() paces iterations
             try:
                 start_time = time.time()
 
@@ -269,7 +267,7 @@ class EnhancedObservability:
                 if self._stop_event.wait(timeout=sleep_time):
                     break
 
-            except _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS + _OBS_ALERT_EXCEPTIONS as e:
+            except _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS + _OBS_ALERT_EXCEPTIONS as e:  # guardian: allow-retry-without-backoff -- polling loop; wait() paces retries
                 Logger.error(f"[OBSERVABILITY] Monitoring loop error: {e}")
                 if self._stop_event.wait(timeout=min(5.0, self._interval_seconds)):
                     break
@@ -596,7 +594,7 @@ class EnhancedObservability:
     def _check_runtime_adg(self) -> dict[str, Any]:
         """Check Runtime ADG health."""
         try:
-            from system_learning.runtime_adg.auto_persistence import get_auto_persistence_tracer
+            from agentic_core.L6_system_learning.auto_persistence import get_auto_persistence_tracer
 
             tracer = get_auto_persistence_tracer()
             status_info = tracer.get_auto_persistence_status()

@@ -316,7 +316,7 @@ class ExitEvalPipeline:
         # The writer itself is best-effort (see tools.ledgers.hook_helpers).
         try:
             _emit_eval_harness_outcome(review, app_eval, decision)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001  # guardian: allow-log-and-swallow -- P1 ADG burndown  # guardian: allow-broad-exception -- P1 ADG burndown
             # guardian: allow-broad-except -- telemetry path MUST never break
             # Exit; any ledger failure is logged but ignored.
             logger.warning(

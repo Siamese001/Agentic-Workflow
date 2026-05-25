@@ -5,15 +5,15 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.engines.eval_record_signer import (
+from agentic_core.L6_system_learning.eval_record_signer import (
     CompletedEvalRecord,
     EvalRecordSigner,
 )
-from system_learning.engines.governance_regression_checker import (
+from agentic_core.L6_system_learning.governance_regression_checker import (
     GovernanceRegressionChecker,
 )
-from system_learning.engines.trajectory_evaluator import TrajectoryEvaluator
-from system_learning.engines.v7_kpi_board import (
+from agentic_core.L6_system_learning.trajectory_evaluator import TrajectoryEvaluator
+from agentic_core.L6_system_learning.v7_kpi_board import (
     UnifiedKPIBoard,
     V7KPIName,
 )

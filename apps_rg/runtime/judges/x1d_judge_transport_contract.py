@@ -92,13 +92,11 @@ class ProviderTransportProfile:
 
 
 def resolved_provider_max_output_tokens(provider_key: str, *, attempt: int = 1) -> int:
-    """Resolved max output token budget per provider (today — pre-unification)."""
-    if provider_key == "gemini_pro":
-        return GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS
-    if provider_key == "openai_chatgpt":
-        return _resolved_openai_judge_max_completion_tokens(attempt=attempt)
-    if provider_key == "anthropic_claude":
-        return ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS
+    """Resolved max output token budget — unified across Gemini, OpenAI, and Anthropic."""
+    from apps_rg.runtime.judges.executive_summary_x1d import _resolved_x1d_judge_max_output_tokens
+
+    if provider_key in PROOF_JUDGE_PROVIDER_KEYS:
+        return _resolved_x1d_judge_max_output_tokens(attempt=attempt)
     return 0
 
 
@@ -115,7 +113,7 @@ def build_provider_transport_profile(provider_key: str) -> ProviderTransportProf
         shared = _call_uses_shared_judge_system(_call_gemini)
         return ProviderTransportProfile(
             provider_key=provider_key,
-            max_output_tokens=GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS,
+            max_output_tokens=resolved_provider_max_output_tokens(provider_key, attempt=1),
             system_includes_score_schema=shared or "JUDGE_SCORE_SCHEMA" in mod_src,
             system_includes_compact_output=shared or "JUDGE_COMPACT_OUTPUT" in mod_src,
             system_includes_compact_system=shared or "JUDGE_COMPACT_SYSTEM" in mod_src,
@@ -129,7 +127,7 @@ def build_provider_transport_profile(provider_key: str) -> ProviderTransportProf
         shared = _call_uses_shared_judge_system(_call_openai)
         return ProviderTransportProfile(
             provider_key=provider_key,
-            max_output_tokens=_resolved_openai_judge_max_completion_tokens(attempt=1),
+            max_output_tokens=resolved_provider_max_output_tokens(provider_key, attempt=1),
             system_includes_score_schema=shared or "JUDGE_SCORE_SCHEMA" in src,
             system_includes_compact_output=shared or "JUDGE_COMPACT_OUTPUT" in src,
             system_includes_compact_system=shared or "JUDGE_COMPACT_SYSTEM" in src,
@@ -146,7 +144,7 @@ def build_provider_transport_profile(provider_key: str) -> ProviderTransportProf
         shared = _call_uses_shared_judge_system(_call_anthropic)
         return ProviderTransportProfile(
             provider_key=provider_key,
-            max_output_tokens=ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS,
+            max_output_tokens=resolved_provider_max_output_tokens(provider_key, attempt=1),
             system_includes_score_schema=shared or "JUDGE_SCORE_SCHEMA" in src,
             system_includes_compact_output=shared or "JUDGE_COMPACT_OUTPUT" in src,
             system_includes_compact_system=shared or "JUDGE_COMPACT_SYSTEM" in src,

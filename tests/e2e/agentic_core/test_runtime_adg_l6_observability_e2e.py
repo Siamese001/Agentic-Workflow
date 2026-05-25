@@ -32,7 +32,7 @@ except ImportError:
     SSOT_AVAILABLE = False
 
 
-from system_learning.runtime_adg import (
+from agentic_core.L6_system_learning.runtime_adg import (
     L6MetaLearningBridge,
     RuntimeADGMaterializer,
 )

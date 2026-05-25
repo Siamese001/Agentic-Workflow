@@ -175,6 +175,7 @@ INDUSTRY_DOMAIN_CLAIMS = [
 
 # Allowed top-level fields in model output
 ALLOWED_TOP_LEVEL_FIELDS = {
+    "executive_strategy_thesis",
     "resume_display_text",
     "executive_summary_text",
     "selected_fact_plan",
@@ -610,6 +611,18 @@ def check_source_sensitive_phrases(
     if unsupported_in_output:
         return False, f"Unsupported sensitive phrases: {unsupported_in_output}"
     
+    return True, None
+
+
+def check_executive_strategy_thesis(parsed_output: dict[str, Any] | None) -> tuple[bool, str | None]:
+    """SVP strategy lanes require a non-empty executive_strategy_thesis before display prose."""
+    if parsed_output is None:
+        return False, "parsed_output is None"
+    thesis = str(parsed_output.get("executive_strategy_thesis") or "").strip()
+    if not thesis:
+        return False, "executive_strategy_thesis missing or empty"
+    if len(thesis.split()) < 8:
+        return False, "executive_strategy_thesis too short for SVP strategy framing"
     return True, None
 
 
@@ -1734,6 +1747,18 @@ def run_x2_gates(
 
     # Existing gates
     add("x2_schema_valid", parsed_output is not None, parsed_output is not None, True, "Model output did not parse to expected JSON object.")
+    from apps_rg.runtime.sections.executive_summary_pa import is_strategy_executive_target_title
+
+    strategy_lane = is_strategy_executive_target_title(str(target_role or ""))
+    if strategy_lane:
+        thesis_ok, thesis_reason = check_executive_strategy_thesis(parsed_output)
+        add(
+            "x2_executive_strategy_thesis_present",
+            thesis_ok,
+            (parsed_output or {}).get("executive_strategy_thesis") if parsed_output else None,
+            "non_empty_thesis",
+            thesis_reason,
+        )
     add("x2_claim_ledger_present", bool(claim_ledger), len(claim_ledger), ">0", "claim_ledger is empty or missing.")
     add("x2_sentence_coverage_present", bool(text_claim_coverage.get("sentences")), len(text_claim_coverage.get("sentences", [])), ">0", "text_claim_coverage missing.")
     add("x2_sentence_coverage_pass", text_claim_coverage.get("overall_pass") is True, text_claim_coverage.get("overall_pass"), True, "One or more displayed sentences lack supported claims.")

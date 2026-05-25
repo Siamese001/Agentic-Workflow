@@ -78,7 +78,7 @@ def format_svp_jd_emphasis_line() -> str:
 
 
 def format_strategy_targeting_gap_note(*, allowed_fact_ids: set[str] | frozenset[str]) -> str:
-    """When JD themes lack proof IDs, require gap_notes instead of JD-as-proof."""
+    """When JD themes lack proof IDs, require gap_notes + concept translation (not JD-as-proof)."""
     allowed = {str(x).lower() for x in allowed_fact_ids}
     interop_proof_markers = (
         "interop",
@@ -88,13 +88,22 @@ def format_strategy_targeting_gap_note(*, allowed_fact_ids: set[str] | frozenset
         "enterprise_architecture",
         "ea_",
     )
-    if any(any(m in fid for m in interop_proof_markers) for fid in allowed):
-        return ""
+    has_interop_proof = any(any(m in fid for m in interop_proof_markers) for fid in allowed)
+    concept_block = (
+        "TARGETING_CONCEPT_MAP (targeting only — NOT PROOF):\n"
+        "- Translate allowed platform/governance/commercial/regulated-delivery facts into executive concepts: "
+        "enterprise IT strategy, architecture modernization, innovation incubation, audit-ready operating models, "
+        "and regulated enterprise scale — without claiming insurance brokerage, federated M&A integration, or "
+        "interoperability product experience unless matching ALLOWED_SOURCE_FACT_IDs exist.\n"
+        "- Do not keyword-stuff JD phrases; use causal synthesis so an SVP IT Strategy reader sees strategic fit.\n"
+    )
+    if has_interop_proof:
+        return concept_block
     return (
-        "TARGETING_GAP (targeting only): JD/briefing may emphasize EA, interoperability, or "
-        "federated/post-merger integration — if no matching ALLOWED_SOURCE_FACT_ID exists, set "
-        "gap_notes.svp_targeting_theme_gap_explained=true and shape emphasis from platform/governance "
-        "facts only (jd_used_as_proof=false).\n"
+        concept_block
+        + "TARGETING_GAP: No EA/interop/federated proof IDs in allowlist — set "
+        "gap_notes.svp_targeting_theme_gap_explained=true; emphasize platform/governance/commercial facts only "
+        "(jd_used_as_proof=false).\n"
     )
 
 
@@ -103,15 +112,16 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
     role = (target_title or "SVP IT strategy").strip()
     return (
         "STRATEGY_EXECUTIVE_SYNTHESIS (targeting only — NOT PROOF):\n"
-        "- Open as technology strategy / enterprise technology executive (not narrow engineering-manager).\n"
-        "- Six sentences = one causal arc: thesis → platform → scale/innovation → governance → commercial (≤1 metric clause) → integrative capstone.\n"
-        "- S3–S4: connective prose across platform scale, operating model, and innovation delivery — not sequential mini-bullets.\n"
-        "- S5: weave quantitative outcomes into strategy context; never a cert/credential/employer-history inventory.\n"
-        "- S6: forward-looking enterprise technology direction synthesized from allowed platform/governance/commercial facts.\n"
+        "- Required JSON field `executive_strategy_thesis` before `resume_display_text` (one ledger-backed sentence).\n"
+        "- Open display S1 as technology strategy / enterprise technology executive (not narrow AI-platform builder only).\n"
+        "- Six sentences = one causal arc serving the thesis; **do not** assign one accomplishment per sentence by default.\n"
+        "- S3–S4: connective prose (platform scale + operating model + innovation delivery) — not sequential mini-bullets.\n"
+        "- S5: ≤1 metric woven into strategy context; no employer-name inventory; no cert label stacks.\n"
+        "- S6: forward-looking enterprise technology direction — not a recap of S2–S5.\n"
         f"{format_svp_jd_emphasis_line()}"
         f"- Target role framing: {role} (positioning only).\n"
         "- NEVER name TARGET_COMPANY in resume_display_text.\n"
-        "- Weave team-scale facts (e.g. 8-to-28 engineering growth) into narrative when in ALLOWED_SOURCE_FACT_IDS.\n"
+        "- Weave team-scale facts (e.g. 8-to-28 engineering growth) into S2–S4 when in ALLOWED_SOURCE_FACT_IDS.\n"
     )
 
 

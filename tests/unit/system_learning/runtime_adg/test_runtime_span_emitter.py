@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from system_learning.runtime_adg.runtime_span_emitter import (
+from agentic_core.L6_system_learning.runtime_span_emitter import (
     SPAN_EXIT_DISPOSITION,
     SPAN_STEP_SEAL,
     SPAN_TRACE_ROOT,
@@ -128,8 +128,8 @@ class TestTier1ContractsInteraction:
     """End-to-end: emitted spans must register as Tier 1 satisfied."""
 
     def test_emitted_spans_satisfy_tier1_contracts(self, adapter: _FakeAdapter) -> None:
-        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
-        from system_learning.runtime_adg.span_contracts import (
+        from agentic_core.L6_system_learning.materializer import RuntimeADGMaterializer
+        from agentic_core.L6_system_learning.span_contracts import (
             validate_tier1_corpus_coverage,
         )
 

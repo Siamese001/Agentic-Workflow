@@ -93,6 +93,7 @@ SANCTIONED_ADAPTER_FILES = {
     "canonical_store.py",
     # OpenAI/provider adapters
     "semantic_enricher.py",
+    "openai_embedder.py",  # L6 canonical OpenAI embedding adapter (text-embedding-3-large)
     # HTTP adapters
     "api_gateway_integration.py",
     "documentation_framework.py",

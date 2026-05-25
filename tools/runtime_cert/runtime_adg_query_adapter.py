@@ -45,7 +45,7 @@ import logging
 from dataclasses import asdict, dataclass, field
 from typing import Any, Final, Iterator
 
-from system_learning.runtime_adg.snapshot import (
+from agentic_core.L6_system_learning.snapshot import (
     RuntimeADGNode,
     RuntimeADGSnapshot,
     attributes_to_json,

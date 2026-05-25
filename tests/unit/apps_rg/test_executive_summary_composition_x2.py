@@ -133,7 +133,8 @@ def test_strategy_target_emits_svp_sentence_arc() -> None:
     assert arc[2].get("arc_role") == "scale_operating_model"
     assert arc[4].get("arc_role") == "commercial_strategy"
     pa_block = format_composition_plan_for_pa(plan)
-    assert "six_sentence_arc" in pa_block
+    assert "narrative_arc_weights" in pa_block
+    assert "executive_strategy_thesis" in pa_block
     assert "S3" in pa_block
 
 

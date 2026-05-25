@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from system_learning.engines.uwg_ink_path_monitor import (
+from agentic_core.L6_system_learning.uwg_ink_path_monitor import (
     detect_non_uwg_writers,
     publish_uwg_uniqueness_kpi,
 )
-from system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
+from agentic_core.L6_system_learning.v6_kpi_board import V6KPIBoard, V6KPIName
 
 
 @pytest.fixture

@@ -52,7 +52,7 @@ class TestIsInternalModuleName:
             "agentic_core.L0_routing.config.path_constants",
             "apps_eval.engines.x",
             "apps_shared",
-            "system_learning.bus",
+            "agentic_core.L6_system_learning.bus",
             "ops_scripts.ci.run_contract_gates",
             "tools.adg.scanner",
             "infrastructure.sdks_mcps.client_wrappers",

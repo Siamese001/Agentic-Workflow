@@ -19,7 +19,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 # Lazy import to avoid L0->L_PG gravity violation
 def _get_prompt_bom():
-    from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM
+    from agentic_core.prompt_governance.contracts import PromptBOM
 
     return PromptBOM
 

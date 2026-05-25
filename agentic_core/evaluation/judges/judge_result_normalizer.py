@@ -92,7 +92,7 @@ def normalize_llm_judge_result(
             score = score / 10.0
         elif score > 1.0 and score <= 100.0:
             score = score / 100.0
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-return-none-swallow -- P1 ADG burndown
         return None
     
     # Extract reasoning

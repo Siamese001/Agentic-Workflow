@@ -35,7 +35,7 @@ import numpy as np
 # REMOVED: _emit_stores_embedding("p4", "w1_strong_determinism_test", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "w1_strong_determinism_test", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "w1_strong_determinism_test", "exec_snapshot_link")
-from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+from agentic_core.L6_system_learning.embedding_service_factory import EmbeddingServiceFactory
 
 # REMOVED: _emit_emits_metric_event("w1_strong_determinism_test", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("w1_strong_determinism_test", "p4obs", "metric_2")

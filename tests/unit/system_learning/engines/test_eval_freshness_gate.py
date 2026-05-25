@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from system_learning.engines.eval_freshness_gate import (
+from agentic_core.L6_system_learning.eval_freshness_gate import (
     EvalFreshnessGate,
     FreshnessPolicy,
 )

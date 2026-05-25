@@ -17,7 +17,7 @@ from typing import Any
 
 import pytest
 
-from system_learning.runtime_adg.app_route_contracts import (
+from agentic_core.L6_system_learning.app_route_contracts import (
     AppRouteContract,
     BUILD_TIME_COMPILER_CONTRACTS,
     build_build_time_compiler_contract,

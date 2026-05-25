@@ -30,7 +30,7 @@ from tools.reports.adg_burndown_report import (
     _latest_gate_results,
     _load_burndown,
     _load_gate_results,
-    _status_glyph,
+    _verdict_display,
 )
 
 CANVAS_BASENAME = "adg-ci-burndown.canvas.tsx"
@@ -80,22 +80,22 @@ def build_canvas_payload(
         for band in ("P0", "P1", "P2", "P3")
     ]
 
+    from tools.reports.gate_signal_catalog import display_verdict_sub, needs_fix
+
     blockers: list[list[str | int]] = []
     for g in gates:
-        cls = str(g.get("classification", "pass"))
-        if cls not in ("blocked", "regressed"):
+        if not needs_fix(g):
             continue
         blockers.append(
             [
                 str(g.get("gate_id", "?")),
                 str(g.get("band", "?")),
-                str(g.get("enforcement", "?")),
-                _status_glyph(cls),
+                display_verdict_sub(g),
                 int(g.get("violation_count", 0)),
                 " ".join(_describe(g).split())[:72],
             ]
         )
-    blockers.sort(key=lambda r: (-int(r[4]), str(r[0])))
+    blockers.sort(key=lambda r: (-int(r[3]), str(r[0])))
 
     try:
         gate_label = gate_results_path.relative_to(REPO.resolve()).as_posix()
@@ -211,7 +211,7 @@ export default function AdgCiBurndownCanvas() {{
               framed
               striped
               stickyHeader
-              headers={{["Gate", "Band", "Enf", "Status", "Violations", "Description"]}}
+              headers={{["Gate", "Band", "Enf", "Verdict", "Findings", "Description"]}}
               rowTone={{DATA.blockers.map(() => "danger" as const)}}
               rows={{DATA.blockers.map((row: Row) => [
                 String(row[0]),

@@ -669,7 +669,7 @@ class CrossLayerCoherenceManager:
 
             # Wave B-7: Emit cache coherence violations for drift detection
             try:
-                from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+                from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
                 bridge = get_sl_memory_bridge()
 

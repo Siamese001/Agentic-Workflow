@@ -38,17 +38,16 @@ class TestInvariantObserverLaw:
     """
 
     def test_surface_isolation_validator_exists(self):
-        from system_learning.engines import surface_isolation_validator  # noqa: F401
+        from agentic_core.L6_system_learning.engines import surface_isolation_validator  # noqa: F401
 
     def test_stage_barrier_enforcer_exists(self):
-        from system_learning.engines import stage_barrier_enforcer  # noqa: F401
+        from agentic_core.L6_system_learning.engines import stage_barrier_enforcer  # noqa: F401
 
     def test_lineage_fields_documented(self):
         # The lineage binder must expose constants or accessors for the 5
         # lineage fields. We assert the module is importable and has at
         # least one symbol containing each lineage field name.
-        mod = importlib.import_module(
-            "system_learning.engines.meta_learning_replay_binding"
+        mod = importlib.import_module("agentic_core.L6_system_learning.engines.meta_learning_replay_binding"
         )
         symbols = " ".join(dir(mod)).lower()
         for field in ("trace", "run", "replay"):
@@ -68,17 +67,17 @@ class TestInvariantEvalBeforeLearning:
     """
 
     def test_eval_freshness_gate_exists(self):
-        from system_learning.engines.eval_freshness_gate import (  # noqa: F401
+        from agentic_core.L6_system_learning.eval_freshness_gate import (  # noqa: F401
             EvalFreshnessGate,
             EvalFreshnessViolation,
             FreshnessDecision,
         )
 
     def test_eval_gated_l4_writer_exists(self):
-        from system_learning.engines import eval_gated_l4_writer  # noqa: F401
+        from agentic_core.L6_system_learning.engines import eval_gated_l4_writer  # noqa: F401
 
     def test_freshness_gate_blocks_missing_eval(self):
-        from system_learning.engines.eval_freshness_gate import (
+        from agentic_core.L6_system_learning.eval_freshness_gate import (
             EvalFreshnessGate,
             FreshnessPolicy,
         )
@@ -114,7 +113,7 @@ class TestInvariantRubricIntegrity:
     """
 
     def test_human_calibration_engine_exists(self):
-        from system_learning.engines import human_calibration_engine  # noqa: F401
+        from agentic_core.L6_system_learning.engines import human_calibration_engine  # noqa: F401
 
     @pytest.mark.parametrize(
         "rubric_path",
@@ -160,7 +159,7 @@ class TestInvariantNoSilentPromote:
         assert "sealed_at" in field_names, "missing seal/signer timestamp"
 
     def test_approval_gauntlet_engine_exists(self):
-        from system_learning.engines import approval_gauntlet_engine  # noqa: F401
+        from agentic_core.L6_system_learning.engines import approval_gauntlet_engine  # noqa: F401
 
 
 # --------------------------------------------------------------------------
@@ -179,12 +178,12 @@ class TestInvariantNoPartialBypass:
         # are asserting v6 invariant presence at the file/contract layer,
         # not exercising the module.
         spec = importlib.util.find_spec(
-            "system_learning.engines.system_learning_admission_gate"
+            "agentic_core.L6_system_learning.engines.system_learning_admission_gate"
         )
         assert spec is not None, "admission gate module missing"
 
     def test_gauntlet_gate_exists(self):
-        from system_learning.engines import gauntlet_gate  # noqa: F401
+        from agentic_core.L6_system_learning.engines import gauntlet_gate  # noqa: F401
 
 
 # --------------------------------------------------------------------------
@@ -198,13 +197,13 @@ class TestInvariantUwgSoleInkPath:
     """
 
     def test_l4_state_writer_exists(self):
-        from system_learning.engines import l4_state_writer  # noqa: F401
+        from agentic_core.L6_system_learning.engines import l4_state_writer  # noqa: F401
 
     def test_l4_audit_reader_exists(self):
-        from system_learning.engines import l4_audit_reader  # noqa: F401
+        from agentic_core.L6_system_learning.engines import l4_audit_reader  # noqa: F401
 
     def test_l4_version_store_exists(self):
-        from system_learning.engines import l4_version_store  # noqa: F401
+        from agentic_core.L6_system_learning.engines import l4_version_store  # noqa: F401
 
     def test_no_direct_l4_writer_outside_uwg(self):
         """Any module named like *l4_state_writer* must live under
@@ -237,14 +236,13 @@ class TestInvariantFutureRunOnly:
     """
 
     def test_meta_learning_state_digest_exists(self):
-        from system_learning.engines import meta_learning_state_digest  # noqa: F401
+        from agentic_core.L6_system_learning.engines import meta_learning_state_digest  # noqa: F401
 
     def test_replay_binding_is_read_only_surface(self):
         # The replay binding module must not expose a "mutate"-style
         # function that writes back into the completed run. We assert
         # absence of obvious mutation entry points.
-        mod = importlib.import_module(
-            "system_learning.engines.meta_learning_replay_binding"
+        mod = importlib.import_module("agentic_core.L6_system_learning.engines.meta_learning_replay_binding"
         )
         forbidden = {"rewrite_completed_run", "mutate_run", "patch_completed_trace"}
         leaked = forbidden & set(dir(mod))

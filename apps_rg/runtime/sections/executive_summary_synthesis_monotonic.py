@@ -27,6 +27,16 @@ JUDGE_X2_REPAIR_WAIVE_SHRINK_GATE_IDS: frozenset[str] = frozenset(
     }
 )
 
+JUDGE_REGEN_COVERAGE_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "x2_sentence_coverage_pass",
+        "x2_unsupported_claim_zero",
+        "x2_claim_coverage_accounting_consistent",
+        "x2_material_clause_coverage_100",
+        "x2_input_usage_accounting_consistent",
+    }
+)
+
 JUDGE_X2_REPAIR_ALLOW_SUBSTANCE_REGRESSION_GATE_IDS: frozenset[str] = frozenset(
     {
         "x2_executive_summary_synthesis_quality",
@@ -69,6 +79,8 @@ def _prior_failed_sentence_count(prior_reject_reason: str, gate_ids: frozenset[s
 
 
 def _prior_needs_evidence_weave(prior_reject_reason: str, gate_ids: frozenset[str]) -> bool:
+    if gate_ids & JUDGE_REGEN_COVERAGE_GATE_IDS:
+        return True
     if gate_ids & {
         "x2_exec_summary_evidence_utilization",
         "x2_claim_ledger_materialized_or_gap_excused",

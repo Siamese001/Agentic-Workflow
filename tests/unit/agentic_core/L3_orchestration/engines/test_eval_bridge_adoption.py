@@ -154,14 +154,14 @@ class TestBuildSealedL2Artifact:
 
 class TestShadowEvalIngester:
     def setup_method(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             reset_shadow_eval_ingester,
         )
 
         reset_shadow_eval_ingester()
 
     def test_enqueue_and_drain(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             ShadowEvalPacket,
             enqueue_shadow_eval_packet,
             get_shadow_eval_ingester,
@@ -176,7 +176,7 @@ class TestShadowEvalIngester:
         assert drained[0].packet_id == "sep-001"
 
     def test_qsize_reflects_queue_depth(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             ShadowEvalPacket,
             enqueue_shadow_eval_packet,
             get_shadow_eval_ingester,
@@ -188,7 +188,7 @@ class TestShadowEvalIngester:
         assert get_shadow_eval_ingester().qsize() == 3
 
     def test_drained_packets_have_future_run_scope(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             ShadowEvalPacket,
             enqueue_shadow_eval_packet,
             get_shadow_eval_ingester,
@@ -207,7 +207,7 @@ class TestShadowEvalIngester:
 
 class TestEvaluateAndEmitAdoption:
     def setup_method(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             reset_async_eval_ingester,
             reset_shadow_eval_ingester,
         )
@@ -220,7 +220,7 @@ class TestEvaluateAndEmitAdoption:
         from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (
             evaluate_and_emit,
         )
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_shadow_eval_ingester,
         )
 
@@ -233,7 +233,7 @@ class TestEvaluateAndEmitAdoption:
         from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (
             evaluate_and_emit,
         )
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_async_eval_ingester,
         )
 
@@ -257,7 +257,7 @@ class TestEvaluateAndEmitAdoption:
         from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (
             evaluate_and_emit,
         )
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_shadow_eval_ingester,
         )
 
@@ -271,7 +271,7 @@ class TestEvaluateAndEmitAdoption:
         from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (
             evaluate_and_emit,
         )
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_shadow_eval_ingester,
         )
 
@@ -283,7 +283,7 @@ class TestEvaluateAndEmitAdoption:
         from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (
             evaluate_and_emit,
         )
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_shadow_eval_ingester,
         )
 
@@ -303,7 +303,7 @@ class TestEvaluateAndEmitAdoption:
             WeakSupportDisposition,
             evaluate_and_emit,
         )
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_shadow_eval_ingester,
         )
 
@@ -332,7 +332,7 @@ class TestL6IngestedProbe:
     """Verify the l6_ingested logic in governed_app_runner uses canonical ingesters."""
 
     def setup_method(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             reset_async_eval_ingester,
             reset_shadow_eval_ingester,
         )
@@ -341,7 +341,7 @@ class TestL6IngestedProbe:
         reset_shadow_eval_ingester()
 
     def test_true_when_shadow_packet_queued(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             ShadowEvalPacket,
             enqueue_shadow_eval_packet,
             get_async_eval_ingester,
@@ -354,7 +354,7 @@ class TestL6IngestedProbe:
         assert l6_ingested is True
 
     def test_true_when_async_packet_queued(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             AsyncEvalPacket,
             get_async_eval_ingester,
             get_shadow_eval_ingester,
@@ -386,7 +386,7 @@ class TestL6IngestedProbe:
         assert l6_ingested is True
 
     def test_false_when_both_queues_empty(self) -> None:
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             get_async_eval_ingester,
             get_shadow_eval_ingester,
         )

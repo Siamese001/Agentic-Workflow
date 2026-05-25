@@ -71,6 +71,8 @@ def _infer_layer(path: str) -> str:
         except (ValueError, TypeError, RuntimeError) as e:
             print(f"[ADG] Warning: Failed to load layer overrides: {e}")
 
+    if "system_learning" in path or "L6_system_learning" in path:
+        return "L6"
     for layer in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
         if f"/{layer}_" in path or f"\\{layer}_" in path or f"/{layer}/" in path:
             return layer

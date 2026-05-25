@@ -27,7 +27,7 @@ from agentic_core.L6_observability.utils.evaluation.evaluation_learning_bridge i
     get_evaluation_learning_bridge,
     reset_evaluation_learning_bridge,
 )
-from system_learning.engines.meta_learning_bus import MetaLearningBus
+from agentic_core.L6_system_learning.meta_learning_bus import MetaLearningBus
 
 
 @dataclass
