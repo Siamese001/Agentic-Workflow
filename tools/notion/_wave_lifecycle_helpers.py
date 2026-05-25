@@ -16,13 +16,21 @@ Plan: notion-wave-lifecycle-autosync-f4a2b8 (W1.P1.1).
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Iterable
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_CURSOR_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts"
+if str(_CURSOR_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_CURSOR_SCRIPTS))
+
+from _notion_plans_status_check import CANONICAL_STATUSES  # noqa: E402
+
 # ---------------------------------------------------------------------------
-# Status taxonomy — aligned with .windsurf/rules/notion-plans-taxonomy.md
-# and memory 2fe76ae0 (canonical Plans DB Status options).
+# Status taxonomy — SSOT: _notion_plans_status_check.CANONICAL_STATUSES
 # ---------------------------------------------------------------------------
 
 STATUS_NOT_STARTED = "Not Started"
@@ -32,18 +40,6 @@ STATUS_COMPLETED = "Completed"
 STATUS_RETIRED = "Retired"
 STATUS_ARCHIVED = "Archived"
 STATUS_LOWER_PRIORITY = "Lower Priority"
-
-CANONICAL_STATUSES: frozenset[str] = frozenset(
-    {
-        STATUS_NOT_STARTED,
-        STATUS_IN_PROGRESS,
-        STATUS_WAITING,
-        STATUS_COMPLETED,
-        STATUS_RETIRED,
-        STATUS_ARCHIVED,
-        STATUS_LOWER_PRIORITY,
-    }
-)
 
 # Statuses where WAVE_START should flip to In Progress.
 # Already-In-Progress / Completed / Retired / Archived stay put.

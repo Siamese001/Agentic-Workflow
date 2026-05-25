@@ -9,22 +9,21 @@ code in .windsurf/scripts/_notion_plans_status_check.py and related files.
 W1 SCOPE: Pure extraction only. No new statuses. No policy changes.
 """
 
-from typing import Set, Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
+from _notion_plans_status_check import (  # noqa: E402
+    CANONICAL_STATUSES as _CANONICAL_STATUSES_FS,
+    FORBIDDEN_PLANS_STATUSES,
+    PLANS_DATA_SOURCE_ID,
+    PLANS_DB_ID,
+    STALE_EQUIVALENTS,
+)
 
 # ============================================================================
-# CANONICAL STATUS VALUES (from notion-plans-taxonomy.md)
+# CANONICAL STATUS VALUES (SSOT: _notion_plans_status_check.py)
 # ============================================================================
 
-CANONICAL_STATUSES: Set[str] = {
-    "In Progress",
-    "Not Started",
-    "Lower Priority",
-    "Waiting",
-    "Completed",
-    "Retired",
-    "Archived",
-}
+CANONICAL_STATUSES: Set[str] = set(_CANONICAL_STATUSES_FS)
 
 # Status option IDs (from API introspection)
 STATUS_IDS: Dict[str, str] = {
@@ -36,20 +35,6 @@ STATUS_IDS: Dict[str, str] = {
     "Retired": "3f684881-e5f5-4104-9c28-54e836e71305",
     "Archived": "a33b8816-b222-4db7-922e-f09c260058bf",
 }
-
-# STALE statuses that should not be used (auto-mapped)
-STALE_EQUIVALENTS: Dict[str, str] = {
-    "Draft": "Not Started",
-    "🟡Draft": "Not Started",
-    "Live": "In Progress",
-    "🟢Live": "In Progress",
-    "Active": "In Progress",
-    "Proposed": "Not Started",
-    "Deprioritized": "Lower Priority",
-    "Deferred": "Lower Priority",
-}
-
-FORBIDDEN_PLANS_STATUSES: frozenset[str] = frozenset({"Active", "Deprioritized"})
 
 # Color mapping for display (not for API writes)
 STATUS_COLORS: Dict[str, str] = {
@@ -91,9 +76,9 @@ PLANS_DB_PROPERTIES: Dict[str, str] = {
 # DATABASE IDs
 # ============================================================================
 
-# Plans DB (reads and writes)
-PLANS_DB_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
-PLANS_DB_DATABASE_ID: str = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
+# Plans DB (reads and writes) — ids from SSOT
+PLANS_DB_DATA_SOURCE_ID: str = PLANS_DATA_SOURCE_ID
+PLANS_DB_DATABASE_ID: str = PLANS_DB_ID
 
 # Backlog Items DB (reads)
 BACKLOG_DB_DATA_SOURCE_ID: str = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"

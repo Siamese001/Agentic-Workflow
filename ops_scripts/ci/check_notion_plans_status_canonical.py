@@ -53,6 +53,16 @@ from typing import Any, Set
 
 # Repo root for ledger path resolution
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+_CURSOR_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts"
+if str(_CURSOR_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_CURSOR_SCRIPTS))
+
+from _notion_plans_status_check import (  # noqa: E402
+    CANONICAL_STATUSES as _CANONICAL_STATUSES_FS,
+    FORBIDDEN_PLANS_STATUSES,
+    PLANS_DATA_SOURCE_ID,
+    STALE_EQUIVALENTS,
+)
 
 # Deferred scope ledger path
 _DEFERRED_SCOPE_LEDGER = _REPO_ROOT / "artifacts" / "ledgers" / "deferred_scope_calibration.sqlite"
@@ -62,33 +72,14 @@ _NOTION_BASE = "https://api.notion.com/v1"
 _NOTION_API_VERSION = "2025-09-03"
 _NOTION_TIMEOUT_S = 30
 
-# Plans DB data_source_id (from memory 2fe76ae0)
-_PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+# Plans DB data_source_id (SSOT)
+_PLANS_DATA_SOURCE_ID = PLANS_DATA_SOURCE_ID
 
-# Canonical status values - ONLY these are allowed
-CANONICAL_STATUSES: Set[str] = {
-    "In Progress",
-    "Not Started",
-    "Lower Priority",
-    "Waiting",
-    "Completed",
-    "Retired",
-    "Archived",
-}
+# Canonical status values - ONLY these are allowed (SSOT)
+CANONICAL_STATUSES: Set[str] = set(_CANONICAL_STATUSES_FS)
 
-# Stale status values that must NOT be used
-STALE_STATUSES: Set[str] = {
-    "Draft",
-    "🟡Draft",
-    "🔵Completed",
-    "Live",
-    "Active",
-    "Proposed",
-    "Complete",
-    "Superseded",
-    "Deprioritized",
-    "Deferred",
-}
+# Stale status values that must NOT be used (SSOT keys + forbidden)
+STALE_STATUSES: Set[str] = set(STALE_EQUIVALENTS.keys()) | set(FORBIDDEN_PLANS_STATUSES)
 
 # Status discipline: "In Progress" with these conditions triggers WARN
 STATUS_IN_PROGRESS = "In Progress"
@@ -382,21 +373,7 @@ def _calculate_oldest_age_days(items: list[dict[str, Any]]) -> int | None:
 def _check_schema_validity() -> list[dict[str, Any]]:
     """Check that canonical/stale status sets are valid."""
     violations = []
-    
-    # Check that canonical set is exactly what we expect
-    expected_canonical = {
-        "In Progress", "Not Started", "Lower Priority", "Waiting",
-        "Completed", "Retired", "Archived"
-    }
-    
-    if CANONICAL_STATUSES != expected_canonical:
-        violations.append({
-            "severity": "CRITICAL",
-            "violation_type": "CANONICAL_SET_MISMATCH",
-            "error": "CANONICAL_STATUSES mismatch",
-            "detail": f"Expected {expected_canonical}, got {CANONICAL_STATUSES}"
-        })
-    
+
     # Check no overlap between canonical and stale
     overlap = CANONICAL_STATUSES & STALE_STATUSES
     if overlap:

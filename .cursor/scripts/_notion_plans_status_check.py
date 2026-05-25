@@ -110,10 +110,20 @@ STALE_EQUIVALENTS: dict[str, str] = {
     # 2026-05-10: "Deprioritized" / "Deferred" → "Lower Priority" (same option ID).
     "Deprioritized": "Lower Priority",
     "Deferred": "Lower Priority",
+    "Complete": "Completed",
+    "Superseded": "Retired",
 }
 
 # Explicitly forbidden — never canonical; must not be written to Notion API.
 FORBIDDEN_PLANS_STATUSES: frozenset[str] = frozenset({"Active", "Deprioritized"})
+
+# Lowercase tokens for on-disk frontmatter / repair tooling.
+CANONICAL_STATUSES_LOWER: frozenset[str] = frozenset(s.lower() for s in CANONICAL_STATUSES)
+
+# Plans rows requiring a non-empty AI Summary (excludes terminal statuses).
+PLANS_STATUSES_AI_SUMMARY_ENFORCED: frozenset[str] = frozenset(
+    s for s in CANONICAL_STATUSES if s not in ("Retired", "Archived")
+)
 
 # Property names that map to the Plans Status field.  Exact match required —
 # Notion property names are case-sensitive.

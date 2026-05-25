@@ -19,28 +19,15 @@ from pathlib import Path
 from typing import Any, Iterable
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_WINDSURF_SCRIPTS = _REPO_ROOT / ".windsurf" / "scripts"
-if str(_WINDSURF_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_WINDSURF_SCRIPTS))
+_CURSOR_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts"
+if str(_CURSOR_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_CURSOR_SCRIPTS))
 
-try:
-    from _notion_plans_status_check import (  # type: ignore
-        CANONICAL_STATUSES,
-        PLANS_DATA_SOURCE_ID,
-        STALE_EQUIVALENTS,
-    )
-except ImportError:
-    CANONICAL_STATUSES = frozenset({
-        "In Progress",
-        "Not Started",
-        "Lower Priority",
-        "Waiting",
-        "Completed",
-        "Retired",
-        "Archived",
-    })
-    PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-    STALE_EQUIVALENTS: dict[str, str] = {}
+from _notion_plans_status_check import (  # noqa: E402
+    CANONICAL_STATUSES,
+    PLANS_DATA_SOURCE_ID,
+    STALE_EQUIVALENTS,
+)
 
 _NOTION_VERSION = "2025-09-03"
 _QUERY_URL = f"https://api.notion.com/v1/data_sources/{PLANS_DATA_SOURCE_ID}/query"

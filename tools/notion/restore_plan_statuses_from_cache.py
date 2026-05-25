@@ -40,9 +40,11 @@ from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
+from _notion_plans_status_check import CANONICAL_STATUSES, STALE_EQUIVALENTS  # noqa: E402
 from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
 
 try:
@@ -66,29 +68,9 @@ QUERY_URL = f"{NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35  # ~3 req/s to stay under Notion rate limit
 
-CANONICAL_STATUSES = {
-    "In Progress",
-    "Not Started",
-    "Lower Priority",
-    "Waiting",
-    "Completed",
-    "Retired",
-    "Archived",
-}
-
-_STALE_STATUS_ALIASES: dict[str, str] = {
-    "Deferred": "Lower Priority",
-    "Deprioritized": "Lower Priority",
-    "Active": "In Progress",
-    "Live": "In Progress",
-    "Draft": "Not Started",
-    "Proposed": "Not Started",
-}
-
-
 def _normalize_status(status: str) -> str:
     """Map legacy cache/live status strings to canonical Plans DB options."""
-    return _STALE_STATUS_ALIASES.get(status, status)
+    return STALE_EQUIVALENTS.get(status, status)
 
 
 # ---------------------------------------------------------------------------

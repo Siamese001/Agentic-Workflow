@@ -32,12 +32,18 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_BASE,
     PLANS_DATA_SOURCE_ID,
+)
+from _notion_plans_status_check import (  # noqa: E402
+    CANONICAL_STATUSES,
+    CANONICAL_STATUSES_LOWER,
+    STALE_EQUIVALENTS,
 )
 
 sys.path.insert(0, str(REPO_ROOT))
@@ -46,24 +52,13 @@ from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: 
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 TIMEOUT = 30.0
 
-CANONICAL = {"in progress", "not started", "lower priority", "waiting", "completed", "retired", "archived"}
+CANONICAL = CANONICAL_STATUSES_LOWER
 
 # Map words found in plan files to canonical Notion status names
-_STATUS_MAP = {
-    "in progress": "In Progress",
-    "live": "In Progress",
-    "not started": "Not Started",
-    "draft": "Not Started",
-    "active": "In Progress",
-    "proposed": "Not Started",
-    "deprioritized": "Lower Priority",
-    "deferred": "Lower Priority",
-    "waiting": "Waiting",
-    "completed": "Completed",
+_STATUS_MAP: dict[str, str] = {
+    **{s.lower(): s for s in CANONICAL_STATUSES},
+    **{k.lower(): v for k, v in STALE_EQUIVALENTS.items() if k.isascii() and not k.startswith("🟢")},
     "done": "Completed",
-    "retired": "Retired",
-    "superseded": "Retired",
-    "archived": "Archived",
 }
 
 

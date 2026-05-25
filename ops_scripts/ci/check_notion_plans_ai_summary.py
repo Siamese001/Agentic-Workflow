@@ -46,16 +46,21 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 from typing import Any, Iterable
 
-_PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-_ENFORCED_STATUSES: frozenset[str] = frozenset({
-    "In Progress",
-    "Not Started",
-    "Lower Priority",
-    "Waiting",
-    "Completed",
-})
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_CURSOR_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts"
+if str(_CURSOR_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_CURSOR_SCRIPTS))
+
+from _notion_plans_status_check import (  # noqa: E402
+    PLANS_DATA_SOURCE_ID,
+    PLANS_STATUSES_AI_SUMMARY_ENFORCED,
+)
+
+_PLANS_DATA_SOURCE_ID = PLANS_DATA_SOURCE_ID
+_ENFORCED_STATUSES = PLANS_STATUSES_AI_SUMMARY_ENFORCED
 _NOTION_VERSION = "2025-09-03"
 _QUERY_URL = f"https://api.notion.com/v1/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
 
