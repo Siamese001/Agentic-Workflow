@@ -126,7 +126,7 @@ def _invoke_apps_research(
 
     _log.info("[research_facade] Invoking: %s", " ".join(cmd))
     try:
-        completed = subprocess.run(
+        completed = subprocess.run(  # guardian: allow-chokepoint-bypass -- research facade shells out to apps_research CLI entrypoint; bounded argv
             cmd,
             capture_output=True,
             text=True,

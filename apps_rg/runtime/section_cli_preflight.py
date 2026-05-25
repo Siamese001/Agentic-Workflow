@@ -42,7 +42,7 @@ def _try_start_qwen_container(container: str) -> tuple[bool, str]:
     if not shutil.which("docker"):
         return False, "docker CLI not on PATH"
     try:
-        proc = subprocess.run(
+        proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- local vLLM preflight docker start; operator-initiated CLI only
             ["docker", "start", container],
             capture_output=True,
             text=True,
@@ -63,7 +63,7 @@ def _docker_container_running(container: str) -> tuple[bool, str]:
     if not shutil.which("docker"):
         return False, "docker CLI not on PATH; cannot verify local Qwen vLLM container"
     try:
-        proc = subprocess.run(
+        proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- local vLLM preflight docker inspect; read-only container state check
             ["docker", "inspect", "-f", "{{.State.Running}}", container],
             capture_output=True,
             text=True,

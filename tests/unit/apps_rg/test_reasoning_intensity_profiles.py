@@ -85,7 +85,7 @@ def test_scratchpad_raises_before_transport(monkeypatch: pytest.MonkeyPatch) -> 
 def test_orchestration_not_forwarded_snapshot_on_http_body() -> None:
     captured: dict = {}
 
-    def _stub(payload: dict) -> ProviderResult:
+    def _stub(payload: dict, **_: object) -> ProviderResult:
         captured.clear()
         captured.update(payload)
         return ProviderResult(

@@ -131,13 +131,18 @@ def test_main_r1a_before_r1b_order(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
     monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
     monkeypatch.setattr(
-        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-        "run_integrated_single_action_spine",
+        "apps_rg.cache.whole_run_entrypoint_preflight._semantic_cache_r1b_enabled",
+        lambda: True,
+    )
+    monkeypatch.setattr(
+        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
         lambda **k: order.append("PIPELINE") or _fake_outcome(tmp_path),
     )
-    monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", lambda *a, **k: None)
-    monkeypatch.setattr("apps_rg.runtime.run_bundle_index", "emit_integrated_run_bundle_index", lambda *a, **k: None)
-    monkeypatch.setattr("apps_rg.runtime.runtime_proof_layout", "find_repo_root", lambda: tmp_path)
+    monkeypatch.setattr("apps_rg.cache.r1a_adapter.stamp_r1a_cache", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "tests.helpers.whole_run_spine_harness.emit_integrated_run_bundle_index",
+        lambda *a, **k: None,
+    )
 
     def fake_r1b(**kwargs):
         order.append("R1B")
@@ -191,7 +196,15 @@ def _fake_outcome(tmp_path: Path):
 def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from tests.helpers import whole_run_spine_harness as harness
 
+    monkeypatch.setattr(
+        "tests.helpers.whole_run_spine_harness.emit_integrated_run_bundle_index",
+        lambda *a, **k: None,
+    )
     monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight._semantic_cache_r1b_enabled",
+        lambda: True,
+    )
     pipeline_called: list[bool] = []
 
     def fake_pipeline(**kwargs):
@@ -199,8 +212,7 @@ def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyP
         return _fake_outcome(tmp_path)
 
     monkeypatch.setattr(
-        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-        "run_integrated_single_action_spine",
+        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
         fake_pipeline,
     )
 
@@ -226,7 +238,7 @@ def test_main_r1b_hit_skips_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyP
         )
 
     with patch(
-        "apps_rg.cache.whole_run_entrypoint_preflight.run_whole_run_cache_preflight",
+        "tests.helpers.whole_run_spine_harness.run_whole_run_cache_preflight",
         fake_whole_preflight,
     ):
         with patch(

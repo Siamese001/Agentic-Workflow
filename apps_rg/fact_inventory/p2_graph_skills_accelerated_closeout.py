@@ -520,7 +520,7 @@ def run_canonical_section_live(
         briefing_text,
     ]
     try:
-        proc = subprocess.run(
+        proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- receipt driver invokes apps_rg section CLI; bounded proof harness subprocess
             cmd,
             cwd=str(repo_root),
             capture_output=True,

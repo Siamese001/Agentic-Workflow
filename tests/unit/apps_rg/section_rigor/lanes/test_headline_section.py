@@ -13,6 +13,7 @@ HEADLINE_CRITICAL_GATES = frozenset(
         "x2_headline_exactly_one_line",
         "x2_headline_pipe_four_segments",
         "x2_headline_word_count_10_to_13",
+        "x2_headline_executive_length",
         "x2_headline_claim_ledger_rows_present",
         "x2_headline_claim_ledger_segment_decomposition",
         "x2_headline_segments_quality",

@@ -28,10 +28,13 @@ def test_resolve_cli_accepts_qwen_vllm() -> None:
     assert src == CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
 
-def test_health_gate_skipped_when_offline_stub(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_health_gate_not_skipped_when_offline_stub_env_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legacy stub env must not skip CLI health (live-qwen-only)."""
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
-    assert should_skip_qwen_vllm_health_gate() is True
-    require_qwen_vllm_cli_health(lane_provider="qwen_vllm", docker_restart_audit={})
+    monkeypatch.delenv("APPS_RG_SKIP_QWEN_VLLM_HEALTH", raising=False)
+    assert should_skip_qwen_vllm_health_gate() is False
 
 
 def _clear_health_skip_env(monkeypatch: pytest.MonkeyPatch) -> None:

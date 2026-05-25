@@ -262,9 +262,9 @@
       "brief_path": "artifacts/apps_rg/fixtures/gtm_presales_targeting/exec_summary_gtm_presales_brief.txt",
       "expected_role_family_ids": ["PARTNERSHIPS_GTM"],
       "weight_override": {
-        "track_actuarial_risk_derivatives": 0.05,
-        "track_data_tech_cloud_ml": 0.7,
-        "track_genai_agentic": 0.25
+        "track_actuarial_risk_derivatives": 0.1,
+        "track_data_tech_cloud_ml": 0.25,
+        "track_genai_agentic": 0.65
       },
       "expected_pillar_ids": [
         "pillar_gtm_presales_motion",

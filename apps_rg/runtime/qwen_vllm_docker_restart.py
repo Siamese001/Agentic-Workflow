@@ -257,7 +257,7 @@ def maybe_restart_qwen_vllm_for_apps_rg_run(
 
     cli_timeout = int(_float_env("APPS_RG_QWEN_VLLM_DOCKER_CLI_TIMEOUT_SECONDS", 240.0, lo=30.0, hi=600.0))
     try:
-        proc = subprocess.run(
+        proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- operator opt-in docker restart for local Qwen vLLM; not model inference egress
             ["docker", "restart", container],
             capture_output=True,
             text=True,

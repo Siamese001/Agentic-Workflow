@@ -53,6 +53,7 @@ SECTION_DEDICATED_TEST_FRAGMENTS: dict[str, tuple[str, ...]] = {
     ),
     "ibm_narrative": (
         "tests/unit/apps_rg/section_rigor/lanes/test_ibm_narrative_section.py",
+        "tests/unit/apps_rg/test_ibm_narrative_word_budget_x2.py",
         "tests/unit/apps_rg/runtime/validators/test_ibm_narrative_display_x2.py",
         "tests/unit/apps_rg/section_rigor/test_unify_ibm_companion_chain.py",
         "tests/_apps_contract/test_unify_ibm_lanes_e2e.py",

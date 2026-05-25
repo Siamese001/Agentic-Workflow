@@ -411,7 +411,7 @@ LocalTier = Literal["local_fast", "local_strong", "gemini_backstop"]
 # as deprecated aliases pointing at the SSOT QWEN_LOCAL_MODEL_ID — both
 # return the same value. New code should import QWEN_LOCAL_MODEL_ID from
 # agentic_core.L0_routing.config.model_registry directly.
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID  # noqa: E402, PLC0415
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID  # noqa: E402, PLC0415  # guardian: allow-layer-violation -- model_registry SSOT at L0 config; deprecated aliases point at canonical QWEN_LOCAL_MODEL_ID
 
 QWEN_7B_MODEL_ID: str = (
     QWEN_LOCAL_MODEL_ID  # Deprecated alias (was "Qwen/Qwen2.5-7B-Instruct" — model never served)

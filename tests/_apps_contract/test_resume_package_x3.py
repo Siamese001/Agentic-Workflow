@@ -33,6 +33,7 @@ _ART = RUNTIME_PROOFS
 def _resume_package_contract_test_harness(monkeypatch: pytest.MonkeyPatch) -> None:
     """Synthetic package fixtures are not product runs; disable fail-closed lane bar."""
     monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+    monkeypatch.setenv("APPS_RG_SECTION_RUNTIME_EXHAUST_KILL_SWITCH", "0")
     monkeypatch.delenv("APPS_RG_WHOLE_RUN_ENVELOPE", raising=False)
     monkeypatch.delenv("APPS_RG_CORRELATED_CLI_RUN", raising=False)
 
@@ -137,6 +138,24 @@ def _emit_lane_dir(rr: Path, lk: str) -> dict[str, str]:
     (ldir / "x1d_llm_judge_outputs.json").write_text(json.dumps({"judges": []}), encoding="utf-8")
     (ldir / "x2_gate_outputs.json").write_text(json.dumps(_mk_x2(True)), encoding="utf-8")
     (ldir / "x3_disposition.json").write_text(json.dumps(_x3_stub()), encoding="utf-8")
+    rid = str(l2.get("run_id") or f"synthetic_{lk}")
+    exhaust = {
+        "schema_version": "section_runtime_exhaust_bundle_v1",
+        "section_id": lk,
+        "run_id": rid,
+        "x3_code": X3_ALLOW_CODE,
+        "current_run_closed": True,
+        "created_after_exit": True,
+    }
+    (ldir / "runtime_exhaust_bundle.json").write_text(json.dumps(exhaust), encoding="utf-8")
+    (ldir / "exit_disposition_receipt.json").write_text(
+        json.dumps({"x3_code": X3_ALLOW_CODE, "run_id": rid}),
+        encoding="utf-8",
+    )
+    (ldir / "l6_shadow_handoff_receipt.json").write_text(
+        json.dumps({"section_id": lk, "run_id": rid, "handoff_sealed": True}),
+        encoding="utf-8",
+    )
 
     l6 = build_l6_shadow_handoff_dict(
         artifact_dir=ldir,

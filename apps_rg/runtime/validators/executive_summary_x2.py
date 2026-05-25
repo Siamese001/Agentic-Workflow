@@ -868,8 +868,29 @@ POST_X2_X1D_WIRING_GATE_IDS: frozenset[str] = frozenset(
         "x2_x1d_required_judges_present",
         "x2_x1d_raw_responses_written",
         "x2_x1d_schema_valid",
+        "x2_x1d_judge_packet_hash_uniform",
     }
 )
+
+
+def check_x1d_judge_packet_hash_uniform(
+    x1d_judges: list[dict[str, Any]] | None,
+) -> tuple[bool, str | None]:
+    """Every MODEL_BACKED judge must grade the same judge_packet_hash / input_hash."""
+    hashes: set[str] = set()
+    for judge in x1d_judges or []:
+        if not isinstance(judge, dict):
+            continue
+        if str(judge.get("evaluator_mode") or "") != "MODEL_BACKED":
+            continue
+        if judge.get("provider_blocked"):
+            continue
+        h = str(judge.get("judge_packet_hash") or judge.get("input_hash") or "").strip()
+        if h:
+            hashes.add(h)
+    if len(hashes) <= 1:
+        return True, None
+    return False, f"multiple judge_packet_hash values across panel: {sorted(hashes)}"
 
 
 def append_executive_summary_x1d_x2_gate_dicts(
@@ -932,6 +953,25 @@ def append_executive_summary_x1d_x2_gate_dicts(
             "judges present",
             "No X1D judges to validate.",
         )
+
+    hash_uniform_ok, hash_uniform_reason = check_x1d_judge_packet_hash_uniform(x1d_judges)
+    _row(
+        "x2_x1d_judge_packet_hash_uniform",
+        hash_uniform_ok,
+        sorted(
+            {
+                str(j.get("judge_packet_hash") or j.get("input_hash") or "")
+                for j in (x1d_judges or [])
+                if isinstance(j, dict)
+                and str(j.get("evaluator_mode") or "") == "MODEL_BACKED"
+                and not j.get("provider_blocked")
+            }
+            - {""}
+        ),
+        "single_hash",
+        hash_uniform_reason,
+    )
+
     return out
 
 

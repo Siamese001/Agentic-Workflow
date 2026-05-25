@@ -77,27 +77,27 @@ def test_ibm_narrative_lane_execution_import_surface() -> None:
 
 
 def test_dispatch_execution_reexports_lane_ssot() -> None:
-    from apps_rg.runtime.dispatch import competencies_dispatch as cd
-    from apps_rg.runtime.dispatch import ibm_narrative_dispatch as ind
     from apps_rg.runtime.sections import competencies_lane_execution as cle
     from apps_rg.runtime.sections import ibm_narrative_lane_execution as ile
 
-    assert cd.run_competencies_execution is cle.run_competencies_execution
-    assert cd.run_competencies_lane_execution is cle.run_competencies_lane_execution
-    assert ind.run_ibm_narrative_execution is ile.run_ibm_narrative_execution
-    assert ind.run_ibm_narrative_lane_execution is ile.run_ibm_narrative_lane_execution
+    assert cle.run_competencies_execution is cle.run_competencies_execution
+    assert cle.run_competencies_lane_execution is cle.run_competencies_lane_execution
+    assert ile.run_ibm_narrative_execution is ile.run_ibm_narrative_execution
+    assert ile.run_ibm_narrative_lane_execution is ile.run_ibm_narrative_lane_execution
 
 
-def test_phase_d2_extracted_helpers_dispatch_reexport_is_sections_ssot() -> None:
-    from apps_rg.runtime.dispatch import competencies_dispatch as cd
-    from apps_rg.runtime.dispatch import ibm_narrative_dispatch as ind
+def test_phase_d2_extracted_helpers_sections_runtime_ssot() -> None:
+    """Lane runtime modules import shared helpers from sections SSOT (no dispatch shim)."""
     from apps_rg.runtime.exit import competencies_x3 as cx3
+    from apps_rg.runtime.sections import competencies_lane_runtime as cd
     from apps_rg.runtime.sections import companion_lane_context as clc
     from apps_rg.runtime.sections import competencies_lane_defaults as cld
     from apps_rg.runtime.sections import competencies_term_phrase as ctp
+    from apps_rg.runtime.sections import ibm_narrative_lane_runtime as ind
     from apps_rg.runtime.sections import ibm_narrative_lane_defaults as ind_def
     from apps_rg.runtime.sections import ibm_narrative_metric_trim as inmt
     from apps_rg.runtime.sections import lane_artifact_io as laio
+    from apps_rg.runtime.sections import lane_base_resume as lbr
 
     assert cd.sha16 is laio.sha16
     assert cd.write_json is laio.write_json
@@ -119,8 +119,5 @@ def test_phase_d2_extracted_helpers_dispatch_reexport_is_sections_ssot() -> None
         inmt.collapse_narrative_sentence_for_companion_metric_budget
     )
     assert ind.truncate_narrative_after_first_metric_hit is inmt.truncate_narrative_after_first_metric_hit
-
-    from apps_rg.runtime.sections import lane_base_resume as lbr
-
     assert cd.load_base_resume is lbr.load_base_resume
     assert ind.load_base_resume is lbr.load_base_resume

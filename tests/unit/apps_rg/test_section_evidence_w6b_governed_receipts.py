@@ -136,15 +136,12 @@ def test_eligible_r1b_emits_commit_request_through_uwg(
         ),
         encoding="utf-8",
     )
-    (ad / "generated_resume.json").write_text("{}\n", encoding="utf-8")
-    (ad / "l2_output.json").write_text('{"section":"executive_summary"}\n', encoding="utf-8")
-    w7 = repo / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w7_fixtures"
-    w7.mkdir(parents=True)
-    src_w7 = Path(__file__).resolve().parents[3] / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w7_fixtures"
-    if src_w7.is_dir():
-        for f in src_w7.glob("*.json"):
-            (w7 / f.name).write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
-    else:
+    from tests.unit.apps_rg.w6_r1b_fixture import seed_w7_fixtures, write_w6_eligible_run_artifacts
+
+    write_w6_eligible_run_artifacts(ad)
+    try:
+        seed_w7_fixtures(repo)
+    except FileNotFoundError:
         pytest.skip("w7 fixtures not present in repo")
 
     gw = AppsRgR1BUwgGateway()

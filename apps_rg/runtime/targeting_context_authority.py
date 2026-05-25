@@ -97,6 +97,13 @@ def _compiled_prompt_message_text(content: str) -> str:
 def extract_material_targeting_from_compiled_prompt(content: str) -> tuple[str, str]:
     """Return (jd_text, briefing_text) embedded in provider-bound compiled prompt."""
     text = _compiled_prompt_message_text(content)
+    from apps_rg.runtime.sections.executive_summary_targeting_cap import (
+        extract_frozen_targeting_from_compiled_content,
+    )
+
+    jd, br = extract_frozen_targeting_from_compiled_content(text)
+    if jd or br:
+        return jd, br
     jd = ""
     br = ""
     m_jd = _JD_FIELD_RE.search(text)
@@ -106,6 +113,17 @@ def extract_material_targeting_from_compiled_prompt(content: str) -> tuple[str, 
     if m_br:
         br = m_br.group(1).strip()
     return jd, br
+
+
+def generation_material_context_from_bundle(bundle: MaterialTargetingBundle) -> GenerationMaterialContext:
+    """SSOT for L2 vs X1D parity — same frozen bundle Qwen PA and judges must use."""
+    jd = bundle.jd_text_frozen
+    br = bundle.briefing_text_frozen
+    return GenerationMaterialContext(
+        jd_text_material=jd,
+        briefing_text_material=br,
+        generation_material_digest=material_targeting_digest(jd, br),
+    )
 
 
 def generation_material_context_from_compiled_prompt(content: str) -> GenerationMaterialContext:
@@ -135,12 +153,21 @@ def evaluate_targeting_parity(
     bundle: MaterialTargetingBundle | None = None,
 ) -> dict[str, Any]:
     parity_match = generation.generation_material_digest == judge.judge_material_digest
+    bundle_matches_generation: bool | None = None
+    if bundle is not None:
+        bundle_matches_generation = (
+            material_targeting_digest(bundle.jd_text_frozen, bundle.briefing_text_frozen)
+            == generation.generation_material_digest
+        )
+        if bundle_matches_generation is False:
+            parity_match = False
     return {
         "schema": "targeting_context_parity_v1",
         "targeting_bundle_digest": bundle.bundle_digest if bundle else None,
         "generation_material_digest": generation.generation_material_digest,
         "judge_material_digest": judge.judge_material_digest,
         "parity_match": parity_match,
+        "bundle_matches_generation_material": bundle_matches_generation,
         "generation_jd_chars": len(generation.jd_text_material),
         "generation_briefing_chars": len(generation.briefing_text_material),
         "judge_jd_chars": len(judge.jd_text_material),
@@ -215,6 +242,7 @@ __all__ = [
     "MaterialTargetingBundle",
     "TargetingAuthorityError",
     "evaluate_targeting_parity",
+    "generation_material_context_from_bundle",
     "extract_material_targeting_from_compiled_prompt",
     "frozen_briefing_text",
     "frozen_jd_text",

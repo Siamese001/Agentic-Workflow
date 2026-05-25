@@ -180,7 +180,9 @@ def load_vigilance_types():
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "load_vigilance_types")
     import importlib
 
-    return importlib.import_module("agentic_core.L6_observability.types.vigilance_event_types")
+    return importlib.import_module(  # guardian: allow-layer-violation -- approved L0→L6 vigilance type seam; lazy import keeps L6 off L0 module-load graph
+        "agentic_core.L6_observability.types.vigilance_event_types",
+    )
 
 
 def get_vigilance_event_artifact():

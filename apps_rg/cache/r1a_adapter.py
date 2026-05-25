@@ -153,6 +153,6 @@ def prune_stale_r1a_entries(
         if stale:
             pruned.append(child.name)
             if not dry_run:
-                shutil.rmtree(child, ignore_errors=True)
+                shutil.rmtree(child, ignore_errors=True)  # guardian: allow-missing-hitl-on-irreversible -- stale cache-dir prune; ephemeral blueprint artifacts only
 
     return pruned

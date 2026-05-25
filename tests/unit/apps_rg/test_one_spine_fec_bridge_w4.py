@@ -214,7 +214,11 @@ def test_pa_consumes_fec_bridge_not_raw_proof_pool():
     assert pa_meta.get("proof_pool_type") == "augmented_skills_graph"
 
 
-def test_compile_blocked_without_fec_bridge():
+def test_compile_blocked_without_fec_bridge(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        "apps_rg.runtime.c0.product_runtime_guards.product_fec_bridge_mandatory",
+        lambda: True,
+    )
     payload = {
         "product_visible": True,
         "selected_fact_plan": {"facts": [{"fact_id": "bul_acme_001", "claim_text": "x"}]},

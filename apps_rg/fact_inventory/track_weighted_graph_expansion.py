@@ -791,14 +791,14 @@ def build_track_weighted_expansion(
 def capture_agentic_core_isolation(*, repo_root: Path | None = None) -> dict[str, Any]:
     """Record agentic_core git state and whether P1-W4 paths touched it."""
     root = repo_root or ROOT
-    diff = subprocess.run(
+    diff = subprocess.run(  # guardian: allow-chokepoint-bypass -- isolation receipt captures read-only git diff; no runtime tool egress
         ["git", "diff", "--name-only", "--", "agentic_core"],
         cwd=str(root),
         capture_output=True,
         text=True,
         check=False,
     )
-    status = subprocess.run(
+    status = subprocess.run(  # guardian: allow-chokepoint-bypass -- isolation receipt captures read-only git status; no runtime tool egress
         ["git", "status", "--short", "--", "agentic_core"],
         cwd=str(root),
         capture_output=True,

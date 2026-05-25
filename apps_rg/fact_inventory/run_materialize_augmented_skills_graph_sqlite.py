@@ -24,7 +24,9 @@ PLAN_ID = "graph-skills-sqlite-c03-w1"
 
 
 def _run_cmd(argv: list[str]) -> dict[str, Any]:
-    proc = subprocess.run(argv, cwd=str(ROOT), capture_output=True, text=True)
+    proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- offline materialization receipt runs bounded repo scripts only
+        argv, cwd=str(ROOT), capture_output=True, text=True
+    )
     return {
         "command": " ".join(argv),
         "exit_code": proc.returncode,

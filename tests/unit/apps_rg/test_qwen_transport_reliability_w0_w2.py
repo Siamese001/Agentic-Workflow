@@ -168,7 +168,7 @@ def test_disable_offline_stub_forces_live_preflight_path(tmp_path: Path, monkeyp
     ad.mkdir()
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
     monkeypatch.setenv("APPS_RG_QWEN_DISABLE_OFFLINE_STUB", "1")
-    assert offline_contract_stub_enabled() is True
+    assert offline_contract_stub_enabled() is False
     assert effective_offline_contract_stub_enabled() is False
 
     qtd.reset_transport_context_for_tests()
@@ -204,12 +204,13 @@ def test_disable_offline_stub_forces_live_preflight_path(tmp_path: Path, monkeyp
     assert (ad / qtd.SIDECAR_NAME).is_file()
 
 
-def test_offline_stub_without_disable_skips_http_probe(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_offline_stub_env_does_not_enable_contract_stub(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Legacy APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1 must not re-enable offline stub (live-qwen-only)."""
     ad = tmp_path / "stub_on"
     ad.mkdir()
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
     monkeypatch.delenv("APPS_RG_QWEN_DISABLE_OFFLINE_STUB", raising=False)
-    assert effective_offline_contract_stub_enabled() is True
+    assert effective_offline_contract_stub_enabled() is False
 
     qtd.reset_transport_context_for_tests()
     qtd.merge_transport_context(artifact_dir=str(ad.resolve()), run_id="r2", section_lane="competencies")
@@ -235,12 +236,12 @@ def test_offline_stub_without_disable_skips_http_probe(tmp_path: Path, monkeypat
         return qvp.ProviderResult(
             provider_requested="qwen_vllm",
             provider_attempted=True,
-            provider_available=False,
-            exact_provider_error="unit_stub_shortcut",
-            runtime_generation_status="BLOCKED",
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
             model=qvp.DEFAULT_QWEN_MODEL,
-            raw_model_output="",
-            provider_response=None,
+            raw_model_output="{}",
+            provider_response={"choices": []},
         )
 
     monkeypatch.setattr(
@@ -257,6 +258,5 @@ def test_offline_stub_without_disable_skips_http_probe(tmp_path: Path, monkeypat
     )
     lane_payload = tag_reasoning_lane(pl, "competencies")
     result = call_qwen_vllm(lane_payload, artifact_dir=ad, run_id="r2")
-    assert probes["n"] == 0
+    assert probes["n"] == 1
     assert result.apps_rg_qwen_preflight_blocked is False
-    assert result.exact_provider_error == "unit_stub_shortcut"

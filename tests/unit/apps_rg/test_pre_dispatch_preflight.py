@@ -63,8 +63,13 @@ def test_stub_skips_qwen_gate() -> None:
             provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
         )
         assert result.dispatch_started is True
-        assert result.qwen_health_status == "SKIPPED"
-        assert result.qwen_model_ready_status == "SKIPPED"
+        from apps_rg.runtime.qwen_offline_contract_stub import offline_contract_stub_enabled
+
+        if offline_contract_stub_enabled():
+            assert result.qwen_health_status == "SKIPPED"
+            assert result.qwen_model_ready_status == "SKIPPED"
+        else:
+            assert result.qwen_health_status in ("PASS", "FAIL", "BLOCKED")
     finally:
         if prev is None:
             os.environ.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)

@@ -48,10 +48,14 @@ UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV = "APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS"
 
 
 def _resolved_x1d_judge_max_output_tokens(*, attempt: int = 1) -> int:
-    """Unified judge output token budget (transport parity)."""
+    """Unified judge output token budget (transport parity).
+
+    Uses ``APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS`` only — not legacy per-provider
+    anthropic-only overrides (``APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS``) so
+    provider max-token maps stay within the 2x spread contract.
+    """
     raw = (
         os.environ.get(UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV, "").strip()
-        or os.environ.get("APPS_RG_ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
         or os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
         or "4096"
     )

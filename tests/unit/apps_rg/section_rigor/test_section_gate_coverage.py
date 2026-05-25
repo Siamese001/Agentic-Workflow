@@ -9,10 +9,20 @@ import pytest
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from tests.unit.apps_rg.section_rigor.gate_coverage_registry import (
     SECTION_DEDICATED_TEST_FRAGMENTS,
+    RETIRED_GATE_REFS,
     uncovered_critical_gates,
     weak_fail_gate_ids_by_lane,
 )
 from tests.unit.apps_rg.section_rigor.lane_registry import LANE_CRITICAL_GATES, weak_fail_cases
+
+
+def _weak_fail_gate_allowed(lane: str, gate_id: str) -> bool:
+    critical = LANE_CRITICAL_GATES[lane]
+    if gate_id in critical:
+        return True
+    ref = RETIRED_GATE_REFS.get(gate_id)
+    replacement = str(ref.replacement_gate_id or "").strip() if ref else ""
+    return bool(replacement and replacement in critical)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -28,7 +38,7 @@ def test_every_generated_lane_has_critical_gates_and_dedicated_test_fragments() 
 def test_weak_fail_cases_reference_valid_lanes_and_critical_gates() -> None:
     for case in weak_fail_cases():
         assert case.lane in GENERATED_LANES
-        assert case.gate_id in LANE_CRITICAL_GATES[case.lane], (
+        assert _weak_fail_gate_allowed(case.lane, case.gate_id), (
             f"{case.gate_id} not in critical gates for {case.lane}"
         )
 

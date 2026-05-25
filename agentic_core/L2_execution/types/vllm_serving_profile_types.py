@@ -167,7 +167,7 @@ _emit_validated_by_safety_plane("p1", "vllm_serving_profile_types", "safety_vali
 _emit_invokes_eval("p1", "vllm_serving_profile_types", "eval_call")
 _emit_proposal_commits_routing("p1", "vllm_serving_profile_types", "routing_commit")
 
-from agentic_core.L0_routing.config.model_registry import (  # noqa: E402, PLC0415
+from agentic_core.L0_routing.config.model_registry import (  # noqa: E402, PLC0415  # guardian: allow-layer-violation -- model_registry SSOT at L0 config; L2 vLLM profile reads canonical model IDs only
     QWEN_LOCAL_MAX_MODEL_LEN,
     QWEN_LOCAL_MODEL_ID,
 )

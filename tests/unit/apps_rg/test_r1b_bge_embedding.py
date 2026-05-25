@@ -48,7 +48,8 @@ def test_resolve_query_vector_falls_back_without_bge(monkeypatch: pytest.MonkeyP
     monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
     monkeypatch.setenv("EMBEDDING_ENABLED", "false")
     monkeypatch.setenv("HF_HOME", "/nonexistent")
-    vec, kind = resolve_query_vector("apps_rg|role|x|y", "deadbeef" * 8)
+    with patch("apps_rg.cache.r1b_bge_embedding.embed_text_bge", return_value=None):
+        vec, kind = resolve_query_vector("apps_rg|role|x|y", "deadbeef" * 8)
     assert kind == "pseudo_digest"
     assert len(vec) == 32
 
@@ -61,5 +62,8 @@ def test_resolve_query_vector_fail_closed_on_product_path(
     monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
     monkeypatch.setenv("EMBEDDING_ENABLED", "false")
     monkeypatch.setenv("HF_HOME", "/nonexistent")
-    with pytest.raises(AppsRgEmbeddingFailClosedError):
+    with (
+        patch("apps_rg.cache.r1b_bge_embedding.embed_text_bge", return_value=None),
+        pytest.raises(AppsRgEmbeddingFailClosedError),
+    ):
         resolve_query_vector("apps_rg|role|x|y", "deadbeef" * 8)

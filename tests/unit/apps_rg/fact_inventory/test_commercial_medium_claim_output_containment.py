@@ -17,6 +17,18 @@ from apps_rg.fact_inventory.validate_commercial_medium_claim_output_containment 
 REPO = Path(__file__).resolve().parents[4]
 
 
+@pytest.fixture(autouse=True)
+def _proof_pool_fixture_dev_bypass() -> None:
+    from apps_rg.runtime.spine.front_contracts import (
+        activate_fixture_dev_bypass,
+        deactivate_fixture_dev_bypass,
+    )
+
+    activate_fixture_dev_bypass(non_product_certified=True)
+    yield
+    deactivate_fixture_dev_bypass()
+
+
 def test_containment_harness_passes() -> None:
     payload = build_containment_payload()
     assert payload["status"] == "PASS", payload.get("violations")

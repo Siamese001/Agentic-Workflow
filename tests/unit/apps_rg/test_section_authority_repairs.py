@@ -36,7 +36,7 @@ def test_strip_credential_dump_removes_cert_sentence():
     assert ok is True
 
 
-def test_exec_summary_authority_repairs_graph_only_fallback_on_bad_llm_shape():
+def test_exec_summary_authority_repairs_graph_only_fallback_on_bad_llm_shape() -> None:
     bad = (
         "This executive has extensive experience in designing governed agentic AI platforms. "
         "This expertise led to productization generating $22M in IP-led revenue. "
@@ -48,8 +48,15 @@ def test_exec_summary_authority_repairs_graph_only_fallback_on_bad_llm_shape():
             "fact_id": "fact_engineering_platform_001",
             "claim_text": "Designed governed agentic AI platforms for regulated workflows.",
         },
+        {
+            "fact_id": "fact_engineering_platform_006",
+            "claim_text": "Platform commercialization generated $22M in IP-led revenue.",
+        },
         {"fact_id": "fact_governance_003", "claim_text": "Implemented Basel III/CCAR validation frameworks."},
         {"fact_id": "fact_exec_002", "claim_text": "Scaled ML engineering organization from 8 to 28."},
+        {"fact_id": "fact_quant_hpc_001", "claim_text": "Delivered HPC quant pipelines for risk analytics."},
+        {"fact_id": "fact_quant_hpc_003", "claim_text": "Applied stochastic calculus for derivatives pricing."},
+        {"fact_id": "fact_partner_001", "claim_text": "Led joint GTM motions with cloud alliance partners."},
     ]
     parsed = {
         "resume_display_text": bad,

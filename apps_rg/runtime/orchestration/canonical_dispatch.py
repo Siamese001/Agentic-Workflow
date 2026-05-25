@@ -442,8 +442,53 @@ def run_canonical_apps_rg_from_cli_primitives(
     )
 
 
+def _run_executive_summary_lane_from_cli(
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str = "",
+    jd: str = "",
+    job_description_ref: str = "",
+    job_description_text: str = "",
+    manual_brief: str = "",
+    resume_path: str = "",
+    source_resume_text: str = "",
+    generation_mode: str = "strategic_tailor",
+    artifact_dir: str = "",
+    lane_provider: str = "",
+    lane_provider_resolution_source: str | None = None,
+    lane_temperature: float = 0.45,
+    lane_x1d_judges: str = "gemini_pro,openai_chatgpt,anthropic_claude",
+    lane_mock_judges: bool = False,
+    lane_allow_test_mock_judges: bool = False,
+) -> dict[str, Any]:
+    """Section-only executive_summary CLI primitive (compat for integrated materialization tests)."""
+    from apps_rg.runtime.spine.section_cli_runners import run_section_executive_summary_spine
+
+    return run_section_executive_summary_spine(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+        artifact_dir=artifact_dir,
+        lane_provider=lane_provider,
+        lane_provider_resolution_source=lane_provider_resolution_source,
+        lane_temperature=lane_temperature,
+        lane_x1d_judges=lane_x1d_judges,
+        lane_mock_judges=lane_mock_judges,
+        lane_allow_test_mock_judges=lane_allow_test_mock_judges,
+    )
+
+
 __all__ = [
     "build_raw_request_for_r4",
+    "_run_executive_summary_lane_from_cli",
     "run_canonical_apps_rg_from_cli_primitives",
     "run_canonical_full_resume_from_cli_primitives",
 ]

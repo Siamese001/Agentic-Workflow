@@ -121,12 +121,15 @@ class TestMainR1AWiring:
     """Tests that __main__.main() calls R1A check before the pipeline."""
 
     def _make_args(self, tmp_path):
+        brief = tmp_path / "brief.json"
+        brief.write_text("{}", encoding="utf-8")
         args = MagicMock()
         args.target_company = "TestCo"
         args.target_role = "Engineer"
         args.candidate = None
         args.jd = None
-        args.manual_brief = str(tmp_path / "brief.json")
+        args.manual_brief = str(brief)
+        args.resume = ""
         args.target_level = None
         args.research_via = None
         args.auto_research_internal = False
@@ -139,7 +142,7 @@ class TestMainR1AWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: str(tmp_path))
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: str(tmp_path))
         pipeline_called = []
 
         def fake_pipeline(**kwargs):
@@ -147,8 +150,9 @@ class TestMainR1AWiring:
             return _fake_r4_result()
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -165,7 +169,7 @@ class TestMainR1AWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
         pipeline_called = []
 
@@ -174,8 +178,9 @@ class TestMainR1AWiring:
             return _fake_r4_result()
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -192,7 +197,7 @@ class TestMainR1AWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         stamped_keys = []
@@ -200,14 +205,15 @@ class TestMainR1AWiring:
         def fake_stamp(key, run_dir, **kwargs):
             stamped_keys.append(key)
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", fake_stamp)
+        monkeypatch.setattr("tests.helpers.whole_run_spine_harness.stamp_r1a_cache", fake_stamp)
 
         def fake_pipeline(**kwargs):
             return _fake_r4_result(fault="")
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -224,7 +230,7 @@ class TestMainR1AWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         stamped_keys = []
@@ -232,14 +238,15 @@ class TestMainR1AWiring:
         def fake_stamp(key, run_dir, **kwargs):
             stamped_keys.append(key)
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", fake_stamp)
+        monkeypatch.setattr("tests.helpers.whole_run_spine_harness.stamp_r1a_cache", fake_stamp)
 
         def fake_pipeline(**kwargs):
             return _fake_r4_result(fault="L2_EXECUTION_ERROR:something")
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -256,7 +263,7 @@ class TestMainR1AWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         stamped_keys = []
@@ -264,14 +271,15 @@ class TestMainR1AWiring:
         def fake_stamp(key, run_dir, **kwargs):
             stamped_keys.append(key)
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", fake_stamp)
+        monkeypatch.setattr("tests.helpers.whole_run_spine_harness.stamp_r1a_cache", fake_stamp)
 
         def fake_pipeline(**kwargs):
             return _fake_r4_result(terminal_r5=True)
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -287,12 +295,15 @@ class TestMainR1BWiring:
     """Tests that __main__.main() calls R1B check when env flag is on."""
 
     def _make_args(self, tmp_path):
+        brief = tmp_path / "brief.json"
+        brief.write_text("{}", encoding="utf-8")
         args = MagicMock()
         args.target_company = "TestCo"
         args.target_role = "Engineer"
         args.candidate = None
         args.jd = None
-        args.manual_brief = str(tmp_path / "brief.json")
+        args.manual_brief = str(brief)
+        args.resume = ""
         args.target_level = None
         args.research_via = None
         args.auto_research_internal = False
@@ -320,8 +331,9 @@ class TestMainR1BWiring:
                 return _fake_r4_result()
 
             monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+                "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+                fake_pipeline,
+            )
             args = self._make_args(tmp_path)
             with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
                 with pytest.raises(SystemExit):
@@ -334,8 +346,12 @@ class TestMainR1BWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+        monkeypatch.setattr(
+            "apps_rg.cache.whole_run_entrypoint_preflight._semantic_cache_r1b_enabled",
+            lambda: True,
+        )
 
         pipeline_called = []
 
@@ -344,13 +360,34 @@ class TestMainR1BWiring:
             return _fake_r4_result()
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
+
+        def fake_whole_preflight(**kwargs):
+            from apps_rg.cache.r1b_whole_run_preflight import WholeRunR1BPreflightResult
+            from apps_rg.cache.whole_run_entrypoint_preflight import WholeRunCachePreflightOutcome
+
+            r1b = WholeRunR1BPreflightResult(
+                outcome="r1b_hit",
+                r1b_hit=True,
+                lookup_anchor="HistoricalIntentRecord.request_intent_vector",
+                cache_grain="ROLE_TARGET_RUN",
+                terminal_packet={"exit_bypassed": False},
+            )
+            return WholeRunCachePreflightOutcome(
+                entrypoint=str(kwargs.get("entrypoint") or ""),
+                r1b_result=r1b,
+                generation_required=False,
+            )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
 
-        with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", return_value={"cached": True}):
+        with patch(
+            "tests.helpers.whole_run_spine_harness.run_whole_run_cache_preflight",
+            fake_whole_preflight,
+        ):
             args = self._make_args(tmp_path)
             with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
                 with pytest.raises(SystemExit) as exc_info:
@@ -363,8 +400,8 @@ class TestMainR1BWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.r1a_adapter.stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
 
         pipeline_called = []
@@ -374,8 +411,9 @@ class TestMainR1BWiring:
             return _fake_r4_result()
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
@@ -393,9 +431,21 @@ class TestMainR1BWiring:
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("tests.helpers.whole_run_spine_harness.stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+        monkeypatch.setattr(
+            "apps_rg.cache.whole_run_entrypoint_preflight._semantic_cache_r1b_enabled",
+            lambda: True,
+        )
+
+        ingest_called: list[bool] = []
+
+        def _fake_ingest(**kwargs):
+            ingest_called.append(True)
+            return "r1b_ingest_test"
+
+        monkeypatch.setattr("tests.helpers.whole_run_spine_harness.maybe_ingest_r1b_post_exit", _fake_ingest)
 
         artifact_dir = tmp_path / "r4_abc"
         artifact_dir.mkdir(parents=True)
@@ -409,39 +459,36 @@ class TestMainR1BWiring:
             return r
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
-
-        mock_adapter = MagicMock()
-        mock_adapter.store_intent_and_output.return_value = None
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         # Mock L0 prerequisite gate to pass through
         _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
 
-        with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", return_value=None):
-            with patch("apps_rg.cache.r1b_adapter.AppsRgR1BCacheAdapter", return_value=mock_adapter):
-                args = self._make_args(tmp_path)
-                with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
-                    with pytest.raises(SystemExit):
-                        harness.run_whole_run_spine_harness(args, runs_dir=tmp_path, artifact_dir_override=artifact_dir)
+        args = self._make_args(tmp_path)
+        with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+            with pytest.raises(SystemExit):
+                harness.run_whole_run_spine_harness(args, runs_dir=tmp_path, artifact_dir_override=artifact_dir)
 
-        assert mock_adapter.store_intent_and_output.called
+        assert ingest_called
 
     def test_r1b_store_skipped_when_no_chunks(self, tmp_path, monkeypatch):
         """R1B store is NOT called when generated_resume.json is absent."""
         from tests.helpers import whole_run_spine_harness as harness
         from unittest.mock import patch
 
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
-        monkeypatch.setattr("apps_rg.cache.r1a_adapter", "stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.whole_run_entrypoint_preflight.check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr("apps_rg.cache.r1a_adapter.stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
 
         def fake_pipeline(**kwargs):
             return _fake_r4_result()
 
         monkeypatch.setattr(
-            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
-            "run_integrated_single_action_spine", fake_pipeline)
+            "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+            fake_pipeline,
+        )
 
         mock_adapter = MagicMock()
 

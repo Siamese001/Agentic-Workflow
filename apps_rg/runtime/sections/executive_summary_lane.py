@@ -1603,7 +1603,13 @@ def run_executive_summary_execution(
             }
     messages = section_compiled.artifact.messages
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
-    _generation_material = generation_material_context_from_compiled_prompt(compiled_prompt)
+    from apps_rg.runtime.targeting_context_authority import (
+        generation_material_context_from_bundle,
+        require_material_targeting_bundle,
+    )
+
+    _bundle_mat = require_material_targeting_bundle(runtime_payload)
+    _generation_material = generation_material_context_from_bundle(_bundle_mat)
     runtime_payload["generation_material_context"] = _generation_material.to_dict()
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", payload_for_json)
@@ -2040,8 +2046,8 @@ def run_executive_summary_execution(
     )
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
-    _judge_jd = _generation_material.jd_text_material
-    _judge_briefing = _generation_material.briefing_text_material
+    _judge_jd = _bundle_mat.jd_text_frozen
+    _judge_briefing = _bundle_mat.briefing_text_frozen
     x1d: list[dict[str, Any]] = []
     judge_packet: dict[str, Any] = {}
     judge_packet_ref = ""

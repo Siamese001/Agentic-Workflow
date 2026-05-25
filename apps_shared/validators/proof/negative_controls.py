@@ -158,7 +158,7 @@ def _t2_packet_field_mutation(export_root: Path, app_id: str, scenario_id: str) 
 
 def _t3_inventory_file_deleted(export_root: Path, app_id: str, scenario_id: str) -> str:
     span_path = export_root / "traces" / f"{app_id}_trace.json"
-    span_path.unlink()
+    span_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- proof negative-control tamper deletes fixture trace file by design
     return f"deleted span inventory file: {span_path.name}"
 
 
@@ -464,7 +464,7 @@ def run_negative_controls(
             scenario_dir_name = _h.sha256(spec.scenario_id.encode()).hexdigest()[:12]
         tamper_root = primary_export_root / "neg" / scenario_dir_name / short_name
         if tamper_root.exists():
-            shutil.rmtree(tamper_root, ignore_errors=True)
+            shutil.rmtree(tamper_root, ignore_errors=True)  # guardian: allow-missing-hitl-on-irreversible -- proof harness resets tamper sandbox dir before scenario
         tamper_root.mkdir(parents=True, exist_ok=True)
 
         # Mirror minimum subtree required by validators

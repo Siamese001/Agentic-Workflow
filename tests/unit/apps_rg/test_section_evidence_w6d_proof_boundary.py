@@ -93,15 +93,13 @@ def _eligible_fixture_dir(repo: Path, ad: Path) -> None:
         ),
         encoding="utf-8",
     )
-    (ad / "generated_resume.json").write_text("{}\n", encoding="utf-8")
-    (ad / "l2_output.json").write_text('{"section":"executive_summary"}\n', encoding="utf-8")
-    w7 = repo / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w7_fixtures"
-    w7.mkdir(parents=True)
-    src_w7 = REPO_ROOT / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w7_fixtures"
-    if not src_w7.is_dir():
+    from tests.unit.apps_rg.w6_r1b_fixture import seed_w7_fixtures, write_w6_eligible_run_artifacts
+
+    write_w6_eligible_run_artifacts(ad)
+    try:
+        seed_w7_fixtures(repo)
+    except FileNotFoundError:
         pytest.skip("w7 fixtures not present in repo")
-    for f in src_w7.glob("*.json"):
-        (w7 / f.name).write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
 
 
 def test_w6d_latest_x3_block_exec_summary_cannot_claim_vector_persistence() -> None:

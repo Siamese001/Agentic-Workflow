@@ -1,6 +1,6 @@
 {
   "schema": "canonical_live_section_proofs_p2_w9_v1",
-  "generated_at": "2026-05-25T09:44:42Z",
+  "generated_at": "2026-05-25T10:33:36Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W9",
   "sprint": "P2-W9-LIVE-MATRIX-CLOSEOUT",
@@ -85,7 +85,7 @@
     },
     "unify_bullets": {
       "section": "unify_bullets",
-      "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py tests/unit/apps_rg/section_rigor/ -q --tb=line -p pytest_timeout",
+      "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py tests/unit/apps_rg/ tests/_apps_contract/test_resume_package_x3.py -q --tb=line -o addopts=",
       "status": "BLOCKED",
       "exit_code": 0,
       "latest_run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\contract_harness\\_test_companion_chain_unify",

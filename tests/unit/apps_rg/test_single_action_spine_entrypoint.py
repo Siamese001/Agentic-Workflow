@@ -160,10 +160,13 @@ def test_cache_miss_invokes_spine_once(monkeypatch: pytest.MonkeyPatch, tmp_path
 def test_section_path_does_not_call_whole_run_spine(monkeypatch: pytest.MonkeyPatch) -> None:
     import apps_rg.runtime.orchestration.canonical_dispatch as cd
 
-    monkeypatch.setattr(cd, "run_integrated_single_action_spine", MagicMock())
+    whole_run_mock = MagicMock()
     monkeypatch.setattr(
-        cd,
-        "_run_executive_summary_lane_from_cli",
+        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+        whole_run_mock,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.apps_rg_spine_run.run_apps_rg_spine",
         lambda **kwargs: {"exit_status": "success", "outcome_authorized": True},
     )
     cd.run_canonical_apps_rg_from_cli_primitives(
@@ -173,4 +176,4 @@ def test_section_path_does_not_call_whole_run_spine(monkeypatch: pytest.MonkeyPa
         jd="jd",
         manual_brief="brief",
     )
-    cd.run_integrated_single_action_spine.assert_not_called()
+    whole_run_mock.assert_not_called()

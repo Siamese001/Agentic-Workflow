@@ -23,11 +23,48 @@ from apps_rg.runtime.sections_root_manifest import (
 )
 
 
-def test_phase1_runs_seven_lanes_mock_provider_no_envelope() -> None:
+def test_phase1_runs_seven_lanes_mock_provider_no_envelope(monkeypatch: pytest.MonkeyPatch) -> None:
     repo = find_repo_root()
     art = repo / "artifacts" / "apps_rg" / "runs" / f"phase1_pytest_{uuid.uuid4().hex[:10]}"
     art.mkdir(parents=True, exist_ok=True)
-    with patch("apps_rg.runtime.bindings.l2_envelope_adapter.run_apps_rg_l2_envelope") as env_call:
+
+    def _stub_lane_dispatch(**kwargs: object) -> dict[str, object]:
+        lane = str(kwargs.get("section") or "")
+        sections_root = Path(os.environ[MODULAR_R4_SECTIONS_ROOT_ENV])
+        run_id = f"pytest_phase1_{lane}"
+        run_dir = (sections_root / lane / run_id).resolve()
+        run_rel = run_dir.relative_to(repo).as_posix()
+        run_dir.mkdir(parents=True, exist_ok=True)
+        l2 = {
+            "section_id": lane,
+            "runtime_generation_status": "REAL_LLM",
+            "product_quality_status": "PASS",
+        }
+        (run_dir / "l2_output.json").write_text(json.dumps(l2), encoding="utf-8")
+        (run_dir / "provider_request.json").write_text(
+            json.dumps({"provider_requested": "qwen_vllm", "provider_attempted": True}),
+            encoding="utf-8",
+        )
+        (run_dir / "x3_disposition.json").write_text(
+            json.dumps({"x3_code": "X3_ALLOW", "pass": True}),
+            encoding="utf-8",
+        )
+        ptr_dir = sections_root / lane
+        ptr_dir.mkdir(parents=True, exist_ok=True)
+        for ptr_name in ("latest_successful_real_run.json", "latest_real_run.json"):
+            (ptr_dir / ptr_name).write_text(
+                json.dumps({"run_dir": run_rel.replace("\\", "/")}),
+                encoding="utf-8",
+            )
+        return {"exit_status": 0, "x3_code": "X3_ALLOW"}
+
+    with (
+        patch("apps_rg.runtime.bindings.l2_envelope_adapter.run_apps_rg_l2_envelope") as env_call,
+        patch(
+            "apps_rg.l2_recipe.modular_resume_generation.run_canonical_apps_rg_from_cli_primitives",
+            side_effect=_stub_lane_dispatch,
+        ),
+    ):
         res = run_modular_resume_generation(
             ModularResumeInputPackage(repo_root=repo),
             art,

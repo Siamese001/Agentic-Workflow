@@ -255,7 +255,7 @@ def validate_replay(
 
     # Clean any previous replay dir for this scenario so we get a fresh run
     if replay_root.exists():
-        shutil.rmtree(replay_root, ignore_errors=True)
+        shutil.rmtree(replay_root, ignore_errors=True)  # guardian: allow-missing-hitl-on-irreversible -- replay validator clears prior replay artifacts before deterministic rerun
     replay_root.mkdir(parents=True, exist_ok=True)
 
     try:

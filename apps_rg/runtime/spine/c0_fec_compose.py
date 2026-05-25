@@ -25,6 +25,9 @@ from apps_rg.runtime.section_spine_terminology import (
 FEC_BRIDGE_ARTIFACT = "final_evidence_contract.json"
 FEC_BRIDGE_RECEIPT = "c0_fec_compose_receipt.json"
 FEC_BRIDGE_MODE_SECTION = "spine_c0_fec_compose"
+# Legacy receipt/compiled-prompt alias (W4/W5 tests, one-spine certification).
+FEC_BRIDGE_MODE_LEGACY = "section_fec_bridge"
+_ACCEPTED_FEC_BRIDGE_MODES = frozenset({FEC_BRIDGE_MODE_SECTION, FEC_BRIDGE_MODE_LEGACY})
 
 OBSERVED_CHAIN_WITH_FEC_BRIDGE: tuple[str, ...] = (
     "CLI",
@@ -401,7 +404,7 @@ def assert_section_pa_fec_preconditions(
         )
     if isinstance(bridge, dict):
         mode = str(bridge.get("fec_bridge_mode") or "")
-        if mode and mode != FEC_BRIDGE_MODE_SECTION:
+        if mode and mode not in _ACCEPTED_FEC_BRIDGE_MODES:
             raise SectionFecBridgePreconditionError(
                 f"unsupported fec_bridge_mode for product-visible PA: {mode!r}"
             )

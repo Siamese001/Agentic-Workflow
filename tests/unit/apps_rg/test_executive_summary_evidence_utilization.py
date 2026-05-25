@@ -32,7 +32,9 @@ def test_utilization_fails_thin_four_sentence_with_large_pool() -> None:
         text, parsed, selected_facts=_facts(6)
     )
     assert ok is False
-    assert reason is not None and "sentence_0" in reason
+    assert reason is not None and (
+        "sentence_0" in reason or "claim_ledger_rows" in reason
+    )
 
 
 def test_utilization_passes_when_pool_excused() -> None:

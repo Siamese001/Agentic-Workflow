@@ -1,6 +1,6 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-05-25T09:44:43Z  
+**Generated:** 2026-05-25T10:33:37Z  
 **Plan:** graph-skills-hardening-f3a8c1  
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
@@ -61,4 +61,4 @@
 
 - isolation_verdict: **ISOLATED_PREEXISTING_CHURN**
 - touched_by_this_wave: **False**
-- dirty_files: `['agentic_core/L0_routing/config/fallback_chains_loader.py', 'agentic_core/L0_routing/reasoning/cold_start_safeguard.py', 'agentic_core/L0_routing/reasoning/v12_route_selector.py', 'agentic_core/L0_routing/reasoning/v15_route_selector.py']`
+- dirty_files: `['agentic_core/L0_routing/enforcement/vigilance_seam.py', 'agentic_core/L1_cognition/reasoning/reasoning_plan.py', 'agentic_core/L2_execution/config/hybrid_retriever_config.py', 'agentic_core/L2_execution/config/provider_type_config.py', 'agentic_core/L2_execution/config/strategist_bio_writer_config.py', 'agentic_core/L2_execution/healers/healing_cascade_registry.py', 'agentic_core/L2_execution/healers/qwen_strict_diagnostic.py', 'agentic_core/L2_execution/observability/l2_otel_emitter.py', 'agentic_core/L2_execution/observability/l2_resolution_spans.py', 'agentic_core/L2_execution/types/vllm_gateway_integration_types.py', 'agentic_core/L2_execution/types/vllm_serving_profile_types.py', 'agentic_core/L2_execution/types/vllm_token_budget_types.py', 'agentic_core/runtime/contracts/apps_rg_ingress_payload.py']`

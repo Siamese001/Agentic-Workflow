@@ -59,6 +59,11 @@ except ImportError:
 
 
 REPO = Path(__file__).resolve().parents[2]
+import sys
+
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
+
 CONFIG_PATH = REPO / "config" / "exception_contracts.yaml"
 ADG_DIR = REPO / "artifacts" / "adg"
 

@@ -9,6 +9,7 @@ import pytest
 from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_MODE_SECTION,
+    FEC_BRIDGE_RECEIPT,
     SectionFecBridgePreconditionError,
     build_spine_c0_fec_artifact,
     wire_spine_c0_fec_for_section,
@@ -21,6 +22,38 @@ from apps_rg.runtime.spine.front_contracts import (
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool, resolve_section_proof_pool
 
 REPO = Path(__file__).resolve().parents[3]
+
+
+@pytest.fixture(autouse=True)
+def _patch_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Unit FEC bridge tests use minimal pools — mock spine C0 retrieve and skip evidence room."""
+    deactivate_fixture_dev_bypass()
+    monkeypatch.setenv("APPS_RG_C0_EVIDENCE_ROOM", "0")
+    from agentic_core.runtime.contracts.final_evidence_contract import (
+        FinalEvidenceContract,
+        SUPPORT_STATUS_PASS,
+    )
+    from apps_rg.runtime.bindings.c0_binding import C0_GRAPH_LANE_NA_REF
+
+    def _fake_c0_retrieve(**_: object) -> FinalEvidenceContract:
+        return FinalEvidenceContract(
+            request_id="req-fec-bridge-test",
+            run_id="run-fec-bridge-test",
+            app_id="apps_rg",
+            trace_id="trace-fec-bridge-test",
+            l5_certification_ref="test:valid:w6",
+            support_status=SUPPORT_STATUS_PASS,
+            support_target_met=True,
+            final_evidence_digest="digest-test",
+            graph_expansion_refs=(C0_GRAPH_LANE_NA_REF,),
+            dense_search_refs=("chromadb:fact_vectors:test",),
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_c0_retrieve.c0_retrieve_apps_rg",
+        _fake_c0_retrieve,
+    )
+
 
 W5A_SECTIONS = (
     "headline",
@@ -101,7 +134,7 @@ def test_fec_bridge_builds_per_section(section_id: str):
     doc = bridge.bridge_doc
     assert doc["fec_bridge_mode"] == FEC_BRIDGE_MODE_SECTION
     assert doc["route_contract_ref"] == "route_contract.json"
-    assert doc["canonical_c0_5_claimed"] is False
+    assert doc["canonical_c0_5_claimed"] is True
 
 
 @pytest.mark.parametrize("section_id", W5A_SECTIONS)
@@ -121,7 +154,7 @@ def test_wire_emits_artifacts(tmp_path: Path, section_id: str):
         runtime_payload=payload,
     )
     assert (tmp_path / "final_evidence_contract_bridge.json").is_file()
-    assert (tmp_path / "c0_fec_bridge_receipt.json").is_file()
+    assert (tmp_path / FEC_BRIDGE_RECEIPT).is_file()
     assert (tmp_path / "route_contract.json").is_file()
     assert (tmp_path / "c0_metrics.json").is_file()
     assert payload.get("section_fec_bridge")

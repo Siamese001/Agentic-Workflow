@@ -438,11 +438,29 @@ def apply_executive_summary_targeting_cap(
     return new_content, meta
 
 
+def extract_frozen_targeting_from_compiled_content(content: str) -> tuple[str, str]:
+    """Parse JD_TEXT + BRIEFING from the jd_requirements block (not legacy regex)."""
+    span = _extract_tagged_block(content, _JD_TAG)
+    if span is None:
+        return "", ""
+    inner = span[2]
+    jd = ""
+    br = ""
+    jd_parsed = _extract_multiline_field(inner, "JD_TEXT (targeting only")
+    if jd_parsed:
+        jd = jd_parsed[1].strip()
+    br_parsed = _extract_multiline_field(inner, "BRIEFING (targeting only")
+    if br_parsed:
+        br = br_parsed[1].strip()
+    return jd, br
+
+
 __all__ = [
     "TARGETING_CAP_STRATEGY",
     "apply_executive_summary_targeting_cap",
     "compress_targeting_briefing_body",
     "compress_targeting_jd_body",
     "estimate_targeting_region_tokens",
+    "extract_frozen_targeting_from_compiled_content",
     "targeting_cap_enabled",
 ]

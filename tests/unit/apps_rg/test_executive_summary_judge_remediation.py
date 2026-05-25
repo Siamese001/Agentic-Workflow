@@ -202,3 +202,52 @@ def test_rerun_soft_failed_judges_uses_post_x2_packet_when_x2_gates_provided(
     )
     assert captured["judge_packet_ref"].endswith("executive_summary_judge_packet_post_x2.json")
     assert (tmp_path / "executive_summary_judge_packet_post_x2.json").is_file()
+
+
+def test_rerun_soft_failed_expands_to_full_panel_when_packet_hash_drifts(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    captured: dict[str, list[str]] = {}
+
+    def _fake_run_llm_judges(**kwargs):
+        captured["judge_keys"] = list(kwargs.get("judge_keys") or [])
+        return []
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.judges.executive_summary_x1d.run_llm_judges",
+        _fake_run_llm_judges,
+    )
+    prior = [
+        _soft_fail_judge("anthropic_claude", findings=["weak synthesis"]),
+        {
+            "provider_key": "gemini_pro",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "judge_packet_hash": "old_hash_11111111",
+            "input_hash": "old_hash_11111111",
+            "normalized_score": 0.9,
+            "normalized_threshold": 0.8,
+        },
+    ]
+    rerun_soft_failed_judges(
+        resume_display_text="Six sentence summary here for testing.",
+        claim_ledger=[],
+        judge_packet={"allowed_fact_ids": ["f1"]},
+        judge_packet_ref=str(tmp_path / "executive_summary_judge_packet.json"),
+        compiled_prompt=None,
+        artifact_dir=tmp_path,
+        judge_keys=["anthropic_claude", "gemini_pro", "openai_chatgpt"],
+        judge_mode="mocked",
+        prior_judges=prior,
+        x2_gates=[{"gate_id": "x2_shape", "pass": True}],
+        allowed_fact_packet=[{"fact_id": "f1", "claim_text": "Led platform work."}],
+        allowed_fact_ids={"f1"},
+        target_title="SVP",
+        target_company="Acme",
+        jd_text="jd",
+        briefing_text="brief",
+        parsed_output={"resume_display_text": "text", "claim_ledger": []},
+    )
+    assert captured["judge_keys"] == ["anthropic_claude", "gemini_pro", "openai_chatgpt"]

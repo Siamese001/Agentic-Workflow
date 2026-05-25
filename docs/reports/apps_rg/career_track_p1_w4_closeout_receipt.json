@@ -1,6 +1,6 @@
 {
   "schema": "career_track_p1_w4_closeout_receipt_v1",
-  "generated_at": "2026-05-25T09:44:43Z",
+  "generated_at": "2026-05-25T10:33:37Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4-CLOSEOUT",
   "c03_binding_proof": {
@@ -24,24 +24,49 @@
   },
   "agentic_core_isolation": {
     "git_diff_name_only_agentic_core": [
-      "agentic_core/L0_routing/config/fallback_chains_loader.py",
-      "agentic_core/L0_routing/reasoning/cold_start_safeguard.py",
-      "agentic_core/L0_routing/reasoning/v12_route_selector.py",
-      "agentic_core/L0_routing/reasoning/v15_route_selector.py"
+      "agentic_core/L0_routing/enforcement/vigilance_seam.py",
+      "agentic_core/L1_cognition/reasoning/reasoning_plan.py",
+      "agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "agentic_core/L2_execution/config/provider_type_config.py",
+      "agentic_core/L2_execution/config/strategist_bio_writer_config.py",
+      "agentic_core/L2_execution/healers/healing_cascade_registry.py",
+      "agentic_core/L2_execution/healers/qwen_strict_diagnostic.py",
+      "agentic_core/L2_execution/observability/l2_otel_emitter.py",
+      "agentic_core/L2_execution/observability/l2_resolution_spans.py",
+      "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
+      "agentic_core/L2_execution/types/vllm_serving_profile_types.py",
+      "agentic_core/L2_execution/types/vllm_token_budget_types.py",
+      "agentic_core/runtime/contracts/apps_rg_ingress_payload.py"
     ],
     "git_status_short_agentic_core": [
-      "D agentic_core/L0_routing/config/fallback_chains_loader.py",
-      "D agentic_core/L0_routing/reasoning/cold_start_safeguard.py",
-      "D agentic_core/L0_routing/reasoning/v12_route_selector.py",
-      "M agentic_core/L0_routing/reasoning/v15_route_selector.py",
-      "?? agentic_core/L0_routing/_archive/",
-      "?? agentic_core/L0_routing/config/fallback_chains_loader_v15.py"
+      "M agentic_core/L0_routing/enforcement/vigilance_seam.py",
+      "M agentic_core/L1_cognition/reasoning/reasoning_plan.py",
+      "M agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "M agentic_core/L2_execution/config/provider_type_config.py",
+      "M agentic_core/L2_execution/config/strategist_bio_writer_config.py",
+      "M agentic_core/L2_execution/healers/healing_cascade_registry.py",
+      "M agentic_core/L2_execution/healers/qwen_strict_diagnostic.py",
+      "M agentic_core/L2_execution/observability/l2_otel_emitter.py",
+      "M agentic_core/L2_execution/observability/l2_resolution_spans.py",
+      "M agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
+      "M agentic_core/L2_execution/types/vllm_serving_profile_types.py",
+      "M agentic_core/L2_execution/types/vllm_token_budget_types.py",
+      "M agentic_core/runtime/contracts/apps_rg_ingress_payload.py"
     ],
     "dirty_files": [
-      "agentic_core/L0_routing/config/fallback_chains_loader.py",
-      "agentic_core/L0_routing/reasoning/cold_start_safeguard.py",
-      "agentic_core/L0_routing/reasoning/v12_route_selector.py",
-      "agentic_core/L0_routing/reasoning/v15_route_selector.py"
+      "agentic_core/L0_routing/enforcement/vigilance_seam.py",
+      "agentic_core/L1_cognition/reasoning/reasoning_plan.py",
+      "agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "agentic_core/L2_execution/config/provider_type_config.py",
+      "agentic_core/L2_execution/config/strategist_bio_writer_config.py",
+      "agentic_core/L2_execution/healers/healing_cascade_registry.py",
+      "agentic_core/L2_execution/healers/qwen_strict_diagnostic.py",
+      "agentic_core/L2_execution/observability/l2_otel_emitter.py",
+      "agentic_core/L2_execution/observability/l2_resolution_spans.py",
+      "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
+      "agentic_core/L2_execution/types/vllm_serving_profile_types.py",
+      "agentic_core/L2_execution/types/vllm_token_budget_types.py",
+      "agentic_core/runtime/contracts/apps_rg_ingress_payload.py"
     ],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [

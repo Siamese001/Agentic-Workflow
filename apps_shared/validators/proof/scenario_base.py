@@ -161,7 +161,7 @@ class ScenarioContext:
         self.scenario_dir = export_root / "contracts" / spec.app_id / spec.scenario_id
         if self.scenario_dir.exists():
             import shutil  # local import to avoid module-load cost when unused
-            shutil.rmtree(self.scenario_dir, ignore_errors=True)
+            shutil.rmtree(self.scenario_dir, ignore_errors=True)  # guardian: allow-missing-hitl-on-irreversible -- proof export pins fresh scenario contracts subtree per run
         self.scenario_dir.mkdir(parents=True, exist_ok=True)
 
         self.spans: list[SpanRecord] = []

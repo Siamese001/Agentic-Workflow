@@ -1,6 +1,6 @@
 {
   "schema": "graph_skills_hardening_p2_accelerated_closeout_v1",
-  "generated_at": "2026-05-25T09:44:43Z",
+  "generated_at": "2026-05-25T10:33:36Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "sprint": "P2-ACCELERATED-CLOSEOUT",
   "status": "PARTIAL",
@@ -19,7 +19,7 @@
   },
   "all_sections_graph_authority": {
     "schema": "all_sections_graph_skills_authority_p2_w1a_v1",
-    "generated_at": "2026-05-25T09:44:42Z",
+    "generated_at": "2026-05-25T10:33:35Z",
     "plan_id": "graph-skills-hardening-f3a8c1",
     "wave": "P2-W1A",
     "all_sections_default_to_augmented_skills_graph": true,
@@ -125,7 +125,7 @@
   },
   "live_proof_summary": {
     "schema": "canonical_live_section_proofs_p2_w9_v1",
-    "generated_at": "2026-05-25T09:44:42Z",
+    "generated_at": "2026-05-25T10:33:36Z",
     "plan_id": "graph-skills-hardening-f3a8c1",
     "wave": "P2-W9",
     "sprint": "P2-W9-LIVE-MATRIX-CLOSEOUT",
@@ -210,7 +210,7 @@
       },
       "unify_bullets": {
         "section": "unify_bullets",
-        "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py tests/unit/apps_rg/section_rigor/ -q --tb=line -p pytest_timeout",
+        "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py tests/unit/apps_rg/ tests/_apps_contract/test_resume_package_x3.py -q --tb=line -o addopts=",
         "status": "BLOCKED",
         "exit_code": 0,
         "latest_run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\contract_harness\\_test_companion_chain_unify",
@@ -417,7 +417,7 @@
   },
   "package_audit": {
     "schema": "cross_section_graph_authority_audit_p2_w10_v1",
-    "generated_at": "2026-05-25T09:44:43Z",
+    "generated_at": "2026-05-25T10:33:36Z",
     "plan_id": "graph-skills-hardening-f3a8c1",
     "wave": "P2-W10",
     "all_sections_trace_to_augmented_skills_graph": true,

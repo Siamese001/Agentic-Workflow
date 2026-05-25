@@ -43,6 +43,7 @@ class AppsRgIngressPayload:
     project_fact_refs: tuple[str, ...] = field(default_factory=tuple)
 
     # Research briefing (path to pre-built research JSON)
+    briefing_artifact_ref: Optional[str] = None
     manual_brief_path: Optional[str] = None
 
     # Research delegation flags

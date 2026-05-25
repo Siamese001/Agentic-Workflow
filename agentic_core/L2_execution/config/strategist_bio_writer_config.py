@@ -37,7 +37,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
 )
 from tqdm import tqdm
-from agentic_core.L0_routing.config.pipeline_constants import (
+from agentic_core.L0_routing.config.pipeline_constants import (  # guardian: allow-layer-violation -- pipeline_constants SSOT at L0 config; L2 reads generic numeric defaults only
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

@@ -3,7 +3,7 @@
   "linked_plan_id": "apps-rg-complexity-test-radar-605dcc",
   "audit_script_version": "section_complexity_reduction_audit",
   "audit_script_digest": "72ae388fb77f2d41",
-  "generated_at": "2026-05-23T21:38:19.284719+00:00",
+  "generated_at": "2026-05-25T10:12:10.509077+00:00",
   "sections": [
     {
       "section_id": "headline",
@@ -13,9 +13,9 @@
     },
     {
       "section_id": "executive_summary",
-      "tagged_runtime_loc": 10956,
-      "module_count": 18,
-      "loc": 10956
+      "tagged_runtime_loc": 15684,
+      "module_count": 29,
+      "loc": 15684
     },
     {
       "section_id": "competencies",
@@ -82,32 +82,47 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_briefing.py",
-      "loc": 136
+      "loc": 165
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_composition.py",
-      "loc": 555
+      "loc": 765
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_evidence_capsule.py",
-      "loc": 461
+      "loc": 469
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_generation_grade_contract.py",
+      "loc": 132
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_judge_remediation.py",
-      "loc": 501
+      "loc": 990
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_lane.py",
-      "loc": 2464
+      "loc": 3105
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_lane_done_policy.py",
+      "loc": 159
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_operator_disposition.py",
+      "loc": 146
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_pa.py",
-      "loc": 582
+      "loc": 615
     },
     {
       "section_id": "executive_summary",
@@ -117,17 +132,32 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_repair_policy.py",
-      "loc": 54
+      "loc": 127
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_synthesis_contract.py",
+      "loc": 239
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_synthesis_monotonic.py",
-      "loc": 134
+      "loc": 208
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_targeting_cap.py",
-      "loc": 410
+      "loc": 466
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_targeting_context.py",
+      "loc": 94
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_targeting_publish.py",
+      "loc": 165
     },
     {
       "section_id": "executive_summary",
@@ -136,8 +166,23 @@
     },
     {
       "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_upstream_triangulation.py",
+      "loc": 237
+    },
+    {
+      "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_voice_repair.py",
       "loc": 284
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_x1d_judge_contract.py",
+      "loc": 464
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_x2_x1d_contract.py",
+      "loc": 381
     },
     {
       "section_id": "executive_summary",
@@ -147,12 +192,12 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/validators/executive_summary_x2.py",
-      "loc": 2039
+      "loc": 2229
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_judge_packet.py",
-      "loc": 381
+      "loc": 580
     },
     {
       "section_id": "executive_summary",
@@ -162,7 +207,17 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_x1d.py",
-      "loc": 1779
+      "loc": 1962
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/judges/executive_summary_x1d_dimension_verdicts.py",
+      "loc": 351
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/judges/executive_summary_x1d_gate_closure_map.py",
+      "loc": 175
     },
     {
       "section_id": "executive_summary",

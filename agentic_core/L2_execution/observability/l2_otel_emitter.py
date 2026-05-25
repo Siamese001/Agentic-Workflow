@@ -41,7 +41,7 @@ from __future__ import annotations
 # The constants below are imported and surfaced so future span construction
 # in this module attaches gen_ai.operation.name, satisfying the upstream
 # OTel GenAI SIG semantic conventions.
-from agentic_core.L6_observability.semconv.gen_ai import (
+from agentic_core.L6_observability.semconv.gen_ai import (  # guardian: allow-layer-violation -- L2 OTEL emitter attaches OTel GenAI semconv keys; telemetry-only, fail-soft when OTEL unavailable
     ATTR_OPERATION_NAME,
     OPERATION_EXECUTE_TOOL,
 )

@@ -32,7 +32,7 @@ import os
 from dataclasses import dataclass
 from typing import Final
 
-from agentic_core.L0_routing.config.model_registry import (
+from agentic_core.L0_routing.config.model_registry import (  # guardian: allow-layer-violation -- model_registry SSOT at L0 config; healing registry reads canonical model-id strings only
     DETERMINISTIC_MODEL_SENTINEL,
     GEMINI_FLASH_MODEL_ID,
     GEMINI_PRO_MODEL_ID,

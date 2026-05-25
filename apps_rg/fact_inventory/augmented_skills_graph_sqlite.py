@@ -1518,7 +1518,7 @@ def materialize_augmented_skills_graph_sqlite(
     }
 
     if out_path.exists():
-        out_path.unlink()
+        out_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- rebuild overwrites prior materialized sqlite artifact in reports path
     conn = sqlite3.connect(str(out_path), timeout=30)
     try:
         for stmt in DDL_STATEMENTS:

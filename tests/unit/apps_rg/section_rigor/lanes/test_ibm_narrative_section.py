@@ -7,6 +7,7 @@ from apps_rg.runtime.validators.ibm_narrative_x2 import run_ibm_narrative_x2_gat
 IBM_NARRATIVE_CRITICAL_GATES = frozenset(
     {
         "x2_ibm_narrative_exactly_one_sentence",
+        "x2_ibm_narrative_word_budget",
         "x2_claim_ledger_claim_text_non_empty",
         "x2_ibm_narrative_no_meta_disclaimer_in_display",
         "x2_ibm_narrative_claim_ledger_clause_decomposition",

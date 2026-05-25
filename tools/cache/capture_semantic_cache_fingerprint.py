@@ -72,15 +72,18 @@ def _capture_chroma(collections: list[str]) -> dict[str, Any]:
             )
         )
         client = chromadb.PersistentClient(path=str(persist))
-        names = collections or [c.name for c in client.list_collections()]
-        for name in names[:32]:
-            coll = client.get_collection(name)
-            count = int(coll.count())
-            meta = dict(coll.metadata or {})
-            row = {"count": count, "metadata": meta}
-            out["collections"][name] = row
-        payload = _canonical_json(out["collections"])
-        out["collections_sha256"] = _sha256_bytes(payload.encode("utf-8"))
+        try:
+            names = collections or [c.name for c in client.list_collections()]
+            for name in names[:32]:
+                coll = client.get_collection(name)
+                count = int(coll.count())
+                meta = dict(coll.metadata or {})
+                row = {"count": count, "metadata": meta}
+                out["collections"][name] = row
+            payload = _canonical_json(out["collections"])
+            out["collections_sha256"] = _sha256_bytes(payload.encode("utf-8"))
+        finally:
+            client.close()
     except Exception as exc:  # guardian: allow-broad-exception -- optional Chroma probe
         out["error"] = f"{type(exc).__name__}:{exc}"
         out["collections_sha256"] = _sha256_bytes(b"unavailable")

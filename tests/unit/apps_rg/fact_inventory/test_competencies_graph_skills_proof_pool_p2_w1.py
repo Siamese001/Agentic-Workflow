@@ -16,9 +16,9 @@ from apps_rg.fact_inventory.competencies_graph_skills_proof_pool import (
     CompetenciesGraphProofPoolError,
 )
 from apps_rg.fact_inventory.track_weighted_graph_expansion import ROOT
+from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGER
 from apps_rg.runtime.proof_pool_resolver import (
     PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
-    PROOF_SOURCE_BROAD_SKILLS_LEDGER,
     resolve_section_proof_pool,
 )
 

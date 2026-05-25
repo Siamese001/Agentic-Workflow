@@ -261,16 +261,28 @@ def build_deterministic_gate_summary(
     }
 
 
+def gate_id_excluded_from_judge_snapshot(gate_id: str) -> bool:
+    """Post-X2 wiring gates must not mutate the GRADE_ONLY packet judges share."""
+    from apps_rg.runtime.validators.executive_summary_x2 import POST_X2_X1D_WIRING_GATE_IDS
+
+    gid = str(gate_id or "").strip()
+    if not gid:
+        return True
+    if gid in POST_X2_X1D_WIRING_GATE_IDS:
+        return True
+    return gid.startswith("x2_x1d_")
+
+
 def build_deterministic_gate_summary_from_x2_gates(
     x2_gates: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Authoritative X2 snapshot for post-X2 judge refresh (all lane gates, not pre-X2 subset)."""
+    """Authoritative X2 snapshot for post-X2 judge refresh (content gates only; excludes x1d wiring)."""
     summary: dict[str, Any] = {}
     for gate in x2_gates:
         if not isinstance(gate, dict):
             continue
         gate_id = str(gate.get("gate_id") or "").strip()
-        if not gate_id:
+        if not gate_id or gate_id_excluded_from_judge_snapshot(gate_id):
             continue
         detail = gate.get("failure_reason")
         if detail is None:
@@ -282,7 +294,7 @@ def build_deterministic_gate_summary_from_x2_gates(
     if summary:
         summary["product_shape_note"] = {
             "pass": True,
-            "detail": f"authoritative_x2_run_snapshot gates={len(summary)}",
+            "detail": f"judge_snapshot_content_gates={len(summary)}",
         }
     return summary
 

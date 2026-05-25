@@ -100,7 +100,7 @@ def _docker_daemon_responsive(timeout: float) -> bool:
     Desktop running" check on Windows / macOS / Linux.
     """
     try:
-        proc = subprocess.run(
+        proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- bounded docker daemon health probe; not LLM/tool egress
             ["docker", "info", "--format", "{{.ServerVersion}}"],
             capture_output=True,
             text=True,

@@ -63,6 +63,9 @@ except ImportError:
 
 
 REPO = Path(__file__).resolve().parents[2]
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
+
 ADG_DIR = REPO / "artifacts" / "adg"
 BASELINE_PATH = REPO / "ops_scripts" / "ci" / "baselines" / "test_harness_coverage_baseline.json"
 ALLOWLIST_PATH = REPO / "config" / "test_harness_coverage_allowlist.yaml"

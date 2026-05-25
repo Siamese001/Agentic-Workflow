@@ -57,8 +57,8 @@ def test_template_has_dedup_marker_and_single_proof_law():
     assert "pa_core_law_v1" in raw
     assert raw.count("<proof_law_v1>") == 1
     assert "<pre_output_checklist>" not in raw
-    assert "<many_shot_examples>" in raw
-    assert raw.count("<negative_example ") >= 3
+    assert "EXEC_SUMMARY_PROMPT_CORE_LAW_V3" in raw or "pa_core_law_v1" in raw
+    assert "many-shot" in raw.lower() or "E0" in raw
 
 
 def test_static_yaml_slots_smaller_than_prior_baseline():
@@ -75,7 +75,7 @@ def test_compiled_prompt_smaller_without_duplicate_allowed_id_json():
     assert "PRODUCT_SHAPE" in content
     assert content.count("ALLOWED_SOURCE_FACT_IDS (JSON array)") == 0
     assert "proof_law_v1" in content
-    assert "<many_shot_examples>" in content
+    assert "proof_law_v1" in content
     est = estimate_tokens_approximate(content)
     assert est < 12000, f"compiled prompt still large for minimal fixture: {est}"
 

@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
+
+import pytest
 
 from apps_rg.prompt_assembly.e0_examples import (
     _EXEC_SUMMARY_POSITIVE_COMPILE_IDS,
@@ -10,18 +13,29 @@ from apps_rg.prompt_assembly.e0_examples import (
 )
 from apps_rg.runtime.judges.executive_summary_judge_packet import (
     build_deterministic_gate_summary,
+    build_deterministic_gate_summary_from_x2_gates,
     build_executive_summary_judge_packet,
     render_judge_prompt_from_packet,
+)
+from apps_rg.runtime.validators.executive_summary_x2 import (
+    POST_X2_X1D_WIRING_GATE_IDS,
+    check_x1d_judge_packet_hash_uniform,
 )
 from apps_rg.runtime.sections.executive_summary_generation_grade_contract import (
     MANIFEST_SCHEMA_PATH,
     build_generation_grade_contract_manifest,
     generation_law_digest_text,
 )
+from apps_rg.runtime.sections.executive_summary_targeting_cap import (
+    extract_frozen_targeting_from_compiled_content,
+)
 from apps_rg.runtime.targeting_context_authority import (
     GenerationMaterialContext,
     JudgeMaterialContext,
+    generation_material_context_from_bundle,
+    material_targeting_digest,
 )
+from apps_rg.runtime.targeting_context_authority import MaterialTargetingBundle
 from apps_rg.runtime.validators.executive_summary_x2 import check_exec_summary_no_credential_dump
 
 
@@ -137,6 +151,81 @@ def test_judge_packet_includes_synthesis_gates_and_generation_law_digest() -> No
 def test_manifest_schema_loads() -> None:
     raw = json.loads(MANIFEST_SCHEMA_PATH.read_text(encoding="utf-8"))
     assert raw["properties"]["schema"]["const"] == "generation_grade_contract_manifest_v1"
+
+
+def test_judge_snapshot_excludes_x1d_wiring_gates() -> None:
+    content_gates = [
+        {"gate_id": "x2_exec_summary_sentence_count_6", "pass": True, "observed_value": "ok"},
+    ]
+    wiring = [
+        {"gate_id": gid, "pass": True, "observed_value": "ok"} for gid in POST_X2_X1D_WIRING_GATE_IDS
+    ]
+    before = build_deterministic_gate_summary_from_x2_gates(content_gates)
+    after = build_deterministic_gate_summary_from_x2_gates(content_gates + wiring)
+    assert before == after
+    assert "x2_x1d_required_judges_present" not in after
+
+
+def test_structural_compiled_prompt_extract_matches_frozen_bundle_digest(
+    tmp_path: Path,
+) -> None:
+    """Regression: legacy regex truncated briefing at in-block 'jd_alignment:' footer text."""
+    run_dir = (
+        Path(__file__).resolve().parents[3]
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / "executive_summary"
+        / "real"
+        / "exec_summary_20260525_100559"
+    )
+    if not (run_dir / "compiled_prompt.txt").is_file():
+        pytest.skip("Brown proof bundle not present")
+    import json
+
+    from apps_rg.runtime.targeting_context_authority import (
+        _BRIEFING_FIELD_RE,
+        _JD_FIELD_RE,
+        generation_material_context_from_compiled_prompt,
+    )
+
+    rp = json.loads((run_dir / "runtime_payload.json").read_text(encoding="utf-8"))
+    bundle = MaterialTargetingBundle.from_dict(rp["material_targeting_bundle"])
+    gen_bundle = generation_material_context_from_bundle(bundle)
+    cp = (run_dir / "compiled_prompt.txt").read_text(encoding="utf-8")
+    content = json.loads(cp)[0]["content"] if cp.strip().startswith("[") else cp
+    jd, br = extract_frozen_targeting_from_compiled_content(content)
+    assert jd[:200] == bundle.jd_text_frozen[:200]
+    assert bundle.briefing_text_frozen in br
+    assert len(br) > 2596
+    legacy_br = ""
+    m_br = _BRIEFING_FIELD_RE.search(content)
+    if m_br:
+        legacy_br = m_br.group(1).strip()
+    assert len(legacy_br) < len(br)
+    assert gen_bundle.generation_material_digest == bundle.bundle_digest
+    legacy = generation_material_context_from_compiled_prompt(cp)
+    assert legacy.generation_material_digest != gen_bundle.generation_material_digest
+
+
+def test_check_x1d_judge_packet_hash_uniform_fails_on_drift() -> None:
+    ok, reason = check_x1d_judge_packet_hash_uniform(
+        [
+            {
+                "provider_key": "gemini_pro",
+                "evaluator_mode": "MODEL_BACKED",
+                "judge_packet_hash": "aaaaaaaaaaaaaaaa",
+            },
+            {
+                "provider_key": "anthropic_claude",
+                "evaluator_mode": "MODEL_BACKED",
+                "judge_packet_hash": "bbbbbbbbbbbbbbbb",
+            },
+        ]
+    )
+    assert ok is False
+    assert reason is not None
+    assert "aaaaaaaa" in reason
 
 
 def test_build_generation_grade_contract_manifest_shape() -> None:

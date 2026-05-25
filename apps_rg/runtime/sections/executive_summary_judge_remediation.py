@@ -768,6 +768,7 @@ def rerun_soft_failed_judges(
         return list(prior_judges)
 
     packet_ref = judge_packet_ref
+    rescore_full_panel = False
     if x2_gates is not None and allowed_fact_packet is not None and allowed_fact_ids is not None:
         gate_summary = build_deterministic_gate_summary_from_x2_gates(x2_gates)
         packet = build_executive_summary_judge_packet(
@@ -786,6 +787,18 @@ def rerun_soft_failed_judges(
             artifact_dir / "executive_summary_judge_packet_post_x2.json",
             packet,
         )
+        from apps_rg.runtime.judges.executive_summary_judge_packet import judge_packet_hash
+
+        new_packet_hash = judge_packet_hash(packet)
+        prior_model_hashes = {
+            str(j.get("judge_packet_hash") or j.get("input_hash") or "").strip()
+            for j in prior_judges
+            if isinstance(j, dict)
+            and str(j.get("evaluator_mode") or "") == "MODEL_BACKED"
+            and not j.get("provider_blocked")
+        } - {""}
+        if prior_model_hashes and new_packet_hash not in prior_model_hashes:
+            rescore_full_panel = True
     else:
         packet = dict(judge_packet)
         packet["deterministic_gate_summary"] = build_deterministic_gate_summary(
@@ -798,7 +811,7 @@ def rerun_soft_failed_judges(
             "resume_display_text": resume_display_text,
             "claim_ledger": claim_ledger,
         }
-    keys_to_run = [k for k in judge_keys if k in soft_keys]
+    keys_to_run = list(judge_keys) if rescore_full_panel else [k for k in judge_keys if k in soft_keys]
     if not keys_to_run:
         return list(prior_judges)
 

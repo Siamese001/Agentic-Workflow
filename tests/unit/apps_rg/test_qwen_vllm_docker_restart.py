@@ -59,17 +59,34 @@ def test_restart_disabled_no_docker_subprocess(
     mock_run.assert_not_called()
 
 
-def test_restart_skips_offline_stub(monkeypatch: pytest.MonkeyPatch, clean_restart_env: None) -> None:
+def test_restart_stub_env_does_not_skip_when_probe_healthy(
+    monkeypatch: pytest.MonkeyPatch, clean_restart_env: None
+) -> None:
+    """Offline stub flag alone no longer skips docker restart (live-qwen-only policy)."""
     monkeypatch.setenv("APPS_RG_QWEN_VLLM_DOCKER_RESTART", "1")
     monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
-    from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
+    from apps_rg.runtime import qwen_vllm_docker_restart as mod
 
-    audit = maybe_restart_qwen_vllm_for_apps_rg_run(
-        running_section_lane=False,
-        cli_provider=None,
+    healthy = VLLMHealth(
+        status="healthy",
+        model_id="Qwen/Qwen2.5-32B-Instruct-AWQ",
+        latency_ms=1.0,
+        checked_at=0.0,
     )
+    with (
+        patch.object(mod, "probe", return_value=healthy),
+        patch.object(
+            mod,
+            "fetch_openai_compatible_model_ids",
+            return_value=(200, ["Qwen/Qwen2.5-32B-Instruct-AWQ"], None),
+        ),
+    ):
+        audit = mod.maybe_restart_qwen_vllm_for_apps_rg_run(
+            running_section_lane=False,
+            cli_provider=None,
+        )
     assert audit["skipped"] is True
-    assert audit["reason"] == "offline_contract_stub"
+    assert audit["reason"] == "already_healthy"
 
 
 def test_if_unhealthy_skips_when_probe_healthy(monkeypatch: pytest.MonkeyPatch, clean_restart_env: None) -> None:
@@ -330,9 +347,13 @@ def test_section_lane_mock_skips(monkeypatch: pytest.MonkeyPatch, clean_restart_
     monkeypatch.setenv("APPS_RG_QWEN_VLLM_DOCKER_RESTART", "1")
     from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
 
-    audit = maybe_restart_qwen_vllm_for_apps_rg_run(
-        running_section_lane=True,
-        cli_provider="mock",
-    )
+    with patch(
+        "apps_rg.runtime.section_cli_defaults.resolve_cli_lane_provider_with_source",
+        return_value=("mock", "unit_test"),
+    ):
+        audit = maybe_restart_qwen_vllm_for_apps_rg_run(
+            running_section_lane=True,
+            cli_provider="mock",
+        )
     assert audit["skipped"] is True
     assert audit["reason"] == "section_lane_provider_mock"

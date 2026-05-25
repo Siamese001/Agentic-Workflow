@@ -44,62 +44,14 @@ STYLE_CRITICAL_GATES: frozenset[str] = frozenset(
     }
 )
 
-LANE_CRITICAL_GATES: dict[str, frozenset[str]] = {
-    "headline": frozenset(
-        {
-            "x2_headline_exactly_one_line",
-            "x2_headline_pipe_four_segments",
-            "x2_headline_word_count_10_to_13",
-            "x2_headline_claim_ledger_rows_present",
-        }
-    ),
-    "executive_summary": frozenset(
-        {
-            "x2_exec_summary_sentence_count_6",
-            "x2_exec_summary_jd_alignment_proof_flags",
-            "x2_claim_ledger_claim_text_non_empty",
-            "x2_first_person_zero",
-        }
-    ),
-    "unify_bullets": frozenset(
-        {
-            "x2_unify_bullet_count_6",
-            "x2_claim_ledger_claim_text_non_empty",
-            "x2_text_claim_coverage_integrity",
-        }
-    ),
-    "unify_narrative": frozenset(
-        {
-            "x2_unify_narrative_exactly_one_sentence",
-            "x2_claim_ledger_claim_text_non_empty",
-        }
-    ),
-    "ibm_bullets": frozenset(
-        {
-            "x2_ibm_bullet_count_5",
-            "x2_claim_ledger_claim_text_non_empty",
-        }
-    ),
-    "ibm_narrative": frozenset(
-        {
-            "x2_ibm_narrative_exactly_one_sentence",
-            "x2_claim_ledger_claim_text_non_empty",
-        }
-    ),
-    "competencies": frozenset(
-        {
-            "x2_competencies_min_category_count",
-            "x2_competencies_min_items_per_category",
-            "x2_competencies_no_low_rigor_two_word_items",
-            "x2_competencies_no_credential_relisting",
-            "x2_competencies_role_alignment_terms",
-            "x2_competencies_no_all_generic_skill_phrase",
-            "x2_competencies_keyword_repetition_limit",
-            "x2_claim_ledger_claim_text_non_empty",
-            "x2_gate_rows_are_internally_consistent",
-        }
-    ),
-}
+def _lane_critical_gates_from_product_shape() -> dict[str, frozenset[str]]:
+    """Regression anchors stay aligned with section_product_shape SSOT (W5A rigor tests)."""
+    return {
+        lane: frozenset(section_product_shape(lane).required_gate_ids) for lane in GENERATED_LANES
+    }
+
+
+LANE_CRITICAL_GATES: dict[str, frozenset[str]] = _lane_critical_gates_from_product_shape()
 
 
 @dataclass(frozen=True)

@@ -291,13 +291,13 @@ def run_wizard(
                         file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
             # Clear the file after reading to prevent stale reuse
             try:
-                _input_path.unlink()
+                _input_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- ephemeral wizard input file under .cursor; user already in interactive flow
             except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
             return file_results
         # Stale/unfilled template — discard and fall through to write+poll.
         try:
-            _input_path.unlink()
+            _input_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- discard stale wizard template before re-poll
         except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
         print(f"[wizard] discarded stale/unfilled {_input_path} — re-templating")
@@ -348,7 +348,7 @@ def run_wizard(
             else:
                 file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
     try:
-        _input_path.unlink()
+        _input_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- remove filled wizard input after successful read
     except OSError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
         pass
     return file_results

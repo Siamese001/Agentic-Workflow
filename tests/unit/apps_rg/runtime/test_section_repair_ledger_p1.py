@@ -28,22 +28,30 @@ from apps_rg.runtime.section_repair_policy import (
 def artifact_dir(tmp_path: Path) -> Path:
     d = tmp_path / "run"
     d.mkdir()
-    init_ledger(d, section_id="executive_summary", run_id="run-test")
     return d
 
 
-def test_deterministic_rewrite_blocked_on_product_fail_closed(monkeypatch, artifact_dir: Path) -> None:
+def _bootstrap_product_fail_closed(monkeypatch: pytest.MonkeyPatch, artifact_dir: Path) -> None:
+    """Init ledger after env reflects product fail-closed (conftest sets TEST_HARNESS=1)."""
     monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
     monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    init_ledger(artifact_dir, section_id="executive_summary", run_id="run-test")
+
+
+def test_deterministic_rewrite_blocked_on_product_fail_closed(monkeypatch, artifact_dir: Path) -> None:
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     assert deterministic_rewrite_allowed() is False
-    assert graph_only_reformat_allowed() is False
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED,
+    )
+
+    assert graph_only_reformat_allowed() is bool(RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED)
 
 
 def test_ledger_blocks_pass_after_deterministic_rewrite_without_regen(
     monkeypatch, artifact_dir: Path
 ) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_repair(
         artifact_dir,
         kind=KIND_DETERMINISTIC_REWRITE,
@@ -74,8 +82,7 @@ def test_ledger_blocks_pass_after_deterministic_rewrite_without_regen(
 def test_ledger_allows_graph_only_quality_repair_without_blocking_product_pass(
     monkeypatch, artifact_dir: Path
 ) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_repair(
         artifact_dir,
         kind=KIND_DETERMINISTIC_REWRITE,
@@ -91,8 +98,7 @@ def test_ledger_allows_graph_only_quality_repair_without_blocking_product_pass(
 def test_ledger_allows_counted_regen_authoritative_attempt(
     monkeypatch, artifact_dir: Path
 ) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_x2_run(
         artifact_dir,
         run_number=1,
@@ -128,8 +134,7 @@ def test_ledger_allows_counted_regen_authoritative_attempt(
 def test_mechanical_only_after_attempt1_x2_fail_still_blocks_pass(
     monkeypatch, artifact_dir: Path
 ) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_x2_run(
         artifact_dir,
         run_number=1,
@@ -158,8 +163,7 @@ def test_mechanical_only_after_attempt1_x2_fail_still_blocks_pass(
 def test_mechanical_finalize_coherence_does_not_block_product_pass(
     monkeypatch, artifact_dir: Path
 ) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_repair(
         artifact_dir,
         kind=KIND_MECHANICAL,
@@ -188,8 +192,7 @@ def test_mechanical_finalize_coherence_does_not_block_product_pass(
 
 
 def test_regen_without_authoritative_bump_blocks_pass(monkeypatch, artifact_dir: Path) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_repair(
         artifact_dir,
         kind=KIND_REGEN_LLM,
@@ -212,8 +215,7 @@ def test_regen_without_authoritative_bump_blocks_pass(monkeypatch, artifact_dir:
 def test_regen_with_authoritative_bump_allows_product_pass(
     monkeypatch, artifact_dir: Path
 ) -> None:
-    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
-    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     record_repair(
         artifact_dir,
         kind=KIND_REGEN_LLM,

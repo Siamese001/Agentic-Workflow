@@ -25,9 +25,16 @@ from apps_rg.runtime.section_l2_spine_receipt import (
     build_l2_execution_packet_for_section,
     l2_spine_kill_switch_enabled,
 )
-from tests.unit.apps_rg.test_one_spine_fec_bridge_w5a import W5A_SECTIONS, _args, _minimal_pool
+from tests.unit.apps_rg.test_one_spine_fec_bridge_w5a import (
+    W5A_SECTIONS,
+    _args,
+    _minimal_pool,
+    _patch_spine_c0_retrieve,
+)
 
 REPO = Path(__file__).resolve().parents[3]
+
+pytestmark = pytest.mark.usefixtures("_patch_spine_c0_retrieve")
 
 
 def _write_json(path: Path, doc: dict) -> None:

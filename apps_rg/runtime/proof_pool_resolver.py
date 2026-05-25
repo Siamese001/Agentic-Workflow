@@ -36,6 +36,7 @@ from apps_rg.fact_inventory.augmented_skills_graph import (
     merge_dual_source_proof_pool_metadata,
     resolve_augmented_skills_graph_authority,
 )
+from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGER
 from apps_rg.runtime.sections.selected_role_fact_set import (
     build_allowed_fact_ids_for_plan_facts,
     graph_only_proof_pool_metadata,
@@ -698,6 +699,7 @@ def _resolve_competencies_graph_skills_proof_pool(
 def resolve_section_proof_pool(
     *,
     section: str,
+    selected_role_fact_set_path: str | None = None,
     broad_skills_ledger_path: str | None = None,
     base_resume_ref: str | None = None,
     target_company: str = "",
@@ -715,6 +717,7 @@ def resolve_section_proof_pool(
     legacy_broad_skills_ledger: bool = False,
 ) -> SectionProofPool:
     """Resolve claim-support proof pool for a canonical section lane."""
+    _ = selected_role_fact_set_path  # legacy containment fixtures; graph authority is SSOT
     from apps_rg.runtime.spine.front_contracts import (
         assert_proof_pool_front_spine_preconditions,
     )

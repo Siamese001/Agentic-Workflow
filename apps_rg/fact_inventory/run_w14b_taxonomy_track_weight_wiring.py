@@ -45,7 +45,9 @@ def main() -> int:
     ]
     env = dict(__import__("os").environ)
     env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
-    pytest_run = subprocess.run(pytest_cmd, cwd=str(ROOT), capture_output=True, text=True, env=env)
+    pytest_run = subprocess.run(  # guardian: allow-chokepoint-bypass -- fact-inventory wiring proof runs pytest subprocess with explicit env
+        pytest_cmd, cwd=str(ROOT), capture_output=True, text=True, env=env
+    )
     # W14 with manifest override (baseline)
     w14_with = run_w14(
         use_manifest_weight_override=True,
