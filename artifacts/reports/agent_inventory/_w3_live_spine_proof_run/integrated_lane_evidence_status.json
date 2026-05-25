@@ -1,0 +1,59 @@
+{
+  "schema_version": "integrated_lane_evidence_status_v1",
+  "generated_at_utc": "2026-05-25T13:22:38.083459+00:00",
+  "integrated_run_id": "_w3_live_spine_proof_run",
+  "correlation_id": "e82e28c19a5e4133",
+  "lanes_finalized": [],
+  "lane_bundle_ref_count": 7,
+  "executed_lane_count": 0,
+  "not_run_lane_count": 7,
+  "missing_lanes": [
+    {
+      "lane_id": "competencies",
+      "reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/competencies/real/<run_id>/"
+    },
+    {
+      "lane_id": "executive_summary",
+      "reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/executive_summary/real/<run_id>/"
+    },
+    {
+      "lane_id": "headline",
+      "reason": "PHASE1_NO_RUN_DIR",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/headline/real/<run_id>/"
+    },
+    {
+      "lane_id": "ibm_bullets",
+      "reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_bullets/real/<run_id>/"
+    },
+    {
+      "lane_id": "ibm_narrative",
+      "reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_narrative/real/<run_id>/"
+    },
+    {
+      "lane_id": "unify_bullets",
+      "reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_bullets/real/<run_id>/"
+    },
+    {
+      "lane_id": "unify_narrative",
+      "reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_narrative/real/<run_id>/"
+    }
+  ],
+  "shadow_artifacts_rejected": [
+    "executive_summary_demo",
+    "generated_lane_rollup.json",
+    "orchestrate_full_resume",
+    "resume_package_x3"
+  ],
+  "explicit_non_claims": [
+    "parent integrated evidence does not consume orchestrate_full_resume rollup",
+    "parent integrated evidence does not consume resume_package_x3",
+    "parent integrated evidence does not consume executive_summary_demo",
+    "product certification not upgraded by packaging alone"
+  ]
+}

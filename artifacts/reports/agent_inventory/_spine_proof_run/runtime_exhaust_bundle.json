@@ -1,0 +1,16 @@
+{
+  "artifact_hash": "sha256:d66cad5b36a04a1218f61c9ad56b04dda3a6717ac60bc9f94777436e8e6b0201",
+  "payload": {
+    "chain_kind": "R4_SINGLE_ACTION",
+    "l2_fault": "",
+    "request_id": "req-9ef76dec33f044db9de375608927683a",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "95a3e615-ff22-4185-aaa0-725852a96284",
+    "runtime_mode": "fixture",
+    "sealed_at_utc": "2026-05-25T13:24:02Z",
+    "synthetic_trace_detected": false,
+    "trace_root": "trace-5ab645474d8c4a6f873ce4bc5c3ba8fa",
+    "x3_disposition": "X3D"
+  },
+  "schema_version": "runtime_exhaust_bundle.v1"
+}

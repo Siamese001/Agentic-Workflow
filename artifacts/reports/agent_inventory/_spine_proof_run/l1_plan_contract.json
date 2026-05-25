@@ -1,0 +1,16 @@
+{
+  "payload": {
+    "artifact_hash": "sha256:2ac709d0a1e3d17bd65f4d5a9bfb267c4facee74302a3b90a3d71a9de4aca0bb",
+    "chain_kind": "R4_SINGLE_ACTION",
+    "emitted_at": "2026-05-25T12:17:34Z",
+    "l2_fault": "",
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
+    "request_id": "req-36a8cbc35c78456c8a1250d508ba24c7",
+    "route_family": "R4_SINGLE_ACTION",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "28d40bf3-099f-423d-88ec-f40ed6c2b414",
+    "terminal_r5": false,
+    "x3_disposition": "X3D"
+  },
+  "schema_version": "l1_plan_contract.v1"
+}

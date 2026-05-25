@@ -1,0 +1,13 @@
+{
+  "artifact_hash": "sha256:08c373cf6ae4f0c4fccd3b1097bb412ded59f2494dd3c2b83bb2078ba913932b",
+  "chain_kind": "R4_SINGLE_ACTION",
+  "emitted_at": "2026-05-25T13:24:02Z",
+  "l2_fault": "",
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
+  "request_id": "req-9ef76dec33f044db9de375608927683a",
+  "route_family": "R4_SINGLE_ACTION",
+  "route_id": "apps_rg.resume_generation_v1",
+  "run_id": "95a3e615-ff22-4185-aaa0-725852a96284",
+  "terminal_r5": false,
+  "x3_disposition": "X3D"
+}

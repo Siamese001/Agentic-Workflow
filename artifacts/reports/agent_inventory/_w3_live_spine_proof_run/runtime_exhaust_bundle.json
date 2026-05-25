@@ -1,0 +1,16 @@
+{
+  "artifact_hash": "sha256:582096ba7567441452a7db860817120adf087b09de1bc04fad5ba66945c2461d",
+  "payload": {
+    "chain_kind": "R4_SINGLE_ACTION",
+    "l2_fault": "L2_EXECUTION_ERROR:RuntimeError:FAILED_MODULAR_R4: decisive='FAIL' failure='fatal_lane_recipe_policy:headline:PHASE1_NO_RUN_DIR; executive_summary:PHASE1_PRIOR_LANE_FAILED; unify_bullets:PHASE1_PRIOR_LANE_FAILED; unify_narrative:PHASE1_PRIOR_LANE_FAILED; ibm_bullets:PHASE1_PRIOR_LANE_FAILED; ibm_narrative:PHASE1_PRIOR_LANE_FAILED; competencies:PHASE1_PRIOR_LANE_FAILED' schema_ok=False lane_ok=False",
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "runtime_mode": "fault",
+    "sealed_at_utc": "2026-05-25T13:22:38Z",
+    "synthetic_trace_detected": false,
+    "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+    "x3_disposition": "X3A"
+  },
+  "schema_version": "runtime_exhaust_bundle.v1"
+}

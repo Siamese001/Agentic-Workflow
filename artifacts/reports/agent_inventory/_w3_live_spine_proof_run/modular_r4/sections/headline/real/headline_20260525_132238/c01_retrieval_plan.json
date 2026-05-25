@@ -1,0 +1,25 @@
+{
+  "schema_version": "c01_retrieval_plan_v1",
+  "section_id": "headline",
+  "target_role": "SVP IT Strategy & Innovation",
+  "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+  "jd_constraints_present": false,
+  "jd_text_excerpt": "Senior Vice President, IT Strategy & Innovation\nBrown & Brown\nRequisition: R26_0000001653\n\nremote type: Remote\nlocations: Plano, TX, USA; Virginia Beach, VA, USA; Charlotte, NC, USA\ntime type: Full time\nposted: Posted 13 Days Ago\n\nBuilt on ",
+  "route_ref": "route_contract.json",
+  "retrieval_targets": {
+    "primary_targets": [
+      "strongest_positioning_facts",
+      "role_family_fit",
+      "brokerage_distribution_innovation",
+      "interoperability_integration_facts",
+      "it_strategy_innovation_facts"
+    ],
+    "secondary_targets": [
+      "metric_highlights",
+      "innovation_labs_pilots",
+      "enterprise_architecture_alignment"
+    ]
+  },
+  "jd_as_proof": false,
+  "generic_docs_as_truth": false
+}

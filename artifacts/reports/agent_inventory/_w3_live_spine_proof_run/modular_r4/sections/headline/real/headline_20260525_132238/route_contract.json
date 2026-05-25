@@ -1,0 +1,121 @@
+{
+  "contract_type": "RouteContract",
+  "contract_version": "apps_rg_spine_front_contracts_v1",
+  "producer_stage": "L0",
+  "consumer_stage": "section_lane_modular",
+  "request_id": "66ef0499-13ff-472e-9e08-74e3729fd8ee",
+  "run_id": "3bcd635e-6adc-4410-886c-4adc47e0af7c",
+  "l1_plan_contract_ref": "l1_plan_contract.json",
+  "parent_contract_ref": "66ef0499-13ff-472e-9e08-74e3729fd8ee",
+  "route_id": "R3_SIMPLE_GROUNDED_READ",
+  "grounding_required": true,
+  "execution_form": "SINGLE_STEP",
+  "payload": {
+    "request_id": "66ef0499-13ff-472e-9e08-74e3729fd8ee",
+    "run_id": "3bcd635e-6adc-4410-886c-4adc47e0af7c",
+    "app_id": "apps_rg",
+    "trace_id": "b7081cd2-6cc6-4e43-853b-9d4f8dd384fa",
+    "route_id": "R3_SIMPLE_GROUNDED_READ",
+    "l3_required": false,
+    "grounding_required": true,
+    "model_generation_required": true,
+    "write_authority_present": false,
+    "tenant_id": "default",
+    "sandbox_required": false,
+    "egress_policy_ref": "",
+    "allowed_tools": [],
+    "allowed_models": [],
+    "allowed_networks": [],
+    "allowed_file_roots": [],
+    "route_family": "R3_SIMPLE_GROUNDED_READ",
+    "execution_form": "SINGLE_STEP",
+    "cache_eligibility": {
+      "r1a_exact": true,
+      "r1b_semantic": true,
+      "r3_grounded": true,
+      "r4_action": false
+    },
+    "action_required": false,
+    "workflow_ref": "",
+    "workflow_manifest_ref": "",
+    "workflow_registry_ref": "",
+    "registry_resolution_receipt_ref": "",
+    "route_gate_refs": [
+      "G07_GROUNDING_READINESS:PASS:1.000",
+      "G08_PERSONALIZATION:NOT_APPLICABLE:0.000",
+      "G10_BUDGET:NOT_APPLICABLE:0.000",
+      "G20_ROUTE_BUDGET:UNKNOWN:0.000"
+    ],
+    "route_gate_receipts": [
+      {
+        "gate_id": "G07_GROUNDING_READINESS",
+        "verdict": "PASS",
+        "score": 1.0,
+        "facts_present": true,
+        "adapter_kind": "TEMPORARY_THIN_ADAPTER",
+        "reason": "jd_hash+resume_hash required for grounding PASS"
+      },
+      {
+        "gate_id": "G08_PERSONALIZATION",
+        "verdict": "NOT_APPLICABLE",
+        "score": 0.0,
+        "facts_present": true,
+        "adapter_kind": "TEMPORARY_THIN_ADAPTER",
+        "reason": "personalization not active for this profile"
+      },
+      {
+        "gate_id": "G10_BUDGET",
+        "verdict": "NOT_APPLICABLE",
+        "score": 0.0,
+        "facts_present": false,
+        "adapter_kind": "TEMPORARY_THIN_ADAPTER",
+        "reason": "budget enforcement disabled in route profile"
+      },
+      {
+        "gate_id": "G20_ROUTE_BUDGET",
+        "verdict": "UNKNOWN",
+        "score": 0.0,
+        "facts_present": false,
+        "adapter_kind": "TEMPORARY_THIN_ADAPTER",
+        "reason": "budget profile not enforced — UNKNOWN per p3.2 policy"
+      }
+    ],
+    "allowed_next_stage": [],
+    "provider_model_requirement_ref": "apps_rg::provider_model::resume_generation::v1",
+    "personalization_required": false,
+    "work_shape": "narrow_regeneration",
+    "task_shape": "section_regen",
+    "route_profile_ref": "arpf::apps_rg::resume_generation::default_single_step::v1",
+    "route_policy_ref": "apps_rg/config/domain_contract/route_profiles.yaml#arpf::apps_rg::resume_generation::default_single_step::v1",
+    "route_digest": "",
+    "hmac_sig": "",
+    "cache_lookup_r1a_receipt": "",
+    "cache_lookup_r1b_receipt": "",
+    "cache_lookup_r5_receipt": "",
+    "r1a_lookup_receipt_ref": "",
+    "r1b_lookup_receipt_ref": "",
+    "r5_fallback_receipt_ref": "",
+    "reason_codes": [
+      "execution_form=SINGLE_STEP"
+    ],
+    "routing_timestamp": "2026-05-25T13:22:37.966010+00:00",
+    "schema_version": "W6.0",
+    "otel_span_refs": [
+      "span:l0:route_decision:b7081cd2-6cc6-4e43-853b-9d4f8dd384fa:3bcd635e-6adc-4410-886c-4adc47e0af7c:ebe33c4c6615c841"
+    ],
+    "audit_refs": [],
+    "signature": "",
+    "posture": {
+      "read_only": true,
+      "external_call": false,
+      "write_intent": false,
+      "hitl_required": false,
+      "posture_class": "read_only"
+    },
+    "gate_verdict_refs": [],
+    "replay_key": "",
+    "snapshot_refs": [],
+    "l5_certification_ref": "test:valid:w6",
+    "graph_traverse_policy": null
+  }
+}

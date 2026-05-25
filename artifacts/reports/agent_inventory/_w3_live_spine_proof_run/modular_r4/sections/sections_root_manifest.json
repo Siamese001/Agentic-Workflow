@@ -1,0 +1,12 @@
+{
+  "schema_version": "1",
+  "root_kind": "modular_r4_sections_root",
+  "root_path": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections",
+  "created_at": "2026-05-25T13:22:37.628997+00:00",
+  "source_env_var": "APPS_RG_MODULAR_R4_SECTIONS_ROOT",
+  "artifact_namespace": "artifacts/apps_rg/runs",
+  "correlation_id": null,
+  "integrated_run_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run",
+  "run_links_ref": null,
+  "notes": "scoped Phase 1 sections root modular_r4/artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections (run_id=e82e28c19a5e4133)"
+}

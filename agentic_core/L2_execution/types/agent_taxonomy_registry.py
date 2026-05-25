@@ -5,6 +5,12 @@ This module maintains the canonical taxonomy mapping for all agents
 in the system, ensuring every agent is classified into one of the
 seven canonical roles.
 
+**Inventory/control surface only (ADR-088):** Rows here document governance
+classification. They do **not** prove product-spine E2E invocation. The
+canonical product spine is function/stage based — see
+``agentic_core/runtime/LAYER.md`` and
+``docs/architecture/adr/ADR-088-product-spine-function-truth.md``.
+
 Generated: Wave 1 of Agent Taxonomy & Healing Standardization Hardening
 """
 
@@ -14,12 +20,24 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+from agentic_core.L2_execution.types.agent_taxonomy_spine_axes import (
+    AgenthoodStatus,
+    InventoryRole,
+    ProductSpineInvocationStatus,
+    RuntimeProofClass,
+    validate_taxonomy_spine_invariants,
+)
 from agentic_core.L2_execution.types.l2_execution_contract import CanonicalAgentRole
 
 __all__ = [
     "AgentClassification",
     "AgentTaxonomyRegistry",
     "AGENT_TAXONOMY_MAP",
+    "AgenthoodStatus",
+    "InventoryRole",
+    "ProductSpineInvocationStatus",
+    "RuntimeProofClass",
+    "validate_taxonomy_spine_invariants",
 ]
 
 
@@ -46,6 +64,14 @@ class AgentClassification:
     is_shim: bool
     implements_l2_contract: bool
     notes: str = ""
+    # ADR-088 orthogonal axes (W1) — registration does not imply product-spine invocation
+    agenthood_status: AgenthoodStatus = AgenthoodStatus.NOT_AGENT
+    inventory_role: InventoryRole = InventoryRole.TRUE_AGENT_NOT_ON_PRODUCT_SPINE
+    product_spine_invocation_status: ProductSpineInvocationStatus = (
+        ProductSpineInvocationStatus.NOT_ARTIFACT_PROVEN
+    )
+    runtime_proof_class: RuntimeProofClass = RuntimeProofClass.NONE
+    spine_proof_ref: str = ""
 
 
 class AgentTaxonomyRegistry:
@@ -117,7 +143,7 @@ class AgentTaxonomyRegistry:
 # This map contains the authoritative classification for all agents
 # as determined by architectural analysis of the codebase.
 
-AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
+_RAW_AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
     # ============================================
     # L0: ROUTING AGENTS
     # ============================================
@@ -126,10 +152,10 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         class_name="RootCustomsAgent",
         current_layer="L0",
         canonical_role=CanonicalAgentRole.ROUTER,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
+        status=AgentStatus.ARCHIVED,
+        is_shim=True,
         implements_l2_contract=False,
-        notes="Root routing agent for L0 customs/validation",
+        notes="W2: thin delegating shim only; legacy body archived under archives/agents/2026-05-25/. Use root_customs_util.",
     ),
     "SSOTFolderCleanupAgent": AgentClassification(
         file_path="agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
@@ -1271,6 +1297,12 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="DELETED WAVE 10: Was SHIM → apps_lic.config.archetype_indicator_config. File removed.",
     ),
 }
+
+from agentic_core.L2_execution.types.agent_taxonomy_w1_merge import finalize_taxonomy_map  # noqa: E402
+
+AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = finalize_taxonomy_map(
+    _RAW_AGENT_TAXONOMY_MAP,
+)
 
 
 def get_taxonomy_registry() -> AgentTaxonomyRegistry:

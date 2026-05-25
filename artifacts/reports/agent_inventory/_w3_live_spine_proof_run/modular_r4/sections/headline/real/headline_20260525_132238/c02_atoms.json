@@ -1,0 +1,188 @@
+{
+  "schema_version": "c02_evidence_fetch_v1",
+  "section_id": "headline",
+  "atoms": [
+    {
+      "fact_id": "fact_engineering_platform_005",
+      "text_to_embed": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+      "source_type": "proof_pool",
+      "source_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+      "source_span_ref": "ledger:fact_engineering_platform_005",
+      "confidence": "HIGH",
+      "domain_tags": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "skill_tags": [
+        "cloud_native",
+        "aws",
+        "databricks",
+        "microservices",
+        "vector_services",
+        "api_gateway",
+        "identity"
+      ],
+      "metric_refs": [],
+      "career_phase_refs": [],
+      "graph_node_refs": [],
+      "allowed_sections": [
+        "headline"
+      ],
+      "blocked_sections": [],
+      "proof_status": "proof_eligible",
+      "requires_trace_audit": false,
+      "retrieval_score": 1.0,
+      "rejected_reason": ""
+    },
+    {
+      "fact_id": "fact_engineering_platform_003",
+      "text_to_embed": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
+      "source_type": "proof_pool",
+      "source_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+      "source_span_ref": "ledger:fact_engineering_platform_003",
+      "confidence": "HIGH",
+      "domain_tags": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "skill_tags": [
+        "retrieval_quality",
+        "context_assembly",
+        "eval_gates",
+        "telemetry",
+        "rollback",
+        "ai_cicd"
+      ],
+      "metric_refs": [],
+      "career_phase_refs": [],
+      "graph_node_refs": [],
+      "allowed_sections": [
+        "headline"
+      ],
+      "blocked_sections": [],
+      "proof_status": "proof_eligible",
+      "requires_trace_audit": false,
+      "retrieval_score": 1.0,
+      "rejected_reason": ""
+    },
+    {
+      "fact_id": "fact_consulting_001",
+      "text_to_embed": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains.",
+      "source_type": "proof_pool",
+      "source_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+      "source_span_ref": "ledger:fact_consulting_001",
+      "confidence": "HIGH",
+      "domain_tags": [
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "skill_tags": [
+        "regulatory_transformation",
+        "legacy_modernization",
+        "financial_services"
+      ],
+      "metric_refs": [],
+      "career_phase_refs": [],
+      "graph_node_refs": [],
+      "allowed_sections": [
+        "headline"
+      ],
+      "blocked_sections": [],
+      "proof_status": "proof_eligible",
+      "requires_trace_audit": false,
+      "retrieval_score": 1.0,
+      "rejected_reason": ""
+    },
+    {
+      "fact_id": "fact_engineering_platform_004",
+      "text_to_embed": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability.",
+      "source_type": "proof_pool",
+      "source_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+      "source_span_ref": "ledger:fact_engineering_platform_004",
+      "confidence": "HIGH",
+      "domain_tags": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "skill_tags": [
+        "ai_lifecycle",
+        "production_adoption",
+        "auditability"
+      ],
+      "metric_refs": [
+        "6 months to 3 weeks"
+      ],
+      "career_phase_refs": [],
+      "graph_node_refs": [],
+      "allowed_sections": [
+        "headline"
+      ],
+      "blocked_sections": [],
+      "proof_status": "proof_eligible",
+      "requires_trace_audit": false,
+      "retrieval_score": 1.0,
+      "rejected_reason": ""
+    },
+    {
+      "fact_id": "fact_engineering_platform_002",
+      "text_to_embed": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+      "source_type": "proof_pool",
+      "source_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+      "source_span_ref": "ledger:fact_engineering_platform_002",
+      "confidence": "HIGH",
+      "domain_tags": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "skill_tags": [
+        "dependency_graph",
+        "legacy_modernization",
+        "refactor_risk"
+      ],
+      "metric_refs": [],
+      "career_phase_refs": [],
+      "graph_node_refs": [],
+      "allowed_sections": [
+        "headline"
+      ],
+      "blocked_sections": [],
+      "proof_status": "proof_eligible",
+      "requires_trace_audit": false,
+      "retrieval_score": 1.0,
+      "rejected_reason": ""
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "source_type": "briefing",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "generic_best_practice",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "jd_payload",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "company_research",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "governance_docs",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "jd_payload_inline",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "app_payload_inline",
+      "reason": "forbidden_as_candidate_proof"
+    },
+    {
+      "source_type": "rubrics",
+      "reason": "forbidden_as_candidate_proof"
+    }
+  ],
+  "graph_inference_performed": false,
+  "jd_used_as_proof": false,
+  "srfs_ref": "",
+  "proof_pool_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json"
+}

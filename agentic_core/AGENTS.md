@@ -25,6 +25,16 @@ These are **generic** and belong here:
 - Generic L6 completed-run consumer — consumes meta-feedback profiles
 - **Multi-provider judge panel harness** — `runtime/judges/panel/` (`JudgePanelRunner`, `CanonicalJudgeContract`, transport preflight, gate-closure reconcile algorithm). Apps register `JudgeProviderAdapter` implementations and supply rubric/gate-closure maps; core enforces one contract hash and provider-neutral pass math.
 
+### Product spine vs agent taxonomy (SSOT — ADR-088)
+
+| Surface | Role |
+|---------|------|
+| `run_integrated_single_action_spine` + linked pipeline functions | **Canonical product E2E spine** (function/stage based) |
+| `AGENT_TAXONOMY_MAP` | **Inventory/control only** — not the runtime execution graph |
+| `*Agent` classes | Adjacent governance/healing/validation unless **artifact-proven** spine-invoked (A1) |
+
+Taxonomy registration **does not** imply E2E invocation (A2). See [ADR-088](../docs/architecture/adr/ADR-088-product-spine-function-truth.md) and [runtime/LAYER.md](runtime/LAYER.md).
+
 ### Vocabulary — Exit vs 00C vs L5 vs UWG vs L6 (SSOT)
 
 Docs-only clarity (child plan **f8e3c1** W5); behavior unchanged.

@@ -1,0 +1,60 @@
+{
+  "artifact_hash": "sha256:5d24795d0ec7be4b61d4cfc83c7ed3d914460a4cf6f5110536894fb7c467e66b",
+  "payload": {
+    "chain_kind": "R4_SINGLE_ACTION",
+    "emitted_at_utc": "2026-05-25T13:22:38Z",
+    "execution_form": "R4_SINGLE_ACTION",
+    "l2_fault": "L2_EXECUTION_ERROR:RuntimeError:FAILED_MODULAR_R4: decisive='FAIL' failure='fatal_lane_recipe_policy:headline:PHASE1_NO_RUN_DIR; executive_summary:PHASE1_PRIOR_LANE_FAILED; unify_bullets:PHASE1_PRIOR_LANE_FAILED; unify_narrative:PHASE1_PRIOR_LANE_FAILED; ibm_bullets:PHASE1_PRIOR_LANE_FAILED; ibm_narrative:PHASE1_PRIOR_LANE_FAILED; competencies:PHASE1_PRIOR_LANE_FAILED' schema_ok=False lane_ok=False",
+    "l2_recipe_executed": true,
+    "l2_recipe_run_report_ref": "",
+    "l2_sub_stages": [
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "app_name": "apps_rg"
+        },
+        "status": "PASS",
+        "sub_stage_id": "E1",
+        "sub_stage_name": "Prep: Plan Decomposition"
+      },
+      {
+        "duration_ms": 0.007,
+        "meta": {},
+        "status": "PASS",
+        "sub_stage_id": "E2",
+        "sub_stage_name": "Valid: Pre-Execution Contract Check"
+      },
+      {
+        "duration_ms": 511.593,
+        "meta": {
+          "fault": "L2_EXECUTION_ERROR:RuntimeError:FAILED_MODULAR_R4: decisive='FAIL' failure='fatal_lane_recipe_policy:headline:PHASE1_NO_RUN_DIR; executive_summary:PHASE1_PRIOR_LANE_FAILED; unify_bullets:PHASE1_PRIOR_LANE_FAILED; unify_narrative:PHASE1_PRIOR_LANE_FAILED; ibm_bullets:PHASE1_PRIOR_LANE_FAILED; ibm_narrative:PHASE1_PRIOR_LANE_FAILED; competencies:PHASE1_PRIOR_LANE_FAILED' schema_ok=False lane_ok=False"
+        },
+        "status": "FAIL",
+        "sub_stage_id": "E3",
+        "sub_stage_name": "Exec: Tool Dispatch"
+      },
+      {
+        "duration_ms": 0.007,
+        "meta": {
+          "retry_attempted": false
+        },
+        "status": "NOT_APPLICABLE",
+        "sub_stage_id": "E4",
+        "sub_stage_name": "Heal: Retry / Recovery"
+      },
+      {
+        "duration_ms": 0.0,
+        "meta": {},
+        "status": "FAIL",
+        "sub_stage_id": "E5",
+        "sub_stage_name": "Seal: Output Assembly"
+      }
+    ],
+    "no_l2_execution_assertion": true,
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36"
+  },
+  "schema_version": "terminal_ret_packet.v1"
+}

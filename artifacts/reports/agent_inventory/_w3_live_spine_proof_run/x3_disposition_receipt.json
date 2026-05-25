@@ -1,0 +1,12 @@
+{
+  "artifact_hash": "sha256:0b1df819d2afd1370ee5f63c8d67b01dcc4f763798859e77f32eac7ef45706fc",
+  "payload": {
+    "disposition": "X3A",
+    "emitted_at_utc": "2026-05-25T13:22:38Z",
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+    "unknown_never_pass": true
+  },
+  "schema_version": "x3_disposition_receipt.v1"
+}

@@ -1,0 +1,131 @@
+{
+  "contract_type": "L1PlanContract",
+  "contract_version": "apps_rg_spine_front_contracts_v1",
+  "producer_stage": "L1",
+  "consumer_stage": "L0",
+  "request_id": "66ef0499-13ff-472e-9e08-74e3729fd8ee",
+  "run_id": "3bcd635e-6adc-4410-886c-4adc47e0af7c",
+  "validated_request_ref": "validated_request.json",
+  "parent_contract_ref": "66ef0499-13ff-472e-9e08-74e3729fd8ee",
+  "payload": {
+    "request_id": "66ef0499-13ff-472e-9e08-74e3729fd8ee",
+    "run_id": "3bcd635e-6adc-4410-886c-4adc47e0af7c",
+    "app_id": "apps_rg",
+    "trace_id": "b7081cd2-6cc6-4e43-853b-9d4f8dd384fa",
+    "task_plan": [
+      "validate_ingress",
+      "load_profiles",
+      "collect_evidence",
+      "generate_section",
+      "assemble_output",
+      "exit_eval"
+    ],
+    "required_capabilities": [
+      "ingress_validation",
+      "evidence_collection",
+      "model_generation"
+    ],
+    "grounding_required": true,
+    "model_generation_required": true,
+    "write_authority_present": false,
+    "tenant_id": "default",
+    "profile_manifest_digest": "84d5a393c07c0b528f4f8709bbcb49c6c536224cf44f0adfb86b393463738abf",
+    "target_level": "",
+    "task_spec": {
+      "generation_mode": "section_regen",
+      "task_class": "resume_generation",
+      "capability_requirements": [
+        "needs_strong_narrative",
+        "needs_long_context"
+      ]
+    },
+    "query_spec": {
+      "jd_hash": "6f3833fae9ad038a82fde25de41ab0ebaad5da14a612c29a7d9427fb1a94a21d",
+      "resume_hash": "b7919ee046f964f52482e4b344770e8df3d611945db5f6fad782164fe46730e2",
+      "target": {
+        "company": "Brown & Brown",
+        "role": "SVP IT Strategy & Innovation",
+        "level": ""
+      }
+    },
+    "support_expectation": {
+      "min_quality": 0.75,
+      "min_ats": 70,
+      "word_min": 400,
+      "word_max": 1200,
+      "provenance_required": true,
+      "fact_checked_required": true,
+      "per_bullet_required": true,
+      "source_quote_required": true
+    },
+    "output_expectation": {
+      "formats": [
+        "json"
+      ],
+      "provenance_required": true,
+      "fact_checked_required": true
+    },
+    "policy_refs": {
+      "manifest_digest": "54eb13215cc8f4d497fba24d2d4a6ed12000ea1e0d1a7d07df1916868d57ef4a",
+      "prompt_registry_ref": "apps_rg/prompt_assembly/templates/registry.v1.yaml",
+      "hitl_policy_ref": "apps_rg/config/hitl_trigger_policy.yaml",
+      "l0_policy_ref": "apps_rg/config/l0_policy.yaml",
+      "agent_spec_ref": "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml",
+      "thresholds_ref": "apps_rg/config/rg_thresholds.yaml",
+      "l5_governance_profile_ref": "apps_rg/profiles/rg_l5_governance_profile.yaml"
+    },
+    "multiple_work_units_hint": false,
+    "merge_required_hint": false,
+    "per_unit_quality_selection_hint": false,
+    "candidate_generation_expected_hint": false,
+    "planning_timestamp": "",
+    "schema_version": "W6.0",
+    "otel_span_refs": [],
+    "audit_refs": [],
+    "signature": "",
+    "posture": {
+      "read_only": true,
+      "external_call": false,
+      "write_intent": false,
+      "hitl_required": false,
+      "posture_class": "read_only"
+    },
+    "gate_verdict_refs": [],
+    "replay_key": "Brown & Brown:SVP IT Strategy & Innovation:b7919ee046f964f5:6f3833fae9ad038a::v1",
+    "snapshot_refs": [],
+    "l5_certification_ref": "test:valid:w6",
+    "non_authority_assertion": {
+      "no_evidence_retrieval": true,
+      "no_pa_assembly": true,
+      "no_model_call": true,
+      "no_c0_import": true
+    },
+    "planning_prior_refs": [
+      "apps_rg/profiles/rg_planning_profile.yaml"
+    ],
+    "route_hints": {
+      "authority_class": "ADVISORY_ONLY",
+      "execution_shape_hint": "single_work_unit_direct"
+    },
+    "work_shape": "narrow_regeneration",
+    "task_shape": "section_regen",
+    "route_profile_ref": "apps_rg/config/domain_contract/route_profiles.yaml",
+    "prompt_bom_refs": [
+      "apps_rg/prompt_assembly/templates/registry.v1.yaml"
+    ],
+    "judge_eval_expectation_refs": [],
+    "validation_receipt_id": "l1val-66ef0499-5d55c177e45090fa",
+    "ambiguity_register": {
+      "schema_version": "apps_rg_ambiguity_register_v1",
+      "register_id": "amb-285dcc266307",
+      "entries": [
+        {
+          "code": "TARGET_LEVEL_UNSPECIFIED",
+          "field": "target_level",
+          "severity": "low",
+          "note": "Default L0 profile selection may apply"
+        }
+      ]
+    }
+  }
+}

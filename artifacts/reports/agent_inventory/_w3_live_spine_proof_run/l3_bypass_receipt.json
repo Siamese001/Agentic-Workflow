@@ -1,0 +1,15 @@
+{
+  "artifact_hash": "sha256:ddad509f46f9bfda785387865d86e1de4f6c43ff126be2e30e79dfe430d6507c",
+  "payload": {
+    "bypass_reason": "R4_DETERMINISTIC_PIPELINE_NO_RUNTIME_ORCHESTRATION",
+    "chain_kind": "R4_SINGLE_ACTION",
+    "no_model_execution": true,
+    "no_orchestration": true,
+    "no_tool_execution": true,
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36"
+  },
+  "schema_version": "l3_bypass_receipt.v1"
+}

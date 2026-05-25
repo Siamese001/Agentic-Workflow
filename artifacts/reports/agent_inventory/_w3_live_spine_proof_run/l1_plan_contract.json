@@ -1,0 +1,23 @@
+{
+  "payload": {
+    "artifact_hash": "sha256:fb56194c6542fbd6a45d1235673f182182c343e3d5051eeb95b1396703ffec5d",
+    "cache_miss_receipt_ref": "artifact://whole_run_cache_preflight_miss.json",
+    "cache_preflight_completed": true,
+    "cache_result": "fallthrough_generation",
+    "chain_kind": "R4_SINGLE_ACTION",
+    "emitted_at": "2026-05-25T13:22:38Z",
+    "generation_spine_invocation_allowed": true,
+    "generation_spine_invocation_blocked_reason": "",
+    "l2_fault": "L2_EXECUTION_ERROR:RuntimeError:FAILED_MODULAR_R4: decisive='FAIL' failure='fatal_lane_recipe_policy:headline:PHASE1_NO_RUN_DIR; executive_summary:PHASE1_PRIOR_LANE_FAILED; unify_bullets:PHASE1_PRIOR_LANE_FAILED; unify_narrative:PHASE1_PRIOR_LANE_FAILED; ibm_bullets:PHASE1_PRIOR_LANE_FAILED; ibm_narrative:PHASE1_PRIOR_LANE_FAILED; competencies:PHASE1_PRIOR_LANE_FAILED' schema_ok=False lane_ok=False",
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
+    "r1a_preflight_status": "miss",
+    "r1b_preflight_status": "skipped",
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "route_family": "R4_SINGLE_ACTION",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "terminal_r5": false,
+    "x3_disposition": "X3A"
+  },
+  "schema_version": "l1_plan_contract.v1"
+}

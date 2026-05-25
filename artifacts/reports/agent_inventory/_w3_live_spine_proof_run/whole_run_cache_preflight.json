@@ -1,0 +1,42 @@
+{
+  "cache_preflight_completed": true,
+  "r1a_preflight_status": "miss",
+  "r1b_preflight_status": "skipped",
+  "cache_result": "fallthrough_generation",
+  "cache_miss_receipt_ref": "artifact://whole_run_cache_preflight_miss.json",
+  "generation_spine_invocation_allowed": true,
+  "generation_spine_invocation_blocked_reason": "",
+  "route_family": "R4_SINGLE_ACTION",
+  "whole_run_cache_preflight": {
+    "entrypoint": "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+    "preflight_order": [
+      "R1A_EXACT_CACHE",
+      "R1B_SEMANTIC_ROLE_TARGET_RUN",
+      "NORMAL_GENERATION"
+    ],
+    "outcome": "fallthrough_generation",
+    "r1a_hit": false,
+    "r1a_artifact_dir": "",
+    "r1b_hit": false,
+    "r1b_preflight": null,
+    "generation_required": true,
+    "c0_fact_vectors_consulted": false,
+    "section_lane_skipped_preflight": false
+  },
+  "preflight": {
+    "entrypoint": "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+    "preflight_order": [
+      "R1A_EXACT_CACHE",
+      "R1B_SEMANTIC_ROLE_TARGET_RUN",
+      "NORMAL_GENERATION"
+    ],
+    "outcome": "fallthrough_generation",
+    "r1a_hit": false,
+    "r1a_artifact_dir": "",
+    "r1b_hit": false,
+    "r1b_preflight": null,
+    "generation_required": true,
+    "c0_fact_vectors_consulted": false,
+    "section_lane_skipped_preflight": false
+  }
+}

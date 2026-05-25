@@ -1,0 +1,16 @@
+{
+  "artifact_hash": "sha256:304fccc8755bbc6034b8c146d32234010a65df63263d170420db6ffe46e9deab",
+  "payload": {
+    "intake_status": "VALIDATED",
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "source_channel": "apps_rg_cli",
+    "target_company": "Brown & Brown",
+    "target_role": "SVP IT Strategy & Innovation",
+    "tenant_id": "default",
+    "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+    "transport": "ui",
+    "user_id": "apps_rg_cli_user"
+  },
+  "schema_version": "validated_request.v1"
+}

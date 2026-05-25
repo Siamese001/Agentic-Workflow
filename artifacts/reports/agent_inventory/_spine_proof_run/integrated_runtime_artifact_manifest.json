@@ -1,0 +1,18 @@
+{
+  "artifact_filenames": [
+    "agentic_core_how_trace.json",
+    "agentic_core_l7_route_family_coverage.json",
+    "agentic_core_spine_proof.json",
+    "integrated_runtime_artifact_manifest.json"
+  ],
+  "artifact_hashes": {},
+  "chain_kind": "R4_SINGLE_ACTION",
+  "chain_linkage": [],
+  "entry_point": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+  "how_trace_ref": "artifact://agentic_core_how_trace.json",
+  "how_trace_sha256": "sha256:033387481cf4cd9375d10cc0375669265717d4d2064cc2f33549fd4d595d279a",
+  "integrated_runtime_entrypoint_used": true,
+  "invocation_id": "95a3e615-ff22-4185-aaa0-725852a96284",
+  "l7_route_family_coverage_ref": "artifact://agentic_core_l7_route_family_coverage.json",
+  "l7_route_family_coverage_sha256": "sha256:c996c3ad67a53208666bded1b8191cecae205dbb564bdf738bb408cf1fe0c52e"
+}

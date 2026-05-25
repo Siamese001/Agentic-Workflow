@@ -1,0 +1,133 @@
+{
+  "schema_version": "section_front_spine_receipt_v1",
+  "generated_at_utc": "2026-05-25T13:22:38.030285+00:00",
+  "plan_slug": "pa-exec-flowchart-gap-f2a8c3",
+  "wave": "W2",
+  "u0_runtime_package_ingested": true,
+  "section_id": "headline",
+  "product_visible": true,
+  "fixture_dev_only": false,
+  "fixture_dev_only_bypass": false,
+  "non_product_certified": false,
+  "product_certification": "NOT_CLAIMED",
+  "canonical_c0_claimed": false,
+  "canonical_exit_claimed": false,
+  "front_spine_status": "PASS",
+  "precondition_status": "PASS",
+  "validated_request_ref": "validated_request.json",
+  "l1_plan_contract_ref": "l1_plan_contract.json",
+  "route_contract_ref": "route_contract.json",
+  "proof_pool_entry_allowed": true,
+  "proof_pool_preconditions": {
+    "status": "PASS",
+    "required_contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract"
+    ],
+    "satisfied": true,
+    "enforcement": "resolve_section_proof_pool product_visible kill switch"
+  },
+  "product_visible_kill_switch_enabled": true,
+  "spine_mode": "section_spine_run",
+  "spine_lane_mode": "section_spine_run",
+  "is_canonical_c0_path": false,
+  "observed_chain": [
+    "CLI",
+    "section_front_spine_bridge",
+    "U0",
+    "L1",
+    "L0",
+    "proof_pool_resolver",
+    "section_lane_modular"
+  ],
+  "canonical_spine_target": [
+    "U0",
+    "L1",
+    "L0",
+    "C0",
+    "PA",
+    "L2",
+    "Exit",
+    "UWG",
+    "L4",
+    "L6"
+  ],
+  "contracts_emitted": {
+    "ValidatedRequest": true,
+    "L1PlanContract": true,
+    "RouteContract": true
+  },
+  "missing_downstream_canonical_contracts": [
+    "FinalEvidenceContract",
+    "PromptEnvelope",
+    "CompiledPromptArtifact",
+    "L2ExecutionPacket",
+    "SealedL2Artifact",
+    "ExitDispositionReceipt",
+    "RuntimeExhaustBundle"
+  ],
+  "downstream_classification": {
+    "spine_mode": "section_lane_modular",
+    "invocation": "python -m apps_rg --section <lane>",
+    "is_second_spine": false,
+    "is_canonical_c0_path": false,
+    "observed_chain": [
+      "CLI",
+      "canonical_dispatch.section_branch",
+      "section_front_spine_bridge",
+      "U0",
+      "L1",
+      "L0",
+      "proof_pool_resolver",
+      "section_c03_graph_binding",
+      "section_PA",
+      "section_L2",
+      "section_X2",
+      "section_X1D",
+      "section_X3",
+      "section_L6_shadow"
+    ],
+    "canonical_target_chain": [
+      "U0",
+      "L1",
+      "L0",
+      "C0",
+      "PA",
+      "L2",
+      "Exit",
+      "UWG",
+      "L4",
+      "L6"
+    ],
+    "front_spine_contracts_emitted": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract"
+    ],
+    "missing_canonical_contracts": [
+      "FinalEvidenceContract",
+      "PromptEnvelope",
+      "CompiledPromptArtifact",
+      "L2ExecutionPacket",
+      "SealedL2Artifact",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "explicit_non_claims": [
+      "no claim of full canonical C0.2 dense retrieval unless Chroma/BGE dense path ran",
+      "no claim of full canonical C0.3 graph traverse unless RouteContract + ACL-bound traverse ran",
+      "no claim of canonical C0.5 FinalEvidenceContract unless spine FEC was emitted and consumed by spine PA",
+      "no claim of durable write unless UWG commit path executed",
+      "section runtime_exhaust_bundle.json is lane-local exhaust refs, not spine RuntimeExhaustBundle"
+    ]
+  },
+  "explicit_non_claims": [
+    "no claim of full canonical C0.2 dense retrieval unless Chroma dense path ran",
+    "no claim of full canonical C0.3 graph traverse unless spine route traverse ran",
+    "no claim of canonical C0.5 FinalEvidenceContract unless spine FEC emitted",
+    "no claim of spine ExitDispositionReceipt or RuntimeExhaustBundle",
+    "no claim of full canonical product certification",
+    "no claim that section CLI is fully migrated past L0"
+  ]
+}

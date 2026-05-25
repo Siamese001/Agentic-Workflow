@@ -1,0 +1,13 @@
+{
+  "subprocess_cwd": "modular Phase1 invokes in-process run_canonical_apps_rg_from_cli_primitives per lane (same surface as python -m apps_rg --section); offline batch is tests.helpers.offline_lane_orchestration only; lane order matches GENERATED_LANES.",
+  "runtime_proofs_strings": [
+    "orchestrate_full_resume.RUNTIME_PROOFS = artifacts/apps_rg/runtime_proofs",
+    "generated_lane_rollup.RUNTIME_PROOFS under repo/artifacts/.../runtime_proofs",
+    "locked_copy_builder.ARTIFACT_REL = artifacts/apps_rg/runtime_proofs/locked_copy",
+    "final_resume_manifest.DEFAULT_*_REL under runtime_proofs",
+    "resume_package_manifest.RUNTIME_PROOFS"
+  ],
+  "lane_run_layout": "artifacts/apps_rg/runtime_proofs/<lane>/{real|mock}/<run_id>/",
+  "r4_modular_replacement": "run_modular_resume_generation writes under artifact_dir/modular_r4 only; no runtime_proofs dependency for canonical R4 modular outputs when this API is used.",
+  "modular_r4_sections_env": "When APPS_RG_MODULAR_R4_SECTIONS_ROOT is set, dispatch prepare/finalize scope pointers to <env_root>/<lane>/latest_*.json and run directories under <env_root>/<lane>/{{mock|real}}/<run_id>/ (Phase 1 real lane invocation)."
+}

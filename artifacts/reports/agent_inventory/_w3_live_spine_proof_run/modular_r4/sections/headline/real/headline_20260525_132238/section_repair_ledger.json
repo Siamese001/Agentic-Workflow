@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "section_id": "headline",
+  "run_id": "headline_20260525_132238",
+  "product_fail_closed": true,
+  "scored_attempt_number": 1,
+  "authoritative_attempt_number": 1,
+  "authoritative_l2_source": "initial_llm",
+  "attempt_1_x2_failed": false,
+  "attempt_1_x2_failed_gate_ids": [],
+  "repairs": [],
+  "x2_runs": []
+}

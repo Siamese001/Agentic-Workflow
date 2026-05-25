@@ -1,0 +1,62 @@
+{
+  "schema_version": "apps_rg.modular_generate_step_receipt.v1",
+  "apps_rg_r4_generation_mode": "modular_section_lanes",
+  "section_provider_calls_ref": "modular_r4/section_provider_calls.json",
+  "section_output_refs": {},
+  "merge_receipt_ref": null,
+  "rg_output_merge_receipt_ref": null,
+  "schema_validation_receipt_ref": "modular_r4/rg_output_schema_validation_receipt.json",
+  "final_schema_valid": false,
+  "lanes_executed": 0,
+  "lane_outputs_valid": false,
+  "final_merge_attempted": false,
+  "decisive_status": "FAIL",
+  "failure_reason": "fatal_lane_recipe_policy:headline:PHASE1_NO_RUN_DIR; executive_summary:PHASE1_PRIOR_LANE_FAILED; unify_bullets:PHASE1_PRIOR_LANE_FAILED; unify_narrative:PHASE1_PRIOR_LANE_FAILED; ibm_bullets:PHASE1_PRIOR_LANE_FAILED; ibm_narrative:PHASE1_PRIOR_LANE_FAILED; competencies:PHASE1_PRIOR_LANE_FAILED",
+  "recipe_lane_policy": {
+    "recipe_pass_policy_version": "apps_rg.modular_lane_recipe_policy.v1",
+    "enforce_product_lane_requirements": true,
+    "fatal_lane_failures": [
+      {
+        "section_lane": "headline",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_NO_RUN_DIR'",
+        "decisive_reason_code": "PHASE1_NO_RUN_DIR"
+      },
+      {
+        "section_lane": "executive_summary",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_PRIOR_LANE_FAILED'",
+        "decisive_reason_code": "PHASE1_PRIOR_LANE_FAILED"
+      },
+      {
+        "section_lane": "unify_bullets",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_PRIOR_LANE_FAILED'",
+        "decisive_reason_code": "PHASE1_PRIOR_LANE_FAILED"
+      },
+      {
+        "section_lane": "unify_narrative",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_PRIOR_LANE_FAILED'",
+        "decisive_reason_code": "PHASE1_PRIOR_LANE_FAILED"
+      },
+      {
+        "section_lane": "ibm_bullets",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_PRIOR_LANE_FAILED'",
+        "decisive_reason_code": "PHASE1_PRIOR_LANE_FAILED"
+      },
+      {
+        "section_lane": "ibm_narrative",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_PRIOR_LANE_FAILED'",
+        "decisive_reason_code": "PHASE1_PRIOR_LANE_FAILED"
+      },
+      {
+        "section_lane": "competencies",
+        "reason": "generation_status='MISSING_LANE_RUN' schema='missing' attempted=False x3='PHASE1_PRIOR_LANE_FAILED'",
+        "decisive_reason_code": "PHASE1_PRIOR_LANE_FAILED"
+      }
+    ],
+    "degraded_allowed_lane_warnings": [],
+    "judge_provider_blocked_count": 0,
+    "deterministic_lane_pass_count": 0,
+    "why_recipe_pass_allowed_despite_lane_warnings": "",
+    "deterministic_gates_required_for_product_pass": true,
+    "final_rg_output_schema_required_for_recipe_pass": true
+  }
+}

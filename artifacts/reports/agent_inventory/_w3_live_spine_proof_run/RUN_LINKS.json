@@ -1,0 +1,539 @@
+{
+  "schema_version": "1",
+  "correlation_id": "e82e28c19a5e4133",
+  "integrated_run_id": "_w3_live_spine_proof_run",
+  "created_at": "2026-05-25T13:22:38.085496+00:00",
+  "root_path": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run",
+  "artifact_namespace": "artifacts/apps_rg/runs",
+  "log_namespace": "apps_rg/pipeline_logs",
+  "log_discovery": {
+    "mode": "telemetry_only",
+    "log_namespace": "apps_rg/pipeline_logs",
+    "log_root_path": null,
+    "notes": "No on-disk directory at log_namespace `apps_rg/pipeline_logs` at index time; pipeline_defaults.yaml declares telemetry_prefix `apps_rg.r4_integrated` (OpenTelemetry spans/metrics)."
+  },
+  "integrated_bundle_index_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/RUN_BUNDLE_INDEX.json",
+  "lane_bundle_refs": [
+    {
+      "lane": "competencies",
+      "lane_id": "competencies",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/competencies/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/competencies/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ],
+      "pre_run_failure_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/competencies/integrated_lane_pre_run_failure.json"
+    },
+    {
+      "lane": "executive_summary",
+      "lane_id": "executive_summary",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/executive_summary/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/executive_summary/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ],
+      "pre_run_failure_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/executive_summary/integrated_lane_pre_run_failure.json"
+    },
+    {
+      "lane": "headline",
+      "lane_id": "headline",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_NO_RUN_DIR",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/headline/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/headline/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ]
+    },
+    {
+      "lane": "ibm_bullets",
+      "lane_id": "ibm_bullets",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_bullets/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_bullets/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ],
+      "pre_run_failure_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_bullets/integrated_lane_pre_run_failure.json"
+    },
+    {
+      "lane": "ibm_narrative",
+      "lane_id": "ibm_narrative",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_narrative/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_narrative/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ],
+      "pre_run_failure_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/ibm_narrative/integrated_lane_pre_run_failure.json"
+    },
+    {
+      "lane": "unify_bullets",
+      "lane_id": "unify_bullets",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_bullets/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_bullets/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ],
+      "pre_run_failure_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_bullets/integrated_lane_pre_run_failure.json"
+    },
+    {
+      "lane": "unify_narrative",
+      "lane_id": "unify_narrative",
+      "status": "NOT_RUN",
+      "proof_mode": "unknown",
+      "run_id": "",
+      "root_path": null,
+      "bundle_index_ref": null,
+      "evidence_package_index_ref": null,
+      "evidence_package_index_sha256": "",
+      "section_l7_binding_manifest_ref": null,
+      "section_l7_binding_manifest_sha256": "",
+      "lane_outcome": "NOT_RUN",
+      "lane_x3": null,
+      "missing_reason": "PHASE1_PRIOR_LANE_FAILED",
+      "expected_run_dir": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_narrative/real/<run_id>/",
+      "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_narrative/real/<run_id>/",
+      "product_certification_impact": "integrated_r4_product_proof_blocked",
+      "parent_integrated_run_id": "_w3_live_spine_proof_run",
+      "parent_l7_artifact_refs": [
+        {
+          "artifact_name": "agentic_core_how_trace.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_l7_route_family_coverage.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "agentic_core_spine_proof.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "runtime_trace_snapshot.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        },
+        {
+          "artifact_name": "integrated_runtime_artifact_manifest.json",
+          "source_path": null,
+          "sha256": "",
+          "exists": false,
+          "trust_status": "missing"
+        }
+      ],
+      "exists": false,
+      "producer": "apps_rg.runtime.integrated_lane_evidence_packaging.build_missing_lane_record",
+      "explicit_non_claims": [
+        "lane did not execute under integrated modular_r4 envelope",
+        "NOT_RUN is explicit; not silent skip",
+        "no section-only proof upgraded to product proof",
+        "no shadow offline rollup consumed as lane evidence"
+      ],
+      "pre_run_failure_ref": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/unify_narrative/integrated_lane_pre_run_failure.json"
+    }
+  ],
+  "aggregate_refs": [],
+  "modular_sections_root": {
+    "mode": "default",
+    "source_env_var": "APPS_RG_MODULAR_R4_SECTIONS_ROOT",
+    "manifest_ref": null,
+    "root_path": null,
+    "exists": false,
+    "notes": "APPS_RG_MODULAR_R4_SECTIONS_ROOT is not set; lane runtime proofs default under artifacts/apps_rg/runtime_proofs."
+  },
+  "notes": "W8B modular_r4 lane evidence packaging",
+  "lane_bundle_refs_source": "modular_r4_sections_tree_v1"
+}

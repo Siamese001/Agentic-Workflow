@@ -1,0 +1,16 @@
+{
+  "receipt_id": "rg_output_schema_validation_receipt.phase1.v3",
+  "validated_at_utc": "2026-05-25T13:22:38.079133+00:00",
+  "final_schema_valid": false,
+  "error": "phase1_merge_not_attempted",
+  "lane_l2_load_errors": {},
+  "assembler_final_resume_relpath": null,
+  "rg_output_final_resume_relpath": null,
+  "generated_resume_json_relpath": null,
+  "rg_output_merge_receipt_relpath": null,
+  "assembly_gates_all_pass": false,
+  "fixture_validated_ok": false,
+  "fixture_error": "no_fixture_provided",
+  "fixture_path": null,
+  "note": "Phase 1 v3: rg_output merge from lane l2_output.json refs (not assembler bridge); PASS requires assembly gates_all_pass + valid outputs/generated_resume.json."
+}

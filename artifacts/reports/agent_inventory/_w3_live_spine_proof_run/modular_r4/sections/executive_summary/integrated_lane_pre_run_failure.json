@@ -1,0 +1,14 @@
+{
+  "schema_version": "integrated_lane_pre_run_failure_v1",
+  "generated_at_utc": "2026-05-25T13:22:38.072033+00:00",
+  "lane_id": "executive_summary",
+  "status": "PRE_RUN_BLOCKED",
+  "blocker": "PHASE1_PRIOR_LANE_FAILED",
+  "lane_exec_status": "pre_run_blocked:PHASE1_PRIOR_LANE_FAILED",
+  "integrated_run_id": "_w3_live_spine_proof_run",
+  "sections_root_rel": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections",
+  "dispatch_result": {
+    "prior_abort": "dispatch_exception:headline:C0.2 product hybrid mandatory for 'headline': CHROMA_PERSIST_DIR required"
+  },
+  "expected_run_dir_pattern": "artifacts/reports/agent_inventory/_w3_live_spine_proof_run/modular_r4/sections/executive_summary/real/<run_id>/"
+}

@@ -1,0 +1,660 @@
+{
+  "app_recipe_execution": {},
+  "artifact_manifest_ref": "",
+  "artifact_manifest_sha256": "",
+  "audit_mode": "MANDATORY",
+  "blocking_gaps": [
+    "artifact_manifest_missing_at_how_trace_emit_time",
+    "spine_proof_bundle_missing_at_how_trace_emit_time"
+  ],
+  "chain_kind": "R4_SINGLE_ACTION",
+  "deterministic_digest": "sha256:dc9a5ef3c9871c1b1c717ed314385c616b7f322f08368f0208ecd31d2a3e0a53",
+  "evidence_plane": "L7_AUDITABILITY",
+  "evidence_plane_mode": "cross_cutting_non_mutating",
+  "execution_form": "R4_SINGLE_ACTION",
+  "fixture_mode_detected": false,
+  "mock_mode_detected": false,
+  "request_id": "req-4906b7d818a5404f908d05817e66595a",
+  "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+  "route_id": "apps_rg.resume_generation_v1",
+  "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+  "runtime_mode": "fixture",
+  "runtime_subject": "agentic_core",
+  "schema_version": "1.1",
+  "spine_proof_bundle_ref": "",
+  "spine_proof_bundle_sha256": "",
+  "stages": [
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_route_authority",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_retrieval",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_prompt_assembly",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_execution",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_exit",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_l4_write",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [
+        "artifact://integrated_runtime_entrypoint_invocation.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://validated_request.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "U0_INTAKE",
+      "stage_name": "U0 \u2014 Validated Request Intake",
+      "status": "RAN",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_integrated_runtime_artifact_chain"
+      ],
+      "why_ran_or_bypassed": "Intake produced a ValidatedRequest envelope."
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_route_authority",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_retrieval",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_prompt_assembly",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_execution",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_exit",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_l4_write",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": false,
+      "input_artifact_refs": [
+        "artifact://validated_request.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://l1_plan_contract.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "L1_PLAN",
+      "stage_name": "L1 \u2014 Plan Contract",
+      "status": "RAN",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_integrated_runtime_artifact_chain"
+      ],
+      "why_ran_or_bypassed": "L1 produced a typed plan contract."
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "exactly_one_route_contract",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_retrieval",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_prompt_assembly",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_execution",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_exit",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_l4_write",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": false,
+      "input_artifact_refs": [
+        "artifact://l1_plan_contract.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://route_contract.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "L0_ROUTE",
+      "stage_name": "L0 \u2014 Route Contract",
+      "status": "RAN",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_integrated_runtime_artifact_chain"
+      ],
+      "why_ran_or_bypassed": "L0 emitted exactly one route contract; execution_form=R4_SINGLE_ACTION."
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "None",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_retrieval_performed",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [
+        "artifact://route_contract.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://c0_bypass_receipt.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "C0_CONTEXT",
+      "stage_name": "C0 \u2014 Grounding / Final Evidence",
+      "status": "BYPASSED",
+      "structural_only_reason": "",
+      "sub_stages": [
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "reason": "BYPASS_PRELOADED_CONTEXT"
+          },
+          "status": "BYPASSED",
+          "sub_stage_id": "C0.1",
+          "sub_stage_name": "Query Normalization"
+        },
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "reason": "BYPASS_PRELOADED_CONTEXT"
+          },
+          "status": "BYPASSED",
+          "sub_stage_id": "C0.2",
+          "sub_stage_name": "Embedding Lookup"
+        },
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "reason": "BYPASS_PRELOADED_CONTEXT"
+          },
+          "status": "BYPASSED",
+          "sub_stage_id": "C0.3",
+          "sub_stage_name": "D1 Exact Cache Probe"
+        },
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "reason": "BYPASS_PRELOADED_CONTEXT"
+          },
+          "status": "BYPASSED",
+          "sub_stage_id": "C0.4",
+          "sub_stage_name": "D2 Semantic Cache Probe"
+        },
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "reason": "BYPASS_PRELOADED_CONTEXT"
+          },
+          "status": "BYPASSED",
+          "sub_stage_id": "C0.5",
+          "sub_stage_name": "Retrieval Augmentation"
+        },
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "reason": "BYPASS_PRELOADED_CONTEXT"
+          },
+          "status": "BYPASSED",
+          "sub_stage_id": "C0.6",
+          "sub_stage_name": "Grounding Context Assembly"
+        }
+      ],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_c0_evidence_or_bypass"
+      ],
+      "why_ran_or_bypassed": "C0 lawfully bypassed: None"
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "NO_MODEL_EXECUTION_REQUIRED",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_prompt_compiled",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": false,
+      "input_artifact_refs": [
+        "artifact://route_contract.json"
+      ],
+      "output_artifact_refs": [],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "PROMPT_ASSEMBLY",
+      "stage_name": "Prompt Assembly",
+      "status": "BYPASSED",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_pa_artifact_or_bypass"
+      ],
+      "why_ran_or_bypassed": "PA lawfully bypassed: NO_MODEL_EXECUTION_REQUIRED"
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "R4_DETERMINISTIC_PIPELINE_NO_RUNTIME_ORCHESTRATION",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_orchestration",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_tool_execution",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_model_execution",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [
+        "artifact://route_contract.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://l3_bypass_receipt.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "L3_ORCHESTRATION",
+      "stage_name": "L3 \u2014 Bypass Receipt",
+      "status": "BYPASSED",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_l3_runtime_or_bypass",
+        "ops_scripts.ci.verify_l3_static_dag_proof"
+      ],
+      "why_ran_or_bypassed": "R1B path bypasses L3: R4_DETERMINISTIC_PIPELINE_NO_RUNTIME_ORCHESTRATION"
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "R1B_TERMINAL_SHORTCIRCUIT_NO_L2",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_real_l2_execution",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_tool_call",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_model_call",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_l4_write_from_l2",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [
+        "artifact://terminal_ret_packet.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://terminal_ret_packet.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "L2_EXECUTE",
+      "stage_name": "L2 \u2014 Bounded Execution",
+      "status": "BYPASSED",
+      "structural_only_reason": "",
+      "sub_stages": [
+        {
+          "duration_ms": 0.0,
+          "meta": {
+            "app_name": "apps_rg"
+          },
+          "status": "PASS",
+          "sub_stage_id": "E1",
+          "sub_stage_name": "Prep: Plan Decomposition"
+        },
+        {
+          "duration_ms": 0.007,
+          "meta": {},
+          "status": "PASS",
+          "sub_stage_id": "E2",
+          "sub_stage_name": "Valid: Pre-Execution Contract Check"
+        },
+        {
+          "duration_ms": 511.593,
+          "meta": {
+            "fault": "L2_EXECUTION_ERROR:RuntimeError:FAILED_MODULAR_R4: decisive='FAIL' failure='fatal_lane_recipe_policy:headline:PHASE1_NO_RUN_DIR; executive_summary:PHASE1_PRIOR_LANE_FAILED; unify_bullets:PHASE1_PRIOR_LANE_FAILED; unify_narrative:PHASE1_PRIOR_LANE_FAILED; ibm_bullets:PHASE1_PRIOR_LANE_FAILED; ibm_narrative:PHASE1_PRIOR_LANE_FAILED; competencies:PHASE1_PRIOR_LANE_FAILED' schema_ok=False lane_ok=False"
+          },
+          "status": "FAIL",
+          "sub_stage_id": "E3",
+          "sub_stage_name": "Exec: Tool Dispatch"
+        },
+        {
+          "duration_ms": 0.007,
+          "meta": {
+            "retry_attempted": false
+          },
+          "status": "NOT_APPLICABLE",
+          "sub_stage_id": "E4",
+          "sub_stage_name": "Heal: Retry / Recovery"
+        },
+        {
+          "duration_ms": 0.0,
+          "meta": {},
+          "status": "FAIL",
+          "sub_stage_id": "E5",
+          "sub_stage_name": "Seal: Output Assembly"
+        }
+      ],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_l2_sealed_artifact",
+        "ops_scripts.ci.verify_integrated_runtime_exit_x3"
+      ],
+      "why_ran_or_bypassed": "R1B path bypasses L2 entirely (terminal-shortcircuit cache reuse). terminal_ret_packet asserts no_l2_execution=True."
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "exactly_one_x3_disposition",
+          "result": "PASS"
+        },
+        {
+          "assertion": "unknown_never_pass",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [
+        "artifact://runtime_gate_verdict_bundle.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://exit_review_packet.json",
+        "artifact://x3_disposition_receipt.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "EXIT_X3",
+      "stage_name": "Exit \u2014 Review Packet & X3 Disposition",
+      "status": "RAN",
+      "structural_only_reason": "",
+      "sub_stages": [
+        {
+          "duration_ms": 0.01,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "PASS",
+          "sub_stage_id": "X1A",
+          "sub_stage_name": "Policy Manifest + Threshold + Grader Roster"
+        },
+        {
+          "duration_ms": 0.004,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 1.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "PASS",
+          "sub_stage_id": "X1B",
+          "sub_stage_name": "Task Completion + Format + Instruction-Follow"
+        },
+        {
+          "duration_ms": 0.004,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "PASS",
+          "sub_stage_id": "X1C",
+          "sub_stage_name": "Sandbox + Mutation + Side-Effect + Egress"
+        },
+        {
+          "duration_ms": 0.002,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "NOT_APPLICABLE",
+          "sub_stage_id": "X1D",
+          "sub_stage_name": "Groundedness + Faithfulness + Citation + Support"
+        },
+        {
+          "duration_ms": 0.003,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "PASS",
+          "sub_stage_id": "X1E",
+          "sub_stage_name": "Process / Tool / Retry / Handoff"
+        },
+        {
+          "duration_ms": 0.007,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "PASS",
+          "sub_stage_id": "X1F",
+          "sub_stage_name": "Latency / Cost / Token Budget"
+        },
+        {
+          "duration_ms": 0.002,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "NOT_APPLICABLE",
+          "sub_stage_id": "X1G",
+          "sub_stage_name": "Consistency Modifier (pass^k)"
+        },
+        {
+          "duration_ms": 0.002,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "PASS",
+          "sub_stage_id": "X1H",
+          "sub_stage_name": "Replay & Determinism Integrity"
+        },
+        {
+          "duration_ms": 0.003,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [
+              "SPAN_COVERAGE_GAP"
+            ],
+            "score": 0.0,
+            "severity": "warn",
+            "threshold": 0.0
+          },
+          "status": "WARN",
+          "sub_stage_id": "X1I",
+          "sub_stage_name": "OTEL Span Completeness"
+        },
+        {
+          "duration_ms": 0.001,
+          "meta": {
+            "confidence": 1.0,
+            "reason_codes": [
+              "NO_STATE_DIFF_OR_ANSWER_ONLY_PATH"
+            ],
+            "score": 0.0,
+            "severity": "info",
+            "threshold": 0.0
+          },
+          "status": "NOT_APPLICABLE",
+          "sub_stage_id": "X1J",
+          "sub_stage_name": "Write Eligibility (UWG Pre-Commit)"
+        }
+      ],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_integrated_runtime_exit_x3"
+      ],
+      "why_ran_or_bypassed": "Exit produced a typed review packet and exactly one X3 disposition receipt."
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_direct_l4_write",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [],
+      "output_artifact_refs": [],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "UWG_L4",
+      "stage_name": "L4 \u2014 UWG Durable Write Gateway",
+      "status": "NOT_APPLICABLE",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.verify_uwg_blocked_commit_receipts"
+      ],
+      "why_ran_or_bypassed": "No durable mutation requested by this run; UWG was not invoked."
+    },
+    {
+      "blocking_gaps": [],
+      "bypass_reason": "",
+      "forbidden_action_assertions": [
+        {
+          "assertion": "no_synthetic_trace_in_production",
+          "result": "PASS"
+        },
+        {
+          "assertion": "no_l4_write_from_l6",
+          "result": "PASS"
+        }
+      ],
+      "hash_bound": true,
+      "input_artifact_refs": [
+        "artifact://x3_disposition_receipt.json"
+      ],
+      "output_artifact_refs": [
+        "artifact://runtime_exhaust_bundle.json",
+        "artifact://runtime_trace_snapshot.json"
+      ],
+      "request_id": "req-4906b7d818a5404f908d05817e66595a",
+      "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "route_id": "apps_rg.resume_generation_v1",
+      "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+      "stage_id": "L6_RUNTIME_EXHAUST",
+      "stage_name": "L6 \u2014 Runtime Exhaust & Trace",
+      "status": "RAN",
+      "structural_only_reason": "",
+      "sub_stages": [],
+      "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+      "verifier_refs": [
+        "ops_scripts.ci.check_synthetic_trace_flag"
+      ],
+      "why_ran_or_bypassed": "L6 sealed the runtime exhaust bundle and emitted a typed trace snapshot for cross-chain reference."
+    }
+  ],
+  "success": true,
+  "synthetic_trace_detected": false,
+  "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36",
+  "verifier_results_ref": ""
+}

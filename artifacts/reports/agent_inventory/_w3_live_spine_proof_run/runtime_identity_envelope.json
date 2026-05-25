@@ -1,0 +1,22 @@
+{
+  "payload": {
+    "app_name": "apps_rg",
+    "blueprint_hash": "sha256:7ac30cf6c39a9cfd25ad789a0150ab20c37a101deba9ee065dcdb045e90c7df8",
+    "caller_surface": "apps_rg_cli",
+    "deterministic_digest": "sha256:cff9ed38ffe19b84f69fe1917d844324f890d0b6612798e36e536a6758a6b6f6",
+    "entrypoint_command": "agentic_core.runtime.entrypoints.integrated_single_action_spine_run",
+    "git_commit": "1ee81e4418a8d8d13532b2d231bd86181d66a5a4",
+    "git_dirty": true,
+    "policy_hash": "sha256:e552289f4d3ddb5fcd15400fa3e7ad2d91bc66314fc93631e175d209a9ef2f52",
+    "registry_digest_set": {},
+    "replay_key": "r4:293f70edf829d06b",
+    "request_id": "req-4906b7d818a5404f908d05817e66595a",
+    "route_contract_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "b6f4fc5a-9f54-459f-83ec-ae863763238d",
+    "schema_version": "1.0",
+    "started_at_utc": "2026-05-25T13:22:37Z",
+    "trace_root": "trace-9e21246afb1a44f3811e059ecf569d36"
+  },
+  "schema_version": "runtime_identity_envelope.v1"
+}

@@ -1,0 +1,72 @@
+{
+  "artifact_hash": "sha256:97c7de625fc80dc0364b3e75983bbdcd78cff050e44a3e814feee9a4bc858c3a",
+  "payload": {
+    "c0_bypass_reason": "BYPASS_PRELOADED_CONTEXT",
+    "c0_required": false,
+    "c0_sub_stages": [
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "reason": "BYPASS_PRELOADED_CONTEXT"
+        },
+        "status": "BYPASSED",
+        "sub_stage_id": "C0.1",
+        "sub_stage_name": "Query Normalization"
+      },
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "reason": "BYPASS_PRELOADED_CONTEXT"
+        },
+        "status": "BYPASSED",
+        "sub_stage_id": "C0.2",
+        "sub_stage_name": "Embedding Lookup"
+      },
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "reason": "BYPASS_PRELOADED_CONTEXT"
+        },
+        "status": "BYPASSED",
+        "sub_stage_id": "C0.3",
+        "sub_stage_name": "D1 Exact Cache Probe"
+      },
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "reason": "BYPASS_PRELOADED_CONTEXT"
+        },
+        "status": "BYPASSED",
+        "sub_stage_id": "C0.4",
+        "sub_stage_name": "D2 Semantic Cache Probe"
+      },
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "reason": "BYPASS_PRELOADED_CONTEXT"
+        },
+        "status": "BYPASSED",
+        "sub_stage_id": "C0.5",
+        "sub_stage_name": "Retrieval Augmentation"
+      },
+      {
+        "duration_ms": 0.0,
+        "meta": {
+          "reason": "BYPASS_PRELOADED_CONTEXT"
+        },
+        "status": "BYPASSED",
+        "sub_stage_id": "C0.6",
+        "sub_stage_name": "Grounding Context Assembly"
+      }
+    ],
+    "deterministic_digest": "sha256:3b22ff3a048fbf275ab9988840c0965e91181993ae7029b381a8f3ad8c2b82d7",
+    "grounding_required": false,
+    "request_id": "req-36a8cbc35c78456c8a1250d508ba24c7",
+    "route_contract_id": "28d40bf3-099f-423d-88ec-f40ed6c2b414",
+    "route_id": "apps_rg.resume_generation_v1",
+    "run_id": "28d40bf3-099f-423d-88ec-f40ed6c2b414",
+    "schema_version": "1.0",
+    "trace_root": "trace-31bc14d1a11342de9be16cf29af6a537"
+  },
+  "schema_version": "c0_bypass_receipt.v1"
+}
