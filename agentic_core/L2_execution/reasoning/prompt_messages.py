@@ -42,6 +42,9 @@ if TYPE_CHECKING:
         AuthoritySlot,
         CompiledPromptArtifact,
     )
+    from agentic_core.L2_execution.regen.same_authority_thread import (
+        SameAuthorityThreadState,
+    )
 
 
 _SYSTEM_SLOT_CODES: tuple[str, ...] = ("S0", "I0", "D0", "C0", "E0", "M0", "H0")
@@ -170,6 +173,54 @@ class PromptMessages:
             "exemplars": [list(pair) for pair in self.exemplars],
             "metadata": dict(self.metadata),
         }
+
+    def append_same_authority_turn(
+        self,
+        *,
+        frozen_compile_ref: str,
+        policy_hash: str,
+        blueprint_hash: str,
+        registry_digest_set: tuple[str, ...],
+        replay_key: str,
+        provider_lane: str,
+        model_lane: str,
+        anchor_assistant_content: str,
+        delta_user_content: str,
+        capability_token: str = "",
+        sandbox_envelope: str = "",
+        prompt_hash: str = "",
+    ) -> "SameAuthorityThreadState":
+        """Append REGEN_DELTA user turn under frozen prefix (ADR-085 W1).
+
+        Delegates to :mod:`agentic_core.L2_execution.regen`.
+        """
+        from agentic_core.L2_execution.regen.prefix_digest import compute_system_prefix_hash
+        from agentic_core.L2_execution.regen.same_authority_bundle import SameAuthorityBundle
+        from agentic_core.L2_execution.regen.same_authority_thread import (
+            SameAuthorityThreadState,
+            append_same_authority_turn as _append,
+        )
+
+        system_hash = compute_system_prefix_hash(self.system_text())
+        bundle = SameAuthorityBundle(
+            frozen_compile_ref=frozen_compile_ref,
+            system_prefix_hash=system_hash,
+            policy_hash=policy_hash,
+            blueprint_hash=blueprint_hash,
+            registry_digest_set=registry_digest_set,
+            replay_key=replay_key,
+            provider_lane=provider_lane,
+            model_lane=model_lane,
+            capability_token=capability_token,
+            sandbox_envelope=sandbox_envelope,
+            prompt_hash=prompt_hash or frozen_compile_ref,
+        )
+        return _append(
+            self,
+            bundle=bundle,
+            anchor_assistant_content=anchor_assistant_content,
+            delta_user_content=delta_user_content,
+        )
 
 
 def _parse_exemplar_turns(e0_content: str) -> tuple[tuple[str, str], ...]:

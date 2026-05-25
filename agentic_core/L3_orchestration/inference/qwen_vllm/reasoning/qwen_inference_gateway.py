@@ -41,6 +41,7 @@ class QwenInferenceRequest:
     top_p: float = 1.0
     response_format: dict[str, Any] | None = None
     use_cache: bool = True  # Enable response caching
+    messages: tuple[dict[str, str], ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -143,6 +144,7 @@ class QwenInferenceGateway:
                 top_p=request.top_p,
                 response_format=request.response_format,
                 request_id=f"{request.app_name}_{int(start_time * 1000)}",
+                messages=request.messages,
             )
 
             # Execute inference

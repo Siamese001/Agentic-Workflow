@@ -93,6 +93,29 @@ def judge_safe_prefilter_enabled() -> bool:
     return RELEASE_SRFS_JUDGE_SAFE_REPAIR_ENABLED and raw in ("1", "true", "yes", "on")
 
 
+def judge_regen_prescriptive_delta_enabled() -> bool:
+    """Surgical regen addendum: lock compiled prompt; anchor prior draft; delta-only judge lines."""
+    raw = os.environ.get(
+        "APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_PRESCRIPTIVE_DELTA",
+        "1",
+    ).strip().lower()
+    if raw in ("0", "false", "no", "off"):
+        return False
+    return True
+
+
+def judge_regen_core_runner_enabled() -> bool:
+    """Delegate prescriptive regen to agentic_core SameAuthorityRegenRunner (ADR-085)."""
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_CORE_SAME_AUTHORITY_REGEN", "1").strip().lower()
+    return raw not in ("0", "false", "no", "off")
+
+
+def judge_regen_legacy_remediation_block_enabled() -> bool:
+    """Re-teach synthesis/composition/X2 guards in regen user turn (drift-prone; debug only)."""
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_LEGACY_BLOCK", "").strip().lower()
+    return raw in ("1", "true", "yes", "on")
+
+
 # Re-run X1D after full X2 with authoritative gate snapshot (default on; no gate weakening).
 RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = True
 
@@ -117,6 +140,7 @@ __all__ = [
     "RELEASE_SYNTHESIS_REGENERATION_ENABLED",
     "SYNTHESIS_REGEN_MAX_ATTEMPTS",
     "SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP",
+    "judge_regen_core_runner_enabled",
     "judge_regen_max_attempts",
     "judge_regeneration_enabled",
     "judge_safe_prefilter_enabled",

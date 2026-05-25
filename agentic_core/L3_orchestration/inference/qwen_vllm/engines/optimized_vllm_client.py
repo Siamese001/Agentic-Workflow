@@ -112,6 +112,8 @@ class VLLMRequest:
     response_format: dict[str, Any] | None = None
     stop: list[str] | None = None
     request_id: str | None = None
+    # ADR-085 W1: multi-turn chat when set; ``prompt`` may be empty.
+    messages: tuple[dict[str, str], ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -250,7 +252,11 @@ class OptimizedVLLMClient:
                 rf_key = json.dumps(request.response_format, sort_keys=True)
             except (TypeError, ValueError):
                 rf_key = str(request.response_format)
-        content = f"{request.prompt}:{request.max_tokens}:{request.temperature}:{request.top_p}:{rf_key}"
+        if request.messages:
+            msg_key = json.dumps(list(request.messages), sort_keys=True)
+            content = f"messages:{msg_key}:{request.max_tokens}:{request.temperature}:{request.top_p}:{rf_key}"
+        else:
+            content = f"{request.prompt}:{request.max_tokens}:{request.temperature}:{request.top_p}:{rf_key}"
         return hashlib.sha256(content.encode()).hexdigest()[:32]
 
     async def infer(self, request: VLLMRequest) -> VLLMResponse:
@@ -425,20 +431,46 @@ class OptimizedVLLMClient:
         url = urljoin(self.base_url + "/", "chat/completions")
 
         completion_target = max(256, min(int(request.max_tokens), 4096))
-        eff_prompt = _truncate_prompt_for_context(
-            request.prompt,
-            completion_budget=completion_target,
-        )
+        if request.messages:
+            chat_messages = [dict(m) for m in request.messages]
+            joined_prompt = "\n".join(
+                f"{m.get('role', 'user')}:{m.get('content', '')}" for m in chat_messages
+            )
+            eff_prompt = _truncate_prompt_for_context(
+                joined_prompt,
+                completion_budget=completion_target,
+            )
+            trunc_applied = len(eff_prompt) != len(joined_prompt)
+            if trunc_applied and chat_messages:
+                # Preserve structure: truncate last user content only (REGEN_DELTA tail).
+                last = chat_messages[-1]
+                overflow = len(joined_prompt) - len(eff_prompt)
+                content = last.get("content", "")
+                if overflow > 0 and content:
+                    last = {**last, "content": content[: max(0, len(content) - overflow)]}
+                    chat_messages[-1] = last
+            payload_messages = chat_messages
+            prompt_chars_in = len(joined_prompt)
+            prompt_chars_after = len(eff_prompt)
+        else:
+            eff_prompt = _truncate_prompt_for_context(
+                request.prompt,
+                completion_budget=completion_target,
+            )
+            trunc_applied = len(eff_prompt) != len(request.prompt)
+            payload_messages = [{"role": "user", "content": eff_prompt}]
+            prompt_chars_in = len(request.prompt)
+            prompt_chars_after = len(eff_prompt)
+
         max_tokens = _clamp_completion_tokens(
-            prompt=eff_prompt,
+            prompt=eff_prompt if not request.messages else "\n".join(
+                m.get("content", "") for m in payload_messages
+            ),
             requested_max_tokens=request.max_tokens,
         )
-        trunc_applied = len(eff_prompt) != len(request.prompt)
         payload = {
             "model": self.model,
-            "messages": [
-                {"role": "user", "content": eff_prompt},
-            ],
+            "messages": payload_messages,
             "max_tokens": max_tokens,
             "temperature": request.temperature,
             "top_p": request.top_p,
@@ -470,8 +502,8 @@ class OptimizedVLLMClient:
                         latency_ms=latency_ms,
                         error_message=err_msg,
                         http_status=int(resp.status),
-                        prompt_chars_in=len(request.prompt),
-                        prompt_chars_after_truncate=len(eff_prompt),
+                        prompt_chars_in=prompt_chars_in,
+                        prompt_chars_after_truncate=prompt_chars_after,
                         prompt_truncated=trunc_applied,
                         effective_max_tokens=int(max_tokens),
                         completion_budget_used=int(completion_target),
@@ -499,8 +531,8 @@ class OptimizedVLLMClient:
                     tokens_used=tokens_used,
                     latency_ms=latency_ms,
                     http_status=int(resp.status),
-                    prompt_chars_in=len(request.prompt),
-                    prompt_chars_after_truncate=len(eff_prompt),
+                    prompt_chars_in=prompt_chars_in,
+                    prompt_chars_after_truncate=prompt_chars_after,
                     prompt_truncated=trunc_applied,
                     effective_max_tokens=int(max_tokens),
                     completion_budget_used=int(completion_target),

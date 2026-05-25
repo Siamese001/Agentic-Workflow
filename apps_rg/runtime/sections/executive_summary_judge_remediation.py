@@ -9,7 +9,9 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.sections.executive_summary_repair_policy import (
+    judge_regen_legacy_remediation_block_enabled,
     judge_regen_max_attempts,
+    judge_regen_prescriptive_delta_enabled,
     judge_regeneration_enabled,
     judge_safe_prefilter_enabled,
     post_regen_judge_rescore_mode,
@@ -303,7 +305,111 @@ def _collect_judge_feedback_lines(x1d_judges: list[dict[str, Any]]) -> dict[str,
     return out
 
 
-def build_judge_remediation_user_message(
+def _soft_failed_model_judges(x1d_judges: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [j for j in x1d_judges if _is_model_backed_soft_fail(j)]
+
+
+def _bounded_soft_fail_findings(x1d_judges: list[dict[str, Any]], *, max_lines: int = 4) -> list[str]:
+    lines: list[str] = []
+    for j in _soft_failed_model_judges(x1d_judges):
+        provider = str(j.get("provider_name") or j.get("provider_key") or "judge")
+        for finding in (j.get("findings") or [])[:2]:
+            text = str(finding).strip()
+            if text:
+                lines.append(f"{provider}: {text[:240]}")
+        if len(lines) >= max_lines:
+            break
+    return lines[:max_lines]
+
+
+def collect_judge_remediation_delta_lines(
+    x1d_judges: list[dict[str, Any]],
+    *,
+    unused_fact_ids: list[str],
+    allowed_fact_count: int,
+    prior_word_count: int = 0,
+    prior_ledger_rows: int = 0,
+) -> list[str]:
+    """App-owned delta lines only (floors + output contract); core owns REGEN_DELTA/PROMPT_LOCK."""
+    from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        collect_dimension_remediation_lines,
+    )
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        format_judge_regen_x2_floor,
+    )
+
+    soft_judges = _soft_failed_model_judges(x1d_judges)
+    dimension_lines = collect_dimension_remediation_lines(soft_judges, min_fail_count=1)
+    finding_lines = _bounded_soft_fail_findings(x1d_judges)
+
+    delta_parts: list[str] = []
+    if dimension_lines:
+        delta_parts.extend(f"- {ln}" for ln in dimension_lines[:6])
+    if finding_lines:
+        delta_parts.extend(f"- finding: {ln}" for ln in finding_lines)
+
+    if not delta_parts:
+        delta_parts.append(
+            "- synthesis_quality / executive_signal: tighten connective S3–S6 prose per "
+            "six_sentence_arc already in the system prompt (no new facts; jd_used_as_proof=false)."
+        )
+
+    if prior_word_count > 0 or prior_ledger_rows > 0:
+        delta_parts.append(
+            format_judge_regen_x2_floor(
+                prior_word_count=max(1, prior_word_count),
+                prior_ledger_rows=max(1, prior_ledger_rows),
+            ),
+        )
+
+    failed_dims = {ln.split(" ", 1)[0] for ln in dimension_lines}
+    if unused_fact_ids and "evidence_utilization" in failed_dims:
+        preview = ", ".join(unused_fact_ids[:8])
+        suffix = "..." if len(unused_fact_ids) > 8 else ""
+        delta_parts.append(
+            f"EVIDENCE_WEAVE (allowed ids only, no new claims): {preview}{suffix}",
+        )
+
+    if allowed_fact_count >= 1:
+        delta_parts.append(
+            "Shape: exactly 6 sentences (max 140 words); same JSON schema as first turn.",
+        )
+    delta_parts.append(
+        "OUTPUT: Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
+        "THIRD PERSON ONLY. No target company name in resume_display_text.",
+    )
+    delta_parts.append(
+        "Revise ONLY resume_display_text and claim_ledger per JUDGE_DELTA; jd_used_as_proof=false.",
+    )
+    _ = PROMPT_LOCK_GENERIC  # apps import core lock text SSOT; envelope applied in format_regen_delta_user_turn
+    return delta_parts
+
+
+def build_judge_remediation_prescriptive_delta_message(
+    *,
+    x1d_judges: list[dict[str, Any]],
+    unused_fact_ids: list[str],
+    allowed_fact_count: int,
+    prior_resume_display_text: str = "",
+    prior_word_count: int = 0,
+    prior_ledger_rows: int = 0,
+) -> str:
+    """Surgical regen user turn via core ``format_regen_delta_user_turn`` (no duplicate PROMPT_LOCK block)."""
+    from agentic_core.L2_execution.regen.prompt_lock import format_regen_delta_user_turn
+
+    _ = prior_resume_display_text  # anchor lives on assistant turn when core runner is used
+    lines = collect_judge_remediation_delta_lines(
+        x1d_judges,
+        unused_fact_ids=unused_fact_ids,
+        allowed_fact_count=allowed_fact_count,
+        prior_word_count=prior_word_count,
+        prior_ledger_rows=prior_ledger_rows,
+    )
+    return format_regen_delta_user_turn(tuple(lines))
+
+
+def build_judge_remediation_legacy_user_message(
     *,
     x1d_judges: list[dict[str, Any]],
     unused_fact_ids: list[str],
@@ -406,6 +512,44 @@ def build_judge_remediation_user_message(
     )
 
 
+def build_judge_remediation_user_message(
+    *,
+    x1d_judges: list[dict[str, Any]],
+    unused_fact_ids: list[str],
+    allowed_fact_count: int,
+    composition_plan: dict[str, Any] | None = None,
+    prior_word_count: int = 0,
+    prior_ledger_rows: int = 0,
+    prior_resume_display_text: str = "",
+) -> str:
+    if judge_regen_legacy_remediation_block_enabled():
+        return build_judge_remediation_legacy_user_message(
+            x1d_judges=x1d_judges,
+            unused_fact_ids=unused_fact_ids,
+            allowed_fact_count=allowed_fact_count,
+            composition_plan=composition_plan,
+            prior_word_count=prior_word_count,
+            prior_ledger_rows=prior_ledger_rows,
+        )
+    if judge_regen_prescriptive_delta_enabled():
+        return build_judge_remediation_prescriptive_delta_message(
+            x1d_judges=x1d_judges,
+            unused_fact_ids=unused_fact_ids,
+            allowed_fact_count=allowed_fact_count,
+            prior_resume_display_text=prior_resume_display_text,
+            prior_word_count=prior_word_count,
+            prior_ledger_rows=prior_ledger_rows,
+        )
+    return build_judge_remediation_legacy_user_message(
+        x1d_judges=x1d_judges,
+        unused_fact_ids=unused_fact_ids,
+        allowed_fact_count=allowed_fact_count,
+        composition_plan=composition_plan,
+        prior_word_count=prior_word_count,
+        prior_ledger_rows=prior_ledger_rows,
+    )
+
+
 def try_judge_safe_prefilter(
     parsed: dict[str, Any],
     selected_facts: list[dict[str, Any]],
@@ -484,7 +628,88 @@ def retry_qwen_for_judge_remediation(
     thread_messages = list(messages)
     allowed_count = len(allowed_fact_ids)
 
+    anchor_text = str(current_parsed.get("resume_display_text") or "").strip()
+    if judge_regen_legacy_remediation_block_enabled() or not judge_regen_prescriptive_delta_enabled():
+        receipt["regen_user_message_mode"] = "legacy_remediation_block"
+    else:
+        receipt["regen_user_message_mode"] = "prescriptive_delta_v1"
+
+    from apps_rg.runtime.sections.executive_summary_same_authority_regen_bridge import (
+        build_incremental_repair_contract,
+        run_core_same_authority_regen,
+    )
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        judge_regen_core_runner_enabled,
+        judge_regen_max_attempts,
+    )
+
+    use_core_runner = (
+        judge_regen_prescriptive_delta_enabled()
+        and not judge_regen_legacy_remediation_block_enabled()
+        and judge_regen_core_runner_enabled()
+    )
+    receipt["regen_engine"] = (
+        "core.SameAuthorityRegenRunner" if use_core_runner else "apps_rg.thread_append"
+    )
+
     for attempt in range(_attempt_cap):
+        if use_core_runner and attempt == 0:
+            contract = build_incremental_repair_contract(
+                messages=thread_messages,
+                provider_payload=provider_payload,
+                x1d_judges=x1d_judges,
+                trigger_receipt=trigger_receipt,
+                unused_fact_ids=unused_fact_ids,
+                allowed_fact_count=allowed_count,
+                anchor_output_text=anchor_text or current_raw,
+                prior_word_count=prior_word_count,
+                prior_ledger_rows=prior_ledger_rows,
+                artifact_dir=artifact_dir,
+                run_id=run_id,
+                semantic_regen_attempt_index=attempt + 1,
+                transport_retry_count=0,
+                max_semantic_regen_attempts=judge_regen_max_attempts(),
+            )
+            regen_text, core_receipt, _sar, _chat_msgs = run_core_same_authority_regen(
+                messages=thread_messages,
+                provider_payload=provider_payload,
+                contract=contract,
+                artifact_dir=artifact_dir,
+                run_id=run_id,
+            )
+            receipt["core_same_authority_regen"] = core_receipt
+            attempt_record: dict[str, Any] = {
+                "attempt": attempt + 1,
+                "engine": "core.SameAuthorityRegenRunner",
+                "accepted": bool(core_receipt.get("accepted")),
+            }
+            if not core_receipt.get("accepted"):
+                attempt_record["skipped"] = core_receipt.get("refusal") or "refused"
+                receipt["attempts"].append(attempt_record)
+                break
+            new_raw = regen_text
+            new_parsed, new_err = parse_model_json(new_raw)
+            attempt_record["parse_ok"] = bool(new_parsed)
+            if new_parsed:
+                new_parsed = normalize_executive_summary_llm_output(new_parsed, selected_fact_plan)
+                prune_exec_summary_claim_ledger_orphans(new_parsed, allowed_fact_ids)
+                from apps_rg.runtime.sections.executive_summary_voice_repair import (
+                    apply_voice_repair_to_parsed,
+                )
+
+                new_parsed, voice_receipt = apply_voice_repair_to_parsed(
+                    new_parsed,
+                    selected_facts=list(selected_fact_plan.get("facts") or []),
+                )
+                if voice_receipt.get("repaired"):
+                    receipt["voice_repair"] = voice_receipt
+                current_raw = new_raw
+                current_parsed = new_parsed
+            else:
+                attempt_record["parse_error"] = new_err
+            receipt["attempts"].append(attempt_record)
+            continue
+
         repair_user = build_judge_remediation_user_message(
             x1d_judges=x1d_judges,
             unused_fact_ids=unused_fact_ids,
@@ -492,6 +717,7 @@ def retry_qwen_for_judge_remediation(
             composition_plan=composition_plan,
             prior_word_count=prior_word_count,
             prior_ledger_rows=prior_ledger_rows,
+            prior_resume_display_text=anchor_text,
         )
         thread_messages = [
             *thread_messages,

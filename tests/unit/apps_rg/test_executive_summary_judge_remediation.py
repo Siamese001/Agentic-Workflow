@@ -7,6 +7,7 @@ from pathlib import Path
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
     all_model_backed_judges_pass,
     any_model_backed_soft_fail,
+    build_judge_remediation_prescriptive_delta_message,
     build_judge_remediation_user_message,
     evaluate_judge_remediation_trigger,
     rerun_soft_failed_judges,
@@ -136,18 +137,42 @@ def test_judge_remediation_user_message_includes_x2_floor() -> None:
     assert "6" in msg
 
 
-def test_remediation_user_message_lists_unused_facts() -> None:
-    msg = build_judge_remediation_user_message(
+def test_prescriptive_delta_locks_compile_core_runner_splits_anchor() -> None:
+    from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
+
+    msg = build_judge_remediation_prescriptive_delta_message(
         x1d_judges=[_soft_fail_judge("anthropic_claude", findings=["weak synthesis"])],
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+        prior_resume_display_text="Sentence one. Sentence two.",
+        prior_word_count=42,
+        prior_ledger_rows=6,
+    )
+    assert "REGEN_DELTA_v1" in msg
+    assert PROMPT_LOCK_GENERIC.split(".")[0] in msg
+    assert "ANCHOR_DRAFT" not in msg
+    assert "Sentence one. Sentence two." not in msg
+    assert "synthesis" in msg.lower() or "weak" in msg.lower()
+    assert "SYNTHESIS_SHAPE" not in msg
+    assert "X2_PHRASE_GUARDS" not in msg
+
+
+def test_remediation_user_message_lists_unused_facts_when_evidence_dim_fails() -> None:
+    judge = _soft_fail_judge("anthropic_claude", findings=["underused facts"])
+    judge["dimension_verdicts"] = {
+        "evidence_utilization": {"pass": False, "severity": "major", "codes": ["underused_facts"]},
+    }
+    msg = build_judge_remediation_user_message(
+        x1d_judges=[judge],
         unused_fact_ids=["fact_003", "fact_004"],
         allowed_fact_count=8,
     )
-    assert "Unused allowed facts" in msg
-    assert "fact_003" in msg
+    assert "EVIDENCE_WEAVE" in msg or "fact_003" in msg
     assert "exactly 6 sentences" in msg.lower()
 
 
-def test_remediation_user_message_includes_x2_phrase_guards() -> None:
+def test_remediation_user_message_legacy_block_includes_x2_phrase_guards(monkeypatch) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_LEGACY_BLOCK", "1")
     msg = build_judge_remediation_user_message(
         x1d_judges=[_soft_fail_judge("anthropic_claude", findings=["weak synthesis"])],
         unused_fact_ids=[],
