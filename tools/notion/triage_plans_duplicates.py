@@ -6,7 +6,7 @@ archives losers (in_trash=true) while keeping a single canonical winner
 per slug. Decision rules:
 
   1. If statuses differ, status priority picks the winner:
-       Completed > In Progress > Deferred > Waiting > Not Started > Retired > Archived
+       Completed > In Progress > Lower Priority > Waiting > Not Started > Retired > Archived
      (Completed always wins because the user explicitly tracked work-done.)
   2. If statuses tie, most-recently-edited wins (last_edited_time desc).
 
@@ -54,7 +54,9 @@ THROTTLE_S = 0.35
 _STATUS_PRIORITY: dict[str, int] = {
     "Completed": 100,
     "In Progress": 80,
-    "Deferred": 60,
+    "Lower Priority": 60,
+    "Deferred": 55,
+    "Deprioritized": 55,
     "Waiting": 50,
     "Not Started": 40,
     "Retired": 20,

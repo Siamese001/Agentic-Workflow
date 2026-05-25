@@ -5,7 +5,7 @@ Constitutional rule: `.cursor/rules/notion-plans-taxonomy.md`
 
 Contract
 --------
-Every Notion Plans row with ``Status ∈ {Live, Draft, Completed}`` MUST have a
+Every Notion Plans row with ``Status ∈ {In Progress, Not Started, Lower Priority, Waiting, Completed}`` MUST have a
 non-empty ``AI Summary`` (property id ``lNTq``, note trailing space in name).
 Format: single sentence, ≤ 12 words, scope + why-it-matters. Soft-cap at
 15 words (rows over that log an advisory WARN but do not fail even under
@@ -25,7 +25,7 @@ SSOT
 ----
 - Data source id: ``ac53d31b-3068-4039-9ebe-856c12caab32`` (Plans)
 - Property id: ``lNTq`` (``AI Summary ``)
-- Status enforced-set: ``{"Live", "Draft", "Completed"}``
+- Status enforced-set: ``{"In Progress", "Not Started", "Lower Priority", "Waiting", "Completed"}``
 
 Exit codes
 ----------
@@ -49,7 +49,13 @@ import urllib.request
 from typing import Any, Iterable
 
 _PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-_ENFORCED_STATUSES: frozenset[str] = frozenset({"Live", "Draft", "Completed"})
+_ENFORCED_STATUSES: frozenset[str] = frozenset({
+    "In Progress",
+    "Not Started",
+    "Lower Priority",
+    "Waiting",
+    "Completed",
+})
 _NOTION_VERSION = "2025-09-03"
 _QUERY_URL = f"https://api.notion.com/v1/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
 

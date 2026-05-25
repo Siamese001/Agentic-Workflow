@@ -45,7 +45,18 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 # Validation constants
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-[a-f0-9]{6}$")
 VALID_CREATION_STATUSES = frozenset({"Not Started", "Completed"})
-FORBIDDEN_AT_CREATION = {"In Progress", "Waiting", "Deferred", "Retired", "Archived"}
+FORBIDDEN_AT_CREATION = {
+    "In Progress",
+    "Waiting",
+    "Lower Priority",
+    "Deferred",
+    "Deprioritized",
+    "Active",
+    "Live",
+    "Draft",
+    "Retired",
+    "Archived",
+}
 
 # Audit log paths (repo-root anchored — hook cwd is usually repo root but this stays correct)
 _AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_corrections.jsonl"

@@ -43,7 +43,18 @@ _NOTION_TIMEOUT_S = 30
 # Validation constants
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-[a-f0-9]{6}$")
 VALID_CREATION_STATUSES = frozenset({"Not Started", "Completed"})
-FORBIDDEN_AT_CREATION = {"In Progress", "Waiting", "Deferred", "Retired", "Archived"}
+FORBIDDEN_AT_CREATION = {
+    "In Progress",
+    "Waiting",
+    "Lower Priority",
+    "Deferred",
+    "Deprioritized",
+    "Active",
+    "Live",
+    "Draft",
+    "Retired",
+    "Archived",
+}
 
 # Audit log paths
 _AUDIT_LOG_PATH = Path("artifacts/windsurf/plan_creation_corrections.jsonl")

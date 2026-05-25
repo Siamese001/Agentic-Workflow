@@ -58,8 +58,20 @@ DETECTION_WINDOW_HOURS = 24
 # Only this status is allowed for new plans
 CANONICAL_NEW_PLAN_STATUS = "Not Started"
 
-# Statuses that violate the new-plan rule
-VIOLATION_STATUSES = {"Lower Priority", "Waiting", "In Progress", "Completed"}
+# Statuses that violate the new-plan rule (must be Not Started at creation)
+VIOLATION_STATUSES = frozenset({"Lower Priority", "Waiting", "In Progress", "Completed"})
+
+# Stale legacy names — also forbidden at creation (would recreate orphan Select options)
+STALE_NEW_PLAN_STATUSES = frozenset({
+    "Deferred",
+    "Deprioritized",
+    "Active",
+    "Live",
+    "Draft",
+    "Proposed",
+    "Complete",
+    "Superseded",
+})
 
 
 @dataclass(frozen=True)
@@ -217,7 +229,7 @@ def check_new_plans_status(token: str | None) -> dict[str, Any]:
             })
             continue
         
-        if status in VIOLATION_STATUSES:
+        if status in VIOLATION_STATUSES or status in STALE_NEW_PLAN_STATUSES:
             violations.append(Violation(
                 page_id=page_id,
                 slug=slug,

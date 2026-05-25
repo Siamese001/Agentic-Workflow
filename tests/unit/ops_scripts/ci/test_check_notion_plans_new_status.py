@@ -19,6 +19,7 @@ sys.path.insert(0, str(REPO_ROOT / "ops_scripts" / "ci"))
 from check_notion_plans_new_status import (
     CANONICAL_NEW_PLAN_STATUS,
     DETECTION_WINDOW_HOURS,
+    STALE_NEW_PLAN_STATUSES,
     VIOLATION_STATUSES,
     _is_newly_created,
     _now_utc,
@@ -278,16 +279,12 @@ class TestMain:
 
 class TestViolationStatuses:
     def test_violation_statuses_set(self):
-        assert "Deferred" in VIOLATION_STATUSES
+        assert "Lower Priority" in VIOLATION_STATUSES
         assert "Waiting" in VIOLATION_STATUSES
         assert "In Progress" in VIOLATION_STATUSES
         assert "Completed" in VIOLATION_STATUSES
         assert CANONICAL_NEW_PLAN_STATUS not in VIOLATION_STATUSES
-
-    def test_lower_priority_NOT_in_violation_statuses(self):
-        """'Lower Priority' is NOT in VIOLATION_STATUSES by design —
-        this gate only catches active-workflow statuses on brand-new plans."""
-        assert "Lower Priority" not in VIOLATION_STATUSES
+        assert "Deferred" in STALE_NEW_PLAN_STATUSES
 
     def test_retired_NOT_in_violation_statuses(self):
         """Retired is not checked by the new-plan gate (it's a terminal status
@@ -299,8 +296,13 @@ class TestViolationStatuses:
         assert "Archived" not in VIOLATION_STATUSES
 
     def test_violation_statuses_exhaustiveness(self):
-        """Exactly these 4 statuses are in VIOLATION_STATUSES."""
-        assert VIOLATION_STATUSES == {"Deferred", "Waiting", "In Progress", "Completed"}
+        """Canonical wrong-at-creation statuses (excludes stale legacy names)."""
+        assert VIOLATION_STATUSES == frozenset({
+            "Lower Priority",
+            "Waiting",
+            "In Progress",
+            "Completed",
+        })
 
 
 class TestEdgeCasePlans:

@@ -54,6 +54,8 @@ _STATUS_MAP = {
     "live": "In Progress",
     "not started": "Not Started",
     "draft": "Not Started",
+    "active": "In Progress",
+    "proposed": "Not Started",
     "deprioritized": "Lower Priority",
     "deferred": "Lower Priority",
     "waiting": "Waiting",

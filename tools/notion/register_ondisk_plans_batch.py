@@ -3,7 +3,7 @@
 
 Reads `artifacts/windsurf/backlog_plan_linkage_misses.jsonl`, extracts unique
 slugs whose on-disk plan file exists at `.windsurf/plans/<slug>.md`, and posts
-one Plans DB row per slug with Slug (title) / Status=Draft / Exists On Disk=true /
+one Plans DB row per slug with Slug (title) / Status=Not Started / Exists On Disk=true /
 Plan File Path / Summary / AI Summary.
 
 Idempotent: queries Plans DB by Slug-equals before posting; skips existing.

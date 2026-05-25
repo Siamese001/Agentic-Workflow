@@ -69,12 +69,27 @@ THROTTLE_S = 0.35  # ~3 req/s to stay under Notion rate limit
 CANONICAL_STATUSES = {
     "In Progress",
     "Not Started",
-    "Deferred",
+    "Lower Priority",
     "Waiting",
     "Completed",
     "Retired",
     "Archived",
 }
+
+_STALE_STATUS_ALIASES: dict[str, str] = {
+    "Deferred": "Lower Priority",
+    "Deprioritized": "Lower Priority",
+    "Active": "In Progress",
+    "Live": "In Progress",
+    "Draft": "Not Started",
+    "Proposed": "Not Started",
+}
+
+
+def _normalize_status(status: str) -> str:
+    """Map legacy cache/live status strings to canonical Plans DB options."""
+    return _STALE_STATUS_ALIASES.get(status, status)
+
 
 # ---------------------------------------------------------------------------
 # HTTP helpers
@@ -205,7 +220,7 @@ def _build_diff(cache: dict[str, dict], live_rows: list[dict]) -> dict:
             target_dist[live_status] += 1
             continue
 
-        cache_status = cache_entry.get("status", "")
+        cache_status = _normalize_status(cache_entry.get("status", ""))
         cache_dist[cache_status] += 1
 
         if cache_status not in CANONICAL_STATUSES:
@@ -292,7 +307,8 @@ def _execute_patches(
 
     bar = tqdm(eligible, desc="Restoring Status", unit="row", colour="green")
     for row in bar:
-        props = {"Status": {"select": {"name": row["cache_status"]}}}
+        target = _normalize_status(row["cache_status"])
+        props = {"Status": {"select": {"name": target}}}
         success, err = _patch_page(row["page_id"], props, token)
         if success:
             ok += 1
@@ -300,14 +316,14 @@ def _execute_patches(
                 event="patch_status",
                 slug=row["slug"],
                 writer="restore_plan_statuses_from_cache",
-                detail=f"status→{row['cache_status']}",
+                detail=f"status→{target}",
             )
         else:
             fail += 1
             failures.append({
                 "page_id": row["page_id"],
                 "slug": row["slug"],
-                "target_status": row["cache_status"],
+                "target_status": target,
                 "error": err,
             })
             if hasattr(bar, "write"):

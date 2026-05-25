@@ -30,9 +30,15 @@ try:
         STALE_EQUIVALENTS,
     )
 except ImportError:
-    CANONICAL_STATUSES = frozenset(
-        {"Live", "Draft", "Waiting", "Completed", "Retired", "Archived"}
-    )
+    CANONICAL_STATUSES = frozenset({
+        "In Progress",
+        "Not Started",
+        "Lower Priority",
+        "Waiting",
+        "Completed",
+        "Retired",
+        "Archived",
+    })
     PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
     STALE_EQUIVALENTS: dict[str, str] = {}
 

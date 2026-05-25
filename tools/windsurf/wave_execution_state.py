@@ -117,7 +117,7 @@ def _check_plan_registration(plan: str) -> int:
         f"  Status:       {res.status}\n"
         "Required: API-post-page into Plans DB (data source "
         "ac53d31b-3068-4039-9ebe-856c12caab32)\n"
-        "  with Slug, Status (Live|Draft), Exists On Disk=true, Plan File Path,\n"
+        "  with Slug, Status=Not Started (canonical), Exists On Disk=true, Plan File Path,\n"
         "  Summary, AI Summary (trailing space in property name).\n"
         "After posting, re-run this command. To force-refresh the local cache:\n"
         "  python ops_scripts/ci/check_plan_registration_freshness.py --refresh\n"

@@ -42,7 +42,7 @@ class PlanStatus(Enum):
     COMPLETED = "Completed"
     RETIRED = "Retired"
     ARCHIVED = "Archived"
-    DEFERRED = "Deferred"
+    LOWER_PRIORITY = "Lower Priority"
 
 
 class LifecycleState(Enum):
