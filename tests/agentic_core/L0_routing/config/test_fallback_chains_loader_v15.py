@@ -21,3 +21,15 @@ def test_single_action_hitl_tier() -> None:
     chain = get_fallback_chain_v15(RouteIdV15.R4_SINGLE_ACTION)
     assert chain[0].route_id == RouteIdV15.R3R4_MANAGED_WORKFLOW
     assert chain[0].cost_tier.value == "TIER_HITL"
+
+
+def test_unknown_route_returns_empty_chain() -> None:
+    reset_cache()
+    assert get_fallback_chain_v15("R99_NONEXISTENT") == ()
+
+
+def test_simple_grounded_read_chain_ends_r5() -> None:
+    reset_cache()
+    chain = get_fallback_chain_v15(RouteIdV15.R3_SIMPLE_GROUNDED_READ)
+    assert chain
+    assert chain[-1].route_id == RouteIdV15.R5_FALLBACK
