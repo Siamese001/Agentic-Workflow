@@ -11,14 +11,20 @@ import hashlib
 import json
 import os
 import re
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from typing import Any
 
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt
 
 SECTION_ID = "executive_summary"
 FAIL_CLOSED_REASON = "TOKEN_BUDGET_EXCEEDED_AFTER_TRIM"
+FAIL_CLOSED_REASON_FIRST_PASS_85PCT = "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT"
 FAIL_SHAPE_ALTERED = "EVIDENCE_CONTRACT_OR_PROMPT_SHAPE_ALTERED"
+FIRST_PASS_INPUT_UTILIZATION_MAX = 0.85
+_CONTEXT_SOURCE_ENV = "ENV_VLLM_MAX_MODEL_LEN"
+_CONTEXT_SOURCE_SERVER = "SERVER_MODELS_METADATA"
+_CONTEXT_SOURCE_UNKNOWN = "UNKNOWN"
+_ENV_VERIFY_CONTEXT_WINDOW = "APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW"
 TRIM_STRATEGY = "executive_summary_optional_trim_only_v2"
 ESTIMATE_METHOD = "approximate_chars_div_3_with_safety_margin"
 
@@ -79,11 +85,228 @@ class ExecutiveSummaryTokenBudgetExceeded(Exception):
 
 
 def resolve_provider_context_window() -> int:
-    raw = os.environ.get("VLLM_MAX_MODEL_LEN", str(_DEFAULT_CONTEXT_WINDOW)).strip()
+    return resolve_context_window_provenance().provider_context_window
+
+
+@dataclass(frozen=True)
+class ContextWindowProvenance:
+    provider_context_window: int
+    provider_context_window_source: str
+    server_context_window_verified: bool
+    server_context_window_warning: str | None
+    server_observed_context_window: int | None = None
+
+
+def _truthy_env_flag(name: str) -> bool:
+    return str(os.environ.get(name, "") or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _server_context_window_from_models_payload(
+    payload: dict[str, Any],
+    *,
+    model_id: str,
+) -> int | None:
+    """Best-effort parse of vLLM/OpenAI-compatible ``/v1/models`` rows."""
+    rows = payload.get("data") if isinstance(payload.get("data"), list) else []
+    needle = str(model_id or "").strip().lower()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        rid = str(row.get("id") or "").strip()
+        if needle and needle not in rid.lower():
+            continue
+        for key in ("max_model_len", "context_length", "max_context_length", "max_sequence_length"):
+            raw = row.get(key)
+            if raw is not None:
+                try:
+                    return max(4096, int(raw))
+                except (TypeError, ValueError):
+                    continue
+        root = row.get("root")
+        if isinstance(root, dict):
+            for key in ("max_model_len", "context_length"):
+                raw = root.get(key)
+                if raw is not None:
+                    try:
+                        return max(4096, int(raw))
+                    except (TypeError, ValueError):
+                        continue
+    return None
+
+
+def resolve_context_window_provenance(*, model: str | None = None) -> ContextWindowProvenance:
+    """Resolve context window with labeled provenance (W2.1). Auto-detect is opt-in only."""
+    env_raw = os.environ.get("VLLM_MAX_MODEL_LEN", str(_DEFAULT_CONTEXT_WINDOW)).strip()
     try:
-        return max(4096, int(raw))
+        env_window = max(4096, int(env_raw))
     except ValueError:
-        return _DEFAULT_CONTEXT_WINDOW
+        env_window = _DEFAULT_CONTEXT_WINDOW
+
+    if not _truthy_env_flag(_ENV_VERIFY_CONTEXT_WINDOW):
+        return ContextWindowProvenance(
+            provider_context_window=env_window,
+            provider_context_window_source=_CONTEXT_SOURCE_ENV,
+            server_context_window_verified=False,
+            server_context_window_warning=(
+                "operator-declared VLLM_MAX_MODEL_LEN; not server-proven (verification disabled)"
+            ),
+            server_observed_context_window=None,
+        )
+
+    from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_BASE_URL, DEFAULT_QWEN_MODEL
+    from apps_rg.runtime.qwen_transport_diag import fetch_openai_compatible_model_ids
+
+    base_url = str(os.environ.get("VLLM_BASE_URL", DEFAULT_QWEN_BASE_URL))
+    model_id = str(model or os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL))
+    timeout_s = float(os.environ.get("APPS_RG_QWEN_MODELS_PROBE_TIMEOUT_SECONDS", "5"))
+    http_status, _ids, transport_error = fetch_openai_compatible_model_ids(
+        base_url=base_url,
+        timeout_s=timeout_s,
+    )
+    if transport_error or http_status != 200:
+        return ContextWindowProvenance(
+            provider_context_window=env_window,
+            provider_context_window_source=_CONTEXT_SOURCE_UNKNOWN,
+            server_context_window_verified=False,
+            server_context_window_warning=(
+                f"server models probe failed; using env VLLM_MAX_MODEL_LEN={env_window} ({transport_error or http_status})"
+            ),
+            server_observed_context_window=None,
+        )
+
+    import urllib.error
+    import urllib.request
+
+    url = str(base_url).rstrip("/") + "/models"
+    try:
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except (OSError, urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError):
+        return ContextWindowProvenance(
+            provider_context_window=env_window,
+            provider_context_window_source=_CONTEXT_SOURCE_UNKNOWN,
+            server_context_window_verified=False,
+            server_context_window_warning=(
+                "server models metadata unreadable; using operator-declared VLLM_MAX_MODEL_LEN"
+            ),
+            server_observed_context_window=None,
+        )
+
+    if not isinstance(payload, dict):
+        payload = {}
+    observed = _server_context_window_from_models_payload(payload, model_id=model_id)
+    if observed is None:
+        return ContextWindowProvenance(
+            provider_context_window=env_window,
+            provider_context_window_source=_CONTEXT_SOURCE_ENV,
+            server_context_window_verified=False,
+            server_context_window_warning=(
+                "server /v1/models reachable but no max_model_len metadata; using env VLLM_MAX_MODEL_LEN"
+            ),
+            server_observed_context_window=None,
+        )
+
+    return ContextWindowProvenance(
+        provider_context_window=observed,
+        provider_context_window_source=_CONTEXT_SOURCE_SERVER,
+        server_context_window_verified=True,
+        server_context_window_warning=None,
+        server_observed_context_window=observed,
+    )
+
+
+def context_window_provenance_receipt_fields(
+    provenance: ContextWindowProvenance,
+) -> dict[str, Any]:
+    return {
+        "provider_context_window": provenance.provider_context_window,
+        "provider_context_window_source": provenance.provider_context_window_source,
+        "server_context_window_verified": provenance.server_context_window_verified,
+        "server_context_window_warning": provenance.server_context_window_warning,
+        "server_observed_context_window": provenance.server_observed_context_window,
+    }
+
+
+def first_pass_85pct_limit_tokens(available_input_tokens: int) -> int:
+    return max(0, int(available_input_tokens * FIRST_PASS_INPUT_UTILIZATION_MAX))
+
+
+def first_pass_utilization_pct(estimated_tokens: int, available_input_tokens: int) -> float:
+    if available_input_tokens <= 0:
+        return 100.0 if estimated_tokens > 0 else 0.0
+    return round(min(999.0, estimated_tokens / available_input_tokens * 100.0), 2)
+
+
+def exceeds_first_pass_85pct_policy(estimated_tokens: int, available_input_tokens: int) -> bool:
+    """W2.2: deterministic fail-closed when optional trim still leaves >85% utilization."""
+    return estimated_tokens > first_pass_85pct_limit_tokens(available_input_tokens)
+
+
+@dataclass(frozen=True)
+class RegenDispatchBudgetCheck:
+    estimated_input_tokens: int
+    max_output_tokens: int
+    reserved_tokens: int
+    provider_context_window: int
+    available_input_tokens: int
+    headroom_tokens: int
+    headroom_pct: float
+    dispatch_allowed: bool
+    block_reason: str | None
+    provider_context_window_source: str = _CONTEXT_SOURCE_ENV
+    server_context_window_verified: bool = False
+    server_context_window_warning: str | None = None
+
+
+def estimate_regen_thread_tokens(messages: list[dict[str, str]]) -> int:
+    """Conservative estimate for full chat ``messages[]`` passed to regen dispatch."""
+    parts = [str(m.get("content") or "") for m in messages if isinstance(m, dict)]
+    return estimate_tokens_approximate("\n".join(parts))
+
+
+def regen_dispatch_allowed(
+    messages: list[dict[str, str]],
+    *,
+    max_output_tokens: int,
+    provider_context_window: int | None = None,
+    model: str | None = None,
+) -> RegenDispatchBudgetCheck:
+    """Fail-closed pre-dispatch gate for regen/repair Qwen calls."""
+    provenance = (
+        resolve_context_window_provenance(model=model)
+        if provider_context_window is None
+        else ContextWindowProvenance(
+            provider_context_window=int(provider_context_window),
+            provider_context_window_source=_CONTEXT_SOURCE_ENV,
+            server_context_window_verified=False,
+            server_context_window_warning="explicit provider_context_window override",
+            server_observed_context_window=None,
+        )
+    )
+    ctx = int(provenance.provider_context_window)
+    max_out = max(1, int(max_output_tokens))
+    reserved = _RESERVED_SYSTEM_SCHEMA_TOKENS
+    available = max(0, ctx - max_out - reserved)
+    est_in = estimate_regen_thread_tokens(messages)
+    headroom = available - est_in
+    headroom_pct = round((headroom / available * 100.0) if available > 0 else 0.0, 2)
+    allowed = est_in <= available
+    block_reason = None if allowed else "regen_input_exceeds_available_context_window"
+    return RegenDispatchBudgetCheck(
+        estimated_input_tokens=est_in,
+        max_output_tokens=max_out,
+        reserved_tokens=reserved,
+        provider_context_window=ctx,
+        available_input_tokens=available,
+        headroom_tokens=headroom,
+        headroom_pct=headroom_pct,
+        dispatch_allowed=allowed,
+        block_reason=block_reason,
+        provider_context_window_source=provenance.provider_context_window_source,
+        server_context_window_verified=provenance.server_context_window_verified,
+        server_context_window_warning=provenance.server_context_window_warning,
+    )
 
 
 def estimate_tokens_approximate(text: str) -> int:
@@ -568,7 +791,18 @@ def apply_executive_summary_token_budget_policy(
     provider_context_window: int | None = None,
 ) -> tuple[SectionCompiledPrompt, dict[str, Any]]:
     """Apply optional-only trims; block before Qwen if evidence/shape would change or budget still exceeded."""
-    ctx = int(provider_context_window or resolve_provider_context_window())
+    provenance = (
+        resolve_context_window_provenance(model=model)
+        if provider_context_window is None
+        else ContextWindowProvenance(
+            provider_context_window=int(provider_context_window),
+            provider_context_window_source=_CONTEXT_SOURCE_ENV,
+            server_context_window_verified=False,
+            server_context_window_warning="explicit provider_context_window override",
+            server_observed_context_window=None,
+        )
+    )
+    ctx = int(provenance.provider_context_window)
     max_out = max(1, int(requested_max_output_tokens))
     reserved = _RESERVED_SYSTEM_SCHEMA_TOKENS
     available = max(0, ctx - max_out - reserved)
@@ -621,15 +855,18 @@ def apply_executive_summary_token_budget_policy(
     shape_violations = verify_prompt_shape_preserved(
         content_for_trim, trimmed_content, srfs_mode=srfs
     )
+    first_pass_limit = first_pass_85pct_limit_tokens(available)
+    exceeds_85 = exceeds_first_pass_85pct_policy(after_tokens, available)
     still_over = after_tokens > available
     shape_altering_required = still_over and not trim_applied
+    utilization_pct = first_pass_utilization_pct(after_tokens, available)
 
     receipt: dict[str, Any] = {
         "status": "PASS",
         "section": SECTION_ID,
         "provider": provider,
         "model": model,
-        "provider_context_window": ctx,
+        **context_window_provenance_receipt_fields(provenance),
         "requested_max_output_tokens": max_out,
         "reserved_input_tokens": reserved,
         "available_input_tokens": available,
@@ -658,6 +895,10 @@ def apply_executive_summary_token_budget_policy(
         "evidence_contract_preserved": not evidence_violations,
         "shape_altering_trim_forbidden": True,
         "shape_altering_trim_required_to_fit": still_over,
+        "first_pass_85pct_policy_enabled": True,
+        "first_pass_85pct_limit_tokens": first_pass_limit,
+        "first_pass_utilization_pct": utilization_pct,
+        "first_pass_85pct_exceeded": exceeds_85,
         "dispatch_allowed": True,
         "fail_closed_reason": None,
         "token_estimate_method": ESTIMATE_METHOD,
@@ -668,6 +909,12 @@ def apply_executive_summary_token_budget_policy(
     if evidence_violations or shape_violations:
         receipt["status"] = "FAIL"
         receipt["fail_closed_reason"] = FAIL_SHAPE_ALTERED
+        receipt["dispatch_allowed"] = False
+        raise ExecutiveSummaryTokenBudgetExceeded(receipt=receipt)
+
+    if exceeds_85:
+        receipt["status"] = "FAIL"
+        receipt["fail_closed_reason"] = FAIL_CLOSED_REASON_FIRST_PASS_85PCT
         receipt["dispatch_allowed"] = False
         raise ExecutiveSummaryTokenBudgetExceeded(receipt=receipt)
 
@@ -708,13 +955,24 @@ def write_token_budget_receipt(artifact_dir, receipt: dict[str, Any]) -> None:
 
 
 __all__ = [
+    "ContextWindowProvenance",
     "ExecutiveSummaryTokenBudgetExceeded",
     "FAIL_CLOSED_REASON",
+    "FAIL_CLOSED_REASON_FIRST_PASS_85PCT",
     "FAIL_SHAPE_ALTERED",
+    "FIRST_PASS_INPUT_UTILIZATION_MAX",
     "PROTECTED_COMPONENT_LABELS",
     "TRIM_STRATEGY",
     "apply_executive_summary_token_budget_policy",
+    "context_window_provenance_receipt_fields",
+    "RegenDispatchBudgetCheck",
+    "estimate_regen_thread_tokens",
     "estimate_tokens_approximate",
+    "exceeds_first_pass_85pct_policy",
+    "first_pass_85pct_limit_tokens",
+    "first_pass_utilization_pct",
+    "regen_dispatch_allowed",
+    "resolve_context_window_provenance",
     "evidence_contract_digest",
     "extract_evidence_contract_snapshot",
     "protected_fact_ids_from_payload",

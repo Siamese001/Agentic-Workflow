@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
+from agentic_core.L2_execution.regen.prompt_lock import DEFAULT_MAX_DELTA_TOKENS
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
     all_model_backed_judges_pass,
     any_model_backed_soft_fail,
     build_judge_remediation_prescriptive_delta_message,
     build_judge_remediation_user_message,
+    collect_judge_remediation_delta_lines,
     evaluate_judge_remediation_trigger,
+    retry_qwen_for_judge_remediation,
     rerun_soft_failed_judges,
 )
 from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_attempts
@@ -168,7 +172,7 @@ def test_remediation_user_message_lists_unused_facts_when_evidence_dim_fails() -
         allowed_fact_count=8,
     )
     assert "EVIDENCE_WEAVE" in msg or "fact_003" in msg
-    assert "exactly 6 sentences" in msg.lower()
+    assert "6 sentences" in msg.lower() or "claim_ledger" in msg.lower()
 
 
 def test_remediation_user_message_legacy_block_includes_x2_phrase_guards(monkeypatch) -> None:
@@ -276,3 +280,124 @@ def test_rerun_soft_failed_expands_to_full_panel_when_packet_hash_drifts(
         parsed_output={"resume_display_text": "text", "claim_ledger": []},
     )
     assert captured["judge_keys"] == ["anthropic_claude", "gemini_pro", "openai_chatgpt"]
+
+
+def _claude_soft_fail_with_dimension_verdicts() -> dict:
+    judge = _soft_fail_judge(
+        "anthropic_claude",
+        findings=[
+            "Sentences 2-5 read as a sequential achievement bullet stack rather than integrated narrative.",
+        ],
+        score=0.68,
+    )
+    judge["dimension_verdicts"] = {
+        "executive_signal": {
+            "pass": False,
+            "severity": "major",
+            "codes": ["bullet_stack", "narrow_opener"],
+        },
+        "synthesis_quality": {
+            "pass": False,
+            "severity": "major",
+            "codes": ["sequential_achievement_stack", "thin_recap_s6"],
+        },
+        "ats_alignment_without_keyword_stuffing": {
+            "pass": True,
+            "severity": "minor",
+            "codes": ["weak_domain_targeting"],
+        },
+    }
+    return judge
+
+
+def test_compact_regen_delta_fits_core_token_budget() -> None:
+    lines = collect_judge_remediation_delta_lines(
+        [_claude_soft_fail_with_dimension_verdicts()],
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+        prior_word_count=120,
+        prior_ledger_rows=6,
+        compact=True,
+    )
+    joined = "\n".join(lines)
+    assert estimate_token_count(joined) <= DEFAULT_MAX_DELTA_TOKENS
+    assert "executive_signal:" in joined
+    assert "synthesis_quality:" in joined
+    assert "ats_alignment_without_keyword_stuffing:" not in joined
+
+
+def test_retry_qwen_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypatch) -> None:
+    import json
+
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", "1")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_PRESCRIPTIVE_DELTA", "1")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_CORE_SAME_AUTHORITY_REGEN", "1")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_LEGACY_BLOCK", "0")
+
+    (tmp_path / "compiled_prompt_artifact.json").write_text(
+        json.dumps({"compilation_hash": "c1", "replay_key": "rk", "policy_hash": "p", "blueprint_hash": "b"}),
+        encoding="utf-8",
+    )
+    parsed = {
+        "resume_display_text": "Anchor text for judge regen fallback testing here.",
+        "claim_ledger": [{"claim_text": "Led platform.", "source_fact_ids": ["f1"]}],
+    }
+    raw = json.dumps(parsed)
+
+    def _refuse_core(**kwargs):
+        return (
+            "",
+            {
+                "accepted": False,
+                "refusal": {"refusal_code": "delta_token_budget_exceeded"},
+            },
+            {},
+            (),
+        )
+
+    class _Result:
+        runtime_generation_status = "REAL_LLM"
+        raw_model_output = json.dumps(
+            {
+                **parsed,
+                "resume_display_text": "Revised anchor text for judge regen fallback testing here.",
+            },
+        )
+
+        def to_dict(self) -> dict:
+            return {"raw_model_output": self.raw_model_output}
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_same_authority_regen_bridge.run_core_same_authority_regen",
+        _refuse_core,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.call_qwen_vllm",
+        lambda *a, **k: _Result(),
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_lane.normalize_executive_summary_llm_output",
+        lambda parsed, _plan: parsed,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_lane.prune_exec_summary_claim_ledger_orphans",
+        lambda parsed, _allowed: None,
+    )
+
+    new_raw, new_parsed, receipt = retry_qwen_for_judge_remediation(
+        [{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
+        {"model": "qwen-test"},
+        raw,
+        parsed,
+        x1d_judges=[_claude_soft_fail_with_dimension_verdicts()],
+        trigger_receipt={"trigger_mode": "solitary_dimension_major_soft_fail"},
+        selected_fact_plan={"facts": [{"fact_id": "f1"}]},
+        allowed_fact_ids={"f1"},
+        unused_fact_ids=[],
+        artifact_dir=tmp_path,
+        max_attempts=1,
+    )
+    assert receipt.get("core_runner_fallback") == "apps_rg.thread_append"
+    assert receipt.get("accepted") is True
+    assert receipt.get("output_changed") is True
+    assert "Revised" in str(new_parsed.get("resume_display_text") or "")

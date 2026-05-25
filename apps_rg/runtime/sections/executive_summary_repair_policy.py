@@ -41,6 +41,8 @@ def synthesis_regen_max_attempts() -> int:
 # Default 1 Qwen cycle; post-regen rescores soft-failed judges only (not full 3-judge panel).
 JUDGE_REGEN_MAX_ATTEMPTS = 1
 JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
+REGEN_MAX_DELTA_TOKENS_DEFAULT = 512
+REGEN_MAX_DELTA_TOKENS_HARD_CAP = 768
 POST_REGEN_JUDGE_RESCORE_SOFT_ONLY = "soft_failed_only"
 POST_REGEN_JUDGE_RESCORE_FULL_PANEL = "full_panel"
 # Opt-in via APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=1 after X2 pass (bounded, same-authority).
@@ -49,6 +51,19 @@ RELEASE_JUDGE_REGENERATION_ENABLED = True
 
 def _truthy_env(raw: str) -> bool:
     return str(raw or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def judge_regen_max_delta_tokens() -> int:
+    """Apps env for core ``IncrementalRepairContract.max_delta_tokens`` (W4.1)."""
+    raw = os.environ.get(
+        "APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS",
+        str(REGEN_MAX_DELTA_TOKENS_DEFAULT),
+    ).strip()
+    try:
+        n = int(raw)
+    except ValueError:
+        n = REGEN_MAX_DELTA_TOKENS_DEFAULT
+    return max(1, min(n, REGEN_MAX_DELTA_TOKENS_HARD_CAP))
 
 
 def judge_regen_max_attempts() -> int:
@@ -142,6 +157,9 @@ __all__ = [
     "SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP",
     "judge_regen_core_runner_enabled",
     "judge_regen_max_attempts",
+    "judge_regen_max_delta_tokens",
+    "REGEN_MAX_DELTA_TOKENS_DEFAULT",
+    "REGEN_MAX_DELTA_TOKENS_HARD_CAP",
     "judge_regeneration_enabled",
     "judge_safe_prefilter_enabled",
     "post_regen_judge_rescore_mode",

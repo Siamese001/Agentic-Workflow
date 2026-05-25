@@ -53,7 +53,7 @@ def test_token_budget_policy_on_compiled_prompt_produces_receipt(tmp_path: Path)
     payload = _minimal_payload()
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     before_tokens = estimate_tokens_approximate(compiled.artifact.messages[0]["content"])
-    ctx_window = before_tokens + 1024 + 512 + 256
+    ctx_window = int(before_tokens / 0.85) + 1024 + 512 + 512
     _, receipt = apply_executive_summary_token_budget_policy(
         compiled,
         runtime_payload=payload,
@@ -68,6 +68,9 @@ def test_token_budget_policy_on_compiled_prompt_produces_receipt(tmp_path: Path)
     doc = json.loads(path.read_text(encoding="utf-8"))
     assert doc["section"] == "executive_summary"
     assert doc["provider_context_window"] == ctx_window
+    assert doc["provider_context_window_source"] == "ENV_VLLM_MAX_MODEL_LEN"
+    assert doc["server_context_window_verified"] is False
+    assert doc.get("first_pass_85pct_policy_enabled") is True
     assert doc["requested_max_output_tokens"] == 1024
     assert "available_input_tokens" in doc
     assert "compiled_prompt_tokens_before_trim" in doc
@@ -79,7 +82,7 @@ def test_provider_request_mock_fallback_not_introduced_by_token_budget():
     payload = _minimal_payload()
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     before_tokens = estimate_tokens_approximate(compiled.artifact.messages[0]["content"])
-    ctx_window = before_tokens + 1024 + 512 + 256
+    ctx_window = int(before_tokens / 0.85) + 1024 + 512 + 512
     _, receipt = apply_executive_summary_token_budget_policy(
         compiled,
         runtime_payload=payload,
@@ -89,6 +92,7 @@ def test_provider_request_mock_fallback_not_introduced_by_token_budget():
         provider_context_window=ctx_window,
     )
     assert receipt.get("status") == "PASS"
+    assert receipt.get("first_pass_85pct_exceeded") is False
     assert receipt.get("evidence_contract_digest_before") == receipt.get("evidence_contract_digest_after")
     assert receipt.get("prompt_shape_preserved") is True
     assert receipt.get("shape_altering_trim_forbidden") is True

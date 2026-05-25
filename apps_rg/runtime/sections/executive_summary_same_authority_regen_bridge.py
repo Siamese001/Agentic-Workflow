@@ -137,6 +137,12 @@ def build_incremental_repair_contract(
     if str(trigger_receipt.get("trigger_mode") or "").startswith("x2"):
         trigger_source = TriggerSource.X2
 
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        judge_regen_max_delta_tokens,
+    )
+
+    max_delta_tokens = judge_regen_max_delta_tokens()
+
     return IncrementalRepairContract(
         request_id=str(run_id or compile_ctx.get("run_id") or "exec-summary-run"),
         run_id=str(run_id or compile_ctx.get("run_id") or "exec-summary-run"),
@@ -167,6 +173,7 @@ def build_incremental_repair_contract(
         semantic_regen_attempt_index=semantic_regen_attempt_index,
         transport_retry_count=transport_retry_count,
         max_semantic_regen_attempts=max_semantic_regen_attempts,
+        max_delta_tokens=max_delta_tokens,
         prompt_messages=pm,
         expected_system_prefix_hash=sys_hash,
         nested_heal_without_new_attempt=nested_heal_without_new_attempt,
@@ -184,20 +191,32 @@ def run_core_same_authority_regen(
     run_id: str | None,
 ) -> tuple[str, dict[str, Any], dict[str, Any], tuple[dict[str, str], ...]]:
     """Invoke core runner; persist receipt + provider_request proof artifacts."""
-    from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
-    from apps_rg.runtime.sections.executive_summary_lane import LANE_KEY, write_json
+    from apps_rg.runtime.sections.executive_summary_lane import write_json
+    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+        budgeted_qwen_regen_call,
+        mark_regen_call_parse,
+    )
 
     runner = SameAuthorityRegenRunner()
+    _semantic_index = int(contract.semantic_regen_attempt_index or 1)
 
     def _provider_generate(chat_messages: list[dict[str, str]]) -> dict[str, Any]:
-        payload = {**provider_payload, "messages": chat_messages}
-        result = call_qwen_vllm(
-            tag_reasoning_lane(payload, LANE_KEY),
+        regen_outcome = budgeted_qwen_regen_call(
+            provider_payload,
+            messages=list(chat_messages),
+            phase="judge_regen",
+            call_site="run_core_same_authority_regen",
+            cycle_index=max(0, _semantic_index - 1),
+            attempt_index=0,
             artifact_dir=artifact_dir,
             run_id=run_id,
         )
+        result = regen_outcome.result
+        if not regen_outcome.dispatch_allowed or result is None:
+            return {"content": "", "mocked_allow": True}
         if result.runtime_generation_status != "REAL_LLM":
             return {"content": "", "mocked_allow": True}
+        mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(result.raw_model_output))
         return {"content": result.raw_model_output or ""}
 
     result = runner.run(
@@ -213,6 +232,7 @@ def run_core_same_authority_regen(
         "schema": "executive_summary_core_same_authority_regen_v1",
         "accepted": result.accepted,
         "regen_engine": "agentic_core.L2_execution.regen.SameAuthorityRegenRunner",
+        "max_delta_tokens": int(contract.max_delta_tokens),
     }
     if result.receipt is not None:
         receipt_dict["same_authority_regen_receipt"] = result.receipt.as_dict()

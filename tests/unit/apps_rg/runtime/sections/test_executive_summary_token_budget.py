@@ -13,13 +13,17 @@ from apps_rg.runtime.spine.front_contracts import (
 from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summary_prompt
 from apps_rg.runtime.sections.executive_summary_token_budget import (
     FAIL_CLOSED_REASON,
+    FAIL_CLOSED_REASON_FIRST_PASS_85PCT,
     FAIL_SHAPE_ALTERED,
     ExecutiveSummaryTokenBudgetExceeded,
     apply_executive_summary_token_budget_policy,
     evidence_contract_digest,
     estimate_tokens_approximate,
+    exceeds_first_pass_85pct_policy,
     extract_evidence_contract_snapshot,
+    first_pass_85pct_limit_tokens,
     protected_fact_ids_from_payload,
+    resolve_context_window_provenance,
     trim_executive_summary_prompt_content,
     verify_prompt_shape_preserved,
     write_token_budget_receipt,
@@ -142,8 +146,12 @@ def test_blocks_instead_of_shape_altering_when_optional_trim_insufficient():
         )
     receipt = excinfo.value.receipt
     assert receipt["status"] == "FAIL"
-    assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON
+    assert receipt["fail_closed_reason"] in (
+        FAIL_CLOSED_REASON,
+        FAIL_CLOSED_REASON_FIRST_PASS_85PCT,
+    )
     assert receipt["dispatch_allowed"] is False
+    assert receipt["first_pass_85pct_policy_enabled"] is True
     assert receipt["shape_altering_trim_forbidden"] is True
     assert receipt["evidence_contract_preserved"] is True
     assert receipt["evidence_contract_digest_before"] == receipt["evidence_contract_digest_after"]
@@ -164,7 +172,10 @@ def test_fail_closed_when_required_content_still_exceeds_budget():
         )
     receipt = excinfo.value.receipt
     assert receipt["status"] == "FAIL"
-    assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON
+    assert receipt["fail_closed_reason"] in (
+        FAIL_CLOSED_REASON,
+        FAIL_CLOSED_REASON_FIRST_PASS_85PCT,
+    )
     assert receipt["dispatch_allowed"] is False
 
 
@@ -172,8 +183,8 @@ def test_apply_policy_writes_pass_receipt_when_optional_trim_fits(tmp_path: Path
     payload = _minimal_payload()
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     before_tokens = estimate_tokens_approximate(compiled.artifact.messages[0]["content"])
-    # SRFS compile is ~19k est. input tokens; 16k VLLM window must block, wider window proves PASS path.
-    ctx_window = before_tokens + 1024 + 512 + 256
+    # SRFS compile is ~19k est. input tokens; window must clear W2.2 85% utilization after optional trim.
+    ctx_window = int(before_tokens / 0.85) + 1024 + 512 + 512
     out, receipt = apply_executive_summary_token_budget_policy(
         compiled,
         runtime_payload=payload,
@@ -189,4 +200,45 @@ def test_apply_policy_writes_pass_receipt_when_optional_trim_fits(tmp_path: Path
     write_token_budget_receipt(tmp_path, receipt)
     saved = json.loads((tmp_path / "token_budget_receipt.json").read_text(encoding="utf-8"))
     assert saved["status"] == "PASS"
+    assert saved["provider_context_window_source"] == "ENV_VLLM_MAX_MODEL_LEN"
+    assert saved["server_context_window_verified"] is False
+    assert saved.get("server_context_window_warning")
+    assert saved["first_pass_85pct_policy_enabled"] is True
     assert out.artifact.messages[0]["content"]
+
+
+def test_context_window_provenance_defaults_to_env_unverified(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW", raising=False)
+    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")
+    prov = resolve_context_window_provenance()
+    assert prov.provider_context_window == 16384
+    assert prov.provider_context_window_source == "ENV_VLLM_MAX_MODEL_LEN"
+    assert prov.server_context_window_verified is False
+    assert prov.server_context_window_warning
+
+
+def test_first_pass_85pct_policy_blocks_between_85_and_100_percent() -> None:
+    available = 8464
+    limit = first_pass_85pct_limit_tokens(available)
+    assert limit == int(8464 * 0.85)
+    assert exceeds_first_pass_85pct_policy(limit + 1, available)
+    assert not exceeds_first_pass_85pct_policy(limit, available)
+
+
+def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> None:
+    payload = _minimal_payload(briefing="B" * 16000)
+    payload["jd_text"] = "J" * 8000
+    compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
+    with pytest.raises(ExecutiveSummaryTokenBudgetExceeded) as excinfo:
+        apply_executive_summary_token_budget_policy(
+            compiled,
+            runtime_payload=payload,
+            provider="qwen_vllm",
+            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            requested_max_output_tokens=1024,
+            provider_context_window=10000,
+        )
+    receipt = excinfo.value.receipt
+    assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON_FIRST_PASS_85PCT
+    assert receipt["first_pass_85pct_exceeded"] is True
+    assert receipt["dispatch_allowed"] is False

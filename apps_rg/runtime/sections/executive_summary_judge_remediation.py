@@ -322,6 +322,47 @@ def _bounded_soft_fail_findings(x1d_judges: list[dict[str, Any]], *, max_lines: 
     return lines[:max_lines]
 
 
+def snapshot_model_backed_judge_scores(x1d_judges: list[dict[str, Any]]) -> dict[str, Any]:
+    """Per-provider score snapshot for regen cycle monotonicity receipts."""
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        dimension_major_fail_on_judge,
+    )
+
+    providers: list[dict[str, Any]] = []
+    for j in _normalize_judge_list(x1d_judges):
+        if j.get("evaluator_mode") != "MODEL_BACKED":
+            continue
+        pk = str(j.get("provider_key") or j.get("judge_id") or "unknown")
+        major_failed = [
+            dim
+            for dim in (
+                "factual_support",
+                "executive_signal",
+                "resume_voice",
+                "ats_alignment_without_keyword_stuffing",
+                "anti_overfit",
+                "synthesis_quality",
+                "evidence_utilization",
+                "deterministic_alignment",
+            )
+            if dimension_major_fail_on_judge(j, dim)
+        ]
+        providers.append(
+            {
+                "provider_key": pk,
+                "score": j.get("score"),
+                "normalized_score": j.get("normalized_score"),
+                "pass": j.get("pass"),
+                "provider_status": j.get("provider_status"),
+                "major_failed_dimensions": major_failed,
+            },
+        )
+    return {
+        "schema": "executive_summary_judge_score_snapshot_v1",
+        "providers": providers,
+    }
+
+
 def collect_judge_remediation_delta_lines(
     x1d_judges: list[dict[str, Any]],
     *,
@@ -329,21 +370,72 @@ def collect_judge_remediation_delta_lines(
     allowed_fact_count: int,
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
+    compact: bool | None = None,
 ) -> list[str]:
     """App-owned delta lines only (floors + output contract); core owns REGEN_DELTA/PROMPT_LOCK."""
-    from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
+    from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
+    from agentic_core.L2_execution.regen.prompt_lock import (
+        DEFAULT_MAX_DELTA_TOKENS,
+        PROMPT_LOCK_GENERIC,
+    )
     from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        collect_dimension_focused_regen_delta_lines,
         collect_dimension_remediation_lines,
+        major_failed_dimension_ids_from_judges,
     )
     from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        format_judge_regen_connective_tissue_guard,
+        format_judge_regen_mechanical_opener_guard,
         format_judge_regen_x2_floor,
+        format_judge_remediation_synthesis_default,
     )
 
+    if compact is None:
+        compact = (
+            judge_regen_prescriptive_delta_enabled()
+            and not judge_regen_legacy_remediation_block_enabled()
+        )
+
     soft_judges = _soft_failed_model_judges(x1d_judges)
+    delta_parts: list[str] = []
+
+    if compact:
+        focused = collect_dimension_focused_regen_delta_lines(soft_judges)
+        if focused:
+            delta_parts.extend(f"- {ln}" for ln in focused[:4])
+        else:
+            delta_parts.append(
+                "- synthesis_quality / executive_signal: rewrite S2–S6 as one connective SVP arc "
+                "(no sequential achievement stack; jd_used_as_proof=false).",
+            )
+        if prior_word_count > 0 or prior_ledger_rows > 0:
+            delta_parts.append(
+                f"X2_FLOOR: ≥{max(1, prior_word_count)} words, ≥{max(1, prior_ledger_rows)} "
+                "claim_ledger rows, exactly 6 sentences; preserve cited source_fact_ids.",
+            )
+        failed_dims = set(major_failed_dimension_ids_from_judges(soft_judges))
+        if unused_fact_ids and "evidence_utilization" in failed_dims:
+            preview = ", ".join(unused_fact_ids[:6])
+            suffix = "..." if len(unused_fact_ids) > 6 else ""
+            delta_parts.append(f"EVIDENCE_WEAVE (allowed ids only): {preview}{suffix}")
+        delta_parts.append(format_judge_regen_connective_tissue_guard().strip())
+        delta_parts.append(
+            "OUTPUT: NEW JSON only; revise ONLY resume_display_text + claim_ledger; "
+            "third person; jd_used_as_proof=false.",
+        )
+        joined = "\n".join(delta_parts)
+        if estimate_token_count(joined) > DEFAULT_MAX_DELTA_TOKENS:
+            delta_parts = [
+                ln
+                for ln in delta_parts
+                if not ln.startswith("CONNECTIVE_TISSUE")
+            ]
+        _ = PROMPT_LOCK_GENERIC
+        return delta_parts
+
     dimension_lines = collect_dimension_remediation_lines(soft_judges, min_fail_count=1)
     finding_lines = _bounded_soft_fail_findings(x1d_judges)
 
-    delta_parts: list[str] = []
     if dimension_lines:
         delta_parts.extend(f"- {ln}" for ln in dimension_lines[:6])
     if finding_lines:
@@ -351,8 +443,7 @@ def collect_judge_remediation_delta_lines(
 
     if not delta_parts:
         delta_parts.append(
-            "- synthesis_quality / executive_signal: tighten connective S3–S6 prose per "
-            "six_sentence_arc already in the system prompt (no new facts; jd_used_as_proof=false)."
+            f"- {format_judge_remediation_synthesis_default()}",
         )
 
     if prior_word_count > 0 or prior_ledger_rows > 0:
@@ -361,6 +452,10 @@ def collect_judge_remediation_delta_lines(
                 prior_word_count=max(1, prior_word_count),
                 prior_ledger_rows=max(1, prior_ledger_rows),
             ),
+        )
+        delta_parts.append(
+            f"CLAIM_COVERAGE: preserve every source_fact_id from the prior claim_ledger "
+            f"({prior_ledger_rows} rows minimum); do not drop allowed facts when rewriting prose.",
         )
 
     failed_dims = {ln.split(" ", 1)[0] for ln in dimension_lines}
@@ -375,6 +470,11 @@ def collect_judge_remediation_delta_lines(
         delta_parts.append(
             "Shape: exactly 6 sentences (max 140 words); same JSON schema as first turn.",
         )
+    delta_parts.append(
+        "X2_VOICE: No Additionally/Furthermore sentence openers; no unsupported "
+        "regulated environments / governance framework / compliance / audit unless verbatim in cited facts.",
+    )
+    delta_parts.append(format_judge_regen_mechanical_opener_guard())
     delta_parts.append(
         "OUTPUT: Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "THIRD PERSON ONLY. No target company name in resume_display_text.",
@@ -579,11 +679,10 @@ def retry_qwen_for_judge_remediation(
     max_attempts: int | None = None,
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
+    cycle_index: int = 0,
 ) -> tuple[str, dict[str, Any], dict[str, Any]]:
     """Bounded post-judge same-authority regen (default one call per outer cycle)."""
-    from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
     from apps_rg.runtime.sections.executive_summary_lane import (
-        LANE_KEY,
         normalize_executive_summary_llm_output,
         parse_model_json,
         prune_exec_summary_claim_ledger_orphans,
@@ -605,7 +704,10 @@ def retry_qwen_for_judge_remediation(
             write_json(artifact_dir / "judge_remediation_receipt.json", receipt)
         return raw_output, parsed, receipt
 
+    from agentic_core.L2_execution.regen.prefix_digest import sha256_hex
+
     pre_parsed = dict(parsed)
+    anchor_hash = sha256_hex(str(pre_parsed.get("resume_display_text") or "").strip())
     pre_parsed, prefilter_meta = try_judge_safe_prefilter(
         pre_parsed,
         list(selected_fact_plan.get("facts") or []),
@@ -651,8 +753,10 @@ def retry_qwen_for_judge_remediation(
     receipt["regen_engine"] = (
         "core.SameAuthorityRegenRunner" if use_core_runner else "apps_rg.thread_append"
     )
+    # Reserve one extra iteration when core runner may refuse (e.g. delta_token_budget_exceeded).
+    _loop_cap = _attempt_cap + 1 if use_core_runner else _attempt_cap
 
-    for attempt in range(_attempt_cap):
+    for attempt in range(_loop_cap):
         if use_core_runner and attempt == 0:
             contract = build_incremental_repair_contract(
                 messages=thread_messages,
@@ -686,7 +790,8 @@ def retry_qwen_for_judge_remediation(
             if not core_receipt.get("accepted"):
                 attempt_record["skipped"] = core_receipt.get("refusal") or "refused"
                 receipt["attempts"].append(attempt_record)
-                break
+                receipt["core_runner_fallback"] = "apps_rg.thread_append"
+                continue
             new_raw = regen_text
             new_parsed, new_err = parse_model_json(new_raw)
             attempt_record["parse_ok"] = bool(new_parsed)
@@ -708,7 +813,7 @@ def retry_qwen_for_judge_remediation(
             else:
                 attempt_record["parse_error"] = new_err
             receipt["attempts"].append(attempt_record)
-            continue
+            break
 
         repair_user = build_judge_remediation_user_message(
             x1d_judges=x1d_judges,
@@ -719,28 +824,57 @@ def retry_qwen_for_judge_remediation(
             prior_ledger_rows=prior_ledger_rows,
             prior_resume_display_text=anchor_text,
         )
+        from apps_rg.runtime.sections.executive_summary_judge_regen_thread import (
+            compact_judge_regen_messages,
+        )
+        from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+            budgeted_qwen_regen_call,
+            mark_regen_call_parse,
+        )
+
         thread_messages = [
             *thread_messages,
             {"role": "assistant", "content": current_raw},
             {"role": "user", "content": repair_user},
         ]
-        repair_payload = {**provider_payload, "messages": thread_messages}
-        result = call_qwen_vllm(
-            tag_reasoning_lane(repair_payload, LANE_KEY),
+        thread_messages, compact_receipt = compact_judge_regen_messages(thread_messages)
+        if compact_receipt.get("compacted"):
+            receipt.setdefault("thread_compaction", []).append(compact_receipt)
+        regen_outcome = budgeted_qwen_regen_call(
+            provider_payload,
+            messages=thread_messages,
+            phase="judge_regen",
+            call_site="retry_qwen_for_judge_remediation",
+            cycle_index=int(cycle_index),
+            attempt_index=attempt + 1,
             artifact_dir=artifact_dir,
             run_id=run_id,
         )
-        attempt_record: dict[str, Any] = {
+        result = regen_outcome.result
+        attempt_record = {
             "attempt": attempt + 1,
-            "runtime_status": result.runtime_generation_status,
+            "engine": "apps_rg.thread_append",
+            "call_id": regen_outcome.call_id,
+            "dispatch_allowed": regen_outcome.dispatch_allowed,
+            "block_reason": regen_outcome.block_reason,
         }
-        if result.runtime_generation_status != "REAL_LLM":
+        if not regen_outcome.dispatch_allowed:
+            attempt_record["skipped"] = "budget_blocked"
+            attempt_record["status"] = "budget_blocked"
+            receipt["attempts"].append(attempt_record)
+            break
+        if result is None or result.runtime_generation_status != "REAL_LLM":
+            attempt_record["runtime_status"] = (
+                result.runtime_generation_status if result is not None else "BLOCKED"
+            )
             attempt_record["skipped"] = "non_real_llm"
             receipt["attempts"].append(attempt_record)
             break
+        attempt_record["runtime_status"] = result.runtime_generation_status
         new_raw = result.raw_model_output
         new_parsed, new_err = parse_model_json(new_raw)
         attempt_record["parse_ok"] = bool(new_parsed)
+        mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(new_parsed))
         if new_parsed:
             new_parsed = normalize_executive_summary_llm_output(new_parsed, selected_fact_plan)
             prune_exec_summary_claim_ledger_orphans(new_parsed, allowed_fact_ids)
@@ -756,13 +890,34 @@ def retry_qwen_for_judge_remediation(
             attempt_record["regen_resume_word_count"] = len(re.findall(r"\S+", regen_text))
             current_raw = new_raw
             current_parsed = new_parsed
-            if artifact_dir is not None:
-                write_json(artifact_dir / "provider_response_judge_regen.json", result.to_dict())
         else:
             attempt_record["parse_error"] = new_err
         receipt["attempts"].append(attempt_record)
+        break
 
-    receipt["accepted"] = bool(current_parsed.get("resume_display_text"))
+    post_hash = sha256_hex(str(current_parsed.get("resume_display_text") or "").strip())
+    output_changed = bool(post_hash) and post_hash != anchor_hash
+    llm_attempt_ok = any(
+        (
+            a.get("parse_ok")
+            and a.get("dispatch_allowed", True)
+            and a.get("skipped") != "budget_blocked"
+        )
+        or (a.get("engine") == "core.SameAuthorityRegenRunner" and a.get("accepted"))
+        for a in receipt.get("attempts") or []
+        if isinstance(a, dict)
+    )
+    receipt["anchor_output_hash"] = anchor_hash
+    receipt["regen_output_hash"] = post_hash
+    receipt["output_changed"] = output_changed
+    receipt["accepted"] = output_changed and llm_attempt_ok and bool(
+        current_parsed.get("resume_display_text"),
+    )
+    if any(
+        isinstance(a, dict) and a.get("status") == "budget_blocked"
+        for a in receipt.get("attempts") or []
+    ):
+        receipt["budget_blocked"] = True
     if artifact_dir is not None:
         write_json(artifact_dir / "judge_remediation_receipt.json", receipt)
     return current_raw, current_parsed, receipt
@@ -787,9 +942,7 @@ def repair_judge_regen_after_x2_fail(
     Uses the same synthesis-repair vocabulary and monotonicity guards as pre-X2 regen,
     anchored to the last X2-green baseline (not the failed regen candidate).
     """
-    from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
     from apps_rg.runtime.sections.executive_summary_lane import (
-        LANE_KEY,
         _build_synthesis_repair_user,
         normalize_executive_summary_llm_output,
         parse_model_json,
@@ -842,13 +995,32 @@ def repair_judge_regen_after_x2_fail(
         {"role": "assistant", "content": regen_raw or json.dumps(regen_parsed, ensure_ascii=False)},
         {"role": "user", "content": repair_user},
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages}
-    result = call_qwen_vllm(
-        tag_reasoning_lane(repair_payload, LANE_KEY),
+    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+        budgeted_qwen_regen_call,
+        mark_regen_call_parse,
+    )
+
+    regen_outcome = budgeted_qwen_regen_call(
+        provider_payload,
+        messages=repair_messages,
+        phase="judge_x2_repair",
+        call_site="repair_judge_regen_after_x2_fail",
+        cycle_index=0,
+        attempt_index=1,
         artifact_dir=artifact_dir,
         run_id=run_id,
     )
-    if result.runtime_generation_status != "REAL_LLM":
+    receipt["call_id"] = regen_outcome.call_id
+    receipt["dispatch_allowed"] = regen_outcome.dispatch_allowed
+    receipt["block_reason"] = regen_outcome.block_reason
+    if not regen_outcome.dispatch_allowed:
+        receipt["skipped"] = "budget_blocked"
+        receipt["status"] = "budget_blocked"
+        if artifact_dir is not None:
+            write_json(artifact_dir / "judge_regen_x2_repair_receipt.json", receipt)
+        return regen_raw, regen_parsed, receipt
+    result = regen_outcome.result
+    if result is None or result.runtime_generation_status != "REAL_LLM":
         receipt["skipped"] = "non_real_llm"
         if artifact_dir is not None:
             write_json(artifact_dir / "judge_regen_x2_repair_receipt.json", receipt)
@@ -857,6 +1029,7 @@ def repair_judge_regen_after_x2_fail(
     new_raw = result.raw_model_output
     new_parsed, parse_err = parse_model_json(new_raw)
     receipt["parse_ok"] = bool(new_parsed)
+    mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(new_parsed))
     if not new_parsed:
         receipt["parse_error"] = parse_err
         if artifact_dir is not None:
@@ -867,12 +1040,17 @@ def repair_judge_regen_after_x2_fail(
     prune_exec_summary_claim_ledger_orphans(new_parsed, allowed_fact_ids)
     from apps_rg.runtime.sections.executive_summary_voice_repair import apply_voice_repair_to_parsed
 
-    new_parsed, voice_receipt = apply_voice_repair_to_parsed(
-        new_parsed,
-        selected_facts=list(selected_fact_plan.get("facts") or []),
+    from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+        prepare_parsed_after_judge_regen,
     )
-    if voice_receipt.get("repaired"):
-        receipt["voice_repair"] = voice_receipt
+
+    new_parsed, prepare_receipt = prepare_parsed_after_judge_regen(
+        new_parsed,
+        allowed_fact_ids=allowed_fact_ids,
+        plan_facts=list(selected_fact_plan.get("facts") or []),
+        artifact_dir=artifact_dir,
+    )
+    receipt["prepare_after_repair"] = prepare_receipt
     _failed_gate_id_set = failed_x2_gate_ids(failed_x2_gates)
     receipt["failed_gate_ids"] = sorted(_failed_gate_id_set)
     mono_ok, mono_detail = evaluate_synthesis_regen_monotonicity(
@@ -889,14 +1067,18 @@ def repair_judge_regen_after_x2_fail(
             write_json(artifact_dir / "judge_regen_x2_repair_receipt.json", receipt)
         return regen_raw, regen_parsed, receipt
 
-    receipt["accepted"] = True
+    receipt["accepted"] = bool(
+        new_parsed
+        and regen_outcome.dispatch_allowed
+        and result.runtime_generation_status == "REAL_LLM"
+        and not regen_outcome.call_record.get("transport_timeout")
+    )
     receipt["repaired_word_count"] = len(
         re.findall(r"\S+", str(new_parsed.get("resume_display_text") or ""))
     )
     receipt["repaired_ledger_rows"] = len(list(new_parsed.get("claim_ledger") or []))
     if artifact_dir is not None:
         write_json(artifact_dir / "judge_regen_x2_repair_receipt.json", receipt)
-        write_json(artifact_dir / "provider_response_judge_regen_x2_repair.json", result.to_dict())
     return new_raw, new_parsed, receipt
 
 
@@ -1114,6 +1296,7 @@ def rescore_judges_after_regen(
         for j in prior_judges
         if j.get("provider_key") and _is_model_backed_soft_fail(j)
     }
+    scores_before = snapshot_model_backed_judge_scores(prior_judges)
     out = rerun_soft_failed_judges(
         resume_display_text=resume_display_text,
         claim_ledger=claim_ledger,
@@ -1133,11 +1316,47 @@ def rescore_judges_after_regen(
         briefing_text=briefing_text,
         parsed_output=parsed_output,
     )
+    scores_after = snapshot_model_backed_judge_scores(out)
+    deltas: list[dict[str, Any]] = []
+    before_by_key = {
+        str(row.get("provider_key")): row
+        for row in scores_before.get("providers") or []
+        if isinstance(row, dict)
+    }
+    for row in scores_after.get("providers") or []:
+        if not isinstance(row, dict):
+            continue
+        pk = str(row.get("provider_key") or "")
+        if pk not in soft_keys:
+            continue
+        prev = before_by_key.get(pk) or {}
+        try:
+            prev_ns = float(prev.get("normalized_score")) if prev.get("normalized_score") is not None else None
+            next_ns = float(row.get("normalized_score")) if row.get("normalized_score") is not None else None
+        except (TypeError, ValueError):
+            prev_ns = next_ns = None
+        delta_ns = None
+        if prev_ns is not None and next_ns is not None:
+            delta_ns = round(next_ns - prev_ns, 4)
+        deltas.append(
+            {
+                "provider_key": pk,
+                "normalized_score_before": prev_ns,
+                "normalized_score_after": next_ns,
+                "normalized_score_delta": delta_ns,
+                "pass_before": prev.get("pass"),
+                "pass_after": row.get("pass"),
+                "improved": delta_ns is not None and delta_ns > 0,
+            },
+        )
     return out, {
         "schema": "executive_summary_post_regen_judge_rescore_v1",
         "rescore_mode": POST_REGEN_JUDGE_RESCORE_SOFT_ONLY,
         "soft_failed_provider_keys": sorted(soft_keys),
         "judges_rescored_count": len(soft_keys),
+        "scores_before": scores_before,
+        "scores_after": scores_after,
+        "score_deltas": deltas,
     }
 
 

@@ -417,6 +417,7 @@ def normalize_executive_summary_llm_output(
         or ""
     ).strip()
     resume = coerce_resume_display_sentence_count_band(resume)
+    thesis = str(parsed.get("executive_strategy_thesis") or "").strip()
     claims = parsed.get("claim_ledger")
     if claims is None:
         claims = parsed.get("claim_ledger_emitted")
@@ -429,6 +430,7 @@ def normalize_executive_summary_llm_output(
     changelog = parsed.get("change_log") if isinstance(parsed.get("change_log"), list) else []
     self_chk = parsed.get("self_check") if isinstance(parsed.get("self_check"), dict) else {}
     out: dict[str, Any] = {
+        "executive_strategy_thesis": thesis,
         "resume_display_text": resume,
         "selected_fact_plan": runtime_selected_fact_plan,
         "claim_ledger": claims,
@@ -707,6 +709,10 @@ def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         self_check["selected_fact_pool_too_small_reason"] = "offline_srfs_mock_compact_facts"
 
     return {
+        "executive_strategy_thesis": (
+            "Technology strategy executive aligning governed AI platforms, regulatory lineage, and "
+            "commercialization into one enterprise IT direction for regulated programs."
+        ),
         "resume_display_text": text,
         "claim_ledger": claims,
         "jd_alignment": {
@@ -756,6 +762,10 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         )
 
     return {
+        "executive_strategy_thesis": (
+            "Enterprise technology leader who operationalizes governed AI platforms and audit-ready "
+            "delivery for regulated enterprise programs."
+        ),
         "resume_display_text": text,
         "claim_ledger": claims,
         "jd_alignment": {
@@ -1106,26 +1116,47 @@ def retry_qwen_for_synthesis(
             {"role": "assistant", "content": current_raw},
             {"role": "user", "content": repair_user},
         ]
-        repair_payload = {**provider_payload, "messages": repair_messages}
-        result = call_qwen_vllm(
-            tag_reasoning_lane(repair_payload, LANE_KEY),
+        from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+            budgeted_qwen_regen_call,
+            mark_regen_call_parse,
+        )
+
+        regen_outcome = budgeted_qwen_regen_call(
+            provider_payload,
+            messages=repair_messages,
+            phase="synthesis_regen",
+            call_site="retry_qwen_for_synthesis",
+            cycle_index=0,
+            attempt_index=attempt + 1,
             artifact_dir=artifact_dir,
             run_id=run_id,
         )
+        result = regen_outcome.result
         attempt_record: dict[str, Any] = {
             "attempt": attempt + 1,
             "reject_reason": reject_reason,
-            "runtime_status": result.runtime_generation_status,
+            "call_id": regen_outcome.call_id,
+            "dispatch_allowed": regen_outcome.dispatch_allowed,
+            "block_reason": regen_outcome.block_reason,
         }
         last_mono_rejected = False
-        if result.runtime_generation_status != "REAL_LLM":
+        if not regen_outcome.dispatch_allowed:
+            attempt_record["skipped"] = "budget_blocked"
+            regen_receipt["attempts"].append(attempt_record)
+            break
+        if result is None or result.runtime_generation_status != "REAL_LLM":
+            attempt_record["runtime_status"] = (
+                result.runtime_generation_status if result is not None else "BLOCKED"
+            )
             attempt_record["skipped"] = "non_real_llm"
             regen_receipt["attempts"].append(attempt_record)
             break
+        attempt_record["runtime_status"] = result.runtime_generation_status
         new_raw = result.raw_model_output
         new_parsed, new_err = parse_model_json(new_raw)
         parse_err = new_err or ""
         attempt_record["parse_ok"] = bool(new_parsed)
+        mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(new_parsed))
         if new_parsed:
             regen_text = str(new_parsed.get("resume_display_text") or "")
             attempt_record["regen_resume_word_count"] = len(re.findall(r"\S+", regen_text))
@@ -1411,7 +1442,11 @@ def run_executive_summary_execution(
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     from apps_rg.runtime.section_repair_ledger import init_ledger
+    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+        clear_regen_budget_ledger,
+    )
 
+    clear_regen_budget_ledger(artifact_dir)
     init_ledger(
         artifact_dir,
         section_id="executive_summary",
@@ -2009,6 +2044,7 @@ def run_executive_summary_execution(
         "runtime_generation_status": runtime_generation_status,
         "product_quality_status": "PENDING",
         "product_quality_reason": "",
+        "executive_strategy_thesis": str((parsed or {}).get("executive_strategy_thesis") or "").strip(),
         "resume_display_text": resume_display_text,
         "selected_fact_plan": selected_fact_plan,
         "claim_ledger": claim_ledger,
@@ -2399,6 +2435,25 @@ def run_executive_summary_execution(
                 _pre_x2 = list(x2)
                 _pre_wc = len(re.findall(r"\S+", _pre_resume))
                 _pre_ledger_rows = len(_pre_ledger)
+                from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+                    post_regen_x2_repair_eligible,
+                    preserve_judge_regen_claim_ledger_from_baseline,
+                    prepare_parsed_after_judge_regen,
+                    write_judge_regen_x2_snapshot,
+                )
+
+                write_judge_regen_x2_snapshot(
+                    artifact_dir,
+                    "x2_gate_outputs_pre_regen.json",
+                    _pre_x2,
+                    label="pre_regen",
+                )
+                from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+                    snapshot_model_backed_judge_scores,
+                )
+
+                _x1d_before_regen = list(x1d)
+                _scores_before_regen = snapshot_model_backed_judge_scores(_x1d_before_regen)
                 unused_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
                 from apps_rg.runtime.sections.executive_summary_pa import (
                     is_strategy_executive_target_title,
@@ -2429,11 +2484,14 @@ def run_executive_summary_execution(
                     max_attempts=1,
                     prior_word_count=_pre_wc,
                     prior_ledger_rows=_pre_ledger_rows,
+                    cycle_index=_cycle_idx,
                 )
                 _cycle_record: dict[str, Any] = {
                     "cycle": _cycle_idx + 1,
                     "trigger_mode": trigger_receipt.get("trigger_mode"),
                     "accepted": bool(_j_receipt.get("accepted")),
+                    "output_changed": bool(_j_receipt.get("output_changed")),
+                    "scores_before": _scores_before_regen,
                 }
                 if _j_receipt.get("accepted") or _j_receipt.get("prefilter_applied"):
                     from apps_rg.runtime.section_repair_ledger import (
@@ -2443,25 +2501,24 @@ def run_executive_summary_execution(
                     )
 
                     parsed = parsed_regen
-                    from apps_rg.runtime.sections.section_authority_repairs import (
-                        apply_exec_summary_display_authority_repairs,
-                    )
-
-                    parsed = apply_exec_summary_display_authority_repairs(
+                    parsed, _prepare_receipt = prepare_parsed_after_judge_regen(
                         parsed,
                         allowed_fact_ids=allowed_fact_ids,
                         plan_facts=list(selected_fact_plan.get("facts") or []),
                         artifact_dir=artifact_dir,
                         target_company=str(getattr(args, "target_company", "") or ""),
                     )
-                    from apps_rg.runtime.sections.executive_summary_voice_repair import (
-                        finalize_executive_summary_coherence,
-                    )
-
-                    parsed, _finalize_receipt = finalize_executive_summary_coherence(
+                    parsed, _preserve_receipt = preserve_judge_regen_claim_ledger_from_baseline(
                         parsed,
-                        selected_facts=list(selected_fact_plan.get("facts") or []),
+                        baseline_parsed=_pre_parsed,
+                        allowed_fact_ids=allowed_fact_ids,
                     )
+                    _prepare_receipt["preserve_ledger"] = _preserve_receipt
+                    if artifact_dir is not None:
+                        write_json(
+                            artifact_dir / "judge_regen_prepare_receipt.json",
+                            _prepare_receipt,
+                        )
                     resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
                     claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
                     coverage = build_sentence_claim_coverage(
@@ -2502,7 +2559,7 @@ def run_executive_summary_execution(
                         proof_pool_digest=str(pool.proof_pool_digest or ""),
                     )
                     _x2_failed = [g for g in x2_regen if not g["pass"]]
-                    if _x2_failed:
+                    if _x2_failed and post_regen_x2_repair_eligible(_x2_failed):
                         _raw_x2r, _parsed_x2r, _x2_repair_rcpt = repair_judge_regen_after_x2_fail(
                             _regen_messages,
                             provider_payload,
@@ -2620,6 +2677,8 @@ def run_executive_summary_execution(
                             artifact_dir / "post_regen_x1d_rescore_receipt.json",
                             _post_regen_x1d_receipt,
                         )
+                        _cycle_record["scores_after"] = _post_regen_x1d_receipt.get("scores_after")
+                        _cycle_record["score_deltas"] = _post_regen_x1d_receipt.get("score_deltas")
                         _emit_dimension_upstream_triangulation(
                             artifact_dir,
                             x1d_judges=x1d,
@@ -2628,6 +2687,12 @@ def run_executive_summary_execution(
                             judge_regen_cycles=_cycles_receipt,
                         )
                         _write_x1d_judge_artifacts(artifact_dir, x1d)
+                        write_judge_regen_x2_snapshot(
+                            artifact_dir,
+                            "x2_gate_outputs_post_regen.json",
+                            x2,
+                            label="post_regen",
+                        )
                         write_x2_gate_outputs(
                             artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary"
                         )
@@ -2643,21 +2708,13 @@ def run_executive_summary_execution(
                         l2_output["claim_ledger"] = claim_ledger
                         l2_output["text_claim_coverage"] = coverage
                         write_json(artifact_dir / "l2_output.json", l2_output)
-                        _regen_messages.append({"role": "assistant", "content": raw_output or ""})
-                        _regen_messages.append(
-                            {
-                                "role": "user",
-                                "content": build_judge_remediation_user_message(
-                                    x1d_judges=x1d,
-                                    unused_fact_ids=unused_ids,
-                                    allowed_fact_count=len(allowed_fact_ids),
-                                    composition_plan=_composition_plan_refresh,
-                                    prior_word_count=len(
-                                        re.findall(r"\S+", resume_display_text or "")
-                                    ),
-                                    prior_ledger_rows=len(claim_ledger),
-                                ),
-                            }
+                        from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+                            extend_regen_thread_after_success,
+                        )
+
+                        _regen_messages = extend_regen_thread_after_success(
+                            _regen_messages,
+                            raw_output or "",
                         )
                         _cycle_record["all_judges_pass"] = all_model_backed_judges_pass(x1d)
                         _cycles_receipt["cycles"].append(_cycle_record)
@@ -2806,6 +2863,12 @@ def run_executive_summary_execution(
             allowed_fact_packet=selected_facts_for_x2,
         ),
     )
+
+    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+        regen_budget_ledger,
+    )
+
+    regen_budget_ledger(artifact_dir).flush()
 
     from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
 

@@ -1,6 +1,7 @@
 # Executive Summary — Operator Guide
 
-> **Plan SSOT:** [.cursor/plans/exec-summary-operator-ship-a3f7c2.md](../.cursor/plans/exec-summary-operator-ship-a3f7c2.md)
+> **Plan SSOT:** [.cursor/plans/exec-summary-operator-ship-a3f7c2.md](../.cursor/plans/exec-summary-operator-ship-a3f7c2.md)  
+> **Token / regen budget:** [.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md](../.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md) · research: [executive_summary_qwen_regen_token_budget_research_20260525.md](../reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md)
 
 ## One command
 
@@ -39,6 +40,35 @@ Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER
 | `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` | `1` (max `3`) | Qwen judge-regen cycles (not judge API count) |
 | `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE` | `soft_failed_only` | After regen: rescore 1–2 judges vs full panel of 3 |
 | `APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO` | ignored on product path | Dev/harness only |
+
+### Token budget & Qwen transport (W1/W2)
+
+All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_call` (fail-closed pre-dispatch). Scratch first-call still uses the lane’s single direct `call_qwen_vllm` after optional trim.
+
+| Variable | Suggested | Purpose |
+|----------|-----------|---------|
+| `VLLM_MAX_MODEL_LEN` | `16384` or `32768` (match server) | Operator-declared context window |
+| `APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW` | `0` (off) | `=1` probes `/v1/models` for `max_model_len` metadata (W2.1) |
+| `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` | `2048` | Scratch generation cap only |
+| `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS` | `1024` | All synthesis/judge/X2-repair regen (≤ scratch cap) |
+| `APPS_RG_QWEN_TIMEOUT_SECONDS` | `90`–`120` | **Transport** timeout per chat completion (not token budget) |
+| `APPS_RG_QWEN_TRANSPORT_MAX_ATTEMPTS` | `3` | HTTP retries on transient failures only (not semantic regen attempts) |
+| `APPS_RG_QWEN_MODELS_PROBE_TIMEOUT_SECONDS` | `5` | `/v1/models` probe when verify flag is on |
+| `APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS` | `512` (max `768`) | Core same-authority delta token cap via apps bridge (W4) |
+
+**First-pass policy (W2.2):** After optional-only trim, scratch dispatch is blocked if estimated input exceeds **85%** of `available_input_tokens` (`TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT`). Hard cap at 100% still applies (`TOKEN_BUDGET_EXCEEDED_AFTER_TRIM`).
+
+**Context provenance (W2.1):** `token_budget_receipt.json` and regen receipts include `provider_context_window_source` (`ENV_VLLM_MAX_MODEL_LEN` \| `SERVER_MODELS_METADATA` \| `UNKNOWN`), `server_context_window_verified`, and `server_context_window_warning` when the window is operator-declared only.
+
+### Transport timeout vs budget (invariant I6)
+
+| Signal | Meaning | Operator action |
+|--------|---------|-----------------|
+| `budget_blocked` / `dispatch_allowed=false` | Thread too large **before** Qwen was called | Shrink thread, enable compaction, or raise `VLLM_MAX_MODEL_LEN` |
+| `transport_timeout=true` | HTTP/chat completion timed out **after** dispatch was allowed | Raise `APPS_RG_QWEN_TIMEOUT_SECONDS`; check vLLM load |
+| `accepted=true` on a regen cycle | Output hash changed **and** matching `provider_response_*` exists for that `call_id` | Do not treat timeout or budget block as success |
+
+`budget_allowed=true` with `transport_timeout=true` is **not** a successful regen. Semantic regen attempt index ≠ transport retry count.
 
 ## X2 credential policy (FSA vs vendor certs)
 
@@ -121,3 +151,79 @@ After judges (or after X2 block with no judges), read **`dimension_upstream_tria
 **Regen hints:** Qwen receives `DIMENSION_VERDICTS` from failed dimensions (`executive_summary_judge_remediation.py`). Trigger modes include `dimension_consensus_soft_fail` and `solitary_dimension_major_soft_fail`.
 
 **Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
+
+## Receipt & call-plan glossary (token / regen budget)
+
+Use **`call_id`** to join rows across receipts and provider files (not filename glob alone).
+
+### Scratch (first Qwen call)
+
+| File | Key fields |
+|------|------------|
+| `token_budget_receipt.json` | `provider_context_window`, `provider_context_window_source`, `server_context_window_verified`, `server_context_window_warning`, `available_input_tokens`, `compiled_prompt_tokens_after_trim`, `first_pass_85pct_limit_tokens`, `first_pass_utilization_pct`, `first_pass_85pct_exceeded`, `dispatch_allowed`, `fail_closed_reason` |
+| `provider_request.json` / `provider_response.json` | Scratch dispatch only |
+
+### Regen / repair (via `budgeted_qwen_regen_call`)
+
+| File | Key fields |
+|------|------------|
+| `executive_summary_qwen_call_plan.json` | Top-level context provenance + `calls[]` with `call_id`, `phase`, `cycle_index`, `attempt_index`, artifact refs |
+| `regen_token_budget_receipt.json` | Same `calls[]` rows (budget SSOT per regen attempt) |
+| `provider_request_{phase}_cycleNN_attemptNN_{call_id}.json` | Request payload for one regen attempt |
+| `provider_response_{phase}_cycleNN_attemptNN_{call_id}.json` | Provider response for that `call_id` |
+
+**Per-call row (`calls[]`) — important fields:**
+
+| Field | When true / set |
+|-------|-----------------|
+| `dispatch_allowed` | Pre-dispatch budget check passed |
+| `transport_dispatched` | `call_qwen_vllm` was invoked |
+| `transport_timeout` | Transport failed with timeout (≠ budget pass) |
+| `provider_response_present` | `REAL_LLM` response artifact written |
+| `parse_ok` | Regen output JSON parsed |
+| `accepted` | Budget + transport + response + parse all OK (per-call evidence gate) |
+
+**Phase values:** `synthesis_regen` \| `judge_regen` \| `judge_x2_repair`
+
+Legacy aliases (`provider_response_judge_regen.json`, etc.) may exist; verifiers should prefer **`call_id`** joins.
+
+### Judge loop (quality — separate from budget proof)
+
+| File | Use |
+|------|-----|
+| `judge_remediation_receipt.json` | Cycle-level `accepted`, `output_changed`, `budget_blocked` |
+| `judge_remediation_cycles.json` | Per-cycle score deltas when regen ran |
+| `same_authority_regen_receipt.json` | Core `SameAuthorityRegenRunner` outcome when enabled |
+
+## Brown budget soak (not judge-cert soak)
+
+Use this to prove **budget safety and artifact linkage** — not that all judges pass or Claude certifies.
+
+**Prerequisites:** Live Qwen (`REAL_LLM`, not `DEV_DEFAULT_MOCK`), vLLM reachable, `targeting_context_parity_receipt.json` → `parity_match=true` (otherwise judge regen may skip).
+
+```powershell
+$env:APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS = "3"
+$env:APPS_RG_QWEN_TIMEOUT_SECONDS = "120"
+$env:VLLM_MAX_MODEL_LEN = "16384"
+
+python -m apps_rg --section executive_summary `
+  --target-company "Brown & Brown" `
+  --target-role "SVP IT Strategy & Innovation" `
+  --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt `
+  --provider qwen_vllm `
+  --allow-non-allow-exit-zero `
+  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md
+```
+
+**Required artifacts (budget proof checklist):**
+
+| Artifact | Proof |
+|----------|-------|
+| `token_budget_receipt.json` | W2.1 provenance + W2.2 85% fields |
+| `executive_summary_qwen_call_plan.json` | W1 call plan with `calls[]` |
+| `regen_token_budget_receipt.json` | Matching `call_id` rows |
+| `provider_request.json` + `provider_response.json` | Scratch REAL_LLM |
+| Per **accepted** regen: `provider_request_*` + `provider_response_*` sharing `call_id` | No fake `accepted` without response |
+| `x3_disposition.json` | Record disposition; **do not** require ALLOW for budget PASS |
+
+**Explicit non-claims:** Claude may still soft-fail; budget soak PASS means fail-closed dispatch, linked provider artifacts, and honest `accepted` flags — not judge certification. For cert soak, use operator-ship / judge-cert procedures separately.
