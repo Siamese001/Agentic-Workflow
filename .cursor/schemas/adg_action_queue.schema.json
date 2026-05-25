@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cursor.agentic-workflow/adg_action_queue.schema.json",
+  "title": "ADG Action Queue v1",
+  "description": "Post-run ranked dispatch queue from ADG gate results and optional P7 artifacts.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "snapshot_ts",
+    "emit_status",
+    "provenance",
+    "summary",
+    "actions"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "snapshot_ts": { "type": "string", "minLength": 1 },
+    "emit_status": {
+      "type": "string",
+      "enum": ["ok", "degraded", "failed"]
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["active_snapshot_ts", "degraded", "degradation_reasons", "inputs"],
+      "properties": {
+        "active_snapshot_ts": { "type": "string" },
+        "degraded": { "type": "boolean" },
+        "degradation_reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/provenance_input" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "fix_count",
+        "track_count",
+        "clear_count",
+        "actions_emitted",
+        "max_actions",
+        "recommended_rank",
+        "degraded"
+      ],
+      "properties": {
+        "fix_count": { "type": "integer", "minimum": 0 },
+        "track_count": { "type": "integer", "minimum": 0 },
+        "clear_count": { "type": "integer", "minimum": 0 },
+        "actions_emitted": { "type": "integer", "minimum": 0 },
+        "max_actions": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "recommended_rank": { "type": "integer", "minimum": 1 },
+        "degraded": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "actions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/action" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "provenance_input": {
+      "type": "object",
+      "required": [
+        "artifact_key",
+        "path",
+        "snapshot_ts",
+        "digest_sha256",
+        "status",
+        "required"
+      ],
+      "properties": {
+        "artifact_key": {
+          "type": "string",
+          "enum": [
+            "gate_results",
+            "burndown",
+            "p0_wave_plan",
+            "refactor_accelerator",
+            "failure_clusters"
+          ]
+        },
+        "path": { "type": "string" },
+        "snapshot_ts": { "type": ["string", "null"] },
+        "digest_sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$|^$" },
+        "status": {
+          "type": "string",
+          "enum": ["present", "missing", "stale", "rejected"]
+        },
+        "required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "rank",
+        "verdict_cluster",
+        "action_kind",
+        "plan_hint",
+        "signal",
+        "source_artifact",
+        "source_digest",
+        "sort_bucket",
+        "sort_band",
+        "violation_count",
+        "ordering_reason",
+        "scoped_tests"
+      ],
+      "properties": {
+        "rank": { "type": "integer", "minimum": 1 },
+        "verdict_cluster": {
+          "type": "string",
+          "enum": ["FIX", "REFACTOR", "P0_WAVE"]
+        },
+        "gate_id": { "type": ["string", "null"] },
+        "source_id": { "type": ["string", "null"] },
+        "action_kind": {
+          "type": "string",
+          "enum": ["fix_gate", "p0_wave_file", "refactor_candidate"]
+        },
+        "file_path": { "type": ["string", "null"] },
+        "symbol": { "type": ["string", "null"] },
+        "scoped_tests": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "plan_hint": { "type": "string" },
+        "signal": { "type": "string" },
+        "sort_bucket": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "sort_band": { "type": "string" },
+        "violation_count": { "type": "integer", "minimum": 0 },
+        "source_artifact": { "type": "string" },
+        "source_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "ordering_reason": { "type": "string" }
+      },
+      "anyOf": [{ "required": ["gate_id"] }, { "required": ["source_id"] }],
+      "additionalProperties": false
+    }
+  }
+}

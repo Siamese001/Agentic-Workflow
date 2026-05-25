@@ -25,9 +25,9 @@ The report is intentionally one file with five fixed sections:
 
   1. Header — snapshot, timestamp, overall verdict
   2. Burndown by band — P0..P3 gross / net / diff / guardian
-  3. CI gates — all 48 gates: description, band, enforcement, status, violations
+  3. CI gates — all 48 gates: description, band, enforcement, verdict, findings
   4. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
-  5. Top blockers — gates currently failing, ordered by violation count
+  5. Top blockers — gates currently failing, ordered by finding count
 
 No SQL, no MCP, no dependencies beyond stdlib.
 """
@@ -42,6 +42,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tools.reports.gate_signal_catalog import (
+    VERDICT_CLUSTER_DEFINITIONS,
+    display_verdict,
+    display_verdict_sub,
+    format_gate_signal,
+    has_backlog_findings,
+    needs_fix,
+    render_verdict_legend_markdown,
+    verdict_sort_key,
+)
+
 REPO = Path(__file__).resolve().parents[2]
 ARTIFACTS = REPO / "artifacts" / "adg"
 BURNDOWN_TABLE_DEFAULT = ARTIFACTS / "adg_burndown_table.json"
@@ -52,69 +63,26 @@ BURNDOWN_REPORT_OUTPUTS: tuple[Path, ...] = (
 )
 
 
-# Human descriptions for each gate. Keyed by ``gate_id`` so the file becomes the
-# documentation SSOT for "what is this gate checking?". When a new gate lands,
-# add its description here; missing entries fall back to the gate_class name.
-GATE_DESCRIPTIONS: dict[str, str] = {
-    # --- P0 layer / authority / writes -------------------------------------
-    "1_critical_path_integrity": "Critical execution paths reach their canonical sinks (no broken chains).",
-    "2_authority_boundary": "L0/L_PG calls cross only declared authority boundaries (UWG / spine).",
-    "3_write_sovereignty": "Every state mutation flows through UWG; no direct infra writes from apps_*.",
-    "4_capability_egress": "Outbound provider/SDK calls leave through sanctioned capability adapters.",
-    "5_text_to_action": "User text reaches action-class tools only after prompt-governance gating.",
-    "6_determinism_provenance": "Determinism digest + replay key are emitted on every trace root.",
-    # --- P1 antipattern / contract -----------------------------------------
-    "7_lifecycle_coverage": "Resources opened in apps_*/agentic_core have matching close/cleanup pairs.",
-    "8_exception_contract": "Catch sites obey the Column-5 precise-exception contract (no bare except).",
-    "9_config_references": "Every env-flag read in code is declared in .env.example.",
-    "10_test_harness_coverage": "Tier-1 emit sites (trace_root / step.seal / disposition) reach the test harness.",
-    "11_expected_wiring": "Each declared call wiring (entry_module → required_call) is reachable in the AST.",
-    # --- P2 hygiene / structure --------------------------------------------
-    "12_archives_isolation": "No imports from archives/ in production code.",
-    "13_pipeline_constants_ssot": "Pipeline constants are sourced from agentic_core.L0_routing.config only.",
-    "14_hardcoded_exclusions": "No hardcoded exclusion lists outside config/excluded_paths.yaml.",
-    "15_subprocess_timeout": "Every subprocess.run / Popen call carries a timeout=.",
-    "16_powershell_ban": "No powershell / pwsh shell invocations in tools/ or ops_scripts/.",
-    "17_query_progress_bar": "Long-running queries / scans display the canonical ProgressReporter.",
-    "18_terminal_cleanup": "Long-lived terminal processes have explicit terminate paths.",
-    "19_zero_loss_refactor": "Removed boilerplate did not leave hollow files behind.",
-    "20_guardian_exemption_gate": "Every guardian: allow-* marker has a specific justification.",
-    # --- P3 style / advisory -----------------------------------------------
-    "21_no_emoji_in_code": "Production code does not contain emoji literals (advisory).",
-    "22_docstring_present": "Public symbols carry a docstring (advisory).",
-    # --- adg_gates suite (post-Phase-D MV gates) ---------------------------
-    # Captured generically here; their per-gate descriptions are derived
-    # from gate_class when not overridden above.
-}
-
-
 def _describe(gate: dict[str, Any]) -> str:
-    """Return a one-line human description for ``gate``.
-
-    Lookup order: explicit GATE_DESCRIPTIONS map -> gate_class name (camelCase
-    split). The fallback keeps the report informative for newly-added gates
-    that have not yet been described in the map.
-    """
-    gid = gate.get("gate_id", "")
-    if gid in GATE_DESCRIPTIONS:
-        return GATE_DESCRIPTIONS[gid]
-    cls = gate.get("gate_class") or ""
-    # Camel-case split: "WriteSovereigntyGate" -> "Write Sovereignty Gate"
-    out: list[str] = []
-    for ch in cls:
-        if out and ch.isupper() and out[-1].islower():
-            out.append(" ")
-        out.append(ch)
-    pretty = "".join(out).replace(" Gate", "")
-    return f"{pretty} (auto-derived)" if pretty else "(no description)"
+    """High-signal cell: what Findings measures + why Verdict is PASS/FAIL/REGR."""
+    return format_gate_signal(gate)
 
 
-def _status_glyph(classification: str) -> str:
-    return {
-        "pass": "PASS",
-        "blocked": "FAIL",
-        "regressed": "REGR",
-    }.get(classification, classification.upper())
+def _verdict_display(gate: dict[str, Any]) -> str:
+    """Top-level verdict: FIX | TRACK | CLEAR."""
+    return display_verdict(gate)
+
+
+def _verdict_sub_display(gate: dict[str, Any]) -> str:
+    return display_verdict_sub(gate)
+
+
+def _count_by_cluster(gates: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for g in gates:
+        v = display_verdict(g)
+        counts[v] = counts.get(v, 0) + 1
+    return counts
 
 
 def _load_gate_results(path: Path) -> dict[str, Any]:
@@ -258,7 +226,16 @@ def render(
     a(f"- **Burndown source:** `{_display_path(burndown_path)}`")
     a(f"- **Snapshot timestamp:** {gates_doc.get('timestamp', 'n/a')}")
     a(f"- **Total gates:** {gates_doc.get('total_gates', len(gates))}")
-    a(f"- **Overall verdict:** **{overall}**")
+    a(f"- **Overall verdict:** **{overall}** (run halt — exit code)")
+    cluster_counts = _count_by_cluster(gates)
+    fix_n = cluster_counts.get("FIX", 0)
+    track_n = cluster_counts.get("TRACK", 0)
+    if fix_n or track_n:
+        a(
+            f"- **Action:** **FIX**={fix_n} (address for green ADG) · "
+            f"**TRACK**={track_n} (CI OK, backlog) · "
+            f"**CLEAR**={cluster_counts.get('CLEAR', 0)}"
+        )
     a("")
 
     # ---------------------------------------------------- §2 burndown by band
@@ -285,23 +262,24 @@ def render(
     )
     a("")
 
-    # ---------------------------------------------------- §3 all gates table
-    a("## 2. All CI Gates")
+    # ---------------------------------------------------- §2 verdict glossary + gates
+    a(render_verdict_legend_markdown())
+    a("## 3. All CI Gates")
     a("")
-    a("One row per registered gate. `Enf` is the enforcement contract: "
-      "**block** = any violation fails the run; **ratchet** = only NEW "
-      "violations beyond the baseline fail; **warn** = advisory only.")
+    a("One row per registered gate.")
     a("")
-    a("| Gate ID | Band | Enf | Status | Violations | Description |")
-    a("|---------|:----:|:---:|:------:|-----------:|-------------|")
-    # Order: by band (P0..P3), then by status (failures first), then by gate_id.
+    a("- **Verdict** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero findings.")
+    a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
+    a("- **Signal** — what Findings count + short Sub note.")
+    a("")
+    a("| Gate ID | Band | Enf | Verdict | Sub | Findings | Signal |")
+    a("|---------|:----:|:---:|:-------:|:---:|---------:|--------|")
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
-    status_order = {"blocked": 0, "regressed": 1, "pass": 2}
     sorted_gates = sorted(
         gates,
         key=lambda g: (
             band_order.get(g.get("band", "P3"), 9),
-            status_order.get(g.get("classification", "pass"), 9),
+            verdict_sort_key(g),
             g.get("gate_id", ""),
         ),
     )
@@ -310,34 +288,86 @@ def render(
             f"| `{g.get('gate_id', '?')}` | "
             f"{g.get('band', '?')} | "
             f"{g.get('enforcement', '?')} | "
-            f"{_status_glyph(g.get('classification', '?'))} | "
+            f"{_verdict_display(g)} | "
+            f"{_verdict_sub_display(g)} | "
             f"{g.get('violation_count', 0)} | "
             f"{_describe(g)} |"
         )
+    fix_gates = [g for g in gates if needs_fix(g)]
+    if fix_gates:
+        a("")
+        a("### Fix now (Verdict FIX)")
+        a("")
+        a("| Gate ID | Sub | Findings |")
+        a("|---------|:---:|---------:|")
+        for g in sorted(
+            fix_gates,
+            key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", "")),
+        ):
+            a(
+                f"| `{g.get('gate_id', '?')}` | "
+                f"{_verdict_sub_display(g)} | "
+                f"{g.get('violation_count', 0)} |"
+            )
+    track_gates = [g for g in gates if has_backlog_findings(g)]
+    if track_gates:
+        a("")
+        a("### Track later (Verdict TRACK — CI OK, backlog remains)")
+        a("")
+        a("| Gate ID | Sub | Findings |")
+        a("|---------|:---:|---------:|")
+        for g in sorted(
+            track_gates,
+            key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", "")),
+        ):
+            a(
+                f"| `{g.get('gate_id', '?')}` | "
+                f"{_verdict_sub_display(g)} | "
+                f"{g.get('violation_count', 0)} |"
+            )
     a("")
 
     # ---------------------------------------------------- §4 aggregates
-    a("## 3. Aggregate Verdicts")
+    a("## 4. Aggregate Verdicts")
     a("")
     a("| Verdict | Count | Meaning |")
     a("|---------|------:|---------|")
-    a(f"| block_pass | {summary.get('block_pass', 0)} | Block-class gates with zero violations. |")
-    a(f"| block_fail | {summary.get('block_fail', 0)} | Block-class gates currently failing — must reach 0. |")
+    a(
+        f"| block_pass | {summary.get('block_pass', 0)} | "
+        "Block-class gates that did not halt the run (exit 0). Findings may be non-zero. |"
+    )
+    a(
+        f"| block_fail | {summary.get('block_fail', 0)} | "
+        "Block-class gates that halted the run — clear the gate blocking condition. |"
+    )
     a(f"| ratchet_pass | {summary.get('ratchet_pass', 0)} | Ratchet-class gates within their baseline ceiling. |")
-    a(f"| ratchet_regressed | {summary.get('ratchet_regressed', 0)} | Ratchet-class gates with NEW violations beyond baseline. |")
+    a(
+        f"| ratchet_regressed | {summary.get('ratchet_regressed', 0)} | "
+        "Ratchet-class gates with NEW findings beyond baseline. |"
+    )
     a(f"| ratchet_seed_missing | {summary.get('ratchet_seed_missing', 0)} | Ratchet-class gates without a baseline seed (first run). |")
     a(f"| warn | {summary.get('warn', 0)} | Advisory-class gates (do not gate the run). |")
     a("")
+    a("### Per-gate verdict rollup (this report)")
+    a("")
+    a("| Verdict | Gates | Meaning |")
+    a("|---------|------:|---------|")
+    for label in ("FIX", "TRACK", "CLEAR"):
+        n = cluster_counts.get(label, 0)
+        if n == 0 and label not in cluster_counts:
+            continue
+        a(f"| {label} | {n} | {VERDICT_CLUSTER_DEFINITIONS[label]} |")
+    a("")
 
     # ---------------------------------------------------- §5 top blockers
-    a("## 4. Top Blockers (Failing or Regressed)")
+    a("## 5. Fix now (detail)")
     a("")
-    blockers = [g for g in gates if g.get("classification") in ("blocked", "regressed")]
+    blockers = [g for g in gates if needs_fix(g)]
     if not blockers:
-        a("_No failing or regressed gates._")
+        a("_No FIX gates._")
     else:
-        a("| Gate | Band | Enf | Violations | Description |")
-        a("|------|:----:|:---:|-----------:|-------------|")
+        a("| Gate | Band | Enf | Sub | Findings | Signal |")
+        a("|------|:----:|:---:|:---:|---------:|--------|")
         for g in sorted(
             blockers, key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", ""))
         ):
@@ -345,11 +375,15 @@ def render(
                 f"| `{g.get('gate_id', '?')}` | "
                 f"{g.get('band', '?')} | "
                 f"{g.get('enforcement', '?')} | "
+                f"{_verdict_sub_display(g)} | "
                 f"{g.get('violation_count', 0)} | "
                 f"{_describe(g)} |"
             )
     a("")
 
+    a("---")
+    for line in _render_next_action_section(gate_results_path):
+        a(line)
     a("---")
     a(
         "Report renderer: `tools/reports/adg_burndown_report.py`. "
@@ -357,6 +391,64 @@ def render(
         "--out artifacts/adg/adg_burndown_report.md`."
     )
     return "\n".join(lines) + "\n"
+
+
+def _render_next_action_section(gate_results_path: Path) -> list[str]:
+    """Link burndown to latest adg_action_queue artifact (W2)."""
+    lines: list[str] = []
+    lines.append("## Next action")
+    lines.append("")
+    queues = sorted(ARTIFACTS.glob("adg_action_queue_*.json"), key=lambda p: p.stat().st_mtime)
+    if not queues:
+        lines.append(
+            "No `adg_action_queue_*.json` found. Emit with: "
+            "`python tools/reports/adg_action_queue.py --latest`"
+        )
+        lines.append("")
+        lines.append("Playbook: [adg_action_dispatch_playbook.md](../../docs/reports/cursor/adg_action_dispatch_playbook.md)")
+        lines.append("")
+        return lines
+
+    latest = queues[-1]
+    try:
+        doc = json.loads(latest.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        lines.append(f"- **Queue:** `{_display_path(latest)}` (unreadable)")
+        lines.append("")
+        return lines
+
+    emit_status = doc.get("emit_status", "unknown")
+    degraded = doc.get("provenance", {}).get("degraded", False)
+    lines.append(f"- **Queue:** `{_display_path(latest)}`")
+    lines.append(f"- **emit_status:** `{emit_status}`")
+    lines.append(f"- **degraded:** `{degraded}`")
+    if degraded:
+        reasons = doc.get("provenance", {}).get("degradation_reasons") or []
+        for reason in reasons:
+            lines.append(f"  - {reason}")
+    summary = doc.get("summary", {})
+    lines.append(
+        f"- **summary:** FIX={summary.get('fix_count', '?')} · "
+        f"TRACK={summary.get('track_count', '?')} · "
+        f"actions_emitted={summary.get('actions_emitted', '?')}"
+    )
+    actions = doc.get("actions") or []
+    if actions:
+        lines.append("")
+        lines.append("| Rank | Verdict | Target | ordering_reason |")
+        lines.append("|-----:|---------|--------|-----------------|")
+        for action in actions[:5]:
+            target = action.get("gate_id") or action.get("source_id") or "?"
+            lines.append(
+                f"| {action.get('rank')} | {action.get('verdict_cluster')} | "
+                f"`{target}` | {action.get('ordering_reason', '')} |"
+            )
+    lines.append("")
+    lines.append(
+        "CLI: `python tools/reports/adg_action_queue.py --latest --top 10 --format markdown`"
+    )
+    lines.append("")
+    return lines
 
 
 def main(argv: list[str] | None = None) -> int:

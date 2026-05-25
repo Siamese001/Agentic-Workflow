@@ -28,6 +28,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from tools.adg.hotspot_gate_linkage import (
+    LinkageContext,
+    load_linkage_context,
+    resolve_module_linkage,
+    top_module_paths_from_scan,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
 REPORTS_DIR = REPO_ROOT / "docs" / "reports" / "adg"
@@ -217,10 +224,10 @@ def scan_app(con: sqlite3.Connection, app: str) -> dict[str, Any]:
         viol = _q(
             con,
             """
-            SELECT severity, kind, source_file, line_no, message
+            SELECT severity, violation_class, file_path, line_no, category
             FROM violations
-            WHERE source_file LIKE ?
-            ORDER BY severity, source_file
+            WHERE file_path LIKE ?
+            ORDER BY severity, file_path
             LIMIT 30
             """,
             (prefix,),
@@ -232,7 +239,57 @@ def scan_app(con: sqlite3.Connection, app: str) -> dict[str, Any]:
     return out
 
 
-def render_md(scan: dict[str, Any], severity: str, snapshot: Path) -> str:
+def render_actionable_hotspots(
+    scan: dict[str, Any],
+    linkage_ctx: LinkageContext,
+    *,
+    limit: int = 5,
+) -> list[str]:
+    """Markdown lines for top-N modules with deterministic gate linkage."""
+    lines: list[str] = []
+    lines.append("## Actionable hotspots (top 5 — deterministic linkage)")
+    lines.append("")
+    lines.append(
+        "Linkage from structured sources only (`gate_results` queue file paths, "
+        "P-views, `mv_debt_concentration_hotspots`, `refactor_accelerator`). "
+        "`unknown` = no gate join."
+    )
+    lines.append("")
+    lines.append(
+        "| module_path | linked_gate_ids | violation_refs | impacted_tests_sample | "
+        "linkage_source | linkage_confidence |"
+    )
+    lines.append(
+        "|-------------|-----------------|----------------|----------------------|"
+        "----------------|-------------------|"
+    )
+    modules = top_module_paths_from_scan(scan, limit=limit)
+    if not modules:
+        lines.append("| _none_ | | | | unknown | missing |")
+        lines.append("")
+        return lines
+
+    for mod in modules:
+        link = resolve_module_linkage(mod, linkage_ctx)
+        gates = ", ".join(f"`{g}`" for g in link.linked_gate_ids) if link.linked_gate_ids else "—"
+        vrefs = ", ".join(link.violation_refs[:3]) if link.violation_refs else "—"
+        if len(link.violation_refs) > 3:
+            vrefs += f" (+{len(link.violation_refs) - 3})"
+        tests = ", ".join(f"`{t}`" for t in link.impacted_tests_sample[:2]) if link.impacted_tests_sample else "—"
+        lines.append(
+            f"| `{link.module_path}` | {gates} | {vrefs} | {tests} | "
+            f"{link.linkage_source} | {link.linkage_confidence} |"
+        )
+    lines.append("")
+    return lines
+
+
+def render_md(
+    scan: dict[str, Any],
+    severity: str,
+    snapshot: Path,
+    linkage_ctx: LinkageContext | None = None,
+) -> str:
     app = scan["app"]
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     lines: list[str] = []
@@ -243,6 +300,8 @@ def render_md(scan: dict[str, Any], severity: str, snapshot: Path) -> str:
     lines.append(f"Severity (Phase B): **{severity}**")
     lines.append(f"ADG Provenance: backend=sqlite, snapshot={snapshot.name}")
     lines.append("")
+    if linkage_ctx is not None:
+        lines.extend(render_actionable_hotspots(scan, linkage_ctx))
     lines.append("## Nodes by Layer")
     lines.append("")
     lines.append("| Layer | Count |")
@@ -326,13 +385,18 @@ def render_md(scan: dict[str, Any], severity: str, snapshot: Path) -> str:
     else:
         lines.append(f"Rows: {len(viol)}")
         lines.append("")
-        lines.append("| Severity | Kind | File | Line | Message |")
+        lines.append("| Severity | Class | File | Line | Category |")
         lines.append("|---|---|---|---:|---|")
         for row in viol[:30]:
             if row and row[0] != "__error__":
                 lines.append(
                     f"| {row[0]} | {row[1]} | `{row[2]}` | {row[3] or ''} | {(row[4] or '')[:80]} |"
                 )
+    lines.append("")
+    lines.append(
+        "See [adg_action_dispatch_playbook.md](../../docs/reports/cursor/adg_action_dispatch_playbook.md) "
+        "and latest `artifacts/adg/adg_action_queue_*.json` for FIX-first triage."
+    )
     lines.append("")
 
     lines.append("## Recommendations (derived)")
@@ -363,11 +427,12 @@ def main() -> int:
 
     print(f"[adg_scan] snapshot = {snapshot.name}")
     con = sqlite3.connect(str(snapshot))
+    linkage_ctx = load_linkage_context(sqlite_connection=con)
     try:
         for app, severity in APPS:
             print(f"[adg_scan] scanning {app} ...", end=" ", flush=True)
             scan = scan_app(con, app)
-            md = render_md(scan, severity, snapshot)
+            md = render_md(scan, severity, snapshot, linkage_ctx=linkage_ctx)
             out_path = REPORTS_DIR / f"{app}_hotspots_{ts}.md"
             out_path.write_text(md, encoding="utf-8")
             n_files = len(scan["engines_and_agents"])

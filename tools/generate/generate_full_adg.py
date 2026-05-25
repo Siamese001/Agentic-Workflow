@@ -120,7 +120,6 @@ from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
 )
 from tools.generate.archiving import (  # noqa: E402  # M.2 modularization
     _archive_old_artifacts,
-    _cleanup_session_scratch,
     _create_zip_archive,
 )
 from tools.generate.core import (  # noqa: E402  # M.6 modularization
@@ -1388,7 +1387,7 @@ def generate_full_adg(
 
         # Persist confidence summary for L0 routing confidence monitor
         try:
-            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            from agentic_core.L6_system_learning.system_learning_memory_bridge import get_sl_memory_bridge
 
             bridge = get_sl_memory_bridge()
             bridge.persist_adg_confidence_summary(conf_summary, ts)
@@ -1554,6 +1553,27 @@ def generate_full_adg(
             f"[ADG] WARNING: burndown report emit returned {_burndown_emit_rc} "
             "(gate-results or burndown-table not yet available)"
         )
+
+    # --- Post-run action queue (plan adg-action-dispatch-c9e4a2 W1.2; non-blocking) ---
+    try:
+        from tools.reports.adg_action_queue import emit_adg_action_queue_from_adg_run  # noqa: PLC0415
+
+        _action_queue_rc, _action_queue_path = emit_adg_action_queue_from_adg_run(
+            adg_artifacts_dir=adg_artifacts_dir,
+            ts=ts,
+            fail_closed=False,
+        )
+        if _action_queue_rc != 0:
+            print(
+                f"[ADG] WARNING: action queue emit returned {_action_queue_rc}",
+                file=sys.stderr,
+            )
+    except Exception as _action_queue_exc:
+        print(
+            f"[adg_action_queue] NEXT_ACTION_ERROR={_action_queue_exc}",
+            file=sys.stderr,
+        )
+
     _rec_burndown = _current_recorder()
     if _rec_burndown is not None:
         _rec_burndown.record(
@@ -1666,15 +1686,15 @@ def generate_full_adg(
         except OSError:
             pass  # breadcrumb is best-effort
 
-    # --- Archive old artifacts AFTER successful current-run zip creation ---
-    # This ensures keep_runs=1 retains exactly one total run (the current run).
-    if archive_old and zip_created:
+    # --- Archive old runs (keep_runs=1 leaves only the current run in artifacts/adg/) ---
+    # Runs even when zip creation failed — loose artifacts gzip/move under _archive/.
+    if archive_old:
         _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
-    elif archive_old:
-        # P1 of RCA 2026-04-28: even when zip creation fails (current run's
-        # files stay in place), session scratch cleanup should still run so
-        # ad-hoc log files do not accumulate forever.
-        _cleanup_session_scratch(adg_artifacts_dir)
+        if not zip_created:
+            print(
+                "[ADG] Archive: retention ran despite zip failure; "
+                "see archive_skipped breadcrumb if present",
+            )
 
     # --- Closure validation check ---
     # W2.2 (plan adg-pipeline-simplification-e2e-9b4c27): data-driven
