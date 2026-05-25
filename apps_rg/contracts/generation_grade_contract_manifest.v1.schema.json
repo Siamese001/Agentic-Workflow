@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg/contracts/generation_grade_contract_manifest.v1.schema.json",
+  "title": "GenerationGradeContractManifestV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "section",
+    "run_id",
+    "surfaces",
+    "targeting",
+    "instructional_digests",
+    "judge_excluded_by_design",
+    "deterministic_gate_summary_keys"
+  ],
+  "properties": {
+    "schema": { "const": "generation_grade_contract_manifest_v1" },
+    "section": { "const": "executive_summary" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "surfaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["l2_compiled_prompt", "x1d_judge_packet", "judge_regen_remediation"],
+      "properties": {
+        "l2_compiled_prompt": { "type": "string" },
+        "x1d_judge_packet": { "type": "string" },
+        "judge_regen_remediation": { "type": "string" }
+      }
+    },
+    "targeting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation_material_digest",
+        "judge_material_digest",
+        "parity_match",
+        "trim_applied"
+      ],
+      "properties": {
+        "generation_material_digest": { "type": "string" },
+        "judge_material_digest": { "type": "string" },
+        "parity_match": { "type": "boolean" },
+        "trim_applied": { "type": "boolean" },
+        "token_trim_components": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "instructional_digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["e0_compile_ids", "rubric_ref", "generation_law_digest_sha256"],
+      "properties": {
+        "e0_compile_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rubric_ref": { "type": "string" },
+        "generation_law_digest_sha256": { "type": "string", "minLength": 64, "maxLength": 64 },
+        "composition_plan_digest": { "type": "string" },
+        "fact_packet_digest": { "type": "string" }
+      }
+    },
+    "judge_excluded_by_design": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "deterministic_gate_summary_keys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "dimension_gate_map": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

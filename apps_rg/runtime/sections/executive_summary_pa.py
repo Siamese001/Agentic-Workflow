@@ -402,6 +402,14 @@ def build_executive_summary_assembly_input(
     allowed_ids = _ordered_allowed_source_fact_ids(runtime_payload, facts)
     if not allowed_ids:
         raise ValueError("allowed_fact_ids or non-empty fact_id on each selected fact is required for executive_summary PA")
+    if strategy_appendix:
+        from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+            format_strategy_targeting_gap_note,
+        )
+
+        gap_note = format_strategy_targeting_gap_note(allowed_fact_ids=set(allowed_ids))
+        if gap_note:
+            jd_block = jd_block + "\n\n" + gap_note
 
     use_capsule = bool(runtime_payload.get("evidence_capsule_active"))
     cap = runtime_payload.get("evidence_capsule") if use_capsule else None

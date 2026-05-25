@@ -332,12 +332,24 @@ def build_judge_remediation_user_message(
             f"COMPOSITION: dominant_arc={plan.get('dominant_arc')}; "
             f"weave missing brushstrokes {missing[:4]} using allowed facts only (no JD-as-proof).\n"
         )
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        collect_dimension_remediation_lines,
+    )
     from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
         format_judge_regen_connective_tissue_guard,
         format_judge_regen_mechanical_opener_guard,
         format_judge_regen_x2_floor,
         format_judge_remediation_synthesis_default,
     )
+
+    dimension_lines = collect_dimension_remediation_lines(x1d_judges, min_fail_count=1)
+    dimension_block = ""
+    if dimension_lines:
+        dimension_block = (
+            "DIMENSION_VERDICTS (structured — prioritize these over free-text findings):\n"
+            + "\n".join(f"- {ln}" for ln in dimension_lines[:8])
+            + "\n"
+        )
 
     x2_floor = ""
     if prior_word_count > 0 or prior_ledger_rows > 0:
@@ -349,6 +361,7 @@ def build_judge_remediation_user_message(
     return (
         "JUDGE_REMEDIATION (GRADE_ONLY feedback — do not invent facts):\n"
         f"{x2_floor}"
+        f"{dimension_block}"
         f"- synthesis: {' | '.join(feedback['synthesis'][:6]) or format_judge_remediation_synthesis_default()}\n"
         f"- jd_emphasis: {' | '.join(feedback['jd_emphasis'][:4]) or 'shape emphasis from JD/briefing only; jd_used_as_proof=false'}\n"
         f"- executive_signal: {' | '.join(feedback['executive_signal'][:4]) or 'elevate SVP platform/governance/commercial signal from allowed facts'}\n"

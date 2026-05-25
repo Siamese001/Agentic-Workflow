@@ -166,6 +166,10 @@ def extract_runtime_x2_gate_ids(
                     if gate_id:
                         gate_ids.add(gate_id)
             break
+    if run_fn == "run_x2_gates" and "executive_summary_x2" in getattr(mod, "__name__", ""):
+        from apps_rg.runtime.validators.executive_summary_x2 import POST_X2_X1D_WIRING_GATE_IDS
+
+        gate_ids |= set(POST_X2_X1D_WIRING_GATE_IDS)
     if not gate_ids:
         raise RuntimeError(f"{mod.__name__}.{run_fn}: no add('gate_id', ...) literals found")
     return frozenset(gate_ids)

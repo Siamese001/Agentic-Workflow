@@ -76,6 +76,27 @@ def format_svp_jd_emphasis_line() -> str:
     )
 
 
+def format_strategy_targeting_gap_note(*, allowed_fact_ids: set[str] | frozenset[str]) -> str:
+    """When JD themes lack proof IDs, require gap_notes instead of JD-as-proof."""
+    allowed = {str(x).lower() for x in allowed_fact_ids}
+    interop_proof_markers = (
+        "interop",
+        "federated",
+        "accession",
+        "brokerage",
+        "enterprise_architecture",
+        "ea_",
+    )
+    if any(any(m in fid for m in interop_proof_markers) for fid in allowed):
+        return ""
+    return (
+        "TARGETING_GAP (targeting only): JD/briefing may emphasize EA, interoperability, or "
+        "federated/post-merger integration — if no matching ALLOWED_SOURCE_FACT_ID exists, set "
+        "gap_notes.svp_targeting_theme_gap_explained=true and shape emphasis from platform/governance "
+        "facts only (jd_used_as_proof=false).\n"
+    )
+
+
 def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
     """U0 targeting appendix for SVP IT strategy / innovation lanes (injected at PA compile)."""
     role = (target_title or "SVP IT strategy").strip()

@@ -863,6 +863,78 @@ def check_unsupported_industry_claims(resume_display_text: str, selected_facts: 
     return True, None
 
 
+POST_X2_X1D_WIRING_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "x2_x1d_required_judges_present",
+        "x2_x1d_raw_responses_written",
+        "x2_x1d_schema_valid",
+    }
+)
+
+
+def append_executive_summary_x1d_x2_gate_dicts(
+    *,
+    x1d_judges: list[dict[str, Any]] | None,
+    artifacts_dir: Path,
+) -> list[dict[str, Any]]:
+    """X1D presence/schema gates — run only after post-X2 judge phase."""
+    out: list[dict[str, Any]] = []
+
+    def _row(gate_id: str, passed: bool, observed: Any, threshold: Any, reason: str | None) -> None:
+        out.append(
+            {
+                "gate_id": gate_id,
+                "gate_type": "deterministic",
+                "pass": passed,
+                "observed_value": observed,
+                "threshold": threshold,
+                "failure_reason": None if passed else reason,
+                "evidence_ref": gate_id,
+            }
+        )
+
+    judges_present_ok, judges_present_reason = check_judge_rows_present(x1d_judges)
+    _row(
+        "x2_x1d_required_judges_present",
+        judges_present_ok,
+        judges_present_reason,
+        None,
+        judges_present_reason,
+    )
+    raw_responses_ok, raw_responses_reason = check_judge_raw_responses_written(artifacts_dir, x1d_judges)
+    _row(
+        "x2_x1d_raw_responses_written",
+        raw_responses_ok,
+        raw_responses_reason,
+        None,
+        raw_responses_reason,
+    )
+    if x1d_judges:
+        invalid: list[str] = []
+        for judge in x1d_judges:
+            schema_ok, schema_reason = check_judge_schema_valid(judge)
+            if not schema_ok:
+                pk = judge.get("provider_key", "unknown")
+                invalid.append(f"{pk}: {schema_reason}")
+        x1d_schema_ok = len(invalid) == 0
+        _row(
+            "x2_x1d_schema_valid",
+            x1d_schema_ok,
+            invalid,
+            [],
+            None if x1d_schema_ok else "; ".join(invalid),
+        )
+    else:
+        _row(
+            "x2_x1d_schema_valid",
+            False,
+            "no judges",
+            "judges present",
+            "No X1D judges to validate.",
+        )
+    return out
+
+
 def check_judge_rows_present(x1d_judges: list[dict[str, Any]] | None) -> tuple[bool, str | None]:
     """Check if all required judge provider rows are present."""
     if x1d_judges is None:
@@ -1342,15 +1414,29 @@ def check_exec_summary_no_credential_dump(resume_display_text: str) -> tuple[boo
         "certified solutions architect",
         "lakehouse fundamentals",
     )
-    for i, sent in enumerate(split_sentences(resume_display_text)):
+    named_cert_labels = (
+        "aws certified",
+        "databricks",
+        "fellow of the society of actuaries",
+        "fsa",
+        "certified solutions architect",
+        "lakehouse fundamentals",
+    )
+    sentences = split_sentences(resume_display_text)
+    for i, sent in enumerate(sentences):
         low = sent.lower()
         hits = sum(1 for m in markers if m in low)
+        named_hits = sum(1 for m in named_cert_labels if m in low)
+        if named_hits >= 2:
+            return False, f"sentence {i}: named certification inventory ({named_hits} labels)"
         if hits >= 3:
             return False, f"sentence {i}: credential or certification inventory block ({hits} markers)"
-        if is_credential_competency_term(sent) and hits >= 2:
-            return False, f"sentence {i}: credential relisting in executive summary"
-        if re.search(r"\bcredentials?\s+reinforce\b", low) and hits >= 2:
+        if is_credential_competency_term(sent) and named_hits >= 1:
+            return False, f"sentence {i}: named cert label in executive summary"
+        if re.search(r"\bcredentials?\s+reinforce\b", low) and named_hits >= 1:
             return False, f"sentence {i}: credential-block closing pattern"
+        if i >= 3 and named_hits >= 1:
+            return False, f"sentence {i}: named cert label in closing band (S4-S6)"
     return True, None
 
 
@@ -1554,6 +1640,7 @@ def run_x2_gates(
     compiled_prompt: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
+    defer_x1d_gates: bool = False,
     target_role: str | None = None,
     selected_facts: list[dict[str, Any]] | None = None,
     proof_pool_metadata: dict[str, Any] | None = None,
@@ -2029,32 +2116,18 @@ def run_x2_gates(
     )
     add("x2_input_output_hashes_present", input_output_hashes_ok, input_output_hashes_ok, True, "Missing input/output hashes.")
 
-    # Gate 17: x2_x1d_required_judges_present
-    judges_present_ok, judges_present_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_present_ok, judges_present_reason, None, judges_present_reason)
-
-    # Gate 18: x2_x1d_raw_responses_written
-    raw_responses_ok, raw_responses_reason = check_judge_raw_responses_written(artifacts_dir, x1d_judges)
-    add("x2_x1d_raw_responses_written", raw_responses_ok, raw_responses_reason, None, raw_responses_reason)
-
-    # Gate 19: x2_x1d_schema_valid — every judge row must satisfy required fields.
-    if x1d_judges:
-        invalid: list[str] = []
-        for judge in x1d_judges:
-            schema_ok, schema_reason = check_judge_schema_valid(judge)
-            if not schema_ok:
-                pk = judge.get("provider_key", "unknown")
-                invalid.append(f"{pk}: {schema_reason}")
-        x1d_schema_ok = len(invalid) == 0
-        add(
-            "x2_x1d_schema_valid",
-            x1d_schema_ok,
-            invalid,
-            [],
-            None if x1d_schema_ok else "; ".join(invalid),
-        )
-    else:
-        add("x2_x1d_schema_valid", False, "no judges", "judges present", "No X1D judges to validate.")
+    if not defer_x1d_gates:
+        for gate_dict in append_executive_summary_x1d_x2_gate_dicts(
+            x1d_judges=x1d_judges,
+            artifacts_dir=artifacts_dir,
+        ):
+            add(
+                gate_dict["gate_id"],
+                gate_dict["pass"],
+                gate_dict.get("observed_value"),
+                gate_dict.get("threshold"),
+                gate_dict.get("failure_reason"),
+            )
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 

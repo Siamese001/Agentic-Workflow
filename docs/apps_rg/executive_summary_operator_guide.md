@@ -70,3 +70,37 @@ Rule: [.cursor/rules/apps-rg-executive-summary-response.mdc](../.cursor/rules/ap
 1. The run finished and wrote a real executive-summary draft plus all the proof files in the artifact folder.
 2. The grader read the same shortened briefing as the writer (about 2,600 characters each)—not the full 15,000-character research paste—so the “unfair textbook” bug is fixed.
 3. It’s still **not approved for release** because some automatic checklists failed (including ones that expect a usage log before it’s written) and Gemini and Claude scored the paragraph below the pass line.
+
+## Input parity (L2 vs X1D)
+
+U0 is only the task slice. Three prompt surfaces exist:
+
+| Surface | Artifact | Contents |
+|---------|----------|----------|
+| L2 (Qwen) | `compiled_prompt.txt` | Full PA: I0, E0, composition plan, C0, JD/briefing, SRFS guards |
+| X1D (judges) | `executive_summary_judge_packet_post_x2.json` | GRADE_ONLY rubric, generation law digest, X2 gate snapshot, candidate |
+| Regen | `judge_remediation_cycles.json` | Judge feedback appended to prior messages |
+
+Per-run contract manifest: `generation_grade_contract_manifest.json` (digests, E0 compile order, gate keys, `judge_excluded_by_design`).
+
+Targeting parity (`targeting_context_parity_receipt.json`) proves JD/briefing bytes match — not full instructional parity. Judges run **after** structural X2 on `REAL_LLM` paths.
+
+Plan: [.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
+
+## Debug: which rubric dimension failed?
+
+After each judge pass, the run writes **`x1d_dimension_matrix.json`** next to `x1d_llm_judge_outputs.json`.
+
+| File | Use |
+|------|-----|
+| `x1d_dimension_matrix.json` | Per-dimension pass/fail per judge + `consensus_fail` when ≥2 judges fail that dimension |
+| `x1d_llm_judge_outputs.json` | Holistic score/pass per judge; each judge includes `dimension_verdicts` (8 keys) |
+| `x2_gate_outputs.json` / packet `deterministic_gate_summary` | Hard structural/proof gates only |
+
+**Read order:** X2 gates → dimension matrix → holistic judge pass count.
+
+`dimension_verdicts_inferred: true` on a judge means the model omitted structured dimensions and the runtime inferred them from findings/flags (still useful, less authoritative than explicit model output).
+
+**Regen hints:** When judge regen runs, Qwen receives a `DIMENSION_VERDICTS` block built from failed dimensions (see `executive_summary_judge_remediation.py`).
+
+**Plan:** [.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md)

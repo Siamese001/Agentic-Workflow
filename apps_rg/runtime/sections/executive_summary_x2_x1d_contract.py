@@ -64,6 +64,8 @@ JUDGE_PACKET_REQUIRED_GATE_KEYS: frozenset[str] = frozenset(
         "x2_exec_summary_no_credential_dump",
         "x2_exec_summary_no_mechanism_inventory",
         "x2_exec_summary_meta_filler_zero",
+        "x2_executive_summary_synthesis_quality",
+        "x2_exec_summary_mechanical_opener_stack_zero",
         "x2_schema_valid",
         "x2_claim_ledger_claim_text_non_empty",
         "x2_claim_ledger_orphan_zero",

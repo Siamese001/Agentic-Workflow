@@ -1106,6 +1106,10 @@ def main():
             "SECTION-X2-X1D generated-lane X2/X1D contract drift (fail-closed)",
             "ops_scripts/ci/check_section_x2_x1d_drift.py",
         ),
+        (
+            "EXEC-SUMMARY-L2-X1D-MANIFEST executive_summary L2/X1D input parity manifest",
+            "ops_scripts/ci/check_exec_summary_l2_x1d_manifest_drift.py",
+        ),
         # APPS-RG-L2-V4-ENVELOPE — apps_rg L2 v4 envelope feature flag bridge validation.
         # Validates W7B feature flag integration: _use_v4_l2_envelope helper,
         # feature flag bridge delegation, legacy path preservation, boundary checks,

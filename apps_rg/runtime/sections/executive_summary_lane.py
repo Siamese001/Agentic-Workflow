@@ -94,9 +94,20 @@ from apps_rg.runtime.sections.executive_summary_targeting_publish import (
     publish_targeting_parity_and_usage_ledger,
     resolve_judge_packet_for_parity,
 )
+from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+    write_x1d_dimension_matrix_artifact,
+)
 
 
 PROMPT_ID = "executive_summary.generate_scratch_v1"
+
+
+def _write_x1d_judge_artifacts(artifact_dir: Path, x1d: list[Any]) -> None:
+    """Persist judge panel outputs and per-dimension debug matrix."""
+    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+    write_x1d_dimension_matrix_artifact(artifact_dir / "x1d_dimension_matrix.json", x1d)
+
+
 EXEC_SUMMARY_TEMP_DEFAULT = 0.45
 EXEC_SUMMARY_TEMP_RANGE = (0.35, 0.55)
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
@@ -1985,35 +1996,9 @@ def run_executive_summary_execution(
     judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
     _judge_jd = _generation_material.jd_text_material
     _judge_briefing = _generation_material.briefing_text_material
-    judge_packet = build_executive_summary_judge_packet(
-        resume_display_text=resume_display_text,
-        claim_ledger=claim_ledger,
-        allowed_fact_packet=selected_facts_for_x2,
-        allowed_fact_ids=allowed_fact_ids,
-        target_title=_args_target_title(args),
-        target_company=str(args.target_company),
-        jd_text=_judge_jd,
-        briefing_text=_judge_briefing,
-        parsed_output=parsed_for_x2,
-    )
-    judge_packet_ref = write_executive_summary_judge_packet(
-        artifact_dir / "executive_summary_judge_packet.json",
-        judge_packet,
-    )
-    x1d = [
-        j.to_dict()
-        for j in run_llm_judges(
-            resume_display_text=resume_display_text,
-            claim_ledger=claim_ledger,
-            judge_keys=judge_keys,
-            mode=judge_mode,
-            artifact_base=artifact_dir,
-            judge_packet=judge_packet,
-            judge_packet_ref=judge_packet_ref,
-            compiled_prompt=compiled_prompt,
-        )
-    ]
-    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+    x1d: list[dict[str, Any]] = []
+    judge_packet: dict[str, Any] = {}
+    judge_packet_ref = ""
 
     usage_doc = build_section_input_usage_ledger_v1(
         section_id="executive_summary",
@@ -2038,7 +2023,7 @@ def run_executive_summary_execution(
         artifact_dir=artifact_dir,
         runtime_payload=runtime_payload,
         generation_material=_generation_material,
-        judge_packet=judge_packet,
+        judge_packet=judge_packet or {},
         usage_doc=usage_doc,
         write_json_fn=write_json,
     )
@@ -2118,6 +2103,7 @@ def run_executive_summary_execution(
         target_role=args.target_role if hasattr(args, "target_role") else None,
         selected_facts=selected_facts_for_x2,
         x1d_judges=x1d,
+        defer_x1d_gates=True,
         proof_pool_metadata=pp_x2 if proof_pool_x2_active else None,
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
@@ -2165,6 +2151,10 @@ def run_executive_summary_execution(
         from apps_rg.runtime.sections.executive_summary_judge_remediation import (
             refresh_x1d_judges_after_full_x2,
         )
+        from apps_rg.runtime.validators.executive_summary_x2 import (
+            append_executive_summary_x1d_x2_gate_dicts,
+        )
+
         x1d, _x1d_refresh_receipt = refresh_x1d_judges_after_full_x2(
             x2_gates=x2,
             resume_display_text=resume_display_text,
@@ -2180,7 +2170,7 @@ def run_executive_summary_execution(
             judge_mode=judge_mode,
             artifact_dir=artifact_dir,
             compiled_prompt=compiled_prompt,
-            prior_judges=x1d,
+            prior_judges=[],
         )
         from apps_rg.runtime.sections.executive_summary_repair_policy import (
             judge_regeneration_enabled,
@@ -2189,20 +2179,37 @@ def run_executive_summary_execution(
         if isinstance(_x1d_refresh_receipt, dict):
             _x1d_refresh_receipt = {
                 **_x1d_refresh_receipt,
+                "phase": "post_x2_initial",
                 "rescore_only": not judge_regeneration_enabled(),
             }
         write_json(artifact_dir / "post_x2_x1d_refresh_receipt.json", _x1d_refresh_receipt)
-        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
-        _jp_post_x2 = resolve_judge_packet_for_parity(artifact_dir, fallback=judge_packet)
+        _write_x1d_judge_artifacts(artifact_dir, x1d)
+        x2.extend(
+            append_executive_summary_x1d_x2_gate_dicts(
+                x1d_judges=x1d,
+                artifacts_dir=artifact_dir,
+            )
+        )
+        write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary")
+        write_json(
+            artifact_dir / "fact_check_result.json",
+            {
+                "passed": not [g for g in x2 if not g["pass"]],
+                "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
+            },
+        )
+        judge_packet = resolve_judge_packet_for_parity(artifact_dir, fallback={})
+        judge_packet_ref = str(
+            artifact_dir / "executive_summary_judge_packet_post_x2.json"
+        )
         _targeting_parity, usage_doc = publish_targeting_parity_and_usage_ledger(
             artifact_dir=artifact_dir,
             runtime_payload=runtime_payload,
             generation_material=_generation_material,
-            judge_packet=_jp_post_x2,
+            judge_packet=judge_packet,
             usage_doc=usage_doc,
             write_json_fn=write_json,
         )
-
     if runtime_generation_status == "REAL_LLM" and not x2_failed_initial and parsed_for_x2:
         from apps_rg.runtime.section_repair_policy import judge_remediation_regen_allowed
         from apps_rg.runtime.sections.executive_summary_judge_remediation import (
@@ -2236,11 +2243,13 @@ def run_executive_summary_execution(
             _soft_only = [j for j in x1d if _is_model_backed_soft_fail(j)]
             if len(_soft_only) != 1:
                 return
+            _jp_soft = resolve_judge_packet_for_parity(artifact_dir, fallback=judge_packet)
+            _jp_soft_ref = str(artifact_dir / "executive_summary_judge_packet_post_x2.json")
             x1d = rerun_soft_failed_judges(
                 resume_display_text=resume_display_text,
                 claim_ledger=claim_ledger,
-                judge_packet=judge_packet,
-                judge_packet_ref=judge_packet_ref,
+                judge_packet=_jp_soft,
+                judge_packet_ref=_jp_soft_ref,
                 compiled_prompt=compiled_prompt,
                 artifact_dir=artifact_dir,
                 judge_keys=judge_keys,
@@ -2255,7 +2264,7 @@ def run_executive_summary_execution(
                 briefing_text=_judge_briefing,
                 parsed_output=parsed_for_x2,
             )
-            write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+            _write_x1d_judge_artifacts(artifact_dir, x1d)
             write_json(
                 artifact_dir / "soft_judge_only_rerun_receipt.json",
                 {
@@ -2535,7 +2544,7 @@ def run_executive_summary_execution(
                             artifact_dir / "post_regen_x1d_full_refresh_receipt.json",
                             _post_regen_x1d_receipt,
                         )
-                        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+                        _write_x1d_judge_artifacts(artifact_dir, x1d)
                         write_x2_gate_outputs(
                             artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary"
                         )
@@ -2672,6 +2681,47 @@ def run_executive_summary_execution(
         judge_packet=_jp_final,
         usage_doc=usage_doc,
         write_json_fn=write_json,
+    )
+    _tb_receipt: dict[str, Any] | None = (
+        token_budget_receipt
+        if isinstance(token_budget_receipt, dict)
+        else None
+    )
+    if _tb_receipt is None and (artifact_dir / "token_budget_receipt.json").is_file():
+        try:
+            _tb_receipt = json.loads(
+                (artifact_dir / "token_budget_receipt.json").read_text(encoding="utf-8")
+            )
+        except (OSError, json.JSONDecodeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
+            _tb_receipt = None
+    _comp_plan_manifest: dict[str, Any] = {}
+    if (artifact_dir / "executive_summary_composition_plan.json").is_file():
+        try:
+            _raw_mp = json.loads(
+                (artifact_dir / "executive_summary_composition_plan.json").read_text(encoding="utf-8")
+            )
+            if isinstance(_raw_mp, dict):
+                _comp_plan_manifest = _raw_mp
+        except (OSError, json.JSONDecodeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
+            _comp_plan_manifest = {}
+    from apps_rg.runtime.sections.executive_summary_generation_grade_contract import (
+        build_generation_grade_contract_manifest,
+        write_generation_grade_contract_manifest,
+    )
+    from apps_rg.runtime.targeting_context_authority import judge_material_context_from_packet
+
+    write_generation_grade_contract_manifest(
+        artifact_dir / "generation_grade_contract_manifest.json",
+        build_generation_grade_contract_manifest(
+            run_id=str(runtime_payload["run_id"]),
+            generation=_generation_material,
+            judge=judge_material_context_from_packet(_jp_final if isinstance(_jp_final, dict) else {}),
+            parity_receipt=_targeting_parity if isinstance(_targeting_parity, dict) else {},
+            judge_packet=_jp_final if isinstance(_jp_final, dict) else None,
+            token_budget_receipt=_tb_receipt,
+            composition_plan=_comp_plan_manifest,
+            allowed_fact_packet=selected_facts_for_x2,
+        ),
     )
 
     from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3

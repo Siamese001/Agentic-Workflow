@@ -25,10 +25,9 @@ SECTION_EXAMPLES: dict[str, str] = {
 _UNIFY_LANE_SECTIONS = frozenset({"unify_bullets", "unify_narrative"})
 
 _EXEC_SUMMARY_POSITIVE_COMPILE_IDS = (
-    "exec_summary_gold_base_resume_001",
+    "exec_summary_pos_svp_it_strategy_001",
     "exec_summary_pos_credibility_implied_001",
     "exec_summary_pos_outcomes_led_001",
-    "exec_summary_pos_svp_it_strategy_001",
 )
 
 _EXEC_SUMMARY_TEMPLATE_SUPPLEMENT = (

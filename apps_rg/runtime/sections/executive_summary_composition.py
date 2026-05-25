@@ -116,6 +116,20 @@ def _fact_id_base(fid: str) -> str:
     return s.split("_metric_", 1)[0] if "_metric_" in s else s
 
 
+_CERT_DISPLAY_OPTIONAL_PREFIXES = ("fact_certs",)
+
+
+def _filter_required_display_fact_ids(role: str, req_ids: list[str]) -> list[str]:
+    """B4 may cite cert facts in ledger; do not require cert labels in display prose (I0 alignment)."""
+    if role != "B4_business_role_fit":
+        return req_ids
+    return [
+        fid
+        for fid in req_ids
+        if not any(fid.startswith(prefix) for prefix in _CERT_DISPLAY_OPTIONAL_PREFIXES)
+    ]
+
+
 def _classify_fact_brushstroke_role(fact_id: str, claim_text: str) -> str:
     fid = _fact_id_base(fact_id).lower()
     low = claim_text.lower()
@@ -173,12 +187,15 @@ def _brushstroke_for_role(role: str, facts: list[dict[str, Any]], allowed: set[s
     ]
     if not role_facts and role == "B1_executive_identity" and facts:
         role_facts = [facts[0]]
-    req_ids = sorted(
-        {
-            _fact_id_base(str(f.get("fact_id") or ""))
-            for f in role_facts
-            if _fact_id_base(str(f.get("fact_id") or "")) in allowed
-        }
+    req_ids = _filter_required_display_fact_ids(
+        role,
+        sorted(
+            {
+                _fact_id_base(str(f.get("fact_id") or ""))
+                for f in role_facts
+                if _fact_id_base(str(f.get("fact_id") or "")) in allowed
+            }
+        ),
     )
     skill_refs = _infer_graph_skill_refs(role_facts, proof_pool_metadata=None)
     image_goals = {

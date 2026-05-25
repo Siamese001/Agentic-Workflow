@@ -7,9 +7,14 @@ import json
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.sections.executive_summary_generation_grade_contract import (
+    dimension_gate_map,
+    generation_law_digest_text,
+)
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_claim_ledger_orphan_source_ids,
     check_exec_summary_evidence_utilization,
+    check_exec_summary_mechanical_opener_stack,
     check_exec_summary_meta_filler_patterns,
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
@@ -44,7 +49,9 @@ Rubric dimensions (SRFS executive summary — product shape **exactly 6 sentence
 1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids.
 2. executive_signal: SVP-level platform/governance/commercialization synthesis, not bullet stacks.
 3. resume_voice: credible third-person executive prose; penalize recruiter filler, "this individual", "Additionally/Furthermore" chains.
-4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
+4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof. When allowed facts
+   lack EA/interop/federated proof IDs, penalize only if prose invents those themes or ignores documented
+   gap_notes — not for absence alone when generation_law_digest requires gap_notes.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
 6. synthesis_quality: **exactly six** integrated sentences with optional composition themes (identity, platform/governance,
    scale/commercialization, outcomes, implied credibility). **Not** a fixed S1–S5 slot checklist. Fewer than six sentences
@@ -92,7 +99,9 @@ Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS la
 1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids only.
 2. executive_signal: SVP-level platform/governance/commercialization synthesis, not bullet stacks.
 3. resume_voice: credible executive prose; no recruiter filler or meta narration.
-4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof.
+4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof. When allowed facts
+   lack EA/interop/federated proof IDs, penalize only if prose invents those themes or ignores documented
+   gap_notes — not for absence alone when generation_law_digest requires gap_notes.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
 6. synthesis_quality: **exactly six** integrated sentences (X2 band); reward connective SVP IT strategy emphasis when
    ledger-backed; penalize thin recap S6 and bullet-stacked prose. **Do not** soft-penalize credential/metric inventory,
@@ -112,14 +121,23 @@ Decisive failure triggers (must align with deterministic_gate_summary failures w
 - obvious rewrite recommendation that invents new claims
 """.strip()
 
-REQUIRED_JUDGE_OUTPUT_SCHEMA = """
+def _required_judge_output_schema_text() -> str:
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        required_judge_output_dimension_block,
+    )
+
+    return f"""
 Return ONLY one compact JSON object:
-{"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,
+{{"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,
  "findings":["short strings"],"cited_sentence_indexes":[1],
  "remediation_suggestions":[],"rationale":"one short paragraph",
- "fail_reasons":[],"unsupported_claims":[],"quality_flags":[]}
+ "fail_reasons":[],"unsupported_claims":[],"quality_flags":[],
+ {required_judge_output_dimension_block()}}}
 score_scale must be 0_to_5 or 0_to_1 with in-range score/threshold.
 """.strip()
+
+
+REQUIRED_JUDGE_OUTPUT_SCHEMA = _required_judge_output_schema_text()
 
 
 def enrich_allowed_fact_packet_for_judges(
@@ -183,6 +201,10 @@ def build_deterministic_gate_summary(
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         resume_display_text, parsed_output
     )
+    from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
+
+    synthesis_ok, synthesis_reason = check_synthesis_quality(resume_display_text)
+    mech_ok, mech_reason = check_exec_summary_mechanical_opener_stack(resume_display_text)
     orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(claim_ledger, allowed_fact_ids)
     parse_ok = bool(parsed_output) and not (parsed_output or {}).get("parse_error")
     ledger_nonempty = all(
@@ -212,6 +234,14 @@ def build_deterministic_gate_summary(
         "x2_exec_summary_evidence_utilization": {
             "pass": util_ok,
             "detail": util_reason or "ok",
+        },
+        "x2_executive_summary_synthesis_quality": {
+            "pass": synthesis_ok,
+            "detail": synthesis_reason or "ok",
+        },
+        "x2_exec_summary_mechanical_opener_stack_zero": {
+            "pass": mech_ok,
+            "detail": mech_reason or "ok",
         },
         "x2_schema_valid": {"pass": parse_ok, "detail": "parsed_output_present" if parse_ok else "parse_missing"},
         "x2_json_parse_valid": {"pass": parse_ok, "detail": "ok" if parse_ok else "json_parse_failed"},
@@ -365,6 +395,8 @@ def build_canonical_judge_contract(packet: dict[str, Any]) -> dict[str, Any]:
         "rubric": packet.get("rubric") or GRAPH_ONLY_GRADE_ONLY_RUBRIC,
         "required_output_schema": packet.get("required_output_schema") or REQUIRED_JUDGE_OUTPUT_SCHEMA,
         "judge_rubric_mode": packet.get("judge_rubric_mode"),
+        "generation_law_digest": packet.get("generation_law_digest"),
+        "dimension_gate_map": packet.get("dimension_gate_map") or dimension_gate_map(),
     }
 
 
@@ -406,6 +438,8 @@ def build_executive_summary_judge_packet(
         "judge_packet_version": JUDGE_PACKET_VERSION,
         "section": "executive_summary",
         "judge_task": "GRADE_ONLY",
+        "generation_law_digest": generation_law_digest_text(),
+        "dimension_gate_map": dimension_gate_map(),
         "candidate_output": {
             "resume_display_text": resume_display_text,
             "claim_ledger": claim_ledger,
@@ -495,6 +529,12 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
         "",
         "DETERMINISTIC_GATE_SUMMARY (AUTHORITATIVE — do not contradict pass=true gates):",
         json.dumps(packet.get("deterministic_gate_summary") or {}, indent=2),
+        "",
+        "GENERATION_LAW_DIGEST (aligned with L2 I0 — judges do not receive full E0/I0):",
+        packet.get("generation_law_digest") or generation_law_digest_text(),
+        "",
+        "DIMENSION_GATE_MAP:",
+        json.dumps(packet.get("dimension_gate_map") or dimension_gate_map(), indent=2),
         "",
         packet.get("rubric") or SRFS_GRADE_ONLY_RUBRIC,
         "",
