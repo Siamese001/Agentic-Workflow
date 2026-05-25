@@ -24,6 +24,9 @@ Reference: W5B P1 apps_lic migration plan
 
 from __future__ import annotations
 
+__layer__ = "L6"
+__l6_chapter__ = "06.7"
+
 import logging
 from dataclasses import dataclass, field
 from enum import Enum

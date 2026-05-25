@@ -41,7 +41,7 @@ from agentic_core.L5_safety.types.exit_disposition_types import (
     QualityChecks,
     RubricScores,
 )
-from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+from ops_scripts.reports.async_eval_packet import (
     build_shadow_eval_packet,
 )
 from agentic_core.L6_observability.utils.evaluation.promotion_packet import (
@@ -611,7 +611,7 @@ class TestHandoffApprovalStateGate:
 
     def test_handoff_blocks_pending_packet_with_approved_flag(self):
         """handoff(approved=True) returns blocked HandoffRecord when approval_state=PENDING."""
-        from agentic_core.L6_observability.utils.evaluation.governed_handoff import (
+        from ops_scripts.reports.governed_handoff import (
             GovernedHandoffAgent,
             HandoffRecord,
         )
@@ -630,7 +630,7 @@ class TestHandoffApprovalStateGate:
 
     def test_handoff_blocks_rejected_packet_with_approved_flag(self):
         """handoff(approved=True) returns blocked HandoffRecord when approval_state=REJECTED."""
-        from agentic_core.L6_observability.utils.evaluation.governed_handoff import (
+        from ops_scripts.reports.governed_handoff import (
             GovernedHandoffAgent,
             HandoffRecord,
         )
@@ -647,7 +647,7 @@ class TestHandoffApprovalStateGate:
 
     def test_handoff_allows_approved_packet_with_approved_flag(self):
         """handoff(approved=True) proceeds past approval_state gate when state=APPROVED."""
-        from agentic_core.L6_observability.utils.evaluation.governed_handoff import (
+        from ops_scripts.reports.governed_handoff import (
             GovernedHandoffAgent,
             HandoffRecord,
         )

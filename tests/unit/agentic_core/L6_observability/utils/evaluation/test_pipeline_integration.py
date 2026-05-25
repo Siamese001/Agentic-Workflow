@@ -49,11 +49,11 @@ from agentic_core.L5_safety.types.exit_outcome_types import (
     DenyReturnPayload,
     EscalateToHITLPacket,
 )
-from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+from ops_scripts.reports.async_eval_packet import (
     ShadowEvalPacket,
     build_shadow_eval_packet,
 )
-from agentic_core.L6_observability.utils.evaluation.governed_handoff import HandoffRecord
+from ops_scripts.reports.governed_handoff import HandoffRecord
 from agentic_core.L6_observability.utils.evaluation.promotion_packet import (
     ApprovalState,
     PromotionPacket,
@@ -574,7 +574,7 @@ class TestScopeMixingInvariant:
 
     def test_governed_handoff_rejects_current_run_packet(self) -> None:
         """GovernedHandoffAgent.handoff raises when packet has wrong run_scope."""
-        from agentic_core.L6_observability.utils.evaluation.governed_handoff import (
+        from ops_scripts.reports.governed_handoff import (
             GovernedHandoffAgent,
         )
 

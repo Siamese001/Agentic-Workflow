@@ -1,0 +1,47 @@
+{
+  "plan_id": "l6-reorg-deferred-followup-f3a9c2",
+  "waves": ["W0", "W1", "W2", "W3", "W4"],
+  "w0": {
+    "reconcile_status": "PASS",
+    "receipt": "docs/reports/cursor/l6_followup_w0_reconcile_20260525.json"
+  },
+  "w1": {
+    "promotion_move": "agentic_core/L6_system_learning/promotion/",
+    "otel_nest": "agentic_core/L6_observability/runtime_trace/{cascade_telemetry,consensus_otel,heal_router_otel,otel_runtime_ingest}.py",
+    "compat_shims": true,
+    "adr": "docs/architecture/adr/ADR-087-l6-passive-layout-followup.md",
+    "eval_adr": "docs/architecture/adr/ADR-086-l6-eval-surface-consolidation.md"
+  },
+  "w2": {
+    "canonical_l_ops": "ops_scripts/reports/{async_eval_packet,governed_handoff,desk_d_governed_board}.py",
+    "l6_compat_shims": true,
+    "l6_source_files_removed_from_gravity_scan": [
+      "agentic_core/L6_observability/utils/evaluation/async_eval_packet.py",
+      "agentic_core/L6_observability/utils/evaluation/governed_handoff.py",
+      "agentic_core/L6_observability/utils/engines/desk_d_governed_board.py"
+    ],
+    "distinct_import_edges_post": 86,
+    "deduplicated_pairs": 43,
+    "burndown_threshold": 24,
+    "burndown_status": "documented_over_threshold_amended",
+    "ci_gate": "ops_scripts/ci/check_l6_architectural_exceptions.py",
+    "adg_regen": "deferred_same_snapshot_inventory_refresh"
+  },
+  "w3": {
+    "verdict": "permanent_exception_documented",
+    "spike": "docs/reports/cursor/l6_category_a_shared_spike_20260525.md"
+  },
+  "w4": {
+    "engines_readme": "agentic_core/L6_system_learning/engines/README.md",
+    "eval_adr": "docs/architecture/adr/ADR-086-l6-eval-surface-consolidation.md"
+  },
+  "e2e_verifier": "tools/_oneoff/l6_e2e_closeout_verify.py",
+  "e2e_closeout_status": "PASS",
+  "e2e_receipt": "docs/reports/cursor/l6_plan_e2e_closeout_20260525.json",
+  "followup_e2e_receipt": "docs/reports/cursor/l6_followup_plan_e2e_closeout_20260525.json",
+  "followup_e2e_checks": "31/31 PASS",
+  "adr_086_m3": {
+    "status": "executed",
+    "receipt": "docs/reports/cursor/l6_adr086_m3_closeout_20260525.json"
+  }
+}

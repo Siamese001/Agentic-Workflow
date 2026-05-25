@@ -53,7 +53,7 @@ from tqdm import tqdm
 
 # Lazy import to avoid L6->L_SL gravity violation
 def _get_rlhf_optimizer():
-    from system_learning.engines.rlhf_optimizer_impl import (
+    from agentic_core.L6_system_learning.rlhf_optimizer_impl import (
         DefaultRLHFOptimizer,
         RLHFChangePackage,
     )

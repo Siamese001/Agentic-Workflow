@@ -101,7 +101,7 @@ def l6_process_apps_lic(
     app_policy = _load_apps_lic_l6_policy()
     
     # Build profile spec for generic engine
-    from agentic_core.L6_observability.promotion.generic_l6_profile_consumer import (
+    from agentic_core.L6_system_learning.promotion.generic_l6_profile_consumer import (
         L6ProfileSpec,
         UWGStatus,
         get_generic_l6_consumer,
@@ -176,7 +176,7 @@ def _parse_uwg_status(uwg_authority: dict[str, Any] | bool) -> "UWGStatus":
     - {"granted": true, ...} -> GRANTED with metadata
     - {"requested": true, ...} -> PENDING
     """
-    from agentic_core.L6_observability.promotion.generic_l6_profile_consumer import (
+    from agentic_core.L6_system_learning.promotion.generic_l6_profile_consumer import (
         UWGStatus,
     )
 

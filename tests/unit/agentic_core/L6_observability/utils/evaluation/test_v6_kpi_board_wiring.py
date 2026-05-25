@@ -8,7 +8,7 @@ from agentic_core.L6_observability.utils.evaluation.learning_metrics_dashboard i
     get_v6_kpi_board,
     reset_v6_kpi_board,
 )
-from system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
+from agentic_core.L6_system_learning.engines.v6_kpi_board import V6KPIBoard, V6KPIName
 
 
 def setup_function(_func):

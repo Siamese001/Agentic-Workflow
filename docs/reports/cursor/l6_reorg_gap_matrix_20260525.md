@@ -27,14 +27,14 @@ The repo already **declares** L6 correctly via in-tree markers and `LAYER.md`, b
 
 | ID | Gap | Evidence | Target wave |
 |----|-----|----------|-------------|
-| G1 | 292 ADG modules untagged `layer=L6` | `check_l6_layer_tag_consistency.py` (advisory); mental model § Alignment W5 | W1 |
-| G2 | 2 observer-law violations | `ports/meta_outcome_bus_hook.py`, `ports/outcome_write_back_hook.py` → L3 dispatcher | W1 |
-| G3 | 8 subpackages missing `__l6_chapter__` | `adg`, `config`, `ml_integration`, `monitoring`, `policy`, `runtime`, `state`, `telemetry` | W2 |
+| G1 | 292 ADG modules untagged `layer=L6` | Resolved W1 fail-closed — see [l6_w1_gate_receipt_20260525.json](l6_w1_gate_receipt_20260525.json) | **W1 DONE** |
+| G2 | 2 observer-law violations | TYPE_CHECKING scope fix in observer-law gate (W1) | **W1 DONE** |
+| G3 | 8 subpackages missing `__l6_chapter__` | `adg`, `config`, `ml_integration`, `monitoring`, `policy`, `runtime`, `state`, `telemetry` | **W2 DONE** |
 | G4 | `engines/` is cross-chapter flat bucket | `__l6_chapter__` empty on `engines/__init__.py` | W3 or doc-only map |
-| G5 | `L6_observability/promotion/` not in mental model | Directory exists alongside `promotion_gates.py` at package root | W4 |
-| G6 | Eval overlap passive vs active | `shadow_eval/`, `utils/evaluation/*`, `system_learning/validators/` | W4 (map); follow-on to consolidate |
-| G7 | Doc folder name lag | `06_L6_Shadow_Evaluation_System_Learning/` vs target `06_L6_Observability_and_System_Learning/` | W2 |
-| G8 | Physical rename not done | `system_learning/` at root; 205-file import blast (`a8c4e2`) | W5 **only if** `PATH_RENAME_CANONICAL` at W0.2 |
+| G5 | `L6_observability/promotion/` not in mental model | Mapped W4 — defer move D1; see [l6_w4_passive_drift_20260525.md](l6_w4_passive_drift_20260525.md) | **W4 DONE** (deferred) |
+| G6 | Eval overlap passive vs active | Three-surface map in W4 §3; consolidation deferred D2 | **W4 DONE** (deferred) |
+| G7 | Doc folder name lag | Renamed to `06_L6_Observability_and_System_Learning/` | **W2 DONE** |
+| G8 | Physical rename not done | Resolved W5 — canonical `agentic_core/L6_system_learning/` | **W5 DONE** (2026-05-25) |
 | G0 | W3+W5 unconstrained (plan defect) | Risk of double-reorg | **W0.2 hard gate** (fixed in plan) |
 
 ---

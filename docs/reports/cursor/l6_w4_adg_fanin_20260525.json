@@ -1,0 +1,127 @@
+{
+  "adg_snapshot": "adg_indexed_05252026_0634.sqlite",
+  "architecture_path": "PATH_RENAME_CANONICAL",
+  "fanin": {
+    "agentic_core/L6_observability/promotion/generic_l6_profile_consumer.py": {
+      "importers": [
+        {
+          "path": "apps_lic/runtime/bindings/promo_binding.py",
+          "layer": "L_APP",
+          "count": 4
+        }
+      ],
+      "importer_count": 1
+    },
+    "agentic_core/L6_observability/promotion_gates.py": {
+      "importers": [
+        {
+          "path": "tests/governance/test_apps_lic_w6_ab_framework.py",
+          "layer": "L_TEST",
+          "count": 5
+        },
+        {
+          "path": "tests/unit/agentic_core/L6_observability/test_promotion_gates.py",
+          "layer": "L_TEST",
+          "count": 5
+        },
+        {
+          "path": "tools/demo/routing_evidence_demo.py",
+          "layer": "L_TOOLS",
+          "count": 5
+        },
+        {
+          "path": "apps_eval/integrations/promotion_loop.py",
+          "layer": "L_APP",
+          "count": 3
+        },
+        {
+          "path": "apps_qna/engines/router/promotion_gates.py",
+          "layer": "L_UNKNOWN",
+          "count": 3
+        },
+        {
+          "path": "apps_qna/router/promotion_gates.py",
+          "layer": "L_UNKNOWN",
+          "count": 3
+        },
+        {
+          "path": "tests/unit/agentic_core/L6_observability/test_l6_closed_loop.py",
+          "layer": "L_TEST",
+          "count": 3
+        },
+        {
+          "path": "apps_underwriting_ai/services/rationale_agreement_tracker.py",
+          "layer": "L_APP",
+          "count": 2
+        }
+      ],
+      "importer_count": 8
+    },
+    "agentic_core/L6_observability/flywheel_promoter.py": {
+      "importers": [
+        {
+          "path": "tests/runtime/test_l6_live_wireup.py",
+          "layer": "L_TEST",
+          "count": 1
+        },
+        {
+          "path": "tests/unit/agentic_core/L5_safety/eval_spine/test_exit_eval_orchestrator.py",
+          "layer": "L_TEST",
+          "count": 1
+        }
+      ],
+      "importer_count": 2
+    },
+    "agentic_core/L6_observability/otel_runtime_ingest.py": {
+      "importers": [
+        {
+          "path": "tools/otel/exercise_real_otel_pipeline.py",
+          "layer": "L_TOOLS",
+          "count": 2
+        },
+        {
+          "path": "agentic_core/L6_observability/consensus_otel.py",
+          "layer": "L6",
+          "count": 1
+        },
+        {
+          "path": "agentic_core/L6_observability/heal_router_otel.py",
+          "layer": "L6",
+          "count": 1
+        },
+        {
+          "path": "system_learning/_tracing.py",
+          "layer": "L6",
+          "count": 1
+        },
+        {
+          "path": "tests/_runtime_observability_plugin.py",
+          "layer": "L_TEST",
+          "count": 1
+        },
+        {
+          "path": "tests/integration/otel/test_runtime_adg_ingest_roundtrip.py",
+          "layer": "L_TEST",
+          "count": 1
+        },
+        {
+          "path": "tests/unit/agentic_core/L6_observability/test_otel_runtime_ingest.py",
+          "layer": "L_TEST",
+          "count": 1
+        },
+        {
+          "path": "tests/unit/agentic_core/L6_observability/test_otel_runtime_ingest_kpi_wiring.py",
+          "layer": "L_TEST",
+          "count": 1
+        }
+      ],
+      "importer_count": 8
+    }
+  },
+  "module_counts": {
+    "promotion_subdir": 1,
+    "shadow_eval": 12,
+    "utils_evaluation": 24,
+    "sl_validators": 7
+  }
+}

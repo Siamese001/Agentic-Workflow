@@ -1,0 +1,21 @@
+{
+  "plan_id": "l6-repo-reorganization-mental-model-c4e8f2",
+  "e2e_status": "PASS",
+  "e2e_verifier": "tools/_oneoff/l6_e2e_closeout_verify.py",
+  "checks_passed": 21,
+  "checks_failed": 0,
+  "architecture_path": "PATH_RENAME_CANONICAL",
+  "l6_tag_at_closeout": "302/302",
+  "l6_obs_at_closeout": "0 findings",
+  "pytest_passed": 57,
+  "closeout_receipts": [
+    "docs/reports/cursor/l6_w0_architecture_decision_20260525.md",
+    "docs/reports/cursor/l6_w1_gate_receipt_20260525.json",
+    "docs/reports/cursor/l6_w2_doc_receipt_20260525.md",
+    "docs/reports/cursor/l6_w4_passive_drift_20260525.md",
+    "docs/reports/cursor/l6_w5_wave_receipt_20260525.md",
+    "docs/reports/cursor/l6_w5_post_rename_cert_20260525.json",
+    "docs/reports/cursor/l6_w6_gravity_receipt_20260525.json",
+    "docs/reports/cursor/l6_plan_e2e_closeout_20260525.json"
+  ]
+}

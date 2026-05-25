@@ -1,0 +1,13 @@
+{
+  "plan_id": "l6-reorg-deferred-followup-f3a9c2",
+  "adr": "ADR-086",
+  "wave": "M3",
+  "status": "PASS",
+  "canonical_package": "agentic_core/L6_observability/shadow_eval/legacy_parallel",
+  "shim_surface": "agentic_core/L6_observability/utils/evaluation",
+  "modules_moved": 9,
+  "shim_only": ["async_eval_packet.py", "governed_handoff.py"],
+  "ops_scripts_canonical": ["ops_scripts/reports/async_eval_packet.py", "ops_scripts/reports/governed_handoff.py"],
+  "migration_script": "tools/_oneoff/l6_adr086_m3_legacy_parallel_move.py",
+  "pytest_eval_suite": "506 passed (utils/evaluation + shadow_eval; excludes unrelated v6_kpi_board path pre-fix)"
+}

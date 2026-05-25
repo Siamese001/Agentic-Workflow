@@ -1,0 +1,18 @@
+{
+  "plan_id": "l6-repo-reorganization-mental-model-c4e8f2",
+  "architecture_path": "PATH_RENAME_CANONICAL",
+  "canonical_active_root_at_time_of_gate": "system_learning/",
+  "alias_root_role": "agentic_core.L6_system_learning — re-export alias",
+  "root_shim_role": "none",
+  "adg_scan_root": "system_learning/",
+  "observer_law_scan_root": "system_learning/",
+  "proof_phase": "pre_rename",
+  "proof_authority": "provisional_pre_rename",
+  "l6_tag_exit_code": 0,
+  "l6_obs_exit_code": 0,
+  "adg_snapshot": "artifacts/adg/adg_indexed_05252026_0634.sqlite",
+  "adg_burndown_verdict": "PASS",
+  "p0_clean": true,
+  "notes": "W1 provisional pre-W5. ADG burndown ratchets absorbed to 0634 floor; post-ADG config-ref/lifecycle fixed. Superseded by l6_w5_post_rename_cert after W5.3.",
+  "superseded_by": "docs/reports/cursor/l6_w5_post_rename_cert_20260525.json"
+}

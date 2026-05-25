@@ -32,7 +32,7 @@ from agentic_core.L5_safety.types.exit_disposition_types import (
     QualityChecks,
     RubricScores,
 )
-from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+from ops_scripts.reports.async_eval_packet import (
     ShadowEvalPacket,
     build_shadow_eval_packet,
 )

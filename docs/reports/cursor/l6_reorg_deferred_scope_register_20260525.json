@@ -1,0 +1,92 @@
+{
+  "parent_plan_id": "l6-repo-reorganization-mental-model-c4e8f2",
+  "followup_plan_id": "l6-reorg-deferred-followup-f3a9c2",
+  "parent_status": "Completed",
+  "architecture_path": "PATH_RENAME_CANONICAL",
+  "canonical_active_root": "agentic_core/L6_system_learning/",
+  "deferred_items": [
+    {
+      "id": "DS-1",
+      "source": "W4-D1",
+      "title": "promotion/ relocation to active 06.7",
+      "followup_wave": "W1.1",
+      "p_band_hint": "P2"
+    },
+    {
+      "id": "DS-2",
+      "source": "W4-D2",
+      "title": "eval utils vs shadow_eval consolidation",
+      "followup_wave": "W1.3+future",
+      "p_band_hint": "P1"
+    },
+    {
+      "id": "DS-3",
+      "source": "W4-D3",
+      "title": "OTEL root nest under runtime_trace/",
+      "followup_wave": "W1.2",
+      "p_band_hint": "P2"
+    },
+    {
+      "id": "DS-4",
+      "source": "W6-ADR-085",
+      "title": "L_OPS move eval orchestration utilities",
+      "followup_wave": "W2.1",
+      "p_band_hint": "P2"
+    },
+    {
+      "id": "DS-5",
+      "source": "7c4e2a-W1.P2",
+      "title": "Category A _shared types extraction",
+      "followup_wave": "W3.1",
+      "p_band_hint": "P3",
+      "status": "blocked_instrumentation"
+    },
+    {
+      "id": "DS-6",
+      "source": "GAP-G4",
+      "title": "engines/ chapter map",
+      "followup_wave": "W4.1",
+      "p_band_hint": "P3"
+    },
+    {
+      "id": "DS-7",
+      "source": "7c4e2a-W3/W4",
+      "title": "architectural_exceptions CI gate",
+      "followup_wave": "W2.2",
+      "p_band_hint": "P3"
+    },
+    {
+      "id": "DS-8",
+      "source": "E2E-closeout",
+      "title": "ADG regen post-marker fixes",
+      "followup_wave": "W2.2",
+      "p_band_hint": "P3"
+    }
+  ],
+  "gravity_burndown_at_parent_close": {
+    "distinct_import_edges": 86,
+    "burndown_threshold": 24,
+    "status": "documented_over_threshold",
+    "inventory": "docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json",
+    "exceptions_yaml": "config/architectural_exceptions.yaml"
+  },
+  "artifacts": [
+    "docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.md",
+    "docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.json",
+    ".cursor/plans/l6-reorg-deferred-followup-f3a9c2.md"
+  ],
+  "artifacts_links": [
+    {
+      "path": "docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.md",
+      "markdown": "[l6_reorg_deferred_scope_register_20260525.md](docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.md)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.json",
+      "markdown": "[l6_reorg_deferred_scope_register_20260525.json](docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.json)"
+    },
+    {
+      "path": "cursor/plans/l6-reorg-deferred-followup-f3a9c2.md",
+      "markdown": "[l6-reorg-deferred-followup-f3a9c2.md](cursor/plans/l6-reorg-deferred-followup-f3a9c2.md)"
+    }
+  ]
+}

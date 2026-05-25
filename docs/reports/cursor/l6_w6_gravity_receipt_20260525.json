@@ -1,0 +1,82 @@
+{
+  "plan_id": "l6-repo-reorganization-mental-model-c4e8f2",
+  "wave_id": "W6",
+  "child_plan": "l6-gravity-hybrid-7c4e2a",
+  "proof_phase": "post_w5_final",
+  "architecture_path": "PATH_RENAME_CANONICAL",
+  "adg_snapshot": "artifacts/adg/adg_indexed_05252026_0751.sqlite",
+  "distinct_import_edges": 86,
+  "deduplicated_edge_entries": 43,
+  "source_file_count": 37,
+  "burndown_threshold": 24,
+  "burndown_status": "documented_over_threshold",
+  "prior_burndown": "integrity_report_generator_util.py moved to ops_scripts/reports/ (2026-05-01 W2.P2)",
+  "category_a_shared_extraction": "deferred_blocked_instrumented_envelopes",
+  "l6_tag_exit_code": 0,
+  "l6_tag_detail": "301/301 tagged L6 (snapshot/__init__.py marker added)",
+  "l6_obs_exit_code": 0,
+  "pytest_exit_code": 0,
+  "pytest_passed": 57,
+  "files_changed": [
+    "config/architectural_exceptions.yaml",
+    "docs/architecture/adr/ADR-085-l6-observability-dependency-hygiene.md",
+    "docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json",
+    "agentic_core/L6_system_learning/snapshot/__init__.py",
+    "tools/_oneoff/l6_w6_gravity_inventory.py",
+    "tools/_oneoff/l6_w6_emit_exceptions_yaml.py"
+  ],
+  "reports_generated": [
+    "docs/reports/cursor/l6_w6_gravity_receipt_20260525.json",
+    "docs/reports/cursor/l6_w6_gravity_receipt_20260525.md",
+    "docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json"
+  ],
+  "artifacts": [
+    "config/architectural_exceptions.yaml"
+  ],
+  "files_changed_links": [
+    {
+      "path": "config/architectural_exceptions.yaml",
+      "markdown": "[architectural_exceptions.yaml](config/architectural_exceptions.yaml)"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-085-l6-observability-dependency-hygiene.md",
+      "markdown": "[ADR-085-l6-observability-dependency-hygiene.md](docs/architecture/adr/ADR-085-l6-observability-dependency-hygiene.md)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json",
+      "markdown": "[l6_w6_gravity_edge_inventory_20260525.json](docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json)"
+    },
+    {
+      "path": "agentic_core/L6_system_learning/snapshot/__init__.py",
+      "markdown": "[__init__.py](agentic_core/L6_system_learning/snapshot/__init__.py)"
+    },
+    {
+      "path": "tools/_oneoff/l6_w6_gravity_inventory.py",
+      "markdown": "[l6_w6_gravity_inventory.py](tools/_oneoff/l6_w6_gravity_inventory.py)"
+    },
+    {
+      "path": "tools/_oneoff/l6_w6_emit_exceptions_yaml.py",
+      "markdown": "[l6_w6_emit_exceptions_yaml.py](tools/_oneoff/l6_w6_emit_exceptions_yaml.py)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "docs/reports/cursor/l6_w6_gravity_receipt_20260525.json",
+      "markdown": "[l6_w6_gravity_receipt_20260525.json](docs/reports/cursor/l6_w6_gravity_receipt_20260525.json)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_w6_gravity_receipt_20260525.md",
+      "markdown": "[l6_w6_gravity_receipt_20260525.md](docs/reports/cursor/l6_w6_gravity_receipt_20260525.md)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json",
+      "markdown": "[l6_w6_gravity_edge_inventory_20260525.json](docs/reports/cursor/l6_w6_gravity_edge_inventory_20260525.json)"
+    }
+  ],
+  "artifacts_links": [
+    {
+      "path": "config/architectural_exceptions.yaml",
+      "markdown": "[architectural_exceptions.yaml](config/architectural_exceptions.yaml)"
+    }
+  ]
+}

@@ -22,7 +22,7 @@ import pytest
 
 pytestmark = pytest.mark.eval_pipeline
 
-from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+from ops_scripts.reports.async_eval_packet import (
     _QUEUE_MAXSIZE,
     AsyncEvalIngester,
     ShadowEvalIngester,
@@ -220,7 +220,7 @@ class TestDropWarningLogs:
         )
 
     def test_shadow_drop_emits_warning(self, caplog):
-        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+        from ops_scripts.reports.async_eval_packet import (
             enqueue_shadow_eval_packet,
         )
 

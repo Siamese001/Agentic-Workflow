@@ -1,0 +1,34 @@
+{
+  "plan_id": "l6-reorg-deferred-followup-f3a9c2",
+  "timestamp_utc": "2026-05-25",
+  "adg_snapshot": "artifacts/adg/adg_indexed_05252026_0751.sqlite",
+  "adg_refresh": {
+    "inventory": "docs/reports/cursor/l6_w6_gravity_edge_inventory_fresh.json",
+    "yaml_regenerated": "config/architectural_exceptions.yaml",
+    "reconcile": "PASS",
+    "distinct_import_edges": 86,
+    "deduplicated_pairs": 43,
+    "note": "Edge counts from fresh ADG snapshot; M1 deletions require next ADG regen for edge delta"
+  },
+  "adr_086_m1": {
+    "status": "executed",
+    "modules_deleted": 12,
+    "tests_removed": 7,
+    "b_surface_modules_remaining": 12
+  },
+  "adr_086_m2": {
+    "status": "compat_documented",
+    "canonical_owner": "agentic_core/L6_observability/shadow_eval/gauntlet.py",
+    "legacy_compat": "agentic_core/L6_observability/utils/evaluation/promotion_gauntlet.py"
+  },
+  "adr_086_m3": {
+    "status": "executed",
+    "canonical_package": "agentic_core/L6_observability/shadow_eval/legacy_parallel",
+    "receipt": "docs/reports/cursor/l6_adr086_m3_closeout_20260525.json"
+  },
+  "adr_088_shared": {
+    "status": "permanent_exception_documented",
+    "scaffold": "agentic_core/_shared/types/README.md",
+    "adr": "docs/architecture/adr/ADR-088-l6-category-a-shared-permanent-exception.md"
+  }
+}

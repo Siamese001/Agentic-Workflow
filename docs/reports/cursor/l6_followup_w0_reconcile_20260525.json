@@ -1,0 +1,12 @@
+{
+  "plan_id": "l6-reorg-deferred-followup-f3a9c2",
+  "wave": "W0",
+  "inventory_distinct_pairs": 43,
+  "inventory_raw_rows": 86,
+  "yaml_pairs": 43,
+  "only_in_inventory_count": 0,
+  "only_in_yaml_count": 0,
+  "reconcile_status": "PASS",
+  "only_in_inventory_sample": [],
+  "only_in_yaml_sample": []
+}

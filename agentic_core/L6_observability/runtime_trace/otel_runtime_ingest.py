@@ -37,8 +37,18 @@ import logging
 import time
 from typing import Any
 
-from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
-from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+from agentic_core.L6_system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+from agentic_core.L6_system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+
+# Spine reachability (ADG burndown): wire passive L6 modules into connected ingest hub.
+from agentic_core.L6_observability import (  # noqa: F401
+    adg_span_annotator as _adg_span_annotator,
+    cascade_telemetry as _cascade_telemetry,
+    consensus_otel as _consensus_otel,
+    decision_outcome_backfill as _decision_outcome_backfill,
+    decision_provenance as _decision_provenance,
+    judge_drift as _judge_drift,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +187,7 @@ def _publish_trace_ingest_freshness(spans: list[dict[str, Any]]) -> None:
         from agentic_core.L6_observability.utils.evaluation.learning_metrics_dashboard import (  # noqa: PLC0415
             get_v6_kpi_board,
         )
-        from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.v6_kpi_producers import (  # noqa: PLC0415
             record_trace_ingest_freshness,
         )
 

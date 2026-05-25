@@ -1,0 +1,89 @@
+{
+  "plan_id": "l6-repo-reorganization-mental-model-c4e8f2",
+  "wave_id": "W5",
+  "proof_phase": "post_rename",
+  "proof_authority": "final_w1_post_rename",
+  "architecture_path": "PATH_RENAME_CANONICAL",
+  "canonical_active_root_at_time_of_gate": "agentic_core/L6_system_learning/",
+  "alias_root_role": "none",
+  "root_shim_role": "none",
+  "adg_scan_root": "agentic_core/L6_system_learning/",
+  "observer_law_scan_root": "agentic_core/L6_system_learning/",
+  "pre_rename_sha": "facbe7ee0a6cea84ea6b30057236667f1e9817eb",
+  "root_system_learning_package_exists": false,
+  "l6_tag_exit_code": 0,
+  "l6_obs_exit_code": 0,
+  "l6_tag_detail": "300/300 tagged L6",
+  "l6_obs_detail": "0 findings",
+  "adg_snapshot": "artifacts/adg/adg_indexed_05252026_0751.sqlite",
+  "supersedes": "docs/reports/cursor/l6_w1_gate_receipt_20260525.json",
+  "import_blast_radius_pre": "docs/reports/cursor/l6_import_blast_radius_pre_rename_20260525.md",
+  "import_blast_radius_post": "docs/reports/cursor/l6_import_blast_radius_post_rename_20260525.md",
+  "stale_cert_scan": {
+    "command_class": "python_walk_canonical_system_learning_patterns",
+    "raw_hits": 32,
+    "actionable_hits": 0,
+    "allowlisted_categories": [
+      "doc_folder_06_L6_Observability_and_System_Learning",
+      "pre_rename_reports_cursor",
+      "historical_w0_w2_receipts",
+      "comment_and_test_assertions",
+      "archives"
+    ],
+    "post_fix": "contract_span_binding_matrix.md runtime_adg paths updated to agentic_core/L6_system_learning/"
+  },
+  "pytest": {
+    "command": "pytest tests/unit/system_learning/test_l6_layer_markers.py tests/unit/agentic_core/L6_system_learning/ tests/unit/ops_scripts/ci/test_check_l6_*.py -q -o addopts=",
+    "exit_code": 0,
+    "passed": 57,
+    "failed": 0
+  },
+  "files_changed": [
+    "agentic_core/L6_system_learning/",
+    "tools/_oneoff/w5_fix_flat_submodule_imports.py",
+    "docs/reference/_notes/L6_mental_model.md",
+    "docs/reference/runtime_certification/contract_span_binding_matrix.md",
+    "docs/reports/cursor/l6_w1_gate_receipt_20260525.json"
+  ],
+  "reports_generated": [
+    "docs/reports/cursor/l6_w5_post_rename_cert_20260525.json",
+    "docs/reports/cursor/l6_w5_wave_receipt_20260525.md",
+    "docs/reports/cursor/l6_import_blast_radius_post_rename_20260525.md"
+  ],
+  "files_changed_links": [
+    {
+      "path": "agentic_core/L6_system_learning/",
+      "markdown": "[](agentic_core/L6_system_learning/)"
+    },
+    {
+      "path": "tools/_oneoff/w5_fix_flat_submodule_imports.py",
+      "markdown": "[w5_fix_flat_submodule_imports.py](tools/_oneoff/w5_fix_flat_submodule_imports.py)"
+    },
+    {
+      "path": "docs/reference/_notes/L6_mental_model.md",
+      "markdown": "[L6_mental_model.md](docs/reference/_notes/L6_mental_model.md)"
+    },
+    {
+      "path": "docs/reference/runtime_certification/contract_span_binding_matrix.md",
+      "markdown": "[contract_span_binding_matrix.md](docs/reference/runtime_certification/contract_span_binding_matrix.md)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_w1_gate_receipt_20260525.json",
+      "markdown": "[l6_w1_gate_receipt_20260525.json](docs/reports/cursor/l6_w1_gate_receipt_20260525.json)"
+    }
+  ],
+  "reports_generated_links": [
+    {
+      "path": "docs/reports/cursor/l6_w5_post_rename_cert_20260525.json",
+      "markdown": "[l6_w5_post_rename_cert_20260525.json](docs/reports/cursor/l6_w5_post_rename_cert_20260525.json)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_w5_wave_receipt_20260525.md",
+      "markdown": "[l6_w5_wave_receipt_20260525.md](docs/reports/cursor/l6_w5_wave_receipt_20260525.md)"
+    },
+    {
+      "path": "docs/reports/cursor/l6_import_blast_radius_post_rename_20260525.md",
+      "markdown": "[l6_import_blast_radius_post_rename_20260525.md](docs/reports/cursor/l6_import_blast_radius_post_rename_20260525.md)"
+    }
+  ]
+}

@@ -22,7 +22,7 @@ def _fresh_store(_tmp_path: Path) -> None:
     exercise file-backed persistence. File-backed ingest is covered by the
     W3 round-trip integration test.
     """
-    from system_learning.runtime_adg.store import InMemoryRuntimeADGStore
+    from agentic_core.L6_system_learning.runtime_adg.store import InMemoryRuntimeADGStore
 
     otel_runtime_ingest._STORE = InMemoryRuntimeADGStore()  # type: ignore[assignment]
     otel_runtime_ingest._MATERIALIZER = None

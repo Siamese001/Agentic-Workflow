@@ -182,7 +182,7 @@ def test_emission_best_effort_when_tracer_raises():
 
 def test_h5_placeholder_symbols_deleted():
     """H5 M2-M4 guard: the 3 placeholder symbols in system_learning/confidence/engine.py are gone."""
-    import system_learning.confidence.engine as mod  # noqa: PLC0415
+    import agentic_core.L6_system_learning.confidence.engine as mod  # noqa: PLC0415
 
     assert not hasattr(mod, "CONFIDENCE_THRESHOLD"), "H5 M2-M4 incomplete: CONFIDENCE_THRESHOLD still present"
     assert not hasattr(mod, "calculate_confidence"), "H5 M2-M4 incomplete: calculate_confidence still present"

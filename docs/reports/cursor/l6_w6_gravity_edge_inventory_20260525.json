@@ -1,0 +1,426 @@
+{
+  "plan_id": "l6-repo-reorganization-mental-model-c4e8f2",
+  "snapshot": "artifacts/adg/adg_indexed_05252026_0751.sqlite",
+  "distinct_import_edges": 86,
+  "source_file_count": 37,
+  "by_source": {
+    "agentic_core/L6_observability/enforcement/agent_monitor.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/execution_proof_emitter.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/enforcement/outcome_logger.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/execution_proof_emitter.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/enforcement/reasoning_streamer.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L2_execution/utils/write_gateway.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/execution/observability_recorder.py": [
+      {
+        "target": "agentic_core/L2_execution/audit/telemetry_bus.py",
+        "layer": "L2"
+      },
+      {
+        "target": "agentic_core/L2_execution/audit/telemetry_bus.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/runtime_trace/runtime_exhaust_bundle.py": [
+      {
+        "target": "agentic_core/L5_safety/contracts/verify.py",
+        "layer": "L5"
+      }
+    ],
+    "agentic_core/L6_observability/shadow_eval/contracts.py": [
+      {
+        "target": "agentic_core/L5_safety/contracts/verify.py",
+        "layer": "L5"
+      }
+    ],
+    "agentic_core/L6_observability/types/vigilance_event_types.py": [
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_observability/utils/engines/TieredVigilanceEmitter.py": [
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_observability/utils/engines/auto_persistence_adapter.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_observability/utils/evaluation/evaluation_record.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/evaluation/promotion_gauntlet.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/evaluation/promotion_packet.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/evaluation/promotion_stager.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/evaluation/rca_aggregator.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/evaluation/shadow_eval_grader.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/fix_testing_observability_util.py": [
+      {
+        "target": "agentic_core/L0_routing/enforcement/mutation_prohibition.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L2_execution/utils/write_gateway.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/performance/performance_registry.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/system_telemetry_util.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_observability/utils/visualization/workflow_visualization.py": [
+      {
+        "target": "agentic_core/L2_execution/utils/providers.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_system_learning/adapters/system_learning_memory_bridge.py": [
+      {
+        "target": "agentic_core/L4_state/enforcement/graph_memory_bridge.py",
+        "layer": "L4"
+      }
+    ],
+    "agentic_core/L6_system_learning/arbitration/__init__.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/confidence/__init__.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/config/config_store.py": [
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/pipeline_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/correlation/__init__.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/engines/hitl_decision_logger.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L5_safety/enforcement/credential_guard.py",
+        "layer": "L5"
+      }
+    ],
+    "agentic_core/L6_system_learning/engines/stage_barrier_enforcer.py": [
+      {
+        "target": "agentic_core/L5_safety/types/hardening_errors.py",
+        "layer": "L5"
+      }
+    ],
+    "agentic_core/L6_system_learning/engines/system_learning_admission_gate.py": [
+      {
+        "target": "agentic_core/L4_state/utils/memory/cache_admission_gate.py",
+        "layer": "L4"
+      },
+      {
+        "target": "agentic_core/L4_state/utils/memory/cache_admission_gate.py",
+        "layer": "L4"
+      }
+    ],
+    "agentic_core/L6_system_learning/fingerprinting/__init__.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/meta_learning/meta_apply.py": [
+      {
+        "target": "agentic_core/L0_routing/enforcement/mutation_prohibition.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L2_execution/types/capability_token_types.py",
+        "layer": "L2"
+      }
+    ],
+    "agentic_core/L6_system_learning/meta_learning/meta_apply_ops.py": [
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/pipelines/meta_learning_pipeline.py": [
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/pipelines/pipeline_factory.py": [
+      {
+        "target": "agentic_core/L0_routing/config/__init__.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/runtime_adg/l6_integration.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/runtime_adg/store.py": [
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/config/path_constants.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/runtime_hitl_consumer.py": [
+      {
+        "target": "agentic_core/L3_orchestration/exit_control/runtime_hitl_ledger.py",
+        "layer": "L3"
+      },
+      {
+        "target": "agentic_core/L3_orchestration/exit_control/runtime_hitl_ledger.py",
+        "layer": "L3"
+      }
+    ],
+    "agentic_core/L6_system_learning/scripts/meta_learning_operator.py": [
+      {
+        "target": "agentic_core/L0_routing/config/__init__.py",
+        "layer": "L0"
+      }
+    ],
+    "agentic_core/L6_system_learning/types/config_store_types.py": [
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      },
+      {
+        "target": "agentic_core/L0_routing/types/determinism_types.py",
+        "layer": "L0"
+      }
+    ]
+  }
+}
