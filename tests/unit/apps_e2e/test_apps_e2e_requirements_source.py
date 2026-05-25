@@ -1,20 +1,21 @@
 """W1 of plan apps-fort-knox-parity-c5d9a3 — catalog tests.
 
-Validates the APPS-REQ-* catalog at certification/apps_e2e_requirements_source.json
-against its schema and enforces the hand-authored invariants:
+Validates the apps_e2e catalog at data/certification/apps_e2e_requirements_source.json
+against its schema and enforces hand-authored invariants:
 
     - Schema-valid against apps_e2e_requirements.schema.json
-    - req_id uniqueness + APPS-REQ-NNN pattern
+    - req_id uniqueness + APPS-REQ-NNN / APPS-DOM-NNN namespaces
     - depends_on_req_ids all resolve to existing rows
     - Exactly one is_positive_control=true row (APPS-REQ-001)
     - Every claim_type's claim_type_required_controls entries are present
-      on every row of that claim_type
-    - Per-app rows cover exactly the 8 AppSpec app_names
-    - Expected row count (33) matches requirement_count field
+      on every non-domain row of that claim_type
+    - Per-app rows cover exactly the 8 runtime app_names
+    - Expected row count (45 = 33 REQ + 12 DOM) matches requirement_count
 """
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -27,7 +28,14 @@ from tools.cert.cert_paths import APPS_REQS_PATH, APPS_REQS_SCHEMA  # noqa: E402
 CATALOG_PATH = APPS_REQS_PATH
 SCHEMA_PATH = APPS_REQS_SCHEMA
 
-EXPECTED_ROW_COUNT = 33
+EXPECTED_ROW_COUNT = 45
+EXPECTED_APPS_REQ_COUNT = 33
+EXPECTED_APPS_DOM_COUNT = 12
+_REQ_ID_RE = re.compile(r"^APPS-REQ-\d{3}$")
+_DOM_ID_RE = re.compile(r"^APPS-DOM-\d{3}$")
+_DOMAIN_CLAIM_TYPES = frozenset(
+    {"APPS_DOMAIN_WIRING", "APPS_DOMAIN_GATING", "APPS_DOMAIN_PROOF"}
+)
 EXPECTED_POSITIVE_CONTROL = "APPS-REQ-001"
 EXPECTED_SCHEMA_VERSION = "apps_e2e_fortknox-v1"
 
@@ -86,16 +94,53 @@ def test_req_ids_are_unique(catalog: dict) -> None:
 
 
 def test_req_id_pattern(catalog: dict) -> None:
-    import re
-    pat = re.compile(r"^APPS-REQ-\d{3}$")
     for r in catalog["requirements"]:
-        assert pat.match(r["req_id"]), f"Invalid req_id: {r['req_id']}"
+        rid = r["req_id"]
+        assert _REQ_ID_RE.match(rid) or _DOM_ID_RE.match(rid), f"Invalid req_id: {rid}"
 
 
-def test_req_ids_are_sequential_starting_at_001(catalog: dict) -> None:
+def test_req_namespace_counts(catalog: dict) -> None:
     ids = [r["req_id"] for r in catalog["requirements"]]
-    expected = [f"APPS-REQ-{i:03d}" for i in range(1, EXPECTED_ROW_COUNT + 1)]
-    assert ids == expected, f"req_ids not sequential. got={ids[:5]}..."
+    req_ids = [i for i in ids if i.startswith("APPS-REQ-")]
+    dom_ids = [i for i in ids if i.startswith("APPS-DOM-")]
+    assert len(req_ids) == EXPECTED_APPS_REQ_COUNT
+    assert len(dom_ids) == EXPECTED_APPS_DOM_COUNT
+
+
+def test_apps_req_ids_are_sequential_001_to_033(catalog: dict) -> None:
+    req_ids = [r["req_id"] for r in catalog["requirements"] if r["req_id"].startswith("APPS-REQ-")]
+    expected = [f"APPS-REQ-{i:03d}" for i in range(1, EXPECTED_APPS_REQ_COUNT + 1)]
+    assert req_ids == expected, f"APPS-REQ block not sequential. got={req_ids[:5]}..."
+
+
+def test_apps_dom_ids_are_sequential_001_to_012(catalog: dict) -> None:
+    dom_ids = [r["req_id"] for r in catalog["requirements"] if r["req_id"].startswith("APPS-DOM-")]
+    expected = [f"APPS-DOM-{i:03d}" for i in range(1, EXPECTED_APPS_DOM_COUNT + 1)]
+    assert dom_ids == expected, f"APPS-DOM block not sequential. got={dom_ids[:5]}..."
+
+
+def test_catalog_order_req_block_then_dom_block(catalog: dict) -> None:
+    ids = [r["req_id"] for r in catalog["requirements"]]
+    first_dom = next(i for i, rid in enumerate(ids) if rid.startswith("APPS-DOM-"))
+    assert all(rid.startswith("APPS-REQ-") for rid in ids[:first_dom])
+    assert all(rid.startswith("APPS-DOM-") for rid in ids[first_dom:])
+
+
+def test_no_positive_control_in_dom_rows(catalog: dict) -> None:
+    dom_canaries = [
+        r
+        for r in catalog["requirements"]
+        if r["req_id"].startswith("APPS-DOM-") and r["is_positive_control"]
+    ]
+    assert not dom_canaries
+
+
+def test_dom_rows_use_domain_claim_types(catalog: dict) -> None:
+    for r in catalog["requirements"]:
+        if r["req_id"].startswith("APPS-DOM-"):
+            assert r["claim_type"] in _DOMAIN_CLAIM_TYPES, (
+                f"{r['req_id']}: unexpected claim_type {r['claim_type']}"
+            )
 
 
 def test_exactly_one_positive_control_row(catalog: dict) -> None:
@@ -125,6 +170,8 @@ def test_no_self_dependency(catalog: dict) -> None:
 def test_claim_type_required_controls_are_present_per_row(catalog: dict) -> None:
     ct_req = catalog["claim_type_required_controls"]
     for r in catalog["requirements"]:
+        if r["claim_type"] in _DOMAIN_CLAIM_TYPES:
+            continue
         required = set(ct_req.get(r["claim_type"], []))
         present = set(r["required_controls"])
         missing = required - present

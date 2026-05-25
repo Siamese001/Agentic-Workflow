@@ -132,17 +132,23 @@ def _iso_utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
 
 
+_DOMAIN_CLAIM_TYPES = frozenset(
+    {"APPS_DOMAIN_WIRING", "APPS_DOMAIN_GATING", "APPS_DOMAIN_PROOF"}
+)
+
+_ASSERTION_CLASS_BY_CLAIM_TYPE = {
+    "APPS_BUNDLE_EMISSION": "APPS_BUNDLE_EMISSION_ASSERTION",
+    "APPS_SPINE_CERTIFIED": "APPS_SPINE_CERTIFIED_ASSERTION",
+    "APPS_WAIVER": "APPS_WAIVER_ASSERTION",
+    "APPS_MATRIX_GOVERNANCE": "APPS_MATRIX_GOVERNANCE_ASSERTION",
+    "APPS_NEGATIVE_CONTROL": "APPS_NEGATIVE_CONTROL_ASSERTION",
+    "APPS_STATIC_CONTRACT": "APPS_STATIC_CONTRACT_ASSERTION",
+    "APPS_POSITIVE_CONTROL": "APPS_POSITIVE_CONTROL_ASSERTION",
+}
+
+
 def _assertion_class_for(row: dict[str, Any]) -> str:
-    claim_type = row["claim_type"]
-    return {
-        "APPS_BUNDLE_EMISSION": "APPS_BUNDLE_EMISSION_ASSERTION",
-        "APPS_SPINE_CERTIFIED": "APPS_SPINE_CERTIFIED_ASSERTION",
-        "APPS_WAIVER": "APPS_WAIVER_ASSERTION",
-        "APPS_MATRIX_GOVERNANCE": "APPS_MATRIX_GOVERNANCE_ASSERTION",
-        "APPS_NEGATIVE_CONTROL": "APPS_NEGATIVE_CONTROL_ASSERTION",
-        "APPS_STATIC_CONTRACT": "APPS_STATIC_CONTRACT_ASSERTION",
-        "APPS_POSITIVE_CONTROL": "APPS_POSITIVE_CONTROL_ASSERTION",
-    }[claim_type]
+    return _ASSERTION_CLASS_BY_CLAIM_TYPE[row["claim_type"]]
 
 
 def _make_assertion(
@@ -522,6 +528,9 @@ def emit_assertions(catalog: dict[str, Any], verifier_report: dict[str, Any],
     assertions: list[dict[str, Any]] = []
 
     for row in catalog["requirements"]:
+        if row["claim_type"] in _DOMAIN_CLAIM_TYPES:
+            continue
+
         req_id = row["req_id"]
         subjects = _expected_apps_for_row(row, all_apps, certified_apps)
 
