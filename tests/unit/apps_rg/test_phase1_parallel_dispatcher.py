@@ -53,3 +53,41 @@ def test_phase1_parallel_env_default_off(monkeypatch) -> None:
     assert phase1_parallel_enabled(profile_flag=False) is False
     monkeypatch.setenv("APPS_RG_PARALLEL_PHASE1_LANES", "1")
     assert phase1_parallel_enabled(profile_flag=False) is True
+
+
+def test_parallel_dispatch_skips_later_waves_after_abort() -> None:
+    """Wave 2 must not run when wave 1 sets should_skip_remaining_waves (fail-closed parity)."""
+    calls: list[str] = []
+    aborted = False
+
+    def _fn(**kwargs: object) -> dict[str, str]:
+        lane = str(kwargs.get("section") or "")
+        calls.append(lane)
+        if lane == "headline":
+            nonlocal aborted
+            aborted = True
+            return {"section": lane, "exit_status": "error", "fault": "dispatch_failed"}
+        return {"section": lane, "exit_status": "ok"}
+
+    ctx = LaneExecutionContext(
+        sections_root="/tmp/sections",
+        target_company="Acme",
+        target_role="VP",
+        job_description_ref="",
+        job_description_text="",
+        manual_brief="",
+        lane_provider="mock",
+        lane_x1d_judges=(),
+        lane_mock_judges=True,
+    )
+    out = dispatch_phase1_lanes_managed(
+        ("executive_summary", "headline", "unify_narrative"),
+        ctx,
+        dispatch_fn=_fn,
+        parallel=True,
+        max_parallel=2,
+        should_skip_remaining_waves=lambda: aborted,
+    )
+    assert "unify_narrative" not in calls
+    assert out["unify_narrative"].exec_status.startswith("pre_run_blocked:")
+    assert out["unify_narrative"].dispatch_result.get("prior_abort")
