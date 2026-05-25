@@ -1,0 +1,32 @@
+{
+  "schema": "graph_skills_c03_unified_pipeline_bind_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave_id": "W10-AG",
+  "generated_at_utc": "2026-05-25T23:29:51.212550+00:00",
+  "git_commit": "24380206e476546707a307255183d46833b42bb3",
+  "adapter_ref": "apps_rg.integrations.c0_graph_adapter",
+  "pipeline_stages": [
+    "l0_route_profiles.yaml",
+    "c0_retrieve_apps_rg",
+    "maybe_run_graph_rag",
+    "run_graph_traverse",
+    "FinalEvidenceContract.graph_expansion_refs",
+    "proof_pool / c03_graphrag_bound"
+  ],
+  "stress": {
+    "adapter_resolution": "RESOLVED",
+    "adapter_healthy": true,
+    "maybe_run_graph_rag_executed": true,
+    "skip_reason": "",
+    "accepted_neighbors": 0,
+    "spine_graph_expansion_refs": [
+      "ref:graph:traverse:fc226b0e046ced92"
+    ],
+    "graph_lane_deferred": false,
+    "unified_pipeline_bound": true
+  },
+  "claims_c03_unified_pipeline_bound": true,
+  "claims_dynamic_graphrag_traverse": true,
+  "claims_agentic_core_changed": false,
+  "status": "PASS"
+}

@@ -1,31 +1,33 @@
-# C0.3 graph lane deferral (apps_rg section spine)
+# C0.3 graph lane — apps_rg section spine (W10-AG unified bind)
 
-**Status:** Deferred — core Graph RAG (C0.3) not on product section path for W4.
+**Status:** **LIVE** on grounded routes when `graph_traverse` policy is active (`live_wiring_deferred: false`).
 
-## Canonical NA reference
+## Canonical references
 
-Spine dense/sparse retrieval via `c0_retrieve_apps_rg` stamps:
+| State | FEC `graph_expansion_refs` |
+|-------|---------------------------|
+| Deferred (no policy / file-only) | `ref:graph:NOT_APPLICABLE:graphrag_deferred_phase1` (`C0_GRAPH_LANE_NA_REF`) |
+| Unified spine (W10-AG) | `ref:graph:node:*`, `ref:graph:traverse:*`, or arsenal lineage refs from `augmented_skills_graph` |
 
-`ref:graph:NOT_APPLICABLE:graphrag_deferred_phase1`
+Defined in [`apps_rg/runtime/bindings/c0_binding.py`](../../runtime/bindings/c0_binding.py).
 
-Defined as `C0_GRAPH_LANE_NA_REF` in [`apps_rg/runtime/bindings/c0_binding.py`](../../runtime/bindings/c0_binding.py).
+## One pipeline (product path)
 
-## What runs instead
-
-| Lane | Section product path |
-|------|----------------------|
+| Stage | Binding |
+|-------|---------|
+| L0 route | [`route_profiles.yaml`](route_profiles.yaml) → `GraphTraversePolicy` via [`l0_binding.py`](../../runtime/bindings/l0_binding.py) |
 | C0.2 dense/sparse | `c0_retrieve_apps_rg` when `grounding_required` |
-| C0.3 graph RAG | **Skipped** — skills graph bindings in evidence room (`apps_rg_c03_skills_graph_used`) are not core Graph RAG |
-| C0.5 FEC | Spine FEC from retrieve + evidence-room stratify (enabled sections) |
+| C0.3 graph | Core `maybe_run_graph_rag` → `run_graph_traverse` + [`apps_rg/integrations/c0_graph_adapter.py`](../../integrations/c0_graph_adapter.py) |
+| C0.5 FEC | Spine FEC with non-NA `graph_expansion_refs` |
+| Proof pool | Section lanes consume spine FEC / `c03_graphrag_bound` aligned to spine output |
 
 ## STOP AS EVIDENCE GAP
 
-When `L1PlanContract.grounding_required` is true and spine FEC `support_status` is
-`WEAK`, `WEAK_WITH_CAVEATS`, `EMPTY`, `BLOCKED`, `CONFLICTED`, `UNKNOWN`, or
+When `L1PlanContract.grounding_required` is true and spine FEC `support_status` is weak or
 `NOT_APPLICABLE` without `support_target_met`, section lanes fail closed via
 `StopAsEvidenceGapError` in [`section_c0_retrieve.py`](../../runtime/spine/section_c0_retrieve.py).
 
 ## Related
 
-- Plan wave W4: [pa-exec-flowchart-gap-f2a8c3](../../../.cursor/plans/pa-exec-flowchart-gap-f2a8c3.md)
-- Gap: GAP-AR-C0-3 / GAP-SPINE-C0-SECTION
+- Plan: [graph-skills-quality-enhancement-c4e8a1](../../../.cursor/plans/graph-skills-quality-enhancement-c4e8a1.md) wave W10-AG
+- Receipt: [graph_skills_quality_w10_ag_receipt.json](../../../docs/reports/apps_rg/graph_skills_quality_w10_ag_receipt.json)

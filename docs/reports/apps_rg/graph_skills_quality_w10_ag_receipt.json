@@ -1,0 +1,37 @@
+{
+  "schema": "graph_skills_quality_wave_receipt_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave_id": "W10-AG",
+  "proof_class": "CONTRACT_TEST_PROOF",
+  "command": "python ops_scripts/apps_rg/emit_graph_skills_quality_w10_ag.py",
+  "command_argv": [
+    "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "ops_scripts/apps_rg/emit_graph_skills_quality_w10_ag.py"
+  ],
+  "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+  "exit_code": 0,
+  "status": "PASS",
+  "pytest_pass": true,
+  "pytest_tail": "......                                                                   [100%]\n============================== warnings summary ===============================\nagentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py:20\n  C:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.\n    from agentic_core.L2_execution.utils.providers import get_clock\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n6 passed, 3 warnings in 0.60s\nsys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n",
+  "author_gate": {
+    "decision_captured": "DECISION_CAPTURED: type=architecture_choice, repo_area=apps_rg, selected=unified_c03_bind, outcome=executed, confidence=0.92, precedent=user-accepted-graph-skills-plan",
+    "selected_option": "unified_c03_bind"
+  },
+  "artifact_paths": [
+    "docs/reports/apps_rg/graph_skills_quality_w10_ag_receipt.json",
+    "docs/reports/apps_rg/graph_skills_c03_unified_pipeline_bind.json"
+  ],
+  "stress": {
+    "adapter_resolution": "RESOLVED",
+    "adapter_healthy": true,
+    "maybe_run_graph_rag_executed": true,
+    "skip_reason": "",
+    "accepted_neighbors": 0,
+    "spine_graph_expansion_refs": [
+      "ref:graph:traverse:fc226b0e046ced92"
+    ],
+    "graph_lane_deferred": false,
+    "unified_pipeline_bound": true
+  },
+  "phase_gate": "PHASE_GATE: wave=W10-AG status=PASS gate=G-W10-AG"
+}

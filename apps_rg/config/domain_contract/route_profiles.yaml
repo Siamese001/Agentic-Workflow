@@ -23,16 +23,24 @@
     enforced: false
     profile_present: false
   graph_traverse:
-    graph_expansion_allowed: false
-    max_hops: 0
-    max_nodes: 0
-    max_edges: 0
-    allowed_relation_types: []
-    contradiction_scan_enabled: false
+    graph_expansion_allowed: true
+    max_hops: 1
+    max_nodes: 32
+    max_edges: 64
+    allowed_relation_types:
+      - DERIVED_FROM
+      - IMPLEMENTS
+      - CONTRADICTS
+      - SOURCE_VERSION
+      - EVIDENCE
+      - SUPPORTS
+      - REQUIRES
+      - RELATED_TO
+    contradiction_scan_enabled: true
     supersession_scan_enabled: false
-    graph_adapter_ref: ""
-    live_wiring_deferred: true
-    wiring_gate: DEFERRED
+    graph_adapter_ref: apps_rg.integrations.c0_graph_adapter
+    live_wiring_deferred: false
+    wiring_gate: LIVE
 
 - route_profile_id: arpf::apps_rg::resume_generation::full_grounded_managed::v1
   app_id: apps_rg
@@ -57,16 +65,24 @@
     enforced: false
     profile_present: false
   graph_traverse:
-    graph_expansion_allowed: false
-    max_hops: 0
-    max_nodes: 0
-    max_edges: 0
-    allowed_relation_types: []
-    contradiction_scan_enabled: false
+    graph_expansion_allowed: true
+    max_hops: 1
+    max_nodes: 32
+    max_edges: 64
+    allowed_relation_types:
+      - DERIVED_FROM
+      - IMPLEMENTS
+      - CONTRADICTS
+      - SOURCE_VERSION
+      - EVIDENCE
+      - SUPPORTS
+      - REQUIRES
+      - RELATED_TO
+    contradiction_scan_enabled: true
     supersession_scan_enabled: false
-    graph_adapter_ref: ""
-    live_wiring_deferred: true
-    wiring_gate: DEFERRED
+    graph_adapter_ref: apps_rg.integrations.c0_graph_adapter
+    live_wiring_deferred: false
+    wiring_gate: LIVE
 
 - route_profile_id: arpf::apps_rg::resume_generation::default_single_step::v1
   app_id: apps_rg
@@ -89,13 +105,21 @@
     enforced: false
     profile_present: false
   graph_traverse:
-    graph_expansion_allowed: false
-    max_hops: 0
-    max_nodes: 0
-    max_edges: 0
-    allowed_relation_types: []
-    contradiction_scan_enabled: false
+    graph_expansion_allowed: true
+    max_hops: 1
+    max_nodes: 32
+    max_edges: 64
+    allowed_relation_types:
+      - DERIVED_FROM
+      - IMPLEMENTS
+      - CONTRADICTS
+      - SOURCE_VERSION
+      - EVIDENCE
+      - SUPPORTS
+      - REQUIRES
+      - RELATED_TO
+    contradiction_scan_enabled: true
     supersession_scan_enabled: false
-    graph_adapter_ref: ""
-    live_wiring_deferred: true
-    wiring_gate: DEFERRED
+    graph_adapter_ref: apps_rg.integrations.c0_graph_adapter
+    live_wiring_deferred: false
+    wiring_gate: LIVE

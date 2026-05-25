@@ -72,6 +72,70 @@ C0_QUERY_VEC_REF_BGE = "c0:bge-m3:query_embedding_bundle:v1"
 
 _logger = logging.getLogger(__name__)
 
+
+def _resolve_spine_graph_expansion_refs(
+    route: Any,
+    merged_items: list[Any],
+) -> tuple[str, ...]:
+    """W10-AG: spine C0.3 graph refs via ``maybe_run_graph_rag`` when route policy is LIVE."""
+    policy = getattr(route, "graph_traverse_policy", None)
+    if policy is None or not getattr(policy, "is_active", False):
+        return (C0_GRAPH_LANE_NA_REF,)
+
+    from agentic_core.runtime.c0.c0_3_graph_rag_executor import maybe_run_graph_rag
+    from apps_rg.integrations.c0_graph_adapter import _extract_fact_id
+    from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+    from apps_rg.runtime.c03_graphrag_bound import (
+        _collect_graph_expansion_refs,
+        _collect_graph_lineage_refs,
+    )
+
+    try:
+        gr = maybe_run_graph_rag(route, merged_items)
+    except Exception as exc:  # guardian: allow-broad-exception -- fail-soft spine graph lane
+        _logger.warning("spine maybe_run_graph_rag failed: %s", exc)
+        gr = None
+
+    refs: list[str] = []
+    if gr is not None and gr.executed and gr.pool is not None:
+        for nb in gr.pool.accepted_graph_neighbors:
+            nid = str(getattr(nb, "neighbor_id", "") or getattr(nb, "node_id", "") or "").strip()
+            if nid:
+                refs.append(f"ref:graph:node:{nid}")
+        manifest = getattr(gr.pool, "graph_traversal_manifest", None)
+        mh = str(getattr(manifest, "manifest_hash", "") or "").strip()
+        if mh:
+            refs.append(f"ref:graph:traverse:{mh[:16]}")
+        if refs:
+            return tuple(dict.fromkeys(refs))[:64]
+
+    fact_ids: set[str] = set()
+    for it in merged_items:
+        for raw in (
+            getattr(it, "source", ""),
+            getattr(it, "source_id", ""),
+            getattr(it, "source_ref", ""),
+            getattr(it, "content", ""),
+            getattr(it, "content_snippet", ""),
+            getattr(it, "evidence_id", ""),
+        ):
+            fid = _extract_fact_id(str(raw or ""))
+            if fid:
+                fact_ids.add(fid)
+    if fact_ids:
+        try:
+            graph = load_augmented_skills_graph()
+            exp = _collect_graph_expansion_refs(graph, selected_fact_ids=fact_ids)
+            lin = _collect_graph_lineage_refs(graph, selected_fact_ids=fact_ids)
+            merged_refs = (*exp, *lin)
+            if merged_refs:
+                return tuple(dict.fromkeys(merged_refs))[:64]
+        except (OSError, ValueError, TypeError) as exc:
+            _logger.warning("spine graph static FEC fallback failed: %s", exc)
+
+    return (C0_GRAPH_LANE_NA_REF,)
+
+
 _embedding_singleton: Any | None = None
 _embedding_singleton_path: str | None = None
 
@@ -580,7 +644,7 @@ def c0_retrieve_apps_rg(
                 result_mapping=result_mapping,
             )
         )
-    graph_expansion_refs: tuple[str, ...] = (C0_GRAPH_LANE_NA_REF,)
+    graph_expansion_refs = _resolve_spine_graph_expansion_refs(route, merged_items)
     support_score_profile: tuple[tuple[str, float], ...] = tuple(support_score_profile_rows)
 
     retrieval_quality_span = _emit_retrieval_quality_span(

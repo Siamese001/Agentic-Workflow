@@ -156,9 +156,9 @@ def _build_spine_retrieve_receipt(
         "graph_expansion_refs": list(getattr(fec, "graph_expansion_refs", None) or ()),
         "graph_lane_na_ref": graph_lane_ref,
         "canonical_c0_2_dense_claimed": dense_ran,
-        "canonical_c0_3_graph_claimed": False,
+        "canonical_c0_3_graph_claimed": graph_lane_ref != C0_GRAPH_LANE_NA_REF,
         "graph_lane_deferred": graph_lane_ref == C0_GRAPH_LANE_NA_REF,
-        "proof_pool_shim_skipped": True,
+        "proof_pool_shim_skipped": graph_lane_ref == C0_GRAPH_LANE_NA_REF,
     }
 
 
@@ -249,7 +249,13 @@ def merge_spine_fec_into_bridge_doc(
             "producer_stage": "spine_c0_retrieve_apps_rg",
             "fec_bridge_mode": out.get("fec_bridge_mode") or "spine_c0_fec_compose",
             "canonical_c0_2_claimed": dense_ran,
-            "canonical_c0_3_claimed": False,
+            "canonical_c0_3_claimed": bool(
+                spine.receipt.get("canonical_c0_3_graph_claimed")
+                or (
+                    spine.fec.graph_expansion_refs
+                    and str(spine.fec.graph_expansion_refs[0]) != C0_GRAPH_LANE_NA_REF
+                )
+            ),
             "canonical_c0_5_claimed": True,
             "canonical_c0_5_fec": True,
             "fec_shape_only": False,
