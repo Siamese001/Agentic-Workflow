@@ -10,6 +10,17 @@ from apps_rg.runtime.orchestration.section_lane_executor import (
     LaneExecutionContext,
     run_lane_in_context,
 )
+from apps_rg.runtime.product_output_policy import PHASE1_PRIOR_LANE_FAILED_BLOCKER
+
+_WAVE_ABORT_EXEC_STATUS = f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}"
+
+
+def _skipped_prior_lane_abort(lane: str) -> LaneDispatchOutcome:
+    return LaneDispatchOutcome(
+        lane=lane,
+        dispatch_result={"prior_abort": PHASE1_PRIOR_LANE_FAILED_BLOCKER, "exit_status": "error"},
+        exec_status=_WAVE_ABORT_EXEC_STATUS,
+    )
 
 
 def dispatch_phase1_lanes_managed(
@@ -19,12 +30,16 @@ def dispatch_phase1_lanes_managed(
     dispatch_fn: Callable[..., dict[str, Any]],
     parallel: bool,
     max_parallel: int = 2,
+    should_skip_remaining_waves: Callable[[], bool] | None = None,
 ) -> dict[str, LaneDispatchOutcome]:
     """Dispatch lanes in DAG waves; serial fallback is one lane at a time."""
     outcomes: dict[str, LaneDispatchOutcome] = {}
 
     if not parallel:
         for lane in lanes_in_order:
+            if should_skip_remaining_waves and should_skip_remaining_waves():
+                outcomes[lane] = _skipped_prior_lane_abort(lane)
+                continue
             outcomes[lane] = run_lane_in_context(ctx, lane, dispatch_fn=dispatch_fn)
         return outcomes
 
@@ -33,9 +48,16 @@ def dispatch_phase1_lanes_managed(
         wave_lanes = [ln for ln in wave.lanes if ln in lanes_in_order]
         if not wave_lanes:
             continue
+        if should_skip_remaining_waves and should_skip_remaining_waves():
+            for lane in wave_lanes:
+                outcomes[lane] = _skipped_prior_lane_abort(lane)
+            continue
         cap = min(wave.max_parallel, max_parallel, len(wave_lanes))
         if cap <= 1:
             for lane in wave_lanes:
+                if should_skip_remaining_waves and should_skip_remaining_waves():
+                    outcomes[lane] = _skipped_prior_lane_abort(lane)
+                    continue
                 outcomes[lane] = run_lane_in_context(ctx, lane, dispatch_fn=dispatch_fn)
             continue
         with ThreadPoolExecutor(max_workers=cap) as pool:

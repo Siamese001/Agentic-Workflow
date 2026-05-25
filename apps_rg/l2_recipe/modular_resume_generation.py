@@ -670,6 +670,7 @@ def run_modular_resume_generation(
                     dispatch_fn=_phase1_dispatch_one_lane,
                     parallel=True,
                     max_parallel=_max_par,
+                    should_skip_remaining_waves=lambda: phase1_aborted,
                 )
                 for lane, oc in _outcomes.items():
                     lane_dispatch_results[lane] = dict(oc.dispatch_result)
