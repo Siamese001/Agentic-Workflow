@@ -51,6 +51,14 @@ from agentic_core.adg.registry.registry_consumer_resolver import (  # noqa: E402
     consumer_edge_to_registry_edges,
     resolve_all_consumer_edges,
 )
+from tools.adg.safe_repo_scan import safe_scan_files  # noqa: E402
+
+
+def _install_safe_repo_scan() -> None:
+    """Patch consumer resolver scan so Windows junction dirs do not abort lift."""
+    import agentic_core.adg.registry.registry_consumer_resolver as rcr
+
+    rcr._scan_files = safe_scan_files  # type: ignore[method-assign]
 
 
 @dataclass
@@ -172,6 +180,9 @@ def lift(
     """
     if not static_snapshot.exists():
         raise FileNotFoundError(f"static snapshot not found: {static_snapshot}")
+
+    if include_consumer_edges:
+        _install_safe_repo_scan()
 
     if edges is None:
         edges = resolve_all_registries()

@@ -29,7 +29,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from time import monotonic
-from typing import Any, Literal
+from collections.abc import Callable
+from typing import Any, Literal, TypeVar
 
 GateStatus = Literal[
     "invoked",           # started — no terminal status yet
@@ -365,6 +366,62 @@ def set_current_recorder(recorder: GateManifestRecorder | None) -> None:
 
 def current_recorder() -> GateManifestRecorder | None:
     return _CURRENT_RECORDER
+
+
+_T = TypeVar("_T")
+
+
+def _deferred_gate_names() -> frozenset[str]:
+    from tools.generate.integration.deferred_failures import deferred_failure_summary
+
+    return frozenset(str(row["gate_name"]) for row in deferred_failure_summary())
+
+
+def run_recorded_validation(
+    name: str,
+    fn: Callable[..., _T],
+    /,
+    *args: object,
+    **kwargs: object,
+) -> _T:
+    """Invoke a validation gate and record pass/fail/deferred_fail in the manifest.
+
+    ``name`` must match ``tools.generate._required_gates.REQUIRED_GATES`` so
+    ``run_full_adg_audit`` cross-check passes in certification mode.
+    """
+    rec = current_recorder()
+    if rec is None:
+        return fn(*args, **kwargs)
+
+    from tools.generate.integration.deferred_failures import _resolve_defer_flag
+
+    deferred_before = _deferred_gate_names()
+    started = monotonic()
+    try:
+        result = fn(*args, **kwargs)
+    except SystemExit:
+        rec.record_validation_gate(
+            name,
+            status="fail",
+            duration_s=monotonic() - started,
+        )
+        raise
+
+    new_deferred = _deferred_gate_names() - deferred_before
+    if new_deferred and _resolve_defer_flag(None):
+        rec.record_validation_gate(
+            name,
+            status="deferred_fail",
+            duration_s=monotonic() - started,
+            message=", ".join(sorted(new_deferred)[:5]),
+        )
+    else:
+        rec.record_validation_gate(
+            name,
+            status="pass",
+            duration_s=monotonic() - started,
+        )
+    return result
 
 
 def record_validation_gate_global(

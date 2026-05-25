@@ -1,6 +1,6 @@
 """CI gate: refuse merge when Fort Knox evidence is stale.
 
-Reads `certification/evidence_assertions.jsonl` and fails closed when
+Reads `data/certification/evidence_assertions.jsonl` and fails closed when
 any assertion's `generated_at_utc` is older than its declared
 `freshness_hours` window.
 
@@ -29,8 +29,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ASSERTIONS = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
-REQS = REPO_ROOT / "certification" / "requirements_source.json"
+ASSERTIONS = REPO_ROOT / "data" / "certification" / "evidence_assertions.jsonl"
+REQS = REPO_ROOT / "data" / "certification" / "requirements_source.json"
 
 
 def main() -> int:

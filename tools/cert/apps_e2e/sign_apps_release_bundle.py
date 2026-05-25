@@ -17,7 +17,7 @@ Trust ladder (apps_e2e track):
 
 Key material:
   - **Public key**:  `config/release_signer/release_signer.pub.pem` (committed)
-  - **Private key**: `keys/release_signer/release_signer.key.pem` (gitignored)
+  - **Private key**: `artifacts/keys/release_signer/release_signer.key.pem` (gitignored)
 
 The same release-signer keypair signs both the agentic_core and apps_e2e
 sign-off envelopes \u2014 there is one Fort Knox release signer identity.
@@ -59,7 +59,7 @@ SHA_NAME = "apps_e2e_signoff_report.sha256"
 MERKLE_NAME = "apps_e2e_signoff_report.merkle.json"
 
 PUBKEY_REL = Path("config/release_signer/release_signer.pub.pem")
-PRIVKEY_REL = Path("keys/release_signer/release_signer.key.pem")
+PRIVKEY_REL = Path("artifacts/keys/release_signer/release_signer.key.pem")
 
 SIGNER_VERSION = "apps_e2e_fortknox_signer-v1"
 SIGNABLE_TRUST_LEVELS = {

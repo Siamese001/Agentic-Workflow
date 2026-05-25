@@ -27,8 +27,8 @@ In-house certification-evidence discipline. No upstream MCP surface — the inte
 
 ## Hard Rules
 
-1. **Never hand-edit** `artifacts/certification/final_requirement_signoff_report.json`. It is a compiler output. Re-run `scripts/compile_requirement_signoff.py` instead.
-2. **Never bypass** the atomic-assertion schema. Every row must match `certification/schemas/evidence_assertion.schema.json` — one `req_id` + one `control` + one artifact-backed fact.
+1. **Never hand-edit** `artifacts/certification/final_requirement_signoff_report.json`. It is a compiler output. Re-run `tools/cert/compile_requirement_signoff.py` instead.
+2. **Never bypass** the atomic-assertion schema. Every row must match `config/certification/schemas/evidence_assertion.schema.json` — one `req_id` + one `control` + one artifact-backed fact.
 3. **Never fold** the mutation runner into the compiler output path. They are distinct trust roots by design (separation of duties).
 4. **Always run as a pair** — `compile_requirement_signoff.py` + `verify_final_requirement_signoff_bundle.py` — when claiming any signoff status.
 5. **Build positive controls before broadening scope.** A broken compiler that rejects everything is indistinguishable from a rigorous one without the canary.
@@ -42,13 +42,13 @@ In-house certification-evidence discipline. No upstream MCP surface — the inte
 
 ```bash
 # 1. Regenerate report from atomic assertions.
-python scripts/compile_requirement_signoff.py
+python tools/cert/compile_requirement_signoff.py
 
 # 2. Independent bundle verifier (MUST pass).
-python scripts/verify_final_requirement_signoff_bundle.py
+python ops_scripts/ci/verify_final_requirement_signoff_bundle.py
 
 # 3. Adversarial mutation bundle (MUST reject all).
-python scripts/generate_mutation_rejection_report.py
+python ops_scripts/ci/generate_mutation_rejection_report.py
 
 # 4. Read the report — status field is authoritative.
 python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certification/final_requirement_signoff_report.json').read_text()); print(r.get('trust_level'), list((r.get('per_requirement') or {}).keys())[:5])"
@@ -96,10 +96,11 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 
 ## References
 
-- Schema SSOT: `certification/schemas/evidence_assertion.schema.json`
-- Compiler: `scripts/compile_requirement_signoff.py`
-- Bundle verifier: `scripts/verify_final_requirement_signoff_bundle.py`
-- Mutation runner: `scripts/generate_mutation_rejection_report.py`
+- Path SSOT: `tools/cert/cert_paths.py`
+- Schema SSOT: `config/certification/schemas/evidence_assertion.schema.json`
+- Compiler: `tools/cert/compile_requirement_signoff.py`
+- Bundle verifier: `ops_scripts/ci/verify_final_requirement_signoff_bundle.py`
+- Mutation runner: `ops_scripts/ci/generate_mutation_rejection_report.py`
 - Positive-control template: `tools/cert/build_positive_control_fixture.py`
 - Rule: `.cursor/rules/fortknox-certification-discipline.md`
 - Author-Gate trigger: `.cursor/rules/author-gate-decision-points.md` §1.11

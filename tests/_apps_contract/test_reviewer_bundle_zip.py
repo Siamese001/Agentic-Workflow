@@ -117,7 +117,7 @@ class TestReviewerBundleZip:
 
     def test_requirement_count_lockstep(self) -> None:
         """Requirements source has requirement_count matching actual rows."""
-        reqs_path = REPO_ROOT / "certification" / "apps_e2e_requirements_source.json"
+        reqs_path = REPO_ROOT / "data" / "certification" / "apps_e2e_requirements_source.json"
         if not reqs_path.exists():
             pytest.skip("Requirements source not found")
 

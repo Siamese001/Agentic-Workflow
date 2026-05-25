@@ -21,7 +21,9 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RUNS_ROOT = REPO_ROOT / "artifacts" / "apps_rg" / "runs"
-OUT_DIR = REPO_ROOT / "certification" / "apps" / "per_app_evidence" / "apps_rg"
+from cert_paths import CERT_REVIEW_APPS_DIR
+
+OUT_DIR = CERT_REVIEW_APPS_DIR / "per_app_evidence" / "apps_rg"
 
 PRODUCER_COMMAND = "tools/cert/apps_e2e/apps_rg_proof_producer.py"
 PRODUCER_VERSION = "apps_rg_proof_producer-v1"

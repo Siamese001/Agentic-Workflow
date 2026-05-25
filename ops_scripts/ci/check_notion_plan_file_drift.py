@@ -65,7 +65,15 @@ NOTION_HTTP_TIMEOUT_S = 20.0
 NOTION_PAGE_SIZE = 100
 NOTION_MAX_PAGES = 20  # 2000 rows safety cap
 
-CLOSED_STATUSES = {"Done", "Closed", "Cancelled", "Archived"}
+# Wave/Phase lifecycle statuses that do not require a live top-level plan file.
+CLOSED_STATUSES = {
+    "Done",
+    "Closed",
+    "Cancelled",
+    "Archived",
+    "Completed",
+    "Retired",
+}
 
 AUDIT_LOG = governance_artifact_log("plan_file_drift.jsonl")
 
@@ -144,7 +152,11 @@ def _extract_phase_title(row: dict[str, Any]) -> str:
 
 
 def _plan_file_exists(filename: str) -> bool:
-    """Check for a plan file. Accepts exact filename or slug-without-suffix."""
+    """Check for a plan file. Accepts exact filename or slug-without-suffix.
+
+    Resolves top-level ``.cursor/plans/``, slug-with-hex variants, and archived
+    copies under ``.cursor/plans/_archive/**`` (W3 windsurf legacy relocation).
+    """
 
     if not filename:
         return False
@@ -158,6 +170,16 @@ def _plan_file_exists(filename: str) -> bool:
     for candidate in PLANS_DIR.glob(f"{base}-*.md"):
         if candidate.is_file():
             return True
+    virtual = PLANS_DIR / "_virtual" / name
+    if virtual.is_file():
+        return True
+    archive_root = PLANS_DIR / "_archive"
+    if archive_root.is_dir():
+        if (archive_root / name).is_file():
+            return True
+        for hit in archive_root.rglob(name):
+            if hit.is_file() and hit.name == name:
+                return True
     return False
 
 

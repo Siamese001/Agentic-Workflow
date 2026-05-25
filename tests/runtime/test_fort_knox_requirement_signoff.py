@@ -15,20 +15,30 @@ import pytest
 from jsonschema import Draft202012Validator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-COMPILER = REPO_ROOT / "scripts" / "compile_requirement_signoff.py"
-BUNDLE_VERIFIER = REPO_ROOT / "scripts" / "verify_final_requirement_signoff_bundle.py"
-EMITTER = REPO_ROOT / "tools" / "cert" / "emit_evidence_assertions.py"
-REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
-OUTPUT_DIR = REPO_ROOT / "artifacts" / "certification"
-REPORT_PATH = OUTPUT_DIR / "final_requirement_signoff_report.json"
-MERKLE_PATH = OUTPUT_DIR / "final_requirement_signoff_report.merkle.json"
-SHA256_PATH = OUTPUT_DIR / "final_requirement_signoff_report.sha256"
-SIG_PATH = OUTPUT_DIR / "final_requirement_signoff_report.signature.json"
+sys.path.insert(0, str(REPO_ROOT))
 
-REQS_SCHEMA = REPO_ROOT / "certification" / "schemas" / "requirements_source.schema.json"
-ASSERTION_SCHEMA = REPO_ROOT / "certification" / "schemas" / "evidence_assertion.schema.json"
-REPORT_SCHEMA = REPO_ROOT / "certification" / "schemas" / "final_requirement_signoff_report.schema.json"
+from tools.cert.cert_paths import (  # noqa: E402
+    ASSERTION_SCHEMA,
+    ASSERTIONS_PATH,
+    COMPILE_SIGNOFF_SCRIPT,
+    FINAL_SIGNOFF_MERKLE,
+    FINAL_SIGNOFF_REPORT,
+    FINAL_SIGNOFF_SHA256,
+    FINAL_SIGNOFF_SIGNATURE,
+    REPORT_SCHEMA,
+    REQS_PATH,
+    REQS_SCHEMA,
+    VERIFY_SIGNOFF_BUNDLE_SCRIPT,
+)
+
+COMPILER = COMPILE_SIGNOFF_SCRIPT
+BUNDLE_VERIFIER = VERIFY_SIGNOFF_BUNDLE_SCRIPT
+EMITTER = REPO_ROOT / "tools" / "cert" / "emit_evidence_assertions.py"
+OUTPUT_DIR = FINAL_SIGNOFF_REPORT.parent
+REPORT_PATH = FINAL_SIGNOFF_REPORT
+MERKLE_PATH = FINAL_SIGNOFF_MERKLE
+SHA256_PATH = FINAL_SIGNOFF_SHA256
+SIG_PATH = FINAL_SIGNOFF_SIGNATURE
 
 
 @pytest.fixture(scope="module", autouse=True)

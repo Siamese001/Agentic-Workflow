@@ -143,7 +143,7 @@ _GOV3_BASELINE: dict[str, dict] = {
         "target_module": "apps_rg.prompt_governance.pa_binding",
         "issue": "GOV-3-BASELINE-006",
     },
-    "archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py": {
+    "artifacts/archives/l2_rationalization_20260519/agentic_core/L2_execution/apps_rg_l2_binding.py": {
         "expiry": "2027-12-31",
         "classification": "ARCHIVED",
         "migration_plan": "l2-rationalization-waves-c8e4f1",

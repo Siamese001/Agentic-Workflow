@@ -1,5 +1,5 @@
 # EvaluationRubric instance — apps_eval self-rubric (meta-eval)
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # This rubric scores the eval runner itself. Used to detect calibration
 # drift and judge-as-decider violations.

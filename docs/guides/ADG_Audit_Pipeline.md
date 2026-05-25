@@ -136,6 +136,34 @@ Markdown reports get a loud banner when runtime is not attested:
 > certification-clean.
 ```
 
+## Enforcement planes (ADR-081)
+
+Four planes integrate old ADG CI into the certification spine:
+
+| Plane | SSOT | Blocks certification |
+|-------|------|----------------------|
+| 1 Generator | `tools/generate/_required_gates.py` | Yes (invocation manifest) |
+| 2 Snapshot | `ops_scripts/ci/adg_gate_manifest.yaml` | Yes (`run_adg_three_graph_tests --strict`) |
+| 3 Dispatcher | `python -m ops_scripts.ci.adg_gates.run` | Yes when `ADG_CERTIFICATION_MODE=1` |
+| 4 Satellite | Contract gates, AUDIT, M-gates | Selective |
+
+Rollup artifact: `artifacts/adg/adg_enforcement_report_<ts>.json`.  
+`check_adg_certified.py --rollup` reads it (default).  
+Gate ownership: [ADG_Gate_Ownership.md](ADG_Gate_Ownership.md).
+
+### CI commands
+
+```bash
+# Full certification
+python tools/adg/run_full_adg_audit.py --mode certification --format both
+
+# PR quick (committed snapshot)
+python ops_scripts/ci/run_adg_three_graph_quick_gate.py
+
+# Changed-files subset
+python ops_scripts/ci/run_adg_three_graph_tests.py --suite changed --strict --snapshot <path>
+```
+
 ## Required-Gate Registry
 
 `tools/generate/_required_gates.py` is the declarative proof contract.

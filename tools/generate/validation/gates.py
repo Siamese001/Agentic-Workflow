@@ -300,9 +300,19 @@ def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
     try:
         with sqlite3.connect(str(sqlite_path)) as conn:
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT COUNT(*) FROM violations WHERE severity='MEDIUM' AND category='antipattern'",
-            )
+            cols = {row[1] for row in cursor.execute("PRAGMA table_info(violations)")}
+            if "disposition" in cols:
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM violations
+                    WHERE severity='MEDIUM' AND category='antipattern'
+                      AND disposition='untriaged'
+                    """,
+                )
+            else:
+                cursor.execute(
+                    "SELECT COUNT(*) FROM violations WHERE severity='MEDIUM' AND category='antipattern'",
+                )
             current_count = cursor.fetchone()[0]
 
         if ratchet_file.exists():

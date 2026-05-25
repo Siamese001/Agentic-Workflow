@@ -5,7 +5,7 @@ Triggered on post_write_code. If the written file is a certification source
 (compiler input, compiler script, verifier, runtime evidence under
 `artifacts/certification/`, or canonical `certification/*.jsonl|*.json|schemas/`
 inputs), re-run the staging script that populates
-`certification/agentic_core/` and `certification/apps/`.
+`artifacts/certification/review/agentic_core/` and `artifacts/certification/review/apps/`.
 
 Excludes writes inside the target directories themselves (avoid loop).
 Fail-open: any error → exit 0.
@@ -24,27 +24,27 @@ LOG = REPO_ROOT / "artifacts" / "cursor" / "cert_stage_hook.log"
 # Paths that, when written, should trigger a restage. All repo-relative, forward slashes.
 TRIGGER_PREFIXES = (
     "artifacts/certification/",
-    "certification/evidence_assertions.jsonl",
-    "certification/evidence_manifest.jsonl",
-    "certification/apps_evidence_assertions.jsonl",
-    "certification/apps_domain_evidence_assertions.jsonl",
-    "certification/apps_negative_control_assertions.jsonl",
-    "certification/requirements_source.json",
-    "certification/apps_e2e_requirements_source.json",
-    "certification/requirement_signoff_schema.json",
-    "certification/schemas/",
-    "scripts/compile_requirement_signoff.py",
-    "scripts/compile_apps_e2e_signoff.py",
-    "scripts/verify_final_requirement_signoff_bundle.py",
+    "data/certification/evidence_assertions.jsonl",
+    "data/certification/evidence_manifest.jsonl",
+    "data/certification/apps_evidence_assertions.jsonl",
+    "data/certification/apps_domain_evidence_assertions.jsonl",
+    "data/certification/apps_negative_control_assertions.jsonl",
+    "data/certification/requirements_source.json",
+    "data/certification/apps_e2e_requirements_source.json",
+    "data/certification/requirement_signoff_schema.json",
+    "config/certification/schemas/",
+    "tools/cert/compile_requirement_signoff.py",
+    "tools/cert/compile_apps_e2e_signoff.py",
+    "ops_scripts/ci/verify_final_requirement_signoff_bundle.py",
     "tools/certification/generate_100pct_runtime_proof.py",
     "tools/certification/generate_apps_100pct_runtime_proof.py",
 )
 
 # Exclude writes INTO the staged review bundle (prevents restage loop).
 EXCLUDE_PREFIXES = (
-    "certification/agentic_core/",
-    "certification/apps/",
-    "certification/README_REVIEW.md",
+    "artifacts/certification/review/agentic_core/",
+    "artifacts/certification/review/apps/",
+    "docs/certification/README_REVIEW.md",
 )
 
 

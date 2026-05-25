@@ -353,7 +353,7 @@ def main() -> int:
         "adr_path_note": (
             "This probe does NOT create the ADR. To produce "
             "artifacts/certification/semantic_cache_threshold_adr.json, "
-            "run: python scripts/generate_threshold_adr.py"
+            "run: python ops_scripts/ci/generate_threshold_adr.py"
         ),
         "anti_cheat_rules_honored": {
             "rule_1_no_silent_threshold_lowering": True,

@@ -1,3 +1,5 @@
+> **Superseded 2026-05-24 (Notion Retired):** Pre–apps-rg-spine-only-unification-d8f4a2; SRFS/graph spine model moved on.
+
 ---
 plan_id: apps-rg-spearman-spine-remediation-f3c9a1
 plan_type: refactor

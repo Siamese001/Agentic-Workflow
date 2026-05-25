@@ -171,7 +171,7 @@ repos:
         entry: py ops_scripts/ci/check_cross_app_contract_schema.py
         language: system
         pass_filenames: false
-        files: ^(requirements/contracts/REQ-CROSS-APP-.*\.contract\.yaml|apps_[^/]+/config/(specs|rubrics)/.*\.yaml|tests/.*/fixtures/(agentspec|evidence_packet|evaluation_rubric|overfit_report|release_recommendation)/.*\.yaml|ops_scripts/ci/check_cross_app_contract_schema\.py)$
+        files: ^(docs/requirements/contracts/REQ-CROSS-APP-.*\.contract\.yaml|apps_[^/]+/config/(specs|rubrics)/.*\.yaml|tests/.*/fixtures/(agentspec|evidence_packet|evaluation_rubric|overfit_report|release_recommendation)/.*\.yaml|ops_scripts/ci/check_cross_app_contract_schema\.py)$
         always_run: false
         require_serial: true
 
@@ -267,7 +267,7 @@ repos:
         entry: py ops_scripts/ci/check_requirements_universe_inventory.py
         language: system
         pass_filenames: false
-        files: ^(docs/reports/design/10c_reconciliation/.*|docs/requirements/.*|requirements/contracts/.*|config/crosswalk/obligations\.yaml|tools/l5_contracts/_requirement_matrix\.json|docs/reference/contracts/enforcement/ALL_REQUIREMENTS_.*)$
+        files: ^(docs/reports/design/10c_reconciliation/.*|docs/requirements/.*|config/crosswalk/obligations\.yaml|tools/l5_contracts/_requirement_matrix\.json|docs/reference/contracts/enforcement/ALL_REQUIREMENTS_.*)$
         always_run: false
         require_serial: true
 
@@ -974,6 +974,16 @@ repos:
       - id: adg-gates-full
         name: "CI: ADG Gate Fleet (unified dispatcher)"
         entry: py -m ops_scripts.ci.adg_gates.run
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # ADR-081 plane-2 quick manifest (manual; requires committed snapshot).
+      - id: adg-three-graph-quick
+        name: "CI: ADG three-graph manifest (quick strict)"
+        entry: py ops_scripts/ci/run_adg_three_graph_quick_gate.py
         language: system
         pass_filenames: false
         always_run: true

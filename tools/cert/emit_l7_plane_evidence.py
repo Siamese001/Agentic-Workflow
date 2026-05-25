@@ -19,7 +19,7 @@ Design:
   writes it to artifacts/certification/runtime/<REQ_ID>/l7_plane_evidence.json
   with `per_req[<REQ_ID>]` shape the compiler accepts.
 - Appends one atomic assertion per required control per req to
-  certification/evidence_assertions.jsonl (idempotent: replaces existing
+  data/certification/evidence_assertions.jsonl (idempotent: replaces existing
   assertions with the same (req_id, control, artifact_path) tuple).
 
 This script is a pure projector: it does NOT emit PASS for missing
@@ -43,8 +43,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CHAINS_DIR = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime"
 OUT_RUNTIME_DIR = REPO_ROOT / "artifacts" / "certification" / "runtime"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
-REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
+from cert_paths import ASSERTIONS_PATH, REQS_PATH
 
 # The chains that the L7 plane covers. `mw_latest` is structural-only by
 # design but still emits the L7 envelope for its chain-kind. W4 added

@@ -1,3 +1,5 @@
+> **Superseded by:** [adg-three-bucket-pipeline-redesign-c8e4f1.md](../../adg-three-bucket-pipeline-redesign-c8e4f1.md) and [ADR-079](../../../docs/architecture/adr/ADR-079-adg-pipeline-three-bucket-opt-in.md). Archived plan — not active.
+
 # Three-Bucket OTEL View — Replace Lift With View
 
 Status: **Complete (W1–W8)** — 2026-04-29

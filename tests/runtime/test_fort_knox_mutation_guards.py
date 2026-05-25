@@ -27,13 +27,18 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-COMPILER = REPO_ROOT / "scripts" / "compile_requirement_signoff.py"
-BUNDLE_VERIFIER = REPO_ROOT / "scripts" / "verify_final_requirement_signoff_bundle.py"
-EXPORTER_XLSX = REPO_ROOT / "scripts" / "export_signoff_to_xlsx.py"
-EXPORTER_MD = REPO_ROOT / "scripts" / "export_signoff_to_markdown.py"
+sys.path.insert(0, str(REPO_ROOT))
+from tools.cert.cert_paths import (  # noqa: E402
+    ASSERTIONS_PATH,
+    COMPILE_SIGNOFF_SCRIPT,
+    REQS_PATH,
+    VERIFY_SIGNOFF_BUNDLE_SCRIPT,
+)
 
-REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
+COMPILER = COMPILE_SIGNOFF_SCRIPT
+BUNDLE_VERIFIER = VERIFY_SIGNOFF_BUNDLE_SCRIPT
+EXPORTER_XLSX = REPO_ROOT / "tools" / "cert" / "export_signoff_to_xlsx.py"
+EXPORTER_MD = REPO_ROOT / "tools" / "cert" / "export_signoff_to_markdown.py"
 OUTPUT_DIR = REPO_ROOT / "artifacts" / "certification"
 REPORT_PATH = OUTPUT_DIR / "final_requirement_signoff_report.json"
 MERKLE_PATH = OUTPUT_DIR / "final_requirement_signoff_report.merkle.json"

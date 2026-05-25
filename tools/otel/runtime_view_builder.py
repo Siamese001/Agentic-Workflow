@@ -308,6 +308,56 @@ def _aggregate_snapshots(
 # Static-edge correlation — link runtime triples to static.edges where possible
 # ---------------------------------------------------------------------------
 
+_RUNTIME_ONLY_RELATIONS: frozenset[str] = frozenset(
+    {"parent_child", "temporal_sequence"}
+)
+_STATIC_RELATION_FALLBACKS: tuple[str, ...] = (
+    "imports",
+    "calls",
+    "invokes",
+    "call",
+)
+
+
+def _norm_label(label: str) -> str:
+    """Normalize runtime labels for comparison against static node identity."""
+    return label.replace("\\", "/").strip().lower()
+
+
+def _node_label_match_sql(alias: str) -> str:
+    """SQL fragment: static node *alias* matches normalized label ``?`` twice."""
+    return f"""(
+    lower(replace(coalesce({alias}.adg_name, ''), '\\', '/')) = ?
+    OR lower(replace(coalesce({alias}.resolved_path, ''), '\\', '/')) = ?
+)"""
+
+
+def _select_static_edge_id(
+    static_con: sqlite3.Connection,
+    *,
+    src_name: str,
+    dst_name: str,
+    relation_type: str,
+) -> int | None:
+    """Return ``edges.id`` when src/dst labels match static nodes for *relation_type*."""
+    src_n = _norm_label(src_name)
+    dst_n = _norm_label(dst_name)
+    cur = static_con.execute(
+        f"""
+        SELECT e.id
+          FROM edges e
+          JOIN nodes s ON s.id = e.src_id
+          JOIN nodes d ON d.id = e.dst_id
+         WHERE {_node_label_match_sql("s")}
+           AND {_node_label_match_sql("d")}
+           AND e.relation_type = ?
+         LIMIT 1
+        """,
+        (src_n, src_n, dst_n, dst_n, relation_type),
+    )
+    row = cur.fetchone()
+    return int(row[0]) if row else None
+
 
 def _resolve_static_edge_id(
     static_con: sqlite3.Connection,
@@ -320,61 +370,68 @@ def _resolve_static_edge_id(
 
     Resolution strategy (broadest match first):
 
-      1. Skip if the relation is the runtime-only ``parent_child`` /
-         ``temporal_sequence`` sentinel \u2014 those have no static counterpart
-         by construction.
-      2. **Exact triple match**: try ``(src_name, dst_name, relation_type)``.
-         This is the strongest correlation \u2014 same nodes, same relation.
-      3. **Reference-class fallback**: if ``relation_type`` is one of the
-         invocation-class relations (``call`` / ``invokes`` / ``calls`` /
-         ``tool_call``), try matching against any of the static
-         reference-class relations (``imports`` / ``calls`` / ``invokes``).
-         This handles the common case where a runtime ``invokes`` trace
-         maps to a static ``imports`` edge.
+      1. **Label match on adg_name OR resolved_path** for ``(src, dst, relation)``.
+         Runtime snapshots often emit file paths while static nodes keep module
+         ``adg_name`` — path fallback restores ``static_edge_id`` linkage.
+      2. **Invocation-class fallback** for runtime ``call`` / ``invokes`` / etc.
+      3. **Runtime-only relation fallback**: ``parent_child`` / ``temporal_sequence``
+         try static ``imports`` / ``calls`` / ``invokes`` between the same nodes.
 
     Returns the static ``edges.id`` if any strategy hits, else ``None``.
-    Runtime evidence without a static counterpart is still authoritative
-    runtime evidence \u2014 ``None`` is fine.
     """
-    if relation_type in {"parent_child", "temporal_sequence"}:
-        return None
-
-    # Strategy 1 \u2014 exact triple match.
-    cur = static_con.execute(
-        """
-        SELECT e.id
-          FROM edges e
-          JOIN nodes s ON s.id = e.src_id
-          JOIN nodes d ON d.id = e.dst_id
-         WHERE s.adg_name = ? AND d.adg_name = ?
-           AND e.relation_type = ?
-         LIMIT 1
-        """,
-        (src_name, dst_name, relation_type),
+    edge_id = _select_static_edge_id(
+        static_con,
+        src_name=src_name,
+        dst_name=dst_name,
+        relation_type=relation_type,
     )
-    row = cur.fetchone()
-    if row:
-        return int(row[0])
+    if edge_id is not None:
+        return edge_id
 
-    # Strategy 2 \u2014 invocation-class fallback.
     if relation_type in {"call", "invokes", "calls", "tool_call"}:
-        cur = static_con.execute(
-            """
-            SELECT e.id
-              FROM edges e
-              JOIN nodes s ON s.id = e.src_id
-              JOIN nodes d ON d.id = e.dst_id
-             WHERE s.adg_name = ? AND d.adg_name = ?
-               AND e.relation_type IN ('imports', 'calls', 'invokes')
-             LIMIT 1
-            """,
-            (src_name, dst_name),
-        )
-        row = cur.fetchone()
-        if row:
-            return int(row[0])
+        for alt in ("imports", "calls", "invokes"):
+            edge_id = _select_static_edge_id(
+                static_con,
+                src_name=src_name,
+                dst_name=dst_name,
+                relation_type=alt,
+            )
+            if edge_id is not None:
+                return edge_id
+
+    if relation_type in _RUNTIME_ONLY_RELATIONS:
+        for alt in _STATIC_RELATION_FALLBACKS:
+            edge_id = _select_static_edge_id(
+                static_con,
+                src_name=src_name,
+                dst_name=dst_name,
+                relation_type=alt,
+            )
+            if edge_id is not None:
+                return edge_id
 
     return None
+
+
+def runtime_static_edge_linkage_counts(
+    static_con: sqlite3.Connection,
+) -> tuple[int, int]:
+    """Return (attested_runtime_rows, rows_with_non_null_static_edge_id)."""
+    try:
+        row = static_con.execute(
+            """
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN static_edge_id IS NOT NULL THEN 1 ELSE 0 END) AS linked
+              FROM v_runtime_proof
+             WHERE attesting_trace_count >= 1
+            """
+        ).fetchone()
+    except sqlite3.Error:
+        return 0, 0
+    if not row:
+        return 0, 0
+    return int(row[0] or 0), int(row[1] or 0)
 
 
 # ---------------------------------------------------------------------------

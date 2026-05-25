@@ -11,8 +11,8 @@ HOSTILE VERIFIER. This script distrusts:
   - its own prior output
 
 The ONLY authoritative inputs are:
-  certification/requirements_source.json       (what must be proven)
-  certification/evidence_assertions.jsonl      (atomic proof assertions)
+  data/certification/requirements_source.json       (what must be proven)
+  data/certification/evidence_assertions.jsonl      (atomic proof assertions)
   referenced on-disk artifacts                 (re-opened, re-hashed every run)
 
 A requirement is SIGNED_OFF only when every required control has at least
@@ -60,17 +60,20 @@ except ImportError:  # pragma: no cover
     print("FATAL: jsonschema is required (pip install jsonschema)", file=sys.stderr)
     sys.exit(2)
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+from cert_paths import (
+    ASSERTION_SCHEMA,
+    ASSERTIONS_PATH,
+    CERT_ARTIFACTS_DIR,
+    REPORT_SCHEMA,
+    REQS_PATH,
+    REQS_SCHEMA,
+    REPO_ROOT,
+)
+
 COMPILER_VERSION = "fortknox-v2.0"
 SCHEMA_VERSION = "fortknox-v2"
 
-REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
-REQS_SCHEMA = REPO_ROOT / "certification" / "schemas" / "requirements_source.schema.json"
-ASSERTION_SCHEMA = REPO_ROOT / "certification" / "schemas" / "evidence_assertion.schema.json"
-REPORT_SCHEMA = REPO_ROOT / "certification" / "schemas" / "final_requirement_signoff_report.schema.json"
-
-OUTPUT_DIR = REPO_ROOT / "artifacts" / "certification"
+OUTPUT_DIR = CERT_ARTIFACTS_DIR
 REPORT_PATH = OUTPUT_DIR / "final_requirement_signoff_report.json"
 SHA256_PATH = OUTPUT_DIR / "final_requirement_signoff_report.sha256"
 MERKLE_PATH = OUTPUT_DIR / "final_requirement_signoff_report.merkle.json"
@@ -504,7 +507,7 @@ def compile_report() -> dict:
     report = {
         "schema_version": SCHEMA_VERSION,
         "compiler_version": COMPILER_VERSION,
-        "compiler_path": "scripts/compile_requirement_signoff.py",
+        "compiler_path": "tools/cert/compile_requirement_signoff.py",
         "compiler_sha256": sha256_file(Path(__file__)),
         "run_timestamp_utc": _iso_now(),
         "source_repo_root": str(REPO_ROOT).replace("\\", "/"),

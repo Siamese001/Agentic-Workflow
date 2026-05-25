@@ -12,6 +12,8 @@ Output: artifacts/_w1_apps_rg_baseline.json
 """
 from __future__ import annotations
 
+__adg_consumer_mode__ = "inventory"
+
 import json
 import sqlite3
 from pathlib import Path
@@ -47,9 +49,12 @@ def fetchall_dicts(cur, sql, params=()):
 
 
 def main() -> None:
-    conn = sqlite3.connect(str(SNAPSHOT))
-    cur = conn.cursor()
+    with sqlite3.connect(str(SNAPSHOT)) as conn:
+        cur = conn.cursor()
+        _run_baseline(cur, conn)
 
+
+def _run_baseline(cur: sqlite3.Cursor, conn: sqlite3.Connection) -> None:
     out: dict = {
         "snapshot": str(SNAPSHOT.relative_to(REPO)),
         "targets": {},

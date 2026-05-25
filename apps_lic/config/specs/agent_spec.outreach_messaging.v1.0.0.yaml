@@ -1,5 +1,5 @@
 # AgentSpec instance — apps_lic outreach messaging agent
-# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
 #
 # Phase B finding: apps_lic is the canary surface for forced warmth, fake
 # intimacy, and mimicry. Outreach messaging is voice-shaped by design.

@@ -29,7 +29,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from ops_scripts.ci._governance_paths import CURSOR_PLANS_DIR  # noqa: E402
+# Inline SSOT path — avoid ops_scripts import (ADG P0 layer_violation: tools -> L_OPS).
+CURSOR_PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
 
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"

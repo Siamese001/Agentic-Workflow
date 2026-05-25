@@ -41,6 +41,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from tools.adg.snapshot_fingerprint import print_audit_receipt, snapshot_fingerprint
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "reports" / "adg"
 
@@ -257,11 +259,13 @@ def run_report(snapshot: Path, top_n: int) -> dict[str, Any]:
         snapshot_display = str(snapshot.relative_to(REPO_ROOT))
     except ValueError:
         snapshot_display = str(snapshot)
+    fingerprint = snapshot_fingerprint(snapshot)
     return {
         "report_kind": "ADG_THREE_BUCKET_GAP_REPORT",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "snapshot": snapshot.name,
         "snapshot_path": snapshot_display,
+        **fingerprint,
         "runtime_view_present": has_runtime,
         "runtime_attested_edges": runtime_total,
         "runtime_proof_status": runtime_proof_status,
@@ -424,8 +428,10 @@ def main() -> int:
     print(
         f"[gap_report] health={report['health_score_pct_triplet_attested']}% "
         f"runtime_present={report['runtime_view_present']} "
-        f"total_edges={report['total_edges_classified']}"
+        f"total_edges={report['total_edges_classified']} "
+        f"snapshot_sha256={report.get('source_snapshot_sha256', 'MISSING')}"
     )
+    print_audit_receipt(report, prefix="GAP_REPORT_RECEIPT")
     for row in report["summary_by_class"]:
         print(
             f"[gap_report]   {row['severity']:>3}  {row['defect_class']:<20} "

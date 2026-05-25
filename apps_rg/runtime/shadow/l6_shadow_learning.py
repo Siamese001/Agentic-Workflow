@@ -214,14 +214,14 @@ def build_l6_shadow_learning_record(
             }
         )
         if soft:
+            from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+                format_l6_judge_soft_fail_recommendation,
+            )
+
             recs.append(
                 {
                     "applies_to": "future_run_only",
-                    "recommendation": (
-                        f"Executive summary soft-fail judges {soft}: prefer bounded judge regen only when "
-                        "<2 judges pass; weave unused allowed facts into sentences 3–5; avoid JD-echo "
-                        "capstone; link sentence 6 claim_ledger to platform/governance facts (not certs)."
-                    ),
+                    "recommendation": format_l6_judge_soft_fail_recommendation(soft_judges=soft),
                 }
             )
 

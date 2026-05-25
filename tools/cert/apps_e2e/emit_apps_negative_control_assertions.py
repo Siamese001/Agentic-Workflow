@@ -56,8 +56,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CATALOG_PATH = REPO_ROOT / "certification" / "apps_e2e_requirements_source.json"
-OUT_PATH = REPO_ROOT / "certification" / "apps_negative_control_assertions.jsonl"
+from cert_paths import APPS_NEGATIVE_ASSERTIONS_PATH as OUT_PATH, APPS_REQS_PATH as CATALOG_PATH
 SIM_DIR = REPO_ROOT / "artifacts" / "apps_negative_controls"
 
 EMITTER_COMMAND = "tools/cert/apps_e2e/emit_apps_negative_control_assertions.py"

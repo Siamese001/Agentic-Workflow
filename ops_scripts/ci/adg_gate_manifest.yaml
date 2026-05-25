@@ -129,33 +129,8 @@ gates:
     accepts_runner_flags: false
     suite: ["full"]
 
-  - gate_id: static.mv_count_floor
-    bucket: static
-    view_rule:
-      kind: scalar
-      sql: "SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','view') AND name LIKE 'mv_%'"
-      expect_min: 30
-    reads: ["sqlite_master"]
-    evidence_mode: inventory
-    enforcement_mode: strict
-    assertion: "snapshot ships at least 30 mv_* views (graph-layer overlay)"
-    thresholds:
-      min_count: 30
-    suite: ["quick", "full"]
-
-  - gate_id: static.pview_count_floor
-    bucket: static
-    view_rule:
-      kind: scalar
-      sql: "SELECT COUNT(*) FROM sqlite_master WHERE type='view' AND name LIKE 'v_p%'"
-      expect_min: 3
-    reads: ["sqlite_master"]
-    evidence_mode: inventory
-    enforcement_mode: strict
-    assertion: "snapshot ships at least 3 v_p* P-views"
-    thresholds:
-      min_count: 3
-    suite: ["quick", "full"]
+  # static.mv_count_floor / static.pview_count_floor merged into
+  # static.snapshot_has_mvs (ADR-081 dedup).
 
   - gate_id: static.no_null_triplet
     bucket: static
@@ -400,6 +375,13 @@ suites:
   full:
     description: "All gates (legacy + new + view-rules)"
   changed:
-    description: "Subset rewritten by the runner based on git diff (W3.future)"
+    description: "Git-diff fan-in subset (config/adg_gate_fanin_map.yaml)"
+
+# Plane 3 dispatcher catalog (metadata only — execution via adg_gates.run)
+dispatcher_catalog:
+  ssot: ops_scripts/ci/adg_gates/unified_registry.py
+  entrypoint: python -m ops_scripts.ci.adg_gates.run
+  enforced_in_certification: true
+  results_artifact_glob: artifacts/adg/adg_gate_results_*.json
   negative:
     description: "Negative-control fixtures from tests/adg/fixtures/negative/"

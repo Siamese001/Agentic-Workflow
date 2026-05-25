@@ -92,6 +92,12 @@ _EXEMPT_PLAN_TYPES: frozenset[str] = frozenset(
         # path above, not by this exemption.
         "platform_core_change",  # generic core contract / export evolution
         "retrospective",  # RCA / look-back plans; no forward refactor blast radius
+        # App / delivery shapes that are not graph-measurable refactors (§22 scope).
+        "apps_rg_evidence",  # GTM / evidence packs — no ADG blast-radius driver
+        "verification",  # proof-bundle / certification closeout
+        "execution",  # runtime wiring / rollout execution
+        "hardening",  # spine hardening without broad graph refactor
+        "architecture",  # structural design doc — evidence added when coding starts
     }
 )
 

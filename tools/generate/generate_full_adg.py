@@ -605,6 +605,8 @@ def generate_full_adg(
     """
     import time as _time
 
+    from tools.generate._gate_manifest import run_recorded_validation  # noqa: PLC0415
+
     # --- Startup mode banner (visible before any work begins) ---
     print(f"[ADG] Mode: FULL  zip=ON  reports=ON  {_three_bucket_mode_banner()}")
 
@@ -731,9 +733,37 @@ def generate_full_adg(
         _check_sqlite_integrity(temp_paths.sqlite)
         _check_artifact_consistency(temp_paths, artifact)
 
+        # Phase-2 on temp snapshot before P2 ratchet so guardian-approved MEDIUM
+        # rows are excluded from the ratchet-eligible count (W5.2 ordering fix).
+        import sqlite3 as _pre_ratchet_sqlite3  # noqa: PLC0415
+
+        try:
+            from agentic_core.adg.processing.phase2_disposition_processor import (  # noqa: PLC0415
+                run_phase2_disposition_processing,
+            )
+
+            _temp_p2 = run_phase2_disposition_processing(temp_paths.sqlite)
+            print(
+                f"[ADG] Phase-2 (pre-ratchet): approved={_temp_p2.get('approved', 0)} "
+                f"tested={_temp_p2.get('tested', 0)} remaining={_temp_p2.get('remaining', 0)}"
+            )
+        except (
+            ImportError,
+            OSError,
+            _pre_ratchet_sqlite3.Error,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as _temp_p2_exc:  # guardian: allow-log-and-swallow -- enrichment only; ratchet still runs
+            print(f"[ADG] Phase-2 (pre-ratchet) skipped: {_temp_p2_exc}")
+
         # --- Tier-1: Structural integrity gates (block on temp SQLite) ---
         # These gates protect artifact correctness. A corrupt artifact must never reach production.
-        _check_p2_ratchet(sqlite_path=temp_paths.sqlite)
+        run_recorded_validation(
+            "p2_ratchet",
+            _check_p2_ratchet,
+            sqlite_path=temp_paths.sqlite,
+        )
 
         # --- Tier-1 passed: commit artifacts to final production location ---
         # W1.1 (plan adg-pipeline-simplification-e2e-9b4c27): collapse the
@@ -1110,10 +1140,12 @@ def generate_full_adg(
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
     # --- ADG gate dispatcher (plan adg-wiring-ci-hardening-7a5d84, H3) ---
-    # Runs the full wiring-CI fleet via the unified dispatcher. Emits a single
-    # JSON artifact at artifacts/adg/adg_gate_results_<ts>.json + appends to
-    # the trend sink. Emitted BEFORE the P0 two-pass runner so the results
-    # land even if P0 halts the pipeline. Non-blocking wrt ADG generation.
+    # ADR-081: blocking when ADG_CERTIFICATION_MODE=1 (plane 3).
+    from tools.generate.integration import adg_run_state as _adg_run_state  # noqa: PLC0415
+    from tools.generate._gate_manifest import current_recorder as _current_recorder  # noqa: PLC0415
+
+    _dispatcher_exit = 0
+    _dispatcher_json_path: str = ""
     try:
         import subprocess as _sp
 
@@ -1125,13 +1157,42 @@ def generate_full_adg(
             timeout=600,
             check=False,
         )
-        _json_path = _disp.stdout.strip().splitlines()[-1] if _disp.stdout else ""
+        _dispatcher_exit = int(_disp.returncode)
+        _adg_run_state.dispatcher_exit_code = _dispatcher_exit
+        _dispatcher_json_path = _disp.stdout.strip().splitlines()[-1] if _disp.stdout else ""
+        _adg_run_state.dispatcher_results_path = _dispatcher_json_path
         print(
-            f"[ADG] Gate dispatcher exit={_disp.returncode} results={_json_path or '?'} "
+            f"[ADG] Gate dispatcher exit={_dispatcher_exit} results={_dispatcher_json_path or '?'} "
             f"(use `python tools/adg/query.py regressions` for details)"
         )
+        _rec_disp = _current_recorder()
+        if _rec_disp is not None:
+            _rec_disp.record(
+                "adg_gate_dispatcher",
+                phase="post-commit-validation",
+                kind="subprocess",
+                blocking_mode="hard_fail",
+                status="pass" if _dispatcher_exit == 0 else "fail",
+                exit_code=_dispatcher_exit,
+                script_rel="ops_scripts/ci/adg_gates/run.py",
+                message=_dispatcher_json_path or None,
+            )
     except (OSError, _sp.TimeoutExpired) as _e:
+        _dispatcher_exit = 1
+        _adg_run_state.dispatcher_exit_code = 1
         _record_pipeline_skip(adg_artifacts_dir, ts, layer="adg-gates", name="dispatcher", exc=_e)
+        _rec_disp = _current_recorder()
+        if _rec_disp is not None:
+            _rec_disp.record(
+                "adg_gate_dispatcher",
+                phase="post-commit-validation",
+                kind="subprocess",
+                blocking_mode="hard_fail",
+                status="timed_out" if isinstance(_e, _sp.TimeoutExpired) else "fail",
+                exit_code=1,
+                script_rel="ops_scripts/ci/adg_gates/run.py",
+                message=str(_e),
+            )
 
     # W8 (plan adg-pipeline-simplification-e2e-9b4c27): defer-exit honored
     # via env var ADG_CONTINUE_ON_P0=1 (also threaded from CLI flag in
@@ -1143,17 +1204,31 @@ def generate_full_adg(
         plan_path=p0_wave_plan.get("markdown_path"),
     )
 
-    _check_p0_violations(
+    run_recorded_validation(
+        "p0_violations",
+        _check_p0_violations,
         routing_summary,
         sqlite_path=prod_sqlite_path,
         plan_path=p0_wave_plan.get("markdown_path"),
     )
-    _check_p1_ratchet(sqlite_path=prod_sqlite_path)
-    _check_dead_production_imports(sqlite_path=prod_sqlite_path)
+    run_recorded_validation("p1_ratchet", _check_p1_ratchet, sqlite_path=prod_sqlite_path)
+    run_recorded_validation(
+        "dead_production_imports",
+        _check_dead_production_imports,
+        sqlite_path=prod_sqlite_path,
+    )
 
     # --- Tier-2b: Structural conformance & agentic anti-pattern gates ---
-    _check_structural_conformance(sqlite_path=prod_sqlite_path)
-    _check_agentic_antipatterns(sqlite_path=prod_sqlite_path)
+    run_recorded_validation(
+        "structural_conformance",
+        _check_structural_conformance,
+        sqlite_path=prod_sqlite_path,
+    )
+    run_recorded_validation(
+        "agentic_antipatterns",
+        _check_agentic_antipatterns,
+        sqlite_path=prod_sqlite_path,
+    )
 
     # --- P7: Analyst-grade report artifacts (non-blocking) ---
     # Helpers raise on failure; this caller loop enforces the non-blocking policy
@@ -1179,7 +1254,11 @@ def generate_full_adg(
             _record_pipeline_skip(adg_artifacts_dir, ts, layer="P7", name=_p7_name, exc=e)
 
     # --- Architecture witness-tier gates: Class A positive / Class B absence ---
-    _check_witness_tier_gates(sqlite_path=prod_sqlite_path)
+    run_recorded_validation(
+        "witness_tier_gates",
+        _check_witness_tier_gates,
+        sqlite_path=prod_sqlite_path,
+    )
 
     # --- P4: High-signal anomaly watchlist (non-blocking intelligence layer) ---
     # W4.1: capture path at function scope so the zip-list builder below
@@ -1973,6 +2052,28 @@ def main() -> None:
                 rt_status, rt_count = runtime_proof_from_sqlite(sqlite_candidate)
         except Exception:  # noqa: BLE001 — manifest emit must never crash main()
             pass
+        # ADR-081 plane 2: quick manifest before manifest finalize (certification only).
+        if (
+            os.environ.get("ADG_CERTIFICATION_MODE") == "1"
+            and sqlite_candidate.is_file()
+            and os.environ.get("ADG_SKIP_PLANE2_MANIFEST") != "1"
+        ):
+            import time as _t_plane2
+
+            from tools.generate.integration.certification_plane2 import (  # noqa: PLC0415
+                record_plane2_in_manifest,
+                run_plane2_manifest_quick,
+            )
+
+            _p2_started = _t_plane2.monotonic()
+            _p2_rc, _ = run_plane2_manifest_quick(sqlite_path=sqlite_candidate, suite="quick", strict=True)
+            record_plane2_in_manifest(
+                _recorder,
+                exit_code=_p2_rc,
+                duration_s=_t_plane2.monotonic() - _p2_started,
+            )
+            if _p2_rc != 0 and gen_rc == 0:
+                gen_rc = _p2_rc
         try:
             _recorder.finalize(
                 sqlite_path=sqlite_candidate if sqlite_candidate.exists() else None,
@@ -2007,6 +2108,16 @@ def main() -> None:
 
     # Clean-exit path: all gates passed, no deferred failures.
     _finalize_manifests(0, p0_status="pass")
+
+    if os.environ.get("ADG_CERTIFICATION_MODE") == "1":
+        from tools.generate.integration import adg_run_state as _adg_run_state_exit  # noqa: PLC0415
+
+        if _adg_run_state_exit.dispatcher_exit_code != 0:
+            print(
+                "[ERROR] ADG certification: plane-3 dispatcher failed "
+                f"(exit={_adg_run_state_exit.dispatcher_exit_code})"
+            )
+            sys.exit(_adg_run_state_exit.dispatcher_exit_code or 1)
 
 
 def _run_post_adg_gate(

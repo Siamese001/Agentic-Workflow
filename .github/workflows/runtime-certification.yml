@@ -199,7 +199,7 @@ jobs:
 
       - name: W1.2j generate_threshold_adr (PROPOSED_NOT_APPLIED)
         continue-on-error: true
-        run: python scripts/generate_threshold_adr.py
+        run: python ops_scripts/ci/generate_threshold_adr.py
 
       # Re-run W1.2a (model) and W1.2b (threshold) AFTER W1.2g/h/i/j so they
       # consume the latest W1p3/p4 evidence artifacts and apply the ADR gate.
@@ -509,7 +509,7 @@ jobs:
 
       # Re-compile signoff against full universe (97+ rows including L7)
       - name: W2.1 Compile requirement signoff
-        run: python scripts/compile_requirement_signoff.py
+        run: python tools/cert/compile_requirement_signoff.py
 
       # Per-claim-type freshness gate (plan §GAP-4)
       - name: W2.2 Freshness gate (per-claim-type stale evidence = FAIL)
@@ -525,11 +525,11 @@ jobs:
 
       # Widened bundle verification (XLSX + per-chain L7 artifacts monitored)
       - name: W2.4 Widened bundle verification
-        run: python scripts/verify_final_requirement_signoff_bundle.py
+        run: python ops_scripts/ci/verify_final_requirement_signoff_bundle.py
 
       # Production-artifact mutation rejection (uses widened monitored set)
       - name: W2.5 Mutation rejection against widened clean-paths set
-        run: python scripts/generate_mutation_rejection_report.py
+        run: python ops_scripts/ci/generate_mutation_rejection_report.py
 
       - name: Upload signoff bundle
         if: always()

@@ -81,6 +81,19 @@ from apps_rg.runtime.sections.executive_summary_proof_bundle import (
     write_executive_summary_artifact_inventory,
 )
 from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.executive_summary_evidence_capsule import _capsule_enabled
+from apps_rg.runtime.sections.executive_summary_targeting_context import (
+    freeze_executive_summary_targeting_context,
+)
+from apps_rg.runtime.targeting_context_authority import (
+    generation_material_context_from_compiled_prompt,
+)
+from apps_rg.runtime.sections.executive_summary_targeting_publish import (
+    audit_judge_packet_targeting_digests,
+    parity_allows_judge_regen,
+    publish_targeting_parity_and_usage_ledger,
+    resolve_judge_packet_for_parity,
+)
 
 
 PROMPT_ID = "executive_summary.generate_scratch_v1"
@@ -113,13 +126,20 @@ def _args_jd_text(args: argparse.Namespace) -> str:
     )
 
 
-def truncate_briefing_for_exec_summary_vllm(briefing: str) -> tuple[str, dict[str, Any] | None]:
+def truncate_briefing_for_exec_summary_vllm(
+    briefing: str,
+    *,
+    role_family_key: str | None = None,
+) -> tuple[str, dict[str, Any] | None]:
     """Prepare briefing via ranked section selection (see executive_summary_briefing)."""
     from apps_rg.runtime.sections.executive_summary_briefing import (
         prepare_briefing_for_executive_summary,
     )
 
-    selected, receipt = prepare_briefing_for_executive_summary(briefing)
+    selected, receipt = prepare_briefing_for_executive_summary(
+        briefing,
+        role_family_key=role_family_key,
+    )
     if receipt.get("fail_closed"):
         return selected, receipt
     if receipt.get("briefing_excluded_chars", 0) == 0 and receipt.get("briefing_original_chars", 0) == len(
@@ -1270,11 +1290,36 @@ def run_executive_summary_execution(
         load_section_proof_for_lane,
     )
 
+    from apps_rg.runtime.ingress.executive_summary_targeting_ingress import (
+        prepare_executive_summary_targeting_ingress,
+    )
+
+    briefing_raw = str(getattr(args, "briefing", "") or "")
+    targeting_ingress = prepare_executive_summary_targeting_ingress(
+        jd_text=_args_jd_text(args),
+        briefing_raw=briefing_raw,
+        target_role=str(getattr(args, "target_role", "") or ""),
+        target_title=_args_target_title(args),
+        repo_root=REPO_ROOT,
+    )
+    if (
+        isinstance(targeting_ingress.briefing_selection_receipt, dict)
+        and targeting_ingress.briefing_selection_receipt.get("fail_closed")
+    ):
+        raise RuntimeError(
+            str(
+                targeting_ingress.briefing_selection_receipt.get("truncation_or_selection_reason")
+                or "briefing_fail_closed"
+            )
+        )
+
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="executive_summary",
         args=args,
         repo_root=REPO_ROOT,
         collect_employment_bullets_fn=collect_employment_bullets,
+        jd_text_override=targeting_ingress.jd_text,
+        briefing_text_override=targeting_ingress.briefing_text_bounded,
     )
     selected_fact_plan = pool.selected_fact_plan
     allowed_fact_ids = pool.allowed_fact_ids
@@ -1285,24 +1330,20 @@ def run_executive_summary_execution(
         explicit=getattr(args, "provider_resolution_source", None),
         resolved_provider=str(args.provider),
     )
-    briefing_raw = str(getattr(args, "briefing", "") or "")
-    briefing_eff, briefing_trunc_meta = truncate_briefing_for_exec_summary_vllm(briefing_raw)
-    if isinstance(briefing_trunc_meta, dict) and briefing_trunc_meta.get("fail_closed"):
-        raise RuntimeError(
-            str(briefing_trunc_meta.get("truncation_or_selection_reason") or "briefing_fail_closed")
-        )
+
     runtime_payload = build_runtime_payload(
         base_json_path=base_path,
         base_hash=base_hash,
         selected_fact_plan=selected_fact_plan,
         target_title=_args_target_title(args),
         target_company=str(getattr(args, "target_company", None) or TARGET_COMPANY_DEFAULT),
-        jd_text=_args_jd_text(args),
-        briefing=briefing_eff,
+        jd_text=targeting_ingress.jd_text,
+        briefing=targeting_ingress.briefing_text_bounded,
         allowed_fact_ids_ordered=allowed_fact_ids_ordered,
     )
-    if briefing_trunc_meta is not None:
-        runtime_payload["briefing_selection"] = briefing_trunc_meta
+    runtime_payload["targeting_ingress"] = targeting_ingress.to_dict()
+    if targeting_ingress.briefing_selection_receipt is not None:
+        runtime_payload["briefing_selection"] = targeting_ingress.briefing_selection_receipt
     runtime_payload["proof_pool_metadata"] = proof_pool_metadata
     if pool.proof_source == "augmented_skills_graph":
         runtime_payload["graph_only_claim_authority"] = True
@@ -1319,8 +1360,25 @@ def run_executive_summary_execution(
         section_id="executive_summary",
         run_id=str(runtime_payload["run_id"]),
     )
-    if briefing_trunc_meta is not None:
-        write_json(artifact_dir / "briefing_selection_receipt.json", briefing_trunc_meta)
+    write_json(
+        artifact_dir / "targeting_ingress_receipt.json",
+        targeting_ingress.to_dict(),
+    )
+    if targeting_ingress.briefing_selection_receipt is not None:
+        write_json(
+            artifact_dir / "briefing_selection_receipt.json",
+            targeting_ingress.briefing_selection_receipt,
+        )
+
+    _tc_receipt = freeze_executive_summary_targeting_context(
+        runtime_payload,
+        authority_source_refs={
+            "targeting_ingress": "targeting_ingress_receipt.json",
+            "briefing_selection": "briefing_selection_receipt.json",
+            "jd_source": "targeting_ingress",
+        },
+    )
+    write_json(artifact_dir / "targeting_context_receipt.json", _tc_receipt)
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
         wire_spine_c0_fec_for_section,
@@ -1488,6 +1546,8 @@ def run_executive_summary_execution(
             }
     messages = section_compiled.artifact.messages
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
+    _generation_material = generation_material_context_from_compiled_prompt(compiled_prompt)
+    runtime_payload["generation_material_context"] = _generation_material.to_dict()
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", payload_for_json)
     pp_c03 = proof_pool_metadata or {}
@@ -1921,29 +1981,10 @@ def run_executive_summary_execution(
         or (provider_request_data or {}).get("id")
         or runtime_payload["run_id"]
     )
-    usage_doc = build_section_input_usage_ledger_v1(
-        section_id="executive_summary",
-        run_id=str(runtime_payload["run_id"]),
-        request_id=req_id,
-        trace_root=trace_rr,
-        repo_root=REPO_ROOT,
-        artifact_dir=artifact_dir,
-        runtime_payload=runtime_payload,
-        selected_fact_plan=sfp_for_usage if isinstance(sfp_for_usage, dict) else {"facts": []},
-        claim_ledger=claim_ledger,
-        allowed_fact_ids=allowed_fact_ids,
-        jd_text=_args_jd_text(args),
-        target_title=_args_target_title(args),
-        target_company=str(args.target_company),
-        briefing_text=str(args.briefing),
-        jd_alignment=l2_output.get("jd_alignment"),
-    )
-    usage_doc = apply_proof_pool_to_usage_ledger(usage_doc, pool)
-    runtime_payload["proof_pool_metadata"] = pool.proof_pool_metadata
-    write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
-
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
+    _judge_jd = _generation_material.jd_text_material
+    _judge_briefing = _generation_material.briefing_text_material
     judge_packet = build_executive_summary_judge_packet(
         resume_display_text=resume_display_text,
         claim_ledger=claim_ledger,
@@ -1951,8 +1992,8 @@ def run_executive_summary_execution(
         allowed_fact_ids=allowed_fact_ids,
         target_title=_args_target_title(args),
         target_company=str(args.target_company),
-        jd_text=_args_jd_text(args),
-        briefing_text=str(args.briefing),
+        jd_text=_judge_jd,
+        briefing_text=_judge_briefing,
         parsed_output=parsed_for_x2,
     )
     judge_packet_ref = write_executive_summary_judge_packet(
@@ -1973,6 +2014,34 @@ def run_executive_summary_execution(
         )
     ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+
+    usage_doc = build_section_input_usage_ledger_v1(
+        section_id="executive_summary",
+        run_id=str(runtime_payload["run_id"]),
+        request_id=req_id,
+        trace_root=trace_rr,
+        repo_root=REPO_ROOT,
+        artifact_dir=artifact_dir,
+        runtime_payload=runtime_payload,
+        selected_fact_plan=sfp_for_usage if isinstance(sfp_for_usage, dict) else {"facts": []},
+        claim_ledger=claim_ledger,
+        allowed_fact_ids=allowed_fact_ids,
+        jd_text=_generation_material.jd_text_material,
+        target_title=_args_target_title(args),
+        target_company=str(args.target_company),
+        briefing_text=_generation_material.briefing_text_material,
+        jd_alignment=l2_output.get("jd_alignment"),
+    )
+    usage_doc = apply_proof_pool_to_usage_ledger(usage_doc, pool)
+    runtime_payload["proof_pool_metadata"] = pool.proof_pool_metadata
+    _targeting_parity, usage_doc = publish_targeting_parity_and_usage_ledger(
+        artifact_dir=artifact_dir,
+        runtime_payload=runtime_payload,
+        generation_material=_generation_material,
+        judge_packet=judge_packet,
+        usage_doc=usage_doc,
+        write_json_fn=write_json,
+    )
 
     trace = {
         "runtime_path": "apps_rg.runtime.sections.executive_summary_lane",
@@ -2034,7 +2103,7 @@ def run_executive_summary_execution(
         text_claim_coverage=coverage,
         allowed_fact_ids=allowed_fact_ids,
         target_company=args.target_company,
-        jd_text=args.jd_text,
+        jd_text=_generation_material.jd_text_material,
         temperature=temperature,
         runtime_generation_status=runtime_generation_status,
         monolithic_prompt_invoked=False,
@@ -2104,8 +2173,8 @@ def run_executive_summary_execution(
             allowed_fact_ids=allowed_fact_ids,
             target_title=_args_target_title(args),
             target_company=str(args.target_company),
-            jd_text=_args_jd_text(args),
-            briefing_text=str(args.briefing),
+            jd_text=_judge_jd,
+            briefing_text=_judge_briefing,
             parsed_output=parsed_for_x2,
             judge_keys=judge_keys,
             judge_mode=judge_mode,
@@ -2124,6 +2193,15 @@ def run_executive_summary_execution(
             }
         write_json(artifact_dir / "post_x2_x1d_refresh_receipt.json", _x1d_refresh_receipt)
         write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+        _jp_post_x2 = resolve_judge_packet_for_parity(artifact_dir, fallback=judge_packet)
+        _targeting_parity, usage_doc = publish_targeting_parity_and_usage_ledger(
+            artifact_dir=artifact_dir,
+            runtime_payload=runtime_payload,
+            generation_material=_generation_material,
+            judge_packet=_jp_post_x2,
+            usage_doc=usage_doc,
+            write_json_fn=write_json,
+        )
 
     if runtime_generation_status == "REAL_LLM" and not x2_failed_initial and parsed_for_x2:
         from apps_rg.runtime.section_repair_policy import judge_remediation_regen_allowed
@@ -2173,8 +2251,8 @@ def run_executive_summary_execution(
                 allowed_fact_ids=allowed_fact_ids,
                 target_title=_args_target_title(args),
                 target_company=str(args.target_company),
-                jd_text=_args_jd_text(args),
-                briefing_text=str(args.briefing),
+                jd_text=_judge_jd,
+                briefing_text=_judge_briefing,
                 parsed_output=parsed_for_x2,
             )
             write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
@@ -2188,7 +2266,8 @@ def run_executive_summary_execution(
                 },
             )
 
-        if judge_remediation_regen_allowed():
+        _regen_ok, _regen_parity_reason = parity_allows_judge_regen(runtime_payload)
+        if judge_remediation_regen_allowed() and _regen_ok:
             _max_judge_cycles = judge_regen_max_attempts()
             _regen_messages = list(messages)
             _cycles_receipt: dict[str, Any] = {
@@ -2196,6 +2275,12 @@ def run_executive_summary_execution(
                 "max_cycles": _max_judge_cycles,
                 "cycles": [],
                 "stopped_reason": "",
+                "generation_material_digest": _generation_material.generation_material_digest,
+                "targeting_parity_at_regen_start": _targeting_parity,
+                "judge_packet_targeting_audit": audit_judge_packet_targeting_digests(
+                    artifact_dir,
+                    generation_material=_generation_material,
+                ),
             }
 
             for _cycle_idx in range(_max_judge_cycles):
@@ -2323,6 +2408,7 @@ def run_executive_summary_execution(
                         text_claim_coverage=coverage,
                         allowed_fact_ids=allowed_fact_ids,
                         args=args,
+                        jd_text=_judge_jd,
                         temperature=temperature,
                         runtime_generation_status=runtime_generation_status,
                         artifact_dir=artifact_dir,
@@ -2388,6 +2474,7 @@ def run_executive_summary_execution(
                                 text_claim_coverage=coverage,
                                 allowed_fact_ids=allowed_fact_ids,
                                 args=args,
+                                jd_text=_judge_jd,
                                 temperature=temperature,
                                 runtime_generation_status=runtime_generation_status,
                                 artifact_dir=artifact_dir,
@@ -2423,24 +2510,30 @@ def run_executive_summary_execution(
                             2,
                             reason="judge_remediation_regen_x2_pass",
                         )
-                        x1d = rerun_soft_failed_judges(
+                        from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+                            refresh_x1d_judges_after_full_x2,
+                        )
+
+                        x1d, _post_regen_x1d_receipt = refresh_x1d_judges_after_full_x2(
+                            x2_gates=x2,
                             resume_display_text=resume_display_text,
                             claim_ledger=claim_ledger,
-                            judge_packet=judge_packet,
-                            judge_packet_ref=judge_packet_ref,
-                            compiled_prompt=compiled_prompt,
-                            artifact_dir=artifact_dir,
-                            judge_keys=judge_keys,
-                            judge_mode=judge_mode,
-                            prior_judges=x1d,
-                            x2_gates=x2,
                             allowed_fact_packet=selected_facts_for_x2,
                             allowed_fact_ids=allowed_fact_ids,
                             target_title=_args_target_title(args),
                             target_company=str(args.target_company),
-                            jd_text=_args_jd_text(args),
-                            briefing_text=str(args.briefing),
+                            jd_text=_judge_jd,
+                            briefing_text=_judge_briefing,
                             parsed_output=parsed_for_x2,
+                            judge_keys=judge_keys,
+                            judge_mode=judge_mode,
+                            artifact_dir=artifact_dir,
+                            compiled_prompt=compiled_prompt,
+                            prior_judges=x1d,
+                        )
+                        write_json(
+                            artifact_dir / "post_regen_x1d_full_refresh_receipt.json",
+                            _post_regen_x1d_receipt,
                         )
                         write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
                         write_x2_gate_outputs(
@@ -2523,6 +2616,16 @@ def run_executive_summary_execution(
             if not _cycles_receipt.get("stopped_reason") and _cycles_receipt["cycles"]:
                 _cycles_receipt["stopped_reason"] = "max_cycles_reached"
             write_json(artifact_dir / "judge_remediation_cycles.json", _cycles_receipt)
+        elif judge_remediation_regen_allowed() and not _regen_ok:
+            write_json(
+                artifact_dir / "judge_remediation_cycles.json",
+                {
+                    "schema": "executive_summary_judge_remediation_cycles_v1",
+                    "skipped": "targeting_parity_required",
+                    "reason": _regen_parity_reason,
+                    "generation_material_digest": _generation_material.generation_material_digest,
+                },
+            )
         else:
             _trigger_ok0, _trigger0 = evaluate_judge_remediation_trigger(
                 x1d,
@@ -2560,6 +2663,16 @@ def run_executive_summary_execution(
 
     attach_ledger_summary_to_l2(l2_output, artifact_dir)
     write_json(artifact_dir / "l2_output.json", l2_output)
+
+    _jp_final = resolve_judge_packet_for_parity(artifact_dir, fallback=judge_packet)
+    _targeting_parity, usage_doc = publish_targeting_parity_and_usage_ledger(
+        artifact_dir=artifact_dir,
+        runtime_payload=runtime_payload,
+        generation_material=_generation_material,
+        judge_packet=_jp_final,
+        usage_doc=usage_doc,
+        write_json_fn=write_json,
+    )
 
     from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
 

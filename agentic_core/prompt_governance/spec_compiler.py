@@ -26,7 +26,7 @@ Authority boundaries
 - Voice profile (if any) is referenced by id; its contents are NOT
   inlined unless explicitly fetched and bound through L4.
 
-See: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+See: docs/requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
 """
 
 from __future__ import annotations

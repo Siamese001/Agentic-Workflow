@@ -1,0 +1,39 @@
+# Maps changed path prefixes to manifest gate_ids for --suite changed.
+# Plan: adg-ci-unified-migration-a7f3b2 W4.1
+#
+# Always-run gates are appended by the runner (preflight + cross_bucket impossibles).
+
+version: 1
+
+always_gate_ids:
+  - preflight.snapshot_present
+  - preflight.schema_version
+  - cross_bucket.impossible_states
+
+path_prefixes:
+  - prefix: tools/otel/
+    gate_ids:
+      - runtime.proof_view_well_formed
+      - runtime.trace_topology
+      - runtime.genai_semconv_coverage
+  - prefix: tools/adg/
+    gate_ids:
+      - registry.graph_integrity
+      - provenance.snapshot_signed
+  - prefix: ops_scripts/ci/check_three_bucket
+    gate_ids:
+      - cross_bucket.gap_thresholds
+      - cross_bucket.impossible_states
+  - prefix: agentic_core/
+    gate_ids:
+      - static.edge_authority_well_formed
+      - static.no_null_triplet
+  - prefix: tools/generate/
+    gate_ids:
+      - static.snapshot_has_mvs
+      - static.no_null_triplet
+
+default_gate_ids:
+  - static.snapshot_has_mvs
+  - static.no_null_triplet
+  - registry.graph_integrity

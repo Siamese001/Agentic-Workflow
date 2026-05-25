@@ -64,6 +64,20 @@ REQUIRED_GATES: tuple[RequiredGate, ...] = (
     RequiredGate("structural_conformance", "post-commit-validation", "validation", "hard_fail"),
     RequiredGate("agentic_antipatterns", "post-commit-validation", "validation", "hard_fail"),
     RequiredGate("witness_tier_gates", "post-commit-validation", "validation", "hard_fail"),
+    # Plane 2 quick manifest — recorded when certification runs three-graph harness.
+    RequiredGate(
+        "three_bucket_manifest_quick",
+        "post-ADG-subprocess",
+        "subprocess",
+        "hard_fail",
+    ),
+    # Plane 3 dispatcher fleet — recorded from adg_gates.run exit in certification.
+    RequiredGate(
+        "adg_gate_dispatcher",
+        "post-commit-validation",
+        "subprocess",
+        "hard_fail",
+    ),
 )
 
 

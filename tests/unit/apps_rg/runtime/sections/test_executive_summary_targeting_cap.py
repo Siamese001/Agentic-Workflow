@@ -130,7 +130,11 @@ def test_jd_not_proof_and_no_fabrication_preserved():
     )
     assert "NOT PROOF" in after or "not proof" in after.lower()
     assert "NO FABRICATION" in after.upper() or "no fabrication" in after.lower()
-    assert "jd_used_as_proof=false" in after or "jd_used_as_proof must be false" in after
+    assert (
+        "jd_used_as_proof=false" in after
+        or "jd_used_as_proof must be false" in after
+        or "targeting-only" in after.lower()
+    )
 
 
 def test_duplicate_jd_line_removed_before_unique_themes():
@@ -146,6 +150,7 @@ def test_duplicate_jd_line_removed_before_unique_themes():
 
 def test_targeting_region_tokens_drop_on_brown_scale():
     payload = _brown_payload()
+    payload["targeting_context_frozen"] = False
     before = _compiled_with_capsule(payload)
     t0 = estimate_targeting_region_tokens(before)
     after, meta = apply_executive_summary_targeting_cap(
@@ -156,3 +161,32 @@ def test_targeting_region_tokens_drop_on_brown_scale():
     t1 = meta["targeting_tokens_after_cap"]
     assert t1 < t0
     assert estimate_tokens_approximate(after) < estimate_tokens_approximate(before)
+
+
+def test_brown_markdown_briefing_cap_includes_post_merger_section():
+    brief = (
+        REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
+    ).read_text(encoding="utf-8")
+    capped = compress_targeting_briefing_body(brief, 2600)
+    assert "post-merger" in capped.lower() or "federated" in capped.lower()
+    assert len(capped) > 1500
+    assert "Cultural Alignment" not in capped or capped.lower().index("post-merger") < capped.lower().index(
+        "cultural"
+    ) if "cultural" in capped.lower() else True
+
+
+def test_frozen_targeting_skips_second_cap_on_compiled_prompt():
+    payload = _brown_payload()
+    from apps_rg.runtime.sections.executive_summary_targeting_context import (
+        freeze_executive_summary_targeting_context,
+    )
+
+    freeze_executive_summary_targeting_context(payload)
+    before = _compiled_with_capsule(payload)
+    after, meta = apply_executive_summary_targeting_cap(
+        before,
+        runtime_payload=payload,
+        available_input_tokens=14848,
+    )
+    assert meta["targeting_cap_reason"] == "targeting_context_frozen_author_judge_parity"
+    assert after == before

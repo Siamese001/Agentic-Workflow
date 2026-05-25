@@ -50,7 +50,7 @@ REQUIRED_ITEMS = [
             "tools/certification/evidence/probe_semantic_cache_model.py",
             "tools/certification/evidence/probe_semantic_cache_threshold.py",
             "tools/certification/evidence/probe_bge_m3_operational.py",
-            "scripts/generate_threshold_adr.py",
+            "ops_scripts/ci/generate_threshold_adr.py",
         ],
         "required_evidence": ["semantic_cache", "bge_m3", "threshold"],
     },

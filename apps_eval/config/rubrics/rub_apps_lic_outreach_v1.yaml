@@ -1,5 +1,5 @@
 # EvaluationRubric instance — apps_lic outreach messaging
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # Phase B note: apps_lic is the canary surface for forced warmth, fake
 # intimacy, and mimicry. This rubric weights non_contrivance and

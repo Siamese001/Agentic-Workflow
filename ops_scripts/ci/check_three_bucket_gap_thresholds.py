@@ -258,6 +258,13 @@ def main(argv: list[str] | None = None) -> int:
     GATE_REPORT_PATH.write_text(json.dumps(asdict(result), indent=2), encoding="utf-8")
 
     print(
+        f"READ_EXISTING_REPORT: path={result.report_path} "
+        f"snapshot={report.get('snapshot', '')} "
+        f"snapshot_sha256={report.get('source_snapshot_sha256', 'MISSING')} "
+        f"generated_at={report.get('generated_at', 'MISSING')} "
+        f"runtime_proof={report.get('runtime_proof_status', '')}"
+    )
+    print(
         f"[three_bucket_gap] classes={len(cls_results)} violations={total_violations} "
         f"runtime_view_present={result.runtime_view_present} "
         f"health_score={result.health_score_pct_triplet_attested:.1f}% "

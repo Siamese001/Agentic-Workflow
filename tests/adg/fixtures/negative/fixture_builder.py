@@ -513,11 +513,70 @@ def build_stale_snapshot_vs_gap_report() -> NegativeFixture:
     return fix
 
 
+def build_null_triplet_edges() -> NegativeFixture:
+    """NULL (bucket, resolution_status, authority_status) — static.no_null_triplet."""
+    fix = NegativeFixture(
+        slug="null_triplet_edges",
+        description="Edge row with NULL triplet columns.",
+        target_gate="static.no_null_triplet",
+        expected_fail_reason="view_rule_fail",
+        extra_args=[],
+    )
+    d = _ensure_dir(fix.slug)
+    con = sqlite3.connect(d / "snapshot.sqlite")
+    try:
+        _common_schema(con)
+        _well_formed_seed(con)
+        con.execute(
+            "INSERT INTO edges(id,src_id,dst_id,relation_type,edge_kind,source_file,bucket,"
+            "resolution_status,authority_status,authority,evidence_refs)"
+            " VALUES (9002,1,2,'imports','static_call','agentic_core/foo.py',NULL,"
+            "NULL,NULL,'verified','{}')"
+        )
+        con.commit()
+    finally:
+        con.close()
+    (d / "manifest.json").write_text(json.dumps(asdict(fix), indent=2), encoding="utf-8")
+    return fix
+
+
+def build_missing_mv_views() -> NegativeFixture:
+    """No mv_* views — static.snapshot_has_mvs."""
+    fix = NegativeFixture(
+        slug="missing_mv_views",
+        description="Snapshot without materialized views.",
+        target_gate="static.snapshot_has_mvs",
+        expected_fail_reason="legacy_exit_code:1",
+        extra_args=[],
+    )
+    d = _ensure_dir(fix.slug)
+    snap_path = d / "snapshot.sqlite"
+    if snap_path.exists():
+        snap_path.unlink()
+    con = sqlite3.connect(snap_path)
+    try:
+        con.executescript(
+            """
+            CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            CREATE TABLE edges (id INTEGER PRIMARY KEY);
+            INSERT INTO meta(key,value) VALUES('schema_version','4.0.0');
+            INSERT INTO meta(key,value) VALUES('artifact_digest','f1xtur3d1g3st0000000000000000000000000000');
+            """
+        )
+        con.commit()
+    finally:
+        con.close()
+    (d / "manifest.json").write_text(json.dumps(asdict(fix), indent=2), encoding="utf-8")
+    return fix
+
+
 # ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
 
 ALL_BUILDERS = (
+    build_null_triplet_edges,
+    build_missing_mv_views,
     build_null_edge_authority,
     build_forged_trace_id,
     build_missing_parent_span_chain,

@@ -42,7 +42,7 @@ def _check_bundle(path: Path) -> list[str]:
 
 def main() -> int:
     bundles = [
-        ROOT / "certification/agentic_core/integrated_runtime/uwg_commit_latest",
+        ROOT / "artifacts/certification/integrated_runtime/uwg_commit_latest",
     ]
     all_errors: list[str] = []
     for bundle in bundles:

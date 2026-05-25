@@ -1,5 +1,5 @@
 # EvaluationRubric instance — apps_rfp RFP response
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # Phase B note: RFP responses are structured. Boilerplate risk is real
 # (acknowledged via overfit_risk_max=1.5 in spec). Compliance correctness

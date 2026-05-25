@@ -16,22 +16,18 @@ PLAN_PATH = ".cursor/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
-    "ADR-079: remove mandatory three-bucket audit (OTel runtime view, registry lift, "
-    "gap report, in-toto sign) from generate_full_adg hot path. Default regen = static graph "
-    "+ MVs + P0. Opt-in via ADG_THREE_BUCKET=1, --three-bucket, or run_three_bucket_audit.py. "
-    "W1 landed 2026-05-23; W2 static_edge_id join; W3 CI/docs; W4 weekly audit runbook."
+    "ADR-079 COMPLETE: three-bucket audit opt-in off generate_full_adg hot path. "
+    "Join fix (path/name fallback), Windows safe_repo_scan for registry lift, "
+    "stale gap-report sha256 guard, weekly runbook. Audit proof: triplet_attested=121, "
+    "health_pct=0.02 on overlap-biased seed. No agentic_core / ADG_CERTIFIED strict changes."
 )
 
-AI_SUMMARY = """- Tier: T3 governance / ADG pipeline
-- Problem: every regen paid triplet audit cost; 0% triplet health (broken static_edge_id join)
-- W1 DONE: optional_three_bucket.py, generate_full_adg trim, run_three_bucket_audit.py, ADR-079
-- W2 TODO: runtime_view_builder join fix + triplet proof on seeded OTel
-- W3 TODO: contract gate hints, archive windsurf plan cross-refs
-- W4 TODO: weekly audit operator doc
-- Hot path: python -m tools.generate.generate_full_adg (three_bucket=OFF)
-- Audit: ADG_THREE_BUCKET=1 python tools/adg/run_three_bucket_audit.py
-- ADR: docs/architecture/adr/ADR-079-adg-pipeline-three-bucket-opt-in.md
-- Disk SSOT: .cursor/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"""
+AI_SUMMARY = """- Status: COMPLETE (2026-05-24)
+- W1–W4 DONE: ADR-079, optional audit, contract tests, join fix, stale guard, archive pointers, runbook
+- Windows: tools/adg/safe_repo_scan.py patches consumer resolver walk (.venv/lib64 junction safe)
+- Proof: docs/reports/cursor/adg_three_bucket_pipeline_redesign_closeout.md (PASS)
+- Operator: seed with --prefer-registry-overlap before audit for triplet proof
+- Disk: .cursor/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"""
 
 
 def _query_page_id() -> str | None:
@@ -68,7 +64,20 @@ def _query_page_id() -> str | None:
     return None
 
 
-def _patch_in_progress(page_id: str) -> bool:
+def _plan_status_name() -> str:
+    plan_file = REPO / PLAN_PATH
+    if plan_file.is_file():
+        for line in plan_file.read_text(encoding="utf-8").splitlines():
+            if line.startswith("PLAN_STATUS:"):
+                raw = line.split(":", 1)[1].strip()
+                if raw.upper() == "COMPLETE":
+                    return "Complete"
+                if raw.upper() in ("IN_PROGRESS", "IN PROGRESS"):
+                    return "In Progress"
+    return "In Progress"
+
+
+def _patch_plan_page(page_id: str) -> bool:
     from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
     import urllib.error
     import urllib.request
@@ -78,11 +87,14 @@ def _patch_in_progress(page_id: str) -> bool:
         return False
     payload = {
         "properties": {
-            "Status": {"select": {"name": "In Progress"}},
+            "Status": {"select": {"name": _plan_status_name()}},
             "Exists On Disk": {"checkbox": True},
             "Plan File Path": {"rich_text": [{"text": {"content": PLAN_PATH}}]},
             "Summary": {
                 "rich_text": [{"text": {"content": SUMMARY[:2000]}}],
+            },
+            "AI Summary ": {
+                "rich_text": [{"text": {"content": AI_SUMMARY[:2000]}}],
             },
         }
     }
@@ -108,8 +120,9 @@ def main() -> int:
     existing = _query_page_id()
     if existing:
         print(f"PLAN_EXISTS: slug={SLUG} page_id={existing}")
-        if _patch_in_progress(existing):
-            print("PATCHED: Status=In Progress, Summary refreshed")
+        status = _plan_status_name()
+        if _patch_plan_page(existing):
+            print(f"PATCHED: Status={status}, Summary refreshed")
         return 0
 
     try:

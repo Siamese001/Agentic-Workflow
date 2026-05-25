@@ -187,6 +187,11 @@ class RouteContract:
     # graph_expansion_allowed=false.
     graph_traverse_policy: GraphTraversePolicy | None = None
 
+    # ----- L5 certification ref (ADR-100 / W2 PA consume-site) -----
+    # Threaded from runtime RouteContract at apps_* → orchestrator PA boundary.
+    # Empty when route was built without L5 authority token (harness-only paths).
+    l5_certification_ref: str = ""
+
     def __post_init__(self) -> None:
         if self.max_k <= 0:
             raise ValueError("max_k must be positive")

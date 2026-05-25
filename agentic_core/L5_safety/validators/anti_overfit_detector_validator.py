@@ -26,7 +26,7 @@ This module is pure compute (no I/O, no LLM, no tools). LLM-rubric checks
 (forced warmth nuance, flattery semantics) are factored as pluggable
 backends with a deterministic fallback so unit tests are reproducible.
 
-See: requirements/contracts/REQ-CROSS-APP-OVERFIT-REPORT-001.contract.yaml
+See: docs/requirements/contracts/REQ-CROSS-APP-OVERFIT-REPORT-001.contract.yaml
 """
 
 from __future__ import annotations

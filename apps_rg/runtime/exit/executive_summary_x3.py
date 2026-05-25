@@ -128,6 +128,21 @@ def aggregate_x3(
 ) -> X3Disposition:
     failed_gates = [g["gate_id"] for g in x2_gates if not g.get("pass")]
 
+    parity_block = False
+    parity_reason = ""
+    if section_input_usage_ledger is not None:
+        if section_input_usage_ledger.get("parity_match") is False:
+            parity_block = True
+            parity_reason = (
+                "generation_material_digest != judge_material_digest "
+                f"({section_input_usage_ledger.get('generation_material_digest')!r} vs "
+                f"{section_input_usage_ledger.get('judge_material_digest')!r})"
+            )
+        tcp = section_input_usage_ledger.get("targeting_context_parity")
+        if isinstance(tcp, dict) and tcp.get("parity_match") is False:
+            parity_block = True
+            parity_reason = parity_reason or "targeting_context_parity.parity_match is false"
+
     authority_reasons: list[str] = []
     if section_input_usage_ledger is None:
         authority_reasons.append("section_input_usage_ledger missing for X3 authority check")
@@ -179,6 +194,8 @@ def aggregate_x3(
         x1d_mode = "BLOCKED_PROVIDER_UNAVAILABLE"
 
     remediation: list[str] = []
+    if parity_block:
+        remediation.append(f"Fix targeting context parity: {parity_reason}")
     if failed_gates:
         remediation.append(f"Fix failed X2 gates: {', '.join(failed_gates)}")
     if authority_reasons:
@@ -204,7 +221,17 @@ def aggregate_x3(
     ledger_hash = hashlib.sha256(json.dumps(ledger_payload, sort_keys=True).encode()).hexdigest()[:16]
 
     review_reason = ""
-    if failed_gates or authority_reasons:
+    if parity_block:
+        if failed_gates or authority_reasons:
+            code = "X3_BLOCK_CONTEXT_PARITY_VIOLATION"
+            scope = "BLOCKED"
+        else:
+            code = "X3_REVIEW_CONTEXT_PARITY_VIOLATION"
+            scope = "REVIEW_ONLY"
+        reason = f"Targeting context parity violation: {parity_reason}"
+        review_reason = reason
+        allowed = False
+    elif failed_gates or authority_reasons:
         code = "X3_BLOCK"
         _parts: list[str] = []
         if failed_gates:

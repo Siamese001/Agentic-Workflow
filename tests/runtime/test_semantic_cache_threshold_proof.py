@@ -113,7 +113,7 @@ class TestADRPathDocumentedButNotActivated:
 
         W1p3 assertion: no ADR on disk at all.
         W1p4 assertion: the probe ITSELF does not create the ADR — if one
-        exists, a separate generator script (scripts/generate_threshold_adr.py)
+        exists, a separate generator script (ops_scripts/ci/generate_threshold_adr.py)
         created it. We verify the probe is not the generator by running the
         probe and checking it does NOT change the ADR file when run.
         """

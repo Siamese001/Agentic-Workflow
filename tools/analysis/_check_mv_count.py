@@ -1,4 +1,7 @@
 """One-shot: check new snapshot MV counts and query v_p0_apps_direct_infra."""
+
+__adg_consumer_mode__ = "inventory"
+
 import sqlite3
 from pathlib import Path
 
@@ -9,8 +12,11 @@ if not snaps:
 else:
     snap = snaps[0]
     print(f"Latest snapshot: {snap.name}")
-    conn = sqlite3.connect(str(snap))
+    with sqlite3.connect(str(snap)) as conn:
+        _print_mv_report(conn)
 
+
+def _print_mv_report(conn: sqlite3.Connection) -> None:
     mv_objects = conn.execute(
         "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name LIKE 'mv_%'"
     ).fetchall()
@@ -33,5 +39,3 @@ else:
             print(" ", r)
     else:
         print("v_p0_apps_direct_infra view not found")
-
-    conn.close()

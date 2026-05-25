@@ -42,7 +42,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_E2E_DIR = REPO_ROOT / "artifacts" / "certification" / "apps_e2e"
-CERT_DIR = REPO_ROOT / "certification"
+CERT_DIR = REPO_ROOT / "data" / "certification"
 OUT_PATH = APPS_E2E_DIR / "APPS_HUNDRED_PERCENT_RUNTIME_PROOF.json"
 
 GENERATOR_PATH_REL = "tools/certification/generate_apps_100pct_runtime_proof.py"

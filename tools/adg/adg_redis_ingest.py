@@ -257,6 +257,19 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
         # Write the sentinel only after a fully successful ingest.
         client.set(sentinel_key, "1")
 
+        ingested_at = str(time.time())
+        sqlite_mtime = str(sqlite_path.stat().st_mtime)
+        meta_mapping = {
+            "ingested_at": ingested_at,
+            "timestamp": snapshot_id,
+            "sqlite_path": str(sqlite_path),
+            "node_count": str(nodes_written),
+            "edge_count": str(edges_written),
+            "sqlite_mtime": sqlite_mtime,
+            "snapshot_id": snapshot_id,
+        }
+        _hset_mapping(client, "adg:meta", meta_mapping)
+
         elapsed = time.monotonic() - t0
         print(f"[adg_redis_ingest] Done in {elapsed:.1f}s — cache is HOT ✓")
 

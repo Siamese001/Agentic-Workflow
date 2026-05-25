@@ -1,28 +1,6 @@
 {
   "gate_id": "B2_layer_skip_ratchet",
-  "count": 871,
-  "seeded_at": "2026-04-23T15:58:25.257802+00:00",
-  "snapshot": "adg_indexed_04232026_1828.sqlite",
-  "tightened_at": "2026-04-23T22:30:08.713325+00:00",
-  "tighten_history": [
-    {
-      "at": "2026-04-23T22:30:08.713325+00:00",
-      "snapshot": "adg_indexed_04232026_1828.sqlite",
-      "from": 802,
-      "to": 725
-    }
-  ],
-  "zero_run_streak": 0,
-  "last_run_at": "2026-04-29T01:38:40.985269+00:00",
-  "last_run_snapshot": "adg_indexed_04282026_2133.sqlite",
-  "loosen_history": [
-    {
-      "at": "2026-04-28T18:49:35+00:00",
-      "snapshot": "unknown",
-      "from": 725,
-      "to": 871,
-      "reason": "finish-deferred-scope 2026-04-28: absorb current floor across 15 wiring_ci ratchets so the ratchet-class P0..P3 gates resume catching only NEW regressions; the absorbed counts are real architectural debt tracked separately under their owning plans (adg-wiring-ci-hardening-7a5d84 W3-W6)."
-    }
-  ],
-  "loosened_at": "2026-04-28T18:49:35+00:00"
+  "count": 893,
+  "seeded_at": "2026-05-25T00:01:14.116951+00:00",
+  "snapshot": "adg_indexed_05242026_1939.sqlite"
 }

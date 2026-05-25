@@ -47,6 +47,7 @@ test_artifacts/
 .sovereign_healing_backup/
 archive/
 archives/
+artifacts/archives/
 # W4d-5: artifacts/ is ignored EXCEPT for proof bundles, which are durable
 # evidence and MUST travel with commits so that proof_bundle_exists=true
 # means the same thing on every CI checkout.
@@ -166,11 +167,16 @@ artifacts/adg/keys/*.key
 
 
 # Fort Knox release signer private key — NEVER commit (added 2026-05-02)
+artifacts/keys/release_signer/*.key.pem
+artifacts/keys/release_signer/*.pem
+# Legacy path (pre SSOT migration 2026-05-24)
 keys/release_signer/*.key.pem
 keys/release_signer/*.pem
 
 # Large ML model binaries — never commit (added 2026-05-05, W6 of apps-rg-l0-cache-deferred-scope-b8e2f4)
 models--BAAI--bge-m3/
+data/cache/huggingface/
+/chroma/
 .locks/
 
 # apps_rg run outputs — should not accumulate in scripts/ (W2 cleanup 2026-05-06)
@@ -179,5 +185,7 @@ apps_rg/scripts/generated_resume_*.json
 # Accidental repo-root venv (2026-05-23) — not the canonical .venv/ under project policy
 .venv.broken_20260522/
 /bin/
+/lib/
+/include/
 /pyvenv.cfg
 /uv.lock

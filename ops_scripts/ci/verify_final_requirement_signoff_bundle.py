@@ -51,19 +51,29 @@ except ImportError:  # pragma: no cover
     print("FATAL: jsonschema is required", file=sys.stderr)
     sys.exit(2)
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
-OUTPUT_DIR = REPO_ROOT / "artifacts" / "certification"
-REPORT_PATH = OUTPUT_DIR / "final_requirement_signoff_report.json"
-SHA256_PATH = OUTPUT_DIR / "final_requirement_signoff_report.sha256"
-MERKLE_PATH = OUTPUT_DIR / "final_requirement_signoff_report.merkle.json"
-SIGNATURE_PATH = OUTPUT_DIR / "final_requirement_signoff_report.signature.json"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from tools.cert.cert_paths import (  # noqa: E402
+    ASSERTIONS_PATH,
+    CERT_ARTIFACTS_DIR,
+    FINAL_SIGNOFF_BUNDLE_VERIFICATION,
+    FINAL_SIGNOFF_MERKLE,
+    FINAL_SIGNOFF_REPORT,
+    FINAL_SIGNOFF_SHA256,
+    FINAL_SIGNOFF_SIGNATURE,
+    REPORT_SCHEMA,
+    REQS_PATH,
+)
+
+OUTPUT_DIR = CERT_ARTIFACTS_DIR
+REPORT_PATH = FINAL_SIGNOFF_REPORT
+SHA256_PATH = FINAL_SIGNOFF_SHA256
+MERKLE_PATH = FINAL_SIGNOFF_MERKLE
+SIGNATURE_PATH = FINAL_SIGNOFF_SIGNATURE
 XLSX_PATH = OUTPUT_DIR / "final_requirement_signoff_report.xlsx"
 MD_PATH = OUTPUT_DIR / "final_requirement_signoff_report.md"
-OUT_PATH = OUTPUT_DIR / "final_requirement_signoff_bundle_verification.json"
-
-REPORT_SCHEMA = REPO_ROOT / "certification" / "schemas" / "final_requirement_signoff_report.schema.json"
+OUT_PATH = FINAL_SIGNOFF_BUNDLE_VERIFICATION
 
 
 def sha256_bytes(b: bytes) -> str:
@@ -379,7 +389,7 @@ def _result(failures: list[str], checks_run: int, sig_status: str = "", report_s
     status = "PASS" if not failures else "FAIL"
     return {
         "schema_version": "fortknox-v2",
-        "verifier_path": "scripts/verify_final_requirement_signoff_bundle.py",
+        "verifier_path": "ops_scripts/ci/verify_final_requirement_signoff_bundle.py",
         "verifier_version": "v1.0",
         "verified_at_utc": _iso_now(),
         "bundle_verification_status": status,

@@ -19,6 +19,7 @@ from apps_rg.runtime.spine.governed_pa_compose import (
     GOVERNED_PA_MODE_SECTION_BOM,
     governed_pa_compose_enabled,
     runtime_fec_to_orchestrator_contract,
+    runtime_route_to_orchestrator_route,
     section_slot_bom_from_compiled,
 )
 
@@ -104,12 +105,23 @@ def test_runtime_fec_adapter_builds_orchestrator_contract() -> None:
     assert orch.must_use
 
 
-def test_pa_compose_apps_rg_uses_core_pipeline(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_runtime_route_to_orchestrator_forwards_l5_cert_ref() -> None:
+    orch = runtime_route_to_orchestrator_route(_route())
+    assert orch.l5_certification_ref == "test:valid:w6"
+
+
+def test_pa_compose_apps_rg_uses_core_pipeline(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    import agentic_core.prompt_governance.prompt_assembly.pipeline as pipeline_mod
+
     monkeypatch.delenv("APPS_RG_GOVERNED_PA_SKIP", raising=False)
-    artifact = pa_compose_apps_rg(_route(), _plan(), _fec(), _vr())
+    with caplog.at_level("WARNING", logger=pipeline_mod._logger.name):
+        artifact = pa_compose_apps_rg(_route(), _plan(), _fec(), _vr())
     assert artifact.compilation_hash
     assert any("pa_manifest:" in ref for ref in artifact.gate_verdict_refs)
     assert any("pa_hmac:" in ref for ref in artifact.gate_verdict_refs)
+    assert not any("L5CertRefViolation" in r.message for r in caplog.records)
 
 
 def test_legacy_pa_when_governed_pa_skipped(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -2,7 +2,7 @@
 title: "AG-PURITY Open Work: Remediation + Strict-Mode Readiness"
 slug: ag-purity-open-work-remediation-roadmap
 tier: T2
-status: Not Started
+status: Retired
 created: 2026-05-12
 source_plan: adg-ci-agentic-core-purity-a7c3e9
 dod_exempt: false

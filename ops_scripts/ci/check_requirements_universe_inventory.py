@@ -27,7 +27,7 @@ Universes (as of 2026-04-30):
   U7  prove_requirements (Step 1)  artifacts/runtime/requirements_proof/* + scripts/verify_*_gate.py
   U8  MERKLE_ROOT enforcement      docs/reference/contracts/enforcement/ALL_REQUIREMENTS_*.json
   U9  AGEN registry                docs/requirements/registry/{policy,best_practice}/AGEN-*.yaml
-  U10 Cross-app contracts          requirements/contracts/REQ-*.contract.yaml
+  U10 Cross-app contracts          docs/requirements/contracts/REQ-*.contract.yaml
   U11 Crosswalk obligations        config/crosswalk/obligations.yaml
   U12 L5 contract matrix           tools/l5_contracts/_requirement_matrix.json
   U13 Per-doctrine matrices        docs/reports/plans/*_requirements_matrix.md, docs/reference/03A/03B/*.md
@@ -160,7 +160,7 @@ UNIVERSES: tuple[Universe, ...] = (
     Universe(
         universe_id="U10",
         name="Cross-app contract requirements",
-        paths=("requirements/contracts/REQ-*.contract.yaml",),
+        paths=("docs/requirements/contracts/REQ-*.contract.yaml",),
         id_prefix="REQ-",
         schema_format="yaml",
     ),
@@ -261,7 +261,7 @@ def _evaluate_universe(u: Universe) -> Universe:
         if base and base != stem:
             needles.append(base)
         # Also use the parent directory — catches CI gates that match the
-        # directory via regex (e.g. requirements/contracts/REQ-CROSS-APP-...)
+        # directory via regex (e.g. docs/requirements/contracts/REQ-CROSS-APP-...)
         # rather than a literal full filename.
         parent = str(Path(pat).parent).replace("\\", "/")
         if parent and parent not in (".", "") and parent not in needles:

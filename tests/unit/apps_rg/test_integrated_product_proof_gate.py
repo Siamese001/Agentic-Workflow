@@ -25,7 +25,7 @@ from apps_rg.runtime.non_product_proof_stamp import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-R4_FIXTURE = REPO_ROOT / "certification" / "agentic_core" / "integrated_runtime" / "r4_latest"
+R4_FIXTURE = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "r4_latest"
 SECTION_RUN = (
     REPO_ROOT
     / "artifacts"

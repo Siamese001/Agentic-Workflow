@@ -1,7 +1,9 @@
+> **Superseded 2026-05-24:** apps_lic requires full rebaseline against [apps-rg-spine-only-unification-d8f4a2.md](apps-rg-spine-only-unification-d8f4a2.md). Notion Plans rows retired; do not execute pre-rebaseline scope.
+
 ---
 plan_id: apps-lic-spine-product-convergence-b7e4a2
 plan_type: refactor
-status: Completed
+status: Superseded (pending apps_lic rebaseline)
 parent_plan: apps-lic-u0-boundary-alignment-4f1d9c
 authored_at: 2026-05-20
 dod_exempt: false
@@ -318,3 +320,26 @@ python -m pytest tests/_apps_contract/test_ag8_apps_lic_golden_path.py -q
 **Second PR slice:** W2 + W3 (product path users care about).
 
 **Third PR slice:** W4 + W5 (quality + proof + legacy flags).
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

@@ -21,10 +21,20 @@ Eliminate silent substitutes on product paths: Chroma default MiniLM vs BGE-M3, 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: PARTIAL
-CURRENT_WAVE: LIVE_PROOF
-LAST_COMPLETED_WAVE: W6
-LAST_UPDATED: 2026-05-22
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W8
+LAST_COMPLETED_WAVE: W8
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+PLAN_COMPLETE: plan=apps-rg-runtime-substitute-burndown-c4e8f1 note="W0-W8 contract closeout; optional X3 polish deferred to backlog"
+NOTION_PAGE_ID: 36827693-f55c-8131-b393-f43334c46a10
+NOTION_RECONCILED: 2026-05-24
+ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md
+ACTIVE_BACKLOG_ROLE: completed_2026_05_25
+PARENT_PLAN: apps-rg-spine-only-unification-d8f4a2
+CLOSEOUT_CLASS: PARTIAL_W0_W8_DONE_POLISH_OPEN
 REVIEW_DECISIONS_LOCKED: W4,W1,W2
 CLOSEOUT_RECEIPT: artifacts/apps_rg/plans/runtime_substitute_burndown_w0_w8_receipt.md
 LIVE_PROOF_RECEIPT: artifacts/apps_rg/plans/runtime_substitute_burndown_live_proof_attempt_20260522.md
@@ -607,3 +617,26 @@ PLAN_COMPLETE: plan=apps-rg-runtime-substitute-burndown-c4e8f1 note="substitute 
 
 - [apps-rg-resume-assembly-debt-burndown-56c022.md](.cursor/plans/apps-rg-resume-assembly-debt-burndown-56c022.md) — product SSOT / phase1 gates (W7 alignment)
 - [_archive/2026-05/apps-rg-cross-section-mock-judge-policy-d8e4f2.md](.cursor/plans/_archive/2026-05/apps-rg-cross-section-mock-judge-policy-d8e4f2.md) — mock judge precedent
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

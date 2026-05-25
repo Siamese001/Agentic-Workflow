@@ -10,6 +10,7 @@ from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_secti
 from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_MODE_SECTION,
     SectionFecBridgePreconditionError,
+    build_spine_c0_fec_artifact,
     wire_spine_c0_fec_for_section,
 )
 from apps_rg.runtime.spine.front_contracts import (

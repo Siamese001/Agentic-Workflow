@@ -23,12 +23,19 @@ Remove or align deprecated X2 gates that still emit **PASS with skip** (or regis
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
+PLAN_STATUS: COMPLETE
 CURRENT_WAVE: W4
-LAST_COMPLETED_WAVE: W3
-LAST_UPDATED: 2026-05-22
-NOTION_STATUS: In Progress
+LAST_COMPLETED_WAVE: W4
+LAST_UPDATED: 2026-05-24
+NOTION_STATUS: Completed
+NOTION_PAGE_ID: 36827693-f55c-817d-95ec-ec054768d647
+NOTION_PLAN_URL: https://www.notion.so/apps-rg-x2-dead-gates-burndown-c4e8f2-36827693f55c817d95ecec054768d647
+NOTION_RECONCILED: 2026-05-24
+PLAN_COMPLETED: 2026-05-24
+PLAN_CREATED: slug=apps-rg-x2-dead-gates-burndown-c4e8f2 path=.cursor/plans/apps-rg-x2-dead-gates-burndown-c4e8f2.md status=Completed notion_page=36827693-f55c-817d-95ec-ec054768d647
 DISK_SSOT: .cursor/plans/apps-rg-x2-dead-gates-burndown-c4e8f2.md
+
+PLAN_COMPLETE: plan=apps-rg-x2-dead-gates-burndown-c4e8f2 note="W1-W4 DONE; registry/SRFS/proof-pool alignment; live exec_summary proof receipt"
 
 ---
 
@@ -300,7 +307,7 @@ DoD-4: W3 complete — single active proof-pool gate ID per section, contract te
 
 DoD-5: W4 complete OR explicitly deferred with `DEFERRED_SCOPE` — live proof shows skip-PASS burndown on golden path
 - Evidence: `docs/reports/apps_rg/apps_rg_x2_dead_gates_burndown_receipt.md` with command output
-- Status: TODO
+- Status: DONE
 
 ### Verification vs deferral
 
@@ -326,3 +333,26 @@ WAVE_START: plan=apps-rg-x2-dead-gates-burndown-c4e8f2 wave=1
 WAVE_COMPLETE: plan=apps-rg-x2-dead-gates-burndown-c4e8f2 wave=1 note="+N tests, N files, scope=registry-audit"
 PLAN_COMPLETE: plan=apps-rg-x2-dead-gates-burndown-c4e8f2 note="X2 dead gates aligned; live proof receipt on disk"
 ```
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

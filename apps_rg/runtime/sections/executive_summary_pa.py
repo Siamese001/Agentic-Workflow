@@ -144,19 +144,11 @@ def format_strategy_executive_targeting_appendix(target_title: str) -> str:
     """Extra U0/JD framing for SVP IT strategy lanes (targeting only — never proof)."""
     if not is_strategy_executive_target_title(target_title):
         return ""
-    return (
-        "STRATEGY_EXECUTIVE_FRAMING (targeting only — NOT PROOF):\n"
-        "- Open as a technology strategy / enterprise technology executive (not a narrow engineering-manager label).\n"
-        "- Weave allowed facts into one causal arc: platform + governance + commercialization + scale.\n"
-        "- Use JD_TEXT/BRIEFING only to tilt emphasis among evidenced themes (federated architecture, innovation, "
-        "post-merger integration, AI/data roadmap) — never cite JD/briefing as proof; jd_used_as_proof=false.\n"
-        "- Avoid bullet-stack sequencing; connect outcomes to enterprise IT direction when facts support it.\n"
-        "- Sentences 3–6: one causal arc (platform scale → governance/innovation → commercial outcomes → fact-backed capstone).\n"
-        "- Sentence 5: synthesize quantitative depth into delivery context — not a certification inventory.\n"
-        "- Sentence 6: capstone from platform/governance/commercial allowed facts only — no JD echo, no generic filler.\n"
-        "- NEVER name TARGET_COMPANY in resume_display_text (no at/for/with Company, no align-with-Company closers).\n"
-        "- Weave team-scale facts (e.g. 8-to-28 engineering growth) into prose when present in ALLOWED_SOURCE_FACT_IDS.\n"
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        format_strategy_executive_u0_block,
     )
+
+    return format_strategy_executive_u0_block(target_title=target_title)
 
 
 def format_jd_targeting_block(

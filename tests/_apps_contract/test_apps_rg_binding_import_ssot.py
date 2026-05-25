@@ -66,7 +66,7 @@ def _should_scan(path: Path) -> bool:
         return False
     if any(part in SCAN_SKIP_PARTS for part in path.parts):
         return False
-    if rel.startswith("archives/"):
+    if rel.startswith("artifacts/archives/"):
         return False
     return True
 

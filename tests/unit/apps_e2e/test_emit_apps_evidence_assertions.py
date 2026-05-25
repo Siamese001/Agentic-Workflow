@@ -13,16 +13,21 @@ Ground rules:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from tools.cert.apps_e2e import emit_apps_evidence_assertions as emitter
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SCHEMA_PATH = REPO_ROOT / "certification" / "schemas" / "apps_evidence_assertion.schema.json"
-CATALOG_PATH = REPO_ROOT / "certification" / "apps_e2e_requirements_source.json"
+sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT / "tools" / "cert"))
+
+from tools.cert.apps_e2e import emit_apps_evidence_assertions as emitter
+from tools.cert.cert_paths import APPS_ASSERTION_SCHEMA, APPS_REQS_PATH  # noqa: E402
+
+SCHEMA_PATH = APPS_ASSERTION_SCHEMA
+CATALOG_PATH = APPS_REQS_PATH
 
 
 # ----------------------------- synthetic fixtures -----------------------------

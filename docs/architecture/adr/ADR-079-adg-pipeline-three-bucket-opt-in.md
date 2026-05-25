@@ -52,6 +52,8 @@ Contract CI gates (`check_three_bucket_gap_thresholds`, `check_adg_certified`) s
 in `run_contract_gates.py` but assume reports are refreshed by the audit script, not
 every regen.
 
+**Operator cadence:** [adg-three-bucket-weekly-audit-runbook.md](../../cursor/adg-three-bucket-weekly-audit-runbook.md).
+
 ## Consequences
 
 - **Faster default regen** — skips OTel store walk, registry resolver pass, and

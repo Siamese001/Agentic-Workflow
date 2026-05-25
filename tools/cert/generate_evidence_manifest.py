@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-OUT_PATH = REPO_ROOT / "certification" / "evidence_manifest.jsonl"
+from cert_paths import EVIDENCE_MANIFEST_PATH as OUT_PATH
 
 # Linkage map: artifact_relpath -> {linked_req_ids, verifier_command, ...}
 LINKAGE: dict[str, dict] = {

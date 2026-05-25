@@ -1,3 +1,5 @@
+> **Notion Completed 2026-05-24:** Archive SSOT; active C0 path under apps-rg-spine-only-unification-d8f4a2.
+
 ---
 plan_slug: apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan
 plan_title: "Apps_RG Retrieval Metrics Ownership + C0 Evidence Serialization Plan"

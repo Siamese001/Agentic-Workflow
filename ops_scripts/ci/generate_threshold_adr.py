@@ -105,7 +105,7 @@ def _rollback_rule(recommended: float | None) -> str:
             "Not applicable — no threshold change is recommended. If the "
             "dataset is expanded or the model is upgraded such that a "
             "safe threshold emerges, regenerate the ADR via "
-            "`python scripts/generate_threshold_adr.py`."
+            "`python ops_scripts/ci/generate_threshold_adr.py`."
         )
     return (
         f"If, after deployment at threshold {recommended}, production "
@@ -129,7 +129,7 @@ def _compose_adr_json(sweep: dict) -> dict:
         "adr_version": ADR_VERSION,
         "created_utc": _now_utc(),
         "created_by": "w1_phase_4_threshold_calibration",
-        "generator": "scripts/generate_threshold_adr.py",
+        "generator": "ops_scripts/ci/generate_threshold_adr.py",
         "old_threshold": OLD_THRESHOLD,
         "recommended_threshold": recommended,
         "recommendation_status": sweep.get("overall_status"),

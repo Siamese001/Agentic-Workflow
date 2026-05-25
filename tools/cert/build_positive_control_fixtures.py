@@ -38,7 +38,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPROVED_VERIFIER = "scripts/verify_rtc_req_csv_gate.py"
 CERT_DIR = REPO_ROOT / "artifacts" / "certification"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
+from cert_paths import ASSERTIONS_PATH
 WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
 CI_BINDING_REPORT = CERT_DIR / "ci_gate_binding_report.json"
 LAYER_BOUNDARY_REPORT = CERT_DIR / "layer_boundary_report_csv_gate.json"

@@ -43,7 +43,7 @@ def test_runbook_references_canonical_scripts():
 
 def test_runbook_references_keypair_paths():
     text = RUNBOOK.read_text(encoding="utf-8")
-    assert "keys/release_signer/release_signer.key.pem" in text
+    assert "artifacts/keys/release_signer/release_signer.key.pem" in text
     assert "config/release_signer/release_signer.pub.pem" in text
 
 

@@ -74,11 +74,26 @@ def main() -> int:
         print(f"ERROR: snapshot not found: {snapshot}", file=sys.stderr)
         return 2
 
-    print(f"[three_bucket_audit] snapshot={snapshot.name}")
+    from tools.adg.snapshot_fingerprint import snapshot_fingerprint
+
+    fp = snapshot_fingerprint(snapshot)
+    print(
+        f"[three_bucket_audit] snapshot={snapshot.name} "
+        f"sha256={fp['source_snapshot_sha256']} "
+        f"mtime={fp['source_snapshot_mtime_iso']}"
+    )
     result = run_optional_three_bucket_enrichment(snapshot)
     if result.skipped_reason:
         print(result.skipped_reason, file=sys.stderr)
         return 2
+    gap_json = REPO_ROOT / "docs" / "reports" / "adg" / "THREE_BUCKET_GAP_REPORT.json"
+    if gap_json.is_file():
+        import json
+
+        from tools.adg.snapshot_fingerprint import print_audit_receipt
+
+        report = json.loads(gap_json.read_text(encoding="utf-8"))
+        print_audit_receipt(report, prefix="THREE_BUCKET_AUDIT_RECEIPT")
     return 0
 
 

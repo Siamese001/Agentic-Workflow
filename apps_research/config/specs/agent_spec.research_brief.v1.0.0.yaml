@@ -1,5 +1,5 @@
 # AgentSpec instance — apps_research research brief assembly agent
-# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
 #
 # Phase B finding: cleanest non-underwriting app. 3 engines + 7 agents.
 # Anti-overfit risk: citation injection, fabricated sources. Citation

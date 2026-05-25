@@ -155,6 +155,8 @@ def build_section_front_spine_from_args(
     args: Any,
     repo_root: Path,
     generation_mode: str = "section_regen",
+    jd_text_override: str | None = None,
+    briefing_text_override: str | None = None,
 ) -> SectionFrontSpineBridge:
     """Run apps_rg U0 → L1 → L0 bindings for a section lane CLI args namespace."""
     from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
@@ -175,8 +177,16 @@ def build_section_front_spine_from_args(
     target_role = str(
         getattr(args, "target_role", "") or getattr(args, "target_title", "") or ""
     ).strip()
-    jd_text = str(getattr(args, "jd_text", "") or "").strip()
-    briefing_text = str(getattr(args, "briefing", "") or "").strip()
+    jd_text = (
+        str(jd_text_override).strip()
+        if jd_text_override is not None
+        else str(getattr(args, "jd_text", "") or "").strip()
+    )
+    briefing_text = (
+        str(briefing_text_override).strip()
+        if briefing_text_override is not None
+        else str(getattr(args, "briefing", "") or "").strip()
+    )
 
     request_id = str(uuid.uuid4())
     run_id = str(uuid.uuid4())

@@ -1,3 +1,5 @@
+> **Superseded by:** [adg-three-bucket-pipeline-redesign-c8e4f1.md](../../adg-three-bucket-pipeline-redesign-c8e4f1.md) and [ADR-079](../../../docs/architecture/adr/ADR-079-adg-pipeline-three-bucket-opt-in.md). Archived plan — not active.
+
 # Three-Bucket ADG Gap Remediation
 
 Status: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30)

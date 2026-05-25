@@ -158,6 +158,7 @@ def runtime_route_to_orchestrator_route(route: RouteContract) -> Any:
         trace_id=route.trace_id,
         l5_certification_ref=route.l5_certification_ref,
     ))
+    l5_ref = str(getattr(route, "l5_certification_ref", "") or "").strip()
     return OrchRoute(
         route_id=route.route_id,
         grounding_required=bool(route.grounding_required),
@@ -171,6 +172,7 @@ def runtime_route_to_orchestrator_route(route: RouteContract) -> Any:
         hmac_sig=str(route.hmac_sig or route.signature or ""),
         app_id=route.app_id,
         task_class="resume_generation",
+        l5_certification_ref=l5_ref,
     )
 
 

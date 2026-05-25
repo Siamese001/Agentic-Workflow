@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-05-25T00:00:20Z",
+  "certification_status": "failed",
+  "generator_exit_code": 1,
+  "report_exit_code": 0,
+  "runtime_proof_status": "attested",
+  "generation_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_05242026_1939.json",
+  "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_05242026_1939.json",
+  "reasons": [
+    "generator exit_code=1",
+    "required gate 'adg_gate_dispatcher' status=fail",
+    "adg_gate_dispatcher overall_exit_code=1",
+    "enforcement_report certified_rollup=NOT_CERTIFIED"
+  ]
+}

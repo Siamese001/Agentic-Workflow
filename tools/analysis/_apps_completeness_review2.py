@@ -8,7 +8,10 @@ Outputs JSON + Markdown summarizing per-app:
   - zero_caller_node_count (from ADG mv_zero_caller_modules-style query)
   - layer breakdown
 """
+
 from __future__ import annotations
+
+__adg_consumer_mode__ = "inventory"
 
 import ast
 import json
@@ -213,56 +216,51 @@ def _load_real_gaps_by_app() -> tuple[dict[str, int], set[str]]:
 
 
 def main() -> None:
-    con = sqlite3.connect(str(SNAP))
-    results = []
-    for app in sorted(APPS):
-        s = scan_app(app)
-        s.update(adg_enrich(con, app.name))
-        results.append(s)
-    real_gaps_by_app, audited_apps = _load_real_gaps_by_app()
-    out = {
-        "snapshot": str(SNAP),
-        "apps": results,
-        "real_gaps_by_app": real_gaps_by_app,
-        "audited_apps": sorted(audited_apps),
-    }
-    Path("artifacts/analysis").mkdir(parents=True, exist_ok=True)
-    Path("artifacts/analysis/apps_completeness_review.json").write_text(
-        json.dumps(out, indent=2, default=str), encoding="utf-8"
-    )
-    # Markdown summary
-    # `RealGaps` comes from the apps_shared stub census (plan
-    # apps-shared-stub-audit-7dfe16 W4). When the census is missing or
-    # an app is not in it, the cell shows `?` so readers can distinguish
-    # "not audited" from "audited, zero gaps".
-    lines = []
-    lines.append(
-        "| App | Files | Funcs | Stubs | Stub% | RealGaps | NotImpl | Pass | Ellipsis | RetNone | DocOnly | ADG Nodes | Zero-Caller | TaskGap | StructGap | PromptGap | ReplayGap | TraceGap | TODO Files |"
-    )
-    lines.append(
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
-    )
-    for r in results:
-        b = r["stub_breakdown"]
-        g = r["adg_gaps"]
-        if r["app"] in audited_apps:
-            real_gaps = real_gaps_by_app.get(r["app"], 0)
-        else:
-            real_gaps = "?"
-        lines.append(
-            f"| {r['app']} | {r['py_files']} | {r['funcs_total']} | {r['funcs_stub']} | {r['stub_pct']} | "
-            f"{real_gaps} | "
-            f"{b.get('raise_notimpl',0)} | {b.get('pass_only',0)} | {b.get('ellipsis_only',0)} | "
-            f"{b.get('return_none_only',0)} | {b.get('docstring_only',0)} | "
-            f"{r['adg_nodes']} | {r['adg_zero_caller_funcs']} | "
-            f"{g.get('task_contract_gaps','-')} | {g.get('structured_output_gaps','-')} | "
-            f"{g.get('prompt_assembly_gaps','-')} | {g.get('replay_surface_gaps','-')} | "
-            f"{g.get('trace_replay_eval_gaps','-')} | {r['todo_file_count']} |"
+    with sqlite3.connect(str(SNAP)) as con:
+        results = []
+        for app in sorted(APPS):
+            s = scan_app(app)
+            s.update(adg_enrich(con, app.name))
+            results.append(s)
+        real_gaps_by_app, audited_apps = _load_real_gaps_by_app()
+        out = {
+            "snapshot": str(SNAP),
+            "apps": results,
+            "real_gaps_by_app": real_gaps_by_app,
+            "audited_apps": sorted(audited_apps),
+        }
+        Path("artifacts/analysis").mkdir(parents=True, exist_ok=True)
+        Path("artifacts/analysis/apps_completeness_review.json").write_text(
+            json.dumps(out, indent=2, default=str), encoding="utf-8"
         )
-    Path("artifacts/analysis/apps_completeness_review.md").write_text(
-        "\n".join(lines), encoding="utf-8"
-    )
-    print("\n".join(lines))
+        lines = []
+        lines.append(
+            "| App | Files | Funcs | Stubs | Stub% | RealGaps | NotImpl | Pass | Ellipsis | RetNone | DocOnly | ADG Nodes | Zero-Caller | TaskGap | StructGap | PromptGap | ReplayGap | TraceGap | TODO Files |"
+        )
+        lines.append(
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+        )
+        for r in results:
+            b = r["stub_breakdown"]
+            g = r["adg_gaps"]
+            if r["app"] in audited_apps:
+                real_gaps = real_gaps_by_app.get(r["app"], 0)
+            else:
+                real_gaps = "?"
+            lines.append(
+                f"| {r['app']} | {r['py_files']} | {r['funcs_total']} | {r['funcs_stub']} | {r['stub_pct']} | "
+                f"{real_gaps} | "
+                f"{b.get('raise_notimpl',0)} | {b.get('pass_only',0)} | {b.get('ellipsis_only',0)} | "
+                f"{b.get('return_none_only',0)} | {b.get('docstring_only',0)} | "
+                f"{r['adg_nodes']} | {r['adg_zero_caller_funcs']} | "
+                f"{g.get('task_contract_gaps','-')} | {g.get('structured_output_gaps','-')} | "
+                f"{g.get('prompt_assembly_gaps','-')} | {g.get('replay_surface_gaps','-')} | "
+                f"{g.get('trace_replay_eval_gaps','-')} | {r['todo_file_count']} |"
+            )
+        Path("artifacts/analysis/apps_completeness_review.md").write_text(
+            "\n".join(lines), encoding="utf-8"
+        )
+        print("\n".join(lines))
 
 
 if __name__ == "__main__":

@@ -74,9 +74,42 @@ jobs:
           path: |
             artifacts/adg/adg_gate_invocation_manifest_*.json
             artifacts/adg/adg_generation_manifest_*.json
+            artifacts/adg/adg_enforcement_report_*.json
             docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json
             docs/reports/adg/THREE_BUCKET_GAP_REPORT.*
+            docs/reports/adg/three_graph_test_rollup.json
           if-no-files-found: warn
+
+      - name: ADG three-graph manifest (quick strict — plane 2)
+        # ADR-081: manifest SSOT; audit wrapper records three_bucket_manifest_quick.
+        # Re-run here for explicit CI visibility when using committed snapshot post-audit.
+        run: |
+          python -c "
+          import json, subprocess, sys
+          from pathlib import Path
+          root = Path('.')
+          manifests = sorted(
+              (root / 'artifacts' / 'adg').glob('adg_generation_manifest_*.json'),
+              key=lambda p: p.stat().st_mtime,
+          )
+          manifests = [p for p in manifests if p.name != 'adg_generation_manifest_latest.json']
+          if not manifests:
+              print('skip: no generation manifest')
+              sys.exit(0)
+          gen = json.loads(manifests[-1].read_text(encoding='utf-8'))
+          snap = gen.get('sqlite_path') or gen.get('snapshot_path')
+          if not snap or not Path(snap).is_file():
+              print('skip: snapshot missing')
+              sys.exit(0)
+          rc = subprocess.call([
+              sys.executable,
+              'ops_scripts/ci/run_adg_three_graph_tests.py',
+              '--suite', 'quick', '--strict', '--snapshot', snap,
+          ])
+          sys.exit(rc)
+          "
+        env:
+          PYTHONPATH: .
 
       - name: Expected-Wiring Gate (declared call-site assertions)
         # Runs immediately after ADG ingest so wiring regressions surface at the
@@ -136,7 +169,7 @@ jobs:
           python ops_scripts/ci/check_observability_on_high_fanin.py
           python ops_scripts/ci/check_external_service_literal_ssot.py
           python ops_scripts/ci/check_cross_mainline_dispatcher.py
-          python ops_scripts/ci/check_env_var_in_config_layer.py
+          # AUDIT_5 removed (ADR-081): config-ref gate owns undeclared env flags.
           python ops_scripts/ci/check_violation_aging_sla.py
         env:
           PYTHONPATH: .

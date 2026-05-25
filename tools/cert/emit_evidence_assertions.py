@@ -35,8 +35,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
-OUT_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
+from cert_paths import ASSERTIONS_PATH as OUT_PATH, REQS_PATH
 
 ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "certification"
 

@@ -42,12 +42,16 @@ def emit_three_bucket_reports(
 
     audit_result = run_authority_audit(sqlite_path, out_path=AUTHORITY_AUDIT_PATH)
 
+    from tools.adg.snapshot_fingerprint import print_audit_receipt
+
     print(
         f"[ADG] three-bucket reports: health={report['health_score_pct_triplet_attested']}% "
         f"runtime_present={report['runtime_view_present']} "
-        f"proof_edges={audit_result.get('proof_count', 0)}"
+        f"proof_edges={audit_result.get('proof_count', 0)} "
+        f"snapshot_sha256={report.get('source_snapshot_sha256', 'MISSING')}"
     )
     print(f"[ADG]   gap_json={gap_json.name} gap_md={gap_md.name} audit={AUTHORITY_AUDIT_PATH.name}")
+    print_audit_receipt(report, prefix="THREE_BUCKET_AUDIT_RECEIPT")
 
     return {
         "gap_json": gap_json,

@@ -20,8 +20,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SRC = REPO_ROOT / "certification" / "requirements_source.json"
-CSV = REPO_ROOT / "certification" / "requirements_source.csv"
+import sys
+
+sys.path.insert(0, str(REPO_ROOT))
+from tools.cert.cert_paths import REQS_PATH  # noqa: E402
+
+SRC = REQS_PATH
+CSV = REQS_PATH.with_suffix(".csv")
 
 # Defaults per claim_type
 CLAIM_TYPE_VERIFIERS = {

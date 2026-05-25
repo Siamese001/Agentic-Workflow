@@ -54,7 +54,7 @@ REF_KIND_IMPORTED_SNAPSHOT = "IMPORTED_CORE_EVIDENCE_SNAPSHOT"
 INTEGRATED_RUNS_REL = "artifacts/apps_rg/runs"
 CORRELATED_CLI_RUN_ENV = "APPS_RG_CORRELATED_CLI_RUN"
 CERTIFICATION_UWG_REL = (
-    "certification/agentic_core/integrated_runtime/uwg_commit_latest"
+    "artifacts/certification/integrated_runtime/uwg_commit_latest"
 )
 
 _CORRELATION_METHOD_ENV = "env_APPS_RG_CORRELATED_CLI_RUN"

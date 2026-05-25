@@ -1,5 +1,5 @@
 # AgentSpec instance — apps_rfp RFP response assembly agent
-# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
 #
 # Phase B finding: 5 orchestrators (RfpOrchestrator, section_orchestrator,
 # enterprise_orchestrator, ComplianceMappingAgent, RequirementAnalysisAgent).

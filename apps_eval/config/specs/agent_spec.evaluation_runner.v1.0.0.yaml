@@ -1,5 +1,5 @@
 # AgentSpec instance — apps_eval evaluation runner
-# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
 #
 # Phase B finding: apps_eval is the cross-app judge consumer. Refactor early
 # despite medium severity. Domain specialization (regression_detector,

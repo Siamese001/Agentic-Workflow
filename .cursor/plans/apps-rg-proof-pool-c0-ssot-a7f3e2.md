@@ -27,7 +27,12 @@ CURRENT_WAVE: Track-C5-live
 LAST_COMPLETED_WAVE: Track-C-code-unit
 LAST_UPDATED: 2026-05-23
 NOTION_STATUS: In Progress
+NOTION_PAGE_ID: 36927693-f55c-8173-99c1-c25da5321677
 NOTION_PLANS_ROW: page_id=36927693-f55c-8173-99c1-c25da5321677
+NOTION_RECONCILED: 2026-05-24
+ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md
+ACTIVE_BACKLOG_ROLE: spine_child_p0
+PARENT_PLAN: apps-rg-spine-only-unification-d8f4a2
 DISK_SSOT: .cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md
 
 PLAN_CREATED: slug=apps-rg-proof-pool-c0-ssot-a7f3e2 path=.cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md status=Not Started
@@ -343,3 +348,26 @@ Pick **one** allowlist authority for PA/L2/X2/FEC (recommended: **resolver pool 
 | PA regen if allowlist widens (option B) | Prefer option A; token budget re-check |
 | unify_narrative bullet coupling | Coordinate with unify_bullets lane ordering |
 | Live proof blocked on BM25/Chroma | Document BLOCKED in closeout; do not fake PASS |
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

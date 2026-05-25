@@ -24,7 +24,10 @@ FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: COMPLETE
 CURRENT_WAVE: W4
 LAST_COMPLETED_WAVE: W4
-LAST_UPDATED: 2026-05-22
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-24
+PARENT_SPINE_PLAN: apps-rg-spine-only-unification-d8f4a2
+LAST_UPDATED: 2026-05-24
 
 ---
 
@@ -269,3 +272,26 @@ PLAN_COMPLETE: plan=exec-summary-pa-core-law-dedup-f8e2a1 note="exec PA dedup sh
 - Prior dedup work: `EXEC_SUMMARY_PROMPT_DEDUP_V2` in [executive_summary.generate_scratch_v1.yaml](apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml)
 - Overlap analysis: chat session 2026-05-22 (exec summary prompt slots vs core PA)
 - Proof run: [exec_summary_20260522_084114](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260522_084114/)
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

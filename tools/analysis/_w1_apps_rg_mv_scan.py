@@ -1,6 +1,8 @@
 """W1 — MV / violations / P-view scan over apps_rg surface."""
 from __future__ import annotations
 
+__adg_consumer_mode__ = "inventory"
+
 import json
 import sqlite3
 from pathlib import Path
@@ -24,8 +26,12 @@ def safe(cur, sql, params=()):
 
 
 def main() -> None:
-    conn = sqlite3.connect(str(SNAPSHOT))
-    cur = conn.cursor()
+    with sqlite3.connect(str(SNAPSHOT)) as conn:
+        cur = conn.cursor()
+        _run_scan(cur, conn)
+
+
+def _run_scan(cur: sqlite3.Cursor, conn: sqlite3.Connection) -> None:
     out: dict = {"snapshot": str(SNAPSHOT.relative_to(REPO))}
 
     # Violations table schema + apps_rg slice

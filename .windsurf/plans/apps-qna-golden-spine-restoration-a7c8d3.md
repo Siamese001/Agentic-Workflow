@@ -1,6 +1,9 @@
+> **Superseded 2026-05-24:** apps_qna requires full rebaseline against [apps-rg-spine-only-unification-d8f4a2.md](../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md) (same disposition as apps_lic). Notion Plans row retired; do not execute pre-rebaseline scope.
+
 ---
 plan_id: apps-qna-golden-spine-restoration-a7c8d3
 plan_type: refactor
+status: Superseded (pending apps_qna rebaseline)
 # T3 architectural refactor: cross-layer, >50 files, governance pattern migration
 dod_exempt: false
 ---

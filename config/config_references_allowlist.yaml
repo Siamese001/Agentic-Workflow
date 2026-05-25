@@ -95,3 +95,8 @@ allowed_external_flags:
   - PYTEST_CURRENT_TEST
   - PYTEST_VERSION
   - PYTEST_XDIST_WORKER
+
+  # --- ADR-081 ADG CI enforcement (wrapper/generator; not operator-facing secrets) ---
+  - ADG_CERTIFIED_USE_ROLLUP
+  - ADG_CI_GATES_LEGACY_M
+  - ADG_SKIP_PLANE2_MANIFEST

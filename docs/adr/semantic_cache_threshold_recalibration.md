@@ -4,7 +4,7 @@
 **Owner approval**: PENDING_APPROVAL  
 **ADR version**: 1.0  
 **Created**: 2026-05-01T18:04:12.067466Z  
-**Generator**: `scripts/generate_threshold_adr.py`
+**Generator**: `ops_scripts/ci/generate_threshold_adr.py`
 
 ## Context
 
@@ -74,7 +74,7 @@ dataset or with an upgraded model — surfaces a safe threshold.)
 
 ## Rollback Rule
 
-Not applicable — no threshold change is recommended. If the dataset is expanded or the model is upgraded such that a safe threshold emerges, regenerate the ADR via `python scripts/generate_threshold_adr.py`.
+Not applicable — no threshold change is recommended. If the dataset is expanded or the model is upgraded such that a safe threshold emerges, regenerate the ADR via `python ops_scripts/ci/generate_threshold_adr.py`.
 
 ## Apply Procedure
 

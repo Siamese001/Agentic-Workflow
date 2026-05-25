@@ -1,7 +1,9 @@
+> **Superseded by:** [adg-three-bucket-pipeline-redesign-c8e4f1.md](../../adg-three-bucket-pipeline-redesign-c8e4f1.md) (ADR-079 opt-in three-bucket), [adg-ci-unified-migration-a7f3b2.md](../../adg-ci-unified-migration-a7f3b2.md) (ADR-081 unified enforcement planes). Archived plan — not active. WA6 strict-flip + NOT NULL graduation is explicitly out of scope under ADR-079.
+
 # Three-Bucket WA6 — `ADG_CERTIFIED_STRICT=1` Flip + `NOT NULL` Graduation
 
 - **Plan ID**: `three-bucket-wa6-strict-flip-e22a51`
-- **Status**: Waiting (calendar-gated until 2026-05-22)
+- **Status**: Superseded 2026-05-24 (was Waiting, calendar-gated until 2026-05-22)
 - **Tier**: T1 (single-wave, ~4,000 tokens)
 - **Created**: 2026-05-03
 - **Owner**: Cursor Agent (proposes); operator (approves WA6 gate)

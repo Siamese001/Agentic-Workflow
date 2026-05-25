@@ -1,7 +1,7 @@
 """Fort Knox — Repo-signer trust-level promoter.
 
 Signs `artifacts/certification/final_requirement_signoff_report.json`
-bytes with the Ed25519 private key at `keys/release_signer/release_signer.key.pem`
+bytes with the Ed25519 private key at `artifacts/keys/release_signer/release_signer.key.pem`
 (matched to the committed public key at
 `config/release_signer/release_signer.pub.pem`) and populates the
 signature envelope with VERIFIED status, signer identity, and a
@@ -48,7 +48,7 @@ SHA_SIDECAR = CERT_DIR / "final_requirement_signoff_report.sha256"
 MERKLE = CERT_DIR / "final_requirement_signoff_report.merkle.json"
 ENVELOPE = CERT_DIR / "final_requirement_signoff_report.signature.json"
 
-PRIV_KEY_PATH = REPO_ROOT / "keys" / "release_signer" / "release_signer.key.pem"
+PRIV_KEY_PATH = REPO_ROOT / "artifacts" / "keys" / "release_signer" / "release_signer.key.pem"
 PUB_KEY_PATH = REPO_ROOT / "config" / "release_signer" / "release_signer.pub.pem"
 SIGNER_IDENTITY = "fortknox-release-signer-v1"
 SIGNATURE_ALGORITHM = "ed25519"

@@ -38,7 +38,7 @@ def _archived_l2_shim_path() -> pathlib.Path:
             "l2_rationalization_*/agentic_core/L2_execution/apps_rg_l2_binding.py"
         )
     )
-    assert matches, "archived L2 shim missing under archives/l2_rationalization_*/"
+    assert matches, "archived L2 shim missing under artifacts/archives/l2_rationalization_*/"
     return matches[-1]
 
 

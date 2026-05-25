@@ -51,7 +51,7 @@ def _load_runtime_generation_status(
                 rgs_l2 = str(l2.get("runtime_generation_status") or "").strip()
                 if rgs_l2:
                     return rgs_l2
-        except (OSError, json.JSONDecodeError, TypeError):
+        except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- optional l2_output read; fall back to unknown status
             pass
     return "unknown"
 
@@ -128,7 +128,7 @@ def resolve_from_artifact_dir(
                             manifest_loaded = raw
                         else:
                             x3_loaded = raw
-                except (OSError, json.JSONDecodeError, TypeError):
+                except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- optional manifest/x3 read; empty dict defaults
                     pass
     return compute_executive_summary_operator_disposition(
         artifact_dir=artifact_dir,

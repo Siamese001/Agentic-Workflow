@@ -19,12 +19,26 @@ def load_section_proof_for_lane(
     repo_root: Path,
     collect_employment_bullets_fn: Callable[..., Any] | None = None,
     artifact_dir: Path | None = None,
+    jd_text_override: str | None = None,
+    briefing_text_override: str | None = None,
 ) -> tuple[SectionProofPool, dict[str, Any], Path, str, SectionFrontSpineBridge]:
     """Return (proof_pool, base_resume_dict, base_path, base_hash, front_spine) for a lane run."""
+    jd_eff = (
+        str(jd_text_override).strip()
+        if jd_text_override is not None
+        else str(getattr(args, "jd_text", "") or getattr(args, "jd", "") or "").strip()
+    )
+    br_eff = (
+        str(briefing_text_override).strip()
+        if briefing_text_override is not None
+        else str(getattr(args, "briefing", "") or "").strip()
+    )
     front_spine = build_section_front_spine_from_args(
         section_id=section_id,
         args=args,
         repo_root=repo_root,
+        jd_text_override=jd_eff,
+        briefing_text_override=br_eff,
     )
     if artifact_dir is not None:
         from apps_rg.runtime.spine.front_contracts import emit_section_front_spine_receipts
@@ -37,8 +51,8 @@ def load_section_proof_for_lane(
         target_company=str(getattr(args, "target_company", "") or ""),
         target_title=str(getattr(args, "target_title", "") or ""),
         target_role=str(getattr(args, "target_role", "") or "") or None,
-        jd_text=str(getattr(args, "jd_text", "") or ""),
-        briefing_text=str(getattr(args, "briefing", "") or ""),
+        jd_text=jd_eff,
+        briefing_text=br_eff,
         repo_root=repo_root,
         collect_employment_bullets_fn=collect_employment_bullets_fn,
         front_spine=front_spine,

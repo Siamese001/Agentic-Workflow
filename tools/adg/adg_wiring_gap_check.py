@@ -36,7 +36,7 @@ Plan: adg-distilled-followups-c8e4a1 W2 / P3-P4.
 from __future__ import annotations
 
 # ADG consumer mode declaration per adg-canonical-invariants.md §6
-__adg_consumer_mode__ = "read_only"
+__adg_consumer_mode__ = "inventory"
 
 import argparse
 import sqlite3

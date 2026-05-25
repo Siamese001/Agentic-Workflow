@@ -28,6 +28,8 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 RECEIPT_PATH = REPO_ROOT / "docs" / "reports" / "adg" / "AUDIT_PIPELINE_RECEIPT.json"
 
@@ -77,6 +79,60 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _append_manifest_gate_record(
+    gate_manifest_path: Path,
+    *,
+    name: str,
+    status: str,
+    exit_code: int,
+    message: str,
+) -> None:
+    try:
+        data = _load_json(gate_manifest_path)
+    except (OSError, json.JSONDecodeError):
+        return
+    gates = data.setdefault("gates", [])
+    gates.append(
+        {
+            "name": name,
+            "phase": "post-ADG-subprocess",
+            "kind": "subprocess",
+            "blocking_mode": "hard_fail",
+            "status": status,
+            "exit_code": exit_code,
+            "duration_s": None,
+            "started_at_utc": _utcnow_iso(),
+            "finished_at_utc": _utcnow_iso(),
+            "script_rel": "ops_scripts/ci/run_adg_three_graph_tests.py",
+            "message": message,
+        }
+    )
+    gate_manifest_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+
+def _run_certification_plane2(
+    *,
+    gate_manifest_path: Path | None,
+    snapshot: Path,
+) -> list[str]:
+    from tools.generate.integration.certification_plane2 import run_plane2_manifest_quick  # noqa: PLC0415
+
+    reasons: list[str] = []
+    rc, _rollup = run_plane2_manifest_quick(sqlite_path=snapshot, suite="quick", strict=True)
+    status = "pass" if rc == 0 else "fail"
+    if gate_manifest_path and gate_manifest_path.is_file():
+        _append_manifest_gate_record(
+            gate_manifest_path,
+            name="three_bucket_manifest_quick",
+            status=status,
+            exit_code=rc,
+            message=f"suite=quick strict=1 exit={rc}",
+        )
+    if rc != 0:
+        reasons.append(f"three_bucket_manifest_quick exit_code={rc}")
+    return reasons
+
+
 def _cross_check_required_gates(gate_manifest: dict[str, Any]) -> list[str]:
     """Return list of reason strings for any required gate missing or skipped."""
     from tools.generate._required_gates import required_gate_names
@@ -103,12 +159,26 @@ def _run_generator(
     timeout_s: int,
     certification_mode: bool,
 ) -> int:
-    env_note = "ADG_CERTIFICATION_MODE=1 " if certification_mode else ""
-    print(f"[audit] Stage-1: {env_note}python tools/generate/generate_full_adg.py {' '.join(extra_args)}")
     import os as _os
+
     env = _os.environ.copy()
     if certification_mode:
         env["ADG_CERTIFICATION_MODE"] = "1"
+        # Plane-2 manifest runs in GHA / contract gates after Stage-1 (avoid duplicate).
+        env["ADG_SKIP_PLANE2_MANIFEST"] = "1"
+        # ADR-079: three-bucket stays off the default regen hot path, but CI
+        # certification must populate v_runtime_proof + registry + gap JSON.
+        env.setdefault("ADG_THREE_BUCKET", "1")
+        env.setdefault("ADG_THREE_BUCKET_SIGN", "1")
+    env_bits = []
+    if certification_mode:
+        env_bits.append("ADG_CERTIFICATION_MODE=1")
+    if env.get("ADG_THREE_BUCKET", "").strip().lower() in ("1", "true", "yes"):
+        env_bits.append("ADG_THREE_BUCKET=1")
+    if env.get("ADG_THREE_BUCKET_SIGN", "").strip().lower() in ("1", "true", "yes"):
+        env_bits.append("ADG_THREE_BUCKET_SIGN=1")
+    env_note = " ".join(env_bits) + (" " if env_bits else "")
+    print(f"[audit] Stage-1: {env_note}python tools/generate/generate_full_adg.py {' '.join(extra_args)}")
     try:
         proc = subprocess.run(  # noqa: S603
             [sys.executable, str(REPO_ROOT / "tools" / "generate" / "generate_full_adg.py"), *extra_args],
@@ -217,6 +287,7 @@ def run_audit(
     generation_manifest: dict[str, Any] = {}
     gate_manifest: dict[str, Any] = {}
     runtime_proof_status = "view_absent"
+    snapshot_raw: str | None = None
     if gen_manifest_path is None:
         reasons.append("generation manifest missing — generator did not emit or clock skew > 2s")
     else:
@@ -233,9 +304,42 @@ def run_audit(
         except (OSError, json.JSONDecodeError) as e:
             reasons.append(f"failed to read generation manifest: {e}")
 
+    snapshot_raw = generation_manifest.get("sqlite_path") or generation_manifest.get("snapshot_path")
+
+    # Plane 2 — three-graph manifest (certification; generator skips via env).
+    if certification_mode and snapshot_raw and gate_manifest_path:
+        snap_path = Path(snapshot_raw)
+        if snap_path.is_file():
+            reasons.extend(
+                _run_certification_plane2(
+                    gate_manifest_path=gate_manifest_path,
+                    snapshot=snap_path,
+                )
+            )
+            try:
+                gate_manifest = _load_json(gate_manifest_path)
+            except (OSError, json.JSONDecodeError):
+                pass
+
     # Cross-check required gates (certification mode only).
     if certification_mode and gate_manifest:
         reasons.extend(_cross_check_required_gates(gate_manifest))
+
+    # Plane-3 dispatcher failure (generator records + exits; double-check JSON).
+    if certification_mode:
+        disp_candidates = sorted(
+            ARTIFACTS_ADG.glob("adg_gate_results_*.json"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        if disp_candidates:
+            try:
+                disp_payload = _load_json(disp_candidates[-1])
+                if int(disp_payload.get("overall_exit_code", 0)) != 0:
+                    reasons.append(
+                        f"adg_gate_dispatcher overall_exit_code={disp_payload.get('overall_exit_code')}"
+                    )
+            except (OSError, json.JSONDecodeError):
+                reasons.append("adg_gate_dispatcher results unreadable")
 
     # Runtime-proof gate.
     if require_runtime_proof and runtime_proof_status != "attested":
@@ -245,7 +349,7 @@ def run_audit(
 
     # Stage 2 — report, only if we have a snapshot.
     report_rc: int | None = None
-    snapshot = generation_manifest.get("sqlite_path") or generation_manifest.get("snapshot_path")
+    snapshot = snapshot_raw
     if snapshot:
         snap_path = Path(snapshot)
         if snap_path.is_file():
@@ -263,6 +367,36 @@ def run_audit(
             reasons.append(f"snapshot declared but not found: {snap_path}")
     else:
         reasons.append("snapshot path absent from generation manifest")
+
+    # ADR-081: unified enforcement report (planes 1–3 rollup).
+    enforcement_path: Path | None = None
+    try:
+        from tools.adg.integration.enforcement_report import (  # noqa: PLC0415
+            build_enforcement_report,
+            write_enforcement_report,
+        )
+
+        rollup_path = REPO_ROOT / "docs" / "reports" / "adg" / "three_graph_test_rollup.json"
+        disp_candidates = sorted(
+            ARTIFACTS_ADG.glob("adg_gate_results_*.json"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        disp_path = disp_candidates[-1] if disp_candidates else None
+        snap_path = Path(snapshot) if snapshot else None
+        report = build_enforcement_report(
+            snapshot_path=snap_path if snap_path and snap_path.is_file() else None,
+            gate_manifest_path=gate_manifest_path,
+            three_graph_rollup_path=rollup_path if rollup_path.is_file() else None,
+            dispatcher_results_path=disp_path,
+            runtime_proof_status=runtime_proof_status,
+            require_runtime_proof=require_runtime_proof,
+        )
+        enforcement_path = write_enforcement_report(report)
+        if certification_mode and report.get("certified_rollup") == "NOT_CERTIFIED":
+            reasons.append("enforcement_report certified_rollup=NOT_CERTIFIED")
+    except (ImportError, OSError, TypeError, ValueError) as exc:
+        if certification_mode:
+            reasons.append(f"enforcement_report build failed: {exc}")
 
     # Classify certification_status.
     if not certification_mode:
@@ -282,6 +416,8 @@ def run_audit(
         reasons=reasons,
     )
     _write_receipt(result)
+    if enforcement_path is not None:
+        print(f"[audit] enforcement report: {enforcement_path}")
 
     # Render summary.
     print(f"[audit] certification_status={status}")

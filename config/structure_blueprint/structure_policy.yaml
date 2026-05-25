@@ -37,15 +37,11 @@ root_directories:
   - data
   - config
   # Infrastructure / generated
-  - archives
   - artifacts
-  - certification
   - infrastructure
-  - keys
   - logs
   - reports
-  - requirements   # frozen requirement files (constraints*.txt etc.)
-  - scripts
+  - scripts        # Fort Knox allowlist: verify_tier*_gate.py, verify_all_requirements_*.py, scripts/proof/**
   - templates
   - test_artifacts
   # Hidden / IDE / VCS
@@ -57,8 +53,6 @@ root_directories:
   - .cursor          # Cursor IDE project config (rules, hooks, MCP SSOT)
   - .windsurf
   - .locks           # git-lfs / xet lock directory (runtime artifact)
-  # Model cache directories (HuggingFace sentence-transformers downloads)
-  - models--BAAI--bge-m3
   # git-xet extension working directory
   - xet
 
@@ -144,3 +138,12 @@ forbidden_root_directories:
   - legacy_engines
   - legacy_resume_gen
   - old_core
+  - inputs          # use data/fixtures/<app>/ or artifacts/<app>/runtime_inputs/
+  - include         # venv header leak — not a repo territory
+  - keys            # use artifacts/keys/ (private) + config/ (public PEM)
+  - lib             # venv site-packages leak — use .venv/
+  - requirements    # cross-app contracts: docs/requirements/contracts/
+  - models--BAAI--bge-m3  # HF cache: HF_HOME or data/cache/huggingface/
+  - certification         # inputs: data/certification/; review: artifacts/certification/review/
+  - chroma                # Chroma persist leak — use data/cache/chromadb/
+  - archives              # quarantine: artifacts/archives/

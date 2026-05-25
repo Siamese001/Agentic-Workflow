@@ -1,6 +1,9 @@
+> **Superseded 2026-05-24:** Pending apps_qna rebaseline vs apps_rg spine (apps-rg-spine-only-unification-d8f4a2). Notion retired.
+
 ---
 plan_id: apps-qna-golden-spine-restoration-a7c8d3
 plan_type: refactor
+status: Superseded (pending apps_qna rebaseline)
 # T3 architectural refactor: cross-layer, >50 files, governance pattern migration
 dod_exempt: false
 ---

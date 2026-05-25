@@ -366,7 +366,7 @@ def test_merkle_changes_when_row_changes(workspace, monkeypatch):
 # --------------------------- live artifact smoke ---------------------------
 
 @pytest.mark.skipif(
-    not (REPO_ROOT / "certification" / "apps_evidence_assertions.jsonl").exists(),
+    not (REPO_ROOT / "data" / "certification" / "apps_evidence_assertions.jsonl").exists(),
     reason="live apps_evidence_assertions.jsonl not present",
 )
 def test_live_compile_canary_passes():

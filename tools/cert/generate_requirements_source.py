@@ -17,7 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_CSV = Path(
     r"C:\Users\amita\Downloads\runtime_certification_requirements_100_percent_hardened.csv"
 )
-OUT_JSON = REPO_ROOT / "certification" / "requirements_source.json"
+from cert_paths import REQS_PATH as OUT_JSON
 
 # Per-claim_type required controls. Matches tools/cert/required_evidence_matrix.yaml
 # but expressed in absolute control names the compiler understands.

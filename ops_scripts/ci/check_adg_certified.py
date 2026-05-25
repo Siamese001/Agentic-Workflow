@@ -1,60 +1,15 @@
 #!/usr/bin/env python3
-"""Gate G-ADG-CERTIFIED — the aggregate certification gate.
+"""Gate G-ADG-CERTIFIED — aggregate certification gate (rollup-first).
 
-ADG consumer mode: ``proof`` — this gate's verdict is the final word on
-whether a snapshot is CERTIFIED. It runs every sub-gate that contributes
-to the three-bucket authority model's correctness invariants and returns
-a single ``ADG_CERTIFIED`` / ``ADG_NOT_CERTIFIED`` verdict with structured
-per-gate breakdown.
-
-Sub-gates aggregated:
-
-  1. **graph-layer evidence** — `check_graph_layer_evidence.py` /
-     `check_snapshot_has_mvs.py` ensure mv_*/v_p* views populated.
-  2. **runtime proof view well-formed** — `check_runtime_proof_view_well_formed.py`
-     asserts every AUTHORITATIVE_RUNTIME row has a real trace_id.
-  3. **OTel GenAI semconv coverage** — `check_otel_genai_semconv_coverage.py`
-     asserts ≥80% of agent/workflow/tool span emitters use the
-     standardized ``gen_ai.*`` attributes.
-  4. **consumer mode declared** — `check_consumer_mode_declared.py`
-     asserts every ADG consumer file declares its mode.
-  5. **triplet completeness** — every edges row has non-null
-     (bucket, resolution_status, authority_status) post-backfill (the W7
-     graduation assertion in `ArtifactPaths.py` enforces this at write
-     time; this gate verifies it at read time as defense in depth).
-
-Verdict logic:
-
-  * ALL sub-gates exit 0 in strict mode -> ADG_CERTIFIED.
-  * ANY sub-gate exit non-zero in strict mode -> ADG_NOT_CERTIFIED with
-    the failing gate reported.
-  * Advisory-mode gates that report violations but exit 0 -> reported
-    as `coverage<threshold` in the report; do NOT block certification
-    until they are graduated to strict.
-
-Plan: ``.cursor/plans/three-bucket-otel-view-5db409.md`` (W7).
-
-USAGE
-=====
-
-::
-
-    # Default: advisory mode — runs every sub-gate but does not block.
-    python ops_scripts/ci/check_adg_certified.py
-
-    # Strict: any sub-gate failure produces a non-zero exit and a
-    # NOT_CERTIFIED verdict.
-    python ops_scripts/ci/check_adg_certified.py --strict
-
-    # CI-friendly: write the verdict file unconditionally.
-    python ops_scripts/ci/check_adg_certified.py --write-verdict
+ADR-081: default path reads ``adg_enforcement_report_*.json`` instead of
+re-invoking six subprocess gates. Use ``--legacy-subgates`` to restore the
+prior subprocess fleet for parity debugging.
 
 Verdict file: ``docs/reports/adg/ADG_CERTIFIED_VERDICT.json``.
 """
 
 from __future__ import annotations
 
-# This gate aggregates other gates; it produces a proof-level certification.
 __adg_consumer_mode__ = "proof"
 
 import argparse
@@ -76,14 +31,12 @@ VERDICT_PATH: Final[Path] = (
     REPO_ROOT / "docs" / "reports" / "adg" / "ADG_CERTIFIED_VERDICT.json"
 )
 
-
-# Sub-gate registry: (label, script_relpath, contributes_to_certification, accepts_strict_flag)
 SUB_GATES: Final[tuple[tuple[str, str, bool, bool], ...]] = (
     (
         "graph-layer evidence (snapshot)",
         "ops_scripts/ci/check_snapshot_has_mvs.py",
         True,
-        False,  # Existing gate has no --strict arg
+        False,
     ),
     (
         "runtime proof view well-formed",
@@ -94,51 +47,37 @@ SUB_GATES: Final[tuple[tuple[str, str, bool, bool], ...]] = (
     (
         "OTel GenAI semconv coverage",
         "ops_scripts/ci/check_otel_genai_semconv_coverage.py",
-        True,  # W3 of three-bucket-gap-remediation-069806: migration complete (100%).
+        True,
         True,
     ),
     (
         "consumer mode declared",
         "ops_scripts/ci/check_consumer_mode_declared.py",
         True,
-        False,  # Activated via env var, not flag
+        False,
     ),
     (
         "three-bucket gap thresholds",
         "ops_scripts/ci/check_three_bucket_gap_thresholds.py",
-        True,  # W5 of three-bucket-gap-remediation-069806.
+        True,
         True,
     ),
     (
         "ADG snapshot signed (in-toto/SLSA)",
         "ops_scripts/ci/check_adg_snapshot_signed.py",
-        True,  # W6 of three-bucket-gap-remediation-069806.
+        True,
         True,
     ),
     (
         "schema graduation readiness",
         "ops_scripts/ci/check_schema_graduation_readiness.py",
-        False,  # W7 — advisory until 4-week green window closes.
+        False,
         True,
     ),
 )
 
 
 def _latest_snapshot() -> Path | None:
-    """Resolve the latest valid ADG snapshot.
-
-    Delegates to the canonical ``tools.adg.shared_modules.path_resolver.latest_sqlite``
-    which validates ``%m%d%Y_%H%M`` timestamps and picks by mtime. This rejects
-    the legacy sentinel ``adg_indexed_99999999_9999.sqlite`` (month 99 is
-    invalid) — without this delegation, the previous naive
-    ``sorted(glob())[-1]`` would shadow the real snapshot with any sentinel
-    that test code or archiver cleanup left behind.
-
-    Regression precedent (2026-04-30): a sentinel was shadowing the real
-    snapshot and this gate falsely reported ``ADG_NOT_CERTIFIED`` via a
-    "triplet completeness" blocker, despite the real snapshot having all
-    762,238 edges properly triplet-attested.
-    """
     if not ARTIFACT_DIR.exists():
         return None
     try:
@@ -146,19 +85,20 @@ def _latest_snapshot() -> Path | None:
     except ImportError:
         files = list(ARTIFACT_DIR.glob("adg_indexed_*.sqlite"))
         from datetime import datetime as _dt  # noqa: PLC0415
+
         def _valid(p: Path) -> bool:
             try:
                 _dt.strptime(p.stem.replace("adg_indexed_", ""), "%m%d%Y_%H%M")
                 return True
             except ValueError:
                 return False
+
         valid = [p for p in files if _valid(p)]
         return max(valid, key=lambda p: p.stat().st_mtime) if valid else None
     return latest_sqlite()
 
 
 def _check_triplet_completeness(snapshot: Path) -> dict[str, object]:
-    """Defense-in-depth: read-time check that all edges have non-null triplet."""
     out: dict[str, object] = {
         "label": "triplet completeness (read-time)",
         "ok": True,
@@ -196,16 +136,37 @@ def _check_triplet_completeness(snapshot: Path) -> dict[str, object]:
     return out
 
 
+def _rollup_verdict(
+    *,
+    report_path: Path,
+    strict: bool,
+) -> tuple[bool, list[str], dict[str, object]]:
+    from ops_scripts.ci.adg_enforcement_report import _load_json  # noqa: PLC0415
+
+    report = _load_json(report_path)
+    blockers: list[str] = []
+    p0 = report.get("p0_bug_gates_failed") or []
+    if p0:
+        blockers.extend(str(x) for x in p0)
+    rollup = str(report.get("certified_rollup", "NOT_CERTIFIED"))
+    certified = rollup == "CERTIFIED"
+    sub_results: list[dict[str, object]] = [
+        {
+            "label": "enforcement_report rollup",
+            "ok": certified,
+            "details": f"path={report_path}",
+            "contributes_to_certification": True,
+            "rollup": report.get("planes"),
+        }
+    ]
+    if strict and not certified:
+        return False, blockers, {"sub_gates": sub_results, "rollup_path": str(report_path)}
+    return certified, blockers, {"sub_gates": sub_results, "rollup_path": str(report_path)}
+
+
 def _run_subgate(
     script_relpath: str, *, strict: bool, accepts_strict_flag: bool
 ) -> dict[str, object]:
-    """Invoke a sub-gate as a subprocess and capture its result.
-
-    Sub-gates that accept ``--strict`` get the flag when ``strict=True``.
-    Sub-gates that activate via env var (e.g. ``CONSUMER_MODE_GATE_STRICT``)
-    are not given the flag — those env vars are set in the inherited env
-    when ``strict`` is passed.
-    """
     script = REPO_ROOT / script_relpath
     if not script.is_file():
         return {
@@ -219,7 +180,6 @@ def _run_subgate(
         cmd.append("--strict")
     env = os.environ.copy()
     if strict:
-        # Activate strict mode for env-flag-based gates.
         env.setdefault("CONSUMER_MODE_GATE_STRICT", "1")
         env.setdefault("RUNTIME_PROOF_VIEW_STRICT", "1")
         env.setdefault("GENAI_SEMCONV_STRICT", "1")
@@ -251,67 +211,94 @@ def _run_subgate(
     }
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="Run every sub-gate in strict mode; non-zero exits produce NOT_CERTIFIED.",
-    )
-    parser.add_argument(
-        "--write-verdict",
-        action="store_true",
-        help="Always write the verdict file (default: only on certification change).",
-    )
-    args = parser.parse_args(argv)
-
-    # W6 P6.1 completion-audit (2026-04-30): env-var surface matches the
-    # rest of the 3B-tier gates.
-    # - ADG_CERTIFIED_BYPASS=1 : skip the gate entirely (logs a one-line
-    #   notice, exits 0). Mirrors APPS_SPINE_DELEGATION_GATE_BYPASS,
-    #   THREE_BUCKET_GAP_BYPASS, etc.
-    # - ADG_CERTIFIED_STRICT=1 : treat the run as strict even without the
-    #   --strict CLI flag. The CLI flag wins when both are set in the
-    #   "advisory" direction (CLI can only INCREASE strictness, not
-    #   decrease it — same semantics as THREE_BUCKET_GAP_STRICT).
-    if os.environ.get("ADG_CERTIFIED_BYPASS") == "1":
-        print("[adg_certified] bypass active (ADG_CERTIFIED_BYPASS=1)")
-        return 0
-    env_strict = os.environ.get("ADG_CERTIFIED_STRICT") == "1"
-    args.strict = args.strict or env_strict
-
-    snapshot = _latest_snapshot()
-    started = datetime.now(timezone.utc)
-
+def _legacy_subgate_verdict(*, strict: bool, snapshot: Path | None) -> tuple[bool, list[str], list[dict[str, object]]]:
     sub_results: list[dict[str, object]] = []
     blockers: list[str] = []
-
-    # Defense-in-depth triplet completeness — runs only when a snapshot exists.
     if snapshot is not None:
         triplet = _check_triplet_completeness(snapshot)
         sub_results.append(triplet)
         if not triplet["ok"]:
             blockers.append(str(triplet["label"]))
-
     for label, script, contributes, accepts_strict_flag in SUB_GATES:
-        result = _run_subgate(
-            script, strict=args.strict, accepts_strict_flag=accepts_strict_flag
-        )
+        result = _run_subgate(script, strict=strict, accepts_strict_flag=accepts_strict_flag)
         result["label"] = label
         result["script"] = script
         result["contributes_to_certification"] = contributes
         sub_results.append(result)
         if contributes and not result["ok"]:
             blockers.append(label)
+    return len(blockers) == 0, blockers, sub_results
 
-    certified = len(blockers) == 0
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Non-zero exit on NOT_CERTIFIED.",
+    )
+    parser.add_argument("--write-verdict", action="store_true")
+    parser.add_argument(
+        "--rollup",
+        action="store_true",
+        help="Read adg_enforcement_report (default unless --legacy-subgates).",
+    )
+    parser.add_argument(
+        "--rollup-path",
+        type=Path,
+        default=None,
+        help="Explicit enforcement report JSON path.",
+    )
+    parser.add_argument(
+        "--legacy-subgates",
+        action="store_true",
+        help="Re-run subprocess sub-gates (pre-ADR-081 behavior).",
+    )
+    args = parser.parse_args(argv)
+
+    if os.environ.get("ADG_CERTIFIED_BYPASS") == "1":
+        print("[adg_certified] bypass active (ADG_CERTIFIED_BYPASS=1)")
+        return 0
+
+    env_strict = os.environ.get("ADG_CERTIFIED_STRICT") == "1"
+    args.strict = args.strict or env_strict
+    use_rollup = args.rollup or os.environ.get("ADG_CERTIFIED_USE_ROLLUP", "1") == "1"
+    use_rollup = use_rollup and not args.legacy_subgates
+
+    snapshot = _latest_snapshot()
+    started = datetime.now(timezone.utc)
+    blockers: list[str] = []
+    sub_results: list[dict[str, object]] = []
+    rollup_path: str | None = None
+
+    if use_rollup:
+        from ops_scripts.ci.adg_enforcement_report import latest_enforcement_report  # noqa: PLC0415
+
+        report_path = args.rollup_path or latest_enforcement_report()
+        if report_path is None or not report_path.is_file():
+            print("[adg_certified] WARN no enforcement report — falling back to legacy subgates")
+            certified, blockers, sub_results = _legacy_subgate_verdict(
+                strict=args.strict, snapshot=snapshot
+            )
+        else:
+            certified, blockers, extra = _rollup_verdict(
+                report_path=report_path, strict=args.strict
+            )
+            sub_results = list(extra.get("sub_gates") or [])
+            rollup_path = str(extra.get("rollup_path") or report_path)
+    else:
+        certified, blockers, sub_results = _legacy_subgate_verdict(
+            strict=args.strict, snapshot=snapshot
+        )
+
     verdict = "ADG_CERTIFIED" if certified else "ADG_NOT_CERTIFIED"
-
     report = {
         "gate": "G-ADG-CERTIFIED",
         "tier": "B",
         "verdict": verdict,
         "strict_mode": args.strict,
+        "rollup_mode": use_rollup,
+        "rollup_path": rollup_path,
         "timestamp": started.isoformat(),
         "snapshot_used": str(snapshot) if snapshot else None,
         "blockers": blockers,
@@ -326,13 +313,10 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"[adg_certified] verdict={verdict} blockers={len(blockers)} "
-        f"sub_gates_run={len(sub_results)} strict={args.strict}"
+        f"rollup={use_rollup} strict={args.strict}"
     )
     if blockers:
         print(f"[adg_certified] blockers: {', '.join(blockers)}")
-        for r in sub_results:
-            if r.get("contributes_to_certification") and not r["ok"]:
-                print(f"  ✗ {r['label']}: {r.get('details') or r.get('stdout_tail', '')[:200]}")
     print(f"[adg_certified] verdict written to {VERDICT_PATH}")
 
     if not certified and args.strict:

@@ -15,7 +15,7 @@ Rotate the release signer keypair when ANY of the following hold:
 | Trigger | Severity | Window |
 |---|---|---|
 | Suspected private-key exposure (laptop loss, accidental commit, etc.) | P0 | Immediate |
-| Ex-employee with access to `keys/release_signer/release_signer.key.pem` | P0 | Within 24h of departure |
+| Ex-employee with access to `artifacts/keys/release_signer/release_signer.key.pem` | P0 | Within 24h of departure |
 | Annual rotation cadence | P3 | Every 365 days from `signing_timestamp_utc` of last rotation |
 | Cryptographic algorithm deprecation (Ed25519 \u2192 Ed448 etc.) | P2 | Within the deprecation window |
 | Quarterly hygiene audit flags age > 365 days | P3 | Next maintenance window |
@@ -46,7 +46,7 @@ python tools/cert/apps_e2e/sign_apps_release_bundle.py --rotate-keys
 This:
 
 - Generates a fresh Ed25519 keypair
-- Writes `keys/release_signer/release_signer.key.pem` (private \u2014 must NOT be committed; verify `.gitignore`)
+- Writes `artifacts/keys/release_signer/release_signer.key.pem` (private \u2014 must NOT be committed; verify `.gitignore`)
 - Writes `config/release_signer/release_signer.pub.pem` (public \u2014 IS committed)
 - Updates `config/release_signer/release_signer.pub.fingerprint` (committed; `signer_identity` consumers read this)
 - Re-signs the current `apps_e2e_signoff_report.json`
@@ -78,7 +78,7 @@ git add artifacts/certification/apps_e2e/APPS_HUNDRED_PERCENT_RUNTIME_PROOF.json
 git commit -m "ops: rotate release-signer keypair (Ed25519, fingerprint=$(Get-Content config/release_signer/release_signer.pub.fingerprint))"
 ```
 
-**Do NOT commit** `keys/release_signer/release_signer.key.pem`. Pre-commit gate `T7s.1` (clean-bundle) will reject the commit if the private key materialized in the index.
+**Do NOT commit** `artifacts/keys/release_signer/release_signer.key.pem`. Pre-commit gate `T7s.1` (clean-bundle) will reject the commit if the private key materialized in the index.
 
 ### Step 4 \u2014 Announce the new fingerprint
 
@@ -165,7 +165,7 @@ CI gate `T7s.1` (clean-bundle) verifies the signature against the committed publ
 
 | Path | Status | Committed? |
 |---|---|---|
-| `keys/release_signer/release_signer.key.pem` | Private key | **NO** |
+| `artifacts/keys/release_signer/release_signer.key.pem` | Private key | **NO** |
 | `config/release_signer/release_signer.pub.pem` | Public key | YES |
 | `config/release_signer/release_signer.pub.fingerprint` | Convenience (sha256 of public key) | YES |
 | `artifacts/certification/apps_e2e/apps_e2e_signoff_report.signature.json` | Latest signature envelope | YES |

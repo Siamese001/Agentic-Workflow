@@ -313,3 +313,26 @@ WAVE_COMPLETE: plan=one-canonical-spine wave=9 note="master closeout; targeted p
 ---
 
 PLAN_COMPLETE: plan=one-canonical-spine-e8b4a1 note="W1-W9 complete; FINAL_ONE_SPINE_STATUS=CLOSED; targeted proof PASS; full apps_contract suite failed (1802 UNKNOWN triage); reports docs/reports/apps_rg/one_spine_*"
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

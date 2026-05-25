@@ -173,13 +173,18 @@ def _check_a_bucket_discipline(con: sqlite3.Connection) -> tuple[list[str], list
 
     # A2 — registry edges should carry AUTHORITATIVE_REGISTRY (or another
     # registry-tier authority). NULL is treated as authority mismatch.
+    # DISABLED_REGISTRY declarations intentionally use RISK_SIGNAL_ONLY per
+    # registry_resolvers._classify_entry_status (disabled MCP servers).
     rows = con.execute(
         """
         SELECT id, relation_type, authority_status, source_file
           FROM edges
          WHERE bucket='registry'
            AND (authority_status IS NULL
-                OR authority_status NOT LIKE '%REGISTRY%')
+                OR (
+                    authority_status NOT LIKE '%REGISTRY%'
+                    AND COALESCE(resolution_status, '') != 'DISABLED_REGISTRY'
+                ))
          LIMIT ?
         """,
         (SAMPLE_LIMIT,),

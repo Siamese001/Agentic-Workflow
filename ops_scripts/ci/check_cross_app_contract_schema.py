@@ -38,7 +38,7 @@ Bypass
 CROSS_APP_CONTRACT_BYPASS=1 in env logs a bypass row to
 `artifacts/cursor/cross_app_contract_violations.jsonl` and exits 0.
 
-Plan: requirements/contracts/REQ-CROSS-APP-* (Phase A).
+Plan: docs/requirements/contracts/REQ-CROSS-APP-* (Phase A).
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONTRACTS_DIR = REPO_ROOT / "requirements" / "contracts"
+CONTRACTS_DIR = REPO_ROOT / "docs" / "requirements" / "contracts"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "cross_app_contract_violations.jsonl"
 
 CONTRACT_FILES = {

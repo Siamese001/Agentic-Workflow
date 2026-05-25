@@ -150,6 +150,15 @@ def test_runtime_proof_status_field_present_in_json_and_md(tmp_path):
     assert "DIAGNOSTIC ONLY — RUNTIME-THIN" not in md
 
 
+def test_report_includes_snapshot_fingerprint_fields(tmp_path):
+    snap = _make_snapshot(tmp_path / "snap.sqlite", with_runtime_view=True, attested=2)
+    r = report_mod.run_report(snap, top_n=5)
+    assert r.get("source_snapshot_sha256")
+    assert len(str(r["source_snapshot_sha256"])) == 64
+    assert r.get("source_snapshot_mtime_iso")
+    assert r["snapshot"] == snap.name
+
+
 def test_runtime_thin_banner_shown_when_not_attested(tmp_path):
     snap = _make_snapshot(tmp_path / "snap.sqlite", with_runtime_view=False, attested=0)
     out_dir = tmp_path / "out"

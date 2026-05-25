@@ -47,8 +47,8 @@ def main() -> int:
         return 0
 
     repo = _repo_root()
-    compiler = repo / "scripts" / "compile_requirement_signoff.py"
-    verifier = repo / "scripts" / "verify_final_requirement_signoff_bundle.py"
+    compiler = repo / "tools" / "cert" / "compile_requirement_signoff.py"
+    verifier = repo / "ops_scripts" / "ci" / "verify_final_requirement_signoff_bundle.py"
     report = repo / "artifacts" / "certification" / "final_requirement_signoff_report.json"
 
     for path, label in [(compiler, "compiler"), (verifier, "verifier")]:

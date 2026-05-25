@@ -1,6 +1,6 @@
 """Pact-style verifier for REQ Coverage Contracts.
 
-Walks ``requirements/contracts/<REQ_ID>.contract.yaml`` and asserts that
+Walks ``docs/requirements/contracts/<REQ_ID>.contract.yaml`` and asserts that
 each contract is satisfied by recent ledger evidence within its
 ``freshness_sla_days`` window.
 
@@ -52,7 +52,7 @@ except ImportError:  # guardian: allow-yaml-optional -- declared dep, but fail c
 from tools.runtime_evidence.ledger_writer import DEFAULT_LEDGER_PATH
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CONTRACTS_DIR = REPO_ROOT / "requirements" / "contracts"
+DEFAULT_CONTRACTS_DIR = REPO_ROOT / "docs" / "requirements" / "contracts"
 
 
 @dataclass

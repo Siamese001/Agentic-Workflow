@@ -18,14 +18,33 @@ _JD_TAG = "jd_requirements"
 
 _BRIEFING_SECTION_PRIORITY: tuple[str, ...] = (
     "STRATEGIC MANDATE",
+    "POST-MERGER",
+    "POST MERGER",
+    "FEDERATED",
+    "ENTERPRISE ARCHITECTURE",
+    "M&A INTEGRATION",
+    "INNOVATION",
+    "AI ENGINEERING",
     "INNOVATION & AI AGENDA",
     "ENTERPRISE ARCHITECTURE & DATA",
     "LEADERSHIP & STAKEHOLDERS",
     "M&A INTEGRATION PLAYBOOK",
-    "M&A INTEGRATION",
     "SEGMENTS",
     "MARKET & CULTURE",
     "RESUME / EXECUTIVE SUMMARY POSITIONING",
+)
+
+_BRIEFING_SLUG_BOOST: tuple[str, ...] = (
+    "post_merger",
+    "federated",
+    "integration",
+    "interoperab",
+    "enterprise_architecture",
+    "innovation",
+    "ai_engineering",
+    "submission",
+    "merger",
+    "acquisition",
 )
 
 _JD_LINE_PRIORITY_PATTERNS: tuple[re.Pattern[str], ...] = tuple(
@@ -135,30 +154,42 @@ def compress_targeting_jd_body(jd_text: str, max_chars: int) -> str:
 
 
 def _parse_briefing_sections(briefing: str) -> tuple[list[str], dict[str, list[str]]]:
-    """Return (preamble lines, section_title -> bullet lines)."""
-    text = briefing.replace("\r\n", "\n")
-    lines = text.split("\n")
+    """Return (preamble lines, section_id -> body lines). Supports === and markdown ## headings."""
+    from apps_rg.runtime.sections.executive_summary_briefing import _split_briefing_sections
+
     preamble: list[str] = []
     sections: dict[str, list[str]] = {}
-    current: str | None = None
-    for line in lines:
-        m = re.match(r"^===\s*(.+?)\s*===\s*$", line.strip())
-        if m:
-            current = m.group(1).strip()
-            sections.setdefault(current, [])
+    for section_id, body in _split_briefing_sections(briefing):
+        lines = [ln.rstrip() for ln in body.split("\n") if ln.strip()]
+        if not lines:
             continue
-        if line.strip().startswith("[END EXEC BRIEF"):
-            break
-        if current is None:
-            if line.strip():
-                preamble.append(line.rstrip())
-        else:
-            sections[current].append(line.rstrip())
+        if section_id == "preamble":
+            preamble.extend(lines)
+            continue
+        title = section_id
+        if lines[0].lstrip().startswith("#"):
+            title = re.sub(r"^#+\s*", "", lines[0]).strip() or section_id
+        sections[title] = lines
+    if not sections and preamble:
+        sections["preamble"] = preamble
+        preamble = []
     return preamble, sections
 
 
+def _score_briefing_section_title(title: str) -> int:
+    t = title.lower()
+    for idx, pat in enumerate(_BRIEFING_SECTION_PRIORITY):
+        if pat.lower() in t:
+            return idx
+    if any(k in t for k in _BRIEFING_SLUG_BOOST):
+        return 0
+    if any(k in t for k in ("cultural", "narrative", "performance_mapping")):
+        return len(_BRIEFING_SECTION_PRIORITY) + 2
+    return len(_BRIEFING_SECTION_PRIORITY) + 1
+
+
 def compress_targeting_briefing_body(briefing: str, max_chars: int) -> str:
-    """Section-priority briefing cap; keeps bullets, drops low-priority sections."""
+    """Section-priority briefing cap; keeps high-signal sections (markdown ## or === headers)."""
     preamble, sections = _parse_briefing_sections(briefing)
     out: list[str] = []
     used = 0
@@ -174,34 +205,36 @@ def compress_targeting_briefing_body(briefing: str, max_chars: int) -> str:
         used += len(add)
         return True
 
-    for pl in preamble[:3]:
-        if not _append(pl):
-            break
-
-    ordered_titles: list[str] = []
-    for title in _BRIEFING_SECTION_PRIORITY:
-        for key in sections:
-            if title.lower() in key.lower() and key not in ordered_titles:
-                ordered_titles.append(key)
-    for key in sorted(sections.keys()):
-        if key not in ordered_titles:
-            ordered_titles.append(key)
+    ordered_titles = sorted(
+        sections.keys(),
+        key=lambda t: (_score_briefing_section_title(t), t.lower()),
+    )
 
     for title in ordered_titles:
         bullets = sections.get(title) or []
         if not bullets:
             continue
-        header = f"=== {title} ==="
+        header_line = bullets[0]
+        if header_line.lstrip().startswith("#"):
+            header = header_line.strip()
+        else:
+            header = f"=== {title} ==="
         if not _append(header):
             break
         seen_b: set[str] = set()
-        for b in bullets:
+        start_idx = 1 if header_line.lstrip().startswith("#") else 0
+        for b in bullets[start_idx:]:
             if b.strip().startswith("- "):
                 bk = _normalize_line_key(b)
                 if bk in seen_b:
                     continue
                 seen_b.add(bk)
             if not _append(b):
+                break
+
+    if not out and preamble:
+        for pl in preamble[:2]:
+            if not _append(pl):
                 break
 
     if not out:
@@ -358,6 +391,11 @@ def apply_executive_summary_targeting_cap(
     }
     if not targeting_cap_enabled(runtime_payload):
         meta["targeting_cap_reason"] = "not_capsule_mode_or_disabled"
+        return content, meta
+
+    if runtime_payload.get("targeting_context_frozen") is True:
+        meta["targeting_cap_reason"] = "targeting_context_frozen_author_judge_parity"
+        meta["targeting_tokens_after_cap"] = estimate_targeting_region_tokens(content)
         return content, meta
 
     span = _extract_tagged_block(content, _JD_TAG)

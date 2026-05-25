@@ -8,8 +8,8 @@ HOSTILE VERIFIER. Distrusts:
   * any assertion not produced by an allowlisted command
 
 The ONLY authoritative inputs are:
-  certification/apps_e2e_requirements_source.json    (what must be proven)
-  certification/apps_evidence_assertions.jsonl       (atomic proof assertions)
+  data/certification/apps_e2e_requirements_source.json    (what must be proven)
+  data/certification/apps_evidence_assertions.jsonl       (atomic proof assertions)
   referenced on-disk artifacts                       (re-opened, re-hashed every run)
 
 A requirement is SIGNED_OFF only when every required control has at least
@@ -76,18 +76,27 @@ except ImportError:  # pragma: no cover
     print("FATAL: jsonschema is required (pip install jsonschema)", file=sys.stderr)
     sys.exit(2)
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+from cert_paths import (
+    APPS_ASSERTION_SCHEMA,
+    APPS_ASSERTIONS_PATH,
+    APPS_REPORT_SCHEMA,
+    APPS_REQS_PATH,
+    APPS_REQS_SCHEMA,
+    CERT_ARTIFACTS_DIR,
+    REPO_ROOT,
+)
+
 COMPILER_VERSION = "apps_e2e_fortknox-v1.0"
 SCHEMA_VERSION = "apps_e2e_fortknox-v1"
-COMPILER_PATH_REL = "scripts/compile_apps_e2e_signoff.py"
+COMPILER_PATH_REL = "tools/cert/compile_apps_e2e_signoff.py"
 
-REQS_PATH = REPO_ROOT / "certification" / "apps_e2e_requirements_source.json"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "apps_evidence_assertions.jsonl"
-REQS_SCHEMA = REPO_ROOT / "certification" / "schemas" / "apps_e2e_requirements.schema.json"
-ASSERTION_SCHEMA = REPO_ROOT / "certification" / "schemas" / "apps_evidence_assertion.schema.json"
-REPORT_SCHEMA = REPO_ROOT / "certification" / "schemas" / "apps_e2e_signoff_report.schema.json"
+REQS_PATH = APPS_REQS_PATH
+ASSERTIONS_PATH = APPS_ASSERTIONS_PATH
+REQS_SCHEMA = APPS_REQS_SCHEMA
+ASSERTION_SCHEMA = APPS_ASSERTION_SCHEMA
+REPORT_SCHEMA = APPS_REPORT_SCHEMA
 
-OUTPUT_DIR = REPO_ROOT / "artifacts" / "certification" / "apps_e2e"
+OUTPUT_DIR = CERT_ARTIFACTS_DIR / "apps_e2e"
 REPORT_PATH = OUTPUT_DIR / "apps_e2e_signoff_report.json"
 SHA256_PATH = OUTPUT_DIR / "apps_e2e_signoff_report.sha256"
 MERKLE_PATH = OUTPUT_DIR / "apps_e2e_signoff_report.merkle.json"

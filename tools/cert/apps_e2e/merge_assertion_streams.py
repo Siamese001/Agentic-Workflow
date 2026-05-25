@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CERT_DIR = REPO_ROOT / "certification"
+from cert_paths import CERT_DATA_DIR as CERT_DIR
 BACKUP_DIR = CERT_DIR / ".bak"
 
 CANONICAL = CERT_DIR / "apps_evidence_assertions.jsonl"

@@ -23,7 +23,7 @@ Suites
 ------
 quick    — preflight + a smoke subset across each bucket (fastest path)
 full     — every gate with suite includes "full"
-changed  — placeholder (W3.future) — currently behaves as full
+changed  — git-diff fan-in subset (config/adg_gate_fanin_map.yaml)
 negative — runs every gate against the negative-control fixtures
 
 Strict mode
@@ -125,6 +125,58 @@ def load_manifest() -> dict[str, Any]:
     return data
 
 
+def _resolve_changed_gate_ids() -> set[str]:
+    """Map ``git diff`` paths to manifest gate_ids via fan-in map."""
+    map_path = REPO_ROOT / "config" / "adg_gate_fanin_map.yaml"
+    if not map_path.is_file():
+        return set()
+    data = yaml.safe_load(map_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        return set()
+    always = set(data.get("always_gate_ids") or [])
+    default = set(data.get("default_gate_ids") or [])
+    selected = set(always)
+    prefixes: list[tuple[str, list[str]]] = []
+    for row in data.get("path_prefixes") or []:
+        if isinstance(row, dict) and row.get("prefix") and row.get("gate_ids"):
+            prefixes.append((str(row["prefix"]), list(row["gate_ids"])))
+    try:
+        proc = subprocess.run(  # noqa: S603
+            ["git", "diff", "--name-only", "origin/main...HEAD"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return always | default
+    if proc.returncode != 0:
+        try:
+            proc = subprocess.run(  # noqa: S603
+                ["git", "diff", "--name-only", "HEAD~1...HEAD"],
+                capture_output=True,
+                text=True,
+                cwd=str(REPO_ROOT),
+                timeout=30,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return always | default
+    paths = [ln.strip().replace("\\", "/") for ln in (proc.stdout or "").splitlines() if ln.strip()]
+    if not paths:
+        return always | default
+    matched = False
+    for path in paths:
+        for prefix, gate_ids in prefixes:
+            if path.startswith(prefix):
+                selected.update(gate_ids)
+                matched = True
+    if not matched:
+        selected.update(default)
+    return selected
+
+
 def filter_gates(
     manifest: dict[str, Any],
     *,
@@ -132,11 +184,17 @@ def filter_gates(
     bucket_filter: str | None,
 ) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
+    changed_ids: set[str] | None = None
+    if suite == "changed":
+        changed_ids = _resolve_changed_gate_ids()
     for gate in manifest["gates"]:
         if bucket_filter and gate.get("bucket") != bucket_filter:
             continue
         suites = gate.get("suite") or ["full"]
-        if suite not in suites:
+        if suite == "changed":
+            if changed_ids is not None and gate["gate_id"] not in changed_ids:
+                continue
+        elif suite not in suites:
             continue
         out.append(gate)
     # Order by lane, then preserve manifest order within a lane.
@@ -216,6 +274,11 @@ def _run_subprocess_gate(
 
     timeout_s = int(gate.get("timeout_s", DEFAULT_TIMEOUT_S))
     env = os.environ.copy()
+    # Legacy gates (accepts_runner_flags: false) resolve the snapshot via
+    # ADG_SNAPSHOT / latest_sqlite — pin the CLI snapshot so plane-2 cannot
+    # drift to a different mtime-selected file during certification.
+    if snapshot is not None:
+        env["ADG_SNAPSHOT"] = str(snapshot.resolve())
     # Activate strict env vars for legacy gates that gate on env not flag.
     if strict:
         strict_env = gate.get("strict_env")

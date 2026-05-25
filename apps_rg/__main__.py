@@ -925,6 +925,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             rc = section_lane_process_exit_code(
                 result=res_dict,
                 allow_non_allow_exit_zero_effective=section_allow_exit,
+                section_id=section_eff,
             )
             emit_cli_section_execution_summary(
                 result=res_dict,

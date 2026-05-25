@@ -39,20 +39,46 @@ def _split_briefing_sections(briefing: str) -> list[tuple[str, str]]:
     return [(sid, body) for sid, body in sections if body]
 
 
-def _rank_section(section_id: str) -> int:
+_INSURANCE_BROKERAGE_SECTION_BOOST = (
+    "post_merger",
+    "federated",
+    "integration",
+    "interoperab",
+    "enterprise_architecture",
+    "innovation",
+    "ai_engineering",
+    "submission",
+    "merger",
+    "acquisition",
+    "distribution",
+)
+
+
+def _rank_section(section_id: str, *, role_family_key: str | None = None) -> int:
     sid = section_id.lower()
+    rf = str(role_family_key or "").upper()
+    if "INSURANCE_BROKERAGE" in rf and any(k in sid for k in _INSURANCE_BROKERAGE_SECTION_BOOST):
+        return 0
     if any(k in sid for k in ("target", "role", "company", "priority", "must")):
         return 0
-    if any(k in sid for k in ("regulated", "governance", "risk", "compliance", "audit")):
+    if any(k in sid for k in ("post_merger", "federated", "integration", "interoperab", "enterprise_architecture")):
         return 1
-    if any(k in sid for k in ("platform", "agentic", "modern", "delivery")):
+    if any(k in sid for k in ("innovation", "ai_engineering", "automation", "pragmatic_process")):
+        return 1
+    if any(k in sid for k in ("regulated", "governance", "risk", "compliance", "audit")):
         return 2
-    if sid in ("preamble", "body"):
+    if any(k in sid for k in ("platform", "agentic", "modern", "delivery")):
         return 3
-    return 4
+    if sid in ("preamble", "body"):
+        return 4
+    return 5
 
 
-def prepare_briefing_for_executive_summary(briefing: str) -> tuple[str, dict[str, Any]]:
+def prepare_briefing_for_executive_summary(
+    briefing: str,
+    *,
+    role_family_key: str | None = None,
+) -> tuple[str, dict[str, Any]]:
     """Select briefing content with an auditable manifest (never silent tail-only drop)."""
     raw = str(briefing or "")
     original_chars = len(raw)
@@ -89,7 +115,10 @@ def prepare_briefing_for_executive_summary(briefing: str) -> tuple[str, dict[str
         }
 
     sections = _split_briefing_sections(raw)
-    ranked = sorted(sections, key=lambda pair: (_rank_section(pair[0]), pair[0]))
+    ranked = sorted(
+        sections,
+        key=lambda pair: (_rank_section(pair[0], role_family_key=role_family_key), pair[0]),
+    )
     included_ids: list[str] = []
     excluded_ids: list[str] = []
     parts: list[str] = []

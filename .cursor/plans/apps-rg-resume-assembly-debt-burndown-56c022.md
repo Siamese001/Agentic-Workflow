@@ -23,10 +23,16 @@ Reduce resume assembly technical debt: retire unused/ghost paths, complete DOCX 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: In Progress
-CURRENT_WAVE: W1-complete
-LAST_COMPLETED_WAVE: W1
-LAST_UPDATED: 2026-05-22
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W4
+LAST_COMPLETED_WAVE: W3
+LAST_UPDATED: 2026-05-24
+NOTION_STATUS: In Progress
+NOTION_PAGE_ID: 36827693-f55c-811f-9cae-c14d491432c4
+NOTION_RECONCILED: 2026-05-24
+ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md
+ACTIVE_BACKLOG_ROLE: spine_child_w5
+PARENT_PLAN: apps-rg-spine-only-unification-d8f4a2
 
 PLAN_CREATED: slug=apps-rg-resume-assembly-debt-burndown-56c022 path=.cursor/plans/apps-rg-resume-assembly-debt-burndown-56c022.md status=Not Started
 
@@ -226,3 +232,26 @@ DoD-5: W4 — Package X3 not required on integrated run dirs.
 ---
 
 DEFERRED_SCOPE: plan=apps-rg-resume-assembly-debt-burndown-56c022 id=w5-eval-facade-removal depends_on=apps_eval-migration title="Remove RgResumeOrchestrator facade after apps_eval migration" items="scenario_runner, taxonomy strings" rationale="Eval parity blocks hard delete" priority=P3
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

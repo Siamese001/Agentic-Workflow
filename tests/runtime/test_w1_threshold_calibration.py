@@ -79,7 +79,7 @@ class TestW1ThresholdSweep:
 class TestW1GenerateThresholdAdr:
     """W1.2j: Generate threshold ADR."""
 
-    SCRIPT_PATH = Path("scripts/generate_threshold_adr.py")
+    SCRIPT_PATH = Path("ops_scripts/ci/generate_threshold_adr.py")
 
     def test_script_exists(self) -> None:
         """ADR generation script exists."""

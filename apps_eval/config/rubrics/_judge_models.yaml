@@ -1,5 +1,5 @@
 # Judge model pin file — apps_eval cross-app rubric registry
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # Pin per-rubric judge models. Drift between rubric version and judge
 # model version is a calibration violation. Calibration cadence

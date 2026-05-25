@@ -6,7 +6,7 @@ Generates native agentic_core evidence artifacts under:
     artifacts/certification/runtime/agentic_core/<layer>/agentic_core_<layer>_harness.json
 
 and appends assertion rows to:
-    certification/evidence_assertions.jsonl
+    data/certification/evidence_assertions.jsonl
 
 Covers all 8 COMPONENT_RUNTIME requirements (one per layer bundle):
     RTC-REQ-092  L0 routing — single deterministic RouteContract
@@ -40,7 +40,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 GENERATED_AT = datetime.now(timezone.utc).isoformat()
 CERT_DIR = REPO_ROOT / "artifacts" / "certification" / "runtime" / "agentic_core"
-ASSERTIONS_PATH = REPO_ROOT / "certification" / "evidence_assertions.jsonl"
+from cert_paths import ASSERTIONS_PATH
 HARNESS_COMMAND = "tools/cert/agentic_core/harness_all_layers.py"
 VERIFIER_VERSION = "agentic-core-standalone-harnesses-f2c7a9"
 

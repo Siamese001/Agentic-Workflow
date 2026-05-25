@@ -240,3 +240,33 @@ class TestRollup:
             "quick", None, datetime.now(timezone.utc), results, strict=False
         )
         assert rollup.overall_status == "ERROR"
+
+
+class TestLegacySnapshotPin:
+    def test_subprocess_gate_sets_adg_snapshot_env(self, tmp_path, monkeypatch):
+        """Legacy gates must receive ADG_SNAPSHOT when the runner has --snapshot."""
+        captured: dict[str, str] = {}
+
+        def fake_run(cmd, **kwargs):  # noqa: ANN001
+            captured["ADG_SNAPSHOT"] = kwargs.get("env", {}).get("ADG_SNAPSHOT", "")
+            class _Proc:
+                returncode = 0
+                stdout = ""
+                stderr = ""
+
+            return _Proc()
+
+        monkeypatch.setattr(_runner.subprocess, "run", fake_run)
+        snap = tmp_path / "adg_indexed_01012026_1200.sqlite"
+        snap.write_bytes(b"")
+        gate = {
+            "gate_id": "static.edge_authority_well_formed",
+            "bucket": "static",
+            "script": "ops_scripts/ci/check_edge_authority_well_formed.py",
+            "evidence_mode": "proof",
+            "enforcement_mode": "strict",
+            "legacy": True,
+            "accepts_runner_flags": False,
+        }
+        _runner._run_subprocess_gate(gate, snapshot=snap, strict=True)
+        assert captured["ADG_SNAPSHOT"] == str(snap.resolve())

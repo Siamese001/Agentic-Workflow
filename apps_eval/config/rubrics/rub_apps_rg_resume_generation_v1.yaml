@@ -1,5 +1,5 @@
 # EvaluationRubric instance — apps_rg resume generation
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # W6+W7 — hard floors on safety_authority, non_contrivance, and
 # instruction_adherence. Resume generation has zero tolerance for fabricated

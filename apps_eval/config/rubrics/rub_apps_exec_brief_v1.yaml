@@ -1,5 +1,5 @@
 # EvaluationRubric instance — apps_exec executive brief
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # Phase B note: exec briefs invite flattery and inflated certainty.
 # evidence_grounding is hard-floor; certainty calibration is required.

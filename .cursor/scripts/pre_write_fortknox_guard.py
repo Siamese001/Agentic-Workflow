@@ -8,9 +8,9 @@ hand-authored assertions that bypass the hostile verifier.
 Blocking conditions (fail-closed):
 1. Direct write to any `final_requirement_signoff_report.{json,sha256,
    merkle.json,signature.json}` under `artifacts/certification/`.
-2. Write to any `*.xlsx` under `certification/` (XLSX outputs are
+2. Write to any `*.xlsx` under `data/certification/` or `artifacts/certification/` (XLSX outputs are
    read-only views emitted by the compiler, never authored).
-3. Append to `certification/evidence_assertions.jsonl` without the
+3. Append to `data/certification/evidence_assertions.jsonl` without the
    emitter-signature header comment:
        # emitted-by: tools/cert/<name>.py
        # emitted-by: scripts/verify_<name>.py
@@ -100,27 +100,27 @@ def check(path: str | None, content: str | None) -> int:
     ):
         return _block(
             f"{posix} is a compiler output. Re-run "
-            "scripts/compile_requirement_signoff.py instead of editing by hand."
+            "tools/cert/compile_requirement_signoff.py instead of editing by hand."
         )
 
     # 2. XLSX under certification/ (compiler-only output).
-    if posix.startswith("certification/") and posix.lower().endswith(".xlsx"):
+    if posix.startswith(("data/certification/", "artifacts/certification/")) and posix.lower().endswith(".xlsx"):
         return _block(
             f"{posix} is a read-only XLSX export. "
             "XLSX files under certification/ are compiler outputs."
         )
 
     # 3. Atomic assertions JSONL — require emitter signature header.
-    if posix == "certification/evidence_assertions.jsonl" and content is not None:
+    if posix == "data/certification/evidence_assertions.jsonl" and content is not None:
         if not _EMITTER_HEADER_RE.search(content):
             return _block(
-                "certification/evidence_assertions.jsonl requires an "
+                "data/certification/evidence_assertions.jsonl requires an "
                 "emitter-signature header '# emitted-by: tools/cert/... '"
                 " or '# emitted-by: scripts/verify_...'"
             )
 
     # 4. Runtime-path emitters writing to the JSONL — forbidden regardless.
-    if posix == "certification/evidence_assertions.jsonl" and content:
+    if posix == "data/certification/evidence_assertions.jsonl" and content:
         # Scan for explicit forbidden emitter paths in the body.
         for prefix in _RUNTIME_FORBIDDEN_PREFIXES:
             needle = f"emitted-by: {prefix}"

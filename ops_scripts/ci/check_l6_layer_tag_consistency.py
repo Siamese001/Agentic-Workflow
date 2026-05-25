@@ -21,6 +21,8 @@ Writes findings to `artifacts/cursor/l6_layer_tag_violations.json`.
 """
 from __future__ import annotations
 
+__adg_consumer_mode__ = "inventory"
+
 import json
 import os
 import sqlite3

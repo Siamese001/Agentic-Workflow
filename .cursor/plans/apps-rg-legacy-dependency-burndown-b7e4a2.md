@@ -25,6 +25,11 @@ PLAN_STATUS: IN_PROGRESS
 CURRENT_WAVE: D3_PARTIAL
 LAST_UPDATED: 2026-05-19
 NOTION_STATUS: In Progress
+NOTION_PAGE_ID: 36527693-f55c-8178-8c13-f1c889dccaf1
+NOTION_RECONCILED: 2026-05-24
+ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md
+ACTIVE_BACKLOG_ROLE: spine_child_p2
+PARENT_PLAN: apps-rg-spine-only-unification-d8f4a2
 DISK_SSOT: .cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md
 EVIDENCE_SSOT: docs/reports/agent_inventory/w11_closeout_and_next_plan_handoff.md
 
@@ -90,3 +95,26 @@ W11 completed **one** gated archive (L2 binding shim) and inventory/classificati
 - [w11_candidate_fanin_matrix.json](../docs/reports/agent_inventory/w11_candidate_fanin_matrix.json)
 - [w11_gated_archive_delete_plan.md](../docs/reports/agent_inventory/w11_gated_archive_delete_plan.md)
 - [w11_m4c_competencies_contract_fix.md](../docs/reports/agent_inventory/w11_m4c_competencies_contract_fix.md)
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Register apps_rg runtime substitute burndown plan in Notion Plans DB (review only)."""
+"""Patch apps_rg runtime substitute burndown plan Completed in Notion Plans DB."""
 from __future__ import annotations
 
 import json
@@ -16,17 +16,17 @@ PLAN_PATH = ".cursor/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
-    "apps_rg substitute burndown — STATUS PARTIAL. W0–W5,W7,W8 done (contract+code). "
-    "W6.1 open. No LIVE_RUNTIME_PROOF or RELEASE_ELIGIBLE_PROOF claimed. "
+    "COMPLETED (2026-05-25): apps_rg runtime substitute burndown W0–W8 DONE. "
+    "Contract+implementation closeout; optional X3 polish deferred. "
     "Receipt: artifacts/apps_rg/plans/runtime_substitute_burndown_w0_w8_receipt.md"
 )
 
-AI_SUMMARY = """- CLOSEOUT: PARTIAL
-- PROOF: CONTRACT_TEST_PROOF + IMPLEMENTATION_RECEIPT (20 pytest pass)
-- LIVE: attempted BLOCKED at C0.2 sparse/BM25 unavailable (Qwen+BGE dense OK)
-- NOT CLAIMED: LIVE_RUNTIME_PROOF PASS, RELEASE_ELIGIBLE_PROOF
-- DONE: W0-W8 incl W6.1 import purge
-- Receipts: runtime_substitute_burndown_w0_w8_receipt.md + live_proof_attempt_20260522.md
+AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-25)
+- CLOSEOUT_CLASS: PARTIAL_W0_W8_DONE_POLISH_DEFERRED
+- PROOF: CONTRACT_TEST_PROOF + IMPLEMENTATION_RECEIPT
+- NOT CLAIMED: RELEASE_ELIGIBLE_PROOF
+- DEFERRED: optional full X3/product_quality PASS polish
+- Disk: .cursor/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md
 - Page: 36827693-f55c-8131-b393-f43334c46a10"""
 
 
@@ -62,7 +62,7 @@ def _query_page_id() -> str | None:
     return str(results[0].get("id") or "") if results else None
 
 
-def _patch_for_review(page_id: str) -> bool:
+def _patch_completed(page_id: str) -> bool:
     from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
     import urllib.error
     import urllib.request
@@ -72,7 +72,7 @@ def _patch_for_review(page_id: str) -> bool:
         return False
     payload = {
         "properties": {
-            "Status": {"select": {"name": "In Progress"}},
+            "Status": {"select": {"name": "Completed"}},
             "Exists On Disk": {"checkbox": True},
             "Plan File Path": {
                 "rich_text": [{"text": {"content": PLAN_PATH}}],
@@ -107,14 +107,14 @@ def _patch_for_review(page_id: str) -> bool:
 def main() -> int:
     page_id = _query_page_id()
     if page_id:
-        if _patch_for_review(page_id):
+        if _patch_completed(page_id):
             print(
                 json.dumps(
                     {
                         "ok": True,
                         "action": "patched",
                         "page_id": page_id,
-                        "status": "Not Started",
+                        "status": "Completed",
                         "slug": SLUG,
                     }
                 )

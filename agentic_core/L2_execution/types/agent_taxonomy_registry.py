@@ -792,7 +792,7 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
     # Rows retained for audit trail only (status=ARCHIVED).
     # ============================================
     "ExecOrchestrator": AgentClassification(
-        file_path="archives/apps_exec_20260505/reasoning/ExecOrchestrator.py",
+        file_path="artifacts/archives/apps_exec_20260505/reasoning/ExecOrchestrator.py",
         class_name="ExecOrchestrator",
         current_layer="L3",
         canonical_role=CanonicalAgentRole.ORCHESTRATOR,
@@ -802,7 +802,7 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="ARCHIVED W5 P5.4. Replaced by RepoBriefOrchestrator in apps_repo_brief.",
     ),
     "EnterpriseBriefOrchestrator": AgentClassification(
-        file_path="archives/apps_exec_20260505/reasoning/enterprise_brief_orchestrator.py",
+        file_path="artifacts/archives/apps_exec_20260505/reasoning/enterprise_brief_orchestrator.py",
         class_name="EnterpriseBriefOrchestrator",
         current_layer="L3",
         canonical_role=CanonicalAgentRole.ORCHESTRATOR,
@@ -812,7 +812,7 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="ARCHIVED W5 P5.4.",
     ),
     "BriefAssemblyAgent": AgentClassification(
-        file_path="archives/apps_exec_20260505/reasoning/BriefAssemblyAgent.py",
+        file_path="artifacts/archives/apps_exec_20260505/reasoning/BriefAssemblyAgent.py",
         class_name="BriefAssemblyAgent",
         current_layer="L2",
         canonical_role=CanonicalAgentRole.EXECUTION,
@@ -822,7 +822,7 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="ARCHIVED W5 P5.4.",
     ),
     "SourceIngestionAgent": AgentClassification(
-        file_path="archives/apps_exec_20260505/reasoning/SourceIngestionAgent.py",
+        file_path="artifacts/archives/apps_exec_20260505/reasoning/SourceIngestionAgent.py",
         class_name="SourceIngestionAgent",
         current_layer="L2",
         canonical_role=CanonicalAgentRole.EXECUTION,
@@ -832,7 +832,7 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="ARCHIVED W5 P5.4.",
     ),
     "StyleComplianceAgent": AgentClassification(
-        file_path="archives/apps_exec_20260505/reasoning/StyleComplianceAgent.py",
+        file_path="artifacts/archives/apps_exec_20260505/reasoning/StyleComplianceAgent.py",
         class_name="StyleComplianceAgent",
         current_layer="L5",
         canonical_role=CanonicalAgentRole.SAFETY,

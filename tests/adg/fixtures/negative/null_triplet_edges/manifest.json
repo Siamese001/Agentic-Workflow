@@ -1,0 +1,7 @@
+{
+  "slug": "null_triplet_edges",
+  "description": "Edge row with NULL triplet columns.",
+  "target_gate": "static.no_null_triplet",
+  "expected_fail_reason": "view_rule_fail",
+  "extra_args": []
+}

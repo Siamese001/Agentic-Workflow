@@ -15,13 +15,17 @@ against its schema and enforces the hand-authored invariants:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CATALOG_PATH = REPO_ROOT / "certification" / "apps_e2e_requirements_source.json"
-SCHEMA_PATH = REPO_ROOT / "certification" / "schemas" / "apps_e2e_requirements.schema.json"
+sys.path.insert(0, str(REPO_ROOT))
+from tools.cert.cert_paths import APPS_REQS_PATH, APPS_REQS_SCHEMA  # noqa: E402
+
+CATALOG_PATH = APPS_REQS_PATH
+SCHEMA_PATH = APPS_REQS_SCHEMA
 
 EXPECTED_ROW_COUNT = 33
 EXPECTED_POSITIVE_CONTROL = "APPS-REQ-001"

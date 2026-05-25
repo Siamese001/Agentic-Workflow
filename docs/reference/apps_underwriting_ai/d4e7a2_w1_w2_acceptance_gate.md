@@ -10,7 +10,7 @@ d4e7a2 should be considered code/scaffold complete, but W1 is not fully accepted
 |---|---|
 | `apps_underwriting_ai/holdout/rationale_judge_holdout.yaml` | Current 100-row holdout dataset supplied for DS-R1/W1 |
 | `apps_underwriting_ai/holdout/rationale_judge_holdout_provenance.yaml` | Required provenance/attestation artifact, currently pending human completion |
-| `scripts/validate_underwriting_holdout.py` | CLI validator for schema, distribution, PII patterns, provenance, and W2 key gating |
+| `ops_scripts/ci/validate_underwriting_holdout.py` | CLI validator for schema, distribution, PII patterns, provenance, and W2 key gating |
 | `tests/apps_underwriting_ai/test_holdout_provenance_gate.py` | Pytest coverage for schema/provenance failure modes |
 
 ## Status semantics
@@ -25,7 +25,7 @@ d4e7a2 should be considered code/scaffold complete, but W1 is not fully accepted
 ## Required command examples
 
 ```bash
-python scripts/validate_underwriting_holdout.py \
+python ops_scripts/ci/validate_underwriting_holdout.py \
   --holdout apps_underwriting_ai/holdout/rationale_judge_holdout.yaml \
   --json
 ```
@@ -33,7 +33,7 @@ python scripts/validate_underwriting_holdout.py \
 Expected current result: schema valid with warning `HOLDOUT_GROUND_TRUTH_EQUALS_HUMAN_SCORE`.
 
 ```bash
-python scripts/validate_underwriting_holdout.py \
+python ops_scripts/ci/validate_underwriting_holdout.py \
   --holdout apps_underwriting_ai/holdout/rationale_judge_holdout.yaml \
   --provenance apps_underwriting_ai/holdout/rationale_judge_holdout_provenance.yaml \
   --require-provenance \
@@ -43,7 +43,7 @@ python scripts/validate_underwriting_holdout.py \
 Expected current result: `W1_PROVENANCE_PENDING`, because the provenance file is intentionally not signed.
 
 ```bash
-python scripts/validate_underwriting_holdout.py \
+python ops_scripts/ci/validate_underwriting_holdout.py \
   --holdout apps_underwriting_ai/holdout/rationale_judge_holdout.yaml \
   --provenance apps_underwriting_ai/holdout/rationale_judge_holdout_provenance.yaml \
   --require-provenance \

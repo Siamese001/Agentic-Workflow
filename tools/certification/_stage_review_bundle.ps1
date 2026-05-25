@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $base = 'C:\Git\Agentic-Workflow-FRESH'
-$dstAC = Join-Path $base 'certification\agentic_core'
-$dstApps = Join-Path $base 'certification\apps'
+$dstAC = Join-Path $base 'artifacts\certification\review\agentic_core'
+$dstApps = Join-Path $base 'artifacts\certification\review\apps'
 $dirs = @(
   $dstAC, $dstApps,
   (Join-Path $dstAC 'compiler_output'),
@@ -54,15 +54,18 @@ robocopy (Join-Path $artC 'integrated_runtime') (Join-Path $dstAC 'integrated_ru
 robocopy (Join-Path $artC 'agentic_core_e2e') (Join-Path $dstAC 'e2e') /E /NFL /NDL /NJH /NJS /NP | Out-Null
 
 $acSrc = Join-Path $dstAC 'source_inputs'
-Copy-Item (Join-Path $base 'certification\evidence_assertions.jsonl') $acSrc -Force
-Copy-Item (Join-Path $base 'certification\evidence_manifest.jsonl') $acSrc -Force
-Copy-Item (Join-Path $base 'certification\requirements_source.json') $acSrc -Force
-Copy-Item (Join-Path $base 'certification\requirement_signoff_schema.json') $acSrc -Force
-robocopy (Join-Path $base 'certification\schemas') (Join-Path $acSrc 'schemas') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+Copy-Item (Join-Path $base 'data\certification\evidence_assertions.jsonl') $acSrc -Force
+Copy-Item (Join-Path $base 'data\certification\evidence_manifest.jsonl') $acSrc -Force
+Copy-Item (Join-Path $base 'data\certification\requirements_source.json') $acSrc -Force
+Copy-Item (Join-Path $base 'data\certification\requirement_signoff_schema.json') $acSrc -Force
+robocopy (Join-Path $base 'config\certification\schemas') (Join-Path $acSrc 'schemas') /E /NFL /NDL /NJH /NJS /NP | Out-Null
 
 $acScripts = Join-Path $dstAC 'scripts'
-Copy-Item (Join-Path $base 'scripts\compile_requirement_signoff.py') $acScripts -Force
-Copy-Item (Join-Path $base 'scripts\verify_final_requirement_signoff_bundle.py') $acScripts -Force
+Copy-Item (Join-Path $base 'tools\cert\compile_requirement_signoff.py') $acScripts -Force
+Copy-Item (Join-Path $base 'tools\cert\verify_final_requirement_signoff_bundle.py') $acScripts -Force -ErrorAction SilentlyContinue
+if (-not (Test-Path (Join-Path $acScripts 'compile_requirement_signoff.py'))) {
+  Copy-Item (Join-Path $base 'scripts\verify_final_requirement_signoff_bundle.py') $acScripts -Force -ErrorAction SilentlyContinue
+}
 Copy-Item (Join-Path $base 'tools\certification\generate_100pct_runtime_proof.py') $acScripts -Force
 
 # ===== apps arm =====
@@ -84,13 +87,13 @@ foreach ($app in 'apps_eval','apps_exec','apps_lic','apps_qna','apps_research','
 robocopy (Join-Path $artC 'apps_rg_e2e') (Join-Path $dstApps 'rg_e2e') /E /NFL /NDL /NJH /NJS /NP | Out-Null
 
 $apSrc = Join-Path $dstApps 'source_inputs'
-Copy-Item (Join-Path $base 'certification\apps_evidence_assertions.jsonl') $apSrc -Force
-Copy-Item (Join-Path $base 'certification\apps_domain_evidence_assertions.jsonl') $apSrc -Force
-Copy-Item (Join-Path $base 'certification\apps_negative_control_assertions.jsonl') $apSrc -Force
-Copy-Item (Join-Path $base 'certification\apps_e2e_requirements_source.json') $apSrc -Force
+Copy-Item (Join-Path $base 'data\certification\apps_evidence_assertions.jsonl') $apSrc -Force
+Copy-Item (Join-Path $base 'data\certification\apps_domain_evidence_assertions.jsonl') $apSrc -Force
+Copy-Item (Join-Path $base 'data\certification\apps_negative_control_assertions.jsonl') $apSrc -Force
+Copy-Item (Join-Path $base 'data\certification\apps_e2e_requirements_source.json') $apSrc -Force
 
 $apScripts = Join-Path $dstApps 'scripts'
-Copy-Item (Join-Path $base 'scripts\compile_apps_e2e_signoff.py') $apScripts -Force
+Copy-Item (Join-Path $base 'tools\cert\compile_apps_e2e_signoff.py') $apScripts -Force
 Copy-Item (Join-Path $base 'tools\certification\generate_apps_100pct_runtime_proof.py') $apScripts -Force
 
 $acCount = (Get-ChildItem $dstAC -Recurse -File).Count

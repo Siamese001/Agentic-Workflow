@@ -40,7 +40,7 @@ class TestADRProposedNotApplied:
         """Running the generator must ALWAYS land at applied=False."""
         adr_path = REPO_ROOT / "artifacts" / "certification" / "semantic_cache_threshold_adr.json"
         result = subprocess.run(
-            [sys.executable, "scripts/generate_threshold_adr.py"],
+            [sys.executable, "ops_scripts/ci/generate_threshold_adr.py"],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,

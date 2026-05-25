@@ -1,5 +1,5 @@
 # EvaluationRubric instance — apps_underwriting_ai underwriting decisioning
-# Conforms to: requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
+# Conforms to: docs/requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml
 #
 # Phase B note: underwriting is the reference implementation. Hard floors
 # on safety_authority AND evidence_grounding. No tone surface; persona

@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-05-24T13:45:00+00:00",
+  "plan_id": "adg-ci-unified-migration-a7f3b2",
+  "status": "PARTIAL",
+  "migration_code_scope": "PASS",
+  "runtime_certification": "PARTIAL",
+  "steps": [
+    {
+      "name": "migration_unit_tests",
+      "cmd": "pytest tests/unit/tools_adg/test_run_full_adg_audit.py tests/unit/ops_scripts/ci/test_adg_enforcement_report.py tests/unit/ops_scripts/ci/test_check_adg_certified_rollup.py tests/unit/ops_scripts/ci/test_adg_three_graph_negative_fixtures.py -q",
+      "exit_code": 0,
+      "note": "33 passed"
+    },
+    {
+      "name": "consumer_mode_declared",
+      "cmd": "python ops_scripts/ci/check_consumer_mode_declared.py",
+      "exit_code": 0,
+      "note": "152/152 declared"
+    },
+    {
+      "name": "plane2_quick_gate",
+      "cmd": "python ops_scripts/ci/run_adg_three_graph_quick_gate.py",
+      "exit_code": 0,
+      "note": "overall_status=WARN (aspirational registry fields + trace_topology); strict quick suite exit 0"
+    },
+    {
+      "name": "p2_ratchet_tier1",
+      "cmd": "generate_full_adg Tier-1 (cert run 05242026_0921 manifest)",
+      "exit_code": 0,
+      "note": "p2_ratchet pass at count=2 ceiling=2 after phase2-pre-ratchet + untriaged-only count"
+    },
+    {
+      "name": "full_certification_audit",
+      "cmd": "python tools/adg/run_full_adg_audit.py --mode certification --format both",
+      "exit_code": 1,
+      "note": "generator exit_code=120 after ~18min post-Tier-1; re-run with --generator-timeout-seconds 7200 recommended"
+    }
+  ],
+  "files_changed_links": [
+    {"path": "ops_scripts/ci/check_registry_graph_integrity.py", "markdown": "[check_registry_graph_integrity.py](ops_scripts/ci/check_registry_graph_integrity.py)"},
+    {"path": "tools/generate/validation/gates.py", "markdown": "[gates.py](tools/generate/validation/gates.py)"},
+    {"path": "tools/generate/generate_full_adg.py", "markdown": "[generate_full_adg.py](tools/generate/generate_full_adg.py)"},
+    {"path": "apps_rg/runtime/sections/executive_summary_operator_disposition.py", "markdown": "[executive_summary_operator_disposition.py](apps_rg/runtime/sections/executive_summary_operator_disposition.py)"},
+    {"path": "tools/adg/integration/enforcement_report.py", "markdown": "[enforcement_report.py](tools/adg/integration/enforcement_report.py)"},
+    {"path": "tools/adg/run_full_adg_audit.py", "markdown": "[run_full_adg_audit.py](tools/adg/run_full_adg_audit.py)"}
+  ],
+  "adr": "docs/architecture/adr/ADR-081-adg-ci-unified-enforcement-planes.md"
+}

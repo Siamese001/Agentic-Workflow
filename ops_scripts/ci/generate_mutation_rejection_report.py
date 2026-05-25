@@ -37,8 +37,20 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT / "tools" / "cert"))
+
+from tools.cert.cert_paths import (  # noqa: E402
+    ASSERTIONS_PATH,
+    COMPILE_SIGNOFF_SCRIPT,
+    FINAL_SIGNOFF_BUNDLE_VERIFICATION,
+    FINAL_SIGNOFF_MERKLE,
+    FINAL_SIGNOFF_REPORT,
+    FINAL_SIGNOFF_SHA256,
+    FINAL_SIGNOFF_SIGNATURE,
+    REQS_PATH,
+)
 
 # Import the compiler's validator directly (pure function, no side effects)
 import compile_requirement_signoff as compiler_mod  # type: ignore
@@ -47,15 +59,15 @@ OUT_PATH = REPO_ROOT / "artifacts" / "certification" / "fortknox_mutation_reject
 SANDBOX = REPO_ROOT / "artifacts" / "certification" / "_mutation_sandbox"
 
 CLEAN_PATHS = {
-    REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.json",
-    REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.sha256",
-    REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.merkle.json",
-    REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.signature.json",
+    FINAL_SIGNOFF_REPORT,
+    FINAL_SIGNOFF_SHA256,
+    FINAL_SIGNOFF_MERKLE,
+    FINAL_SIGNOFF_SIGNATURE,
     REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.xlsx",
-    REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_bundle_verification.json",
+    FINAL_SIGNOFF_BUNDLE_VERIFICATION,
     REPO_ROOT / "artifacts" / "certification" / "positive_control_RTC-REQ-001.json",
-    REPO_ROOT / "certification" / "evidence_assertions.jsonl",
-    REPO_ROOT / "certification" / "requirements_source.json",
+    ASSERTIONS_PATH,
+    REQS_PATH,
     # W2.4: widen monitoring to L7 route-family coverage matrices per chain
     # and the agentic_core_how_trace per chain. Any in-place mutation of
     # these upstream artifacts would desync the L7 plane's evidence
@@ -552,8 +564,8 @@ def main() -> int:
         "generator_path": "scripts/generate_mutation_rejection_report.py",
         "generator_sha256": _sha256(Path(__file__)),
         "generated_at_utc": _iso_now(),
-        "compiler_path": "scripts/compile_requirement_signoff.py",
-        "compiler_sha256": _sha256(REPO_ROOT / "scripts" / "compile_requirement_signoff.py"),
+        "compiler_path": "tools/cert/compile_requirement_signoff.py",
+        "compiler_sha256": _sha256(COMPILE_SIGNOFF_SCRIPT),
         "sandbox_dir": str(SANDBOX.relative_to(REPO_ROOT)).replace("\\", "/"),
         "clean_bundle_paths_monitored": sorted(
             str(p.relative_to(REPO_ROOT)).replace("\\", "/") for p in CLEAN_PATHS),

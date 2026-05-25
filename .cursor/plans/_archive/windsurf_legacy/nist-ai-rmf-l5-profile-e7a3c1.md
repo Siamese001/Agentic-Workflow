@@ -2,7 +2,7 @@
 
 **Plan ID**: `nist-ai-rmf-l5-profile-e7a3c1`  
 **Created**: 2026-05-14  
-**Status**: Not Started  
+**Status**: Retired (2026-05-24 — archive hygiene; not active .cursor/plans SSOT)  
 **Tier**: T3 Architectural  
 **Goal**: Add NIST AI RMF (including GenAI profile) as external governance framework profile under agentic_core L5
 

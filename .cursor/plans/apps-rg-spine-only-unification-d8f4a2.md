@@ -30,6 +30,10 @@ NOTION_PLANS_ROW: page_id=36927693-f55c-8190-b30b-de1f6534e2a7
 LAST_UPDATED: 2026-05-23
 PLAN_CREATED: slug=apps-rg-spine-only-unification-d8f4a2 path=.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md status=Not Started
 NOTION_PLANS_ROW: page_id=36927693-f55c-8190-b30b-de1f6534e2a7 url=https://www.notion.so/36927693f55c8190b30bde1f6534e2a7
+NOTION_STATUS: In Progress
+NOTION_RECONCILED: 2026-05-24
+ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md
+ACTIVE_BACKLOG_ROLE: master
 GIT_MAIN_COMMIT: 3e7ab52413 apps_rg spine-only unification W2-W6 (2026-05-23)
 
 ---
@@ -288,3 +292,26 @@ See [spine_unification_open_scope_20260523.md](../docs/reports/apps_rg/spine_uni
 - W1 does not claim live provider PASS.
 - Deleting lanes in W4 does not remove section **prompt content** — only monolithic orchestration.
 - Supersedes bridge semantics in `one-canonical-spine-e8b4a1`; does not rewrite its historical receipts.
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

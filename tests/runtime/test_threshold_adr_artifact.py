@@ -13,7 +13,7 @@ ADR_MD = REPO_ROOT / "docs" / "adr" / "semantic_cache_threshold_recalibration.md
 
 pytestmark = pytest.mark.skipif(
     not ADR_JSON.exists(),
-    reason="semantic_cache_threshold_adr.json not present (run scripts/generate_threshold_adr.py)",
+    reason="semantic_cache_threshold_adr.json not present (run ops_scripts/ci/generate_threshold_adr.py)",
 )
 
 
@@ -149,7 +149,7 @@ class TestRegeneration:
         """Re-running the generator MUST still land at PENDING_APPROVAL."""
         import subprocess, sys
         result = subprocess.run(
-            [sys.executable, "scripts/generate_threshold_adr.py"],
+            [sys.executable, "ops_scripts/ci/generate_threshold_adr.py"],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,

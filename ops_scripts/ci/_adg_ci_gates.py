@@ -426,8 +426,23 @@ def _eval_m9(cur: dict, base: dict) -> tuple[bool, str]:
     return True, f"OK: records_execution_trace edges = {ret_cur} >= {TRACE_MIN_EDGES}"
 
 
+def _m_gate_sunset(gate_id: str) -> tuple[bool, str] | None:
+    """ADR-081: M10/M11/M12 superseded by plane-1 validation gates."""
+    if os.environ.get("ADG_CI_GATES_LEGACY_M") == "1":
+        return None
+    if gate_id in ("M10", "M11", "M12"):
+        return (
+            True,
+            f"sunset {gate_id}: use p1_ratchet/p2_ratchet/dead_production_imports/p0_violations",
+        )
+    return None
+
+
 def _eval_m10(cur: dict, base: dict) -> tuple[bool, str]:
     """M10: antipattern count must not increase by more than ANTIPATTERN_MAX_INCREASE_PCT%."""
+    sunset = _m_gate_sunset("M10")
+    if sunset is not None:
+        return sunset
     ap_base = base.get("antipattern", 0)
     ap_cur = cur.get("antipattern", 0)
     if ap_base == 0:
@@ -444,6 +459,9 @@ def _eval_m10(cur: dict, base: dict) -> tuple[bool, str]:
 
 def _eval_m11(cur: dict, base: dict) -> tuple[bool, str]:
     """M11: dead_imports must not increase by more than DEAD_IMPORT_MAX_INCREASE."""
+    sunset = _m_gate_sunset("M11")
+    if sunset is not None:
+        return sunset
     di_base = base.get("dead_imports", 0)
     di_cur = cur.get("dead_imports", 0)
     delta = di_cur - di_base
@@ -457,6 +475,9 @@ def _eval_m11(cur: dict, base: dict) -> tuple[bool, str]:
 
 def _eval_m12(cur: dict, base: dict) -> tuple[bool, str]:
     """M12: layer_violation_count must stay at zero."""
+    sunset = _m_gate_sunset("M12")
+    if sunset is not None:
+        return sunset
     lv_cur = cur.get("layer_violation_count", 0)
     if lv_cur > LAYER_VIOLATION_MAX:
         return False, f"layer_violation_count = {lv_cur} > {LAYER_VIOLATION_MAX} — layer gravity violated"
