@@ -1,8 +1,12 @@
-"""Declarative reasoning intensity intents per apps_rg Qwen lane (HTTP singleton).
+"""Declarative reasoning intensity intents per apps_rg Qwen lane.
 
-Executive summary declares the strongest knobs (temperature, branching, reflexion samples).
-Orchestration actually executing multiple samples/branches remains a separate runner — the
-ReasoningExecutionReceipt honestly records IGNORED orch rows for singleton HTTP calls.
+Narrative lanes (executive_summary, unify_narrative, ibm_narrative) use a single Qwen HTTP call;
+orchestration knobs stay honest IGNORED on the singleton transport.
+
+Employment bullet lanes: Unify 15× / IBM 12× Qwen paths (skills/JD/briefing in PA), Claude top-6 / top-5
+with minimum score floor; regen extra paths if threshold not met (see employment_bullet_pool).
+
+Competencies uses a smaller pool (4 paths) + Claude category selection.
 """
 from __future__ import annotations
 
@@ -85,6 +89,46 @@ _T2_QUALITY = SectionReasoningProfile(
     executive_lane=False,
 )
 
+_UNIFY_BULLET_POOL = SectionReasoningProfile(
+    tier=ReasoningIntensityTier.T2_QUALITY_SECTION,
+    temperature=0.38,
+    tot_branches=1,
+    tot_depth=1,
+    self_consistency_samples=15.0,
+    reflexion_loops=0.0,
+    executive_lane=False,
+)
+
+_IBM_BULLET_POOL = SectionReasoningProfile(
+    tier=ReasoningIntensityTier.T2_QUALITY_SECTION,
+    temperature=0.38,
+    tot_branches=1,
+    tot_depth=1,
+    self_consistency_samples=12.0,
+    reflexion_loops=0.0,
+    executive_lane=False,
+)
+
+_COMPETENCIES_BULLET_POOL = SectionReasoningProfile(
+    tier=ReasoningIntensityTier.T2_QUALITY_SECTION,
+    temperature=0.38,
+    tot_branches=1,
+    tot_depth=1,
+    self_consistency_samples=4.0,
+    reflexion_loops=0.0,
+    executive_lane=False,
+)
+
+_NARRATIVE_SINGLE_PATH = SectionReasoningProfile(
+    tier=ReasoningIntensityTier.T3_CRITICAL_SECTION,
+    temperature=0.39,
+    tot_branches=3,
+    tot_depth=2,
+    self_consistency_samples=1.0,
+    reflexion_loops=1.0,
+    executive_lane=False,
+)
+
 _lane_map: Final[dict[str, SectionReasoningProfile]] = {
     "education": _T0_LOCKED,
     "certifications": _T0_LOCKED,
@@ -92,11 +136,11 @@ _lane_map: Final[dict[str, SectionReasoningProfile]] = {
     # required would always IGNORE them and deny quality certification; headline matches transport.
     "headline": _T0_LOCKED,
     "executive_summary": _EXEC_SUMMARY_PROFILE,
-    "competencies": _T3_NON_EXEC,
-    "unify_narrative": _T3_NON_EXEC,
-    "unify_bullets": _T3_NON_EXEC,
-    "ibm_narrative": _T2_QUALITY,
-    "ibm_bullets": _T2_QUALITY,
+    "competencies": _COMPETENCIES_BULLET_POOL,
+    "unify_narrative": _NARRATIVE_SINGLE_PATH,
+    "unify_bullets": _UNIFY_BULLET_POOL,
+    "ibm_narrative": _NARRATIVE_SINGLE_PATH,
+    "ibm_bullets": _IBM_BULLET_POOL,
 }
 
 
@@ -114,7 +158,7 @@ def executive_summary_must_dominate_lesser_sections() -> None:
     assert float(es["self_consistency_samples"]) > float(head_kw["self_consistency_samples"])
     assert float(es["reflexion_loops"]) > float(head_kw["reflexion_loops"])
 
-    lesser_lanes = ("ibm_bullets", "ibm_narrative", "education")
+    lesser_lanes = ("ibm_narrative", "education")
     for lane in lesser_lanes:
         ot = profile_to_requested_kw(section_reasoning_profile(lane))
         assert float(es["self_consistency_samples"]) > float(

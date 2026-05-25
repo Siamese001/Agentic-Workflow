@@ -70,10 +70,10 @@ def _percent_tokens_in_text(text: str) -> list[str]:
 
 
 def _thesis_platform_opener() -> str:
-    """Thesis-led S1: executive identity without mechanism-inventory (X2-safe)."""
+    """Thesis-led S1: SVP IT strategy identity without mechanism-inventory (X2-safe)."""
     return (
-        "Technology strategy executive who operationalizes governed agentic AI platforms "
-        "for regulated enterprise workflows with traceable execution and enterprise scale."
+        "Technology strategy executive who aligns enterprise IT direction, governed AI "
+        "platform delivery, and innovation programs for regulated enterprise scale."
     )
 
 
@@ -107,14 +107,23 @@ def _commercialization_sentence(row: dict[str, Any]) -> str:
 def _quant_hpc_sentence(row: dict[str, Any]) -> str:
     _ = row
     return (
-        "Monolithic risk analytics were containerized with HPC microservices, trimming "
-        "stress-testing cycles by 40% and enabling real-time stress testing."
+        "That regulatory lineage work extended to re-architecting monolithic risk analytics "
+        "with containerized HPC microservices, trimming stress-testing cycles by 40% and "
+        "enabling real-time stress testing."
     )
 
 
 def _quant_background_sentence(row: dict[str, Any]) -> str:
     claim = str(row.get("claim_text") or "").strip()
-    if claim and "derivatives" in claim.lower():
+    claim_lower = claim.lower()
+    if claim and any(
+        marker in claim for marker in ("Towers Perrin", "ING", "Aetna")
+    ):
+        return (
+            "Built advanced quantitative foundation through derivatives pricing, "
+            "multi-Greek hedging, capital modeling, and FSA credential rigor."
+        )
+    if claim and "derivatives" in claim_lower:
         first = claim.split(".")[0].strip()
         if len(first) > 200:
             return (
@@ -271,7 +280,8 @@ def _strategic_closer_sentence(target_role: str) -> str:
     _ = target_role  # targeting is composition input only; not mirrored in display pad
     return (
         "Governed platform delivery, engineering scale, and regulatory-grade controls "
-        "connect execution discipline to measurable enterprise outcomes."
+        "extend that arc toward enterprise architecture modernization and data-driven "
+        "innovation programs."
     )
 
 
@@ -348,9 +358,9 @@ def build_graph_only_executive_summary_from_facts(
         sc = _commercialization_sentence(commercial)
         if team:
             sc = (
-                "Platform commercialization generated $22M in IP-led revenue and expanded gross "
-                "margins by 20% while scaling the ML engineering organization from 8 to 28 "
-                "specialists."
+                "Building on that platform foundation, platform commercialization generated $22M "
+                "in IP-led revenue and expanded gross margins by 20% while scaling the ML "
+                "engineering organization from 8 to 28 specialists."
             )
         sentences.append(sc)
         ids = _metric_ids_for_base("fact_engineering_platform_006", commercial, allowed_fact_ids)
@@ -360,6 +370,11 @@ def build_graph_only_executive_summary_from_facts(
 
     if gov:
         sg = _governance_metric_sentence(gov)
+        if sentences:
+            sg = (
+                "Through that operating model, Basel III and CCAR data lineage, cataloging, "
+                "and automated validation frameworks cut regulatory reporting errors by 40%."
+            )
         sentences.append(sg)
         ledger.append(
             _ledger_row(

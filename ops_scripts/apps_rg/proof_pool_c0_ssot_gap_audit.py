@@ -231,6 +231,23 @@ def audit_run(run_dir: Path, lane: str) -> dict:
         x2_active_pool=x2_active_pool,
     )
     out.update(authority)
+    # D7 graph-skills-quality: strict set equality naming (plan appendix).
+    out["resolver_ids"] = sorted(pool_ids)
+    out["fec_ids"] = sorted(fec_ids)
+    out["resolver_only_ids"] = list(authority.get("pool_only_ids") or sorted(pool_ids - fec_ids))
+    out["fec_only_ids"] = list(authority.get("fec_only_ids") or sorted(fec_ids - pool_ids))
+    out["d7_set_equal"] = not out["fec_only_ids"] and not out["resolver_only_ids"]
+    if out["d7_set_equal"]:
+        out["d7_status"] = "PASS"
+    else:
+        out["d7_status"] = "FAIL"
+        out["d7_exclusions"] = [
+            {"fact_id": fid, "reason_code": "fec_only_not_in_resolver"}
+            for fid in out["fec_only_ids"]
+        ] + [
+            {"fact_id": fid, "reason_code": "resolver_only_missing_from_fec"}
+            for fid in out["resolver_only_ids"]
+        ]
     if (
         out.get("raw_preclamp_allowlist_mismatch")
         and out.get("x2_active_pool") == "PASS"

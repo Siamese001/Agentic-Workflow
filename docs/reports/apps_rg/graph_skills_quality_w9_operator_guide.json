@@ -1,0 +1,35 @@
+{
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W9",
+  "gate_id": "G-W9",
+  "proof_class": "CONTRACT_TEST_PROOF",
+  "operator_guide_path": "docs/apps_rg/graph_skills_quality_operator_guide.md",
+  "guide_present": true,
+  "guide_markers_pass": true,
+  "guide_failures": [],
+  "fixture_digests": [
+    {
+      "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt",
+      "pinned": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "actual": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "pass": true
+    },
+    {
+      "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
+      "pinned": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "actual": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "pass": true
+    },
+    {
+      "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md",
+      "pinned": "74bd4674f23f17236abf3e5a3837e7fd422d6691e2f7e1dc234653f11a6da1f6",
+      "actual": "74bd4674f23f17236abf3e5a3837e7fd422d6691e2f7e1dc234653f11a6da1f6",
+      "pass": true
+    }
+  ],
+  "fixture_digests_pass": true,
+  "contract_test_pass": true,
+  "aggregate_pass": true,
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "emitted_at": "2026-05-25T23:13:47.577551+00:00"
+}

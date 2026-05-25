@@ -1,0 +1,45 @@
+{
+  "schema": "graph_skills_quality_w2_skill_capsule_v1",
+  "generated_at": "2026-05-25T22:53:24Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W2",
+  "status": "PASS",
+  "capsule_marker": "SKILL_PHRASE_CAPSULE_NOT_EVIDENCE",
+  "lanes": {
+    "headline": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    },
+    "executive_summary": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    },
+    "unify_bullets": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    },
+    "unify_narrative": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    },
+    "ibm_bullets": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    },
+    "ibm_narrative": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    },
+    "competencies": {
+      "capsule_marker_present": true,
+      "pytest_exit_code": 0
+    }
+  },
+  "phase_gate_g_w2": {
+    "gate": "G-W2",
+    "status": "PASS",
+    "seven_lane_capsule_contract": true,
+    "neg6_metadata_scan": true,
+    "failures": []
+  }
+}

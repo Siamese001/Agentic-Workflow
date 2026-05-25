@@ -1,0 +1,72 @@
+{
+  "schema": "hybrid_graph_boost_receipt_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W6",
+  "generated_at": "2026-05-25T23:05:57Z",
+  "status": "PASS",
+  "pool_widen_forbidden": true,
+  "reorder_only": true,
+  "neg3_all_lanes_pass": true,
+  "reorder_applied_any_lane": true,
+  "lanes": [
+    {
+      "section_id": "executive_summary",
+      "resolver_fact_count": 7,
+      "reorder_applied": true,
+      "pool_widened": false,
+      "pool_widen_forbidden": true,
+      "rejected_widen_attempt_count": 1,
+      "rejected_widen_attempts": [
+        {
+          "fact_id": "fact_w6_outside_resolver_probe",
+          "reason_code": "outside_resolver_pool",
+          "action": "rejected_widen_attempt"
+        }
+      ],
+      "hybrid_matched_in_pool_count": 3,
+      "selection_method_suffix": "+hybrid_informed_order_v1",
+      "status": "PASS",
+      "neg3_fail_closed": true,
+      "neg3_pass": true,
+      "explicit_widen_probes": [
+        {
+          "fact_id": "fact_w6_outside_resolver_probe",
+          "reason_code": "outside_resolver_pool",
+          "action": "rejected_widen_attempt"
+        },
+        {
+          "fact_id": "fact_jd_only_w6_probe",
+          "reason_code": "outside_resolver_pool",
+          "action": "rejected_widen_attempt"
+        }
+      ],
+      "all_rejected_widen_attempts": [
+        {
+          "fact_id": "fact_w6_outside_resolver_probe",
+          "reason_code": "outside_resolver_pool",
+          "action": "rejected_widen_attempt"
+        },
+        {
+          "fact_id": "fact_w6_outside_resolver_probe",
+          "reason_code": "outside_resolver_pool",
+          "action": "rejected_widen_attempt"
+        },
+        {
+          "fact_id": "fact_jd_only_w6_probe",
+          "reason_code": "outside_resolver_pool",
+          "action": "rejected_widen_attempt"
+        }
+      ],
+      "resolver_allowed_fact_ids_sample": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ]
+    }
+  ],
+  "non_claim": "Hybrid boost reordered in-pool facts only; out-of-pool widen attempts are rejected and logged."
+}

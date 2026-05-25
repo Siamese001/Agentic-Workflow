@@ -1,0 +1,35 @@
+{
+  "schema": "graph_skills_quality_w7_ci_ratchet_v1",
+  "generated_at": "2026-05-25T23:08:10Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W7",
+  "status": "PARTIAL",
+  "primary_proof_class": "CONTRACT_TEST_PROOF",
+  "workflow_path": ".github/workflows/graph-skills-authority-ratchet.yml",
+  "agentic_core_boundary": "docs/reports/apps_rg/graph_skills_agentic_core_boundary_w7.json",
+  "agentic_core_changed_count": 0,
+  "pytest_exit_code": 0,
+  "pytest_target_count": 8,
+  "d10_ci_ratchet": {
+    "workflow": "graph-skills-authority-ratchet.yml",
+    "local_mirror_pass": true,
+    "gha": {
+      "ci_gha_executed": false,
+      "workflow_file_exists": true,
+      "run_url": null,
+      "gh_error": "[WinError 2] The system cannot find the file specified"
+    }
+  },
+  "d13_nightly_soak": {
+    "cron": "17 9 * * *",
+    "note": "Scheduled on graph-skills-authority-ratchet.yml; verify green run on GHA for full CI_RATCHET_PROOF"
+  },
+  "phase_gate_g_w7": {
+    "gate": "G-W7",
+    "status": "PARTIAL",
+    "agentic_core_boundary_pass": true,
+    "contract_pytest_pass": true,
+    "workflow_file_exists": true,
+    "ci_gha_executed": false
+  }
+}

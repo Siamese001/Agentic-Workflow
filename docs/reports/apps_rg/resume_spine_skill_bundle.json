@@ -1,0 +1,941 @@
+{
+  "schema": "resume_spine_skill_bundle_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "generated_at": "2026-05-25T23:03:43Z",
+  "lanes": [
+    "headline",
+    "executive_summary",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "per_lane_summary": {
+    "headline": {
+      "allowed_fact_count": 7,
+      "skill_row_count": 0,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_headline"
+    },
+    "executive_summary": {
+      "allowed_fact_count": 7,
+      "skill_row_count": 21,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_c03_graphrag"
+    },
+    "unify_bullets": {
+      "allowed_fact_count": 8,
+      "skill_row_count": 0,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_unify_bullets_company_hint"
+    },
+    "unify_narrative": {
+      "allowed_fact_count": 8,
+      "skill_row_count": 0,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_unify_narrative_company_hint"
+    },
+    "ibm_bullets": {
+      "allowed_fact_count": 11,
+      "skill_row_count": 0,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_ibm_bullets"
+    },
+    "ibm_narrative": {
+      "allowed_fact_count": 5,
+      "skill_row_count": 0,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_ibm_narrative_company_hint"
+    },
+    "competencies": {
+      "allowed_fact_count": 14,
+      "skill_row_count": 20,
+      "proof_source": "augmented_skills_graph",
+      "selection_method": "augmented_skills_graph_track_weighted_competencies"
+    }
+  },
+  "skill_rows": [
+    {
+      "skill_id": "skill_actuarial_fsa_fellowship",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_certs_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_actuarial_fsa_fellowship', 'to': 'fact_certs_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_actuarial_foundation",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_actuarial_foundation",
+          "to": "skill_actuarial_fsa_fellowship",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_actuarial_fsa_fellowship",
+          "to": "fact_certs_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_agent_to_human_handoff_design",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_governance_003",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_agent_to_human_handoff_design', 'to': 'fact_governance_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_regulatory_governance",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_regulatory_governance",
+          "to": "skill_agent_to_human_handoff_design",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_agent_to_human_handoff_design",
+          "to": "fact_governance_003",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_agentic_control_plane_design",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_agentic_control_plane_design', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_agentic_ai_platforms",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_agentic_ai_platforms",
+          "to": "skill_agentic_control_plane_design",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_agentic_control_plane_design",
+          "to": "fact_engineering_platform_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_006",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_agentic_platform_productization', 'to': 'fact_engineering_platform_006', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_revenue_commercialization",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_revenue_commercialization",
+          "to": "skill_agentic_platform_productization",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_agentic_platform_productization",
+          "to": "fact_engineering_platform_006",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_ai_governance_certification",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_governance_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_governance_certification', 'to': 'fact_governance_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_regulatory_governance",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_regulatory_governance",
+          "to": "skill_ai_governance_certification",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_ai_governance_certification",
+          "to": "fact_governance_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_ai_platform_commercialization",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_004",
+        "fact_exec_002",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_platform_commercialization', 'to': 'fact_engineering_platform_004', 'note': 'graph edge skill_supported_by_fact'}",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_platform_commercialization', 'to': 'fact_exec_002', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_revenue_commercialization",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_revenue_commercialization",
+          "to": "skill_ai_platform_commercialization",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_ai_platform_commercialization",
+          "to": "fact_engineering_platform_004",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_app_overlay_runtime_binding",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_app_overlay_runtime_binding', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_agentic_ai_platforms",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_agentic_ai_platforms",
+          "to": "skill_app_overlay_runtime_binding",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_app_overlay_runtime_binding",
+          "to": "fact_engineering_platform_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_app_specific_runtime_overlay_design",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_app_specific_runtime_overlay_design', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_genai_agentic",
+          "to": "pillar_revenue_commercialization",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_revenue_commercialization",
+          "to": "skill_app_specific_runtime_overlay_design",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_app_specific_runtime_overlay_design",
+          "to": "fact_engineering_platform_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_capital_capital_modeling",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_quant_hpc_003",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_capital_capital_modeling', 'to': 'fact_quant_hpc_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_capital_modeling",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_capital_modeling",
+          "to": "skill_capital_capital_modeling",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_capital_capital_modeling",
+          "to": "fact_quant_hpc_003",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_capital_regulatory_capital",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_governance_003",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_capital_regulatory_capital', 'to': 'fact_governance_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_capital_modeling",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_capital_modeling",
+          "to": "skill_capital_regulatory_capital",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_capital_regulatory_capital",
+          "to": "fact_governance_003",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_derivatives_derivatives_pricing",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_quant_hpc_003",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_derivatives_derivatives_pricing', 'to': 'fact_quant_hpc_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_derivatives_structured",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_derivatives_structured",
+          "to": "skill_derivatives_derivatives_pricing",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_derivatives_derivatives_pricing",
+          "to": "fact_quant_hpc_003",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_revenue_ops_004",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_finance_cost_optimization_dashboards', 'to': 'fact_revenue_ops_004', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_strategic_finance_saas",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_strategic_finance_saas",
+          "to": "skill_finance_cost_optimization_dashboards",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_finance_cost_optimization_dashboards",
+          "to": "fact_revenue_ops_004",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_revenue_ops_005",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_finance_ma_synergy_due_diligence', 'to': 'fact_revenue_ops_005', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_strategic_finance_saas",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_strategic_finance_saas",
+          "to": "skill_finance_ma_synergy_due_diligence",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_finance_ma_synergy_due_diligence",
+          "to": "fact_revenue_ops_005",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_revenue_ops_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_p2_gtm_discovery_qualification', 'to': 'fact_revenue_ops_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_gtm_presales_motion",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_gtm_presales_motion",
+          "to": "skill_p2_gtm_discovery_qualification",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_p2_gtm_discovery_qualification",
+          "to": "fact_revenue_ops_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_sales_accounts_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_p2_gtm_enterprise_deal_support', 'to': 'fact_sales_accounts_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_gtm_presales_motion",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_gtm_presales_motion",
+          "to": "skill_p2_gtm_enterprise_deal_support",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_p2_gtm_enterprise_deal_support",
+          "to": "fact_sales_accounts_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_sr_cloud_data_platform_engineering",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_cloud_data_platform_engineering', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_insurer_it_strategy_ai_enablement",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_insurer_it_strategy_ai_enablement",
+          "to": "skill_sr_cloud_data_platform_engineering",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_sr_cloud_data_platform_engineering",
+          "to": "fact_engineering_platform_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_sr_enterprise_portfolio_data_governance",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_governance_004",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_enterprise_portfolio_data_governance', 'to': 'fact_governance_004', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_enterprise_portfolio_governance",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_enterprise_portfolio_governance",
+          "to": "skill_sr_enterprise_portfolio_data_governance",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_sr_enterprise_portfolio_data_governance",
+          "to": "fact_governance_004",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_sr_insurtech_cto_it_enablement",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "exp_insurtech_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_insurtech_cto_it_enablement', 'to': 'exp_insurtech_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_insurer_it_strategy_ai_enablement",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_insurer_it_strategy_ai_enablement",
+          "to": "skill_sr_insurtech_cto_it_enablement",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_sr_insurtech_cto_it_enablement",
+          "to": "exp_insurtech_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_sr_insurtech_legacy_cloud_modernization",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "bul_insurtech_001",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_insurtech_legacy_cloud_modernization', 'to': 'bul_insurtech_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_insurance_carrier_transformation",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_insurance_carrier_transformation",
+          "to": "skill_sr_insurtech_legacy_cloud_modernization",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_sr_insurtech_legacy_cloud_modernization",
+          "to": "bul_insurtech_001",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    },
+    {
+      "skill_id": "skill_sr_microservices_integration_platform",
+      "lanes": [
+        "competencies",
+        "executive_summary"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_002",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_microservices_integration_platform', 'to': 'fact_engineering_platform_002', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "activation_status": null,
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_data_tech_cloud_ml",
+          "to": "pillar_interoperability_integration_ecosystem",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_interoperability_integration_ecosystem",
+          "to": "skill_sr_microservices_integration_platform",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_supported_by_fact",
+          "from": "skill_sr_microservices_integration_platform",
+          "to": "fact_engineering_platform_002",
+          "note": "graph edge skill_supported_by_fact"
+        }
+      ]
+    }
+  ],
+  "unique_skill_count": 20,
+  "dedupe_collision_count": 21,
+  "dedupe_collisions": [
+    {
+      "skill_id": "skill_ai_platform_commercialization",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "executive_summary",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_platform_commercialization', 'to': 'fact_engineering_platform_004', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_platform_commercialization', 'to': 'fact_exec_002', 'note': 'graph edge skill_supported_by_fact'}"
+      ]
+    },
+    {
+      "skill_id": "skill_actuarial_fsa_fellowship",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_actuarial_fsa_fellowship', 'to': 'fact_certs_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_certs_001"
+      ]
+    },
+    {
+      "skill_id": "skill_capital_capital_modeling",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_capital_capital_modeling', 'to': 'fact_quant_hpc_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_quant_hpc_003"
+      ]
+    },
+    {
+      "skill_id": "skill_capital_regulatory_capital",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_capital_regulatory_capital', 'to': 'fact_governance_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_governance_003"
+      ]
+    },
+    {
+      "skill_id": "skill_derivatives_derivatives_pricing",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_derivatives_derivatives_pricing', 'to': 'fact_quant_hpc_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_quant_hpc_003"
+      ]
+    },
+    {
+      "skill_id": "skill_sr_cloud_data_platform_engineering",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_cloud_data_platform_engineering', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_001"
+      ]
+    },
+    {
+      "skill_id": "skill_sr_enterprise_portfolio_data_governance",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_enterprise_portfolio_data_governance', 'to': 'fact_governance_004', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_governance_004"
+      ]
+    },
+    {
+      "skill_id": "skill_sr_insurtech_cto_it_enablement",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_insurtech_cto_it_enablement', 'to': 'exp_insurtech_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "exp_insurtech_001"
+      ]
+    },
+    {
+      "skill_id": "skill_sr_insurtech_legacy_cloud_modernization",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_insurtech_legacy_cloud_modernization', 'to': 'bul_insurtech_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "bul_insurtech_001"
+      ]
+    },
+    {
+      "skill_id": "skill_sr_microservices_integration_platform",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_sr_microservices_integration_platform', 'to': 'fact_engineering_platform_002', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_002"
+      ]
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_finance_cost_optimization_dashboards', 'to': 'fact_revenue_ops_004', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_revenue_ops_004"
+      ]
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_finance_ma_synergy_due_diligence', 'to': 'fact_revenue_ops_005', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_revenue_ops_005"
+      ]
+    },
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_p2_gtm_discovery_qualification', 'to': 'fact_revenue_ops_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_revenue_ops_001"
+      ]
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_p2_gtm_enterprise_deal_support', 'to': 'fact_sales_accounts_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_sales_accounts_001"
+      ]
+    },
+    {
+      "skill_id": "skill_agent_to_human_handoff_design",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_agent_to_human_handoff_design', 'to': 'fact_governance_003', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_governance_003"
+      ]
+    },
+    {
+      "skill_id": "skill_agentic_control_plane_design",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_agentic_control_plane_design', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_001"
+      ]
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_agentic_platform_productization', 'to': 'fact_engineering_platform_006', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_006"
+      ]
+    },
+    {
+      "skill_id": "skill_ai_governance_certification",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_governance_certification', 'to': 'fact_governance_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_governance_001"
+      ]
+    },
+    {
+      "skill_id": "skill_ai_platform_commercialization",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_platform_commercialization', 'to': 'fact_engineering_platform_004', 'note': 'graph edge skill_supported_by_fact'}",
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_ai_platform_commercialization', 'to': 'fact_exec_002', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_004",
+        "fact_exec_002"
+      ]
+    },
+    {
+      "skill_id": "skill_app_overlay_runtime_binding",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_app_overlay_runtime_binding', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_001"
+      ]
+    },
+    {
+      "skill_id": "skill_app_specific_runtime_overlay_design",
+      "reason_code": "fact_id_links_diverge_across_lanes",
+      "lane": "competencies",
+      "existing_links": [
+        "{'edge_type': 'skill_supported_by_fact', 'from': 'skill_app_specific_runtime_overlay_design', 'to': 'fact_engineering_platform_001', 'note': 'graph edge skill_supported_by_fact'}"
+      ],
+      "incoming_links": [
+        "fact_engineering_platform_001"
+      ]
+    }
+  ],
+  "dedupe_pass": false,
+  "bundle_digest": "c030702528ce744c48ae3c756dc040ce41023ae30b1428b3421b6109f831276e"
+}

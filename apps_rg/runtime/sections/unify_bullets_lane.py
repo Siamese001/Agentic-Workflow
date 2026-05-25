@@ -59,6 +59,8 @@ from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
 from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+from apps_rg.runtime.reasoning.employment_bullet_pool import build_employment_targeting_context
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.shadow.unify_bullets_l6 import build_l6_shadow_package, extend_unify_bullets_l6_learning_fields
@@ -735,47 +737,61 @@ def run_unify_bullets_execution(
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
-    result = call_qwen_vllm(provider_payload)
-    provider_result_data = result.to_dict()
-    raw_output = result.raw_model_output
-    runtime_generation_status = result.runtime_generation_status
+    judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    result, raw_output, parsed_in, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
+        section_lane=LANE_KEY,
+        slot_kind="bullets",
+        provider_payload=provider_payload,
+        parse_model_json=parse_model_json,
+        normalize_parsed=lambda p: normalize_unify_parsed_without_ledger_synthesis(p, runtime_payload),
+        artifact_dir=artifact_dir,
+        run_id=str(runtime_payload.get("run_id") or ""),
+        temperature_bounds=UNIFY_TEMP_RANGE,
+        base_temperature=float(args.temperature) if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT,
+        required_bullet_ids=UNIFY_BULLET_IDS,
+        targeting_context=build_employment_targeting_context(runtime_payload, section_lane=LANE_KEY),
+        judge_mode=judge_mode,
+    )
+    write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
+    provider_result_data = result.to_dict() if result else {}
+    runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     write_json(artifact_dir / "provider_response.json", provider_result_data)
-    if result.runtime_generation_status == "REAL_LLM":
-        parsed_in, parse_error = parse_model_json(raw_output)
-        if parsed_in is None:
-            raw_output, parsed_in, parse_error = retry_qwen_for_parse(
-                messages, provider_payload, raw_output, parse_error
-            )
-            if parsed_in is not None:
-                record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
-        parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
-        if parsed is not None:
-            from apps_rg.runtime.c0.graph_story_authority import forbid_base_resume_bullet_hydration
-            from apps_rg.runtime.sections.unify_canonical_hydration import (
-                should_hydrate_unify_bullets_from_canonical,
-            )
+    parsed = parsed_in
+    if result and result.runtime_generation_status == "REAL_LLM" and parsed_in is None:
+        raw_output, parsed_in, parse_error = retry_qwen_for_parse(
+            messages, provider_payload, raw_output, parse_error
+        )
+        if parsed_in is not None:
+            record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
+        parsed = (
+            normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
+        )
+    if parsed is not None:
+        from apps_rg.runtime.c0.graph_story_authority import forbid_base_resume_bullet_hydration
+        from apps_rg.runtime.sections.unify_canonical_hydration import (
+            should_hydrate_unify_bullets_from_canonical,
+        )
 
-            forbid_base_resume_bullet_hydration(
-                section_id="unify_bullets",
-                runtime_payload=runtime_payload,
-                parsed=parsed,
-                base_resume=base,
-                would_hydrate_fn=should_hydrate_unify_bullets_from_canonical,
+        forbid_base_resume_bullet_hydration(
+            section_id="unify_bullets",
+            runtime_payload=runtime_payload,
+            parsed=parsed,
+            base_resume=base,
+            would_hydrate_fn=should_hydrate_unify_bullets_from_canonical,
+        )
+        _pre_metric_repair = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+        _repair_protected_unify_bullet_metrics(out=parsed, runtime_payload=runtime_payload)
+        if json.dumps(parsed, sort_keys=True, separators=(",", ":")) != _pre_metric_repair:
+            record_deterministic_rewrite(
+                artifact_dir,
+                operation="repair_protected_unify_bullet_metrics",
+                reason="restore_canonical_protected_metrics",
             )
-            _pre_metric_repair = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
-            _repair_protected_unify_bullet_metrics(out=parsed, runtime_payload=runtime_payload)
-            if json.dumps(parsed, sort_keys=True, separators=(",", ":")) != _pre_metric_repair:
-                record_deterministic_rewrite(
-                    artifact_dir,
-                    operation="repair_protected_unify_bullet_metrics",
-                    reason="restore_canonical_protected_metrics",
-                )
-    elif result.runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
+    elif result and result.runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         parsed_in, parse_error = parse_model_json(raw_output)
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
-    else:
-        parsed = None
-        parse_error = result.exact_provider_error or "provider blocked"
+    elif not parsed:
+        parse_error = (result.exact_provider_error if result else None) or parse_error or "provider blocked"
 
     bullets = list((parsed or {}).get("bullets") or [])
     claim_ledger_raw = list((parsed or {}).get("claim_ledger") or []) if parsed else []

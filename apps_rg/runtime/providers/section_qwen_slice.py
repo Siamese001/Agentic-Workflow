@@ -69,6 +69,7 @@ def call_qwen_vllm(
     *,
     artifact_dir: Path | str | None = None,
     run_id: str | None = None,
+    temperature_override: float | None = None,
 ) -> qwen_vllm_provider.ProviderResult:
     envelope = dict(payload)
     lane_token = envelope.pop("_reasoning_section_lane", None)
@@ -92,7 +93,10 @@ def call_qwen_vllm(
         merged_req["max_tokens"] = mt
 
     http_body = _sanitize_transport_payload(envelope)
-    http_body["temperature"] = float(prof_kw["temperature"])
+    if temperature_override is not None:
+        http_body["temperature"] = float(temperature_override)
+    else:
+        http_body["temperature"] = float(prof_kw["temperature"])
 
     for leak in _FORBIDDEN_SCRATCH:
         if leak in http_body:

@@ -1,0 +1,29 @@
+{
+  "schema": "graph_skills_quality_w5_spine_fec_v1",
+  "generated_at": "2026-05-25T23:03:55Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W5",
+  "status": "PASS",
+  "resume_spine_skill_bundle": "docs/reports/apps_rg/resume_spine_skill_bundle.json",
+  "unique_skill_count": 20,
+  "dedupe_pass": false,
+  "dedupe_collision_count": 21,
+  "d7_receipt": "docs/reports/apps_rg/graph_skills_fec_set_equality_receipt.json",
+  "d7_pass_count": 6,
+  "d7_target_count": 6,
+  "d7_lanes": [
+    "executive_summary",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "phase_gate_g_w5": {
+    "gate": "G-W5",
+    "status": "PASS",
+    "resume_spine_skill_bundle_on_disk": true,
+    "d7_set_equality_6_of_6": true,
+    "contract_tests_pass": true
+  }
+}

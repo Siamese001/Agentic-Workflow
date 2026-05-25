@@ -209,12 +209,30 @@ def run_competencies_lane_execution(
             file=sys.stderr,
             flush=True,
         )
-    result = call_qwen_vllm(
-        tag_reasoning_lane(provider_payload, LANE_KEY),
+    from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+
+    judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    result, raw_output, parsed, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
+        section_lane=LANE_KEY,
+        slot_kind="competencies",
+        provider_payload=provider_payload,
+        parse_model_json=parse_model_json,
+        normalize_parsed=lambda p: normalize_parsed_output(p, runtime_payload, allowed_fact_ids),
         artifact_dir=artifact_dir,
         run_id=_run_id or None,
+        temperature_bounds=(0.30, 0.50),
+        base_temperature=float(args.temperature),
+        required_bullet_ids=None,
+        targeting_context={
+            "target_title": runtime_payload.get("target_title"),
+            "target_company": runtime_payload.get("target_company"),
+        },
+        judge_mode=judge_mode,
     )
-    if getattr(result, "apps_rg_qwen_preflight_blocked", False):
+    write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
+    raw_model_output_original = raw_output
+    provider_raw_output = raw_output
+    if getattr(result, "apps_rg_qwen_preflight_blocked", False) if result else False:
         live_preflight_blocked = True
         snap = getattr(result, "apps_rg_last_probe_snapshot", None)
         write_json(
@@ -232,7 +250,7 @@ def run_competencies_lane_execution(
             file=sys.stderr,
             flush=True,
         )
-    provider_result_data = result.to_dict()
+    provider_result_data = result.to_dict() if result else {}
     if live_preflight_blocked:
         provider_result_data = {
             **provider_result_data,
@@ -240,13 +258,9 @@ def run_competencies_lane_execution(
             "provider_unreachable_reason": REASON_PROVIDER_UNAVAILABLE,
             "live_provider_gate_artifact": "competencies_live_provider_gate.json",
         }
-    raw_output = result.raw_model_output
-    provider_raw_output = raw_output
-    raw_model_output_original = raw_output
     write_json(artifact_dir / "provider_response.json", provider_result_data)
-    runtime_generation_status = result.runtime_generation_status
-    if result.runtime_generation_status in ("REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS):
-        parsed, parse_error = parse_model_json(raw_model_output_original)
+    runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
+    if runtime_generation_status in ("REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS):
         if parsed is None:
             raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
                 messages,

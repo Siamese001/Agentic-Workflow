@@ -265,6 +265,7 @@ def compile_headline_prompt(
         compiled,
         allowed_source_fact_ids=ids,
         skills_authority_metadata=pp_meta,
+        runtime_payload=runtime_payload,
     )
 
 

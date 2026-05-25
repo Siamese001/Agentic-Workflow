@@ -1,0 +1,26 @@
+{
+  "schema": "graph_skills_quality_w4_quality_port_v1",
+  "generated_at": "2026-05-25T22:59:41Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W4",
+  "status": "PASS",
+  "non_claim": "Rubric port did not relax groundedness, specificity, or citation thresholds.",
+  "rubric_port_diff": "docs/reports/apps_rg/graph_skills_x1d_rubric_port_diff.json",
+  "any_masking_relaxed": false,
+  "invariant_failures": [],
+  "pytest_exit_code": 0,
+  "pytest_targets": [
+    "tests/unit/apps_rg/test_graph_skills_authority_separation.py",
+    "tests/unit/apps_rg/test_graph_skills_authority_separation_w1.py",
+    "tests/unit/apps_rg/test_graph_skills_x1d_rubric_w4.py",
+    "tests/unit/apps_rg/validators/test_headline_x2_fixed_prefix_contract.py",
+    "tests/unit/apps_rg/test_executive_summary_composition_x2.py"
+  ],
+  "phase_gate_g_w4": {
+    "gate": "G-W4",
+    "status": "PASS",
+    "rubric_diff_pass": true,
+    "negative_authority_tests_pass": true,
+    "x2_contract_subset_pass": true
+  }
+}

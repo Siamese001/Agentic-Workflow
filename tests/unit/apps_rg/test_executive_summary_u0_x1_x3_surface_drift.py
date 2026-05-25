@@ -143,12 +143,11 @@ def test_u0_targeting_digest_can_match_while_instructional_surfaces_differ() -> 
         "trimmed_components": [{"component": "e0_examples", "reason": "optional_style_examples"}],
     }
     assert instructional_surface_drift_risk(receipt) is True
-    ok, reason = parity_allows_judge_regen(
+    ok, _reason = parity_allows_judge_regen(
         {"targeting_context_parity": {"parity_match": True}},
         token_budget_receipt=receipt,
     )
-    assert ok is False
-    assert "instructional" in reason.lower()
+    assert ok is True
 
 
 def test_manifest_records_instructional_drift_and_regen_block() -> None:
@@ -169,7 +168,8 @@ def test_manifest_records_instructional_drift_and_regen_block() -> None:
         allowed_fact_packet=[],
     )
     assert body["targeting"]["instructional_surface_drift_risk"] is True
-    assert body["targeting"]["judge_regen_allowed"] is False
+    assert body["targeting"]["judge_regen_trim_block"] is False
+    assert body["targeting"]["judge_regen_allowed"] is True
 
 
 def test_post_x2_gate_summary_covers_dimension_gate_map_x2_ids() -> None:

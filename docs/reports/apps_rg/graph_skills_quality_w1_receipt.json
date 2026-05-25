@@ -1,0 +1,31 @@
+{
+  "schema": "graph_skills_quality_wave_receipt_v1",
+  "wave_id": "W1",
+  "proof_class": "CONTRACT_TEST_PROOF",
+  "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe ops_scripts/apps_rg/emit_graph_skills_quality_w1.py",
+  "command_argv": [
+    "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "ops_scripts/apps_rg/emit_graph_skills_quality_w1.py"
+  ],
+  "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+  "env_vars": {},
+  "exit_code": 0,
+  "artifact_paths": [
+    "docs/reports/apps_rg/graph_skills_quality_w1_jd_subgraph.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_receipt.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/headline.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/executive_summary.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/unify_bullets.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/unify_narrative.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/ibm_bullets.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/ibm_narrative.json",
+    "docs/reports/apps_rg/graph_skills_quality_w1_rationale/competencies.json"
+  ],
+  "timestamp_utc": "2026-05-25T22:48:41Z",
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "phase_gate": {
+    "gate": "G-W1",
+    "status": "PASS"
+  },
+  "notes": "Fixture rationale only; REAL_LLM graph_selection_rationale.json is W10."
+}

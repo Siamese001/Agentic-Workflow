@@ -1,0 +1,18 @@
+{
+  "schema": "graph_skills_quality_w3_graph_v2_v1",
+  "generated_at": "2026-05-25T22:55:37Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W3",
+  "status": "PASS",
+  "graph_v2_digest_pinned": "addf5c7d12a459fe49ed9851241a5b84ae0343a372798f3af583ee7f17629483",
+  "active_orphan_count_after": 0,
+  "controlled_migration_count": 106,
+  "phase_gate_g_w3": {
+    "gate": "G-W3",
+    "status": "PASS",
+    "zero_active_orphans": true,
+    "graph_v2_digest_pinned": true,
+    "rollback_doc_exists": true
+  },
+  "migration_receipt": "docs/reports/apps_rg/graph_v2_migration_receipt.json"
+}

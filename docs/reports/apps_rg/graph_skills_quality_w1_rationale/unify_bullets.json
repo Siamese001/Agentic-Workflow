@@ -1,0 +1,270 @@
+{
+  "schema": "graph_selection_rationale_v1",
+  "section_id": "unify_bullets",
+  "targeting": {
+    "target_company": "Brown & Brown",
+    "target_role": "SVP IT Strategy & Innovation",
+    "jd_sha256": "23b16bd0ae15188a4de4d533209e34ccff8fae6d12c96894a2dd90cc53bb4dfd",
+    "briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b"
+  },
+  "jd_subgraph_policy": {
+    "jd_used_as_proof": false,
+    "jd_shapes_ranking_only": true,
+    "briefing_used_as_proof": false,
+    "targeting_only": true
+  },
+  "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+  "track_weight_audit": {
+    "weights_without_jd": {
+      "track_actuarial_risk_derivatives": 0.1,
+      "track_data_tech_cloud_ml": 0.5,
+      "track_genai_agentic": 0.4
+    },
+    "weights_with_jd": {
+      "track_actuarial_risk_derivatives": 0.0847,
+      "track_data_tech_cloud_ml": 0.5085,
+      "track_genai_agentic": 0.4068
+    },
+    "weight_deltas": {
+      "track_actuarial_risk_derivatives": -0.0153,
+      "track_data_tech_cloud_ml": 0.0085,
+      "track_genai_agentic": 0.0068
+    },
+    "jd_boosted_tracks": [
+      "track_data_tech_cloud_ml",
+      "track_genai_agentic"
+    ],
+    "jd_boost_monotonic": true
+  },
+  "jd_keyword_hits": [
+    {
+      "track_id": "track_data_tech_cloud_ml",
+      "bump": 0.05,
+      "keywords_matched": [
+        "partner"
+      ],
+      "policy_ref": "apps_rg/fact_inventory/track_weighted_graph_expansion.py:resolve_career_track_weights"
+    },
+    {
+      "track_id": "track_data_tech_cloud_ml",
+      "bump": 0.08,
+      "keywords_matched": [
+        "it strategy",
+        "enterprise architecture",
+        "data platforms",
+        "technology strategy"
+      ],
+      "policy_ref": "apps_rg/fact_inventory/track_weighted_graph_expansion.py:resolve_career_track_weights"
+    },
+    {
+      "track_id": "track_genai_agentic",
+      "bump": 0.06,
+      "keywords_matched": [
+        "it strategy",
+        "enterprise architecture",
+        "data platforms",
+        "technology strategy"
+      ],
+      "policy_ref": "apps_rg/fact_inventory/track_weighted_graph_expansion.py:resolve_career_track_weights"
+    }
+  ],
+  "selection_method": "augmented_skills_graph_unify_bullets_company_hint",
+  "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+  "graph_digest": "b6098809fe9987db8f974b8f738a6eff0c435136b9f67f67e55e0bfd68daa832",
+  "selected_skill_ids": [
+    "skill_actuarial_fsa_fellowship",
+    "skill_agent_to_human_handoff_design",
+    "skill_agentic_control_plane_design",
+    "skill_agentic_platform_productization",
+    "skill_ai_governance_certification",
+    "skill_ai_platform_commercialization",
+    "skill_app_overlay_runtime_binding",
+    "skill_app_specific_runtime_overlay_design",
+    "skill_approval_gated_workflow_design",
+    "skill_capital_capital_modeling",
+    "skill_finance_cost_optimization_dashboards",
+    "skill_finance_ma_synergy_due_diligence",
+    "skill_p2_gtm_discovery_qualification",
+    "skill_p2_gtm_enterprise_deal_support",
+    "skill_p2_gtm_executive_buyer_alignment",
+    "skill_p2_gtm_joint_vendor_roadmaps",
+    "skill_p2_gtm_solution_mapping",
+    "skill_p2_gtm_stakeholder_alignment",
+    "skill_p2_tech_aws_modernization_patterns",
+    "skill_p2_tech_devops_pipeline_blueprint"
+  ],
+  "selected_skill_count": 20,
+  "allowed_fact_count": 8,
+  "jd_only_admission_checks": [
+    {
+      "skill_id": "skill_actuarial_fsa_fellowship",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_agent_to_human_handoff_design",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_agentic_control_plane_design",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_ai_governance_certification",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_ai_platform_commercialization",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 2,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_app_overlay_runtime_binding",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_app_specific_runtime_overlay_design",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_approval_gated_workflow_design",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_capital_capital_modeling",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "admitted": true,
+      "reason_code": "ok_graph_fact_links",
+      "fact_id_links_count": 1,
+      "jd_only_skill_id_pattern": false,
+      "jd_text_present": true
+    },
+    {
+      "skill_id": "jd_inferred_skill_svp_it_strategy",
+      "admitted": false,
+      "reason_code": "jd_only_or_empty_fact_id_links",
+      "fact_id_links_count": 0,
+      "jd_only_skill_id_pattern": true,
+      "jd_text_present": true
+    }
+  ],
+  "neg1_all_selected_skills_have_fact_links": true,
+  "evidence_authority": "augmented_skills_graph"
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "graph_skills_quality_wave_receipt_v1",
+  "wave_id": "W5",
+  "proof_class": "CONTRACT_TEST_PROOF",
+  "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe ops_scripts/apps_rg/emit_graph_skills_quality_w5.py",
+  "command_argv": [
+    "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "ops_scripts/apps_rg/emit_graph_skills_quality_w5.py"
+  ],
+  "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+  "env_vars": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "exit_code": 0,
+  "artifact_paths": [
+    "docs/reports/apps_rg/resume_spine_skill_bundle.json",
+    "docs/reports/apps_rg/graph_skills_fec_set_equality_receipt.json",
+    "docs/reports/apps_rg/graph_skills_quality_w5_spine_fec.json",
+    "docs/reports/apps_rg/graph_skills_quality_w5_receipt.json"
+  ],
+  "timestamp_utc": "2026-05-25T23:03:55Z",
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "phase_gate": {
+    "gate": "G-W5",
+    "status": "PASS"
+  }
+}

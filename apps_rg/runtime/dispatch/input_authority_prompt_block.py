@@ -99,6 +99,7 @@ def augment_section_compiled_with_input_authority(
     allowed_source_fact_ids: Sequence[str],
     skills_authority_metadata: dict[str, Any] | None = None,
     include_allowed_id_list: bool = True,
+    runtime_payload: dict[str, Any] | None = None,
 ) -> SectionCompiledPrompt:
     """Return a copy of ``compiled`` with INPUT_AUTHORITY + PRODUCT_SHAPE on the last message."""
     block = format_input_authority_block(
@@ -107,7 +108,12 @@ def augment_section_compiled_with_input_authority(
         include_allowed_id_list=include_allowed_id_list,
     )
     out = _append_block_to_last_message(compiled, block)
-    return augment_section_compiled_with_product_shape(out)
+    out = augment_section_compiled_with_product_shape(out)
+    if runtime_payload is not None:
+        from apps_rg.runtime.graph_skill_phrase_capsule import augment_section_compiled_with_skill_phrase_capsule
+
+        out = augment_section_compiled_with_skill_phrase_capsule(out, runtime_payload=runtime_payload)
+    return out
 
 
 def finalize_section_compiled_with_proof_pool(
@@ -128,6 +134,9 @@ def finalize_section_compiled_with_proof_pool(
         allowed_source_fact_ids=ids,
         skills_authority_metadata=skills_meta,
     )
+    from apps_rg.runtime.graph_skill_phrase_capsule import augment_section_compiled_with_skill_phrase_capsule
+
+    out = augment_section_compiled_with_skill_phrase_capsule(out, runtime_payload=runtime_payload)
     last_content = ""
     if out.artifact.messages:
         last_content = str(out.artifact.messages[-1].get("content") or "")

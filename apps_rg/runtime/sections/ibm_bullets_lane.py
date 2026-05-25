@@ -51,6 +51,8 @@ from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3 as _aggregate_ibm_b
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+from apps_rg.runtime.reasoning.employment_bullet_pool import build_employment_targeting_context
 from apps_rg.runtime.section_proof.lane_proof_accounting import (
     generation_status_allows_qwen_json_parse,
     resolve_lane_placement_bucket,
@@ -719,21 +721,34 @@ def run_ibm_bullets_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
     req_model = str(tagged.get("model", DEFAULT_QWEN_MODEL))
-    result = call_qwen_vllm(tagged)
-    provider_result_data = result.to_dict()
-    raw_output = result.raw_model_output
-    runtime_generation_status = result.runtime_generation_status
+    judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    result, raw_output, parsed, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
+        section_lane=LANE_KEY,
+        slot_kind="bullets",
+        provider_payload=tagged,
+        parse_model_json=parse_model_json,
+        normalize_parsed=lambda p: normalize_parsed_output(p, runtime_payload),
+        artifact_dir=artifact_dir,
+        run_id=str(runtime_payload.get("run_id") or ""),
+        temperature_bounds=IBM_TEMP_RANGE,
+        base_temperature=float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT,
+        required_bullet_ids=IBM_BULLET_IDS,
+        targeting_context=build_employment_targeting_context(runtime_payload, section_lane=LANE_KEY),
+        judge_mode=judge_mode,
+    )
+    write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
+    provider_result_data = result.to_dict() if result else {}
+    runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     write_json(artifact_dir / "provider_response.json", provider_result_data)
-    if generation_status_allows_qwen_json_parse(result.runtime_generation_status):
-        parsed, parse_error = parse_model_json(raw_output)
+    if generation_status_allows_qwen_json_parse(runtime_generation_status):
         if parsed is None:
             raw_output, parsed, parse_error = retry_qwen_for_parse(
                 messages, tagged, raw_output, parse_error
             )
             if parsed is not None:
                 record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
+                parsed = normalize_parsed_output(parsed, runtime_payload)
         if parsed is not None:
-            parsed = normalize_parsed_output(parsed, runtime_payload)
             from apps_rg.runtime.c0.graph_story_authority import forbid_base_resume_bullet_hydration
 
             forbid_base_resume_bullet_hydration(

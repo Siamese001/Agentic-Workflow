@@ -61,6 +61,13 @@ def finalize_section_l2_after_output(
         l2_output_ref=l2_output_ref,
         section_output_ref=section_output_ref,
     )
+    from apps_rg.runtime.graph_skills_run_artifacts import persist_graph_skills_lane_artifacts
+
+    persist_graph_skills_lane_artifacts(
+        artifact_dir,
+        section_id=section_id,
+        runtime_payload=runtime_payload,
+    )
     from apps_rg.runtime.spine.section_x3_finalize import finalize_section_spine_exit_after_sealed_l2
 
     finalize_section_spine_exit_after_sealed_l2(

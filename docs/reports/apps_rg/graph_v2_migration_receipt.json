@@ -1,0 +1,4093 @@
+{
+  "schema": "graph_v2_migration_receipt_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W3",
+  "status": "PASS",
+  "ledger_path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+  "backup_v1_path": "artifacts/apps_rg/fact_inventory/backups/master_skills_arsenal_ledger_pre_graph_v2_w3_20260525T225530Z.json",
+  "ledger_digest_before": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+  "ledger_digest_after": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
+  "graph_v2_digest_pinned": "addf5c7d12a459fe49ed9851241a5b84ae0343a372798f3af583ee7f17629483",
+  "active_orphan_count_before": 106,
+  "active_orphan_count_after": 0,
+  "orphans_before": [
+    {
+      "skill_id": "skill_derivatives_derivatives_pricing",
+      "reasons": [
+        "invalid_allowed_sections:['early_career']",
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_greeks_hedging_multi_greek_hedging",
+      "reasons": [
+        "invalid_allowed_sections:['early_career']",
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_capital_capital_modeling",
+      "reasons": [
+        "invalid_allowed_sections:['early_career']",
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_actuarial_fsa_fellowship",
+      "reasons": [
+        "invalid_allowed_sections:['early_career']",
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_risk_enterprise_risk_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_risk_model_risk",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_capital_regulatory_capital",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_partner_co_selling",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_partner_solution_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_partner_customer_deal_support",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_partner_sales_revenue_targets",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_partner_partner_led_ai_solutions",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_partner_partner_revenue_3m",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_revops_salesforce_pipeline_analytics",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_revops_salesforce_forecast_pipeline",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_revops_usage_based_subscription_forecasting",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sales_global_financial_institutions_leadership",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_reference_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_p2_tech_reusable_accelerators",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_insurtech_legacy_cloud_modernization",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_sr_insurtech_regulated_insurer_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_sr_insurtech_cto_it_enablement",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_sr_cloud_data_platform_engineering",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_enterprise_portfolio_data_governance",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_basel_ccar_lineage_regulatory",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_banking_ai_governance_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_microservices_integration_platform",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_sr_w12_hyperscaler_alliance_co_sell",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_sr_w12_joint_ai_solution_development",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sr_w12_industry_reference_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_governed_agentic_systems_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_layered_runtime_spine_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_agentic_control_plane_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_app_overlay_runtime_binding",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_reusable_agentic_platform_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_deterministic_route_selection",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_route_contract_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_cache_fallback_grounded_action_routing",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_risk_and_hitl_route_posture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_route_replay_and_idempotency_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_managed_workflow_orchestration",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_dependency_and_join_control",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_bounded_fanout_and_retry_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_multi_step_quality_loop_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_context_engineering",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_dense_sparse_exact_retrieval_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_metadata_acl_freshness_filtering",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_evidence_contract_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_graph_aware_relationship_grounding",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_contradiction_and_lineage_handling",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_prompt_assembly_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_instruction_data_boundary_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_authority_ordered_prompt_packaging",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_schema_bound_generation",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_prompt_injection_airlock_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_bounded_agent_execution",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_sandboxed_execution_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_external_egress_control",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_side_effect_bounded_action_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_no_direct_write_runtime_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_retry_and_thrash_guard_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_runtime_resilience_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_runtime_gate_mesh_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_fail_closed_gate_semantics",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_output_quality_and_schema_gates",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_x1_x2_x3_exit_control",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_llm_judge_packet_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_exit_disposition_governance",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_ai_governance_certification",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_authority_and_registry_binding",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_policy_bound_runtime_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_origin_trust_and_content_boundary",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_provider_and_egress_governance",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_human_review_reclearance_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_static_governance_drift_detection",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_replayable_runtime_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_audit_grade_observability",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_receipt_and_artifact_chain_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_no_bypass_proof_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_runtime_proof_bundle_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_learning_firewall_controls",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_hitl_escalation_architecture",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_approval_gated_workflow_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_human_review_freeze_and_resume",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_agent_to_human_handoff_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_confidence_based_escalation",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "skill_id": "skill_reusable_ai_ip_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_app_specific_runtime_overlay_design",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_enterprise_workflow_adoption",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_operating_model_for_agentic_ai",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    },
+    {
+      "skill_id": "skill_ai_platform_commercialization",
+      "reasons": [
+        "missing_graph_hop_path"
+      ],
+      "activation_status": "ACTIVE"
+    }
+  ],
+  "orphans_after": [],
+  "controlled_migrations": [
+    {
+      "skill_id": "skill_derivatives_derivatives_pricing",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "early_career",
+          "executive_summary",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_derivatives_structured",
+          "skill_derivatives_derivatives_pricing",
+          "fact_quant_hpc_003"
+        ],
+        "link_class_by_fact": {
+          "fact_quant_hpc_003": "primary"
+        },
+        "source_ledger_ref": "fact_quant_hpc_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_greeks_hedging_multi_greek_hedging",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "early_career",
+          "executive_summary",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_greeks_hedging",
+          "skill_greeks_hedging_multi_greek_hedging",
+          "fact_quant_hpc_003"
+        ],
+        "link_class_by_fact": {
+          "fact_quant_hpc_003": "primary"
+        },
+        "source_ledger_ref": "fact_quant_hpc_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_capital_capital_modeling",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "early_career",
+          "executive_summary"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_capital_modeling",
+          "skill_capital_capital_modeling",
+          "fact_quant_hpc_003"
+        ],
+        "link_class_by_fact": {
+          "fact_quant_hpc_003": "primary"
+        },
+        "source_ledger_ref": "fact_quant_hpc_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_actuarial_fsa_fellowship",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "early_career"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_actuarial_foundation",
+          "skill_actuarial_fsa_fellowship",
+          "fact_certs_001"
+        ],
+        "link_class_by_fact": {
+          "fact_certs_001": "primary"
+        },
+        "source_ledger_ref": "fact_certs_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_risk_enterprise_risk_controls",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_risk_management",
+          "skill_risk_enterprise_risk_controls",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_risk_model_risk",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_risk_management",
+          "skill_risk_model_risk",
+          "fact_governance_005"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_005": "primary"
+        },
+        "source_ledger_ref": "fact_governance_005"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_capital_regulatory_capital",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "ibm_bullets",
+          "executive_summary"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_capital_modeling",
+          "skill_capital_regulatory_capital",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_co_selling",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_cosell_partner_engineering",
+          "skill_partner_co_selling",
+          "fact_partnerships_gtm_003"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_003": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_solution_architecture",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "headline"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "headline"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_presales_solutioning",
+          "skill_partner_solution_architecture",
+          "fact_solutions_001"
+        ],
+        "link_class_by_fact": {
+          "fact_solutions_001": "primary"
+        },
+        "source_ledger_ref": "fact_solutions_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_customer_deal_support",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "unify_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "unify_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_customer_stakeholder",
+          "skill_partner_customer_deal_support",
+          "fact_sales_accounts_001"
+        ],
+        "link_class_by_fact": {
+          "fact_sales_accounts_001": "primary"
+        },
+        "source_ledger_ref": "fact_sales_accounts_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_sales_revenue_targets",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_revenue_commercialization",
+          "skill_partner_sales_revenue_targets",
+          "fact_sales_accounts_001"
+        ],
+        "link_class_by_fact": {
+          "fact_sales_accounts_001": "primary"
+        },
+        "source_ledger_ref": "fact_sales_accounts_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_partner_led_ai_solutions",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_partner_gtm_alliances",
+          "skill_partner_partner_led_ai_solutions",
+          "fact_partnerships_gtm_001"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_001": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_partner_revenue_3m",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_partner_gtm_alliances",
+          "skill_partner_partner_revenue_3m",
+          "fact_partnerships_gtm_001"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_001": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_revops_salesforce_pipeline_analytics",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_revenue_operations",
+          "skill_revops_salesforce_pipeline_analytics",
+          "fact_revenue_ops_001"
+        ],
+        "link_class_by_fact": {
+          "fact_revenue_ops_001": "primary"
+        },
+        "source_ledger_ref": "fact_revenue_ops_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_revops_salesforce_forecast_pipeline",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_revenue_operations",
+          "skill_revops_salesforce_forecast_pipeline",
+          "fact_revenue_ops_002"
+        ],
+        "link_class_by_fact": {
+          "fact_revenue_ops_002": "primary"
+        },
+        "source_ledger_ref": "fact_revenue_ops_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_revops_usage_based_subscription_forecasting",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_revenue_operations",
+          "skill_revops_usage_based_subscription_forecasting",
+          "fact_revenue_ops_003"
+        ],
+        "link_class_by_fact": {
+          "fact_revenue_ops_003": "primary"
+        },
+        "source_ledger_ref": "fact_revenue_ops_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sales_modernization_deals_15m",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "ibm_bullets",
+          "unify_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "ibm_bullets",
+          "unify_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_revenue_commercialization",
+          "skill_sales_modernization_deals_15m",
+          "fact_sales_accounts_002"
+        ],
+        "link_class_by_fact": {
+          "fact_sales_accounts_002": "primary"
+        },
+        "source_ledger_ref": "fact_sales_accounts_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sales_global_financial_institutions_leadership",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_customer_stakeholder",
+          "skill_sales_global_financial_institutions_leadership",
+          "fact_sales_accounts_003"
+        ],
+        "link_class_by_fact": {
+          "fact_sales_accounts_003": "primary"
+        },
+        "source_ledger_ref": "fact_sales_accounts_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_partner_gtm_alliances",
+          "skill_partner_ibm_aws_alliance_joint_revenue",
+          "fact_partnerships_gtm_002"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_002": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_partner_cloud_vendor_joint_gtm",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_partner_gtm_alliances",
+          "skill_partner_cloud_vendor_joint_gtm",
+          "fact_partnerships_gtm_004"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_004": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_finance_cost_optimization_dashboards",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_strategic_finance_saas",
+          "skill_finance_cost_optimization_dashboards",
+          "fact_revenue_ops_004"
+        ],
+        "link_class_by_fact": {
+          "fact_revenue_ops_004": "primary"
+        },
+        "source_ledger_ref": "fact_revenue_ops_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_finance_ma_synergy_due_diligence",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_strategic_finance_saas",
+          "skill_finance_ma_synergy_due_diligence",
+          "fact_revenue_ops_005"
+        ],
+        "link_class_by_fact": {
+          "fact_revenue_ops_005": "primary"
+        },
+        "source_ledger_ref": "fact_revenue_ops_005"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_gtm_discovery_qualification",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_gtm_presales_motion",
+          "skill_p2_gtm_discovery_qualification",
+          "fact_revenue_ops_001"
+        ],
+        "link_class_by_fact": {
+          "fact_revenue_ops_001": "primary"
+        },
+        "source_ledger_ref": "fact_revenue_ops_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "ibm_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "ibm_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_gtm_presales_motion",
+          "skill_p2_gtm_solution_mapping",
+          "fact_solutions_001"
+        ],
+        "link_class_by_fact": {
+          "fact_solutions_001": "primary"
+        },
+        "source_ledger_ref": "fact_solutions_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_gtm_presales_motion",
+          "skill_p2_gtm_stakeholder_alignment",
+          "fact_partnerships_gtm_005"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_005": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_005"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "headline"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "headline"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_gtm_presales_motion",
+          "skill_p2_gtm_executive_buyer_alignment",
+          "fact_sales_accounts_001"
+        ],
+        "link_class_by_fact": {
+          "fact_sales_accounts_001": "primary"
+        },
+        "source_ledger_ref": "fact_sales_accounts_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "unify_narrative",
+          "executive_summary"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_gtm_presales_motion",
+          "skill_p2_gtm_enterprise_deal_support",
+          "fact_sales_accounts_001"
+        ],
+        "link_class_by_fact": {
+          "fact_sales_accounts_001": "primary"
+        },
+        "source_ledger_ref": "fact_sales_accounts_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_gtm_presales_motion",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "fact_partnerships_gtm_004"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_004": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_tech_reference_architecture",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_technical_presales_accelerators",
+          "skill_p2_tech_reference_architecture",
+          "fact_solutions_002"
+        ],
+        "link_class_by_fact": {
+          "fact_solutions_002": "primary"
+        },
+        "source_ledger_ref": "fact_solutions_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_technical_presales_accelerators",
+          "skill_p2_tech_aws_modernization_patterns",
+          "fact_partnerships_gtm_002"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_002": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "unify_bullets",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_technical_presales_accelerators",
+          "skill_p2_tech_devops_pipeline_blueprint",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_p2_tech_reusable_accelerators",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "unify_bullets",
+          "executive_summary"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_technical_presales_accelerators",
+          "skill_p2_tech_reusable_accelerators",
+          "fact_engineering_platform_006"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_006": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_006"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_insurtech_legacy_cloud_modernization",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_insurance_carrier_transformation",
+          "skill_sr_insurtech_legacy_cloud_modernization",
+          "bul_insurtech_001"
+        ],
+        "link_class_by_fact": {
+          "bul_insurtech_001": "primary"
+        },
+        "source_ledger_ref": "bul_insurtech_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_insurtech_regulated_insurer_controls",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_insurance_carrier_transformation",
+          "skill_sr_insurtech_regulated_insurer_controls",
+          "bul_insurtech_002"
+        ],
+        "link_class_by_fact": {
+          "bul_insurtech_002": "primary"
+        },
+        "source_ledger_ref": "bul_insurtech_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_insurtech_cto_it_enablement",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "ibm_narrative"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "ibm_narrative"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_insurer_it_strategy_ai_enablement",
+          "skill_sr_insurtech_cto_it_enablement",
+          "exp_insurtech_001"
+        ],
+        "link_class_by_fact": {
+          "exp_insurtech_001": "primary"
+        },
+        "source_ledger_ref": "exp_insurtech_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_cloud_data_platform_engineering",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_insurer_it_strategy_ai_enablement",
+          "skill_sr_cloud_data_platform_engineering",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_enterprise_portfolio_data_governance",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_enterprise_portfolio_governance",
+          "skill_sr_enterprise_portfolio_data_governance",
+          "fact_governance_004"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_004": "primary"
+        },
+        "source_ledger_ref": "fact_governance_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_basel_ccar_lineage_regulatory",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_banking_platform_responsible_ai",
+          "skill_sr_basel_ccar_lineage_regulatory",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_banking_ai_governance_controls",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary"
+        ],
+        "graph_hop_path": [
+          "track_actuarial_risk_derivatives",
+          "pillar_banking_platform_responsible_ai",
+          "skill_sr_banking_ai_governance_controls",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_microservices_integration_platform",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_interoperability_integration_ecosystem",
+          "skill_sr_microservices_integration_platform",
+          "fact_engineering_platform_002"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_002": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_hyperscaler_marketplace_partner_gtm",
+          "skill_sr_w12_databricks_lakehouse_fundamentals",
+          "cert_databricks_lakehouse_001"
+        ],
+        "link_class_by_fact": {
+          "cert_databricks_lakehouse_001": "primary"
+        },
+        "source_ledger_ref": "cert_databricks_lakehouse_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_w12_hyperscaler_alliance_co_sell",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "ibm_bullets",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "executive_summary",
+          "ibm_bullets",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_hyperscaler_marketplace_partner_gtm",
+          "skill_sr_w12_hyperscaler_alliance_co_sell",
+          "bul_ibm_005"
+        ],
+        "link_class_by_fact": {
+          "bul_ibm_005": "primary"
+        },
+        "source_ledger_ref": "bul_ibm_005"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_w12_joint_ai_solution_development",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "unify_bullets",
+          "competencies"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_applied_ai_partner_architecture",
+          "skill_sr_w12_joint_ai_solution_development",
+          "fact_partnerships_gtm_001"
+        ],
+        "link_class_by_fact": {
+          "fact_partnerships_gtm_001": "primary"
+        },
+        "source_ledger_ref": "fact_partnerships_gtm_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sr_w12_industry_reference_architecture",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "ibm_bullets"
+        ],
+        "graph_hop_path": [
+          "track_data_tech_cloud_ml",
+          "pillar_applied_ai_partner_architecture",
+          "skill_sr_w12_industry_reference_architecture",
+          "fact_solutions_002"
+        ],
+        "link_class_by_fact": {
+          "fact_solutions_002": "primary"
+        },
+        "source_ledger_ref": "fact_solutions_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_governed_agentic_systems_architecture",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_governed_agentic_systems_architecture",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_layered_runtime_spine_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_layered_runtime_spine_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_agentic_control_plane_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_agentic_control_plane_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_app_overlay_runtime_binding",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_app_overlay_runtime_binding",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_reusable_agentic_platform_architecture",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_reusable_agentic_platform_architecture",
+          "fact_engineering_platform_006"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_006": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_006"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_deterministic_route_selection",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_deterministic_route_selection",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_route_contract_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_route_contract_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_cache_fallback_grounded_action_routing",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_cache_fallback_grounded_action_routing",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_risk_and_hitl_route_posture",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_risk_and_hitl_route_posture",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_route_replay_and_idempotency_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_route_replay_and_idempotency_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_managed_workflow_orchestration",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_managed_workflow_orchestration",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_dependency_and_join_control",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_dependency_and_join_control",
+          "fact_engineering_platform_002"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_002": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_bounded_fanout_and_retry_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_bounded_fanout_and_retry_design",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_multi_step_quality_loop_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_multi_step_quality_loop_design",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_context_engineering",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_context_engineering",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_dense_sparse_exact_retrieval_design",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_dense_sparse_exact_retrieval_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_metadata_acl_freshness_filtering",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_metadata_acl_freshness_filtering",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_evidence_contract_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_evidence_contract_design",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_graph_aware_relationship_grounding",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_graph_aware_relationship_grounding",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_contradiction_and_lineage_handling",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_contradiction_and_lineage_handling",
+          "fact_governance_002"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_002": "primary"
+        },
+        "source_ledger_ref": "fact_governance_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_prompt_assembly_architecture",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_prompt_assembly_architecture",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_instruction_data_boundary_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_instruction_data_boundary_design",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_authority_ordered_prompt_packaging",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_authority_ordered_prompt_packaging",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_schema_bound_generation",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_schema_bound_generation",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_prompt_injection_airlock_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_prompt_injection_airlock_design",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_bounded_agent_execution",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_bounded_agent_execution",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_sandboxed_execution_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_sandboxed_execution_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_external_egress_control",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_external_egress_control",
+          "fact_governance_004"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_004": "primary"
+        },
+        "source_ledger_ref": "fact_governance_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_side_effect_bounded_action_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_side_effect_bounded_action_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_no_direct_write_runtime_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_no_direct_write_runtime_design",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_retry_and_thrash_guard_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_retry_and_thrash_guard_design",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_runtime_resilience_controls",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_runtime_resilience_controls",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_runtime_gate_mesh_design",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_runtime_gate_mesh_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_fail_closed_gate_semantics",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_fail_closed_gate_semantics",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_output_quality_and_schema_gates",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_output_quality_and_schema_gates",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_x1_x2_x3_exit_control",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_x1_x2_x3_exit_control",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_llm_judge_packet_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_llm_judge_packet_design",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_exit_disposition_governance",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_exit_disposition_governance",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_ai_governance_certification",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_ai_governance_certification",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_authority_and_registry_binding",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_authority_and_registry_binding",
+          "fact_governance_002"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_002": "primary"
+        },
+        "source_ledger_ref": "fact_governance_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_policy_bound_runtime_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_policy_bound_runtime_design",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_origin_trust_and_content_boundary",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_origin_trust_and_content_boundary",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_provider_and_egress_governance",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_provider_and_egress_governance",
+          "fact_governance_004"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_004": "primary"
+        },
+        "source_ledger_ref": "fact_governance_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_human_review_reclearance_controls",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_human_review_reclearance_controls",
+          "fact_governance_002"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_002": "primary"
+        },
+        "source_ledger_ref": "fact_governance_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_static_governance_drift_detection",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_static_governance_drift_detection",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_replayable_runtime_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_replayable_runtime_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_audit_grade_observability",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_audit_grade_observability",
+          "fact_engineering_platform_003"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_003": "primary",
+          "fact_engineering_platform_004": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_receipt_and_artifact_chain_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_receipt_and_artifact_chain_design",
+          "fact_governance_001"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_001": "primary"
+        },
+        "source_ledger_ref": "fact_governance_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_no_bypass_proof_controls",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_no_bypass_proof_controls",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_runtime_proof_bundle_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_runtime_proof_bundle_design",
+          "fact_engineering_platform_004"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_004": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_learning_firewall_controls",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_agentic_ai_platforms",
+          "skill_learning_firewall_controls",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_hitl_escalation_architecture",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_hitl_escalation_architecture",
+          "fact_governance_002"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_002": "primary"
+        },
+        "source_ledger_ref": "fact_governance_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_approval_gated_workflow_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_approval_gated_workflow_design",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_human_review_freeze_and_resume",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_human_review_freeze_and_resume",
+          "fact_governance_002"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_002": "primary"
+        },
+        "source_ledger_ref": "fact_governance_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_agent_to_human_handoff_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_agent_to_human_handoff_design",
+          "fact_governance_003"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_003": "primary"
+        },
+        "source_ledger_ref": "fact_governance_003"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_confidence_based_escalation",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_regulatory_governance",
+          "skill_confidence_based_escalation",
+          "fact_governance_002"
+        ],
+        "link_class_by_fact": {
+          "fact_governance_002": "primary"
+        },
+        "source_ledger_ref": "fact_governance_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_agentic_platform_productization",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_revenue_commercialization",
+          "skill_agentic_platform_productization",
+          "fact_engineering_platform_006"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_006": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_006"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_reusable_ai_ip_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_revenue_commercialization",
+          "skill_reusable_ai_ip_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_app_specific_runtime_overlay_design",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_revenue_commercialization",
+          "skill_app_specific_runtime_overlay_design",
+          "fact_engineering_platform_001"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_001": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_enterprise_workflow_adoption",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_revenue_commercialization",
+          "skill_enterprise_workflow_adoption",
+          "fact_exec_002"
+        ],
+        "link_class_by_fact": {
+          "fact_exec_002": "primary"
+        },
+        "source_ledger_ref": "fact_exec_002"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_operating_model_for_agentic_ai",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_revenue_commercialization",
+          "skill_operating_model_for_agentic_ai",
+          "fact_exec_001"
+        ],
+        "link_class_by_fact": {
+          "fact_exec_001": "primary"
+        },
+        "source_ledger_ref": "fact_exec_001"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    },
+    {
+      "skill_id": "skill_ai_platform_commercialization",
+      "activation_status": "ACTIVE",
+      "before": {
+        "allowed_sections": [
+          "executive_summary",
+          "competencies",
+          "unify_bullets"
+        ],
+        "graph_hop_path": null,
+        "link_class_by_fact": null,
+        "source_ledger_ref": null
+      },
+      "after": {
+        "allowed_sections": [
+          "competencies",
+          "executive_summary",
+          "unify_bullets"
+        ],
+        "graph_hop_path": [
+          "track_genai_agentic",
+          "pillar_revenue_commercialization",
+          "skill_ai_platform_commercialization",
+          "fact_engineering_platform_004"
+        ],
+        "link_class_by_fact": {
+          "fact_engineering_platform_004": "primary",
+          "fact_exec_002": "primary"
+        },
+        "source_ledger_ref": "fact_engineering_platform_004"
+      },
+      "migration_note": "W3 strip invalid allowed_sections; derive graph_hop_path"
+    }
+  ],
+  "sqlite_materialization": {
+    "sqlite_db_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\fact_inventory\\augmented_skills_graph.sqlite",
+    "graph_version": "master_skills_arsenal_graph_v1",
+    "graph_hash": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
+    "materialized_at": "2026-05-25T22:55:30Z",
+    "materialized_from": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+    "node_count_json": 236,
+    "edge_count_json": 1400,
+    "node_count_sqlite": 498,
+    "edge_count_sqlite": 1400,
+    "skill_fact_link_count": 109,
+    "section_eligibility_count": 458,
+    "role_family_projection_count": 17,
+    "tables_created": [
+      "graph_nodes",
+      "graph_edges",
+      "skill_fact_links",
+      "section_eligibility",
+      "role_family_projection",
+      "graph_metadata"
+    ]
+  },
+  "rollback_doc": "docs/apps_rg/graph_skills_graph_v2_rollback.md"
+}

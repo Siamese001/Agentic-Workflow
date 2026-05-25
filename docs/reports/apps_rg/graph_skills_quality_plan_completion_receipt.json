@@ -1,0 +1,16 @@
+{
+  "schema": "graph_skills_quality_plan_completion_receipt_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "plan_status": "Completed",
+  "completed_at": "2026-05-26",
+  "authorization": "user-directed-closeout",
+  "waves_completed": ["W0", "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10"],
+  "waves_deferred": ["W10-AG"],
+  "closeout_ref": "docs/reports/apps_rg/graph_skills_quality_enhancement_closeout.json",
+  "closeout_status_at_complete": "PARTIAL",
+  "live_x3_allow_lane_count": 2,
+  "contract_tests_pass": 62,
+  "notion_page_id": "36b27693-f55c-81c0-bb50-d8df6df2b60e",
+  "claims_release_eligible": false,
+  "notes": "W10-AG unified C0.3 bind and D16 REAL_LLM proof remain follow-on work."
+}

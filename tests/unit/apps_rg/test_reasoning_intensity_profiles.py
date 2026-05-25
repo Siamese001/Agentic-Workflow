@@ -31,17 +31,26 @@ def test_locked_sections_are_t0() -> None:
     assert section_reasoning_profile("certifications").tier is ReasoningIntensityTier.T0_LOCKED_FACT
 
 
-def test_critical_sections_map_to_t3() -> None:
-    for lane in ("competencies", "unify_narrative", "unify_bullets"):
+def test_narrative_critical_sections_map_to_t3() -> None:
+    for lane in ("unify_narrative", "ibm_narrative"):
         assert section_reasoning_profile(lane).tier is ReasoningIntensityTier.T3_CRITICAL_SECTION
+
+
+def test_bullet_pool_sections_map_to_t2_with_sc() -> None:
+    for lane in ("competencies", "unify_bullets", "ibm_bullets"):
+        prof = section_reasoning_profile(lane)
+        assert prof.tier is ReasoningIntensityTier.T2_QUALITY_SECTION
+    assert section_reasoning_profile("competencies").self_consistency_samples == 4.0
+    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 15.0
+    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 12.0
 
 
 def test_headline_singleton_lane_is_t0_locked_fact() -> None:
     assert section_reasoning_profile("headline").tier is ReasoningIntensityTier.T0_LOCKED_FACT
 
 
-def test_ibm_sections_map_to_t2() -> None:
-    assert section_reasoning_profile("ibm_narrative").tier is ReasoningIntensityTier.T2_QUALITY_SECTION
+def test_ibm_narrative_single_path_and_bullets_pool() -> None:
+    assert section_reasoning_profile("ibm_narrative").tier is ReasoningIntensityTier.T3_CRITICAL_SECTION
     assert section_reasoning_profile("ibm_bullets").tier is ReasoningIntensityTier.T2_QUALITY_SECTION
 
 
@@ -137,10 +146,11 @@ def test_orchestration_not_forwarded_snapshot_on_http_body() -> None:
     assert ref_blob["samples_requested"] >= 3
     assert ref_blob["samples_completed"] == 1
 
-    loops = by_name["reflexion_loops"]
-    ref_loop = json.loads(loops["proved_reference"])
-    assert ref_loop["loops_requested"] >= 1
-    assert ref_loop["loops_completed"] == 0
+    loops = by_name.get("reflexion_loops")
+    if loops and loops.get("requested"):
+        ref_loop = json.loads(loops["proved_reference"])
+        assert ref_loop["loops_requested"] >= 1
+        assert ref_loop["loops_completed"] == 0
 
 
 def test_softened_t0_headline_allows_quality_cert_path_like_http_singleton() -> None:

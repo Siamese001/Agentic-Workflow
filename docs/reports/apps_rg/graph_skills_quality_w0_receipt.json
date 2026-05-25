@@ -1,0 +1,25 @@
+{
+  "schema": "graph_skills_quality_wave_receipt_v1",
+  "wave_id": "W0",
+  "proof_class": "DETERMINISTIC_RUNTIME_PROOF",
+  "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe ops_scripts/apps_rg/emit_graph_skills_quality_w0_baseline.py",
+  "command_argv": [
+    "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "ops_scripts/apps_rg/emit_graph_skills_quality_w0_baseline.py"
+  ],
+  "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+  "env_vars": {},
+  "exit_code": 0,
+  "artifact_paths": [
+    "docs/reports/apps_rg/graph_skills_quality_enhancement_w0_baseline.json",
+    "docs/reports/apps_rg/graph_skills_quality_w0_receipt.json"
+  ],
+  "timestamp_utc": "2026-05-25T22:45:23Z",
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "phase_gate": {
+    "gate": "G-W0",
+    "status": "PASS"
+  },
+  "notes": "W0 baseline inventory; no LIVE_X3 closeout claim.",
+  "baseline_status": "PASS"
+}

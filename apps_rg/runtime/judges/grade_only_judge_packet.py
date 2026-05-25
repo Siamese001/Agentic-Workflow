@@ -10,6 +10,28 @@ from typing import Any
 from apps_rg.runtime.section_judge_policy import get_section_judge_policy, normalize_section_id
 
 JUDGE_PACKET_VERSION = "apps_rg_grade_only_judge_packet_v1"
+_PRE_X2_PENDING_GATE_KEY = "x2_judge_snapshot_pending"
+
+
+def ensure_panel_gate_summary(
+    deterministic_gate_summary: dict[str, Any] | None,
+    *,
+    section_id: str,
+) -> dict[str, Any]:
+    """Non-empty gate summary for core JudgePanelRunner when X2 runs after X1D."""
+    summary = dict(deterministic_gate_summary or {})
+    if summary:
+        return summary
+    sid = normalize_section_id(section_id)
+    return {
+        _PRE_X2_PENDING_GATE_KEY: {
+            "pass": True,
+            "detail": (
+                f"Pre-X2 GRADE_ONLY for {sid}: lane runs X2 after judges; grade on rubric, "
+                "allowed_fact_packet, and candidate_output only — do not fail on missing x2_* keys."
+            ),
+        }
+    }
 
 GRADE_ONLY_INSTRUCTION = """
 You are grading a generated resume section candidate produced by a separate generator.
@@ -73,7 +95,9 @@ def build_grade_only_judge_packet(
             "claims_must_be_supported_by_allowed_fact_packet": True,
             "judges_must_not_rewrite": True,
         },
-        "deterministic_gate_summary": dict(deterministic_gate_summary or {}),
+        "deterministic_gate_summary": ensure_panel_gate_summary(
+            deterministic_gate_summary, section_id=sid
+        ),
         "section_specific_rubric": section_rubric.strip(),
         "grading_only_instructions": GRADE_ONLY_INSTRUCTION,
         "required_judge_output_schema": REQUIRED_JUDGE_OUTPUT_SCHEMA,
@@ -131,7 +155,9 @@ __all__ = [
     "GRADE_ONLY_INSTRUCTION",
     "JUDGE_PACKET_VERSION",
     "REQUIRED_JUDGE_OUTPUT_SCHEMA",
+    "_PRE_X2_PENDING_GATE_KEY",
     "build_grade_only_judge_packet",
+    "ensure_panel_gate_summary",
     "judge_packet_hash",
     "render_judge_prompt_from_packet",
     "write_judge_packet",

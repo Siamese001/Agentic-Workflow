@@ -256,6 +256,11 @@
       ],
       "promoted_skill_count": 9,
       "rejected_skill_count": 0
+    },
+    "graph_skills_quality_w3": {
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "schema_tag": "master_skills_arsenal_graph_v2_quality",
+      "applied_at": "2026-05-25T22:55:30Z"
     }
   },
   "graph_layers": [
@@ -25676,9 +25681,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career",
-        "executive_summary",
-        "competencies"
+        "competencies",
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -25703,7 +25707,17 @@
       "zero_hallucination_guardrail": "Do not claim derivatives_pricing beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_derivatives_structured",
+        "skill_derivatives_derivatives_pricing",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_greeks_hedging_multi_greek_hedging",
@@ -25730,9 +25744,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career",
-        "executive_summary",
-        "competencies"
+        "competencies",
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -25757,7 +25770,17 @@
       "zero_hallucination_guardrail": "Do not claim multi_greek_hedging beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_greeks_hedging",
+        "skill_greeks_hedging_multi_greek_hedging",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_derivatives_exotic_options",
@@ -26286,7 +26309,6 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career",
         "executive_summary"
       ],
       "visibility_rule": "role_family_match",
@@ -26312,7 +26334,17 @@
       "zero_hallucination_guardrail": "Do not claim capital_modeling beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_capital_modeling",
+        "skill_capital_capital_modeling",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_capital_reserving",
@@ -26433,8 +26465,7 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
-        "early_career"
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26459,7 +26490,17 @@
       "zero_hallucination_guardrail": "Do not claim fsa_fellowship beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_actuarial_foundation",
+        "skill_actuarial_fsa_fellowship",
+        "fact_certs_001"
+      ],
+      "link_class_by_fact": {
+        "fact_certs_001": "primary"
+      },
+      "source_ledger_ref": "fact_certs_001"
     },
     {
       "skill_id": "skill_actuarial_actuarial_software",
@@ -26561,7 +26602,17 @@
       "zero_hallucination_guardrail": "Do not claim enterprise_risk_controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_risk_management",
+        "skill_risk_enterprise_risk_controls",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_risk_market_risk",
@@ -26663,7 +26714,17 @@
       "zero_hallucination_guardrail": "Do not claim model_risk beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_risk_management",
+        "skill_risk_model_risk",
+        "fact_governance_005"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_005": "primary"
+      },
+      "source_ledger_ref": "fact_governance_005"
     },
     {
       "skill_id": "skill_capital_regulatory_capital",
@@ -26692,8 +26753,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ibm_bullets",
-        "executive_summary"
+        "executive_summary",
+        "ibm_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26718,7 +26779,17 @@
       "zero_hallucination_guardrail": "Do not claim regulatory_capital beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_capital_modeling",
+        "skill_capital_regulatory_capital",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_partner_aws_ecosystem",
@@ -26925,7 +26996,17 @@
       "zero_hallucination_guardrail": "Do not claim co_selling beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_cosell_partner_engineering",
+        "skill_partner_co_selling",
+        "fact_partnerships_gtm_003"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_003": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_003"
     },
     {
       "skill_id": "skill_partner_partner_engineering",
@@ -27074,7 +27155,17 @@
       "zero_hallucination_guardrail": "Do not claim solution_architecture beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_presales_solutioning",
+        "skill_partner_solution_architecture",
+        "fact_solutions_001"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_001"
     },
     {
       "skill_id": "skill_partner_workshops",
@@ -27182,7 +27273,17 @@
       "zero_hallucination_guardrail": "Do not claim customer_deal_support beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_customer_stakeholder",
+        "skill_partner_customer_deal_support",
+        "fact_sales_accounts_001"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_001": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_001"
     },
     {
       "skill_id": "skill_partner_enterprise_negotiations",
@@ -27289,7 +27390,17 @@
       "zero_hallucination_guardrail": "Do not claim sales_revenue_targets beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_revenue_commercialization",
+        "skill_partner_sales_revenue_targets",
+        "fact_sales_accounts_001"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_001": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_001"
     },
     {
       "skill_id": "skill_partner_gtm_enablement",
@@ -27393,7 +27504,17 @@
       "zero_hallucination_guardrail": "Do not claim partner_led_ai_solutions beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_partner_led_ai_solutions",
+        "fact_partnerships_gtm_001"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001"
     },
     {
       "skill_id": "skill_partner_product_feedback_loops",
@@ -27539,7 +27660,17 @@
       "zero_hallucination_guardrail": "Do not claim partner_revenue_3m beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_partner_revenue_3m",
+        "fact_partnerships_gtm_001"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001"
     },
     {
       "skill_id": "skill_revops_salesforce_pipeline_analytics",
@@ -27569,8 +27700,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -27596,7 +27727,17 @@
       "zero_hallucination_guardrail": "Do not claim salesforce_pipeline_analytics beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_revenue_operations",
+        "skill_revops_salesforce_pipeline_analytics",
+        "fact_revenue_ops_001"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_001": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_001"
     },
     {
       "skill_id": "skill_revops_salesforce_forecast_pipeline",
@@ -27650,7 +27791,17 @@
       "zero_hallucination_guardrail": "Do not claim salesforce_forecast_pipeline beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_revenue_operations",
+        "skill_revops_salesforce_forecast_pipeline",
+        "fact_revenue_ops_002"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_002": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_002"
     },
     {
       "skill_id": "skill_revops_usage_based_subscription_forecasting",
@@ -27706,7 +27857,17 @@
       "zero_hallucination_guardrail": "Do not claim usage_based_subscription_forecasting beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_revenue_operations",
+        "skill_revops_usage_based_subscription_forecasting",
+        "fact_revenue_ops_003"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_003": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_003"
     },
     {
       "skill_id": "skill_revops_sales_forecasting_frameworks",
@@ -27866,7 +28027,17 @@
       "zero_hallucination_guardrail": "Do not claim modernization_deals_15m beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_revenue_commercialization",
+        "skill_sales_modernization_deals_15m",
+        "fact_sales_accounts_002"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_002": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_002"
     },
     {
       "skill_id": "skill_sales_global_financial_institutions_leadership",
@@ -27927,7 +28098,17 @@
       "zero_hallucination_guardrail": "Do not claim global_financial_institutions_sales_leadership beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_customer_stakeholder",
+        "skill_sales_global_financial_institutions_leadership",
+        "fact_sales_accounts_003"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_003": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_003"
     },
     {
       "skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
@@ -27957,8 +28138,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
-        "competencies"
+        "competencies",
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -27983,7 +28164,17 @@
       "zero_hallucination_guardrail": "Do not claim ibm_aws_alliance_joint_revenue beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_ibm_aws_alliance_joint_revenue",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill_partner_cloud_vendor_joint_gtm",
@@ -28039,7 +28230,17 @@
       "zero_hallucination_guardrail": "Do not claim cloud_vendor_joint_gtm beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_cloud_vendor_joint_gtm",
+        "fact_partnerships_gtm_004"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_004": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_004"
     },
     {
       "skill_id": "skill_finance_cost_optimization_dashboards",
@@ -28095,7 +28296,17 @@
       "zero_hallucination_guardrail": "Do not claim finance_cost_optimization_dashboards beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_strategic_finance_saas",
+        "skill_finance_cost_optimization_dashboards",
+        "fact_revenue_ops_004"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_004": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_004"
     },
     {
       "skill_id": "skill_finance_ma_synergy_due_diligence",
@@ -28149,7 +28360,17 @@
       "zero_hallucination_guardrail": "Do not claim ma_synergy_due_diligence beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_strategic_finance_saas",
+        "skill_finance_ma_synergy_due_diligence",
+        "fact_revenue_ops_005"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_005": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_005"
     },
     {
       "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
@@ -28399,8 +28620,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
-        "competencies"
+        "competencies",
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -28425,7 +28646,17 @@
       "zero_hallucination_guardrail": "Do not claim discovery_qualification beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_discovery_qualification",
+        "fact_revenue_ops_001"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_001": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_001"
     },
     {
       "skill_id": "skill_p2_gtm_solution_mapping",
@@ -28453,8 +28684,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
@@ -28480,7 +28711,17 @@
       "zero_hallucination_guardrail": "Do not claim solution_mapping_executive_value beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_solution_mapping",
+        "fact_solutions_001"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_001"
     },
     {
       "skill_id": "skill_p2_gtm_stakeholder_alignment",
@@ -28535,7 +28776,17 @@
       "zero_hallucination_guardrail": "Do not claim stakeholder_alignment_governance beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_stakeholder_alignment",
+        "fact_partnerships_gtm_005"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_005": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_005"
     },
     {
       "skill_id": "skill_p2_gtm_executive_buyer_alignment",
@@ -28590,7 +28841,17 @@
       "zero_hallucination_guardrail": "Do not claim executive_buyer_alignment beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "fact_sales_accounts_001"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_001": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_001"
     },
     {
       "skill_id": "skill_p2_gtm_commercial_validation_pilots",
@@ -28668,8 +28929,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_narrative",
-        "executive_summary"
+        "executive_summary",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -28694,7 +28955,17 @@
       "zero_hallucination_guardrail": "Do not claim enterprise_deal_support beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_enterprise_deal_support",
+        "fact_sales_accounts_001"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_001": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_001"
     },
     {
       "skill_id": "skill_p2_gtm_presales_delivery_handoff",
@@ -28801,7 +29072,17 @@
       "zero_hallucination_guardrail": "Do not claim joint_gtm_cloud_vendor_roadmaps beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "fact_partnerships_gtm_004"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_004": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_004"
     },
     {
       "skill_id": "skill_p2_tech_reference_architecture",
@@ -28856,7 +29137,17 @@
       "zero_hallucination_guardrail": "Do not claim reference_architecture_industry_solutions beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_reference_architecture",
+        "fact_solutions_002"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_002": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_002"
     },
     {
       "skill_id": "skill_p2_tech_aws_modernization_patterns",
@@ -28911,7 +29202,17 @@
       "zero_hallucination_guardrail": "Do not claim aws_migration_modernization_patterns beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_aws_modernization_patterns",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
@@ -28940,8 +29241,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_bullets",
-        "competencies"
+        "competencies",
+        "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "high",
@@ -28966,7 +29267,17 @@
       "zero_hallucination_guardrail": "Do not claim devops_pipeline_cicd_blueprint beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_devops_pipeline_blueprint",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_p2_tech_demoable_accelerator",
@@ -29045,8 +29356,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_bullets",
-        "executive_summary"
+        "executive_summary",
+        "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "high",
@@ -29071,7 +29382,17 @@
       "zero_hallucination_guardrail": "Do not claim reusable_implementation_accelerators beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_reusable_accelerators",
+        "fact_engineering_platform_006"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_006": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_006"
     },
     {
       "skill_id": "skill_p2_tech_adoption_derisking",
@@ -29287,8 +29608,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "ibm_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -29314,7 +29635,17 @@
       "zero_hallucination_guardrail": "Do not claim insurtech_legacy_cloud_modernization beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_insurance_carrier_transformation",
+        "skill_sr_insurtech_legacy_cloud_modernization",
+        "bul_insurtech_001"
+      ],
+      "link_class_by_fact": {
+        "bul_insurtech_001": "primary"
+      },
+      "source_ledger_ref": "bul_insurtech_001"
     },
     {
       "skill_id": "skill_sr_insurtech_regulated_insurer_controls",
@@ -29370,7 +29701,17 @@
       "zero_hallucination_guardrail": "Do not claim insurtech_regulated_insurer_controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_insurance_carrier_transformation",
+        "skill_sr_insurtech_regulated_insurer_controls",
+        "bul_insurtech_002"
+      ],
+      "link_class_by_fact": {
+        "bul_insurtech_002": "primary"
+      },
+      "source_ledger_ref": "bul_insurtech_002"
     },
     {
       "skill_id": "skill_sr_insurance_systems_resilience_internal",
@@ -29445,8 +29786,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
@@ -29472,7 +29813,17 @@
       "zero_hallucination_guardrail": "Do not claim insurtech_cto_it_enablement beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_insurer_it_strategy_ai_enablement",
+        "skill_sr_insurtech_cto_it_enablement",
+        "exp_insurtech_001"
+      ],
+      "link_class_by_fact": {
+        "exp_insurtech_001": "primary"
+      },
+      "source_ledger_ref": "exp_insurtech_001"
     },
     {
       "skill_id": "skill_sr_cloud_data_platform_engineering",
@@ -29526,7 +29877,17 @@
       "zero_hallucination_guardrail": "Do not claim cloud_data_platform_engineering beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_insurer_it_strategy_ai_enablement",
+        "skill_sr_cloud_data_platform_engineering",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_sr_enterprise_portfolio_data_governance",
@@ -29555,8 +29916,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
-        "competencies"
+        "competencies",
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -29581,7 +29942,17 @@
       "zero_hallucination_guardrail": "Do not claim enterprise_portfolio_data_governance beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_enterprise_portfolio_governance",
+        "skill_sr_enterprise_portfolio_data_governance",
+        "fact_governance_004"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_004": "primary"
+      },
+      "source_ledger_ref": "fact_governance_004"
     },
     {
       "skill_id": "skill_sr_basel_ccar_lineage_regulatory",
@@ -29611,8 +29982,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -29638,7 +30009,17 @@
       "zero_hallucination_guardrail": "Do not claim basel_ccar_lineage_regulatory beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_banking_platform_responsible_ai",
+        "skill_sr_basel_ccar_lineage_regulatory",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_sr_banking_ai_governance_controls",
@@ -29692,7 +30073,17 @@
       "zero_hallucination_guardrail": "Do not claim banking_ai_governance_controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_banking_platform_responsible_ai",
+        "skill_sr_banking_ai_governance_controls",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_sr_regulated_financial_institutions_fluency",
@@ -29800,7 +30191,17 @@
       "zero_hallucination_guardrail": "Do not claim microservices_integration_platform beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_interoperability_integration_ecosystem",
+        "skill_sr_microservices_integration_platform",
+        "fact_engineering_platform_002"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_002": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_002"
     },
     {
       "skill_id": "skill_sr_w12_databricks_lakehouse_fundamentals",
@@ -29855,7 +30256,17 @@
       "zero_hallucination_guardrail": "Do not claim databricks_lakehouse_fundamentals beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "skill_sr_w12_databricks_lakehouse_fundamentals",
+        "cert_databricks_lakehouse_001"
+      ],
+      "link_class_by_fact": {
+        "cert_databricks_lakehouse_001": "primary"
+      },
+      "source_ledger_ref": "cert_databricks_lakehouse_001"
     },
     {
       "skill_id": "skill_sr_w12_hyperscaler_alliance_co_sell",
@@ -29912,7 +30323,17 @@
       "zero_hallucination_guardrail": "Do not claim hyperscaler_alliance_co_sell beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+        "bul_ibm_005"
+      ],
+      "link_class_by_fact": {
+        "bul_ibm_005": "primary"
+      },
+      "source_ledger_ref": "bul_ibm_005"
     },
     {
       "skill_id": "skill_sr_w12_joint_ai_solution_development",
@@ -29941,8 +30362,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_bullets",
-        "competencies"
+        "competencies",
+        "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -29967,7 +30388,17 @@
       "zero_hallucination_guardrail": "Do not claim joint_ai_solution_development beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_applied_ai_partner_architecture",
+        "skill_sr_w12_joint_ai_solution_development",
+        "fact_partnerships_gtm_001"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001"
     },
     {
       "skill_id": "skill_sr_w12_industry_reference_architecture",
@@ -30022,7 +30453,17 @@
       "zero_hallucination_guardrail": "Do not claim industry_reference_architecture_partner beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "confidence_grade": "HIGH",
-      "confidence_grade_derived": "HIGH"
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_applied_ai_partner_architecture",
+        "skill_sr_w12_industry_reference_architecture",
+        "fact_solutions_002"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_002": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_002"
     },
     {
       "skill_id": "skill_governed_agentic_systems_architecture",
@@ -30067,8 +30508,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30100,7 +30541,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_001",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_governed_agentic_systems_architecture",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_layered_runtime_spine_design",
@@ -30144,8 +30595,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30167,7 +30618,17 @@
       "zero_hallucination_guardrail": "Do not claim Layered runtime spine design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_layered_runtime_spine_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_agentic_control_plane_design",
@@ -30211,8 +30672,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30234,7 +30695,17 @@
       "zero_hallucination_guardrail": "Do not claim Agentic control plane design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_agentic_control_plane_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_app_overlay_runtime_binding",
@@ -30277,8 +30748,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30299,7 +30770,17 @@
       "zero_hallucination_guardrail": "Do not claim App overlay runtime binding beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_app_overlay_runtime_binding",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_reusable_agentic_platform_architecture",
@@ -30342,8 +30823,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30375,7 +30856,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_006",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_reusable_agentic_platform_architecture",
+        "fact_engineering_platform_006"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_006": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_006"
     },
     {
       "skill_id": "skill_intent_interpretation_and_ambiguity_framing",
@@ -30732,8 +31223,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30754,7 +31245,17 @@
       "zero_hallucination_guardrail": "Do not claim Deterministic route selection beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_deterministic_route_selection",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_route_contract_design",
@@ -30797,8 +31298,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30819,7 +31320,17 @@
       "zero_hallucination_guardrail": "Do not claim Route contract design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_route_contract_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_cache_fallback_grounded_action_routing",
@@ -30862,8 +31373,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30886,7 +31397,17 @@
       "zero_hallucination_guardrail": "Do not claim Cache fallback grounded action routing beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_cache_fallback_grounded_action_routing",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_risk_and_hitl_route_posture",
@@ -30929,8 +31450,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -30952,7 +31473,17 @@
       "zero_hallucination_guardrail": "Do not claim Risk and HITL route posture beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_risk_and_hitl_route_posture",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_route_replay_and_idempotency_design",
@@ -30995,8 +31526,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31018,7 +31549,17 @@
       "zero_hallucination_guardrail": "Do not claim Route replay and idempotency design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_route_replay_and_idempotency_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_managed_workflow_orchestration",
@@ -31061,8 +31602,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31083,7 +31624,17 @@
       "zero_hallucination_guardrail": "Do not claim Managed workflow orchestration beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_managed_workflow_orchestration",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_dependency_and_join_control",
@@ -31126,8 +31677,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31148,7 +31699,17 @@
       "zero_hallucination_guardrail": "Do not claim Dependency and join control beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_dependency_and_join_control",
+        "fact_engineering_platform_002"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_002": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_002"
     },
     {
       "skill_id": "skill_bounded_fanout_and_retry_design",
@@ -31191,8 +31752,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31214,7 +31775,17 @@
       "zero_hallucination_guardrail": "Do not claim Bounded fanout and retry design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_bounded_fanout_and_retry_design",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_workflow_checkpointing_and_resumability",
@@ -31319,8 +31890,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31342,7 +31913,17 @@
       "zero_hallucination_guardrail": "Do not claim Multi-step quality loop design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_multi_step_quality_loop_design",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_context_engineering",
@@ -31386,8 +31967,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31417,7 +31998,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_003",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_context_engineering",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_dense_sparse_exact_retrieval_design",
@@ -31460,8 +32051,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31494,7 +32085,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_001",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_dense_sparse_exact_retrieval_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_metadata_acl_freshness_filtering",
@@ -31537,8 +32138,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31559,7 +32160,17 @@
       "zero_hallucination_guardrail": "Do not claim Metadata ACL freshness filtering beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_metadata_acl_freshness_filtering",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_evidence_contract_design",
@@ -31602,8 +32213,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31624,7 +32235,17 @@
       "zero_hallucination_guardrail": "Do not claim Evidence contract design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_evidence_contract_design",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_graph_aware_relationship_grounding",
@@ -31667,8 +32288,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31700,7 +32321,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_001",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_graph_aware_relationship_grounding",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_contradiction_and_lineage_handling",
@@ -31743,8 +32374,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31765,7 +32396,17 @@
       "zero_hallucination_guardrail": "Do not claim Contradiction and lineage handling beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_contradiction_and_lineage_handling",
+        "fact_governance_002"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_002": "primary"
+      },
+      "source_ledger_ref": "fact_governance_002"
     },
     {
       "skill_id": "skill_prompt_assembly_architecture",
@@ -31808,8 +32449,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31840,7 +32481,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_003",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_prompt_assembly_architecture",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_instruction_data_boundary_design",
@@ -31883,8 +32534,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31906,7 +32557,17 @@
       "zero_hallucination_guardrail": "Do not claim Instruction data boundary design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_instruction_data_boundary_design",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_authority_ordered_prompt_packaging",
@@ -31949,8 +32610,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -31972,7 +32633,17 @@
       "zero_hallucination_guardrail": "Do not claim Authority ordered prompt packaging beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_authority_ordered_prompt_packaging",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_schema_bound_generation",
@@ -32015,8 +32686,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32037,7 +32708,17 @@
       "zero_hallucination_guardrail": "Do not claim Schema bound generation beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_schema_bound_generation",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_prompt_injection_airlock_design",
@@ -32080,8 +32761,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32103,7 +32784,17 @@
       "zero_hallucination_guardrail": "Do not claim Prompt injection airlock design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_prompt_injection_airlock_design",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_bounded_agent_execution",
@@ -32146,8 +32837,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32168,7 +32859,17 @@
       "zero_hallucination_guardrail": "Do not claim Bounded agent execution beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_bounded_agent_execution",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_tool_and_model_registry_control",
@@ -32274,8 +32975,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32296,7 +32997,17 @@
       "zero_hallucination_guardrail": "Do not claim Sandboxed execution design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_sandboxed_execution_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_external_egress_control",
@@ -32339,8 +33050,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32361,7 +33072,17 @@
       "zero_hallucination_guardrail": "Do not claim External egress control beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_external_egress_control",
+        "fact_governance_004"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_004": "primary"
+      },
+      "source_ledger_ref": "fact_governance_004"
     },
     {
       "skill_id": "skill_side_effect_bounded_action_design",
@@ -32404,8 +33125,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32428,7 +33149,17 @@
       "zero_hallucination_guardrail": "Do not claim Side effect bounded action design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_side_effect_bounded_action_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_no_direct_write_runtime_design",
@@ -32471,8 +33202,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32494,7 +33225,17 @@
       "zero_hallucination_guardrail": "Do not claim No direct write runtime design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_no_direct_write_runtime_design",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_same_authority_runtime_repair",
@@ -32600,8 +33341,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32623,7 +33364,17 @@
       "zero_hallucination_guardrail": "Do not claim Retry and thrash guard design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_retry_and_thrash_guard_design",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_schema_and_output_repair",
@@ -32790,8 +33541,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32812,7 +33563,17 @@
       "zero_hallucination_guardrail": "Do not claim Runtime resilience controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_runtime_resilience_controls",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_runtime_gate_mesh_design",
@@ -32855,8 +33616,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32894,7 +33655,17 @@
         ],
         "override_reason": "archive_snippet_verified_by_operator"
       },
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_runtime_gate_mesh_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_fail_closed_gate_semantics",
@@ -32937,8 +33708,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -32960,7 +33731,17 @@
       "zero_hallucination_guardrail": "Do not claim Fail closed gate semantics beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_fail_closed_gate_semantics",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_output_quality_and_schema_gates",
@@ -33003,8 +33784,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33026,7 +33807,17 @@
       "zero_hallucination_guardrail": "Do not claim Output quality and schema gates beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_output_quality_and_schema_gates",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_x1_x2_x3_exit_control",
@@ -33070,8 +33861,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33091,7 +33882,17 @@
       "zero_hallucination_guardrail": "Do not claim X1 X2 X3 exit control beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_x1_x2_x3_exit_control",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_llm_judge_packet_design",
@@ -33134,8 +33935,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33156,7 +33957,17 @@
       "zero_hallucination_guardrail": "Do not claim LLM judge packet design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_llm_judge_packet_design",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_multi_judge_calibration",
@@ -33261,8 +34072,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33283,7 +34094,17 @@
       "zero_hallucination_guardrail": "Do not claim Exit disposition governance beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_exit_disposition_governance",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_ai_governance_certification",
@@ -33326,8 +34147,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33347,7 +34168,17 @@
       "zero_hallucination_guardrail": "Do not claim AI governance certification beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_ai_governance_certification",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_authority_and_registry_binding",
@@ -33390,8 +34221,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33412,7 +34243,17 @@
       "zero_hallucination_guardrail": "Do not claim Authority and registry binding beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_authority_and_registry_binding",
+        "fact_governance_002"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_002": "primary"
+      },
+      "source_ledger_ref": "fact_governance_002"
     },
     {
       "skill_id": "skill_policy_bound_runtime_design",
@@ -33455,8 +34296,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33478,7 +34319,17 @@
       "zero_hallucination_guardrail": "Do not claim Policy bound runtime design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_policy_bound_runtime_design",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_origin_trust_and_content_boundary",
@@ -33521,8 +34372,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33544,7 +34395,17 @@
       "zero_hallucination_guardrail": "Do not claim Origin trust and content boundary beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_origin_trust_and_content_boundary",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_provider_and_egress_governance",
@@ -33587,8 +34448,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33609,7 +34470,17 @@
       "zero_hallucination_guardrail": "Do not claim Provider and egress governance beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_provider_and_egress_governance",
+        "fact_governance_004"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_004": "primary"
+      },
+      "source_ledger_ref": "fact_governance_004"
     },
     {
       "skill_id": "skill_human_review_reclearance_controls",
@@ -33652,8 +34523,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33675,7 +34546,17 @@
       "zero_hallucination_guardrail": "Do not claim Human review reclearance controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_human_review_reclearance_controls",
+        "fact_governance_002"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_002": "primary"
+      },
+      "source_ledger_ref": "fact_governance_002"
     },
     {
       "skill_id": "skill_static_governance_drift_detection",
@@ -33718,8 +34599,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33741,7 +34622,17 @@
       "zero_hallucination_guardrail": "Do not claim Static governance drift detection beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_static_governance_drift_detection",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_replayable_runtime_design",
@@ -33785,8 +34676,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33807,7 +34698,17 @@
       "zero_hallucination_guardrail": "Do not claim Replayable runtime design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_replayable_runtime_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_audit_grade_observability",
@@ -33851,8 +34752,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33884,7 +34785,18 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_003",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_audit_grade_observability",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary",
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill_receipt_and_artifact_chain_design",
@@ -33927,8 +34839,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -33950,7 +34862,17 @@
       "zero_hallucination_guardrail": "Do not claim Receipt and artifact chain design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_receipt_and_artifact_chain_design",
+        "fact_governance_001"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_governance_001"
     },
     {
       "skill_id": "skill_no_bypass_proof_controls",
@@ -33993,8 +34915,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34015,7 +34937,17 @@
       "zero_hallucination_guardrail": "Do not claim No bypass proof controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_no_bypass_proof_controls",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_runtime_proof_bundle_design",
@@ -34058,8 +34990,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34081,7 +35013,17 @@
       "zero_hallucination_guardrail": "Do not claim Runtime proof bundle design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_runtime_proof_bundle_design",
+        "fact_engineering_platform_004"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_004"
     },
     {
       "skill_id": "skill_trace_and_reconstruction_design",
@@ -34433,8 +35375,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34455,7 +35397,17 @@
       "zero_hallucination_guardrail": "Do not claim Learning firewall controls beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_learning_firewall_controls",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_hitl_escalation_architecture",
@@ -34498,8 +35450,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34520,7 +35472,17 @@
       "zero_hallucination_guardrail": "Do not claim HITL escalation architecture beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_hitl_escalation_architecture",
+        "fact_governance_002"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_002": "primary"
+      },
+      "source_ledger_ref": "fact_governance_002"
     },
     {
       "skill_id": "skill_approval_gated_workflow_design",
@@ -34563,8 +35525,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34586,7 +35548,17 @@
       "zero_hallucination_guardrail": "Do not claim Approval gated workflow design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_approval_gated_workflow_design",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_human_review_freeze_and_resume",
@@ -34629,8 +35601,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34652,7 +35624,17 @@
       "zero_hallucination_guardrail": "Do not claim Human review freeze and resume beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_human_review_freeze_and_resume",
+        "fact_governance_002"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_002": "primary"
+      },
+      "source_ledger_ref": "fact_governance_002"
     },
     {
       "skill_id": "skill_agent_to_human_handoff_design",
@@ -34695,8 +35677,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34718,7 +35700,17 @@
       "zero_hallucination_guardrail": "Do not claim Agent to human handoff design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_agent_to_human_handoff_design",
+        "fact_governance_003"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_003": "primary"
+      },
+      "source_ledger_ref": "fact_governance_003"
     },
     {
       "skill_id": "skill_confidence_based_escalation",
@@ -34761,8 +35753,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34783,7 +35775,17 @@
       "zero_hallucination_guardrail": "Do not claim Confidence based escalation beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_regulatory_governance",
+        "skill_confidence_based_escalation",
+        "fact_governance_002"
+      ],
+      "link_class_by_fact": {
+        "fact_governance_002": "primary"
+      },
+      "source_ledger_ref": "fact_governance_002"
     },
     {
       "skill_id": "skill_agentic_platform_productization",
@@ -34826,8 +35828,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34858,7 +35860,17 @@
         "override_reason": "archive_snippet_verified_by_operator"
       },
       "primary_fact_id": "fact_engineering_platform_006",
-      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z"
+      "operator_archive_promotion_applied_at": "2026-05-20T15:57:29Z",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_revenue_commercialization",
+        "skill_agentic_platform_productization",
+        "fact_engineering_platform_006"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_006": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_006"
     },
     {
       "skill_id": "skill_reusable_ai_ip_design",
@@ -34901,8 +35913,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34922,7 +35934,17 @@
       "zero_hallucination_guardrail": "Do not claim Reusable AI IP design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_revenue_commercialization",
+        "skill_reusable_ai_ip_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_app_specific_runtime_overlay_design",
@@ -34965,8 +35987,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -34988,7 +36010,17 @@
       "zero_hallucination_guardrail": "Do not claim App specific runtime overlay design beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_revenue_commercialization",
+        "skill_app_specific_runtime_overlay_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_enterprise_workflow_adoption",
@@ -35031,8 +36063,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -35053,7 +36085,17 @@
       "zero_hallucination_guardrail": "Do not claim Enterprise workflow adoption beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_revenue_commercialization",
+        "skill_enterprise_workflow_adoption",
+        "fact_exec_002"
+      ],
+      "link_class_by_fact": {
+        "fact_exec_002": "primary"
+      },
+      "source_ledger_ref": "fact_exec_002"
     },
     {
       "skill_id": "skill_operating_model_for_agentic_ai",
@@ -35096,8 +36138,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -35118,7 +36160,17 @@
       "zero_hallucination_guardrail": "Do not claim Operating model for agentic AI beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_revenue_commercialization",
+        "skill_operating_model_for_agentic_ai",
+        "fact_exec_001"
+      ],
+      "link_class_by_fact": {
+        "fact_exec_001": "primary"
+      },
+      "source_ledger_ref": "fact_exec_001"
     },
     {
       "skill_id": "skill_ai_platform_commercialization",
@@ -35162,8 +36214,8 @@
         "unsupervised production agents"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
+        "executive_summary",
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
@@ -35183,7 +36235,18 @@
       "zero_hallucination_guardrail": "Do not claim AI platform commercialization beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_GENAI_AGENTIC",
       "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_revenue_commercialization",
+        "skill_ai_platform_commercialization",
+        "fact_engineering_platform_004"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_004": "primary",
+        "fact_exec_002": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_004"
     }
   ],
   "actuarial_career_matrix": [

@@ -1,0 +1,76 @@
+{
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W8",
+  "gate_id": "G-W8",
+  "proof_class": "CONTRACT_TEST_PROOF",
+  "real_llm_proof_class": "REAL_LLM_RUNTIME_PROOF",
+  "real_llm_executed": false,
+  "real_llm_probe_paths": [
+    "artifacts/apps_rg/runs/_test_exec_whole/modular_r4/sections/executive_summary/real/exec_summary_20260520_194739/resume_display_text.txt",
+    "artifacts/apps_rg/runs/_w8c_probe2/modular_r4/sections/executive_summary/real/exec_summary_20260520_195148/resume_display_text.txt",
+    "artifacts/apps_rg/runs/_w8c_probe3/modular_r4/sections/executive_summary/real/exec_summary_20260520_195401/resume_display_text.txt"
+  ],
+  "contract_test_pass": true,
+  "lanes": [
+    {
+      "schema": "graph_skills_utilization_receipt_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "section_id": "executive_summary",
+      "selected_skill_ids": [
+        "brown_exec_platform"
+      ],
+      "allowed_phrases": [
+        "agentic ai platform"
+      ],
+      "used_phrases": [
+        "agentic ai platform"
+      ],
+      "semantic_variants_matched": [],
+      "cited_fact_ids": [
+        "fact_brown_exec_001"
+      ],
+      "unused_skill_ids": [],
+      "used_skill_ids": [
+        "brown_exec_platform"
+      ],
+      "suppressed_skill_ids": [],
+      "forbidden_phrase_violations": [],
+      "unsupported_skill_phrase_violations": [],
+      "utilization_score": 1.0,
+      "eligible_skill_count": 1,
+      "pass": true
+    },
+    {
+      "schema": "graph_skills_utilization_receipt_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "section_id": "competencies",
+      "selected_skill_ids": [
+        "brown_comp_platform"
+      ],
+      "allowed_phrases": [
+        "platform engineering"
+      ],
+      "used_phrases": [
+        "platform engineering"
+      ],
+      "semantic_variants_matched": [],
+      "cited_fact_ids": [
+        "fact_brown_comp_001"
+      ],
+      "unused_skill_ids": [],
+      "used_skill_ids": [
+        "brown_comp_platform"
+      ],
+      "suppressed_skill_ids": [],
+      "forbidden_phrase_violations": [],
+      "unsupported_skill_phrase_violations": [],
+      "utilization_score": 1.0,
+      "eligible_skill_count": 1,
+      "pass": true
+    }
+  ],
+  "aggregate_pass": true,
+  "utilization_score_mean": 1.0,
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "emitted_at": "2026-05-25T23:11:52.907960+00:00"
+}

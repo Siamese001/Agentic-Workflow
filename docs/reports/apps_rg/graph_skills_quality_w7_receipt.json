@@ -1,0 +1,34 @@
+{
+  "schema": "graph_skills_quality_wave_receipt_v1",
+  "wave_id": "W7",
+  "proof_class": "CONTRACT_TEST_PROOF",
+  "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe ops_scripts/apps_rg/emit_graph_skills_quality_w7.py",
+  "command_argv": [
+    "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "ops_scripts/apps_rg/emit_graph_skills_quality_w7.py"
+  ],
+  "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+  "env_vars": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "exit_code": 0,
+  "status": "PARTIAL",
+  "pytest_stdout_tail": "",
+  "pytest_stderr_tail": "",
+  "artifact_paths": [
+    "docs/reports/apps_rg/graph_skills_agentic_core_boundary_w7.json",
+    "docs/reports/apps_rg/graph_skills_quality_w7_ci_ratchet.json",
+    "docs/reports/apps_rg/graph_skills_quality_w7_receipt.json",
+    ".github/workflows/graph-skills-authority-ratchet.yml"
+  ],
+  "timestamp_utc": "2026-05-25T23:08:10Z",
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "phase_gate": {
+    "gate": "G-W7",
+    "status": "PARTIAL",
+    "agentic_core_boundary_pass": true,
+    "contract_pytest_pass": true,
+    "workflow_file_exists": true,
+    "ci_gha_executed": false
+  }
+}

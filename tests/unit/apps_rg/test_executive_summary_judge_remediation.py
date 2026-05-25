@@ -290,6 +290,10 @@ def _claude_soft_fail_with_dimension_verdicts() -> dict:
         ],
         score=0.68,
     )
+    judge["remediation_suggestions"] = [
+        "Reframe the opening thesis to position the candidate as an enterprise-wide IT strategy leader.",
+        "Replace the bullet-stack pattern (S2-S5) with connective narrative tying platform and governance.",
+    ]
     judge["dimension_verdicts"] = {
         "executive_signal": {
             "pass": False,
@@ -324,6 +328,61 @@ def test_compact_regen_delta_fits_core_token_budget() -> None:
     assert "executive_signal:" in joined
     assert "synthesis_quality:" in joined
     assert "ats_alignment_without_keyword_stuffing:" not in joined
+    assert "enterprise-wide IT strategy leader" in joined
+    assert "bullet-stack pattern" in joined
+
+
+def test_all_soft_failed_judges_emit_untruncated_feedback() -> None:
+    long_finding_a = (
+        "Sentences 2-5 read as a sequential achievement bullet stack rather than integrated "
+        "SVP-level strategic narrative with no connective tissue."
+    )
+    long_finding_b = (
+        "Closing synthesis remains generic and does not project enterprise architecture "
+        "or innovation incubation themes from allowed facts."
+    )
+    remed_a = (
+        "Reframe the opening thesis to position the candidate as an enterprise-wide IT "
+        "strategy and innovation leader, not solely an agentic AI platform builder."
+    )
+    remed_b = (
+        "Strengthen S6 forward synthesis with specific strategic framing relevant to "
+        "enterprise architecture and innovation incubation rather than generic outcomes."
+    )
+    judges = [
+        {
+            **_soft_fail_judge("anthropic_claude", findings=[long_finding_a], score=0.68),
+            "remediation_suggestions": [remed_a],
+            "dimension_verdicts": {
+                "executive_signal": {"pass": False, "severity": "major", "codes": ["bullet_stack"]},
+                "synthesis_quality": {"pass": False, "severity": "major", "codes": ["thin_S6"]},
+            },
+        },
+        {
+            **_soft_fail_judge("openai_chatgpt", findings=[long_finding_b], score=0.72),
+            "remediation_suggestions": [remed_b],
+            "dimension_verdicts": {
+                "synthesis_quality": {"pass": False, "severity": "major", "codes": ["thin_recap"]},
+            },
+        },
+    ]
+    lines = collect_judge_remediation_delta_lines(
+        judges,
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+        prior_word_count=120,
+        prior_ledger_rows=6,
+        compact=True,
+    )
+    joined = "\n".join(lines)
+    assert long_finding_a in joined
+    assert long_finding_b in joined
+    assert remed_a in joined
+    assert remed_b in joined
+    assert "JUDGE_DELTA_SOURCE provider_key=anthropic_claude" in joined
+    assert "JUDGE_DELTA_SOURCE provider_key=openai_chatgpt" in joined
+    assert "anthropic_claude remediation:" in joined
+    assert "openai_chatgpt remediation:" in joined
 
 
 def test_retry_qwen_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypatch) -> None:

@@ -1,0 +1,73 @@
+{
+  "schema": "graph_skills_quality_w1_jd_subgraph_v1",
+  "generated_at": "2026-05-25T22:48:41Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W1",
+  "status": "PASS",
+  "brown_jd_path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt",
+  "sections": {
+    "headline": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/headline.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "augmented_skills_graph_headline"
+    },
+    "executive_summary": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/executive_summary.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "augmented_skills_graph_executive_summary"
+    },
+    "unify_bullets": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/unify_bullets.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "augmented_skills_graph_unify_bullets_company_hint"
+    },
+    "unify_narrative": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/unify_narrative.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "augmented_skills_graph_unify_narrative_company_hint"
+    },
+    "ibm_bullets": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/ibm_bullets.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "augmented_skills_graph_ibm_bullets"
+    },
+    "ibm_narrative": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/ibm_narrative.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "augmented_skills_graph_ibm_narrative_company_hint"
+    },
+    "competencies": {
+      "rationale_path": "docs/reports/apps_rg/graph_skills_quality_w1_rationale/competencies.json",
+      "role_family_key": "INSURANCE_BROKERAGE_IT_INNOVATION",
+      "jd_boost_monotonic": true,
+      "jd_keyword_hit_count": 3,
+      "selected_skill_count": 20,
+      "selection_method": "TRACK_WEIGHTED_MULTI_HOP"
+    }
+  },
+  "phase_gate_g_w1": {
+    "gate": "G-W1",
+    "status": "PASS",
+    "graph_selection_rationale_per_lane": true,
+    "jd_boost_monotonic_all_lanes": true,
+    "failures": []
+  }
+}

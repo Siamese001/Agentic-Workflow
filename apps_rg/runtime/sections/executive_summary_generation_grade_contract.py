@@ -10,6 +10,7 @@ from typing import Any
 from apps_rg.prompt_assembly.e0_examples import _EXEC_SUMMARY_POSITIVE_COMPILE_IDS
 from apps_rg.runtime.sections.executive_summary_targeting_publish import (
     instructional_surface_drift_risk,
+    judge_regen_blocked_by_trim,
 )
 from apps_rg.runtime.targeting_context_authority import (
     GenerationMaterialContext,
@@ -83,6 +84,7 @@ def build_generation_grade_contract_manifest(
         if isinstance(row, dict)
     ]
     drift_risk = instructional_surface_drift_risk(token_budget_receipt)
+    regen_trim_block = judge_regen_blocked_by_trim(token_budget_receipt)
     gate_summary = (judge_packet or {}).get("deterministic_gate_summary") or {}
     return {
         "schema": MANIFEST_SCHEMA,
@@ -100,7 +102,8 @@ def build_generation_grade_contract_manifest(
             "trim_applied": trim_applied,
             "token_trim_components": trimmed_components,
             "instructional_surface_drift_risk": drift_risk,
-            "judge_regen_allowed": parity_receipt.get("parity_match") is True and not drift_risk,
+            "judge_regen_trim_block": regen_trim_block,
+            "judge_regen_allowed": parity_receipt.get("parity_match") is True and not regen_trim_block,
         },
         "instructional_digests": {
             "e0_compile_ids": list(_EXEC_SUMMARY_POSITIVE_COMPILE_IDS),

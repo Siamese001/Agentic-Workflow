@@ -1,0 +1,202 @@
+{
+  "schema": "graph_skills_quality_enhancement_w0_baseline_v1",
+  "generated_at": "2026-05-25T22:45:23Z",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W0",
+  "status": "PASS",
+  "brown_fixture_pins": [
+    {
+      "fixture_id": "brown_jd",
+      "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt",
+      "sha256": "23b16bd0ae15188a4de4d533209e34ccff8fae6d12c96894a2dd90cc53bb4dfd",
+      "briefing_role": "jd",
+      "exists_on_disk": true,
+      "sha256_plan_doc": "23b16bd0ae15188a4de4d533209e34ccff8fae6d12c96894a2dd90cc53bb4dfd",
+      "sha256_pinned_w0": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "sha256_verified_against_plan_doc": false,
+      "fixture_pin_drift": true
+    },
+    {
+      "fixture_id": "brown_briefing_default",
+      "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
+      "sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "briefing_role": "six_lanes",
+      "exists_on_disk": true,
+      "sha256_plan_doc": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "sha256_pinned_w0": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "sha256_verified_against_plan_doc": true,
+      "fixture_pin_drift": false
+    },
+    {
+      "fixture_id": "brown_briefing_exec",
+      "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md",
+      "sha256": "6fb5d18f438f872cddd9ed4daeef2ae4a3fd16fc21b0435f502aeaa27f11b689",
+      "briefing_role": "executive_summary",
+      "exists_on_disk": true,
+      "sha256_plan_doc": "6fb5d18f438f872cddd9ed4daeef2ae4a3fd16fc21b0435f502aeaa27f11b689",
+      "sha256_pinned_w0": "74bd4674f23f17236abf3e5a3837e7fd422d6691e2f7e1dc234653f11a6da1f6",
+      "sha256_verified_against_plan_doc": false,
+      "fixture_pin_drift": true
+    }
+  ],
+  "brown_all_fixtures_exist": true,
+  "brown_fixture_pin_drift_ids": [
+    "brown_jd",
+    "brown_briefing_exec"
+  ],
+  "brown_w10_must_use_sha256_pinned_w0": true,
+  "x3_code_samples_latest_real_runs": [
+    {
+      "lane": "headline",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260525_223026",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_ALLOW",
+      "x3_normalized": "ALLOW_FINISH",
+      "x3_pass": true,
+      "live_x3_allow_claimed": true,
+      "note": null
+    },
+    {
+      "lane": "executive_summary",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260525_223714",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_REVIEW_JUDGE_SOFT_FAIL",
+      "x3_normalized": "REVIEW",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "note": null
+    },
+    {
+      "lane": "unify_bullets",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260523_123122",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "note": null
+    },
+    {
+      "lane": "unify_narrative",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260523_123336",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "note": null
+    },
+    {
+      "lane": "ibm_bullets",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260523_123849",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "note": null
+    },
+    {
+      "lane": "ibm_narrative",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260523_124006",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "note": null
+    },
+    {
+      "lane": "competencies",
+      "latest_run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260524_010446",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": null,
+      "x3_normalized": "UNKNOWN",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "note": "missing_x3_disposition.json"
+    }
+  ],
+  "x3_normalization_dry_run": [
+    {
+      "input": "X3_ALLOW",
+      "x3_normalized": "ALLOW_FINISH",
+      "live_x3_allow_claimed": true,
+      "lane": "headline"
+    },
+    {
+      "input": "X3_REVIEW_JUDGE_SOFT_FAIL",
+      "x3_normalized": "REVIEW",
+      "live_x3_allow_claimed": false,
+      "lane": "executive_summary"
+    },
+    {
+      "input": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "live_x3_allow_claimed": false,
+      "lane": "unify_bullets"
+    },
+    {
+      "input": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "live_x3_allow_claimed": false,
+      "lane": "unify_narrative"
+    },
+    {
+      "input": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "live_x3_allow_claimed": false,
+      "lane": "ibm_bullets"
+    },
+    {
+      "input": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "live_x3_allow_claimed": false,
+      "lane": "ibm_narrative"
+    },
+    {
+      "input": null,
+      "x3_normalized": "UNKNOWN",
+      "live_x3_allow_claimed": false,
+      "lane": "competencies"
+    }
+  ],
+  "live_x3_allow_lane_count": 1,
+  "live_x3_7_of_7": false,
+  "claims_live_x3_from_w0": false,
+  "evidence_inventory": {
+    "real_lane_runs_with_latest_dir": 7,
+    "contract_harness_dirs": 1027,
+    "proof_class_lane_latest_counts": {
+      "CONTRACT_TEST_PROOF": 1027,
+      "DETERMINISTIC_RUNTIME_PROOF": 0,
+      "REAL_LLM_RUNTIME_PROOF": 7,
+      "LIVE_X3_ALLOW_PROOF": 1,
+      "CI_RATCHET_PROOF": 0
+    },
+    "p2_closeout_ref": "docs/reports/apps_rg/graph_skills_hardening_p2_accelerated_closeout.json",
+    "p2_closeout_status": "PARTIAL",
+    "p2_live_x3_sections_claimed": [
+      "executive_summary"
+    ],
+    "p2_live_x3_used_for_d6": false,
+    "note": "W0 does not inherit LIVE_X3_ALLOW from P2 closeout; per-lane REAL_LLM artifacts required in W10."
+  },
+  "lane_registry_briefing_discrepancy": {
+    "file": "apps_rg/runtime/rigor/lane_registry.py",
+    "registry_default_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.txt",
+    "on_disk_ssot_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
+    "registry_exec_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt",
+    "on_disk_ssot_exec_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md",
+    "registry_txt_exists": false,
+    "registry_md_exists": true,
+    "remediation_wave": "W9"
+  },
+  "gaps_for_downstream_waves": [
+    "graph_skills_quality_w1+ artifacts not emitted",
+    "test_graph_skills_authority_separation.py missing (W4)",
+    "graph-skills-authority-ratchet.yml missing (W7)",
+    "x3_disposition_normalize.py stub present; wire into W10 closeout emitter",
+    "LIVE_X3 lanes at W0: 1/7 (headline only if latest runs unchanged)"
+  ]
+}

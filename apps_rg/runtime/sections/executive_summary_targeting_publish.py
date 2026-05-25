@@ -123,17 +123,35 @@ INSTRUCTIONAL_TRIM_COMPONENTS: frozenset[str] = frozenset(
     }
 )
 
+# E0 is excluded from judge GRADE_ONLY packets by design (see JUDGE_EXCLUDED_BY_DESIGN);
+# trimming E0 alone does not make judge-regen deltas unfair to the writer thread.
+JUDGE_REGEN_BLOCKING_TRIM_COMPONENTS: frozenset[str] = frozenset(
+    {
+        "y0_style_preferences",
+        "jd_briefing_prose",
+        "jd_text_prose",
+    }
+)
 
-def instructional_surface_drift_risk(token_budget_receipt: dict[str, Any] | None) -> bool:
-    """True when L2 trim removed instructional slots judges never receive (RCA C1)."""
+
+def _trimmed_component_names(token_budget_receipt: dict[str, Any] | None) -> set[str]:
     if not isinstance(token_budget_receipt, dict) or not token_budget_receipt.get("trim_applied"):
-        return False
-    trimmed = {
+        return set()
+    return {
         str(row.get("component") or "")
         for row in (token_budget_receipt.get("trimmed_components") or [])
         if isinstance(row, dict)
     }
-    return bool(trimmed & INSTRUCTIONAL_TRIM_COMPONENTS)
+
+
+def instructional_surface_drift_risk(token_budget_receipt: dict[str, Any] | None) -> bool:
+    """True when L2 trim removed instructional slots (manifest/RCA; includes optional E0)."""
+    return bool(_trimmed_component_names(token_budget_receipt) & INSTRUCTIONAL_TRIM_COMPONENTS)
+
+
+def judge_regen_blocked_by_trim(token_budget_receipt: dict[str, Any] | None) -> bool:
+    """True when trim removed Y0/JD prose judges also lack — blocks same-authority judge regen."""
+    return bool(_trimmed_component_names(token_budget_receipt) & JUDGE_REGEN_BLOCKING_TRIM_COMPONENTS)
 
 
 def parity_allows_judge_regen(
@@ -146,19 +164,21 @@ def parity_allows_judge_regen(
         return False, "targeting_context_parity missing"
     if tcp.get("parity_match") is not True:
         return False, "parity_match is false — judge regen would use unfair targeting context"
-    if instructional_surface_drift_risk(token_budget_receipt):
+    if judge_regen_blocked_by_trim(token_budget_receipt):
         return (
             False,
-            "L2 instructional surface trimmed (E0/Y0/JD prose) — judge packet lacks those blocks",
+            "L2 instructional surface trimmed (Y0/JD prose) — judge packet lacks those blocks",
         )
     return True, "parity_match"
 
 
 __all__ = [
     "INSTRUCTIONAL_TRIM_COMPONENTS",
+    "JUDGE_REGEN_BLOCKING_TRIM_COMPONENTS",
     "audit_judge_packet_targeting_digests",
     "instructional_surface_drift_risk",
     "judge_packet_for_parity_evaluation",
+    "judge_regen_blocked_by_trim",
     "parity_allows_judge_regen",
     "publish_targeting_parity_and_usage_ledger",
     "resolve_judge_packet_for_parity",

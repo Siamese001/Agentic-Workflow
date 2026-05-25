@@ -1,0 +1,205 @@
+{
+  "schema": "graph_skills_x1d_rubric_port_diff_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W4",
+  "status": "PASS",
+  "non_claim": "Rubric port did not relax groundedness, specificity, or citation thresholds.",
+  "baseline_path": "apps_rg/runtime/judges/graph_skills_x1d_rubric_baseline_w4.json",
+  "lane_families": [
+    {
+      "lane_family": "executive_summary",
+      "lanes": [
+        {
+          "lane_id": "executive_summary",
+          "rubric_version_before": "executive_summary_x1d_v1",
+          "rubric_version_after": "executive_summary_x1d_v1",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "144e22be33be994cb9d9f66b414f37bf3cc1e4bfda922ad117ef5e472f279c41",
+          "rubric_sha256_after": "144e22be33be994cb9d9f66b414f37bf3cc1e4bfda922ad117ef5e472f279c41",
+          "dimension_count_before": 6,
+          "dimension_count_after": 6,
+          "decisive_trigger_count_before": 7,
+          "decisive_trigger_count_after": 7,
+          "masking_relaxed": false
+        }
+      ],
+      "masking_relaxed": false
+    },
+    {
+      "lane_family": "headline",
+      "lanes": [
+        {
+          "lane_id": "headline",
+          "rubric_version_before": "headline_x1d_v4",
+          "rubric_version_after": "headline_x1d_v4",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "62df87fe81fa9889503aeb2756cfe0fd2489c8aea7deb89b06ca456d02314fbc",
+          "rubric_sha256_after": "62df87fe81fa9889503aeb2756cfe0fd2489c8aea7deb89b06ca456d02314fbc",
+          "dimension_count_before": 8,
+          "dimension_count_after": 8,
+          "decisive_trigger_count_before": 8,
+          "decisive_trigger_count_after": 8,
+          "masking_relaxed": false
+        }
+      ],
+      "masking_relaxed": false
+    },
+    {
+      "lane_family": "narrative",
+      "lanes": [
+        {
+          "lane_id": "unify_narrative",
+          "rubric_version_before": "unify_narrative_x1d_v2",
+          "rubric_version_after": "unify_narrative_x1d_v2",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "5b26b01c0d0b7a450aa38f505c79584952f85c81bb59d3e9af67e010a807094e",
+          "rubric_sha256_after": "5b26b01c0d0b7a450aa38f505c79584952f85c81bb59d3e9af67e010a807094e",
+          "dimension_count_before": 10,
+          "dimension_count_after": 10,
+          "decisive_trigger_count_before": 5,
+          "decisive_trigger_count_after": 5,
+          "masking_relaxed": false
+        },
+        {
+          "lane_id": "ibm_narrative",
+          "rubric_version_before": "ibm_narrative_x1d_v2",
+          "rubric_version_after": "ibm_narrative_x1d_v2",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "cf336922d81c4b4f2e2ed15c359d13b809a156d53bc8c78dabc34256ce996548",
+          "rubric_sha256_after": "cf336922d81c4b4f2e2ed15c359d13b809a156d53bc8c78dabc34256ce996548",
+          "dimension_count_before": 10,
+          "dimension_count_after": 10,
+          "decisive_trigger_count_before": 5,
+          "decisive_trigger_count_after": 5,
+          "masking_relaxed": false
+        }
+      ],
+      "masking_relaxed": false
+    },
+    {
+      "lane_family": "bullets",
+      "lanes": [
+        {
+          "lane_id": "unify_bullets",
+          "rubric_version_before": "unify_bullets_x1d_v2",
+          "rubric_version_after": "unify_bullets_x1d_v2",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "bcf3b7c2b96cb58bbabed44bb0d7a520268442c1efc8e68989b0639b72f692e7",
+          "rubric_sha256_after": "bcf3b7c2b96cb58bbabed44bb0d7a520268442c1efc8e68989b0639b72f692e7",
+          "dimension_count_before": 10,
+          "dimension_count_after": 10,
+          "decisive_trigger_count_before": 6,
+          "decisive_trigger_count_after": 6,
+          "masking_relaxed": false
+        },
+        {
+          "lane_id": "ibm_bullets",
+          "rubric_version_before": "ibm_bullets_x1d_v2",
+          "rubric_version_after": "ibm_bullets_x1d_v2",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "5c46ed4c64e00b65d3b5013740acec8e641ec7f8304a12978bc395777e2b20b1",
+          "rubric_sha256_after": "5c46ed4c64e00b65d3b5013740acec8e641ec7f8304a12978bc395777e2b20b1",
+          "dimension_count_before": 10,
+          "dimension_count_after": 10,
+          "decisive_trigger_count_before": 5,
+          "decisive_trigger_count_after": 5,
+          "masking_relaxed": false
+        }
+      ],
+      "masking_relaxed": false
+    },
+    {
+      "lane_family": "competencies",
+      "lanes": [
+        {
+          "lane_id": "competencies",
+          "rubric_version_before": "competencies_x1d_v1",
+          "rubric_version_after": "competencies_x1d_v1",
+          "threshold_before": 0.8,
+          "threshold_after": 0.8,
+          "rubric_sha256_before": "1e37286e10ea9396a8ab467f12ef638497719d9a3ef1cc995f4aaf24e13357b7",
+          "rubric_sha256_after": "1e37286e10ea9396a8ab467f12ef638497719d9a3ef1cc995f4aaf24e13357b7",
+          "dimension_count_before": 7,
+          "dimension_count_after": 7,
+          "decisive_trigger_count_before": 3,
+          "decisive_trigger_count_after": 3,
+          "masking_relaxed": false
+        }
+      ],
+      "masking_relaxed": false
+    }
+  ],
+  "any_masking_relaxed": false,
+  "invariant_failures": [],
+  "current_snapshots": [
+    {
+      "lane_id": "executive_summary",
+      "lane_family": "executive_summary",
+      "rubric_version": "executive_summary_x1d_v1",
+      "default_threshold": 0.8,
+      "rubric_sha256": "144e22be33be994cb9d9f66b414f37bf3cc1e4bfda922ad117ef5e472f279c41",
+      "dimension_count": 6,
+      "decisive_trigger_count": 7
+    },
+    {
+      "lane_id": "headline",
+      "lane_family": "headline",
+      "rubric_version": "headline_x1d_v4",
+      "default_threshold": 0.8,
+      "rubric_sha256": "62df87fe81fa9889503aeb2756cfe0fd2489c8aea7deb89b06ca456d02314fbc",
+      "dimension_count": 8,
+      "decisive_trigger_count": 8
+    },
+    {
+      "lane_id": "unify_narrative",
+      "lane_family": "narrative",
+      "rubric_version": "unify_narrative_x1d_v2",
+      "default_threshold": 0.8,
+      "rubric_sha256": "5b26b01c0d0b7a450aa38f505c79584952f85c81bb59d3e9af67e010a807094e",
+      "dimension_count": 10,
+      "decisive_trigger_count": 5
+    },
+    {
+      "lane_id": "ibm_narrative",
+      "lane_family": "narrative",
+      "rubric_version": "ibm_narrative_x1d_v2",
+      "default_threshold": 0.8,
+      "rubric_sha256": "cf336922d81c4b4f2e2ed15c359d13b809a156d53bc8c78dabc34256ce996548",
+      "dimension_count": 10,
+      "decisive_trigger_count": 5
+    },
+    {
+      "lane_id": "unify_bullets",
+      "lane_family": "bullets",
+      "rubric_version": "unify_bullets_x1d_v2",
+      "default_threshold": 0.8,
+      "rubric_sha256": "bcf3b7c2b96cb58bbabed44bb0d7a520268442c1efc8e68989b0639b72f692e7",
+      "dimension_count": 10,
+      "decisive_trigger_count": 6
+    },
+    {
+      "lane_id": "ibm_bullets",
+      "lane_family": "bullets",
+      "rubric_version": "ibm_bullets_x1d_v2",
+      "default_threshold": 0.8,
+      "rubric_sha256": "5c46ed4c64e00b65d3b5013740acec8e641ec7f8304a12978bc395777e2b20b1",
+      "dimension_count": 10,
+      "decisive_trigger_count": 5
+    },
+    {
+      "lane_id": "competencies",
+      "lane_family": "competencies",
+      "rubric_version": "competencies_x1d_v1",
+      "default_threshold": 0.8,
+      "rubric_sha256": "1e37286e10ea9396a8ab467f12ef638497719d9a3ef1cc995f4aaf24e13357b7",
+      "dimension_count": 7,
+      "decisive_trigger_count": 3
+    }
+  ]
+}

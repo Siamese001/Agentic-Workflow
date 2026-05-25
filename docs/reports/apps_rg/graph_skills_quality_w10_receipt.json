@@ -1,0 +1,37 @@
+{
+  "schema": "graph_skills_quality_wave_receipt_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave_id": "W10",
+  "proof_class": "LIVE_X3_ALLOW_PROOF",
+  "command": "python ops_scripts/apps_rg/emit_graph_skills_quality_w10.py",
+  "command_argv": [
+    "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "ops_scripts/apps_rg/emit_graph_skills_quality_w10.py"
+  ],
+  "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+  "env_vars": {},
+  "exit_code": 0,
+  "artifact_paths": [
+    "docs/reports/apps_rg/graph_skills_quality_enhancement_closeout.json",
+    "docs/reports/apps_rg/graph_skills_quality_w10_receipt.json"
+  ],
+  "timestamp_utc": "2026-05-25T23:21:01Z",
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "phase_gate": {
+    "gate": "G-W10",
+    "status": "PARTIAL",
+    "live_x3_allow_count": 2
+  },
+  "proof_classes": {
+    "closeout_compiler": "PASS",
+    "live_x3_matrix": "PARTIAL"
+  },
+  "claims": {
+    "claims_release_eligible": false,
+    "claims_live_x3_7_of_7": false,
+    "claims_dynamic_graphrag_traverse": false,
+    "claims_c03_unified_pipeline_bound": false
+  },
+  "pytest_tail": "..                                                                       [100%]\n============================== warnings summary ===============================\nagentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py:20\n  C:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.\n    from agentic_core.L2_execution.utils.providers import get_clock\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 3 warnings in 0.09s\nsys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n",
+  "notes": "W10 does not complete plan \u2014 mandatory W10-AG follows."
+}

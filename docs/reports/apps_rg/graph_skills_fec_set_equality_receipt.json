@@ -1,0 +1,221 @@
+{
+  "schema": "graph_skills_fec_set_equality_receipt_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W5",
+  "d7_lanes": [
+    "executive_summary",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "competencies"
+  ],
+  "d7_pass_count": 6,
+  "d7_target_count": 6,
+  "d7_all_pass": true,
+  "status": "PASS",
+  "lanes": [
+    {
+      "lane": "executive_summary",
+      "schema": "graph_skills_fec_set_equality_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "fec_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "resolver_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_exec_002",
+        "fact_governance_003",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "fec_only_ids": [],
+      "resolver_only_ids": [],
+      "fec_id_count": 7,
+      "resolver_id_count": 7,
+      "set_equal": true,
+      "status": "PASS",
+      "exclusions": []
+    },
+    {
+      "lane": "unify_bullets",
+      "schema": "graph_skills_fec_set_equality_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "fec_ids": [
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_004_metric_06dd515f",
+        "bul_unify_005",
+        "bul_unify_006",
+        "bul_unify_006_metric_6f3de275"
+      ],
+      "resolver_ids": [
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_004_metric_06dd515f",
+        "bul_unify_005",
+        "bul_unify_006",
+        "bul_unify_006_metric_6f3de275"
+      ],
+      "fec_only_ids": [],
+      "resolver_only_ids": [],
+      "fec_id_count": 8,
+      "resolver_id_count": 8,
+      "set_equal": true,
+      "status": "PASS",
+      "exclusions": []
+    },
+    {
+      "lane": "unify_narrative",
+      "schema": "graph_skills_fec_set_equality_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "fec_ids": [
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_004_metric_06dd515f",
+        "bul_unify_005",
+        "bul_unify_006",
+        "bul_unify_006_metric_6f3de275"
+      ],
+      "resolver_ids": [
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_004_metric_06dd515f",
+        "bul_unify_005",
+        "bul_unify_006",
+        "bul_unify_006_metric_6f3de275"
+      ],
+      "fec_only_ids": [],
+      "resolver_only_ids": [],
+      "fec_id_count": 8,
+      "resolver_id_count": 8,
+      "set_equal": true,
+      "status": "PASS",
+      "exclusions": []
+    },
+    {
+      "lane": "ibm_bullets",
+      "schema": "graph_skills_fec_set_equality_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "fec_ids": [
+        "bul_ibm_001",
+        "bul_ibm_001_metric_6c88f785",
+        "bul_ibm_002",
+        "bul_ibm_002_metric_fcc67808",
+        "bul_ibm_003",
+        "bul_ibm_003_metric_13834eeb",
+        "bul_ibm_004",
+        "bul_ibm_004_metric_b334bdf4",
+        "bul_ibm_005",
+        "fact_sales_accounts_002",
+        "fact_sales_accounts_002_metric_95e0fa63"
+      ],
+      "resolver_ids": [
+        "bul_ibm_001",
+        "bul_ibm_001_metric_6c88f785",
+        "bul_ibm_002",
+        "bul_ibm_002_metric_fcc67808",
+        "bul_ibm_003",
+        "bul_ibm_003_metric_13834eeb",
+        "bul_ibm_004",
+        "bul_ibm_004_metric_b334bdf4",
+        "bul_ibm_005",
+        "fact_sales_accounts_002",
+        "fact_sales_accounts_002_metric_95e0fa63"
+      ],
+      "fec_only_ids": [],
+      "resolver_only_ids": [],
+      "fec_id_count": 11,
+      "resolver_id_count": 11,
+      "set_equal": true,
+      "status": "PASS",
+      "exclusions": []
+    },
+    {
+      "lane": "ibm_narrative",
+      "schema": "graph_skills_fec_set_equality_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "fec_ids": [
+        "fact_consulting_001",
+        "fact_governance_003",
+        "fact_governance_003_metric_e5abeb74",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_001_metric_219867bb"
+      ],
+      "resolver_ids": [
+        "fact_consulting_001",
+        "fact_governance_003",
+        "fact_governance_003_metric_e5abeb74",
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_001_metric_219867bb"
+      ],
+      "fec_only_ids": [],
+      "resolver_only_ids": [],
+      "fec_id_count": 5,
+      "resolver_id_count": 5,
+      "set_equal": true,
+      "status": "PASS",
+      "exclusions": []
+    },
+    {
+      "lane": "competencies",
+      "schema": "graph_skills_fec_set_equality_v1",
+      "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+      "fec_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
+        "fact_exec_002",
+        "fact_governance_001",
+        "fact_governance_003",
+        "fact_governance_004",
+        "fact_quant_hpc_003",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_001"
+      ],
+      "resolver_ids": [
+        "fact_certs_001",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
+        "fact_exec_002",
+        "fact_governance_001",
+        "fact_governance_003",
+        "fact_governance_004",
+        "fact_quant_hpc_003",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005",
+        "fact_sales_accounts_001"
+      ],
+      "fec_only_ids": [],
+      "resolver_only_ids": [],
+      "fec_id_count": 14,
+      "resolver_id_count": 14,
+      "set_equal": true,
+      "status": "PASS",
+      "exclusions": []
+    }
+  ]
+}

@@ -13,6 +13,7 @@ from apps_rg.runtime.sections.executive_summary_targeting_publish import (
     audit_judge_packet_targeting_digests,
     instructional_surface_drift_risk,
     judge_packet_for_parity_evaluation,
+    judge_regen_blocked_by_trim,
     parity_allows_judge_regen,
     resolve_judge_packet_for_parity,
 )
@@ -57,6 +58,20 @@ def test_instructional_trim_blocks_regen_despite_parity_match() -> None:
         token_budget_receipt=receipt,
     )
     assert ok is False
+
+
+def test_e0_only_trim_allows_judge_regen() -> None:
+    receipt = {
+        "trim_applied": True,
+        "trimmed_components": [{"component": "e0_examples"}],
+    }
+    assert instructional_surface_drift_risk(receipt) is True
+    assert judge_regen_blocked_by_trim(receipt) is False
+    ok, _ = parity_allows_judge_regen(
+        {"targeting_context_parity": {"parity_match": True}},
+        token_budget_receipt=receipt,
+    )
+    assert ok is True
 
 
 def test_c0_optional_fact_trim_does_not_block_regen() -> None:

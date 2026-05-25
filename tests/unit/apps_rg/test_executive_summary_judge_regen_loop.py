@@ -21,6 +21,7 @@ from apps_rg.runtime.sections.executive_summary_voice_repair import (
 def test_judge_regen_defaults_on_without_env(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_CORE_SAME_AUTHORITY_REGEN", raising=False)
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
     assert judge_regeneration_enabled() is True
     assert judge_regen_core_runner_enabled() is True
 

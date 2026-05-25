@@ -1,0 +1,15 @@
+{
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "wave": "W9",
+  "status": "PASS",
+  "proof_classes": {
+    "contract": "PASS"
+  },
+  "artifacts": {
+    "operator_guide": "docs/apps_rg/graph_skills_quality_operator_guide.md",
+    "w9_json": "docs/reports/apps_rg/graph_skills_quality_w9_operator_guide.json"
+  },
+  "pytest_tail": ".                                                                        [100%]\n============================== warnings summary ===============================\nagentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py:20\n  C:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.\n    from agentic_core.L2_execution.utils.providers import get_clock\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 passed, 3 warnings in 0.06s\nsys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n",
+  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "emitted_at": "2026-05-25T23:13:47.577551+00:00"
+}

@@ -1,0 +1,78 @@
+# Graph skills authority ratchet — CONTRACT_TEST_PROOF for graph-skills-quality-enhancement (W7 / G-W7).
+#
+# Enforces:
+#   - No agentic_core/ diffs while plan touches_agentic_core=false (W10-AG may opt in via env)
+#   - Unit contract tests for graph-skills authority, capsule, FEC, hybrid, rubric, v2 migration
+#
+# Plan: .cursor/plans/graph-skills-quality-enhancement-c4e8a1.md
+# Local mirror: python ops_scripts/apps_rg/emit_graph_skills_quality_w7.py
+
+name: Graph Skills Authority Ratchet
+
+on:
+  pull_request:
+    paths:
+      - "apps_rg/**"
+      - "tests/**/test_graph_skills*.py"
+      - "tests/unit/apps_rg/fact_inventory/test_graph_skills*.py"
+      - "ops_scripts/apps_rg/emit_graph_skills_quality_w*.py"
+      - "ops_scripts/apps_rg/graph_skills*.py"
+      - "ops_scripts/ci/check_graph_skills_agentic_core_boundary.py"
+      - ".github/workflows/graph-skills-authority-ratchet.yml"
+  push:
+    branches: [main, master]
+    paths:
+      - "apps_rg/**"
+      - "tests/**/test_graph_skills*.py"
+      - "ops_scripts/ci/check_graph_skills_agentic_core_boundary.py"
+      - ".github/workflows/graph-skills-authority-ratchet.yml"
+  workflow_dispatch: {}
+  schedule:
+    # Nightly soak anchor for D13 (graph-skills contract ratchet).
+    - cron: "17 9 * * *"
+
+concurrency:
+  group: graph-skills-authority-ratchet-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  graph-skills-authority-ratchet:
+    name: Graph skills authority ratchet
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/common-setup
+
+      - name: agentic_core boundary (no diffs)
+        env:
+          GRAPH_SKILLS_BASE_REF: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+        run: python ops_scripts/ci/check_graph_skills_agentic_core_boundary.py --base-ref "${GRAPH_SKILLS_BASE_REF}"
+
+      - name: Graph-skills contract pytest suite
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: |
+          python -m pytest \
+            tests/unit/apps_rg/test_graph_skills_authority_separation.py \
+            tests/unit/apps_rg/test_graph_skills_authority_separation_w1.py \
+            tests/unit/apps_rg/test_graph_skills_jd_subgraph_w1.py \
+            tests/unit/apps_rg/test_graph_skills_skill_capsule_w2.py \
+            tests/unit/apps_rg/fact_inventory/test_graph_skills_graph_v2_w3.py \
+            tests/unit/apps_rg/test_graph_skills_x1d_rubric_w4.py \
+            tests/unit/apps_rg/test_graph_skills_spine_fec_w5.py \
+            tests/unit/apps_rg/test_graph_skills_hybrid_boost_w6.py \
+            tests/unit/apps_rg/test_graph_skills_utilization_w8.py \
+            tests/unit/apps_rg/test_graph_skills_operator_guide_w9.py \
+            tests/unit/apps_rg/test_graph_skills_closeout_w10.py \
+            tests/unit/apps_rg/test_graph_skills_run_artifacts.py \
+            tests/unit/apps_rg/test_graph_skills_enhancement_hardening.py \
+            -q -o addopts=

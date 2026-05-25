@@ -11,6 +11,7 @@ from typing import Any
 from apps_rg.runtime.sections.executive_summary_repair_policy import (
     judge_regen_legacy_remediation_block_enabled,
     judge_regen_max_attempts,
+    judge_regen_max_delta_tokens,
     judge_regen_prescriptive_delta_enabled,
     judge_regeneration_enabled,
     judge_safe_prefilter_enabled,
@@ -301,7 +302,7 @@ def _collect_judge_feedback_lines(x1d_judges: list[dict[str, Any]]) -> dict[str,
             out["synthesis"].append(f"{provider} fail_reason: {reason}")
         rationale = str(j.get("rationale") or "").strip()
         if rationale and _is_model_backed_soft_fail(j):
-            out["synthesis"].append(f"{provider} rationale: {rationale[:400]}")
+            out["synthesis"].append(f"{provider} rationale: {rationale}")
     return out
 
 
@@ -309,16 +310,77 @@ def _soft_failed_model_judges(x1d_judges: list[dict[str, Any]]) -> list[dict[str
     return [j for j in x1d_judges if _is_model_backed_soft_fail(j)]
 
 
-def _bounded_soft_fail_findings(x1d_judges: list[dict[str, Any]], *, max_lines: int = 4) -> list[str]:
+def _provider_label(judge: dict[str, Any]) -> str:
+    return str(judge.get("provider_name") or judge.get("provider_key") or "judge").strip()
+
+
+def _verbatim_soft_failed_judge_feedback_lines(soft_judges: list[dict[str, Any]]) -> list[str]:
+    """Full-text X1D feedback per soft-failed judge — no per-field character truncation."""
     lines: list[str] = []
-    for j in _soft_failed_model_judges(x1d_judges):
-        provider = str(j.get("provider_name") or j.get("provider_key") or "judge")
-        for finding in (j.get("findings") or [])[:2]:
+    for j in soft_judges:
+        provider = _provider_label(j)
+        provider_key = str(j.get("provider_key") or provider).strip()
+        lines.append(f"JUDGE_DELTA_SOURCE provider_key={provider_key} provider_name={provider}")
+        for suggestion in j.get("remediation_suggestions") or []:
+            text = str(suggestion).strip()
+            if text:
+                lines.append(f"- {provider} remediation: {text}")
+        for finding in j.get("findings") or []:
             text = str(finding).strip()
             if text:
-                lines.append(f"{provider}: {text[:240]}")
-        if len(lines) >= max_lines:
-            break
+                lines.append(f"- {provider} finding: {text}")
+        for reason in j.get("fail_reasons") or []:
+            text = str(reason).strip()
+            if text:
+                lines.append(f"- {provider} fail_reason: {text}")
+        rationale = str(j.get("rationale") or "").strip()
+        if rationale:
+            lines.append(f"- {provider} rationale: {rationale}")
+    return lines
+
+
+def _is_droppable_guard_delta_line(line: str) -> bool:
+    stripped = line.strip()
+    return stripped.startswith(
+        (
+            "CONNECTIVE_TISSUE:",
+            "EVIDENCE_WEAVE",
+            "MECHANICAL_OPENER_GUARD:",
+        ),
+    )
+
+
+def _pack_delta_lines_to_token_budget(
+    sections: dict[str, list[str]],
+    *,
+    max_tokens: int,
+) -> list[str]:
+    """Pack delta lines without truncating judge feedback text; drop optional guards first."""
+    from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
+
+    order = ("judge_feedback", "dimension", "floors", "guards")
+    packed: list[str] = []
+    for section_key in order:
+        for line in sections.get(section_key) or []:
+            if not str(line).strip():
+                continue
+            trial = packed + [line]
+            if estimate_token_count("\n".join(trial)) <= max_tokens:
+                packed = trial
+                continue
+            if section_key == "judge_feedback":
+                packed.append(line)
+    if estimate_token_count("\n".join(packed)) <= max_tokens:
+        return packed
+    guards = [ln for ln in packed if _is_droppable_guard_delta_line(ln)]
+    if guards:
+        packed = [ln for ln in packed if ln not in guards]
+    return packed
+
+
+def _bounded_soft_fail_findings(x1d_judges: list[dict[str, Any]], *, max_lines: int = 4) -> list[str]:
+    """Legacy alias — prefer ``_verbatim_soft_failed_judge_feedback_lines``."""
+    lines = _verbatim_soft_failed_judge_feedback_lines(_soft_failed_model_judges(x1d_judges))
     return lines[:max_lines]
 
 
@@ -373,11 +435,7 @@ def collect_judge_remediation_delta_lines(
     compact: bool | None = None,
 ) -> list[str]:
     """App-owned delta lines only (floors + output contract); core owns REGEN_DELTA/PROMPT_LOCK."""
-    from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
-    from agentic_core.L2_execution.regen.prompt_lock import (
-        DEFAULT_MAX_DELTA_TOKENS,
-        PROMPT_LOCK_GENERIC,
-    )
+    from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
     from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
         collect_dimension_focused_regen_delta_lines,
         collect_dimension_remediation_lines,
@@ -397,19 +455,25 @@ def collect_judge_remediation_delta_lines(
         )
 
     soft_judges = _soft_failed_model_judges(x1d_judges)
-    delta_parts: list[str] = []
+    max_tokens = judge_regen_max_delta_tokens()
+    sections: dict[str, list[str]] = {
+        "judge_feedback": _verbatim_soft_failed_judge_feedback_lines(soft_judges),
+        "dimension": [],
+        "floors": [],
+        "guards": [],
+    }
 
     if compact:
         focused = collect_dimension_focused_regen_delta_lines(soft_judges)
         if focused:
-            delta_parts.extend(f"- {ln}" for ln in focused[:4])
+            sections["dimension"] = [f"- {ln}" for ln in focused]
         else:
-            delta_parts.append(
+            sections["dimension"] = [
                 "- synthesis_quality / executive_signal: rewrite S2–S6 as one connective SVP arc "
                 "(no sequential achievement stack; jd_used_as_proof=false).",
-            )
+            ]
         if prior_word_count > 0 or prior_ledger_rows > 0:
-            delta_parts.append(
+            sections["floors"].append(
                 f"X2_FLOOR: ≥{max(1, prior_word_count)} words, ≥{max(1, prior_ledger_rows)} "
                 "claim_ledger rows, exactly 6 sentences; preserve cited source_fact_ids.",
             )
@@ -417,43 +481,29 @@ def collect_judge_remediation_delta_lines(
         if unused_fact_ids and "evidence_utilization" in failed_dims:
             preview = ", ".join(unused_fact_ids[:6])
             suffix = "..." if len(unused_fact_ids) > 6 else ""
-            delta_parts.append(f"EVIDENCE_WEAVE (allowed ids only): {preview}{suffix}")
-        delta_parts.append(format_judge_regen_connective_tissue_guard().strip())
-        delta_parts.append(
+            sections["guards"].append(f"EVIDENCE_WEAVE (allowed ids only): {preview}{suffix}")
+        sections["guards"].append(format_judge_regen_connective_tissue_guard().strip())
+        sections["guards"].append(
             "OUTPUT: NEW JSON only; revise ONLY resume_display_text + claim_ledger; "
             "third person; jd_used_as_proof=false.",
         )
-        joined = "\n".join(delta_parts)
-        if estimate_token_count(joined) > DEFAULT_MAX_DELTA_TOKENS:
-            delta_parts = [
-                ln
-                for ln in delta_parts
-                if not ln.startswith("CONNECTIVE_TISSUE")
-            ]
         _ = PROMPT_LOCK_GENERIC
-        return delta_parts
+        return _pack_delta_lines_to_token_budget(sections, max_tokens=max_tokens)
 
     dimension_lines = collect_dimension_remediation_lines(soft_judges, min_fail_count=1)
-    finding_lines = _bounded_soft_fail_findings(x1d_judges)
-
     if dimension_lines:
-        delta_parts.extend(f"- {ln}" for ln in dimension_lines[:6])
-    if finding_lines:
-        delta_parts.extend(f"- finding: {ln}" for ln in finding_lines)
-
-    if not delta_parts:
-        delta_parts.append(
-            f"- {format_judge_remediation_synthesis_default()}",
-        )
+        sections["dimension"] = [f"- {ln}" for ln in dimension_lines]
+    elif not sections["judge_feedback"]:
+        sections["dimension"] = [f"- {format_judge_remediation_synthesis_default()}"]
 
     if prior_word_count > 0 or prior_ledger_rows > 0:
-        delta_parts.append(
+        sections["floors"].append(
             format_judge_regen_x2_floor(
                 prior_word_count=max(1, prior_word_count),
                 prior_ledger_rows=max(1, prior_ledger_rows),
             ),
         )
-        delta_parts.append(
+        sections["floors"].append(
             f"CLAIM_COVERAGE: preserve every source_fact_id from the prior claim_ledger "
             f"({prior_ledger_rows} rows minimum); do not drop allowed facts when rewriting prose.",
         )
@@ -462,28 +512,26 @@ def collect_judge_remediation_delta_lines(
     if unused_fact_ids and "evidence_utilization" in failed_dims:
         preview = ", ".join(unused_fact_ids[:8])
         suffix = "..." if len(unused_fact_ids) > 8 else ""
-        delta_parts.append(
+        sections["guards"].append(
             f"EVIDENCE_WEAVE (allowed ids only, no new claims): {preview}{suffix}",
         )
 
     if allowed_fact_count >= 1:
-        delta_parts.append(
+        sections["guards"].append(
             "Shape: exactly 6 sentences (max 140 words); same JSON schema as first turn.",
         )
-    delta_parts.append(
-        "X2_VOICE: No Additionally/Furthermore sentence openers; no unsupported "
-        "regulated environments / governance framework / compliance / audit unless verbatim in cited facts.",
+    sections["guards"].extend(
+        [
+            "X2_VOICE: No Additionally/Furthermore sentence openers; no unsupported "
+            "regulated environments / governance framework / compliance / audit unless verbatim in cited facts.",
+            format_judge_regen_mechanical_opener_guard(),
+            "OUTPUT: Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
+            "THIRD PERSON ONLY. No target company name in resume_display_text.",
+            "Revise ONLY resume_display_text and claim_ledger per JUDGE_DELTA; jd_used_as_proof=false.",
+        ],
     )
-    delta_parts.append(format_judge_regen_mechanical_opener_guard())
-    delta_parts.append(
-        "OUTPUT: Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
-        "THIRD PERSON ONLY. No target company name in resume_display_text.",
-    )
-    delta_parts.append(
-        "Revise ONLY resume_display_text and claim_ledger per JUDGE_DELTA; jd_used_as_proof=false.",
-    )
-    _ = PROMPT_LOCK_GENERIC  # apps import core lock text SSOT; envelope applied in format_regen_delta_user_turn
-    return delta_parts
+    _ = PROMPT_LOCK_GENERIC
+    return _pack_delta_lines_to_token_budget(sections, max_tokens=max_tokens)
 
 
 def build_judge_remediation_prescriptive_delta_message(

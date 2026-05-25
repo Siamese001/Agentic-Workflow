@@ -1,0 +1,9 @@
+{
+  "schema": "graph_skills_agentic_core_boundary_v1",
+  "plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "status": "PASS",
+  "base_ref": null,
+  "changed_paths": [],
+  "changed_count": 0,
+  "policy": "graph-skills-quality-enhancement touches_agentic_core=false until W10-AG"
+}

@@ -574,6 +574,7 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
             allowed_source_fact_ids=ids,
             skills_authority_metadata=pp if isinstance(pp, dict) else None,
             include_allowed_id_list=False,
+            runtime_payload=runtime_payload,
         )
     else:
         compiled = augment_section_compiled_with_product_shape(compiled)
