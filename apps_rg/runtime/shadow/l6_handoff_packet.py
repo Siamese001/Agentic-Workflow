@@ -26,7 +26,12 @@ def repo_rel(repo_root: Path, path: Path) -> str:
 
 
 def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+    if not path.is_file():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return {}
 
 
 def _iso_mtime(path: Path) -> str:

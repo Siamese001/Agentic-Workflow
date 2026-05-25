@@ -1,0 +1,9 @@
+{
+  "schema_version": "l0_l3_otel_replay_v1",
+  "plan": "l0-l3-parent-gap-remediation-a7f3e2",
+  "wave": "W4",
+  "proof": "tests/unit/apps_rg/test_l0_l3_otel_replay.py",
+  "spans": ["l0.route_decision", "l3.orchestration"],
+  "replay": "payload_digest byte-identical across duplicate emit",
+  "status": "PASS"
+}

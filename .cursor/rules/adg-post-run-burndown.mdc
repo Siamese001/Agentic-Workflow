@@ -1,0 +1,37 @@
+---
+description: |
+  Apply when Cursor Agent has just run ADG. Surface readable markdown tables
+  (primary) from adg_burndown_report.md; optional compact canvas summary only.
+alwaysApply: false
+---
+
+# ADG Post-Run Burndown — Readable Tables First
+
+> Gate tables are **markdown**, not a 500-line JSON blob inside `.canvas.tsx`. Open the report file with Markdown preview.
+
+## When this rule fires
+
+After ADG runs, burndown refresh, or user asks for gate status / burndown.
+
+## Protocol
+
+1. **Readable tables (required):** Open [artifacts/adg/adg_burndown_report.md](artifacts/adg/adg_burndown_report.md) — `Ctrl+Shift+V` (Markdown preview) or follow stderr `READABLE_TABLES=...` from `python tools/reports/adg_burndown_canvas.py`.
+2. **Refresh:** `python tools/reports/adg_burndown_canvas.py` (regenerates markdown + compact canvas).
+3. **Chat inline:** If needed, paste stdout from `python tools/reports/adg_burndown_report.py` (starts with `# ADG CI Burndown Report`) — do not paraphrase counts.
+4. **Canvas (optional):** Compact summary only (`ADG_BURNDOWN_OPEN_CANVAS=1` to auto-open). Full 48-gate grid is **not** embedded in canvas source.
+
+## Forbidden
+
+- Pointing users at raw `.canvas.tsx` as the gate table (embedded JSON is not readable).
+- Replacing markdown tables with prose summaries.
+
+## Bypass
+
+- `ADG_BURNDOWN_CANVAS_BYPASS=1` — skip canvas write
+- `ADG_BURNDOWN_NO_OPEN=1` — do not `cursor -r` open files
+- `ADG_BURNDOWN_INLINE_BYPASS=1` — skip stdout markdown
+
+## References
+
+- [tools/reports/adg_burndown_report.py](tools/reports/adg_burndown_report.py)
+- [tools/reports/adg_burndown_canvas.py](tools/reports/adg_burndown_canvas.py)

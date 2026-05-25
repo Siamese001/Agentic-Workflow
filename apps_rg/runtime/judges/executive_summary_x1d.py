@@ -18,6 +18,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
+from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+    dimension_verdicts_json_schema_fragment,
+    ensure_dimension_verdicts,
+)
+
 
 JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
 DEFAULT_THRESHOLD = 0.80
@@ -128,8 +133,9 @@ def _invoke_judge_with_bounded_retries(
 JUDGE_COMPACT_OUTPUT = """
 Return ONLY one compact JSON object. No markdown fences, no prose before or after, no nested objects.
 Required shape (findings and remediation_suggestions must be arrays of short strings only):
-{"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,"findings":["..."],"cited_sentence_indexes":[1],"remediation_suggestions":[]}
+{"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,"findings":["..."],"cited_sentence_indexes":[1],"remediation_suggestions":[],"dimension_verdicts":{...8 rubric keys...}}
 At most 6 short strings in findings and 4 in remediation_suggestions.
+Include dimension_verdicts with all eight rubric dimension ids (pass/severity/codes per dimension).
 """.strip()
 
 JUDGE_COMPACT_SYSTEM = (
@@ -155,6 +161,7 @@ GEMINI_JUDGE_RESPONSE_SCHEMA: dict[str, Any] = {
         "findings": {"type": "array", "items": {"type": "string"}},
         "cited_sentence_indexes": {"type": "array", "items": {"type": "integer"}},
         "remediation_suggestions": {"type": "array", "items": {"type": "string"}},
+        "dimension_verdicts": dimension_verdicts_json_schema_fragment(),
     },
     "required": list(JUDGE_REQUIRED_FIELDS)
     + ["decisive_failure", "findings", "cited_sentence_indexes", "remediation_suggestions"],
@@ -239,6 +246,8 @@ class JudgeOutput:
     fail_reasons: list[str] = field(default_factory=list)
     unsupported_claims: list[str] = field(default_factory=list)
     quality_flags: list[str] = field(default_factory=list)
+    dimension_verdicts: dict[str, Any] | None = None
+    dimension_verdicts_inferred: bool = False
     mocked: bool = False
     advisory_only: bool = False
     model_tier: str | None = None
@@ -756,6 +765,9 @@ def _make_model_backed_output(
         )
 
         result = reconcile_grade_only_judge_result(result, deterministic_gate_summary)
+    result, _dv_inferred = ensure_dimension_verdicts(
+        result, deterministic_gate_summary=deterministic_gate_summary
+    )
     raw_score = float(result.get("score", 0.0))
     raw_threshold = float(result.get("threshold", DEFAULT_THRESHOLD))
     declared_scale = result.get("score_scale")
@@ -829,6 +841,8 @@ def _make_model_backed_output(
         fail_reasons=[str(x) for x in (result.get("fail_reasons") or []) if str(x).strip()],
         unsupported_claims=[str(x) for x in (result.get("unsupported_claims") or []) if str(x).strip()],
         quality_flags=[str(x) for x in (result.get("quality_flags") or []) if str(x).strip()],
+        dimension_verdicts=dict(result.get("dimension_verdicts") or {}),
+        dimension_verdicts_inferred=bool(result.get("dimension_verdicts_inferred")),
         model_requested=model_name,
         model_actual=model_name,
     )

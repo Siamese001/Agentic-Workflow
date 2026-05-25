@@ -57,7 +57,8 @@ Rubric dimensions (SRFS executive summary — product shape **exactly 6 sentence
    scale/commercialization, outcomes, implied credibility). **Not** a fixed S1–S5 slot checklist. Fewer than six sentences
    is a decisive failure (aligned with x2_exec_summary_sentence_count_6). **Concise alone is insufficient** when
    evidence_utilization lists unused high-confidence facts or prose reads as stacked bullets. Credential facts are
-   **optional** — omit rather than inventory AWS/Databricks/FSA/Basel/CCAR labels. For SVP IT strategy targets, penalize
+   **optional** — omit vendor cert inventories (AWS/Databricks/Associate-level labels); one FSA rigor weave is allowed
+   when X2 passes (C0.3 phase-1, not a cert dump). Penalize AWS+FSA stacks or certification laundry lists. For SVP IT strategy targets, penalize
    metric-inventory S3–S5 and reward connective emphasis on enterprise architecture, innovation programs, and multi-year
    IT strategy (JD targeting only — never JD-as-proof). Sentence 6 must integrate the arc, not recap prior sentences thinly.
 7. evidence_utilization: penalize under-use of allowed_fact_packet when unused_fact_ids is non-empty and synthesis is thin.

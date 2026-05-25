@@ -20,10 +20,18 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1  
-PLAN_STATUS: TODO  
-CURRENT_WAVE: W0  
-LAST_COMPLETED_WAVE: NONE  
-LAST_UPDATED: 2026-05-15  
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W2
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_RECEIPT: docs/reports/plans/waiting_plans_execution_receipt_20260525.md
+PROOF_COMMAND: python tools/cache/capture_semantic_cache_fingerprint.py --label closeout
+NOTION_PAGE_ID: 36127693-f55c-81ce-a640-d26133b431de
+NOTION_RECONCILED: 2026-05-25
+TRIPLECHECK: valid optional — fingerprint receipt DoD open
+WAITING_FOR: Optional audit request; W1–W2 not started
 
 ---
 

@@ -1,6 +1,6 @@
 # P2 rebaseline — all-section graph-skills authority
 
-**Generated:** 2026-05-21T20:50:53Z
+**Generated:** 2026-05-25T09:44:42Z
 
 - P2-W1 opt-in superseded by P2-W1A all-section default
 - competencies-only scope superseded

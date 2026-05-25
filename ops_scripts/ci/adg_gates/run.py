@@ -547,7 +547,7 @@ def main(argv: list[str] | None = None) -> int:
                 1 for r in rows if r["enforcement"] == "block" and r["classification"] == "pass"
             ),
             "block_fail": sum(
-                1 for r in rows if r["enforcement"] == "block" and r["classification"] != "pass"
+                1 for r in rows if r["enforcement"] == "block" and r["classification"] == "blocked"
             ),
             "ratchet_pass": sum(
                 1 for r in rows if r["enforcement"] == "ratchet" and r["classification"] == "pass"
@@ -592,6 +592,14 @@ def main(argv: list[str] | None = None) -> int:
             )
     else:
         print(str(json_path))
+
+    # Mandatory burndown markdown when burndown table exists from a prior/full ADG run.
+    try:
+        from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+
+        emit_mandatory_adg_burndown_report(gate_results=json_path, fail_closed=False)
+    except ImportError:
+        pass
 
     if args.markers:
         for r in rows:

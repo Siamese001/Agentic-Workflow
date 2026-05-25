@@ -80,6 +80,33 @@ def run_optional_three_bucket_enrichment(
 
     print("[ADG] three-bucket audit: ENABLED (off hot path by default; ADR-079)")
 
+    sqlite_path = Path(sqlite_path).resolve()
+    if not sqlite_path.exists():
+        result.skipped_reason = f"static snapshot missing: {sqlite_path}"
+        print(f"[ADG] three-bucket audit: SKIPPED — {result.skipped_reason}")
+        return result
+
+    import sqlite3 as _sqlite3
+
+    try:
+        _probe = _sqlite3.connect(str(sqlite_path))
+        try:
+            for _tbl in ("nodes", "edges"):
+                _row = _probe.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+                    (_tbl,),
+                ).fetchone()
+                if not _row:
+                    result.skipped_reason = f"canonical table missing: {_tbl}"
+                    print(f"[ADG] three-bucket audit: SKIPPED — {result.skipped_reason}")
+                    return result
+        finally:
+            _probe.close()
+    except _sqlite3.Error as exc:
+        result.skipped_reason = f"sqlite probe failed: {exc}"
+        print(f"[ADG] three-bucket audit: SKIPPED — {result.skipped_reason}")
+        return result
+
     if runtime_view_enabled():
         try:
             from tools.otel.runtime_view_builder import build_runtime_view  # noqa: PLC0415

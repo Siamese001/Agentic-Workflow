@@ -20,11 +20,14 @@ Rule: .cursor/rules/apps-test-surface-taxonomy.md.
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+ARTIFACT_DIR = REPO_ROOT / "artifacts" / "ci"
 
 # Ensure the windsurf scripts helper is importable when run as a script
 _WINDSURF_SCRIPTS = REPO_ROOT / ".windsurf" / "scripts"
@@ -34,18 +37,39 @@ if str(_WINDSURF_SCRIPTS) not in sys.path:
 from _apps_test_surface_check import ALL_APPS, ViolationKind, check  # noqa: E402
 
 
+def _write_run_artifact(*, exit_code: int, violation_count: int) -> Path:
+    """Persist one TSP1 run for soak counting (plan apps-test-surface-deferred-f3c8b2 W1)."""
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
+    path = ARTIFACT_DIR / f"check_apps_test_surface_parity_{ts}.json"
+    payload = {
+        "gate": "TSP1",
+        "script": "ops_scripts/ci/check_apps_test_surface_parity.py",
+        "timestamp_utc": ts,
+        "exit_code": exit_code,
+        "violation_count": violation_count,
+        "apps_checked": len(ALL_APPS),
+    }
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    return path
+
+
 def main() -> int:
     if os.environ.get("APPS_TEST_SURFACE_BYPASS") == "1":
         print(
             "WARNING: APPS_TEST_SURFACE_BYPASS=1 — skipping test surface parity check.",
             file=sys.stderr,
         )
+        artifact = _write_run_artifact(exit_code=0, violation_count=0)
+        print(f"TSP1 artifact (bypass): {artifact.relative_to(REPO_ROOT)}", file=sys.stderr)
         return 0
 
     violations = check(REPO_ROOT)
 
     if not violations:
         print(f"TSP1 test surface parity: OK — all {len(ALL_APPS)} apps have canonical surfaces")
+        artifact = _write_run_artifact(exit_code=0, violation_count=0)
+        print(f"TSP1 artifact: {artifact.relative_to(REPO_ROOT)}")
         return 0
 
     # Group by kind for a clean summary
@@ -81,6 +105,8 @@ def main() -> int:
         "Bypass (not recommended): APPS_TEST_SURFACE_BYPASS=1",
         file=sys.stderr,
     )
+    artifact = _write_run_artifact(exit_code=1, violation_count=len(violations))
+    print(f"TSP1 artifact: {artifact.relative_to(REPO_ROOT)}", file=sys.stderr)
     return 1
 
 

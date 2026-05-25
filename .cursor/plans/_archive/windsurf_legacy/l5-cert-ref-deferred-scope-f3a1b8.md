@@ -42,7 +42,7 @@ The parent plan (`c4e7f1`) threaded `l5_certification_ref: str` through all 13 `
 
 **Why deferred:** Each app's pipeline shape is distinct — this is per-app work, not a cross-cutting field add. Scope per app is ~2-3k tokens. 10 apps × ~2.5k = ~25k total.
 
-**Prerequisite:** `apps-rg-runtime-wiring-completion-d4e8a1` plan (W3/W5 layer bindings) must land first for apps_rg; other apps depend on their own ingress wiring plans.
+**Prerequisite:** apps_rg spine path — superseded by `apps-rg-spine-only-unification-d8f4a2` (COMPLETE 2026-05-24); legacy plan `apps-rg-runtime-wiring-completion-d4e8a1` retired same date. Other apps depend on their own ingress wiring plans.
 
 **Sequencing:** DS-1 can be split into 10 child plans, one per app. apps_rg is the reference implementation — complete it first.
 

@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-012",
   "selected_at_utc": "2026-04-30T15:13:35.909406+00:00",
-  "evidence_bound_at_utc": "2026-05-15T18:53:36.875031+00:00",
+  "evidence_bound_at_utc": "2026-05-25T00:23:55.100283+00:00",
   "canonical_owner_surface": "Offline_Ingestion_Index_Build",
   "runtime_artifact_ref": "ChunkSealedEnvelope",
   "otel_span_ref": "ingest.chunk.sealed",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "7a84735ff4186ff5ce52a4c3ff7c1ad902f21afb",
+  "git_head_at_test_time": "1f8195f162cb6918022018ffc24859f2b2abf2f5",
   "git_dirty_at_test_time": false,
-  "content_hash": "f1df0bed87d2ddb31a76b0399f280b6391948d22fd32f77b3f3a1e1bb85ea4f2"
+  "content_hash": "4b130e53b8f47befd3d01e99ad8ddd5f47b4e4bb5d27a8a825fb0e4d493b161f"
 }

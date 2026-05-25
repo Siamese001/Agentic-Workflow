@@ -1400,43 +1400,82 @@ def check_exec_summary_no_mechanism_inventory(
     return True, None
 
 
+# Vendor/cloud cert labels — inventory-style (e.g. AWS Associate). Not C0.3 phase-1 FSA rigor.
+VENDOR_NAMED_CERT_LABELS: tuple[str, ...] = (
+    "aws certified",
+    "databricks",
+    "certified solutions architect",
+    "lakehouse fundamentals",
+)
+
+# FSA (Fellow of the Society of Actuaries): C0.3 skills-graph phase-1 rigor signal — not a vendor cert.
+FSA_RIGOR_MARKERS: tuple[str, ...] = (
+    "fellow of the society of actuaries",
+    "society of actuaries",
+    "fsa credential",
+    "fsa designation",
+)
+FSA_WORD_RE = re.compile(r"\bfsa\b", re.IGNORECASE)
+
+CREDENTIAL_CONTEXT_MARKERS: tuple[str, ...] = (
+    *VENDOR_NAMED_CERT_LABELS,
+    *FSA_RIGOR_MARKERS,
+    "basel iii",
+    "ccar",
+)
+
+
+def _vendor_named_cert_hits(low: str) -> int:
+    return sum(1 for m in VENDOR_NAMED_CERT_LABELS if m in low)
+
+
+def _sentence_has_fsa_rigor(low: str) -> bool:
+    if any(m in low for m in FSA_RIGOR_MARKERS):
+        return True
+    return bool(FSA_WORD_RE.search(low))
+
+
+def _sentence_fsa_rigor_only(low: str) -> bool:
+    """FSA-only sentence: allowed once per summary (C0.3 phase-1), unlike vendor cert dumps."""
+    return _sentence_has_fsa_rigor(low) and _vendor_named_cert_hits(low) == 0
+
+
 def check_exec_summary_no_credential_dump(resume_display_text: str) -> tuple[bool, str | None]:
     from apps_rg.runtime.sections.competencies_certification_contract import is_credential_competency_term
 
-    markers = (
-        "aws certified",
-        "databricks",
-        "fellow of the society of actuaries",
-        "society of actuaries",
-        "fsa",
-        "basel iii",
-        "ccar",
-        "certified solutions architect",
-        "lakehouse fundamentals",
-    )
-    named_cert_labels = (
-        "aws certified",
-        "databricks",
-        "fellow of the society of actuaries",
-        "fsa",
-        "certified solutions architect",
-        "lakehouse fundamentals",
-    )
     sentences = split_sentences(resume_display_text)
+    fsa_only_indexes = [i for i, s in enumerate(sentences) if _sentence_fsa_rigor_only(s.lower())]
+    if len(fsa_only_indexes) > 1:
+        return (
+            False,
+            f"at most one FSA rigor mention allowed (C0.3 phase-1); found sentences {fsa_only_indexes}",
+        )
+
     for i, sent in enumerate(sentences):
         low = sent.lower()
-        hits = sum(1 for m in markers if m in low)
-        named_hits = sum(1 for m in named_cert_labels if m in low)
-        if named_hits >= 2:
-            return False, f"sentence {i}: named certification inventory ({named_hits} labels)"
-        if hits >= 3:
-            return False, f"sentence {i}: credential or certification inventory block ({hits} markers)"
-        if is_credential_competency_term(sent) and named_hits >= 1:
+        vendor_hits = _vendor_named_cert_hits(low)
+        context_hits = sum(1 for m in CREDENTIAL_CONTEXT_MARKERS if m in low)
+        fsa_only = _sentence_fsa_rigor_only(low)
+
+        if fsa_only:
+            if vendor_hits >= 1:
+                return False, f"sentence {i}: FSA rigor mention mixed with vendor cert labels"
+            continue
+
+        if vendor_hits >= 2:
+            return False, f"sentence {i}: vendor certification inventory ({vendor_hits} labels)"
+        if context_hits >= 3:
+            return False, f"sentence {i}: credential or certification inventory block ({context_hits} markers)"
+        if is_credential_competency_term(sent) and vendor_hits >= 1:
+            return False, f"sentence {i}: vendor cert label in executive summary"
+        if is_credential_competency_term(sent):
             return False, f"sentence {i}: named cert label in executive summary"
-        if re.search(r"\bcredentials?\s+reinforce\b", low) and named_hits >= 1:
+        if re.search(r"\bcredentials?\s+reinforce\b", low) and (
+            vendor_hits >= 1 or _sentence_has_fsa_rigor(low)
+        ):
             return False, f"sentence {i}: credential-block closing pattern"
-        if i >= 3 and named_hits >= 1:
-            return False, f"sentence {i}: named cert label in closing band (S4-S6)"
+        if i >= 3 and vendor_hits >= 1:
+            return False, f"sentence {i}: named vendor cert label in closing band (S4-S6)"
     return True, None
 
 

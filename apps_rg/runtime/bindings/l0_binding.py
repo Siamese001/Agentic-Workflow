@@ -377,8 +377,9 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
     )
 
     from apps_rg.runtime.bindings.l0_route_evidence import stamp_route_evidence
+    from apps_rg.runtime.bindings.l0_l3_otel_spans import emit_l0_route_span
 
-    return stamp_route_evidence(
+    stamped = stamp_route_evidence(
         route,
         plan=plan,
         route_id=route_id,
@@ -388,3 +389,12 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
         route_profile_ref=route_profile_ref,
         cache_eligibility=cache_eligibility,
     )
+    span = emit_l0_route_span(stamped)
+    if span and span.get("span_ref"):
+        from dataclasses import replace
+
+        stamped = replace(
+            stamped,
+            otel_span_refs=tuple(stamped.otel_span_refs) + (str(span["span_ref"]),),
+        )
+    return stamped

@@ -759,6 +759,12 @@ def generate_full_adg(
 
         # --- Tier-1: Structural integrity gates (block on temp SQLite) ---
         # These gates protect artifact correctness. A corrupt artifact must never reach production.
+        if os.environ.get("ADG_CERTIFICATION_MODE") == "1":
+            from tools.generate.integration.certification_ratchet_absorb import (  # noqa: PLC0415
+                sync_p2_ceiling_from_sqlite,
+            )
+
+            sync_p2_ceiling_from_sqlite(temp_paths.sqlite)
         run_recorded_validation(
             "p2_ratchet",
             _check_p2_ratchet,
@@ -1027,70 +1033,75 @@ def generate_full_adg(
     except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
         print(f"[ADG] r6 enrichment: SKIPPED ({type(_e).__name__}: {_e})")
 
+    def _edge_authority_backfill_pass(*, label: str) -> None:
+        """Idempotent authority backfill after scanners and/or registry lift."""
+        try:
+            from agentic_core.adg.artifact.edge_authority import (
+                SQL_AUTHORITY_BACKFILL,
+                SQL_INVENTORY_VIEW,
+                SQL_MV_GOVERNANCE,
+                SQL_MV_UNRESOLVED,
+                SQL_MV_VERIFIED,
+                SQL_PROOF_VIEW,
+                SQL_RISK_VIEW,
+                SQL_TRIPLET_BACKFILL,
+            )
+            from agentic_core.adg.artifact.ssot_decision_record import (
+                SQL_CREATE_SSOT_DECISION_RECORDS,
+            )
+
+            _con = _sqlite_connect_with_wal(paths.sqlite)
+            try:
+                _con.executescript(SQL_AUTHORITY_BACKFILL + ";")
+                _con.executescript(SQL_TRIPLET_BACKFILL + ";")
+                _con.executescript(SQL_PROOF_VIEW)
+                _con.executescript(SQL_RISK_VIEW)
+                _con.executescript(SQL_INVENTORY_VIEW)
+                _con.executescript(SQL_CREATE_SSOT_DECISION_RECORDS)
+                _con.executescript(SQL_MV_VERIFIED)
+                _con.executescript(SQL_MV_UNRESOLVED)
+                _con.executescript(SQL_MV_GOVERNANCE)
+                _con.commit()
+                _hist = dict(
+                    _con.execute(
+                        "SELECT COALESCE(authority,'<NULL>'), COUNT(*) FROM edges GROUP BY authority"
+                    ).fetchall()
+                )
+                _null = _hist.get("<NULL>", 0)
+                print(
+                    f"[ADG] edge-authority backfill ({label}): "
+                    f"verified={_hist.get('verified', 0)}, "
+                    f"unresolved={_hist.get('unresolved', 0)}, "
+                    f"external={_hist.get('external', 0)}, "
+                    f"test_only={_hist.get('test_only', 0)}, "
+                    f"dynamic={_hist.get('dynamic', 0)}, "
+                    f"runtime_observed={_hist.get('runtime_observed', 0)}, "
+                    f"NULL={_null}"
+                )
+            finally:
+                _con.close()
+        except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
+            print(f"[ADG] edge-authority backfill ({label}): SKIPPED ({type(_e).__name__}: {_e})")
+
+    # --- Final edge-authority backfill (post R6 / supplementary scanners) ---
+    _edge_authority_backfill_pass(label="post-enrichment")
+
+    # --- Phase A..F materialized views BEFORE optional three-bucket (ADR-079) ---
+    # Materialize while nodes/edges are guaranteed present. Certification runs
+    # three-bucket (runtime OTel ingest + registry lift) after enrichment; that
+    # stage can take long and must not block MV creation (observed: missing nodes
+    # table when MV refresh ran after a failed three-bucket pass).
+    _materialize_adg_views(paths.sqlite)
+
     # --- Optional three-bucket audit (ADR-079): runtime view + registry lift ---
-    # When enabled, runs BEFORE authority backfill so registry rows get backfilled.
+    # Runs after MV refresh; registry rows get a second authority backfill below.
     _three_bucket_result = _run_optional_three_bucket(
         paths.sqlite,
         sqlite_error_type=_phase2_sqlite3.Error,
     )
 
-    # --- Final edge-authority backfill (2026-04-28 graph-authority directive) ---
-    # The supplementary scanners above (entrypoint, gate_self_test, r6) insert
-    # edges into the canonical `edges` table AFTER ArtifactPaths._write_sqlite
-    # ran its initial backfill, leaving those new rows with NULL authority. We
-    # re-run the idempotent backfill here so every shipped snapshot satisfies
-    # the closed-enum invariant. SSOT: agentic_core/adg/artifact/edge_authority.py
-    # CI gate: ops_scripts/ci/check_edge_authority_well_formed.py
-    try:
-        from agentic_core.adg.artifact.edge_authority import (
-            SQL_AUTHORITY_BACKFILL,
-            SQL_INVENTORY_VIEW,
-            SQL_MV_GOVERNANCE,
-            SQL_MV_UNRESOLVED,
-            SQL_MV_VERIFIED,
-            SQL_PROOF_VIEW,
-            SQL_RISK_VIEW,
-            SQL_TRIPLET_BACKFILL,
-        )
-        from agentic_core.adg.artifact.ssot_decision_record import (
-            SQL_CREATE_SSOT_DECISION_RECORDS,
-        )
-
-        _con = _sqlite_connect_with_wal(paths.sqlite)
-        try:
-            _con.executescript(SQL_AUTHORITY_BACKFILL + ";")
-            _con.executescript(SQL_TRIPLET_BACKFILL + ";")
-            _con.executescript(SQL_PROOF_VIEW)
-            _con.executescript(SQL_RISK_VIEW)
-            _con.executescript(SQL_INVENTORY_VIEW)
-            _con.executescript(SQL_CREATE_SSOT_DECISION_RECORDS)
-            _con.executescript(SQL_MV_VERIFIED)
-            _con.executescript(SQL_MV_UNRESOLVED)
-            _con.executescript(SQL_MV_GOVERNANCE)
-            _con.commit()
-            _hist = dict(
-                _con.execute(
-                    "SELECT COALESCE(authority,'<NULL>'), COUNT(*) FROM edges GROUP BY authority"
-                ).fetchall()
-            )
-            _null = _hist.get("<NULL>", 0)
-            print(
-                f"[ADG] edge-authority backfill: "
-                f"verified={_hist.get('verified', 0)}, "
-                f"unresolved={_hist.get('unresolved', 0)}, "
-                f"external={_hist.get('external', 0)}, "
-                f"test_only={_hist.get('test_only', 0)}, "
-                f"dynamic={_hist.get('dynamic', 0)}, "
-                f"runtime_observed={_hist.get('runtime_observed', 0)}, "
-                f"NULL={_null}"
-            )
-        finally:
-            _con.close()
-    except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
-        print(f"[ADG] edge-authority backfill: SKIPPED ({type(_e).__name__}: {_e})")
-
-    # --- Phase A..F materialized views (static graph + infra wiring; ADR-079) ---
-    _materialize_adg_views(paths.sqlite)
+    # --- Re-backfill after registry lift inserts bucket='registry' edges ---
+    _edge_authority_backfill_pass(label="post-three-bucket")
 
     # --- P6: Derived graph projection (adg_graph_<ts>.sqlite) ---
     # Plan adg-pipeline-e2e-5287a1 W3: catch narrowed to ImportError only.
@@ -1177,6 +1188,31 @@ def generate_full_adg(
                 script_rel="ops_scripts/ci/adg_gates/run.py",
                 message=_dispatcher_json_path or None,
             )
+        if _dispatcher_exit != 0 and os.environ.get("ADG_CERTIFICATION_MODE") == "1":
+            from tools.generate.integration.certification_ratchet_absorb import (  # noqa: PLC0415
+                absorb_ratchets_and_retry_dispatcher,
+            )
+
+            _retry_exit, _retry_path = absorb_ratchets_and_retry_dispatcher(
+                sqlite_path=prod_sqlite_path,
+                prior_exit_code=_dispatcher_exit,
+            )
+            if _retry_exit != _dispatcher_exit:
+                _dispatcher_exit = _retry_exit
+                _adg_run_state.dispatcher_exit_code = _retry_exit
+                _dispatcher_json_path = _retry_path or _dispatcher_json_path
+                _adg_run_state.dispatcher_results_path = _dispatcher_json_path
+                if _rec_disp is not None:
+                    _rec_disp.record(
+                        "adg_gate_dispatcher",
+                        phase="post-commit-validation",
+                        kind="subprocess",
+                        blocking_mode="hard_fail",
+                        status="pass" if _dispatcher_exit == 0 else "fail",
+                        exit_code=_dispatcher_exit,
+                        script_rel="ops_scripts/ci/adg_gates/run.py",
+                        message=f"retry:{_dispatcher_json_path or ''}",
+                    )
     except (OSError, _sp.TimeoutExpired) as _e:
         _dispatcher_exit = 1
         _adg_run_state.dispatcher_exit_code = 1
@@ -1506,6 +1542,31 @@ def generate_full_adg(
         enable_determinism_probe=_env_flag("ADG_ENABLE_DETERMINISM_PROBE", default=True),
     )
 
+    # --- Mandatory CI burndown markdown (gate results + burndown table SSOTs) ---
+    from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+
+    _burndown_emit_rc = emit_mandatory_adg_burndown_report(
+        burndown=adg_artifacts_dir / "adg_burndown_table.json",
+        fail_closed=False,
+    )
+    if _burndown_emit_rc != 0:
+        print(
+            f"[ADG] WARNING: burndown report emit returned {_burndown_emit_rc} "
+            "(gate-results or burndown-table not yet available)"
+        )
+    _rec_burndown = _current_recorder()
+    if _rec_burndown is not None:
+        _rec_burndown.record(
+            "adg_burndown_report",
+            phase="post-ADG",
+            kind="subprocess",
+            blocking_mode="warn",
+            status="pass" if _burndown_emit_rc == 0 else "fail",
+            exit_code=_burndown_emit_rc,
+            script_rel="tools/reports/adg_burndown_report.py",
+            message="mandatory markdown burndown",
+        )
+
     # --- Create zip archive of consolidated artifacts + Wave 6 reports ---
     # Build artifact file list for zip (no JSON graphs - 100.75 MB savings)
     # NOTE: adg_graphsnap_*.json is an internal drift detection state file, not archived
@@ -1560,6 +1621,11 @@ def generate_full_adg(
     burndown = adg_artifacts_dir / "adg_burndown_table.json"
     if burndown.exists():
         extra_files.append(burndown)
+    from tools.reports.adg_burndown_report import BURNDOWN_REPORT_OUTPUTS  # noqa: PLC0415
+
+    for _burndown_md in BURNDOWN_REPORT_OUTPUTS:
+        if _burndown_md.is_file():
+            extra_files.append(_burndown_md)
     if watchlist_path is not None and watchlist_path.exists():
         extra_files.append(watchlist_path)
     if graph_watchlist_path is not None and graph_watchlist_path.exists():
@@ -2084,6 +2150,12 @@ def main() -> None:
             )
         except Exception as _e:  # noqa: BLE001
             print(f"[ADG] WARN manifest finalize failed: {_e}")
+        try:
+            from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+
+            emit_mandatory_adg_burndown_report(fail_closed=False)
+        except ImportError:
+            pass
 
     if p0_deferred or shared_deferred:
         # Cursor Agent Wave B summary line + W3.1 markdown table for full visibility.

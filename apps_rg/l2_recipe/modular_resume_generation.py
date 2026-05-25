@@ -360,6 +360,8 @@ class ModularResumeProfile:
     phase1_invoke_real_lanes: bool = False
     phase1_lane_provider: str = "qwen_vllm"
     self_consistency_requested: int = 0
+    parallel_phase1_lanes: bool = False
+    phase1_max_parallel: int = 2
 
 
 _PLUMBING_ASSEMBLY_PROVIDERS = frozenset({"mock", "mocked", "stub"})
@@ -507,20 +509,27 @@ def run_modular_resume_generation(
             phase1_aborted = False
             phase1_abort_reason = ""
 
-            for lane in GENERATED_LANES:
-                os.environ[MODULAR_R4_SECTIONS_ROOT_ENV] = str(sections_root.resolve())
+            from apps_rg.runtime.orchestration.managed_section_lane_dispatcher import (
+                dispatch_phase1_lanes_managed,
+            )
+            from apps_rg.runtime.orchestration.section_lane_concurrency import (
+                phase1_parallel_enabled,
+                resolve_max_parallel,
+            )
+            from apps_rg.runtime.orchestration.section_lane_executor import (
+                LaneExecutionContext,
+            )
+
+            _parallel_phase1 = phase1_parallel_enabled(
+                profile_flag=bool(profile.parallel_phase1_lanes)
+            )
+            _max_par = resolve_max_parallel(default=int(profile.phase1_max_parallel or 2))
+
+            def _phase1_dispatch_one_lane(**kwargs: Any) -> dict[str, Any]:
+                nonlocal phase1_aborted, phase1_abort_reason
+                lane = str(kwargs.get("section") or "")
                 if phase1_aborted:
-                    emit_integrated_lane_pre_run_failure(
-                        sections_root=sections_root,
-                        integrated_dir=art,
-                        repo_root=repo,
-                        lane_id=lane,
-                        blocker=PHASE1_PRIOR_LANE_FAILED_BLOCKER,
-                        dispatch_result={"prior_abort": phase1_abort_reason},
-                        lane_exec_status=f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}",
-                    )
-                    lane_exec_status[lane] = f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}"
-                    continue
+                    return {"prior_abort": phase1_abort_reason, "exit_status": "error"}
                 upstream_spec = _narrative_upstream.get(lane)
                 if upstream_spec is not None:
                     upstream_lane, expected_ids = upstream_spec
@@ -542,45 +551,128 @@ def run_modular_resume_generation(
                             },
                             lane_exec_status=f"pre_run_blocked:{PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}",
                         )
-                        lane_dispatch_results[lane] = {
+                        return {
                             "fault": "upstream_not_finalized",
                             "upstream_lane": upstream_lane,
                             "exit_status": "error",
                         }
-                        lane_exec_status[lane] = f"pre_run_blocked:{PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}"
-                        continue
                 try:
-                    result = run_canonical_apps_rg_from_cli_primitives(
-                        target_company=tc,
-                        target_role=tr,
-                        jd="",
-                        job_description_ref=jd_ref,
-                        job_description_text=jd_txt,
-                        manual_brief=br_dispatch,
-                        resume_path="",
-                        source_resume_text="",
-                        generation_mode="strategic_tailor",
-                        artifact_dir="",
-                        section=lane,
-                        lane_provider=profile.phase1_lane_provider,
-                        lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
-                        lane_temperature=default_temperature_for_section(lane),
-                        lane_x1d_judges=x1d_eff,
-                        lane_mock_judges=lane_mock_j_for_phase1,
-                    )
-                    lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
-                    lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
-                    if product_fail_closed_runtime() and phase1_dispatch_hard_failed(
-                        lane_dispatch_results[lane]
-                    ):
+                    result = run_canonical_apps_rg_from_cli_primitives(**kwargs)
+                    res = dict(result) if isinstance(result, dict) else {}
+                    if product_fail_closed_runtime() and phase1_dispatch_hard_failed(res):
                         phase1_aborted = True
-                        phase1_abort_reason = f"dispatch_failed:{lane}:{lane_exec_status[lane]}"
+                        phase1_abort_reason = f"dispatch_failed:{lane}"
+                    return res
                 except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
-                    lane_exec_status[lane] = f"error:{exc!s}"
-                    lane_dispatch_results[lane] = {"fault": "exception", "error": str(exc)}
                     if product_fail_closed_runtime():
                         phase1_aborted = True
                         phase1_abort_reason = f"dispatch_exception:{lane}:{exc!s}"
+                    return {"fault": "exception", "error": str(exc), "exit_status": "error"}
+
+            _lane_ctx = LaneExecutionContext(
+                sections_root=str(sections_root.resolve()),
+                target_company=tc,
+                target_role=tr,
+                job_description_ref=jd_ref,
+                job_description_text=jd_txt,
+                manual_brief=br_dispatch,
+                lane_provider=profile.phase1_lane_provider,
+                lane_x1d_judges=x1d_eff,
+                lane_mock_judges=lane_mock_j_for_phase1,
+            )
+
+            if _parallel_phase1:
+                _outcomes = dispatch_phase1_lanes_managed(
+                    GENERATED_LANES,
+                    _lane_ctx,
+                    dispatch_fn=_phase1_dispatch_one_lane,
+                    parallel=True,
+                    max_parallel=_max_par,
+                )
+                for lane, oc in _outcomes.items():
+                    lane_dispatch_results[lane] = dict(oc.dispatch_result)
+                    lane_exec_status[lane] = _phase1_lane_dispatch_status(
+                        lane_dispatch_results[lane]
+                    )
+                    if oc.exec_status.startswith("error:") and not lane_dispatch_results[lane].get(
+                        "fault"
+                    ):
+                        lane_exec_status[lane] = oc.exec_status
+            else:
+                for lane in GENERATED_LANES:
+                    os.environ[MODULAR_R4_SECTIONS_ROOT_ENV] = str(sections_root.resolve())
+                    if phase1_aborted:
+                        emit_integrated_lane_pre_run_failure(
+                            sections_root=sections_root,
+                            integrated_dir=art,
+                            repo_root=repo,
+                            lane_id=lane,
+                            blocker=PHASE1_PRIOR_LANE_FAILED_BLOCKER,
+                            dispatch_result={"prior_abort": phase1_abort_reason},
+                            lane_exec_status=f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}",
+                        )
+                        lane_exec_status[lane] = f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}"
+                        continue
+                    upstream_spec = _narrative_upstream.get(lane)
+                    if upstream_spec is not None:
+                        upstream_lane, expected_ids = upstream_spec
+                        if not companion_accepted_in_modular_sections_root(
+                            repo,
+                            sections_root,
+                            upstream_section_id=upstream_lane,
+                            expected_bullet_ids=expected_ids,
+                        ):
+                            emit_integrated_lane_pre_run_failure(
+                                sections_root=sections_root,
+                                integrated_dir=art,
+                                repo_root=repo,
+                                lane_id=lane,
+                                blocker=PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER,
+                                dispatch_result={
+                                    "fault": "upstream_not_finalized",
+                                    "upstream_lane": upstream_lane,
+                                },
+                                lane_exec_status=f"pre_run_blocked:{PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}",
+                            )
+                            lane_dispatch_results[lane] = {
+                                "fault": "upstream_not_finalized",
+                                "upstream_lane": upstream_lane,
+                                "exit_status": "error",
+                            }
+                            lane_exec_status[lane] = f"pre_run_blocked:{PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}"
+                            continue
+                    try:
+                        result = run_canonical_apps_rg_from_cli_primitives(
+                            target_company=tc,
+                            target_role=tr,
+                            jd="",
+                            job_description_ref=jd_ref,
+                            job_description_text=jd_txt,
+                            manual_brief=br_dispatch,
+                            resume_path="",
+                            source_resume_text="",
+                            generation_mode="strategic_tailor",
+                            artifact_dir="",
+                            section=lane,
+                            lane_provider=profile.phase1_lane_provider,
+                            lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+                            lane_temperature=default_temperature_for_section(lane),
+                            lane_x1d_judges=x1d_eff,
+                            lane_mock_judges=lane_mock_j_for_phase1,
+                        )
+                        lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
+                        lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
+                        if product_fail_closed_runtime() and phase1_dispatch_hard_failed(
+                            lane_dispatch_results[lane]
+                        ):
+                            phase1_aborted = True
+                            phase1_abort_reason = f"dispatch_failed:{lane}:{lane_exec_status[lane]}"
+                    except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+                        lane_exec_status[lane] = f"error:{exc!s}"
+                        lane_dispatch_results[lane] = {"fault": "exception", "error": str(exc)}
+                        if product_fail_closed_runtime():
+                            phase1_aborted = True
+                            phase1_abort_reason = f"dispatch_exception:{lane}:{exc!s}"
             for lane in GENERATED_LANES:
                 if phase1_aborted:
                     continue
@@ -630,6 +722,8 @@ def run_modular_resume_generation(
                 "run_id": run_id,
                 "lane_status": lane_exec_status,
                 "sections_root_rel": _rel_under_repo(sections_root, repo),
+                "phase1_parallel_enabled": _parallel_phase1,
+                "phase1_max_parallel": _max_par if _parallel_phase1 else 1,
             }
             if lane_targeting is not None:
                 inv_extra["lane_argv_targeting"] = asdict(lane_targeting)

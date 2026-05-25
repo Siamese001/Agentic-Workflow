@@ -1,7 +1,7 @@
 # Plan: apps_rg Runtime Wiring Completion + W0–W9 RCA
 
 **Slug:** `apps-rg-runtime-wiring-completion-d4e8a1`
-**Status:** Not Started
+**Status:** Retired — superseded by `apps-rg-spine-only-unification-d8f4a2` (COMPLETE 2026-05-24). Notion reconciled 2026-05-24.
 **Tier:** T3 — cross-layer, multi-file, architectural, governance
 **Created:** 2026-05-09
 **Re-opens:** `apps-rg-declarative-ingress-only-spinal-governance-c8b3e1` (was marked W9 COMPLETE 2026-05-09; this plan establishes that close-out was premature and lands the missing wiring)

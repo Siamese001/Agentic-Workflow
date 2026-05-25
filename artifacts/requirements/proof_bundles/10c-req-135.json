@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-135",
   "selected_at_utc": "2026-04-30T15:31:10.208465+00:00",
-  "evidence_bound_at_utc": "2026-05-15T18:53:36.926551+00:00",
+  "evidence_bound_at_utc": "2026-05-25T00:23:55.147130+00:00",
   "canonical_owner_surface": "03_L3_Orchestration",
   "runtime_artifact_ref": "WorkflowContract",
   "otel_span_ref": "l3.workflow.contract_emitted",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "7a84735ff4186ff5ce52a4c3ff7c1ad902f21afb",
+  "git_head_at_test_time": "1f8195f162cb6918022018ffc24859f2b2abf2f5",
   "git_dirty_at_test_time": false,
-  "content_hash": "b07fc7daaa3081befc3a9f3af34d0515742a7f162096eb6ca5d956d12d7df243"
+  "content_hash": "d4302f21abcf459d4857e0c5d93f76d6fd14afb91309dc636b0a67a06d089033"
 }

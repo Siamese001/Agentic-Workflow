@@ -22,11 +22,18 @@ Close gaps between **resolver allowlist** (PA/L2/X2 enforcement), **C0 evidence 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: Track-C5-live
-LAST_COMPLETED_WAVE: Track-C-code-unit
-LAST_UPDATED: 2026-05-23
-NOTION_STATUS: In Progress
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: Track-C-containment
+LAST_COMPLETED_WAVE: Track-C-containment
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_CLASS: TRACK_B_AND_C_CONTAINMENT_DONE
+PLAN_COMPLETE: plan=apps-rg-proof-pool-c0-ssot-a7f3e2 note="Track B W23; Track C code; targeting parity 233409"
+DEFERRED_SCOPE: Track_C5_X3_ALLOW,W0_W4_FEC_allowlist_convergence
+CLOSEOUT_RECEIPT: docs/reports/plans/active_backlog_closeout_receipt_20260525.md
+PROOF_RECEIPT: docs/reports/apps_rg/exec_summary_targeting_parity_live_proof_20260524_233409_receipt.md
 NOTION_PAGE_ID: 36927693-f55c-8173-99c1-c25da5321677
 NOTION_PLANS_ROW: page_id=36927693-f55c-8173-99c1-c25da5321677
 NOTION_RECONCILED: 2026-05-24

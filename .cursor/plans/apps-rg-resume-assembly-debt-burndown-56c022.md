@@ -23,11 +23,17 @@ Reduce resume assembly technical debt: retire unused/ghost paths, complete DOCX 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W4
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W3
 LAST_COMPLETED_WAVE: W3
-LAST_UPDATED: 2026-05-24
-NOTION_STATUS: In Progress
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_CLASS: W0_W3_PRODUCT_JSON_SSOT_DONE
+PLAN_COMPLETE: plan=apps-rg-resume-assembly-debt-burndown-56c022 note="W0-W3 lane merge + fail-closed assembly"
+DEFERRED_SCOPE: W4_offline_demotion,W5_engines_reasoning_boundary
+CLOSEOUT_RECEIPT: docs/reports/plans/active_backlog_closeout_receipt_20260525.md
 NOTION_PAGE_ID: 36827693-f55c-811f-9cae-c14d491432c4
 NOTION_RECONCILED: 2026-05-24
 ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md

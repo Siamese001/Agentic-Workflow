@@ -281,6 +281,17 @@ def run_audit(
         if certification_mode and not diagnostic_allow_failed_generator:
             reasons.append(f"generator exit_code={gen_rc}")
 
+    # Mandatory burndown markdown (best-effort after Stage-1; full emit is in generate_full_adg).
+    try:
+        from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+
+        _burndown_rc = emit_mandatory_adg_burndown_report(fail_closed=False)
+        if _burndown_rc != 0 and certification_mode:
+            reasons.append(f"burndown report emit exit_code={_burndown_rc}")
+    except ImportError as _burndown_import_err:
+        if certification_mode:
+            reasons.append(f"burndown report module unavailable: {_burndown_import_err}")
+
     # Locate manifests.
     gen_manifest_path = _find_generation_manifest(wall_start)
     gate_manifest_path: Path | None = None

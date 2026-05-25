@@ -9,6 +9,18 @@ Combines two on-disk SSOTs into one human-readable markdown:
         — gross / net / diff / guardian by band (P0..P3)
         — written by tools.generate.reporting.reports
 
+**Mandatory on every ADG run:** ``emit_mandatory_adg_burndown_report()`` is invoked
+from ``tools/generate/generate_full_adg.py``, ``tools/adg/run_full_adg_audit.py``, and
+``ops_scripts/ci/adg_gates/run.py``. Outputs:
+
+  * artifacts/adg/adg_burndown_report.md
+  * docs/reports/adg/adg_burndown_report.md
+  * **stdout** — full markdown for inline Cursor chat (see ``.cursor/rules/adg-post-run-burndown.mdc``)
+  * **Cursor Canvas** — ``adg-ci-burndown.canvas.tsx`` via ``tools/reports/adg_burndown_canvas.py``
+
+Set ``ADG_BURNDOWN_INLINE_BYPASS=1`` to suppress stdout markdown (files still written).
+Set ``ADG_BURNDOWN_CANVAS_BYPASS=1`` to skip canvas generation (markdown/files still written).
+
 The report is intentionally one file with five fixed sections:
 
   1. Header — snapshot, timestamp, overall verdict
@@ -25,12 +37,19 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
 REPO = Path(__file__).resolve().parents[2]
 ARTIFACTS = REPO / "artifacts" / "adg"
+BURNDOWN_TABLE_DEFAULT = ARTIFACTS / "adg_burndown_table.json"
+# Mandatory outputs on every ADG run (artifact + docs mirror for operators).
+BURNDOWN_REPORT_OUTPUTS: tuple[Path, ...] = (
+    ARTIFACTS / "adg_burndown_report.md",
+    REPO / "docs" / "reports" / "adg" / "adg_burndown_report.md",
+)
 
 
 # Human descriptions for each gate. Keyed by ``gate_id`` so the file becomes the
@@ -110,11 +129,110 @@ def _load_burndown(path: Path) -> dict[str, Any]:
     return data
 
 
+def _display_path(path: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(REPO.resolve()))
+    except ValueError:
+        return str(resolved)
+
+
 def _latest_gate_results() -> Path:
     candidates = sorted(ARTIFACTS.glob("adg_gate_results_*.json"))
     if not candidates:
         raise FileNotFoundError(f"no adg_gate_results_*.json under {ARTIFACTS}")
     return candidates[-1]
+
+
+def _inline_burndown_bypassed() -> bool:
+    return os.environ.get("ADG_BURNDOWN_INLINE_BYPASS", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+
+
+def emit_mandatory_adg_burndown_report(
+    *,
+    gate_results: Path | None = None,
+    burndown: Path | None = None,
+    fail_closed: bool = True,
+    print_inline: bool = True,
+) -> int:
+    """Write burndown markdown to disk and stdout (Cursor inline display).
+
+    Called automatically from ``generate_full_adg`` and ``run_full_adg_audit``
+    so every ADG run produces a human-readable CI burndown report.
+
+    Args:
+        gate_results: ``adg_gate_results_<ts>.json`` (defaults to newest).
+        burndown: ``adg_burndown_table.json`` (defaults to artifacts/adg/).
+        fail_closed: When True, return 2 if inputs are missing; else 0 with warning.
+        print_inline: When True, emit full markdown to stdout for Cursor Agent chat.
+
+    Returns:
+        0 on success, 2 when inputs missing (if fail_closed), 2 on write errors.
+    """
+    burndown_path = (burndown or BURNDOWN_TABLE_DEFAULT).resolve()
+    try:
+        gate_path = (gate_results or _latest_gate_results()).resolve()
+    except FileNotFoundError as exc:
+        print(f"[adg_burndown_report] mandatory emit skipped: {exc}", file=sys.stderr)
+        return 2 if fail_closed else 0
+
+    missing: list[str] = []
+    if not gate_path.is_file():
+        missing.append(f"gate-results missing: {gate_path}")
+    if not burndown_path.is_file():
+        missing.append(f"burndown-table missing: {burndown_path}")
+    if missing:
+        print(
+            "[adg_burndown_report] mandatory emit blocked — " + "; ".join(missing),
+            file=sys.stderr,
+        )
+        return 2 if fail_closed else 0
+
+    try:
+        md = render(gate_path, burndown_path)
+        for out_path in BURNDOWN_REPORT_OUTPUTS:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(md, encoding="utf-8")
+            try:
+                label = out_path.relative_to(REPO.resolve())
+            except ValueError:
+                label = out_path
+            print(
+                f"[adg_burndown_report] wrote {label} "
+                f"({len(md.splitlines())} lines, {len(md)} bytes)",
+                file=sys.stderr,
+            )
+        if print_inline and not _inline_burndown_bypassed():
+            sys.stdout.write("\n")
+            sys.stdout.write(md)
+            if not md.endswith("\n"):
+                sys.stdout.write("\n")
+            print(
+                "[adg_burndown_report] inline markdown emitted to stdout for Cursor display",
+                file=sys.stderr,
+            )
+        elif _inline_burndown_bypassed():
+            print(
+                "[adg_burndown_report] WARNING: inline stdout suppressed "
+                "(ADG_BURNDOWN_INLINE_BYPASS=1)",
+                file=sys.stderr,
+            )
+        from tools.reports.adg_burndown_canvas import emit_adg_burndown_canvas
+
+        emit_adg_burndown_canvas(
+            gate_results=gate_path,
+            burndown=burndown_path,
+            open_markdown=True,
+            open_canvas=False,
+        )
+    except OSError as exc:
+        print(f"[adg_burndown_report] mandatory emit failed: {exc}", file=sys.stderr)
+        return 2
+    return 0
 
 
 def render(
@@ -136,8 +254,8 @@ def render(
     a("# ADG CI Burndown Report")
     a("")
     a(f"- **Generated:** {_dt.datetime.now(_dt.timezone.utc).isoformat(timespec='seconds')}")
-    a(f"- **Gate-results source:** `{gate_results_path.relative_to(REPO)}`")
-    a(f"- **Burndown source:** `{burndown_path.relative_to(REPO)}`")
+    a(f"- **Gate-results source:** `{_display_path(gate_results_path)}`")
+    a(f"- **Burndown source:** `{_display_path(burndown_path)}`")
     a(f"- **Snapshot timestamp:** {gates_doc.get('timestamp', 'n/a')}")
     a(f"- **Total gates:** {gates_doc.get('total_gates', len(gates))}")
     a(f"- **Overall verdict:** **{overall}**")
@@ -263,22 +381,25 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    gate_results = args.gate_results or _latest_gate_results()
-    if not gate_results.exists():
-        print(f"[adg_burndown_report] gate-results not found: {gate_results}", file=sys.stderr)
-        return 2
-    if not args.burndown.exists():
-        print(f"[adg_burndown_report] burndown not found: {args.burndown}", file=sys.stderr)
-        return 2
+    gate_results = (args.gate_results or _latest_gate_results()).resolve()
+    args.burndown = args.burndown.resolve()
+    args.out = args.out.resolve()
 
-    md = render(gate_results, args.burndown)
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(md, encoding="utf-8")
-    print(
-        f"[adg_burndown_report] wrote {args.out.relative_to(REPO)} "
-        f"({len(md.splitlines())} lines, {len(md)} bytes)"
+    rc = emit_mandatory_adg_burndown_report(
+        gate_results=gate_results,
+        burndown=args.burndown,
+        fail_closed=True,
     )
-    return 0
+    mandatory_paths = {p.resolve() for p in BURNDOWN_REPORT_OUTPUTS}
+    if args.out not in mandatory_paths and rc == 0:
+        md = render(gate_results, args.burndown)
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(md, encoding="utf-8")
+        print(
+            f"[adg_burndown_report] wrote {args.out.relative_to(REPO.resolve())} "
+            f"({len(md.splitlines())} lines, {len(md)} bytes)"
+        )
+    return rc
 
 
 if __name__ == "__main__":

@@ -12,7 +12,14 @@ from apps_rg.runtime.sections.executive_summary_repair_policy import (
     judge_regen_max_attempts,
     judge_regeneration_enabled,
     judge_safe_prefilter_enabled,
+    post_regen_judge_rescore_mode,
     post_x2_judge_refresh_enabled,
+    POST_REGEN_JUDGE_RESCORE_FULL_PANEL,
+    POST_REGEN_JUDGE_RESCORE_SOFT_ONLY,
+)
+from apps_rg.runtime.sections.executive_summary_upstream_triangulation import (
+    consensus_failed_dimensions,
+    solitary_dimension_severe_soft_fail,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
@@ -200,20 +207,26 @@ def evaluate_judge_remediation_trigger(
     if tag_sets:
         shared_tags = set.intersection(*tag_sets) if len(tag_sets) > 1 else tag_sets[0]
 
-    quorum = len(soft_fails) >= min_fail and bool(shared_tags)
+    dim_consensus = consensus_failed_dimensions(x1d_judges, min_fail_count=min_fail)
+    receipt["dimension_consensus_failed"] = dim_consensus
+
+    quorum = len(soft_fails) >= min_fail and (bool(shared_tags) or bool(dim_consensus))
     solitary_severe = False
+    solitary_dim_major: list[str] = []
     if len(soft_fails) == 1:
         solo = soft_fails[0]
         solo_tags = tag_sets[0] if tag_sets else set()
+        dim_severe, solitary_dim_major = solitary_dimension_severe_soft_fail(solo)
         try:
             solo_ns = float(solo.get("normalized_score"))
             solo_nt = float(solo.get("normalized_threshold", 0.8))
-            solitary_severe = solo_ns < solo_nt and bool(
-                solo_tags & {"synthesis", "executive_signal", "jd_emphasis"}
+            solitary_severe = solo_ns < solo_nt and (
+                dim_severe or bool(solo_tags & {"synthesis", "executive_signal", "jd_emphasis"})
             )
         except (TypeError, ValueError):
-            solitary_severe = False
+            solitary_severe = dim_severe
     receipt["solitary_severe_soft_fail"] = solitary_severe
+    receipt["solitary_dimension_major_failed"] = solitary_dim_major
 
     if pass_count >= 2 and not solitary_severe:
         receipt["reason"] = "two_or_more_judges_already_pass_skip_regen"
@@ -239,8 +252,12 @@ def evaluate_judge_remediation_trigger(
     triggered = quorum or median_fail or decisive_trigger or solitary_severe
     receipt["triggered"] = triggered
     if triggered:
-        if quorum:
+        if dim_consensus and quorum:
+            receipt["trigger_mode"] = "dimension_consensus_soft_fail"
+        elif quorum:
             receipt["trigger_mode"] = "quorum_soft_fail"
+        elif solitary_severe and solitary_dim_major:
+            receipt["trigger_mode"] = "solitary_dimension_major_soft_fail"
         elif solitary_severe:
             receipt["trigger_mode"] = "solitary_severe_soft_fail"
         elif median_fail:
@@ -808,6 +825,81 @@ def rerun_soft_failed_judges(
         else:
             out.append(j)
     return out
+
+
+def rescore_judges_after_regen(
+    *,
+    x2_gates: list[dict[str, Any]],
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+    allowed_fact_packet: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+    target_title: str,
+    target_company: str,
+    jd_text: str,
+    briefing_text: str,
+    parsed_output: dict[str, Any] | None,
+    judge_keys: list[str],
+    judge_mode: str,
+    artifact_dir: Path,
+    compiled_prompt: str | None,
+    prior_judges: list[dict[str, Any]],
+    judge_packet: dict[str, Any],
+    judge_packet_ref: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Post-regen judge spend: soft-failed only by default (not full 3-judge panel)."""
+    mode = post_regen_judge_rescore_mode()
+    if mode == POST_REGEN_JUDGE_RESCORE_FULL_PANEL:
+        refreshed, receipt = refresh_x1d_judges_after_full_x2(
+            x2_gates=x2_gates,
+            resume_display_text=resume_display_text,
+            claim_ledger=claim_ledger,
+            allowed_fact_packet=allowed_fact_packet,
+            allowed_fact_ids=allowed_fact_ids,
+            target_title=target_title,
+            target_company=target_company,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+            parsed_output=parsed_output,
+            judge_keys=judge_keys,
+            judge_mode=judge_mode,
+            artifact_dir=artifact_dir,
+            compiled_prompt=compiled_prompt,
+            prior_judges=prior_judges,
+        )
+        receipt["rescore_mode"] = POST_REGEN_JUDGE_RESCORE_FULL_PANEL
+        return refreshed, receipt
+
+    soft_keys = {
+        str(j.get("provider_key"))
+        for j in prior_judges
+        if j.get("provider_key") and _is_model_backed_soft_fail(j)
+    }
+    out = rerun_soft_failed_judges(
+        resume_display_text=resume_display_text,
+        claim_ledger=claim_ledger,
+        judge_packet=judge_packet,
+        judge_packet_ref=judge_packet_ref,
+        compiled_prompt=compiled_prompt,
+        artifact_dir=artifact_dir,
+        judge_keys=judge_keys,
+        judge_mode=judge_mode,
+        prior_judges=prior_judges,
+        x2_gates=x2_gates,
+        allowed_fact_packet=allowed_fact_packet,
+        allowed_fact_ids=allowed_fact_ids,
+        target_title=target_title,
+        target_company=target_company,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        parsed_output=parsed_output,
+    )
+    return out, {
+        "schema": "executive_summary_post_regen_judge_rescore_v1",
+        "rescore_mode": POST_REGEN_JUDGE_RESCORE_SOFT_ONLY,
+        "soft_failed_provider_keys": sorted(soft_keys),
+        "judges_rescored_count": len(soft_keys),
+    }
 
 
 def refresh_x1d_judges_after_full_x2(

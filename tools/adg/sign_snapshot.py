@@ -451,8 +451,8 @@ def sign_snapshot(
     verify_only: bool = False,
     key_path: Path | None = None,
 ) -> SignStats:
-    snap = snapshot or _latest_snapshot()
-    if snap is None:
+    snap = snapshot if snapshot is not None and snapshot.exists() else _latest_snapshot()
+    if snap is None or not snap.exists():
         raise FileNotFoundError("no ADG snapshot under artifacts/adg/")
 
     content = _content_digest(snap)

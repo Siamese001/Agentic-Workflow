@@ -83,7 +83,8 @@ slot_bodies:
     Never one sentence per source fact; never Label: detail stitching; third person; no U+2014 em dash.
     Sentence 1 must be a complete clause (not a fragment ending on a relative clause alone).
     Vary sentence openers; do not chain six sentences starting with Led/Successfully/Built/Delivered.
-    Do not mention certifications, AWS, Databricks, FSA, or credential inventories in resume_display_text.
+    Do not inventory AWS, Databricks, or vendor certification labels. At most one FSA (Fellow of the Society of Actuaries)
+    rigor mention is allowed when woven into quantitative/actuarial narrative (C0.3 phase-1) — not a trailing cert laundry list.
     Voice and failure-mode examples: E0 at L2 execute time (hydrated from executive_summary_examples.yaml; positives are 6 sentences; match that band).
     </composition_heuristics>
 

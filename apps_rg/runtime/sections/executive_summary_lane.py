@@ -108,6 +108,52 @@ def _write_x1d_judge_artifacts(artifact_dir: Path, x1d: list[Any]) -> None:
     write_x1d_dimension_matrix_artifact(artifact_dir / "x1d_dimension_matrix.json", x1d)
 
 
+def _emit_dimension_upstream_triangulation(
+    artifact_dir: Path,
+    *,
+    x1d_judges: list[Any],
+    x2_gates: list[dict[str, Any]],
+    runtime_payload: dict[str, Any],
+    judge_regen_cycles: dict[str, Any] | None = None,
+) -> None:
+    """Map dimension failures → Qwen prompt surfaces (no extra judge API spend)."""
+    from apps_rg.runtime.sections.executive_summary_repair_policy import post_regen_judge_rescore_mode
+    from apps_rg.runtime.sections.executive_summary_upstream_triangulation import (
+        build_dimension_upstream_triangulation,
+        write_dimension_upstream_triangulation,
+    )
+
+    manifest: dict[str, Any] = {}
+    _manifest_path = artifact_dir / "generation_grade_contract_manifest.json"
+    if _manifest_path.is_file():
+        try:
+            _raw_m = json.loads(_manifest_path.read_text(encoding="utf-8"))
+            if isinstance(_raw_m, dict):
+                manifest = _raw_m
+        except (OSError, json.JSONDecodeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
+            manifest = {}
+    if not judge_regen_cycles and (artifact_dir / "judge_remediation_cycles.json").is_file():
+        try:
+            _raw_c = json.loads((artifact_dir / "judge_remediation_cycles.json").read_text(encoding="utf-8"))
+            if isinstance(_raw_c, dict):
+                judge_regen_cycles = _raw_c
+        except (OSError, json.JSONDecodeError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
+            judge_regen_cycles = None
+    x2_failed = [str(g.get("gate_id")) for g in x2_gates if not g.get("pass")]
+    body = build_dimension_upstream_triangulation(
+        x1d_judges=[j if isinstance(j, dict) else getattr(j, "to_dict", lambda: {})() for j in x1d_judges],
+        x2_failed_gate_ids=x2_failed,
+        generation_manifest=manifest,
+        judge_regen_cycles=judge_regen_cycles,
+        post_regen_judge_mode=post_regen_judge_rescore_mode(),
+    )
+    body["run_id"] = str(runtime_payload.get("run_id") or "")
+    write_dimension_upstream_triangulation(
+        artifact_dir / "dimension_upstream_triangulation.json",
+        body,
+    )
+
+
 EXEC_SUMMARY_TEMP_DEFAULT = 0.45
 EXEC_SUMMARY_TEMP_RANGE = (0.35, 0.55)
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
@@ -2137,6 +2183,15 @@ def run_executive_summary_execution(
     )
 
     x2_failed_initial = [g for g in x2 if not g["pass"]]
+    if not (artifact_dir / "x1d_llm_judge_outputs.json").is_file():
+        _write_x1d_judge_artifacts(artifact_dir, x1d)
+    if x2_failed_initial:
+        _emit_dimension_upstream_triangulation(
+            artifact_dir,
+            x1d_judges=x1d,
+            x2_gates=x2,
+            runtime_payload=runtime_payload,
+        )
     _composition_plan_refresh: dict[str, Any] = {}
     _comp_plan_path = artifact_dir / "executive_summary_composition_plan.json"
     if _comp_plan_path.is_file():
@@ -2184,6 +2239,12 @@ def run_executive_summary_execution(
             }
         write_json(artifact_dir / "post_x2_x1d_refresh_receipt.json", _x1d_refresh_receipt)
         _write_x1d_judge_artifacts(artifact_dir, x1d)
+        _emit_dimension_upstream_triangulation(
+            artifact_dir,
+            x1d_judges=x1d,
+            x2_gates=x2,
+            runtime_payload=runtime_payload,
+        )
         x2.extend(
             append_executive_summary_x1d_x2_gate_dicts(
                 x1d_judges=x1d,
@@ -2275,7 +2336,10 @@ def run_executive_summary_execution(
                 },
             )
 
-        _regen_ok, _regen_parity_reason = parity_allows_judge_regen(runtime_payload)
+        _regen_ok, _regen_parity_reason = parity_allows_judge_regen(
+            runtime_payload,
+            token_budget_receipt=token_budget_receipt,
+        )
         if judge_remediation_regen_allowed() and _regen_ok:
             _max_judge_cycles = judge_regen_max_attempts()
             _regen_messages = list(messages)
@@ -2520,10 +2584,14 @@ def run_executive_summary_execution(
                             reason="judge_remediation_regen_x2_pass",
                         )
                         from apps_rg.runtime.sections.executive_summary_judge_remediation import (
-                            refresh_x1d_judges_after_full_x2,
+                            rescore_judges_after_regen,
                         )
 
-                        x1d, _post_regen_x1d_receipt = refresh_x1d_judges_after_full_x2(
+                        _jp_rescore = resolve_judge_packet_for_parity(artifact_dir, fallback=judge_packet)
+                        _jp_rescore_ref = str(
+                            artifact_dir / "executive_summary_judge_packet_post_x2.json"
+                        )
+                        x1d, _post_regen_x1d_receipt = rescore_judges_after_regen(
                             x2_gates=x2,
                             resume_display_text=resume_display_text,
                             claim_ledger=claim_ledger,
@@ -2539,10 +2607,19 @@ def run_executive_summary_execution(
                             artifact_dir=artifact_dir,
                             compiled_prompt=compiled_prompt,
                             prior_judges=x1d,
+                            judge_packet=_jp_rescore,
+                            judge_packet_ref=_jp_rescore_ref,
                         )
                         write_json(
-                            artifact_dir / "post_regen_x1d_full_refresh_receipt.json",
+                            artifact_dir / "post_regen_x1d_rescore_receipt.json",
                             _post_regen_x1d_receipt,
+                        )
+                        _emit_dimension_upstream_triangulation(
+                            artifact_dir,
+                            x1d_judges=x1d,
+                            x2_gates=x2,
+                            runtime_payload=runtime_payload,
+                            judge_regen_cycles=_cycles_receipt,
                         )
                         _write_x1d_judge_artifacts(artifact_dir, x1d)
                         write_x2_gate_outputs(

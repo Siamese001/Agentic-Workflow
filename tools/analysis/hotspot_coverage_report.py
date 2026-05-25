@@ -35,10 +35,25 @@ DEFAULT_TOP = 25
 
 
 def _latest_snapshot() -> Path:
-    candidates = sorted((REPO_ROOT / "artifacts" / "adg").glob("adg_indexed_*.sqlite"))
+    import os
+
+    override = os.environ.get("ADG_SNAPSHOT", "").strip()
+    if override:
+        p = Path(override)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if not p.exists():
+            raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
+        return p.resolve()
+    adg_dir = REPO_ROOT / "artifacts" / "adg"
+    candidates = [
+        c
+        for c in adg_dir.glob("adg_indexed_*.sqlite")
+        if "99999999" not in c.name and c.stat().st_size > 50_000_000
+    ]
     if not candidates:
         raise FileNotFoundError("no ADG snapshot found in artifacts/adg/")
-    return candidates[-1]
+    return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
 def _read(adg_path: Path, top: int) -> dict[str, Any]:

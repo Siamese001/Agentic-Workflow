@@ -20,10 +20,17 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1  
-PLAN_STATUS: TODO  
-CURRENT_WAVE: W0  
-LAST_COMPLETED_WAVE: NONE  
-LAST_UPDATED: 2026-05-15  
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W2
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_PAGE_ID: 36127693-f55c-81e2-bb0a-cad26d5dc3cc
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+PLAN_COMPLETE: plan=10c-proof-bundle-current-head-a8f4c2 note="198 bundles regen @ HEAD; W4d-4 gate PASS"
+CLOSEOUT_RECEIPT: docs/reports/plans/not_started_plans_triplecheck_receipt_20260525.md
+PROOF_GATE: ops_scripts/ci/check_10c_pilot_proof_evidence.py --skip-pytest exit=0
 
 ---
 

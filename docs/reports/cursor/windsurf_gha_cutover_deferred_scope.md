@@ -30,7 +30,7 @@ DEFERRED_SCOPE: plan=windsurf-gha-cutover-d9f2a7 wave=W5 phase=W5.D4 layer=L_TOO
 | ID | Phase | Band (scored) | Title | Status |
 |----|-------|---------------|-------|--------|
 | D1 | W5.D1 | P3 | Notion plan path batch migration | ✅ DONE |
-| D2 | W1.D1 | P3 | Full `.windsurf/` tree deletion | ✅ Assessed — deletion blocked (mirror required) |
+| D2 | W1.D1 | P3 | Full `.windsurf/` tree deletion | ⏸ OUT_OF_BAND — assessed only; `deletion_safe: false`; separate plan |
 | D3 | W5.D2 | P4 | T7.7 governance health re-home | ✅ DONE |
 | D4 | W5.D3 | P4 | Full contract-gates re-run | ✅ Ran (graph_layer pre-existing FAIL) |
 | D5 | W5.D4 | P4 | Artifact namespace dual-write | ✅ DONE |

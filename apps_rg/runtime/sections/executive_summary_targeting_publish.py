@@ -67,6 +67,27 @@ def audit_judge_packet_targeting_digests(
     }
 
 
+def judge_packet_for_parity_evaluation(
+    judge_packet: dict[str, Any],
+    *,
+    generation_material: GenerationMaterialContext,
+) -> dict[str, Any]:
+    """Prefer on-disk judge packet targeting; else generation material (pre-judge / X2-block)."""
+    if isinstance(judge_packet, dict):
+        tc = judge_packet.get("targeting_context")
+        if isinstance(tc, dict):
+            jd = str(tc.get("jd_text") or "")
+            br = str(tc.get("briefing") or "")
+            if jd or br:
+                return judge_packet
+    return {
+        "targeting_context": {
+            "jd_text": generation_material.jd_text_material,
+            "briefing": generation_material.briefing_text_material,
+        }
+    }
+
+
 def publish_targeting_parity_and_usage_ledger(
     *,
     artifact_dir: Path,
@@ -78,7 +99,9 @@ def publish_targeting_parity_and_usage_ledger(
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Write parity receipt + merged usage ledger; update runtime_payload."""
     bundle = require_material_targeting_bundle(runtime_payload)
-    judge_material = judge_material_context_from_packet(judge_packet)
+    judge_material = judge_material_context_from_packet(
+        judge_packet_for_parity_evaluation(judge_packet, generation_material=generation_material)
+    )
     parity = evaluate_targeting_parity(
         generation=generation_material,
         judge=judge_material,
@@ -91,17 +114,51 @@ def publish_targeting_parity_and_usage_ledger(
     return parity, merged
 
 
-def parity_allows_judge_regen(runtime_payload: dict[str, Any]) -> tuple[bool, str]:
+INSTRUCTIONAL_TRIM_COMPONENTS: frozenset[str] = frozenset(
+    {
+        "e0_examples",
+        "y0_style_preferences",
+        "jd_briefing_prose",
+        "jd_text_prose",
+    }
+)
+
+
+def instructional_surface_drift_risk(token_budget_receipt: dict[str, Any] | None) -> bool:
+    """True when L2 trim removed instructional slots judges never receive (RCA C1)."""
+    if not isinstance(token_budget_receipt, dict) or not token_budget_receipt.get("trim_applied"):
+        return False
+    trimmed = {
+        str(row.get("component") or "")
+        for row in (token_budget_receipt.get("trimmed_components") or [])
+        if isinstance(row, dict)
+    }
+    return bool(trimmed & INSTRUCTIONAL_TRIM_COMPONENTS)
+
+
+def parity_allows_judge_regen(
+    runtime_payload: dict[str, Any],
+    *,
+    token_budget_receipt: dict[str, Any] | None = None,
+) -> tuple[bool, str]:
     tcp = runtime_payload.get("targeting_context_parity")
     if not isinstance(tcp, dict):
         return False, "targeting_context_parity missing"
-    if tcp.get("parity_match") is True:
-        return True, "parity_match"
-    return False, "parity_match is false — judge regen would use unfair targeting context"
+    if tcp.get("parity_match") is not True:
+        return False, "parity_match is false — judge regen would use unfair targeting context"
+    if instructional_surface_drift_risk(token_budget_receipt):
+        return (
+            False,
+            "L2 instructional surface trimmed (E0/Y0/JD prose) — judge packet lacks those blocks",
+        )
+    return True, "parity_match"
 
 
 __all__ = [
+    "INSTRUCTIONAL_TRIM_COMPONENTS",
     "audit_judge_packet_targeting_digests",
+    "instructional_surface_drift_risk",
+    "judge_packet_for_parity_evaluation",
     "parity_allows_judge_regen",
     "publish_targeting_parity_and_usage_ledger",
     "resolve_judge_packet_for_parity",

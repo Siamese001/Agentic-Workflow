@@ -26,9 +26,23 @@ FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: COMPLETED  
 CURRENT_WAVE: NONE  
 LAST_COMPLETED_WAVE: W5  
-LAST_UPDATED: 2026-05-23
+LAST_UPDATED: 2026-05-25
 
 PLAN_CREATED: slug=windsurf-gha-cutover-d9f2a7 path=.cursor/plans/windsurf-gha-cutover-d9f2a7.md status=Not Started
+
+MIGRATION_SCOPE_STATUS: COMPLETE  
+GLOBAL_CONTRACT_GATE_STATUS: PARTIAL_EXTERNAL_BLOCKER  
+BLOCKER_NOT_ATTRIBUTED_TO_PLAN: graph_layer pre-existing plan violations (`check_graph_layer_evidence` — unknown `plan_type` on active `.cursor/plans/*.md`)  
+REQUIRED_FOLLOWUP: owning graph_layer / plan-taxonomy remediation (e.g. exec-summary plan cluster) or explicit waiver with owner reference — **not** windsurf-gha-cutover scope
+
+STATUS_INTEGRITY_NOTE: W0–W5 implementation scope is complete. Phase tables reconciled to DONE (2026-05-25). Global contract-gate certification remains PARTIAL due to pre-existing graph_layer plan violations unrelated to this cutover. This plan does **not** claim full repository governance green — only windsurf-gha-cutover scope completion with external blocker documented. Do **not** treat as clean governance PASS until DoD-4 is green, waived with owner/reference, or split to a separate graph_layer remediation plan.
+
+GOVERNANCE_CERTIFICATION_STATUS: PARTIAL (migration complete; global contract gate not green)
+
+LAST_METADATA_RECONCILE: 2026-05-25  
+NOTION_PAGE_ID: 36927693-f55c-81eb-a9a1-d9955c280b83  
+NOTION_RECEIPT_PAGE_ID: 36b27693-f55c-815a-bbf8-f3e793e0f295  
+NOTION_RECEIPT_PAGE_URL: https://www.notion.so/36b27693f55c815abbf8f3e793e0f295
 
 ---
 
@@ -73,20 +87,20 @@ PLAN_CREATED: slug=windsurf-gha-cutover-d9f2a7 path=.cursor/plans/windsurf-gha-c
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W0.1 | Workflow ↔ gate dependency matrix | 🔲 TODO |
-| W0.2 | GitHub required-check audit | 🔲 TODO |
-| W0.3 | Operator go/no-go on W1 | 🔲 TODO |
-| W1.1 | Remove `.github/workflows/_deleted/` | 🔲 TODO |
-| W1.2 | Update docs referencing windsurf-governance-health | 🔲 TODO |
-| W2.1 | `author-gate-gates.yml` path filters | 🔲 TODO |
-| W2.2 | `notion-plan-file-drift-nightly.yml` plan root | 🔲 TODO |
-| W2.3 | `apps-e2e-harness-nightly.yml` schema paths | 🔲 TODO |
-| W2.4 | Comment-only windsurf plan refs in other YAML | 🔲 TODO |
-| W3.1 | `check_notion_plan_file_drift.py` | 🔲 TODO |
-| W3.2 | `check_plan_*` helpers (`PLANS_DIR`, `_plan_registration`) | 🔲 TODO |
-| W3.3 | `run_contract_gates.py` windsurf skills dir (mirror or drop) | 🔲 TODO |
-| W4.1 | Relocate decision ledger schemas/scripts if not already under `.cursor/` | 🔲 TODO |
-| W5.1 | Closeout receipt on disk | 🔲 TODO |
+| W0.1 | Workflow ↔ gate dependency matrix | ✅ DONE |
+| W0.2 | GitHub required-check audit | ✅ DONE (manual/skipped — `gh` unavailable; see inventory) |
+| W0.3 | Operator go/no-go on W1 | ✅ DONE |
+| W1.1 | Remove `.github/workflows/_deleted/` | ✅ DONE |
+| W1.2 | Update docs referencing windsurf-governance-health | ✅ DONE |
+| W2.1 | `author-gate-gates.yml` path filters | ✅ DONE |
+| W2.2 | `notion-plan-file-drift-nightly.yml` plan root | ✅ DONE |
+| W2.3 | `apps-e2e-harness-nightly.yml` schema paths | ✅ DONE |
+| W2.4 | Comment-only windsurf plan refs in other YAML | ✅ DONE |
+| W3.1 | `check_notion_plan_file_drift.py` | ✅ DONE |
+| W3.2 | `check_plan_*` helpers (`PLANS_DIR`, `_plan_registration`) | ✅ DONE |
+| W3.3 | `run_contract_gates.py` windsurf skills dir (mirror or drop) | ✅ DONE |
+| W4.1 | Relocate decision ledger schemas/scripts if not already under `.cursor/` | ✅ DONE |
+| W5.1 | Closeout receipt on disk | ✅ DONE |
 
 ---
 
@@ -94,20 +108,20 @@ PLAN_CREATED: slug=windsurf-gha-cutover-d9f2a7 path=.cursor/plans/windsurf-gha-c
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W0.1 | Dependency matrix | `.github/workflows/*.yml`, `ops_scripts/ci/run_contract_gates.py` | Confusing “Windsurf Action” vs path coupling | ~2k | 🔲 TODO |
-| W0.2 | Branch protection | GitHub repo settings (manual) | Stale required check names | ~1k | 🔲 TODO |
-| W0.3 | Go/no-go | Plan only | Premature `.windsurf/` delete | ~1k | 🔲 TODO |
-| W1.1 | Delete `_deleted/` | `.github/workflows/_deleted/**` | Dead workflows; broken script ref | ~2k | 🔲 TODO |
-| W1.2 | Doc hygiene | `docs/reports/precommit*.md`, `p1_p4_enforcement_breakdown.md` | Stale T7.7 references | ~1k | 🔲 TODO |
-| W2.1 | Author-Gate workflow | `.github/workflows/author-gate-gates.yml` | Triggers only on `.windsurf/` today | ~3k | 🔲 TODO |
-| W2.2 | Plan drift workflow | `.github/workflows/notion-plan-file-drift-nightly.yml` | Wrong plan root after migration | ~3k | 🔲 TODO |
-| W2.3 | E2E schemas | `.github/workflows/apps-e2e-harness-nightly.yml`, schemas | Duplicate schema locations | ~3k | 🔲 TODO |
-| W2.4 | Comment cleanup | `runtime-certification.yml`, `fortknox-nightly.yml`, etc. | Misleading plan paths | ~3k | 🔲 TODO |
-| W3.1 | Drift gate script | `ops_scripts/ci/check_notion_plan_file_drift.py` | Hard-coded `.windsurf/plans` | ~5k | 🔲 TODO |
-| W3.2 | Plan registration gates | `check_plan_registration_freshness.py`, `check_plan_done_notion_status.py`, `check_plan_notion_wave_freshness.py` | Import from `.windsurf/scripts` | ~5k | 🔲 TODO |
-| W3.3 | Contract gates | `ops_scripts/ci/run_contract_gates.py` | §26 `check_windsurf_config_schema.py` still required for mirror | ~4k | 🔲 TODO |
-| W4.1 | Author-Gate artifacts | `.windsurf/schemas/*`, `.windsurf/scripts/*`, `.windsurf/state/**` | Ledger SSOT split | ~10k | 🔲 TODO |
-| W5.1 | Closeout | `docs/reports/cursor/windsurf_gha_cutover_closeout.md` | Proof bundle | ~3k | 🔲 TODO |
+| W0.1 | Dependency matrix | `.github/workflows/*.yml`, `ops_scripts/ci/run_contract_gates.py` | Confusing “Windsurf Action” vs path coupling | ~2k | ✅ DONE |
+| W0.2 | Branch protection | GitHub repo settings (manual) | Stale required check names | ~1k | ✅ DONE |
+| W0.3 | Go/no-go | Plan only | Premature `.windsurf/` delete | ~1k | ✅ DONE |
+| W1.1 | Delete `_deleted/` | `.github/workflows/_deleted/**` | Dead workflows; broken script ref | ~2k | ✅ DONE |
+| W1.2 | Doc hygiene | `docs/reports/precommit*.md`, `p1_p4_enforcement_breakdown.md` | Stale T7.7 references | ~1k | ✅ DONE |
+| W2.1 | Author-Gate workflow | `.github/workflows/author-gate-gates.yml` | Triggers only on `.windsurf/` today | ~3k | ✅ DONE |
+| W2.2 | Plan drift workflow | `.github/workflows/notion-plan-file-drift-nightly.yml` | Wrong plan root after migration | ~3k | ✅ DONE |
+| W2.3 | E2E schemas | `.github/workflows/apps-e2e-harness-nightly.yml`, schemas | Duplicate schema locations | ~3k | ✅ DONE |
+| W2.4 | Comment cleanup | `runtime-certification.yml`, `fortknox-nightly.yml`, etc. | Misleading plan paths | ~3k | ✅ DONE |
+| W3.1 | Drift gate script | `ops_scripts/ci/check_notion_plan_file_drift.py` | Hard-coded `.windsurf/plans` | ~5k | ✅ DONE |
+| W3.2 | Plan registration gates | `check_plan_registration_freshness.py`, `check_plan_done_notion_status.py`, `check_plan_notion_wave_freshness.py` | Import from `.windsurf/scripts` | ~5k | ✅ DONE |
+| W3.3 | Contract gates | `ops_scripts/ci/run_contract_gates.py` | §26 `check_windsurf_config_schema.py` still required for mirror | ~4k | ✅ DONE |
+| W4.1 | Author-Gate artifacts | `.windsurf/schemas/*`, `.windsurf/scripts/*`, `.windsurf/state/**` | Ledger SSOT split | ~10k | ✅ DONE |
+| W5.1 | Closeout | `docs/reports/cursor/windsurf_gha_cutover_closeout.md` | Proof bundle | ~3k | ✅ DONE |
 
 ---
 
@@ -130,25 +144,26 @@ PLAN_CREATED: slug=windsurf-gha-cutover-d9f2a7 path=.cursor/plans/windsurf-gha-c
 
 ## Out Of Scope
 
-- Deleting entire `.windsurf/` directory (deferred; requires CI parity plan per governance closeout)
+- **Deleting entire `.windsurf/` directory** — explicitly **out of scope** for this plan; requires a **separate** CI parity plan (`windsurf-tree-deletion-ci-parity` / phase W1.D1) with proof that hooks, MCP mirror, artifact namespace, and constitutional gates no longer require the mirror tree ([windsurf_deletion_readiness.json](../../artifacts/cursor/windsurf_deletion_readiness.json) currently `deletion_safe: false`)
 - Windsurf IDE runtime / hook execution changes
 - `agentic_core` or `apps_rg` product runtime
 - Weakening gates to greenwash migration
+- Claiming **global governance PASS** while DoD-4 remains PARTIAL (graph_layer external blocker)
 
 ---
 
 ## Wave 0 — Inventory and protections
 
 WAVE_ID: W0  
-WAVE_STATUS: TODO  
-WAVE_COMPLETE: NO  
+WAVE_STATUS: DONE  
+WAVE_COMPLETE: YES  
 AUTHORIZATION_STATUS: NOT_REQUIRED  
 CHECKPOINT: A
 
 **Phases**:
-- **W0.1** — Build matrix from table above; link each row to gate script | ~2k tokens | PHASE_STATUS: TODO
-- **W0.2** — Confirm GitHub branch protection does not require “Windsurf Governance Health Check” | ~1k tokens | PHASE_STATUS: TODO
-- **W0.3** — Operator confirms W1 safe to execute | ~1k tokens | PHASE_STATUS: TODO
+- **W0.1** — Build matrix from table above; link each row to gate script | ~2k tokens | PHASE_STATUS: DONE
+- **W0.2** — Confirm GitHub branch protection does not require “Windsurf Governance Health Check” | ~1k tokens | PHASE_STATUS: DONE
+- **W0.3** — Operator confirms W1 safe to execute | ~1k tokens | PHASE_STATUS: DONE
 
 **Acceptance**:
 - Matrix committed in this plan (above) or `docs/reports/cursor/windsurf_gha_inventory.json`
@@ -171,14 +186,14 @@ gh api repos/:owner/:repo/branches/main/protection 2>/dev/null || true
 ## Wave 1 — Tombstone workflow removal
 
 WAVE_ID: W1  
-WAVE_STATUS: TODO  
-WAVE_COMPLETE: NO  
+WAVE_STATUS: DONE  
+WAVE_COMPLETE: YES  
 AUTHORIZATION_STATUS: NOT_REQUIRED  
 CHECKPOINT: B
 
 **Phases**:
-- **W1.1** — `git rm -r .github/workflows/_deleted/` | ~2k tokens | PHASE_STATUS: TODO
-- **W1.2** — Patch stale docs that cite T7.7 / `check_windsurf_governance.py` | ~1k tokens | PHASE_STATUS: TODO
+- **W1.1** — `git rm -r .github/workflows/_deleted/` | ~2k tokens | PHASE_STATUS: DONE
+- **W1.2** — Patch stale docs that cite T7.7 / `check_windsurf_governance.py` | ~1k tokens | PHASE_STATUS: DONE
 
 **Acceptance**:
 - No YAML under `.github/workflows/_deleted/`
@@ -189,8 +204,8 @@ CHECKPOINT: B
 ## Wave 2 — Live workflow path migration
 
 WAVE_ID: W2  
-WAVE_STATUS: TODO  
-WAVE_COMPLETE: NO  
+WAVE_STATUS: DONE  
+WAVE_COMPLETE: YES  
 AUTHORIZATION_STATUS: AUTHORIZATION_REQUIRED  
 CHECKPOINT: C
 
@@ -211,8 +226,8 @@ CHECKPOINT: C
 ## Wave 3 — CI script path migration
 
 WAVE_ID: W3  
-WAVE_STATUS: TODO  
-WAVE_COMPLETE: NO  
+WAVE_STATUS: DONE  
+WAVE_COMPLETE: YES  
 AUTHORIZATION_STATUS: NOT_REQUIRED  
 CHECKPOINT: D
 
@@ -232,8 +247,8 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/ops_scripts/ci/test
 ## Wave 4 — Author-Gate SSOT relocation
 
 WAVE_ID: W4  
-WAVE_STATUS: TODO  
-WAVE_COMPLETE: NO  
+WAVE_STATUS: DONE  
+WAVE_COMPLETE: YES  
 AUTHORIZATION_STATUS: AUTHORIZATION_REQUIRED  
 CHECKPOINT: E
 
@@ -249,13 +264,13 @@ CHECKPOINT: E
 ## Wave 5 — Closeout
 
 WAVE_ID: W5  
-WAVE_STATUS: TODO  
-WAVE_COMPLETE: NO  
+WAVE_STATUS: DONE  
+WAVE_COMPLETE: YES  
 AUTHORIZATION_STATUS: NOT_REQUIRED  
 CHECKPOINT: F
 
 **Phases**:
-- **W5.1** — Emit `docs/reports/cursor/windsurf_gha_cutover_closeout.md`; set Notion Plans status Completed
+- **W5.1** — Emit `docs/reports/cursor/windsurf_gha_cutover_closeout.md`; set Notion Plans status Completed | PHASE_STATUS: DONE
 
 **Acceptance**:
 - Closeout lists every workflow touched, commands run, and explicit “still requires `.windsurf/`” items
@@ -278,58 +293,92 @@ CHECKPOINT: F
 
 ---
 
-## Deferred scope (captured 2026-05-23)
+## Completed deferred scope (W5.D1–W5.D4)
 
-Disk SSOT: [windsurf_gha_cutover_deferred_scope.md](../../docs/reports/cursor/windsurf_gha_cutover_deferred_scope.md)
+Captured 2026-05-23; implemented per [windsurf_gha_deferred_scope_closeout.md](../../docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md). Historical markers: [windsurf_gha_cutover_deferred_scope.md](../../docs/reports/cursor/windsurf_gha_cutover_deferred_scope.md).
+
+| Phase | Title | Status | Proof |
+|-------|-------|--------|-------|
+| W5.D1 | Notion plan path batch migration | ✅ DONE | [migrate_plan_paths_windsurf_to_cursor.py](../../tools/notion/migrate_plan_paths_windsurf_to_cursor.py) — Plans 403 + Wave/Phase 24 patched; [mark_windsurf_gha_deferred_rows_done.py](../../tools/notion/mark_windsurf_gha_deferred_rows_done.py) |
+| W5.D2 | T7.7 governance health re-home | ✅ DONE | [check_cursor_governance_mirror_health.py](../../ops_scripts/ci/check_cursor_governance_mirror_health.py) wired in contract-gates |
+| W5.D3 | Full `run_contract_gates.py` re-run | ✅ DONE (executed; external FAIL) | Exit **1** — see DoD-4 and [Proof artifacts](#proof-artifacts-receipt-backed) |
+| W5.D4 | Artifact namespace dual-write | ✅ DONE | [_governance_paths.py](../../ops_scripts/ci/_governance_paths.py) `append_governance_artifact_jsonl` |
 
 ```
-DEFERRED_SCOPE: plan=windsurf-gha-cutover-d9f2a7 wave=W5 phase=W5.D1 layer=L_TOOLS fan_in=20 surface=State coverage_gap_pct=45.0 est_tokens=8000 reason=Batch-update Notion Plans and Wave/Phase Plan File paths from .windsurf/plans to .cursor/plans to clear drift gate orphans
+DEFERRED_SCOPE_COMPLETE: plan=windsurf-gha-cutover-d9f2a7 phases=W5.D1,W5.D2,W5.D3,W5.D4
+```
 
+## Remaining out of band (not complete — separate plan)
+
+| Phase | Title | Status | Reason |
+|-------|-------|--------|--------|
+| W1.D1 | Full `.windsurf/` tree deletion | ⏸ OUT_OF_BAND | Separate plan: [windsurf-tree-deletion-ci-parity-b8e4f1](windsurf-tree-deletion-ci-parity-b8e4f1.md) · `deletion_safe: false` — [windsurf_deletion_readiness.json](../../artifacts/cursor/windsurf_deletion_readiness.json) |
+
+Original marker (transferred — do **not** count as cutover-complete):
+
+```
 DEFERRED_SCOPE: plan=NEW:windsurf-tree-deletion-ci-parity wave=W1 phase=W1.D1 layer=L_TOOLS fan_in=60 surface=Security coverage_gap_pct=25.0 est_tokens=25000 reason=Full .windsurf tree deletion after CI parity proof for hooks MCP and artifact namespace
-
-DEFERRED_SCOPE: plan=windsurf-gha-cutover-d9f2a7 wave=W5 phase=W5.D2 layer=L_TOOLS fan_in=8 surface=Observability coverage_gap_pct=15.0 est_tokens=5000 reason=Re-home T7.7 windsurf-governance-health as optional Cursor advisory gate for .windsurf mirror cross-refs
-
-DEFERRED_SCOPE: plan=windsurf-gha-cutover-d9f2a7 wave=W5 phase=W5.D3 layer=L_TOOLS fan_in=12 surface=Execution coverage_gap_pct=12.0 est_tokens=3000 reason=Re-run full run_contract_gates.py after windsurf-gha-cutover file churn for DoD-4 closure
-
-DEFERRED_SCOPE: plan=windsurf-gha-cutover-d9f2a7 wave=W5 phase=W5.D4 layer=L_TOOLS fan_in=15 surface=Observability coverage_gap_pct=20.0 est_tokens=6000 reason=Rename artifacts/windsurf hook log namespace to artifacts/cursor with dual-read shim
 ```
 
-PLAN_COMPLETE: plan=windsurf-gha-cutover-d9f2a7 note="W0-W5 + deferred W5.D1-D4 implemented; closeout docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md"
-
-DEFERRED_SCOPE_COMPLETE: plan=windsurf-gha-cutover-d9f2a7 phases=W5.D1,W1.D1,W5.D2,W5.D3,W5.D4
+PLAN_COMPLETE: plan=windsurf-gha-cutover-d9f2a7 note="W0–W5 + W5.D1–D4 complete; W1.D1 tree deletion out of band; closeout [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) + [windsurf_gha_deferred_scope_closeout.md](../../docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md) + metadata reconcile [windsurf_gha_metadata_reconcile_20260525_receipt.md](../../docs/reports/cursor/windsurf_gha_metadata_reconcile_20260525_receipt.md)"
 
 ---
 
 ## Definition of Done
 
+**Completion semantics:** `PLAN_STATUS: COMPLETED` means **windsurf-gha-cutover migration scope** (W0–W5 + W5.D1–D4) is done. It does **not** mean global `run_contract_gates.py` is green (DoD-4 PARTIAL — external graph_layer blocker).
+
 DoD-1: Tombstone workflows removed  
-- Evidence: `test ! -d .github/workflows/_deleted` after W1  
+- Evidence: `.github/workflows/_deleted` absent — verified 2026-05-25: `_deleted ABSENT: OK`  
+- Receipt: [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) W1  
 - Status: PASS
 
 DoD-2: Plan drift gate uses `.cursor/plans/`  
-- Evidence: `ops_scripts/ci/_governance_paths.py` + `check_notion_plan_file_drift.py`  
+- Evidence: [ops_scripts/ci/_governance_paths.py](../../ops_scripts/ci/_governance_paths.py) + [check_notion_plan_file_drift.py](../../ops_scripts/ci/check_notion_plan_file_drift.py)  
 - Status: PASS
 
 DoD-3: Targeted CI tests pass  
-- Evidence: 77 passed (`test_check_windsurf_config_schema`, plan gates)  
+- Evidence: **77 passed** — `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/ops_scripts/ci/test_check_windsurf_config_schema.py ... -o addopts=` (session 2026-05-23)  
+- Receipt: [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) § Commands run  
 - Status: PASS
 
 DoD-4: Contract gates green for touched files  
-- Evidence: `run_contract_gates.py` executed; exit 1 on pre-existing graph_layer plan violations (not windsurf cutover regressions)  
-- Status: PARTIAL
+- Evidence: `python ops_scripts/ci/run_contract_gates.py` → **exit 1** — `[check_graph_layer_evidence] FAIL — 6 plan(s) missing graph-layer evidence` (unknown `plan_type` on active `.cursor/plans/*.md`; not windsurf path migration regressions)  
+- Log: `artifacts/windsurf/graph_layer_violations.jsonl`  
+- Re-run receipt: 2026-05-25 (same 6-plan blocker set)  
+- Status: **PARTIAL** — `GLOBAL_CONTRACT_GATE_STATUS: PARTIAL_EXTERNAL_BLOCKER`  
+- Required followup: graph_layer / plan-taxonomy remediation or waiver — **not** this plan
 
 DoD-5: Closeout on disk + Notion Plans row Completed  
-- Evidence: [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md)  
+- Evidence: [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) · Notion `36927693-f55c-81eb-a9a1-d9955c280b83`  
 - Status: PASS
+
+## Proof artifacts (receipt-backed)
+
+| Claim | Artifact / command |
+|-------|-------------------|
+| W0 inventory | [docs/reports/cursor/windsurf_gha_inventory.json](../../docs/reports/cursor/windsurf_gha_inventory.json) |
+| W5 cutover closeout | [docs/reports/cursor/windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) |
+| W5.D1–D4 deferred closeout | [docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md](../../docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md) |
+| Metadata reconcile (auditor-safe ledger) | [windsurf_gha_metadata_reconcile_20260525_receipt.md](../../docs/reports/cursor/windsurf_gha_metadata_reconcile_20260525_receipt.md) · [windsurf_gha_metadata_reconcile_20260525_manifest.json](../../docs/reports/cursor/windsurf_gha_metadata_reconcile_20260525_manifest.json) |
+| Notion Plans row | `36927693-f55c-81eb-a9a1-d9955c280b83` |
+| `_deleted/` absent | `Test-Path .github/workflows/_deleted` → false (2026-05-25) |
+| Targeted pytest 77 passed | [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) § Commands run |
+| Contract gate exit 1 + blocker | `python ops_scripts/ci/run_contract_gates.py` → 6 plans: `exec-summary-l2-x1d-input-parity-c4f8e1.md`, `exec-summary-operator-ship-a3f7c2.md`, `exec-summary-targeting-ingress-u0-b8e4f1.md`, `exec-summary-targeting-wiring-closeout-b9e2a4.md`, `exec-summary-x1d-dimension-verdicts-e8f4a2.md`, `l5-pa-orchestrator-ref-forward-c7e4a1.md` |
+| W1.D1 deletion assessed (not executed) | [artifacts/cursor/windsurf_deletion_readiness.json](../../artifacts/cursor/windsurf_deletion_readiness.json) |
 
 ### Verification vs Deferral
 
-| Item | Verify in this plan | Deferred |
-|------|---------------------|----------|
-| Delete `_deleted/` GHA | W1 | — |
-| Live workflow path migration | W2–W4 | — |
-| Full `.windsurf/` tree delete | — | Separate plan |
-| Re-home governance health check | — | GAP-3 optional |
+| Item | Verify in this plan | Deferred / out of band |
+|------|---------------------|------------------------|
+| Delete `_deleted/` GHA | W1 ✅ | — |
+| Live workflow path migration | W2–W4 ✅ | — |
+| Notion path batch (W5.D1) | W5.D1 ✅ | — |
+| Mirror health gate (W5.D2) | W5.D2 ✅ | — |
+| Contract-gates re-run (W5.D3) | Executed ✅; global green ❌ (DoD-4 PARTIAL) | graph_layer followup |
+| Artifact dual-write (W5.D4) | W5.D4 ✅ | full namespace rename later |
+| Full `.windsurf/` tree delete | — | **Separate plan** (W1.D1) — not `DEFERRED_SCOPE_COMPLETE` |
+| Re-home governance health (optional) | W5.D2 superseded GAP-3 | — |
 
 ---
 
@@ -346,9 +395,12 @@ SCOPE_EXPANSION: plan=windsurf-gha-cutover-d9f2a7 reason="<summary>" added="<wav
 ## References
 
 - Prior analysis: Windsurf GHA risk Q&A (2026-05-23 session)
-- [governance_two_tier_closeout.md](../../docs/reports/cursor/governance_two_tier_closeout.md) — `.windsurf/` not deleted
+- [governance_two_tier_closeout.md](../../docs/reports/cursor/governance_two_tier_closeout.md) — `.windsurf/` **not deleted**; mirror frozen until separate CI parity plan
+- [windsurf_gha_inventory.json](../../docs/reports/cursor/windsurf_gha_inventory.json) · [windsurf_gha_cutover_closeout.md](../../docs/reports/cursor/windsurf_gha_cutover_closeout.md) · [windsurf_gha_deferred_scope_closeout.md](../../docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md)
 - [pre-commit-scope-migration-20260408.md](../../docs/reports/plans/pre-commit-scope-migration-20260408.md) — T7.7 removal
 - Tombstone workflow removed W1 (was `_deleted/windsurf-governance-health.yml`)
+- Full `.windsurf/` tree deletion: **out of scope** — separate plan `windsurf-tree-deletion-ci-parity` (phase W1.D1)
+
 ---
 
 ## ADG_GRAPH_LAYER_EVIDENCE

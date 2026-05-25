@@ -11,9 +11,18 @@ from apps_rg.runtime.targeting_context_authority import (
 )
 from apps_rg.runtime.sections.executive_summary_targeting_publish import (
     audit_judge_packet_targeting_digests,
+    instructional_surface_drift_risk,
+    judge_packet_for_parity_evaluation,
     parity_allows_judge_regen,
     resolve_judge_packet_for_parity,
 )
+
+
+def test_judge_packet_for_parity_falls_back_to_generation_material() -> None:
+    gen = GenerationMaterialContext("jd-live", "brief-live", material_targeting_digest("jd-live", "brief-live"))
+    seeded = judge_packet_for_parity_evaluation({}, generation_material=gen)
+    assert seeded["targeting_context"]["jd_text"] == "jd-live"
+    assert seeded["targeting_context"]["briefing"] == "brief-live"
 
 
 def test_resolve_judge_packet_prefers_post_x2(tmp_path: Path) -> None:
@@ -35,6 +44,32 @@ def test_parity_allows_judge_regen() -> None:
     bad, reason = parity_allows_judge_regen({"targeting_context_parity": {"parity_match": False}})
     assert bad is False
     assert "false" in reason
+
+
+def test_instructional_trim_blocks_regen_despite_parity_match() -> None:
+    receipt = {
+        "trim_applied": True,
+        "trimmed_components": [{"component": "jd_text_prose"}],
+    }
+    assert instructional_surface_drift_risk(receipt) is True
+    ok, _ = parity_allows_judge_regen(
+        {"targeting_context_parity": {"parity_match": True}},
+        token_budget_receipt=receipt,
+    )
+    assert ok is False
+
+
+def test_c0_optional_fact_trim_does_not_block_regen() -> None:
+    receipt = {
+        "trim_applied": True,
+        "trimmed_components": [{"component": "c0_optional_fact_line"}],
+    }
+    assert instructional_surface_drift_risk(receipt) is False
+    ok, _ = parity_allows_judge_regen(
+        {"targeting_context_parity": {"parity_match": True}},
+        token_budget_receipt=receipt,
+    )
+    assert ok is True
 
 
 def test_audit_judge_packets_match_generation(tmp_path: Path) -> None:

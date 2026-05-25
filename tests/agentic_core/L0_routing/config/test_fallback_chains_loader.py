@@ -6,7 +6,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
 
-from agentic_core.L0_routing.config.fallback_chains_loader import (
+from agentic_core.L0_routing._archive.v12.config.fallback_chains_loader import (
     get_fallback_chain,
     get_slo_default,
     reset_cache,
@@ -37,19 +37,22 @@ class TestGetFallbackChain:
             }
         }
 
-        with patch("builtins.open", mock_open()):
-            with patch("yaml.safe_load", return_value=yaml_data):
-                chain = get_fallback_chain("R3_GROUNDED")
+        with patch(
+            "agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml",
+            return_value=yaml_data,
+        ):
+            reset_cache()
+            chain = get_fallback_chain("R3_GROUNDED")
 
-                assert len(chain) == 2
-                assert chain[0].route_id == RouteId.R1A
-                assert chain[0].cost_tier == CostTier.TIER_S
-                assert chain[1].route_id == RouteId.R5_FALLBACK
-                assert chain[1].cost_tier == CostTier.TIER_S
+            assert len(chain) == 2
+            assert chain[0].route_id == RouteId.R1A
+            assert chain[0].cost_tier == CostTier.TIER_S
+            assert chain[1].route_id == RouteId.R5_FALLBACK
+            assert chain[1].cost_tier == CostTier.TIER_S
 
     def test_get_fallback_chain_hardcoded_fallback(self):
         """Test hardcoded fallback when YAML is unavailable."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             chain = get_fallback_chain("R3_GROUNDED")
 
             # Should return hardcoded fallback
@@ -67,10 +70,13 @@ class TestGetFallbackChain:
             }
         }
 
-        with patch("builtins.open", mock_open()):
-            with patch("yaml.safe_load", return_value=yaml_data):
-                with pytest.raises(V12RouteContractError):
-                    get_fallback_chain("R3_GROUNDED")
+        with patch(
+            "agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml",
+            return_value=yaml_data,
+        ):
+            reset_cache()
+            with pytest.raises(V12RouteContractError):
+                get_fallback_chain("R3_GROUNDED")
 
     def test_get_fallback_chain_invalid_route_id(self):
         """Test handling of invalid route_id in YAML."""
@@ -82,11 +88,13 @@ class TestGetFallbackChain:
             }
         }
 
-        with patch("builtins.open", mock_open()):
-            with patch("yaml.safe_load", return_value=yaml_data):
-                # Should handle gracefully or raise appropriate error
-                with pytest.raises(V12RouteContractError):
-                    get_fallback_chain("R3_GROUNDED")
+        with patch(
+            "agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml",
+            return_value=yaml_data,
+        ):
+            reset_cache()
+            with pytest.raises(V12RouteContractError):
+                get_fallback_chain("R3_GROUNDED")
 
     def test_get_fallback_chain_empty_chain(self):
         """Test handling of empty fallback chain."""
@@ -96,26 +104,29 @@ class TestGetFallbackChain:
             }
         }
 
-        with patch("builtins.open", mock_open()):
-            with patch("yaml.safe_load", return_value=yaml_data):
-                chain = get_fallback_chain("R3_GROUNDED")
-                assert chain == ()
+        with patch(
+            "agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml",
+            return_value=yaml_data,
+        ):
+            reset_cache()
+            chain = get_fallback_chain("R3_GROUNDED")
+            assert chain == ()
 
     def test_get_fallback_chain_route_id_as_string(self):
         """Test that route_id can be passed as string."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             chain = get_fallback_chain("R3_GROUNDED")
             assert isinstance(chain, tuple)
 
     def test_get_fallback_chain_route_id_as_enum(self):
         """Test that route_id can be passed as RouteId enum."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             chain = get_fallback_chain(RouteId.R3_GROUNDED)
             assert isinstance(chain, tuple)
 
     def test_get_fallback_chain_terminal_routes(self):
         """Test that terminal routes return empty chain."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             assert get_fallback_chain("R1A") == ()
             assert get_fallback_chain("R5_FALLBACK") == ()
 
@@ -130,10 +141,13 @@ class TestGetFallbackChain:
             }
         }
 
-        with patch("builtins.open", mock_open()):
-            with patch("yaml.safe_load", return_value=yaml_data):
-                with pytest.raises(V12RouteContractError, match="duplicate"):
-                    get_fallback_chain("R3_GROUNDED")
+        with patch(
+            "agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml",
+            return_value=yaml_data,
+        ):
+            reset_cache()
+            with pytest.raises(V12RouteContractError, match="duplicate"):
+                get_fallback_chain("R3_GROUNDED")
 
     def test_get_fallback_chain_self_reference(self):
         """Test that self-referencing chains raise error."""
@@ -145,10 +159,13 @@ class TestGetFallbackChain:
             }
         }
 
-        with patch("builtins.open", mock_open()):
-            with patch("yaml.safe_load", return_value=yaml_data):
-                with pytest.raises(V12RouteContractError, match="cycle"):
-                    get_fallback_chain("R3_GROUNDED")
+        with patch(
+            "agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml",
+            return_value=yaml_data,
+        ):
+            reset_cache()
+            with pytest.raises(V12RouteContractError, match="cycle"):
+                get_fallback_chain("R3_GROUNDED")
 
 
 class TestGetSloDefault:
@@ -198,7 +215,7 @@ class TestGetSloDefault:
 
     def test_get_slo_default_hardcoded_fallback(self):
         """Test hardcoded SLO defaults when YAML is unavailable."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             slo = get_slo_default("R1A", None)
 
             # Should return hardcoded defaults
@@ -207,31 +224,31 @@ class TestGetSloDefault:
 
     def test_get_slo_default_missing_route(self):
         """Test that missing route raises error."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             with pytest.raises(V12RouteContractError, match="no SLO default"):
                 get_slo_default("INVALID_ROUTE", None)
 
     def test_get_slo_default_route_id_as_string(self):
         """Test that route_id can be passed as string."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             slo = get_slo_default("R1A", None)
             assert isinstance(slo, RouteSLO)
 
     def test_get_slo_default_route_id_as_enum(self):
         """Test that route_id can be passed as RouteId enum."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             slo = get_slo_default(RouteId.R1A, None)
             assert isinstance(slo, RouteSLO)
 
     def test_get_slo_default_cost_tier_as_string(self):
         """Test that cost_tier can be passed as string."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             slo = get_slo_default("R3_GROUNDED", "TIER_S")
             assert isinstance(slo, RouteSLO)
 
     def test_get_slo_default_cost_tier_as_enum(self):
         """Test that cost_tier can be passed as CostTier enum."""
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             slo = get_slo_default("R3_GROUNDED", CostTier.TIER_S)
             assert isinstance(slo, RouteSLO)
 
@@ -269,14 +286,14 @@ class TestResetCache:
     def test_reset_cache(self):
         """Test that reset_cache clears the YAML cache."""
         # Load once to populate cache
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             get_fallback_chain("R3_GROUNDED")
 
         # Reset cache
         reset_cache()
 
         # Should work without error
-        with patch("agentic_core.L0_routing.config.fallback_chains_loader._load_yaml", return_value={}):
+        with patch("agentic_core.L0_routing._archive.v12.config.fallback_chains_loader._load_yaml", return_value={}):
             get_fallback_chain("R3_GROUNDED")
 
 

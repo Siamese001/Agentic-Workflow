@@ -46,9 +46,16 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1  
-PLAN_STATUS: IN_PROGRESS  
-CURRENT_WAVE: W3  
-LAST_COMPLETED_WAVE: W3C (implementation slices 3A–3C documented)  
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W3
+LAST_COMPLETED_WAVE: W3C
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+PLAN_COMPLETE: plan=l5-fanin-architecture-reduction-e7c4a2 note="W3 implementation + ratchet PASS adg_indexed_05242026_2005.sqlite"
+CLOSEOUT_RECEIPT: docs/reports/plans/active_backlog_closeout_receipt_20260525.md
+RATCHET_PROOF: ops_scripts/ci/check_l5_hotspot_fanin_ratchet.py exit=0 snapshot=adg_indexed_05242026_2005.sqlite
 LAST_UPDATED: 2026-05-24
 NOTION_STATUS: In Progress
 NOTION_PAGE_ID: 36227693-f55c-81fc-a35b-dea4f39b11d8

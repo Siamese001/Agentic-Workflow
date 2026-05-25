@@ -1,7 +1,9 @@
+> **Archived 2026-05-25:** Current repo state sufficient. D-02/D-05 not required; `ADG_REDIS_URL` SSOT + three-bucket `v_runtime_proof` cover needs. Notion Archived.
+
 # ADG Config SSOT — Redis & OTel Deferred Scope
 
 **Slug:** `adg-config-ssot-redis-otel-deferred-f7a3d2`
-**Status:** Not Started
+**Status:** Archived
 **Parent Plan:** `adg-config-ssot-uber-deferred-e8f2a3` (COMPLETED 2026-05-06)
 **Tier:** T3 (cross-layer, config-discipline)
 **Created:** 2026-05-06

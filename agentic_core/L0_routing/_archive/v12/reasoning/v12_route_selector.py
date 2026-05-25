@@ -26,14 +26,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from agentic_core.L0_routing.config.fallback_chains_loader import (
+from agentic_core.L0_routing._archive.v12.config.fallback_chains_loader import (
     get_fallback_chain,
     get_slo_default,
 )
 from agentic_core.L0_routing.config.routing_calibration import (
     get_v12_threshold,
 )
-from agentic_core.L0_routing.reasoning.cold_start_safeguard import (
+from agentic_core.L0_routing._archive.v12.reasoning.cold_start_safeguard import (
     maybe_override_for_cold_start,
 )
 from agentic_core.L0_routing.types.route_contract_v12_extensions import (

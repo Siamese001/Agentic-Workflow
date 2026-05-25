@@ -1,7 +1,7 @@
 # Plan: Author-Gate Pipeline Hardening — Deferred Scope
 
 **Slug:** `author-gate-pipeline-hardening-deferred-b3e1d7`
-**Status:** Waiting — DS-5 blocked on ≥14 days empirical data (earliest ~2026-05-23); only 1 violation log entry as of 2026-05-09
+**Status:** Waiting — DS-5 only (DS-1–DS-4 DONE 2026-05-24). Blocked on ≥14d empirical violation rows in `artifacts/cursor/author_gate_pipeline_violations.jsonl` + `artifacts/windsurf/author_gate_pipeline_violations.jsonl` (still sparse as of 2026-05-24).
 **Tier:** T2 — multi-file, single concern family
 **Created:** 2026-05-09
 **Parent plan:** `author-gate-ui-renderer-hardening-a7f3c2` (Completed 2026-05-09)

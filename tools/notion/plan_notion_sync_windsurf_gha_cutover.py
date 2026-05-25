@@ -78,9 +78,10 @@ def _patch_completed(page_id: str) -> bool:
     if not token:
         return False
     summary = (
-        "COMPLETED (2026-05-23): Windsurf GHA cutover — removed _deleted/ workflows; "
-        "migrated plan gates and author-gate-gates.yml to .cursor/ SSOT. "
-        "Closeout: docs/reports/cursor/windsurf_gha_cutover_closeout.md"
+        "COMPLETED (migration scope): Windsurf GHA cutover W0–W5 + W5.D1–D4. "
+        "Metadata reconcile 2026-05-25 — phase ledger DONE; DoD-4 PARTIAL (graph_layer external). "
+        "W1.D1 tree deletion OUT_OF_BAND. "
+        "Receipt: docs/reports/cursor/windsurf_gha_metadata_reconcile_20260525_receipt.md"
     )
     payload = {
         "properties": {

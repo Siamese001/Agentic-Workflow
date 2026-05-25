@@ -10,7 +10,7 @@ import importlib
 import pytest
 
 
-MODULE_PATH = "agentic_core.L0_routing.reasoning.v12_route_selector"
+MODULE_PATH = "agentic_core.L0_routing._archive.v12.reasoning.v12_route_selector"
 
 
 def test_module_imports():

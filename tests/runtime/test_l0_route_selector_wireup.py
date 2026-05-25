@@ -11,40 +11,66 @@ proof-OTEL emission while keeping the contract output byte-identical.
 
 from __future__ import annotations
 
-from dataclasses import is_dataclass
-
 import pytest
 
 from agentic_core.L0_routing.reasoning import v15_route_selector as v15
+from agentic_core.L0_routing.types.route_contract_v15 import (
+    AuthorityScope,
+    CapabilityClass,
+    FreshnessClassV15,
+    SandboxClass,
+    SideEffectClass,
+    SupportTargetV15,
+)
 from agentic_core.runtime.prove_requirements.otel_contract import validate_trace
 from agentic_core.runtime.prove_requirements.otel_emitter import RuntimeSpanEmitter
 from agentic_core.runtime.prove_requirements.replay_engine import replay_digest
 
 
-def _signals_grounded() -> v15.RouteSignalsV15:
-    """Construct a minimal RouteSignalsV15 that selects a real route.
-
-    We use the dataclass's defaults plus the strongest "deterministic"
-    flags so the test does not depend on the harder branches of the
-    selector. The selector will produce SOME route -- which one is
-    determined by the actual signals -- and that's all this test cares
-    about for the wire-up acceptance check.
-    """
-    cls = v15.RouteSignalsV15
-    if not is_dataclass(cls):
-        pytest.skip("RouteSignalsV15 is not a dataclass; cannot synthesize")
-    # Build via default-construction; inspect.fields() to populate.
-    try:
-        return cls()  # type: ignore[call-arg]
-    except TypeError:
-        pytest.skip("RouteSignalsV15 has required fields; W11 test needs richer fixture")
-        # unreachable, but keeps the type checker happy
-        return cls.__new__(cls)
+@pytest.fixture(scope="module")
+def authority() -> AuthorityScope:
+    return AuthorityScope(
+        tenant_scope="tenant-a",
+        acl_scope=("read",),
+        region_scope="us-east-1",
+        capability_class=CapabilityClass.READ_ONLY,
+        side_effect_class=SideEffectClass.PURE,
+        sandbox_class=SandboxClass.NO_SANDBOX,
+    )
 
 
 @pytest.fixture(scope="module")
-def signals() -> v15.RouteSignalsV15:
-    return _signals_grounded()
+def signals(authority: AuthorityScope) -> v15.RouteSignalsV15:
+    return v15.RouteSignalsV15(
+        ingress_ok=True,
+        authority=authority,
+        policy_hash="policy-1",
+        blueprint_hash="bp-1",
+        snapshot_id="snap-1",
+        trace_root="trace-1",
+        route_span_id="span-1",
+        replay_key="replay-1",
+        route_telemetry_event_id="evt-1",
+        classifier_confidence=0.80,
+        exact_cache_hit=False,
+        semantic_cache_hit=False,
+        high_risk_action=False,
+        low_risk_reversible_action=False,
+        action_args_need_grounding=False,
+        grounding_required=False,
+        support_target=SupportTargetV15.NONE,
+        multi_step_required=False,
+        cross_step_contract_change=False,
+        parallel_safe_shards=False,
+        iterative_refinement_needed=False,
+        needs_hitl_pause=False,
+        freshness_class=FreshnessClassV15.SLOW_CHANGING,
+        underspecified=False,
+        unsafe=False,
+        hitl_pause_points=(),
+        workflow_blueprint_id=None,
+        base_contract_id="contract-1",
+    )
 
 
 # ---------------------------------------------------------------------------

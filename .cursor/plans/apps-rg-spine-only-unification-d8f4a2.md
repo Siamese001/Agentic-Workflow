@@ -23,11 +23,19 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W5
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W6
 LAST_COMPLETED_WAVE: W6
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_CLASS: PHASE1_W1_W6_SINGLE_SPINE_DONE
+PLAN_COMPLETE: plan=apps-rg-spine-only-unification-d8f4a2 note="W1-W4+W6 done; single-spine gate 0 findings; section E2E"
+DEFERRED_SCOPE: W5_L3_assembly_package_in_spine_entry,W7_agentic_core_migration
+CLOSEOUT_RECEIPT: docs/reports/plans/active_backlog_closeout_receipt_20260525.md
+INTERIM_WHOLE_RUN: run_apps_rg_spine scope=full delegates to run_integrated_single_action_spine R4
 NOTION_PLANS_ROW: page_id=36927693-f55c-8190-b30b-de1f6534e2a7
-LAST_UPDATED: 2026-05-23
 PLAN_CREATED: slug=apps-rg-spine-only-unification-d8f4a2 path=.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md status=Not Started
 NOTION_PLANS_ROW: page_id=36927693-f55c-8190-b30b-de1f6534e2a7 url=https://www.notion.so/36927693f55c8190b30bde1f6534e2a7
 NOTION_STATUS: In Progress

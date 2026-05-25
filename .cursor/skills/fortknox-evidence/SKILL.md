@@ -11,6 +11,8 @@ metadata:
 In-house certification-evidence discipline. No upstream MCP surface — the integrity comes from deterministic scripts, schemas, and hashes.
 
 **Parent rule:** `.cursor/rules/fortknox-certification-discipline.md`
+**Dual-track SSOT:** `docs/architecture/adr/ADR-103-fortknox-runtime-dual-track.md` (certification vs runtime proof)
+**Runtime template:** `docs/reports/runtime_cert/README.md`
 **Constitutional tie-in:** §32
 **Author-Gate trigger:** `certification_claim` (author-gate-decision-points.md §1.11)
 

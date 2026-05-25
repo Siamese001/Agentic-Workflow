@@ -37,10 +37,12 @@ def synthesis_regen_max_attempts() -> int:
     return max(1, min(n, SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP))
 
 
-# Post-X1D same-authority regen when X2 passed but judge quorum/median signals synthesis gap.
-# Mission-critical section: default 3 Qwen cycles (re-judge soft fails after each); cap 5.
-JUDGE_REGEN_MAX_ATTEMPTS = 3
-JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 5
+# Post-X1D same-authority regen when X2 passed but dimension/holistic signals synthesis gap.
+# Default 1 Qwen cycle; post-regen rescores soft-failed judges only (not full 3-judge panel).
+JUDGE_REGEN_MAX_ATTEMPTS = 1
+JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
+POST_REGEN_JUDGE_RESCORE_SOFT_ONLY = "soft_failed_only"
+POST_REGEN_JUDGE_RESCORE_FULL_PANEL = "full_panel"
 # Opt-in via APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=1 after X2 pass (bounded, same-authority).
 RELEASE_JUDGE_REGENERATION_ENABLED = True
 
@@ -60,6 +62,14 @@ def judge_regen_max_attempts() -> int:
     except ValueError:
         n = JUDGE_REGEN_MAX_ATTEMPTS
     return max(1, min(n, JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP))
+
+
+def post_regen_judge_rescore_mode() -> str:
+    """After judge-regen Qwen rewrite: rescore only soft fails (cheap) vs full panel (expensive)."""
+    raw = str(os.environ.get("APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE", "") or "").strip().lower()
+    if raw in ("full_panel", "full", "all", "refresh_all"):
+        return POST_REGEN_JUDGE_RESCORE_FULL_PANEL
+    return POST_REGEN_JUDGE_RESCORE_SOFT_ONLY
 
 
 def judge_regeneration_enabled() -> bool:
@@ -90,3 +100,28 @@ RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = True
 def post_x2_judge_refresh_enabled() -> bool:
     raw = os.environ.get("APPS_RG_EXEC_SUMMARY_X1D_POST_X2_REFRESH", "1").strip().lower()
     return RELEASE_POST_X2_JUDGE_REFRESH_ENABLED and raw not in ("0", "false", "no", "off")
+
+
+__all__ = [
+    "JUDGE_REGEN_MAX_ATTEMPTS",
+    "JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP",
+    "POST_REGEN_JUDGE_RESCORE_FULL_PANEL",
+    "POST_REGEN_JUDGE_RESCORE_SOFT_ONLY",
+    "RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED",
+    "RELEASE_JUDGE_REGENERATION_ENABLED",
+    "RELEASE_POST_X2_JUDGE_REFRESH_ENABLED",
+    "RELEASE_SRFS_DENSITY_MICRO_EXPANSION_ENABLED",
+    "RELEASE_SRFS_EMERGENCY_FINALIZER_ENABLED",
+    "RELEASE_SRFS_JUDGE_SAFE_REPAIR_ENABLED",
+    "RELEASE_SRFS_LLM_REPAIR_ENABLED",
+    "RELEASE_SYNTHESIS_REGENERATION_ENABLED",
+    "SYNTHESIS_REGEN_MAX_ATTEMPTS",
+    "SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP",
+    "judge_regen_max_attempts",
+    "judge_regeneration_enabled",
+    "judge_safe_prefilter_enabled",
+    "post_regen_judge_rescore_mode",
+    "post_x2_judge_refresh_enabled",
+    "synthesis_regen_max_attempts",
+    "synthesis_regeneration_enabled",
+]

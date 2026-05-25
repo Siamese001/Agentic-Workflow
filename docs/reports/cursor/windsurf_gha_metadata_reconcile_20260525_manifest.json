@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-05-25",
+  "PLAN_ID": "windsurf-gha-cutover-d9f2a7",
+  "RECEIPT": "docs/reports/cursor/windsurf_gha_metadata_reconcile_20260525_receipt.md",
+  "PLAN_FILE": ".cursor/plans/windsurf-gha-cutover-d9f2a7.md",
+  "NOTION_PAGE_ID": "36927693-f55c-81eb-a9a1-d9955c280b83",
+  "NOTION_RECEIPT_PAGE_ID": "36b27693-f55c-815a-bbf8-f3e793e0f295",
+  "NOTION_RECEIPT_PAGE_URL": "https://www.notion.so/36b27693f55c815abbf8f3e793e0f295",
+  "MIGRATION_SCOPE_STATUS": "COMPLETE",
+  "GLOBAL_CONTRACT_GATE_STATUS": "PARTIAL_EXTERNAL_BLOCKER",
+  "GOVERNANCE_CERTIFICATION_STATUS": "PARTIAL",
+  "PLAN_LEDGER_INTEGRITY": "PASS",
+  "LAST_METADATA_RECONCILE": "2026-05-25",
+  "PHASES_RECONCILED": [
+    "W0.1",
+    "W0.2",
+    "W0.3",
+    "W1.1",
+    "W1.2",
+    "W2.1",
+    "W2.2",
+    "W2.3",
+    "W2.4",
+    "W3.1",
+    "W3.2",
+    "W3.3",
+    "W4.1",
+    "W5.1"
+  ],
+  "DEFERRED_SCOPE_COMPLETE": ["W5.D1", "W5.D2", "W5.D3", "W5.D4"],
+  "OUT_OF_BAND": ["W1.D1"],
+  "PROOF_ARTIFACTS": {
+    "inventory": "docs/reports/cursor/windsurf_gha_inventory.json",
+    "cutover_closeout": "docs/reports/cursor/windsurf_gha_cutover_closeout.md",
+    "deferred_closeout": "docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md",
+    "deletion_readiness": "artifacts/cursor/windsurf_deletion_readiness.json"
+  },
+  "DOD": {
+    "DoD-1": "PASS",
+    "DoD-2": "PASS",
+    "DoD-3": "PASS",
+    "DoD-4": "PARTIAL",
+    "DoD-5": "PASS"
+  },
+  "CONTRACT_GATE_BLOCKER": {
+    "gate": "check_graph_layer_evidence",
+    "exit_code": 1,
+    "plan_count": 6,
+    "plans": [
+      ".cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md",
+      ".cursor/plans/exec-summary-operator-ship-a3f7c2.md",
+      ".cursor/plans/exec-summary-targeting-ingress-u0-b8e4f1.md",
+      ".cursor/plans/exec-summary-targeting-wiring-closeout-b9e2a4.md",
+      ".cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md",
+      ".cursor/plans/l5-pa-orchestrator-ref-forward-c7e4a1.md"
+    ]
+  },
+  "DELETED_WORKFLOWS_DIR_ABSENT": true
+}

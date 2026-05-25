@@ -9,7 +9,7 @@
 | Phase | Item | Result | Evidence |
 |-------|------|--------|----------|
 | W5.D1 | Notion plan path migration | **DONE** | [migrate_plan_paths_windsurf_to_cursor.py](../../tools/notion/migrate_plan_paths_windsurf_to_cursor.py) — Plans 403 patched, Wave/Phase 24 patched |
-| W1.D1 | Full `.windsurf/` deletion | **DONE (assessed)** | Deletion **not safe**; [check_windsurf_deletion_readiness.py](../../ops_scripts/ci/check_windsurf_deletion_readiness.py) + [windsurf_deletion_readiness.json](../../artifacts/cursor/windsurf_deletion_readiness.json) |
+| W1.D1 | Full `.windsurf/` deletion | **OUT_OF_BAND (assessed only)** | Deletion **not executed**; `deletion_safe: false` — [check_windsurf_deletion_readiness.py](../../ops_scripts/ci/check_windsurf_deletion_readiness.py) + [windsurf_deletion_readiness.json](../../artifacts/cursor/windsurf_deletion_readiness.json); separate plan `windsurf-tree-deletion-ci-parity` |
 | W5.D2 | T7.7 governance health re-home | **DONE** | [check_cursor_governance_mirror_health.py](../../ops_scripts/ci/check_cursor_governance_mirror_health.py) wired in contract-gates |
 | W5.D3 | Full contract-gates | **DONE (ran)** | `run_contract_gates.py` exit 1 — graph-layer plan violations (pre-existing active plans) |
 | W5.D4 | Artifact namespace dual-write | **DONE** | [_governance_paths.py](../../ops_scripts/ci/_governance_paths.py) `append_governance_artifact_jsonl` |

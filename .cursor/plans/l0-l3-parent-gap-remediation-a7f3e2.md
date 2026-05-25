@@ -21,11 +21,21 @@ Close gaps between repo runtime and parent SSOT [03_L0_Route_Decision_Switching_
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
-LAST_UPDATED: 2026-05-23
-PLAN_CREATED: slug=l0-l3-parent-gap-remediation-a7f3e2 path=.cursor/plans/l0-l3-parent-gap-remediation-a7f3e2.md status=Not Started
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W3
+LAST_COMPLETED_WAVE: W3
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_RECEIPT: docs/reports/plans/waiting_plans_execution_receipt_20260525.md
+DEFERRED_SCOPE: W4 OTEL/replay integrated proof
+PROOF_GATE: ops_scripts/ci/check_l0_parent_invariants.py
+W0_SSOT: docs/reports/l0_l3/execution_form_ssot_decision_20260525.md
+NOTION_PAGE_ID: 36927693-f55c-812e-9828-ccb5031897fd
+NOTION_RECONCILED: 2026-05-25
+TRIPLECHECK: valid backlog — l3_binding + §7 validators not shipped
+WAITING_FOR: Author-Gate for touches_agentic_core; W0 execution_form SSOT
+PLAN_CREATED: slug=l0-l3-parent-gap-remediation-a7f3e2 path=.cursor/plans/l0-l3-parent-gap-remediation-a7f3e2.md status=Waiting
 
 ---
 

@@ -69,6 +69,16 @@ def main() -> int:
     if ok:
         errors.append("credential gate must fail named cert labels in closing band")
 
+    tp_src = (
+        REPO_ROOT / "apps_rg/runtime/sections/executive_summary_targeting_publish.py"
+    ).read_text(encoding="utf-8")
+    if "instructional_surface_drift_risk" not in tp_src:
+        errors.append("targeting_publish must define instructional_surface_drift_risk")
+    if "token_budget_receipt=token_budget_receipt" not in (
+        REPO_ROOT / "apps_rg/runtime/sections/executive_summary_lane.py"
+    ).read_text(encoding="utf-8"):
+        errors.append("lane must pass token_budget_receipt into parity_allows_judge_regen")
+
     if errors:
         for err in errors:
             print(f"FAIL: {err}", file=sys.stderr)

@@ -21,10 +21,17 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: D3_PARTIAL
-LAST_UPDATED: 2026-05-19
-NOTION_STATUS: In Progress
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: C
+LAST_COMPLETED_WAVE: C
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_CLASS: PHASES_ABC_DONE
+PLAN_COMPLETE: plan=apps-rg-legacy-dependency-burndown-b7e4a2 note="competencies contract; PA parity; Rg migration"
+DEFERRED_SCOPE: D3_stub_repair_hardening,Phase_E_archive_when_fanin_zero
+CLOSEOUT_RECEIPT: docs/reports/plans/active_backlog_closeout_receipt_20260525.md
 NOTION_PAGE_ID: 36527693-f55c-8178-8c13-f1c889dccaf1
 NOTION_RECONCILED: 2026-05-24
 ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md

@@ -1,0 +1,41 @@
+# Phase-1 section lane DAG — apps_rg whole-run parallel orchestration SSOT
+# Plan: apps-rg-parallel-section-orchestration-f2a8c4 (W0.1)
+schema_version: resume_sections_dag_v1
+lanes:
+  - id: headline
+    weight: light
+    wave: 1
+  - id: executive_summary
+    weight: heavy
+    wave: 0
+  - id: unify_bullets
+    weight: light
+    wave: 1
+  - id: unify_narrative
+    weight: light
+    wave: 2
+    depends_on:
+      - unify_bullets
+  - id: ibm_bullets
+    weight: light
+    wave: 1
+  - id: ibm_narrative
+    weight: light
+    wave: 1
+  - id: competencies
+    weight: light
+    wave: 1
+waves:
+  - id: 0
+    description: heavy lane solo (executive_summary)
+    lanes: [executive_summary]
+    max_parallel: 1
+  - id: 1
+    description: parallel-eligible light lanes (+ optional headline)
+    lanes: [headline, unify_bullets, ibm_bullets, ibm_narrative, competencies]
+    max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
+    default_max_parallel: 2
+  - id: 2
+    description: serial downstream narrative
+    lanes: [unify_narrative]
+    max_parallel: 1

@@ -5,8 +5,8 @@
   "strict_mode": true,
   "rollup_mode": true,
   "rollup_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_enforcement_report_test0001_0000.json",
-  "timestamp": "2026-05-24T13:16:33.536966+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05242026_0842.sqlite",
+  "timestamp": "2026-05-25T00:09:00.691670+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05242026_2006.sqlite",
   "blockers": [
     "manifest:static.no_null_triplet:view_rule_fail"
   ],

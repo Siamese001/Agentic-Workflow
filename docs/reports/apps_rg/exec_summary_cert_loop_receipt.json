@@ -1,0 +1,37 @@
+{
+  "final": {
+    "run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\executive_summary\\real\\exec_summary_20260525_014608",
+    "operator_status": "DRAFT_READY",
+    "certified": false,
+    "draft_ready": true,
+    "process_exit_code": 0,
+    "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL",
+    "x3_pass": false,
+    "pass_count": 1,
+    "judges": [
+      {
+        "provider": "gemini_pro",
+        "score": 3.0,
+        "pass": false,
+        "inferred_dims": false
+      },
+      {
+        "provider": "openai_chatgpt",
+        "score": 4.3,
+        "pass": true,
+        "inferred_dims": false
+      },
+      {
+        "provider": "anthropic_claude",
+        "score": 3.4,
+        "pass": false,
+        "inferred_dims": false
+      }
+    ],
+    "attempt": 8,
+    "cli_exit_code": 0,
+    "elapsed_s": 358.6
+  },
+  "attempts": 8,
+  "certified": false
+}

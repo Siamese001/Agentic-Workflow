@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-075",
   "selected_at_utc": "2026-04-30T15:05:41.353556+00:00",
-  "evidence_bound_at_utc": "2026-05-15T18:53:36.846373+00:00",
+  "evidence_bound_at_utc": "2026-05-25T00:23:55.075956+00:00",
   "canonical_owner_surface": "03_L0_Route_Decision",
   "runtime_artifact_ref": "RouteContract",
   "otel_span_ref": "l0.route.contract_emitted",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "7a84735ff4186ff5ce52a4c3ff7c1ad902f21afb",
+  "git_head_at_test_time": "1f8195f162cb6918022018ffc24859f2b2abf2f5",
   "git_dirty_at_test_time": false,
-  "content_hash": "f3c7d0d105306f5ab607c120bae381019b2258bdf77836cc89449d5e296ad26e"
+  "content_hash": "4404dde18faa80856489e262d3cc7fc6c2f6b1cbf7ca37469bb2aab1c348c93f"
 }

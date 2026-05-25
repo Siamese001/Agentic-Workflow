@@ -43,10 +43,24 @@ APPS = [
 
 
 def latest_snapshot() -> Path:
-    candidates = sorted(ADG_DIR.glob("adg_indexed_*.sqlite"))
+    import os
+
+    override = os.environ.get("ADG_SNAPSHOT", "").strip()
+    if override:
+        p = Path(override)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if not p.exists():
+            raise SystemExit(f"ADG_SNAPSHOT not found: {p}")
+        return p.resolve()
+    candidates = [
+        c
+        for c in ADG_DIR.glob("adg_indexed_*.sqlite")
+        if "99999999" not in c.name and c.stat().st_size > 50_000_000
+    ]
     if not candidates:
         raise SystemExit("No ADG snapshot found at artifacts/adg/adg_indexed_*.sqlite")
-    return candidates[-1]
+    return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
 def _table_exists(con: sqlite3.Connection, name: str) -> bool:

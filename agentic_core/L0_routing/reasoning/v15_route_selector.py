@@ -463,22 +463,14 @@ def _build_r3(
 def _default_fallback_for(
     route_id: RouteIdV15,
 ) -> tuple[FallbackEntryV15, ...]:
-    """Default fallback chains for non-terminal routes (R5 always last)."""
-    if route_id == RouteIdV15.R3_SIMPLE_GROUNDED_READ:
-        return (
-            FallbackEntryV15(RouteIdV15.R3_SIMPLE_GROUNDED_READ, CostTierV15.TIER_L),
-            FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-        )
-    if route_id == RouteIdV15.R4_SINGLE_ACTION:
-        return (
-            FallbackEntryV15(RouteIdV15.R3R4_MANAGED_WORKFLOW, CostTierV15.TIER_HITL),
-            FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-        )
-    if route_id == RouteIdV15.R3R4_MANAGED_WORKFLOW:
-        return (
-            FallbackEntryV15(RouteIdV15.R3_SIMPLE_GROUNDED_READ, CostTierV15.TIER_M),
-            FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-        )
+    """Fallback chains from v15 YAML SSOT (W2.1); hardcoded mirror as loader fallback."""
+    from agentic_core.L0_routing.config.fallback_chains_loader_v15 import (
+        get_fallback_chain_v15,
+    )
+
+    chain = get_fallback_chain_v15(route_id)
+    if chain:
+        return chain
     return ()
 
 

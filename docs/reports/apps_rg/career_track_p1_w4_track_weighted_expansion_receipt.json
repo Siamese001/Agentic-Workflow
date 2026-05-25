@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-21T20:50:54Z",
+  "generated_at": "2026-05-25T09:44:43Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -2011,7 +2011,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-05-21T20:50:54.219812+00:00",
+      "generated_at_utc": "2026-05-25T09:44:43.880886+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2330,7 +2330,7 @@
             "career_track": "track_data_tech_cloud_ml"
           }
         ],
-        "evidence_collection_timestamp": "2026-05-21T20:50:54.219812+00:00",
+        "evidence_collection_timestamp": "2026-05-25T09:44:43.880886+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -2407,9 +2407,26 @@
     ]
   },
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [],
-    "git_status_short_agentic_core": [],
-    "dirty_files": [],
+    "git_diff_name_only_agentic_core": [
+      "agentic_core/L0_routing/config/fallback_chains_loader.py",
+      "agentic_core/L0_routing/reasoning/cold_start_safeguard.py",
+      "agentic_core/L0_routing/reasoning/v12_route_selector.py",
+      "agentic_core/L0_routing/reasoning/v15_route_selector.py"
+    ],
+    "git_status_short_agentic_core": [
+      "D agentic_core/L0_routing/config/fallback_chains_loader.py",
+      "D agentic_core/L0_routing/reasoning/cold_start_safeguard.py",
+      "D agentic_core/L0_routing/reasoning/v12_route_selector.py",
+      "M agentic_core/L0_routing/reasoning/v15_route_selector.py",
+      "?? agentic_core/L0_routing/_archive/",
+      "?? agentic_core/L0_routing/config/fallback_chains_loader_v15.py"
+    ],
+    "dirty_files": [
+      "agentic_core/L0_routing/config/fallback_chains_loader.py",
+      "agentic_core/L0_routing/reasoning/cold_start_safeguard.py",
+      "agentic_core/L0_routing/reasoning/v12_route_selector.py",
+      "agentic_core/L0_routing/reasoning/v15_route_selector.py"
+    ],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -2421,8 +2438,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".cursor/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": true,
-    "isolation_verdict": "CLEAN",
+    "workspace_guard_clean": false,
+    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope."
   }
 }

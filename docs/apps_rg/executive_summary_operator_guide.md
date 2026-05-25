@@ -28,7 +28,7 @@ Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER
 ## Repair loops (simplified)
 
 1. **Synthesis regen** — before judges; default **on** (`APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN`).
-2. **Judge regen** — after judges when not certified; default **on** on product CLI. Up to **3 cycles** (Qwen rewrite → re-X2 → re-score soft-failed judges); stops early when all judges pass. If a judge-directed rewrite **fails X2**, one **X2-repair** pass runs (same machinery as pre-judge synthesis regen) instead of discarding the attempt. Opt-out: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=0`. Cap: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` (default `3`, max `5`).
+2. **Judge regen** — after judges when not certified; default **on** on product CLI. Default **1 cycle** (Qwen rewrite → re-X2 → **rescore soft-failed judges only**, not full 3-judge panel). Stops early when all judges pass. Opt-out: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=0`. Cap: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` (default `1`, max `3`). Legacy full panel after each regen: `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=full_panel`.
 
 ## Env flags that matter
 
@@ -36,8 +36,20 @@ Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER
 |----------|---------|---------|
 | `APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN` | on | Pre-X2 shape repair |
 | `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN` | **on** (product path); `=0` opt-out | Post-judge Qwen rewrite loop |
-| `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` | `3` (max `5`) | Cycles until all judges pass or cap |
+| `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` | `1` (max `3`) | Qwen judge-regen cycles (not judge API count) |
+| `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE` | `soft_failed_only` | After regen: rescore 1–2 judges vs full panel of 3 |
 | `APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO` | ignored on product path | Dev/harness only |
+
+## X2 credential policy (FSA vs vendor certs)
+
+`x2_exec_summary_no_credential_dump` blocks **vendor cert inventories** (AWS, Databricks, Associate-level label stacks). **FSA** (Fellow of the Society of Actuaries) is treated as **C0.3 skills-graph phase-1 rigor** — not the same as an AWS cert line:
+
+| Allowed | Blocked |
+|---------|---------|
+| **One** sentence with FSA-only wording woven into quantitative/actuarial narrative | AWS + Databricks + FSA laundry lists |
+| | Two+ FSA mentions in the same summary |
+| | FSA in the same sentence as AWS/Databricks labels |
+| | Vendor cert labels in closing band (S4–S6) |
 
 ## What we are not doing
 
@@ -87,20 +99,25 @@ Targeting parity (`targeting_context_parity_receipt.json`) proves JD/briefing by
 
 Plan: [.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
 
-## Debug: which rubric dimension failed?
+## Debug: which rubric dimension failed? (triangulate → Qwen, not more judges)
 
-After each judge pass, the run writes **`x1d_dimension_matrix.json`** next to `x1d_llm_judge_outputs.json`.
+After judges (or after X2 block with no judges), read **`dimension_upstream_triangulation.json`** first — it maps failed dimensions to **Qwen/L2 prompt files** and upstream actions without spending on another full judge panel.
 
 | File | Use |
 |------|-----|
+| **`dimension_upstream_triangulation.json`** | Consensus failed dimensions → `qwen_prompt_surfaces`, `upstream_actions`, `recommended_next_step` |
 | `x1d_dimension_matrix.json` | Per-dimension pass/fail per judge + `consensus_fail` when ≥2 judges fail that dimension |
-| `x1d_llm_judge_outputs.json` | Holistic score/pass per judge; each judge includes `dimension_verdicts` (8 keys) |
-| `x2_gate_outputs.json` / packet `deterministic_gate_summary` | Hard structural/proof gates only |
+| `x1d_llm_judge_outputs.json` | Holistic score/pass; each judge has `dimension_verdicts` (8 keys) |
+| `compiled_prompt.txt` | **What Qwen actually saw** (I0, E0, composition, JD/briefing blocks) |
+| `executive_summary_composition_plan.json` | Six-sentence arc / brushstroke plan |
+| `x2_gate_outputs.json` | Hard gates (fix these before paying for judges) |
 
-**Read order:** X2 gates → dimension matrix → holistic judge pass count.
+**Read order:** X2 gates → `dimension_upstream_triangulation.json` → `compiled_prompt.txt` → dimension matrix → holistic pass count.
 
-`dimension_verdicts_inferred: true` on a judge means the model omitted structured dimensions and the runtime inferred them from findings/flags (still useful, less authoritative than explicit model output).
+**Judge spend (typical):** 1× post-X2 panel (3 judges) + optional 1 Qwen regen cycle + rescore **soft-failed only** (1 judge if solitary fail). Avoid `POST_REGEN_JUDGE_MODE=full_panel` unless debugging transport.
 
-**Regen hints:** When judge regen runs, Qwen receives a `DIMENSION_VERDICTS` block built from failed dimensions (see `executive_summary_judge_remediation.py`).
+`dimension_verdicts_inferred: true` means the model omitted structured dimensions; runtime inferred from findings (use with care).
 
-**Plan:** [.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md)
+**Regen hints:** Qwen receives `DIMENSION_VERDICTS` from failed dimensions (`executive_summary_judge_remediation.py`). Trigger modes include `dimension_consensus_soft_fail` and `solitary_dimension_major_soft_fail`.
+
+**Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)

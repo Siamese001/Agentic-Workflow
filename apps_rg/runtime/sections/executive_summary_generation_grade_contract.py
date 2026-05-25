@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.prompt_assembly.e0_examples import _EXEC_SUMMARY_POSITIVE_COMPILE_IDS
+from apps_rg.runtime.sections.executive_summary_targeting_publish import (
+    instructional_surface_drift_risk,
+)
 from apps_rg.runtime.targeting_context_authority import (
     GenerationMaterialContext,
     JudgeMaterialContext,
@@ -36,7 +39,8 @@ def generation_law_digest_text() -> str:
         "GENERATION_LAW_DIGEST:\n"
         "- Proof: ALLOWED_SOURCE_FACT_IDS + C0 lines only; JD/briefing targeting-only.\n"
         "- Anti-inventory: no comma-chain mechanism dumps; no sequential achievement bullet stack.\n"
-        "- Credential policy: omit AWS/Databricks/FSA/cert name lists; implied credibility only.\n"
+        "- Credential policy: omit AWS/Databricks/vendor cert inventories; at most one FSA rigor mention "
+        "(C0.3 phase-1) when woven into quantitative narrative — not equivalent to AWS Associate labels.\n"
         "- SVP ATS: shape JD emphasis via allowed facts; document gap_notes when JD themes lack proof IDs.\n"
         "- Exactly 6 sentences, one paragraph, max 140 words.\n"
     )
@@ -77,6 +81,7 @@ def build_generation_grade_contract_manifest(
         for row in ((token_budget_receipt or {}).get("trimmed_components") or [])
         if isinstance(row, dict)
     ]
+    drift_risk = instructional_surface_drift_risk(token_budget_receipt)
     gate_summary = (judge_packet or {}).get("deterministic_gate_summary") or {}
     return {
         "schema": MANIFEST_SCHEMA,
@@ -93,6 +98,8 @@ def build_generation_grade_contract_manifest(
             "parity_match": parity_receipt.get("parity_match") is True,
             "trim_applied": trim_applied,
             "token_trim_components": trimmed_components,
+            "instructional_surface_drift_risk": drift_risk,
+            "judge_regen_allowed": parity_receipt.get("parity_match") is True and not drift_risk,
         },
         "instructional_digests": {
             "e0_compile_ids": list(_EXEC_SUMMARY_POSITIVE_COMPILE_IDS),

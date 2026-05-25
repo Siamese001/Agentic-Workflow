@@ -54,7 +54,8 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "arc_role": "commercial_strategy",
         "guidance": (
             "S5: at most one high-signal metric clause woven into strategy context; "
-            "no metric-inventory stack, no Towers Perrin/ING/Aetna credential dump, no cert/AWS/FSA labels."
+            "no metric-inventory stack, no Towers Perrin/ING/Aetna credential dump; no AWS/Databricks cert labels "
+            "(one FSA rigor weave allowed when fact-backed)."
         ),
     },
     {
@@ -195,7 +196,8 @@ def format_judge_remediation_synthesis_default() -> str:
         "references the prior theme — not six standalone achievement bullets); "
         "S3–S4 weave platform scale, operating model, and innovation delivery; "
         "S5 single woven metric clause inside strategy context (no credential/employer dump); "
-        "S6 integrative enterprise IT direction capstone from allowed facts only (no tacked FSA/cert line); "
+        "S6 integrative enterprise IT direction capstone from allowed facts only (no vendor cert laundry list; "
+        "optional single FSA rigor clause only when fact_quant_hpc supports it); "
         "tilt emphasis toward enterprise architecture, federated integration, innovation incubation, "
         "multi-year IT strategy from JD (targeting only; jd_used_as_proof=false)"
     )

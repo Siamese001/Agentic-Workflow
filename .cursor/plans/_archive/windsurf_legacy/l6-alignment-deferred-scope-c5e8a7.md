@@ -1,6 +1,6 @@
 # L6 Alignment — Deferred Scope
 
-> **Status: In Progress.** Execution plan converting deferred items from the parent plan `l6-doctrinal-alignment-noninvasive-b9d3f5` (Completed) and the parked invasive sibling `l6-folder-rename-doctrinal-alignment-a8c4e2` (Deprioritized) into actionable waves.
+> **Status: Deprioritized (2026-05-24).** Internal backlog — not blocked on external dependency. Activate on explicit promotion request. Notion reconciled from Waiting → Deprioritized.
 
 ## 1. Origin
 

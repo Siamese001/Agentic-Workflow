@@ -2,6 +2,7 @@
 
 **Plan:** [windsurf-gha-cutover-d9f2a7.md](../../.cursor/plans/windsurf-gha-cutover-d9f2a7.md)  
 **Completed:** 2026-05-23  
+**Metadata reconcile:** [windsurf_gha_metadata_reconcile_20260525_receipt.md](windsurf_gha_metadata_reconcile_20260525_receipt.md) (2026-05-25)  
 **Notion page:** `36927693-f55c-81eb-a9a1-d9955c280b83`
 
 ## Summary

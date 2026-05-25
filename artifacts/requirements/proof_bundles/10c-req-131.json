@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-131",
   "selected_at_utc": "2026-04-30T15:25:26.957376+00:00",
-  "evidence_bound_at_utc": "2026-05-15T18:53:36.907003+00:00",
+  "evidence_bound_at_utc": "2026-05-25T00:23:55.130813+00:00",
   "canonical_owner_surface": "06_L6_Shadow_Evaluation_System_Learning",
   "runtime_artifact_ref": "L6EvalRecord",
   "otel_span_ref": "l6.eval.record_sealed",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "7a84735ff4186ff5ce52a4c3ff7c1ad902f21afb",
+  "git_head_at_test_time": "1f8195f162cb6918022018ffc24859f2b2abf2f5",
   "git_dirty_at_test_time": false,
-  "content_hash": "d56b623867490472b39f574a84f6b22aed3f3088e3130d7f7c13274313371610"
+  "content_hash": "55eb12228de2099198d616da373b18b0665df7e7ce4a66cfc0f0a9f40bf3db97"
 }

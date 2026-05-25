@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-096",
   "selected_at_utc": "2026-04-30T15:31:10.216051+00:00",
-  "evidence_bound_at_utc": "2026-05-15T18:53:36.936753+00:00",
+  "evidence_bound_at_utc": "2026-05-25T00:23:55.157266+00:00",
   "canonical_owner_surface": "05_Exit_Evaluation_and_Control",
   "runtime_artifact_ref": "X3DispositionPacket",
   "otel_span_ref": "exit.x1.gates_evaluated",
@@ -13,7 +13,7 @@
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "7a84735ff4186ff5ce52a4c3ff7c1ad902f21afb",
+  "git_head_at_test_time": "1f8195f162cb6918022018ffc24859f2b2abf2f5",
   "git_dirty_at_test_time": false,
-  "content_hash": "f03c8a452fd305ae2e44b6f49da4db4f7144a128a4add1b28f004c906ff27504"
+  "content_hash": "aab5e60502b7ea5bb3d9f53767ee1d5e560f5e80b5f25894646171d7a3bb4657"
 }

@@ -21,10 +21,19 @@ Parallelize modular R4 Phase-1 lane dispatch on the canonical whole-run path (`r
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
-LAST_UPDATED: 2026-05-20
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W2
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_RECEIPT: docs/reports/plans/waiting_plans_execution_receipt_20260525.md
+DEFERRED_SCOPE: W3–W4 live whole-run parallel smoke; default parallel off
+PROOF_TESTS: tests/unit/apps_rg/test_phase1_parallel_dispatcher.py
+NOTION_PAGE_ID: 36627693-f55c-810f-8d37-e31d7656b46c
+NOTION_RECONCILED: 2026-05-25
+TRIPLECHECK: valid — whole-run parallel lanes not implemented; section spine is serial per CLI
+WAITING_FOR: Spine W5 deferred; modular_resume_generation serial Phase-1
 
 ---
 

@@ -16,16 +16,16 @@ import os
 import pytest
 
 from agentic_core.L0_routing.config import routing_calibration
-from agentic_core.L0_routing.config.fallback_chains_loader import (
+from agentic_core.L0_routing._archive.v12.config.fallback_chains_loader import (
     get_fallback_chain,
     get_slo_default,
     reset_cache as reset_fallback_cache,
 )
-from agentic_core.L0_routing.reasoning.cold_start_safeguard import (
+from agentic_core.L0_routing._archive.v12.reasoning.cold_start_safeguard import (
     ColdStartDecision,
     maybe_override_for_cold_start,
 )
-from agentic_core.L0_routing.reasoning.v12_route_selector import (
+from agentic_core.L0_routing._archive.v12.reasoning.v12_route_selector import (
     RouteSignals,
     select_route,
 )

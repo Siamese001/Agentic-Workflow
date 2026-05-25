@@ -1,6 +1,6 @@
 {
   "gate_id": "G_REACH_l0_reachability",
-  "count": 2783,
+  "count": 2784,
   "seeded_at": "2026-04-23T15:00:00+00:00",
   "snapshot": "adg_indexed_04232026_1828.sqlite",
   "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline.",
@@ -32,8 +32,8 @@
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-24T15:55:24.735611+00:00",
-  "last_run_snapshot": "adg_indexed_05242026_1112.sqlite",
+  "last_run_at": "2026-05-25T04:01:08.345221+00:00",
+  "last_run_snapshot": "adg_indexed_05242026_2005.sqlite",
   "loosen_history": [
     {
       "at": "2026-04-28T18:49:35+00:00",
@@ -62,7 +62,14 @@
       "from": 2779,
       "to": 2783,
       "reason": "ADR-081 post-regen absorb: adg_indexed_05242026_1939 certification run."
+    },
+    {
+      "at": "2026-05-25T00:24:46+00:00",
+      "snapshot": "adg_indexed_05242026_2005.sqlite",
+      "from": 2783,
+      "to": 2784,
+      "reason": "ADR-081 post-regen absorb: +1 L0 reachability on adg_indexed_05242026_2005 snapshot."
     }
   ],
-  "loosened_at": "2026-05-25T00:05:00+00:00"
+  "loosened_at": "2026-05-25T00:24:46+00:00"
 }

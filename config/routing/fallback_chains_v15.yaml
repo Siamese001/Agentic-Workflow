@@ -1,0 +1,16 @@
+# v15 fallback chains — SSOT (plan l0-routing-v15-only-cutover W1.2)
+# HITL is TIER_HITL on managed-workflow entries, not a sovereign R-HITL route.
+version: 1
+
+chains:
+  R3_SIMPLE_GROUNDED_READ:
+    - {route_id: R3_SIMPLE_GROUNDED_READ, cost_tier: TIER_L}
+    - {route_id: R5_FALLBACK, cost_tier: TIER_S}
+
+  R4_SINGLE_ACTION:
+    - {route_id: R3R4_MANAGED_WORKFLOW, cost_tier: TIER_HITL}
+    - {route_id: R5_FALLBACK, cost_tier: TIER_S}
+
+  R3R4_MANAGED_WORKFLOW:
+    - {route_id: R3_SIMPLE_GROUNDED_READ, cost_tier: TIER_M}
+    - {route_id: R5_FALLBACK, cost_tier: TIER_S}

@@ -100,3 +100,4 @@ allowed_external_flags:
   - ADG_CERTIFIED_USE_ROLLUP
   - ADG_CI_GATES_LEGACY_M
   - ADG_SKIP_PLANE2_MANIFEST
+  - EXEC_SUMMARY_CERT_LOOP_MAX  # oneoff cert loop driver (tools/_oneoff/run_exec_summary_until_certified.py)

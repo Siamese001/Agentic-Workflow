@@ -1,6 +1,6 @@
 {
   "schema": "cross_section_graph_authority_audit_p2_w10_v1",
-  "generated_at": "2026-05-19T18:16:51Z",
+  "generated_at": "2026-05-25T09:44:43Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W10",
   "all_sections_trace_to_augmented_skills_graph": true,
@@ -27,10 +27,10 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": null,
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 40,
+      "c03_graph_hop_paths_count": 43,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 11
+      "allowed_fact_count": 7
     },
     "unify_bullets": {
       "section": "unify_bullets",
@@ -63,7 +63,7 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": "augmented_skills_graph_ibm_bullets",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 6,
+      "c03_graph_hop_paths_count": 2,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 11
@@ -87,7 +87,7 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": "augmented_skills_graph_track_weighted_competencies",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 21,
+      "c03_graph_hop_paths_count": 22,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 14

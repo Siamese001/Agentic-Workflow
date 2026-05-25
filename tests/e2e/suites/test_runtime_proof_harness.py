@@ -35,7 +35,7 @@ from tests.e2e.proof.validators import (
 )
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 # ---------------------------------------------------------------------------
@@ -306,9 +306,14 @@ def test_artifact_filename_matches_99_1_spec():
 
 
 def _run_cli(module: str, args: list[str], cwd: Path) -> subprocess.CompletedProcess:
+    import os
+
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(cwd)
     return subprocess.run(
         [sys.executable, "-m", module, *args],
         cwd=str(cwd),
+        env=env,
         capture_output=True,
         text=True,
         timeout=120,

@@ -35,6 +35,51 @@ def test_e0_compile_leads_with_svp_strategy_not_gold_base() -> None:
     )
 
 
+def test_credential_gate_allows_single_fsa_rigor_weave() -> None:
+    """C0.3 phase-1 FSA is not a vendor cert dump (unlike AWS Associate labels)."""
+    text = (
+        "Technology strategy executive who operationalizes governed agentic AI platforms for regulated workflows. "
+        "Platform commercialization generated proof-backed revenue while scaling engineering delivery. "
+        "Basel III and CCAR lineage frameworks cut regulatory reporting errors for stakeholders. "
+        "Monolithic risk analytics were containerized with HPC microservices for faster stress testing. "
+        "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, "
+        "and FSA credential across Towers Perrin, ING, and Aetna. "
+        "Governed platform delivery connects execution discipline to measurable enterprise outcomes."
+    )
+    ok, reason = check_exec_summary_no_credential_dump(text)
+    assert ok is True, reason
+
+
+def test_credential_gate_fails_fsa_mixed_with_aws() -> None:
+    text = (
+        "Technology strategy executive building governed platforms for enterprise delivery. "
+        "Platform lifecycle spans architecture and operating model design. "
+        "Commercial outcomes remain grounded in selected executive facts. "
+        "Depth is supported by AWS Certified Solutions Architect and FSA credential together. "
+        "Governance discipline informs delivery trade-offs across programs. "
+        "Enterprise technology direction stays forward-looking when facts support it."
+    )
+    ok, reason = check_exec_summary_no_credential_dump(text)
+    assert ok is False
+    assert reason is not None
+    assert "mixed" in reason.lower() or "vendor" in reason.lower()
+
+
+def test_credential_gate_fails_two_fsa_mentions() -> None:
+    text = (
+        "Technology strategy executive with FSA rigor in quantitative foundations. "
+        "Platform lifecycle spans architecture and operating model design. "
+        "Commercial outcomes remain grounded in selected executive facts. "
+        "Governance discipline informs delivery trade-offs across programs. "
+        "Additional actuarial depth includes FSA designation in prior roles. "
+        "Enterprise technology direction stays forward-looking when facts support it."
+    )
+    ok, reason = check_exec_summary_no_credential_dump(text)
+    assert ok is False
+    assert reason is not None
+    assert "at most one" in reason.lower()
+
+
 def test_credential_gate_fails_two_markers_in_closing_band() -> None:
     text = (
         "Technology strategy executive building governed platforms for enterprise delivery. "

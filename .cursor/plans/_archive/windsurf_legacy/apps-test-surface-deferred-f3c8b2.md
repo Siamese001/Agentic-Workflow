@@ -50,7 +50,7 @@ dod_exempt: false
 **From**: parent plan Out Of Scope §"Promoting the new `apps-test-surface-taxonomy.md` rule from advisory to fail-closed — deferred"
 **AG_QUEUE_SEED**: `plan=apps-test-surface-consolidation-11acd9-v2 id=W6_rule_promotion depends_on=W6_landing title=promote_apps-test-surface-taxonomy_advisory_to_fail_closed_after_30day_clean`
 **Status**: ⏳ WAITING — blocked on external time dependency.
-**Dependency**: `artifacts/ci/check_apps_test_surface_parity_*.json` must show ≥30 consecutive exit-0 runs. TSP1 first went green 2026-05-10. **Earliest unblock date: 2026-06-09**.
+**Dependency**: `artifacts/ci/check_apps_test_surface_parity_*.json` must show ≥30 consecutive exit-0 runs. TSP1 first went green 2026-05-10. **Earliest unblock date: 2026-06-09**. Artifact emission wired in gate 2026-05-24 (`check_apps_test_surface_parity.py` writes timestamped JSON per run).
 **Action when unblocked**: Flip `APPS_TEST_SURFACE_FAIL_CLOSED=1` in `.pre-commit-config.yaml`; update `run_contract_gates.py` advisory comment to fail-closed.
 **Gate evidence required**: `artifacts/ci/check_apps_test_surface_parity_*.json` history showing 30 consecutive exit-0 runs.
 

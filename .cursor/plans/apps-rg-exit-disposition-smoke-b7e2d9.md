@@ -23,10 +23,14 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1  
-PLAN_STATUS: TODO  
-CURRENT_WAVE: W0  
-LAST_COMPLETED_WAVE: NONE  
-LAST_UPDATED: 2026-05-15  
+PLAN_STATUS: SUPERSEDED
+CURRENT_WAVE: —
+LAST_COMPLETED_WAVE: W6
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Retired
+NOTION_PAGE_ID: 36127693-f55c-813e-acf2-f97adc252143
+SUPERSEDED_BY: apps-rg-spine-only-unification-d8f4a2 exit_disposition_receipt.json
+PLAN_COMPLETE: plan=apps-rg-exit-disposition-smoke-b7e2d9 note="Spine emits exit_disposition_receipt.json; legacy 07_Exit_disposition.json N/A"
 
 ---
 
