@@ -158,7 +158,7 @@ def main() -> int:
             "parent": {"type": "database_id", "database_id": PLANS_DB},
             "properties": {
                 "Slug": {"title": _rt(PLAN_SLUG)},
-                "Status": {"select": {"name": "Active"}},
+                "Status": {"select": {"name": "Not Started"}},
                 "Plan File Path": {"rich_text": _rt(f".windsurf/plans/{PLAN_FILENAME}")},
                 "Exists On Disk": {"checkbox": True},
                 "Summary": {"rich_text": _rt(PARENT_SUMMARY)},

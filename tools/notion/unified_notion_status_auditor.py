@@ -34,32 +34,24 @@ from typing import Any
 
 from tools.notion.notion_bearer_token import get_notion_bearer_token
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+_CURSOR_SCRIPTS = REPO_ROOT / ".cursor" / "scripts"
+if str(_CURSOR_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_CURSOR_SCRIPTS))
+
+from _notion_plans_status_check import (  # noqa: E402
+    BACKLOG_DATA_SOURCE_ID,
+    BACKLOG_DB_ID,
+    CANONICAL_STATUSES,
+    PLANS_DATA_SOURCE_ID,
+    PLANS_DB_ID,
+    STALE_EQUIVALENTS,
+)
+
 # Notion API constants
 _NOTION_API = "https://api.notion.com/v1"
 _NOTION_VERSION = "2022-06-28"
 _TIMEOUT = 15.0
-
-# DB identifiers
-PLANS_DB_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
-PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-BACKLOG_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
-BACKLOG_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
-
-# Canonical status vocabulary
-CANONICAL_STATUSES = frozenset({
-    "Not Started", "In Progress", "Deferred", "Waiting", "Completed", "Retired", "Archived"
-})
-
-# Stale → Canonical mappings
-STALE_EQUIVALENTS = {
-    "Draft": "Not Started",
-    "🟡Draft": "Not Started",
-    "Live": "In Progress",
-    "🟢Live": "In Progress",
-    "Deprioritized": "Deferred",
-}
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _violations_log_path() -> Path:

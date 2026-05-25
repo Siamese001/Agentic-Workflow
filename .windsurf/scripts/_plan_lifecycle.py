@@ -22,7 +22,7 @@ class PlanStatus:
     NOT_STARTED = "Not Started"
     IN_PROGRESS = "In Progress"
     WAITING = "Waiting"
-    DEFERRED = "Deferred"
+    LOWER_PRIORITY = "Lower Priority"
     COMPLETED = "Completed"
     RETIRED = "Retired"
     ARCHIVED = "Archived"
@@ -86,21 +86,21 @@ VALID_PLAN_TRANSITIONS: Dict[str, Set[str]] = {
     # From -> To set
     PlanStatus.NOT_STARTED: {
         PlanStatus.IN_PROGRESS,
-        PlanStatus.DEFERRED,
+        PlanStatus.LOWER_PRIORITY,
         PlanStatus.RETIRED,
     },
     PlanStatus.IN_PROGRESS: {
         PlanStatus.WAITING,
-        PlanStatus.DEFERRED,
+        PlanStatus.LOWER_PRIORITY,
         PlanStatus.COMPLETED,
         PlanStatus.RETIRED,
     },
     PlanStatus.WAITING: {
         PlanStatus.IN_PROGRESS,
-        PlanStatus.DEFERRED,
+        PlanStatus.LOWER_PRIORITY,
         PlanStatus.RETIRED,
     },
-    PlanStatus.DEFERRED: {
+    PlanStatus.LOWER_PRIORITY: {
         PlanStatus.IN_PROGRESS,
         PlanStatus.NOT_STARTED,  # Undefer
         PlanStatus.RETIRED,
@@ -169,7 +169,10 @@ def validate_status(status: str) -> Tuple[bool, Optional[str]]:
     stale_map = {
         "Draft": PlanStatus.NOT_STARTED,
         "Live": PlanStatus.IN_PROGRESS,
-        "Deprioritized": PlanStatus.DEFERRED,
+        "Active": PlanStatus.IN_PROGRESS,
+        "Proposed": PlanStatus.NOT_STARTED,
+        "Deprioritized": PlanStatus.LOWER_PRIORITY,
+        "Deferred": PlanStatus.LOWER_PRIORITY,
     }
     
     if status in stale_map:

@@ -86,6 +86,8 @@ STALE_STATUSES: Set[str] = {
     "Proposed",
     "Complete",
     "Superseded",
+    "Deprioritized",
+    "Deferred",
 }
 
 # Status discipline: "In Progress" with these conditions triggers WARN

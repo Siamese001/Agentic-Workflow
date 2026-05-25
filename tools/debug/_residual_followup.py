@@ -94,7 +94,7 @@ def retry_plan_registration(schema: dict):
         ("File Path", PLAN_FILE, "rich_text"),
         ("Path", PLAN_FILE, "rich_text"),
         ("Slug", PLAN_SLUG, "rich_text"),
-        ("Status", "Active", "select"),
+        ("Status", "Not Started", "select"),
         ("Exists On Disk", True, "checkbox"),
     ]:
         if cand_name in schema:

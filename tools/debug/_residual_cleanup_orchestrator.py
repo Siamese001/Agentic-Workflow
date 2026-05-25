@@ -84,7 +84,7 @@ def register_plan() -> str:
         "properties": {
             "Plan Name": _title(f"notion-backlog-residual-cleanup-c3d8f2"),
             "Plan File Path": _rt(PLAN_FILE),
-            "Status": {"select": {"name": "Active"}},
+            "Status": {"select": {"name": "Not Started"}},
             "Exists On Disk": {"checkbox": True},
         },
     }

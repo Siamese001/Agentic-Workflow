@@ -70,14 +70,15 @@ def test_only_body_text_returns_none(mod):
         ("Completed", "Completed"),
         ("Retired", "Retired"),
         ("Archived", "Archived"),
-        ("Deferred", "Deferred"),
+        ("Deferred", "Lower Priority"),
         ("Waiting", "Waiting"),
         # Legacy mappings
         ("Live", "In Progress"),
         ("Draft", "Not Started"),
         ("Done", "Completed"),
         ("Superseded", "Retired"),
-        ("Deprioritized", "Deferred"),
+        ("Deprioritized", "Lower Priority"),
+        ("Active", "In Progress"),
         # Quoted variants
         ('"Completed"', "Completed"),
         ("'Retired'", "Retired"),

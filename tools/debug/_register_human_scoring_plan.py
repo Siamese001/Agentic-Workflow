@@ -111,7 +111,7 @@ def register_plan():
             "Slug": _title(PLAN_SLUG),
             "Plan File Path": _rt(PLAN_FILE),
             "Summary": _rt(PLAN_SUMMARY),
-            "Status": {"select": {"name": "Active"}},
+            "Status": {"select": {"name": "Not Started"}},
             "Exists On Disk": {"checkbox": True},
         },
     }

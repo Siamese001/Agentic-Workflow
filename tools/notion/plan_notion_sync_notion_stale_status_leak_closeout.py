@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Create or sync apps-rg-reasoning-deletion-d4e8f1 in Notion Plans DB."""
+"""Register or patch notion-stale-status-leak-closeout-b8e4f2 Completed in Notion Plans DB."""
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from pathlib import Path
@@ -12,22 +11,21 @@ sys.path.insert(0, str(REPO))
 
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
-SLUG = "apps-rg-reasoning-deletion-d4e8f1"
-PLAN_PATH = ".cursor/plans/apps-rg-reasoning-deletion-d4e8f1.md"
+SLUG = "notion-stale-status-leak-closeout-b8e4f2"
+PLAN_PATH = ".cursor/plans/notion-stale-status-leak-closeout-b8e4f2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
-    "COMPLETED (2026-05-23): Deleted legacy apps_rg/reasoning/ agent swarm; migrated "
-    "rg_orchestrator_facade + apps_eval scenarios; 37 scoped contract tests passed. "
-    "Product path: python -m apps_rg → canonical_dispatch → section lanes."
+    "RCA + hardening: block Active/Deprioritized Plans Status writes; SSOT stale map; "
+    "auditor imports _notion_plans_status_check; docs/writers fixed. UI orphan options removed."
 )
 
-AI_SUMMARY = """- STATUS: Completed (W0–W3 executed)
-- Deleted: apps_rg/reasoning/ (10 modules) + tests/unit/apps_rg/reasoning/
-- Migrated: rg_orchestrator_facade (canonical dispatch only); eval hop scenarios → SKIP
-- Proof: pytest 37 passed (quarantine + facade + authority); python -m apps_rg --help OK
-- Receipt: artifacts/apps_rg/reasoning_deletion_receipt.md
-- Disk SSOT: .cursor/plans/apps-rg-reasoning-deletion-d4e8f1.md"""
+AI_SUMMARY = """- PLAN_STATUS: Completed (2026-05-25)
+- W1: FORBIDDEN_PLANS_STATUSES + STALE_EQUIVALENTS; unified auditor SSOT import
+- W2: receipt + Notion Completed; user deleted stale Select options in UI
+- Receipt: docs/reports/plans/notion_stale_status_leak_closeout_receipt_20260525.md
+- Tests: test_notion_plans_status_check (70), backfill + plan_freshness (34)
+- Disk: .cursor/plans/notion-stale-status-leak-closeout-b8e4f2.md"""
 
 
 def _query_page_id() -> str | None:
@@ -38,7 +36,10 @@ def _query_page_id() -> str | None:
     token = get_notion_bearer_token_or_none()
     if not token:
         return None
-    payload = {"filter": {"property": "Slug", "title": {"equals": SLUG}}, "page_size": 1}
+    payload = {
+        "filter": {"property": "Slug", "title": {"equals": SLUG}},
+        "page_size": 1,
+    }
     body = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         f"https://api.notion.com/v1/data_sources/{DATA_SOURCE_ID}/query",
@@ -56,10 +57,12 @@ def _query_page_id() -> str | None:
     except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError):
         return None
     rows = data.get("results") or []
-    return str(rows[0].get("id") or "") if rows else None
+    if rows:
+        return str(rows[0].get("id") or "") or None
+    return None
 
 
-def _patch_page(page_id: str, *, status: str) -> bool:
+def _patch_page(page_id: str) -> bool:
     from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
     import urllib.error
     import urllib.request
@@ -69,7 +72,7 @@ def _patch_page(page_id: str, *, status: str) -> bool:
         return False
     payload = {
         "properties": {
-            "Status": {"select": {"name": status}},
+            "Status": {"select": {"name": "Completed"}},
             "Exists On Disk": {"checkbox": True},
             "Plan File Path": {"rich_text": [{"text": {"content": PLAN_PATH}}]},
             "Summary": {"rich_text": [{"text": {"content": SUMMARY[:2000]}}]},
@@ -91,43 +94,46 @@ def _patch_page(page_id: str, *, status: str) -> bool:
         with urllib.request.urlopen(req, timeout=30) as resp:
             json.loads(resp.read().decode("utf-8"))
         return True
-    except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError):
+    except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}), file=sys.stderr)
         return False
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--completed", action="store_true", help="Mark plan Completed in Notion")
-    args = parser.parse_args()
-    status = "Completed" if args.completed else "Not Started"
-
     page_id = _query_page_id()
     if page_id:
-        ok = _patch_page(page_id, status=status)
-        print(json.dumps({"ok": ok, "action": "patched", "page_id": page_id, "slug": SLUG, "status": status}))
-        return 0 if ok else 1
-    try:
-        result = create_plan_in_notion(
-            slug=SLUG,
-            summary=SUMMARY,
-            ai_summary=AI_SUMMARY,
-            force_status="Completed" if args.completed else None,
-        )
-    except PlanCreationError as exc:
-        print(json.dumps({"ok": False, "error": str(exc)}), file=sys.stderr)
-        return 1
+        ok = _patch_page(page_id)
+        action = "patched"
+    else:
+        try:
+            result = create_plan_in_notion(
+                slug=SLUG,
+                summary=SUMMARY,
+                ai_summary=AI_SUMMARY,
+                force_status="Completed",
+            )
+        except PlanCreationError as exc:
+            print(json.dumps({"ok": False, "error": str(exc)}), file=sys.stderr)
+            return 1
+        ok = result.ok
+        page_id = result.page_id
+        action = "created"
     print(
         json.dumps(
             {
-                "ok": result.ok,
-                "action": "created",
-                "page_id": result.page_id,
+                "ok": ok,
+                "action": action,
                 "slug": SLUG,
-                "status": result.status,
-            }
+                "page_id": page_id,
+                "status": "Completed",
+                "plan_path": PLAN_PATH,
+            },
+            indent=2,
         )
     )
-    return 0 if result.ok else 1
+    if ok:
+        print(f"PLAN_COMPLETE: slug={SLUG} path={PLAN_PATH} status=Completed notion_page={page_id}")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

@@ -140,9 +140,12 @@ def create_plans_database(tok: str) -> str:
             "Status": {
                 "select": {
                     "options": [
-                        {"name": "Active", "color": "green"},
-                        {"name": "Proposed", "color": "yellow"},
-                        {"name": "Complete", "color": "blue"},
+                        {"name": "In Progress", "color": "green"},
+                        {"name": "Not Started", "color": "gray"},
+                        {"name": "Lower Priority", "color": "yellow"},
+                        {"name": "Waiting", "color": "orange"},
+                        {"name": "Completed", "color": "blue"},
+                        {"name": "Retired", "color": "purple"},
                         {"name": "Archived", "color": "gray"},
                     ]
                 }
@@ -209,7 +212,7 @@ def list_existing_plans(tok: str, plans_db_id: str) -> dict[str, str]:
 
 def create_plan_page(tok: str, plans_db_id: str, slug: str, exists_on_disk: bool) -> str:
     file_path = f".windsurf/plans/{slug}.md" if exists_on_disk else ""
-    status = "Active" if exists_on_disk else "Proposed"
+    status = "Not Started"
     ds_id = _plans_data_source_id(tok, plans_db_id)
     body = {
         "parent": {"type": "data_source_id", "data_source_id": ds_id},

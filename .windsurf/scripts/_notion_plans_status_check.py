@@ -104,10 +104,16 @@ STALE_EQUIVALENTS: dict[str, str] = {
     # Old plain-word forms superseded by the 2026-05-03 rename.
     "Live": "In Progress",
     "Draft": "Not Started",
-    # 2026-05-10: "Deprioritized" renamed to "Deferred" → "Lower Priority".
+    # Pre-2026-05-02 schema (Active→Live→In Progress; Proposed→Draft→Not Started).
+    "Active": "In Progress",
+    "Proposed": "Not Started",
+    # 2026-05-10: "Deprioritized" / "Deferred" → "Lower Priority" (same option ID).
     "Deprioritized": "Lower Priority",
     "Deferred": "Lower Priority",
 }
+
+# Explicitly forbidden — never canonical; must not be written to Notion API.
+FORBIDDEN_PLANS_STATUSES: frozenset[str] = frozenset({"Active", "Deprioritized"})
 
 # Property names that map to the Plans Status field.  Exact match required —
 # Notion property names are case-sensitive.

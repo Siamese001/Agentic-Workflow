@@ -218,6 +218,21 @@ def test_deprioritized_is_stale_with_suggestion() -> None:
     assert v.suggested == "Lower Priority"
 
 
+def test_active_is_stale_with_suggestion() -> None:
+    """'Active' is stale (pre-Live schema) — canonical is 'In Progress'."""
+    v = decide(PLANS_DB_ID, "Status", "Active")
+    assert isinstance(v, Violation)
+    assert v.suggested == "In Progress"
+
+
+def test_forbidden_statuses_not_canonical() -> None:
+    from _notion_plans_status_check import FORBIDDEN_PLANS_STATUSES
+
+    for forbidden in FORBIDDEN_PLANS_STATUSES:
+        assert forbidden not in CANONICAL_STATUSES
+        assert decide(PLANS_DB_ID, "Status", forbidden) is not None
+
+
 def test_draft_is_stale_maps_to_not_started() -> None:
     """Regression for 2026-05-05 incident: 'Draft' was written to Plans DB.
     It must be flagged and suggest 'Not Started'."""

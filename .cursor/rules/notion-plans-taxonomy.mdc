@@ -156,8 +156,9 @@ Option names are `In Progress`/`Not Started`/`Lower Priority`/`Waiting`/`Complet
 - 50 plans flipped Live → Retired in one session (Plans DB had become a graveyard with `Live` as default-and-never-decay)
 - Schema rename pass on both Plans DB and Backlog Items DB: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted on Plans DB
 - 2026-05-03: `Live`→`In Progress`, `Draft`→`Not Started` (same option IDs, display names changed in Notion UI)
-- 2026-05-05: `Deprioritized` added as canonical status for paused/deferred plans
-- 2026-05-10: `Deprioritized` → `Deferred` (UI rename, same option ID; legacy `Deprioritized` writes auto-mapped to `Deferred` by `_notion_plans_status_check.py`)
+- 2026-05-05: `Deprioritized` added (later renamed)
+- 2026-05-10: `Deprioritized` → `Deferred` → `Lower Priority` (UI rename, same option ID)
+- **Forbidden legacy writes:** `Active`, `Deprioritized` — use `In Progress` / `Lower Priority`; `_notion_plans_status_check.py` blocks and maps via `STALE_EQUIVALENTS`
 - 2026-05-10: `Deferred` → `Lower Priority` (UI rename, same option ID; legacy `Deferred` writes auto-mapped to `Lower Priority`)
 - Higher-signal vocabulary chosen for outcome-orientation (`Completed` > `Complete`, `Retired` > `Superseded`)
 - 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring (Plans only)

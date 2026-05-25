@@ -19,7 +19,7 @@ from typing import Set, Dict, List, Optional
 CANONICAL_STATUSES: Set[str] = {
     "In Progress",
     "Not Started",
-    "Deferred",  # Renamed from "Deprioritized" 2026-05-10
+    "Lower Priority",
     "Waiting",
     "Completed",
     "Retired",
@@ -30,7 +30,7 @@ CANONICAL_STATUSES: Set[str] = {
 STATUS_IDS: Dict[str, str] = {
     "In Progress": "521256be-2c96-4522-809e-f3dcb6843af9",
     "Not Started": "503df59f-85d4-4ac0-baae-e457d0354b6f",
-    "Deferred": "~nZH",  # ID preserved across rename
+    "Lower Priority": "~nZH",  # ID preserved across Deprioritized/Deferred renames
     "Waiting": "dOTb",
     "Completed": "3a59faae-e327-4258-a4d3-82c835ff830d",
     "Retired": "3f684881-e5f5-4104-9c28-54e836e71305",
@@ -39,18 +39,23 @@ STATUS_IDS: Dict[str, str] = {
 
 # STALE statuses that should not be used (auto-mapped)
 STALE_EQUIVALENTS: Dict[str, str] = {
-    "Draft": "Not Started",  # 🟡Draft -> Not Started
+    "Draft": "Not Started",
     "🟡Draft": "Not Started",
-    "Live": "In Progress",  # 🟢Live -> In Progress
+    "Live": "In Progress",
     "🟢Live": "In Progress",
-    "Deprioritized": "Deferred",  # Legacy -> new name
+    "Active": "In Progress",
+    "Proposed": "Not Started",
+    "Deprioritized": "Lower Priority",
+    "Deferred": "Lower Priority",
 }
+
+FORBIDDEN_PLANS_STATUSES: frozenset[str] = frozenset({"Active", "Deprioritized"})
 
 # Color mapping for display (not for API writes)
 STATUS_COLORS: Dict[str, str] = {
     "In Progress": "green",
     "Not Started": "gray",
-    "Deferred": "yellow",
+    "Lower Priority": "yellow",
     "Waiting": "orange",
     "Completed": "blue",
     "Retired": "purple",
@@ -166,7 +171,7 @@ def get_active_statuses() -> Set[str]:
     - Live = In Progress (green)
     - Draft = Not Started (gray) — NOT "Draft" stale option
     """
-    return {"In Progress", "Not Started", "Waiting", "Deferred"}
+    return {"In Progress", "Not Started", "Waiting", "Lower Priority"}
 
 
 def get_terminal_statuses() -> Set[str]:

@@ -68,7 +68,7 @@ DEFAULT_MIN_FILES = 3
 DEFAULT_RECENCY_SEC = 300
 
 # Status values that indicate "active" plans
-ACTIVE_STATUSES = {"In Progress", "Not Started", "Waiting", "Deferred"}
+ACTIVE_STATUSES = {"In Progress", "Not Started", "Waiting", "Lower Priority"}
 
 # ---------------------------------------------------------------------------
 # Data structures

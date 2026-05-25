@@ -100,7 +100,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--completed", action="store_true", help="Mark plan Completed in Notion")
     args = parser.parse_args()
-    status = "Completed" if args.completed else "Active"
+    status = "Completed" if args.completed else "Not Started"
 
     page_id = _query_page_id()
     if page_id:

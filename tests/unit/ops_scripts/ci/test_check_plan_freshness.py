@@ -209,7 +209,7 @@ class TestIsActiveStatus:
         assert is_active_status("Waiting") is True
 
     def test_deferred_is_active(self) -> None:
-        assert is_active_status("Deferred") is True
+        assert is_active_status("Lower Priority") is True
 
     def test_completed_is_not_active(self) -> None:
         assert is_active_status("Completed") is False

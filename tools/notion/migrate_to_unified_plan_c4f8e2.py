@@ -158,7 +158,7 @@ def step_a_post_plans_row(tok: str, dry_run: bool) -> dict:
                 "rich_text": [{"type": "text", "text": {"content": plan_file_path}}]
             },
             "Summary": {"rich_text": [{"type": "text", "text": {"content": summary}}]},
-            "Status": {"select": {"name": "Active"}},
+            "Status": {"select": {"name": "Not Started"}},
             "Exists On Disk": {"checkbox": True},
         },
     }
