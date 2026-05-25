@@ -1,9 +1,6 @@
 {
   "gate_id": "O_tool_call_parity_ratchet",
-  "count": 299,
-  "seeded_at": "2026-05-24T15:50:41.621106+00:00",
-  "snapshot": "adg_indexed_05242026_1112.sqlite",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-05-24T15:55:14.289158+00:00",
-  "last_run_snapshot": "adg_indexed_05242026_1112.sqlite"
+  "count": 300,
+  "seeded_at": "2026-05-25T00:01:24.408150+00:00",
+  "snapshot": "adg_indexed_05242026_1939.sqlite"
 }
