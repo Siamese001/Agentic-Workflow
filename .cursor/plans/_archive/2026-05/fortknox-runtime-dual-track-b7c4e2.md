@@ -24,10 +24,18 @@ One-sentence summary: **Keep Fort Knox as tamper-evident certification (notary) 
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
-LAST_UPDATED: 2026-05-15
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W3
+LAST_COMPLETED_WAVE: W3
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+PLAN_COMPLETED: 2026-05-25
+CLOSEOUT_RECEIPT: docs/reports/plans/waiting_plans_execution_receipt_20260525.md
+DEFERRED_SCOPE: W4 ADR-091 retirement appendix only
+NOTION_PAGE_ID: 36127693-f55c-811c-8ecc-db4577c8874c
+NOTION_RECONCILED: 2026-05-25
+TRIPLECHECK: valid — plan W0–W4 open; fortknox-evidence skill partial SSOT only
+WAITING_FOR: Dual-track ADR/CI waves W0–W1
 
 ---
 
@@ -239,3 +247,26 @@ CHECKPOINT: C
 - `.cursor/skills/fortknox-evidence/SKILL.md`
 - `docs/reports/runtime_cert/apps_rg_p31_p32_runtime/` (example runtime pack)
 - Constitutional §32 + ADR-091 (in-toto evolution) as cited in Fort Knox rule
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

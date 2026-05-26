@@ -1,0 +1,130 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "parent_plan_id": "cursor-governance-two-tier-b4e8f2",
+  "status": "PASS",
+  "completed_at": "2026-05-26T20:00:00+00:00",
+  "source_audit": "docs/reports/cursor/governance_dedup_audit_20260526.md",
+  "waves_completed": ["W0", "W1", "W2", "W3", "W4", "W5"],
+  "deferred_items": [
+    {
+      "gap_id": "GAP-1",
+      "title": "Dispatch shadow period",
+      "wave": "W1",
+      "status": "PASS",
+      "resolution": "7-day shadow waived by operator; logged in artifacts/cursor/governance_dispatch_shadow.jsonl (w1_shadow_waiver)"
+    },
+    {
+      "gap_id": "GAP-2",
+      "title": "Obsolete hook scripts",
+      "wave": "W1",
+      "status": "PASS",
+      "resolution": "12 scripts + legacy hook moved to _legacy_cursor; matrix 0 obsolete_candidate"
+    },
+    {
+      "gap_id": "GAP-3",
+      "title": "check_cursor_native_config legacy refs",
+      "wave": "W2",
+      "status": "PASS",
+      "resolution": "legacy_reference_allowlist.yaml; strict gate PASS (31→0 failures)"
+    },
+    {
+      "gap_id": "GAP-4",
+      "title": "MCP redirect stubs vs AGENTS Skill column",
+      "wave": "—",
+      "status": "DEFERRED",
+      "p_band": "P4",
+      "resolution": "Mitigated: AGENTS.md note (2026-05-26). Optional follow-up: autogen Skill column → mcp-integration § anchors only"
+    },
+    {
+      "gap_id": "GAP-5",
+      "title": "Plan sprawl",
+      "wave": "W3",
+      "status": "PASS",
+      "resolution": "76 archived to .cursor/plans/_archive/2026-05/; active_plan_files_count=11 (target ≤20)"
+    },
+    {
+      "gap_id": "GAP-6",
+      "title": "Windsurf always_on (~47 KB)",
+      "wave": "W4",
+      "status": "PASS",
+      "resolution": "13 rules demoted to model_decision; windsurf_always_on_total=0 B"
+    }
+  ],
+  "final_metrics": {
+    "tier_1_bytes": 19674,
+    "tier_1_status": "PASS",
+    "windsurf_always_on_bytes": 0,
+    "active_plan_files_count": 11,
+    "always_apply_mdc_count": 4,
+    "post_agent_ssot": ".cursor/hooks/after_agent_governance_dispatch.py"
+  },
+  "wave_receipts": [
+    {
+      "wave": "W0",
+      "path": "docs/reports/cursor/governance_dedup_w0_receipt.json",
+      "markdown": "[governance_dedup_w0_receipt.json](docs/reports/cursor/governance_dedup_w0_receipt.json)"
+    },
+    {
+      "wave": "W1",
+      "path": "docs/reports/cursor/governance_dedup_w1_receipt.json",
+      "markdown": "[governance_dedup_w1_receipt.json](docs/reports/cursor/governance_dedup_w1_receipt.json)"
+    },
+    {
+      "wave": "W2",
+      "path": "docs/reports/cursor/governance_dedup_w2_receipt.json",
+      "markdown": "[governance_dedup_w2_receipt.json](docs/reports/cursor/governance_dedup_w2_receipt.json)"
+    },
+    {
+      "wave": "W3",
+      "path": "docs/reports/cursor/governance_dedup_w3_receipt.json",
+      "markdown": "[governance_dedup_w3_receipt.json](docs/reports/cursor/governance_dedup_w3_receipt.json)"
+    },
+    {
+      "wave": "W4",
+      "path": "docs/reports/cursor/governance_dedup_w4_receipt.json",
+      "markdown": "[governance_dedup_w4_receipt.json](docs/reports/cursor/governance_dedup_w4_receipt.json)"
+    }
+  ],
+  "commands_run": [
+    {
+      "command": "python ops_scripts/ci/check_ag_hook_wiring.py",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "command": "python ops_scripts/ci/check_agents_md_sync.py",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "command": "python .cursor/scripts/check_cursor_optimized_config.py",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "command": "python .cursor/scripts/generate_rules_index.py --check",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "command": "python ops_scripts/ci/check_always_on_token_budget.py",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "command": "pytest tests/unit/ops_scripts/hooks/cursor/ -q",
+      "exit_code": 0,
+      "result": "34 passed"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/reports/cursor/governance_dedup_closeout_receipt.md",
+      "markdown": "[governance_dedup_closeout_receipt.md](docs/reports/cursor/governance_dedup_closeout_receipt.md)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_dedup_closeout_receipt.json",
+      "markdown": "[governance_dedup_closeout_receipt.json](docs/reports/cursor/governance_dedup_closeout_receipt.json)"
+    }
+  ]
+}

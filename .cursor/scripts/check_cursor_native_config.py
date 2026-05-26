@@ -23,11 +23,38 @@ def rel(path: Path) -> str:
     return str(path.relative_to(PROJECT)).replace('\\','/')
 
 
+def _load_yaml_path_globs(path: Path) -> list[str]:
+    """Parse allowed_path_globs from a minimal YAML list (no PyYAML dependency)."""
+    if not path.is_file():
+        return []
+    globs: list[str] = []
+    in_list = False
+    for raw in path.read_text(encoding='utf-8').splitlines():
+        line = raw.strip()
+        if line.startswith("#") or not line:
+            continue
+        if line == "allowed_path_globs:":
+            in_list = True
+            continue
+        if in_list and line.endswith(":") and not line.startswith("- "):
+            break
+        if in_list and line.startswith("- "):
+            item = line[2:].strip().strip('"').strip("'")
+            if item:
+                globs.append(item)
+    return globs
+
+
 def load_allowlist() -> dict:
-    path = ROOT / 'migration_allowlist.json'
-    if not path.exists():
-        return {'allowed_legacy_paths': [], 'legacy_tokens': DEFAULT_LEGACY_TOKENS}
-    return json.loads(path.read_text(encoding='utf-8'))
+    path = ROOT / "migration_allowlist.json"
+    base: dict = {"allowed_legacy_paths": [], "legacy_tokens": DEFAULT_LEGACY_TOKENS}
+    if path.is_file():
+        base = json.loads(path.read_text(encoding="utf-8"))
+    yaml_globs = _load_yaml_path_globs(ROOT / "legacy_reference_allowlist.yaml")
+    json_globs = base.get("legacy_reference_path_globs") or []
+    merged = list(base.get("allowed_legacy_paths") or []) + list(json_globs) + yaml_globs
+    base["allowed_legacy_paths"] = merged
+    return base
 
 
 def is_allowed(path: Path, patterns: list[str]) -> bool:

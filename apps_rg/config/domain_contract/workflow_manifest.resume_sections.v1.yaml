@@ -21,7 +21,9 @@ lanes:
     wave: 1
   - id: ibm_narrative
     weight: light
-    wave: 1
+    wave: 2
+    depends_on:
+      - ibm_bullets
   - id: competencies
     weight: light
     wave: 1
@@ -32,10 +34,10 @@ waves:
     max_parallel: 1
   - id: 1
     description: parallel-eligible light lanes (+ optional headline)
-    lanes: [headline, unify_bullets, ibm_bullets, ibm_narrative, competencies]
+    lanes: [headline, unify_bullets, ibm_bullets, competencies]
     max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
     default_max_parallel: 2
   - id: 2
-    description: serial downstream narrative
-    lanes: [unify_narrative]
+    description: serial downstream narratives (after finalized companion bullets)
+    lanes: [unify_narrative, ibm_narrative]
     max_parallel: 1

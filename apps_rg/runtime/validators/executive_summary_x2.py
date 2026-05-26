@@ -1039,6 +1039,73 @@ def check_judge_schema_valid(judge: dict[str, Any]) -> tuple[bool, str | None]:
     return True, None
 
 
+def _normalize_display_clause(text: str) -> str:
+    return " ".join(str(text or "").lower().split())
+
+
+def _token_overlap_matches(reference_lower: str, sentence_lower: str) -> bool:
+    tokens = _ledger_claim_tokens(reference_lower)
+    if not tokens:
+        return False
+    hits = sum(1 for token in tokens if token in sentence_lower)
+    return hits >= max(1, min(3, len(tokens)))
+
+
+def _display_claim_token_overlap_matches(claim_display: str, sentence_lower: str) -> bool:
+    """Display ``claim`` overlap: avoid binding S6 capstone to thesis row via generic tokens only."""
+    display_norm = _normalize_display_clause(claim_display)
+    tokens = _ledger_claim_tokens(display_norm)
+    if not tokens:
+        return False
+    hits = sum(1 for token in tokens if token in sentence_lower)
+    need = max(1, min(3, len(tokens)))
+    if hits < need:
+        return False
+    return (hits / len(tokens)) >= 0.45
+
+
+def _row_sentence_match_strength(sentence: str, row: dict[str, Any]) -> int:
+    """Score how well a ledger row binds to one display sentence (higher = display-bound)."""
+    sentence_lower = sentence.lower().strip()
+    claim_display = str(row.get("claim") or "").strip()
+    claim_text = str(row.get("claim_text") or "").strip()
+
+    if claim_display:
+        display_norm = _normalize_display_clause(claim_display)
+        sentence_norm = _normalize_display_clause(sentence)
+        if display_norm == sentence_norm:
+            return 100
+        if display_norm in sentence_norm or sentence_norm in display_norm:
+            return 90
+        if _display_claim_token_overlap_matches(claim_display, sentence_lower):
+            return 70
+
+    if claim_text and _token_overlap_matches(claim_text.lower(), sentence_lower):
+        return 50
+
+    return 0
+
+
+def _matching_ledger_rows_for_display_sentence(
+    sentence: str,
+    claim_ledger: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Rows that support this sentence; prefer display ``claim`` over fact ``claim_text`` only."""
+    scored: list[tuple[int, dict[str, Any]]] = []
+    for row in claim_ledger:
+        strength = _row_sentence_match_strength(sentence, row)
+        if strength > 0:
+            scored.append((strength, row))
+    if not scored:
+        return []
+    scored.sort(key=lambda item: item[0], reverse=True)
+    best = scored[0][0]
+    if best >= 70:
+        top = [row for strength, row in scored if strength == best]
+        return top[:1]
+    return [row for strength, row in scored if strength == best]
+
+
 def build_sentence_claim_coverage(
     resume_display_text: str,
     claim_ledger: list[dict[str, Any]],
@@ -1046,24 +1113,15 @@ def build_sentence_claim_coverage(
 ) -> dict[str, Any]:
     """Map every displayed sentence to material claim support.
 
-    This is intentionally strict for the overlay. It relies on the model's claim ledger
-    and does not invent support after the fact.
+    Display sentences bind to ledger ``claim`` (paraphrase shown in resume_display_text);
+    fact proof remains ``claim_text`` + ``source_fact_ids``. Does not invent support.
     """
     sentences = split_sentences(resume_display_text)
     coverage_rows = []
     overall_pass = True
 
     for idx, sentence in enumerate(sentences, 1):
-        matching_claims = []
-        sentence_lower = sentence.lower()
-        for claim in claim_ledger:
-            claim_text = str(claim.get("claim_text") or "").strip()
-            if not claim_text:
-                continue
-            claim_tokens = [t for t in re.findall(r"[A-Za-z0-9$%]+", claim_text.lower()) if len(t) > 3]
-            token_hits = sum(1 for token in claim_tokens if token in sentence_lower)
-            if token_hits >= max(1, min(3, len(claim_tokens))):
-                matching_claims.append(claim)
+        matching_claims = _matching_ledger_rows_for_display_sentence(sentence, claim_ledger)
 
         material_claims = []
         if not matching_claims:
@@ -1099,6 +1157,67 @@ def build_sentence_claim_coverage(
         })
 
     return {"sentences": coverage_rows, "overall_pass": overall_pass}
+
+
+def check_claim_ledger_row_count_matches_sentence_count(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    """Strategy lane: one claim_ledger row per displayed sentence."""
+    n_sentences = len([s for s in split_sentences(resume_display_text) if str(s).strip()])
+    n_rows = len(claim_ledger)
+    if n_sentences == n_rows:
+        return True, None
+    return False, f"display_sentences={n_sentences} claim_ledger_rows={n_rows}"
+
+
+def check_self_check_claim_ledger_consistent(
+    parsed_output: dict[str, Any] | None,
+    text_claim_coverage: dict[str, Any],
+) -> tuple[bool, str | None]:
+    """When the model asserts full ledger coverage, coverage must agree."""
+    if not isinstance(parsed_output, dict):
+        return True, None
+    sc = parsed_output.get("self_check")
+    if not isinstance(sc, dict):
+        return True, None
+    if sc.get("every_material_claim_in_claim_ledger") is not True:
+        return True, None
+    if text_claim_coverage.get("overall_pass") is True:
+        return True, None
+    return (
+        False,
+        "self_check.every_material_claim_in_claim_ledger=true but "
+        "text_claim_coverage.overall_pass is false.",
+    )
+
+
+def ledger_row_display_claim_materialized(row: dict[str, Any], resume_display_text: str) -> bool:
+    """True when ledger display ``claim`` (not fact ``claim_text`` alone) appears in resume body."""
+    claim_display = str(row.get("claim") or "").strip()
+    if not claim_display:
+        return True
+    resume_norm = _normalize_display_clause(resume_display_text)
+    display_norm = _normalize_display_clause(claim_display)
+    if display_norm and display_norm in resume_norm:
+        return True
+    return _display_claim_token_overlap_matches(claim_display, resume_display_text.lower())
+
+
+def check_claim_field_maps_to_display_sentence(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    """Each non-empty ledger ``claim`` must corroborate resume_display_text."""
+    orphans: list[str] = []
+    for idx, row in enumerate(claim_ledger, 1):
+        if not str(row.get("claim") or "").strip():
+            continue
+        if not ledger_row_display_claim_materialized(row, resume_display_text):
+            orphans.append(f"row_{idx}")
+    if orphans:
+        return False, f"ledger claim not materialized in resume_display_text: {', '.join(orphans)}"
+    return True, None
 
 
 NORTH_STAR_SIGNATURE_PHRASES = (
@@ -1767,6 +1886,38 @@ def run_x2_gates(
     add("x2_claim_ledger_present", bool(claim_ledger), len(claim_ledger), ">0", "claim_ledger is empty or missing.")
     add("x2_sentence_coverage_present", bool(text_claim_coverage.get("sentences")), len(text_claim_coverage.get("sentences", [])), ">0", "text_claim_coverage missing.")
     add("x2_sentence_coverage_pass", text_claim_coverage.get("overall_pass") is True, text_claim_coverage.get("overall_pass"), True, "One or more displayed sentences lack supported claims.")
+
+    self_check_ok, self_check_reason = check_self_check_claim_ledger_consistent(
+        parsed_output, text_claim_coverage
+    )
+    add(
+        "x2_self_check_claim_ledger_consistent",
+        self_check_ok,
+        self_check_reason or "ok",
+        "self_check_implies_coverage_pass",
+        self_check_reason,
+    )
+    if strategy_lane:
+        row_count_ok, row_count_reason = check_claim_ledger_row_count_matches_sentence_count(
+            resume_display_text, claim_ledger
+        )
+        add(
+            "x2_claim_ledger_row_count_matches_sentence_count",
+            row_count_ok,
+            row_count_reason or "ok",
+            "sentences_eq_ledger_rows",
+            row_count_reason,
+        )
+        claim_map_ok, claim_map_reason = check_claim_field_maps_to_display_sentence(
+            resume_display_text, claim_ledger
+        )
+        add(
+            "x2_claim_field_maps_to_display_sentence",
+            claim_map_ok,
+            claim_map_reason or "ok",
+            "each_claim_in_display",
+            claim_map_reason,
+        )
 
     source_coverage_ok = bool(claim_ledger) and all(
         any((sid in allowed_fact_ids) or ("_metric_" in sid) for sid in (claim.get("source_fact_ids") or []))

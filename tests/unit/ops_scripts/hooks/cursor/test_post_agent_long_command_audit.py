@@ -121,7 +121,7 @@ class TestLegacyMainStdin:
 
 class TestAfterAgentChainOrdering:
     def test_long_command_after_mcp_hygiene_author_gate_first(self) -> None:
-        hook = REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py"
+        hook = REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py"
         text = hook.read_text(encoding="utf-8")
         capture_pos = text.index("post_cursor_agent_author_gate_capture.py")
         mcp_pos = text.rindex("post_cursor_agent_mcp_hygiene_audit.py")

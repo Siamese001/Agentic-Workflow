@@ -1,0 +1,34 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "wave": "W3",
+  "status": "PASS",
+  "completed_at": "2026-05-26T19:22:00+00:00",
+  "gates": {
+    "check_cursor_optimized_config": "PASS",
+    "active_plan_files_count": 11,
+    "target_max": 20
+  },
+  "inventory": {
+    "before_top_level_count": 87,
+    "archived_count": 76,
+    "after_top_level_count": 11
+  },
+  "artifacts": [
+    {
+      "path": "docs/reports/cursor/plan_sprawl_inventory_20260526.csv",
+      "markdown": "[plan_sprawl_inventory_20260526.csv](docs/reports/cursor/plan_sprawl_inventory_20260526.csv)"
+    },
+    {
+      "path": ".cursor/plans/_archive/2026-05",
+      "markdown": "[2026-05 archive](.cursor/plans/_archive/2026-05)"
+    },
+    {
+      "path": "tools/cursor/plan_sprawl_w3_archive.py",
+      "markdown": "[plan_sprawl_w3_archive.py](tools/cursor/plan_sprawl_w3_archive.py)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_dedup_w3_receipt.md",
+      "markdown": "[governance_dedup_w3_receipt.md](docs/reports/cursor/governance_dedup_w3_receipt.md)"
+    }
+  ]
+}

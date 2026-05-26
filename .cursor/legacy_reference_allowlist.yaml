@@ -1,0 +1,19 @@
+# Sanctioned legacy Windsurf/Cascade references in active .cursor paths (W2).
+# Consumed by check_cursor_native_config.py — not a runtime config file.
+#
+# Rationale: post_cursor_agent_* scripts retain historical docstrings; sync tools
+# must mention .windsurf/mcp_config.json mirror; _legacy_cursor is archive SSOT.
+
+allowed_path_globs:
+  - ".cursor/mcp.json"
+  - ".cursor/RULES_INDEX.md"
+  - ".cursor/rules/windsurf-config-lookup.mdc"
+  - ".cursor/rules/adg-analysis-procedures.mdc"
+  - ".cursor/schemas/**"
+  - ".cursor/scripts/sync_mcp_config.py"
+  - ".cursor/scripts/refresh-windsurf-docs.ps1"
+  - ".cursor/scripts/manual_post_cursor_agent_replay.py"
+  - ".cursor/scripts/generate_rules_index.py"
+  - ".cursor/scripts/_post_cursor_agent_payload.py"
+  - ".cursor/scripts/post_cursor_agent_*.py"
+  - ".cursor/scripts/_legacy_cursor/**"

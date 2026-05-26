@@ -1,6 +1,6 @@
 {
   "schema": "all_sections_graph_skills_authority_p2_w1a_v1",
-  "generated_at": "2026-05-25T21:40:51Z",
+  "generated_at": "2026-05-26T18:40:05Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W1A",
   "all_sections_default_to_augmented_skills_graph": true,
@@ -47,12 +47,12 @@
       "proof_source": "augmented_skills_graph",
       "c03_graph_bound_status": "BOUND",
       "broad_skills_ledger_used_as_authority": false,
-      "selection_method": "augmented_skills_graph_unify_bullets_company_hint",
+      "selection_method": "augmented_skills_graph_unify_bullets_track_ranked",
       "proof_pool_type": "augmented_skills_graph",
       "c03_graph_hop_paths_count": 1,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 8
+      "allowed_fact_count": 9
     },
     "unify_narrative": {
       "section": "unify_narrative",

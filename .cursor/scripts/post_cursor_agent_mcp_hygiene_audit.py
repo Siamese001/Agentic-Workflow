@@ -14,7 +14,7 @@ Subcommands:
 
   run_all — runs **preflight** only; **does not** run orphan_reap (safety).
 
-See also: ``.cursor/hooks/after_agent_author_gate_audits.py`` (chain invokes
+See also: ``.cursor/hooks/after_agent_governance_dispatch.py`` (chain invokes
 ``python ... post_cursor_agent_mcp_hygiene_audit.py agent_response``).
 """
 from __future__ import annotations

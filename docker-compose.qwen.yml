@@ -1,0 +1,75 @@
+# Qwen vLLM stack for apps_rg / agentic_core live qwen_vllm runs.
+#
+# Linux containers on Docker Desktop (WSL2 GPU passthrough) or native Linux + NVIDIA.
+# Not Windows containers.
+#
+# Standalone (run from WSL so the model bind-mount resolves — Windows-only compose
+# often leaves /models/qwen empty):
+#   wsl -e bash -lc 'cd /mnt/c/Git/Agentic-Workflow-FRESH && docker compose -f docker-compose.qwen.yml up -d'
+#
+# Recreate after changing image/args (config is fixed at create time):
+#   docker compose -f docker-compose.qwen.yml up -d --force-recreate
+#
+# With OTel under the same Compose project (agentic-workflow-fresh in Docker Desktop):
+#   docker compose -f docker-compose.local-stack.yml up -d
+#
+# Container name stays local-qwen-vllm (SSOT for section_cli_preflight, qwen_vllm_docker_restart).
+# Topology: docs/architecture/qwen-vllm-topology.md
+# Blackwell / RTX 5090 quirks: .cursor/rules/local-llm-wsl2-gpu.mdc
+
+services:
+  qwen-vllm:
+    # Pin — do not use :latest on Blackwell (pydantic init regressions on floating tags).
+    image: vllm/vllm-openai:v0.11.0
+    container_name: local-qwen-vllm
+    gpus: all
+    # Default Docker /dev/shm is 64 MiB; vLLM worker IPC needs much more or workers die silently.
+    shm_size: "16gb"
+    ports:
+      - "8000:8000"
+    environment:
+      VLLM_USE_V1: "1"
+      # Optional: set HF_TOKEN in shell or a .env file beside this compose file for faster/resumable pulls.
+      HF_HUB_ENABLE_HF_TRANSFER: "1"
+    volumes:
+      # Prefer local WSL weights (fast, offline). Override with QWEN_MODEL_HOST_PATH env.
+      - type: bind
+        source: ${QWEN_MODEL_HOST_PATH:-/home/amita/models/Qwen2.5-32B-Instruct-AWQ}
+        target: /models/qwen
+        read_only: true
+      - qwen-hf-cache:/root/.cache/huggingface
+    command:
+      - --model
+      - /models/qwen
+      - --served-model-name
+      - Qwen/Qwen2.5-32B-Instruct-AWQ
+      - --quantization
+      - awq_marlin
+      - --attention-backend
+      - TRITON_ATTN
+      - --dtype
+      - auto
+      - --max-model-len
+      - "24576"
+      - --gpu-memory-utilization
+      - "0.88"
+      - --max-num-seqs
+      - "8"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS --max-time 8 http://127.0.0.1:8000/v1/models | grep -q Qwen",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 420s
+
+volumes:
+  qwen-hf-cache:

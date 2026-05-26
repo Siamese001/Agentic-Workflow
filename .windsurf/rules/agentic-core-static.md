@@ -1,10 +1,10 @@
 ---
-trigger: always_on
+trigger: model_decision
 tier: 0
 description: |
   Core architecture law: agentic_core is app-agnostic governed runtime.
   apps_* customize behavior through U0 runtime_customization_package and app-owned profile refs.
-  This rule is always on — applies to every task.
+  Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/agentic-core-static.mdc (alwaysApply: false).
 ---
 
 # agentic_core Static Architecture Law

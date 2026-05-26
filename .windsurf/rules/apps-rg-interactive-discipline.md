@@ -1,6 +1,6 @@
 ---
-trigger: always_on
-description: Apply when invoking `python -m apps_rg` or discussing target-company/role/JD/briefing. Enforces Cursor Agent discipline complementing the in-app wizard and cross-company guard.
+trigger: model_decision
+description: Apply when invoking `python -m apps_rg` or discussing target-company/role/JD/briefing. Enforces Cursor Agent discipline complementing the in-app wizard and cross-company guard. Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/apps-rg-interactive-discipline.mdc (alwaysApply: false).
 ---
 
 # apps_rg Interactive Discipline

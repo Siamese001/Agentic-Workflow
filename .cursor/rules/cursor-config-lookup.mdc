@@ -24,6 +24,8 @@ When the question is about Cursor behavior or this `.cursor` folder, search in t
 
 Use this rule to locate the governing Cursor surface before answering configuration questions. Keep answers grounded in file paths and avoid treating archived compatibility files as active runtime behavior.
 
+**Local Qwen vLLM Docker boot:** [`docs/cursor/briefing_local_qwen_docker_boot_20260526.md`](../../docs/cursor/briefing_local_qwen_docker_boot_20260526.md) (one-pager) · [`docs/cursor/local_qwen_docker_boot.md`](../../docs/cursor/local_qwen_docker_boot.md) (full runbook).
+
 ## Archive boundary
 
 `.cursor/cursor_compat/**`, `.cursor/_zero_loss_originals/**`, `.cursor/scripts/_legacy_cursor/**`, and `.cursor/plans/_archive/**` are historical compatibility material unless a user explicitly asks for migration history.

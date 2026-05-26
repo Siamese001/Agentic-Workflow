@@ -1,0 +1,36 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "wave": "W1",
+  "status": "PASS",
+  "completed_at": "2026-05-26T19:19:00+00:00",
+  "shadow_waiver": {
+    "event": "w1_shadow_waiver",
+    "original_eligible_at": "2026-06-02T19:16:02.050922+00:00",
+    "authorized_by": "user"
+  },
+  "archived": {
+    "scripts": 12,
+    "hooks": 1,
+    "script_dir": ".cursor/scripts/_legacy_cursor",
+    "hook_dir": ".cursor/hooks/_legacy_cursor"
+  },
+  "matrix": {
+    "post_agent_scripts_total_before": 42,
+    "post_agent_scripts_total_after": 30,
+    "obsolete_candidate_after": 0
+  },
+  "gates": {
+    "pytest_cursor_hooks": "34 passed",
+    "check_ag_hook_wiring": "PASS"
+  },
+  "artifacts": [
+    {
+      "path": ".cursor/scripts/_legacy_cursor/README.md",
+      "markdown": "[README.md](.cursor/scripts/_legacy_cursor/README.md)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_dedup_w1_receipt.md",
+      "markdown": "[governance_dedup_w1_receipt.md](docs/reports/cursor/governance_dedup_w1_receipt.md)"
+    }
+  ]
+}

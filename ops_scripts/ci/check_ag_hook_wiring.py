@@ -46,7 +46,6 @@ HOOKS_PATH = REPO_ROOT / ".cursor" / "hooks.json"
 VIOLATIONS_OUT = REPO_ROOT / "artifacts" / "cursor" / "ag_hook_wiring_violations.json"
 CURSOR_AG_CHAIN_HOOKS: tuple[Path, str] = (
     (REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py", "after_agent_governance_dispatch.py"),
-    (REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py", "after_agent_author_gate_audits.py"),
 )
 
 BYPASS_ENV = "AG_HOOK_WIRING_BYPASS"
@@ -84,7 +83,6 @@ AG_AUDIT_TRIGGER_SCRIPTS = {
     "post_cursor_agent_author_gate_schema_audit.py",
     "post_cursor_agent_ask_user_question_packet_audit.py",
     "post_cursor_agent_author_gate_capture.py",
-    "after_agent_author_gate_audits.py",
     "after_agent_governance_dispatch.py",
 }
 
@@ -206,7 +204,7 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
         })
 
     # AG-WIRE-2/3/4: required post-response audit hooks must be present and visible
-    # (or satisfied by ``after_agent_author_gate_audits.py`` chain that enumerates them).
+    # (or satisfied by ``after_agent_governance_dispatch.py`` chain that enumerates them).
     for req in REQUIRED_POST_CURSOR_AGENT_HOOKS:
         script = req["script"]
         inv_id = req["id"]
@@ -218,7 +216,7 @@ def evaluate(hooks_data: dict[str, Any]) -> list[dict[str, Any]]:
                 "severity": "ERROR",
                 "message": (
                     f"post-response hooks do not contain {script} "
-                    f"and `.cursor/hooks/after_agent_author_gate_audits.py` does not cover it. "
+                    f"and `.cursor/hooks/after_agent_governance_dispatch.py` does not cover it. "
                     f"{req['description']}."
                 ),
             })

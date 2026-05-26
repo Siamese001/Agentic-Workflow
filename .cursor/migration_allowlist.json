@@ -9,6 +9,7 @@
     ".cursor/migration_allowlist.json",
     ".cursor/plans/_archive/**",
     ".cursor/scripts/_legacy_windsurf/**",
+    ".cursor/scripts/_legacy_cursor/**",
     ".cursor/scripts/check_cursor_native_config.py",
     ".cursor/scripts/check_cursor_optimized_config.py",
     ".cursor/windsurf_compat/**",
@@ -16,6 +17,7 @@
     "ops_scripts/ci/check_always_on_token_budget.py",
     "docs/reports/cursor/**",
     ".cursor/skills/mcp-integration/agents-tier1-companion.md",
+    ".cursor/legacy_reference_allowlist.yaml",
     ".windsurf/rules/README.md"
   ],
   "legacy_tokens": [

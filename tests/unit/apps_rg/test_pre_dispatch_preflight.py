@@ -6,6 +6,9 @@ from pathlib import Path
 
 import pytest
 
+import json
+import os
+
 from apps_rg.runtime.pre_dispatch_preflight import (
     evaluate_jd_cli_input,
     evaluate_manual_brief_cli_input,
@@ -13,6 +16,7 @@ from apps_rg.runtime.pre_dispatch_preflight import (
     targeting_override_allowed,
 )
 from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
+from tests.unit.apps_rg.section_rigor.unify_ibm_lane_fixtures import unify_bullets_parsed_from_mock
 
 REPO = Path(__file__).resolve().parents[3]
 _FRESH_JD = REPO / "tests" / "_fixtures" / "ci-probe-jd.txt"
@@ -75,3 +79,98 @@ def test_stub_skips_qwen_gate() -> None:
             os.environ.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
         else:
             os.environ["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = prev
+
+
+def test_narrative_preflight_blocked_without_upstream_bullets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    empty_modular = (
+        REPO / "artifacts" / "apps_rg" / "runtime_proofs" / "contract_harness" / "_modular_narrative_preflight_empty"
+    )
+    empty_modular.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setenv("APPS_RG_MODULAR_R4_SECTIONS_ROOT", str(empty_modular.resolve()))
+    monkeypatch.setattr(
+        "apps_rg.runtime.validators.companion_bullet_finalization._l2_from_legacy_stale_fallback",
+        lambda *_a, **_k: None,
+    )
+    result = run_pre_dispatch_preflight(
+        section="unify_narrative",
+        jd=str(_FRESH_JD),
+        manual_brief="Lane briefing with non-default digest for pytest unit scope.",
+        lane_provider="mock",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+    )
+    assert result.dispatch_started is False
+    assert result.upstream_bullets_status == "BLOCKED"
+    assert result.upstream_bullets_lane == "unify_bullets"
+    assert "UPSTREAM_BULLETS_NOT_FINALIZED" in result.decisive_reason
+
+
+def test_ibm_narrative_preflight_blocked_without_upstream_bullets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    empty_modular = (
+        REPO
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / "contract_harness"
+        / "_modular_ibm_narrative_preflight_empty"
+    )
+    empty_modular.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setenv("APPS_RG_MODULAR_R4_SECTIONS_ROOT", str(empty_modular.resolve()))
+    monkeypatch.setattr(
+        "apps_rg.runtime.validators.companion_bullet_finalization._l2_from_legacy_stale_fallback",
+        lambda *_a, **_k: None,
+    )
+    result = run_pre_dispatch_preflight(
+        section="ibm_narrative",
+        jd=str(_FRESH_JD),
+        manual_brief="Lane briefing with non-default digest for pytest unit scope.",
+        lane_provider="mock",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+    )
+    assert result.dispatch_started is False
+    assert result.upstream_bullets_lane == "ibm_bullets"
+
+
+def test_narrative_preflight_passes_with_modular_finalized_upstream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    parsed, _ = unify_bullets_parsed_from_mock()
+    sections_root = (
+        REPO / "artifacts" / "apps_rg" / "runtime_proofs" / "contract_harness" / "_modular_narrative_preflight"
+    )
+    sections_root.mkdir(parents=True, exist_ok=True)
+    lane_base = sections_root / "unify_bullets"
+    run_dir = lane_base / "real" / "unify_bullets_preflight_gate"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    l2 = {
+        "section_id": "unify_bullets",
+        "product_quality_status": "PASS",
+        "runtime_generation_status": "REAL_LLM",
+        "bullets": parsed["bullets"],
+    }
+    (run_dir / "l2_output.json").write_text(json.dumps(l2), encoding="utf-8")
+    (run_dir / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW"}),
+        encoding="utf-8",
+    )
+    rel = os.path.relpath(run_dir, REPO).replace("\\", "/")
+    (lane_base / "latest_successful_real_run.json").write_text(
+        json.dumps({"run_dir": rel}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("APPS_RG_MODULAR_R4_SECTIONS_ROOT", str(sections_root.resolve()))
+    result = run_pre_dispatch_preflight(
+        section="unify_narrative",
+        jd=str(_FRESH_JD),
+        manual_brief="Lane briefing with non-default digest for pytest unit scope.",
+        lane_provider="mock",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+    )
+    assert result.upstream_bullets_status == "PASS"
+    assert result.upstream_bullets_lane == "unify_bullets"

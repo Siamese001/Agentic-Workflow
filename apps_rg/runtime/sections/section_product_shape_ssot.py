@@ -176,6 +176,9 @@ def _exec_summary_shape() -> SectionProductShape:
         ),
         proof_gate_ids=(
             "x2_exec_summary_jd_alignment_proof_flags",
+            "x2_claim_ledger_row_count_matches_sentence_count",
+            "x2_self_check_claim_ledger_consistent",
+            "x2_claim_field_maps_to_display_sentence",
             "x2_claim_ledger_claim_text_non_empty",
             "x2_claim_ledger_orphan_zero",
             "x2_exec_summary_prompt_template_authority",

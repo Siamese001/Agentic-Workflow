@@ -14,40 +14,53 @@ For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
 | Field | Value |
 |---|---|
 | Container | `local-qwen-vllm` |
-| Image | `vllm/vllm-openai:latest` in examples below (**floating**); for **proof or release-leaning** runs, **pin** an explicit image tag or digest (see **W5 — Image tag and digest pinning**). |
-| Model | `Qwen/Qwen2.5-32B-Instruct-AWQ` (32B-AWQ) |
+| Compose SSOT | `docker-compose.qwen.yml` |
+| Cursor boot runbook | `docs/cursor/local_qwen_docker_boot.md` |
+| Image | `vllm/vllm-openai:v0.11.0` in compose (**pinned**); see **W5 — Image tag and digest pinning** for digest discipline |
+| Model | `Qwen/Qwen2.5-32B-Instruct-AWQ` (32B-AWQ) served from `/models/qwen` (WSL bind mount) |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL` in `agentic_core/L0_routing/config/model_registry.py`) |
 | Port mapping | `0.0.0.0:8000->8000/tcp` |
-| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 24576 --gpu-memory-utilization 0.92 --host 0.0.0.0 --port 8000` |
+| Weights host path | `${QWEN_MODEL_HOST_PATH:-/home/amita/models/Qwen2.5-32B-Instruct-AWQ}` (WSL ext4) |
+| Container args | `--model /models/qwen --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --attention-backend TRITON_ATTN --max-model-len 24576 --gpu-memory-utilization 0.88 --max-num-seqs 8` |
+| `shm_size` | `16gb` (default Docker 64 MiB breaks vLLM workers) |
 | Restart policy | `unless-stopped` (set 2026-05-06 W3 of plan apps-rg-vllm-deferred-followup-f7d3a9) |
 
 **Context window SSOT:** `24576` tokens. Set matching `VLLM_MAX_MODEL_LEN=24576` for apps_rg / agentic_core token budgets. Do not set env to 32k while the container stays at 16k (or vice versa).
 
-### Recreate container at 24k (operator)
+### Boot / recreate (operator)
 
-When changing `--max-model-len`, recreate `local-qwen-vllm` (config is fixed at create time):
+**SSOT:** [`docs/cursor/local_qwen_docker_boot.md`](../cursor/local_qwen_docker_boot.md)
+
+Run **Compose from WSL** so the model bind mount resolves (PowerShell-only `docker compose` often leaves `/models/qwen` empty):
 
 ```powershell
-docker stop local-qwen-vllm
-docker rm local-qwen-vllm
-docker run -d --name local-qwen-vllm --gpus all -p 8000:8000 `
-  vllm/vllm-openai:latest `
-  --model Qwen/Qwen2.5-32B-Instruct-AWQ `
-  --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ `
-  --quantization awq_marlin --dtype auto `
-  --max-model-len 24576 --gpu-memory-utilization 0.92 `
-  --host 0.0.0.0 --port 8000
-curl http://localhost:8000/v1/models
+wsl -e bash -lc 'cd /mnt/c/Git/Agentic-Workflow-FRESH && docker compose -f docker-compose.qwen.yml up -d qwen-vllm'
 ```
 
-If the container OOMs on load, try `--gpu-memory-utilization 0.88` or step down to `20480` (update `VLLM_MAX_MODEL_LEN` to match).
+Recreate after changing image, `max-model-len`, or mount:
+
+```powershell
+wsl -e bash -lc 'cd /mnt/c/Git/Agentic-Workflow-FRESH && docker compose -f docker-compose.qwen.yml up -d --force-recreate qwen-vllm'
+```
+
+Or: `wsl bash /mnt/c/Git/Agentic-Workflow-FRESH/ops_scripts/apps_rg/boot_local_qwen_vllm.sh`
+
+Verify:
+
+```powershell
+docker exec local-qwen-vllm test -f /models/qwen/config.json
+curl -fsS http://localhost:8000/v1/models
+```
+
+If the container OOMs on load, compose already uses `--gpu-memory-utilization 0.88`; or step down to `20480` (update `VLLM_MAX_MODEL_LEN` to match).
 
 ### Lifecycle
 
 - Start: `docker start local-qwen-vllm`
 - Stop: `docker stop local-qwen-vllm`
 - Health: `curl http://localhost:8000/v1/models` should return JSON with `Qwen/Qwen2.5-32B-Instruct-AWQ` in `data[0].id`
-- Interactive helper (Windows): `ops_scripts/apps_rg/Fix-AppsRgWslRuntime.ps1` starts the container and probes health.
+- Boot helper (WSL): `ops_scripts/apps_rg/boot_local_qwen_vllm.sh` — compose up + mount/API checks.
+- Interactive helper (Windows): `ops_scripts/apps_rg/Fix-AppsRgWslRuntime.ps1` — boot vLLM + WSL venv smoke test.
 
 ### apps_rg section CLI — opt-in auto-start (Wave D)
 

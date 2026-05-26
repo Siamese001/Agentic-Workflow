@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Converted from Cursor rule constitutional.md Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/constitutional.mdc (alwaysApply: false).
 ---
 
 > See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.

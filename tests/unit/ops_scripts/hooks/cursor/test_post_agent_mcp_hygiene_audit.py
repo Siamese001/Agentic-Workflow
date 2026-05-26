@@ -92,7 +92,7 @@ class TestRunAllDoesNotReap:
 
 class TestAfterAgentChainWiring:
     def test_mcp_hygiene_before_long_command_with_agent_response_argv(self) -> None:
-        text = (REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py").read_text(encoding="utf-8")
+        text = (REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py").read_text(encoding="utf-8")
         assert "post_cursor_agent_mcp_hygiene_audit.py" in text
         assert "post_cursor_agent_long_command_audit.py" in text
         assert "agent_response" in text
@@ -102,7 +102,7 @@ class TestAfterAgentChainWiring:
         assert capture_pos < mcp_pos < long_pos
 
     def test_author_gate_scripts_unchanged_order(self) -> None:
-        text = (REPO_ROOT / ".cursor" / "hooks" / "after_agent_author_gate_audits.py").read_text(encoding="utf-8")
+        text = (REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py").read_text(encoding="utf-8")
         seeds_pos = text.rindex("post_cursor_agent_ag_queue_seed_capture.py")
         mcp_pos = text.rindex("post_cursor_agent_mcp_hygiene_audit.py")
         assert seeds_pos < mcp_pos

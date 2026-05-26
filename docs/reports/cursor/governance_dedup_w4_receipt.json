@@ -1,0 +1,28 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "wave": "W4",
+  "status": "PASS",
+  "completed_at": "2026-05-26T19:30:00+00:00",
+  "gates": {
+    "check_always_on_token_budget": "PASS",
+    "tier_1_bytes": 19674,
+    "windsurf_always_on_before_bytes": 47493,
+    "windsurf_always_on_after_bytes": 0,
+    "windsurf_always_on_file_count_before": 13,
+    "windsurf_always_on_file_count_after": 0
+  },
+  "artifacts": [
+    {
+      "path": "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
+      "markdown": "[windsurf_always_on_demotion_map_20260526.md](docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md)"
+    },
+    {
+      "path": "tools/cursor/windsurf_always_on_demote_w4.py",
+      "markdown": "[windsurf_always_on_demote_w4.py](tools/cursor/windsurf_always_on_demote_w4.py)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_dedup_w4_receipt.md",
+      "markdown": "[governance_dedup_w4_receipt.md](docs/reports/cursor/governance_dedup_w4_receipt.md)"
+    }
+  ]
+}

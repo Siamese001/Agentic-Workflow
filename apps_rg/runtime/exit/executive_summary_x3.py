@@ -9,13 +9,16 @@ from typing import Any
 from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 
 
-# Blocked provider evaluator modes
+# Blocked provider evaluator modes (per-judge rows only — not empty-panel sentinel).
 BLOCKED_MODES = {
     "BLOCKED_PROVIDER_UNAVAILABLE",
     "BLOCKED_MODEL_NOT_FOUND",
     "BLOCKED_RESPONSE_PARSE_ERROR",
     "BLOCKED_SCHEMA_VALIDATION_ERROR",
 }
+
+# Aggregate X1D mode when the lane emitted zero judge rows (e.g. X2 failed before panel).
+NO_JUDGE_ROWS_EMITTED = "NO_JUDGE_ROWS_EMITTED"
 
 
 @dataclass
@@ -183,15 +186,20 @@ def aggregate_x3(
     ]
     soft_failed = [j["provider_key"] for j in x1d_judges if _is_model_backed_soft_fail(j)]
 
-    modes = {j.get("evaluator_mode") for j in x1d_judges}
-    if modes == {"MODEL_BACKED"}:
-        x1d_mode = "MODEL_BACKED"
-    elif "MOCKED" in modes:
-        x1d_mode = "MOCKED"
-    elif any(m in BLOCKED_MODES for m in modes):
-        x1d_mode = "BLOCKED_PROVIDER_UNAVAILABLE"
+    if not x1d_judges:
+        x1d_mode = NO_JUDGE_ROWS_EMITTED
     else:
-        x1d_mode = "BLOCKED_PROVIDER_UNAVAILABLE"
+        modes = {j.get("evaluator_mode") for j in x1d_judges}
+        if modes == {"MODEL_BACKED"}:
+            x1d_mode = "MODEL_BACKED"
+        elif "MOCKED" in modes:
+            x1d_mode = "MOCKED"
+        elif any(m in BLOCKED_MODES for m in modes):
+            x1d_mode = "BLOCKED_PROVIDER_UNAVAILABLE"
+        elif blocked:
+            x1d_mode = "BLOCKED_PROVIDER_UNAVAILABLE"
+        else:
+            x1d_mode = "BLOCKED_PROVIDER_UNAVAILABLE"
 
     remediation: list[str] = []
     if parity_block:

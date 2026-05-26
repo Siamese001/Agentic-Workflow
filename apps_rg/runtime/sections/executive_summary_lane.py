@@ -878,6 +878,17 @@ def _synthesis_shape_reject_reason(
     sent_ok, sent_reason = check_exec_summary_sentence_count_6(text)
     if not sent_ok and sent_reason:
         failures.append(sent_reason)
+    if sent_ok and isinstance(parsed, dict):
+        from apps_rg.runtime.validators.executive_summary_x2 import (
+            check_claim_ledger_row_count_matches_sentence_count,
+        )
+
+        ledger = list(parsed.get("claim_ledger") or [])
+        row_count_ok, row_count_reason = check_claim_ledger_row_count_matches_sentence_count(
+            text, ledger
+        )
+        if not row_count_ok and row_count_reason:
+            failures.append(f"claim_ledger_row_count:{row_count_reason}")
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         text, parsed, selected_facts=selected_facts
     )

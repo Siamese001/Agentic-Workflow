@@ -24,6 +24,7 @@ from apps_rg.runtime.targeting_input_freshness import (
 
 TargetingInputStatus = Literal["PASS", "MISSING", "EMPTY", "STALE", "DEFAULT_BLOCKED"]
 QwenGateStatus = Literal["PASS", "FAIL", "SKIPPED", "NOT_APPLICABLE"]
+UpstreamBulletsGateStatus = Literal["NOT_APPLICABLE", "PASS", "BLOCKED"]
 
 _ENV_ALLOW_STALE_TARGETING_SSOT = "APPS_RG_ALLOW_STALE_TARGETING_SSOT"
 _ENV_ALLOW_DEFAULT_TARGETING_PATHS = "APPS_RG_ALLOW_DEFAULT_TARGETING_PATHS"
@@ -190,6 +191,9 @@ class PreDispatchPreflightResult:
     lane_provider: str
     qwen_health_status: QwenGateStatus
     qwen_model_ready_status: QwenGateStatus
+    upstream_bullets_status: UpstreamBulletsGateStatus
+    upstream_bullets_lane: str
+    upstream_bullets_detail: str
     dispatch_started: bool
     decisive_reason: str
 
@@ -210,6 +214,9 @@ class PreDispatchPreflightResult:
             "lane_provider": self.lane_provider,
             "qwen_health_status": self.qwen_health_status,
             "qwen_model_ready_status": self.qwen_model_ready_status,
+            "upstream_bullets_status": self.upstream_bullets_status,
+            "upstream_bullets_lane": self.upstream_bullets_lane,
+            "upstream_bullets_detail": self.upstream_bullets_detail,
             "dispatch_started": self.dispatch_started,
             "decisive_reason": self.decisive_reason,
         }
@@ -286,6 +293,30 @@ def _qwen_failure_message(
     return f"{base}: {detail or 'qwen_vllm_unavailable'}".strip()
 
 
+def _upstream_bullets_failure_message(
+    *,
+    status: UpstreamBulletsGateStatus,
+    upstream_lane: str,
+    detail: str,
+) -> str | None:
+    from apps_rg.runtime.validators.companion_bullet_finalization import (
+        PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER,
+    )
+
+    if status != "BLOCKED":
+        return None
+    lane = str(upstream_lane or "companion_bullets").strip()
+    extra = str(detail or "").strip()
+    msg = (
+        f"Pre-dispatch companion gate blocked ({PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}): "
+        f"--section {lane} must be ACCEPTED_FINALIZED (REAL_LLM, product_quality PASS, "
+        f"X3 allow-family) before narrative dispatch."
+    )
+    if extra:
+        msg = f"{msg} ({extra})"
+    return msg
+
+
 def run_pre_dispatch_preflight(
     *,
     section: str,
@@ -296,11 +327,18 @@ def run_pre_dispatch_preflight(
     docker_restart_audit: dict[str, Any] | None = None,
 ) -> PreDispatchPreflightResult:
     """Evaluate all mandatory gates; ``dispatch_started`` is False when any gate fails."""
+    from apps_rg.runtime.validators.companion_bullet_finalization import (
+        evaluate_narrative_upstream_bullets_gate,
+    )
+
     jd_status, jd_path = evaluate_jd_cli_input(jd)
     brief_status, brief_path = evaluate_manual_brief_cli_input(manual_brief)
     q_health, q_model, q_detail = evaluate_qwen_readiness(
         lane_provider=lane_provider,
         docker_restart_audit=docker_restart_audit,
+    )
+    upstream_status, upstream_lane, upstream_detail = evaluate_narrative_upstream_bullets_gate(
+        str(section).strip()
     )
 
     decisive = ""
@@ -316,16 +354,25 @@ def run_pre_dispatch_preflight(
         decisive = targeting_err
         dispatch_started = False
     else:
-        qwen_err = _qwen_failure_message(
-            health=q_health,
-            model_ready=q_model,
-            detail=q_detail,
+        upstream_err = _upstream_bullets_failure_message(
+            status=upstream_status,
+            upstream_lane=upstream_lane,
+            detail=upstream_detail,
         )
-        if qwen_err:
-            decisive = qwen_err
+        if upstream_err:
+            decisive = upstream_err
             dispatch_started = False
         else:
-            decisive = "all_pre_dispatch_gates_passed"
+            qwen_err = _qwen_failure_message(
+                health=q_health,
+                model_ready=q_model,
+                detail=q_detail,
+            )
+            if qwen_err:
+                decisive = qwen_err
+                dispatch_started = False
+            else:
+                decisive = "all_pre_dispatch_gates_passed"
 
     return PreDispatchPreflightResult(
         section=str(section).strip(),
@@ -337,6 +384,9 @@ def run_pre_dispatch_preflight(
         lane_provider=str(lane_provider),
         qwen_health_status=q_health,
         qwen_model_ready_status=q_model,
+        upstream_bullets_status=upstream_status,
+        upstream_bullets_lane=upstream_lane,
+        upstream_bullets_detail=upstream_detail,
         dispatch_started=dispatch_started,
         decisive_reason=decisive,
     )
@@ -398,6 +448,7 @@ __all__ = [
     "PreDispatchPreflightResult",
     "TargetingInputStatus",
     "QwenGateStatus",
+    "UpstreamBulletsGateStatus",
     "enforce_pre_dispatch_preflight",
     "evaluate_jd_cli_input",
     "evaluate_manual_brief_cli_input",

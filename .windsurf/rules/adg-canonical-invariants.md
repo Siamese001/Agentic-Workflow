@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Converted from Cursor rule adg-canonical-invariants.md Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/adg-canonical-invariants.mdc (alwaysApply: false).
 ---
 
 # ADG Canonical Invariants

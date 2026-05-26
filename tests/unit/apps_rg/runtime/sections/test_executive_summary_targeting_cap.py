@@ -19,6 +19,7 @@ from apps_rg.runtime.sections.executive_summary_targeting_cap import (
     compress_targeting_briefing_body,
     compress_targeting_jd_body,
     estimate_targeting_region_tokens,
+    extract_frozen_targeting_from_compiled_content,
 )
 from apps_rg.runtime.sections.executive_summary_token_budget import (
     estimate_tokens_approximate,
@@ -148,7 +149,10 @@ def test_duplicate_jd_line_removed_before_unique_themes():
     assert capped.count("Brown & Brown is seeking") <= 1
 
 
-def test_targeting_region_tokens_drop_on_brown_scale():
+def test_targeting_region_tokens_drop_on_brown_scale(monkeypatch: pytest.MonkeyPatch):
+    """Cap still trims when env forces a ceiling below the Brown briefing size."""
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_TARGETING_CAP_BRIEFING_CHARS", "2600")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_TARGETING_CAP_JD_CHARS", "2000")
     payload = _brown_payload()
     payload["targeting_context_frozen"] = False
     before = _compiled_with_capsule(payload)
@@ -173,6 +177,33 @@ def test_brown_markdown_briefing_cap_includes_post_merger_section():
     assert "Cultural Alignment" not in capped or capped.lower().index("post-merger") < capped.lower().index(
         "cultural"
     ) if "cultural" in capped.lower() else True
+
+
+def test_default_targeting_caps_pass_full_brown_jd_and_briefing():
+    jd = (
+        REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"
+    ).read_text(encoding="utf-8")
+    brief = (
+        REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
+    ).read_text(encoding="utf-8")
+    payload = _brown_payload()
+    payload["jd_text"] = jd
+    payload["briefing"] = brief
+    payload["targeting_context_frozen"] = False
+    before = _compiled_with_capsule(payload)
+    after, meta = apply_executive_summary_targeting_cap(
+        before,
+        runtime_payload=payload,
+        available_input_tokens=22_016,
+    )
+    assert meta.get("targeting_max_jd_chars") == 6000
+    assert meta.get("targeting_max_briefing_chars") == 16000
+    jd_out, br_out = extract_frozen_targeting_from_compiled_content(after)
+    assert "Skills & Experience to be Successful" in jd_out
+    assert "R26_0000001653" in jd_out
+    assert len(jd_out) >= len(jd.strip()) - len(_CAP_NOTICE) - 4
+    assert "Post-Merger Technology Integration" in br_out
+    assert len(br_out) >= len(brief.strip()) - len(_CAP_NOTICE) - 4
 
 
 def test_frozen_targeting_skips_second_cap_on_compiled_prompt():

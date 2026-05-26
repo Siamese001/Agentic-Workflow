@@ -85,13 +85,22 @@ def targeting_cap_enabled(runtime_payload: dict[str, Any]) -> bool:
     return env not in ("0", "false", "no")
 
 
+# Defaults sized for VLLM_MAX_MODEL_LEN=24576 (24k): available input ~22k tokens after
+# 2048 completion + 512 reserve. Brown SVP briefing ~15.2k chars; JD ~4.3k — caps carry
+# full targeting docs with margin; section-priority trim only when source exceeds cap.
+_DEFAULT_JD_MAX_CHARS = 6_000
+_DEFAULT_BRIEFING_MAX_CHARS = 16_000
+
+
 def _resolve_max_chars(kind: str, *, gap_tokens: int = 0) -> int:
     env_key = f"APPS_RG_EXEC_SUMMARY_TARGETING_CAP_{kind.upper()}_CHARS"
     raw = os.environ.get(env_key, "").strip()
     if raw:
-        return max(512, int(raw))
-    defaults = {"JD": 2000, "BRIEFING": 2600}
-    base = defaults.get(kind.upper(), 2000)
+        base = max(512, int(raw))
+    elif kind.upper() == "BRIEFING":
+        base = _DEFAULT_BRIEFING_MAX_CHARS
+    else:
+        base = _DEFAULT_JD_MAX_CHARS
     if gap_tokens > 0:
         # Rough chars to shed from targeting region only (~3 chars/token).
         shed = max(0, int(gap_tokens * 3.2))
@@ -124,7 +133,14 @@ def _score_jd_line(line: str) -> int:
 
 def compress_targeting_jd_body(jd_text: str, max_chars: int) -> str:
     """Dedupe and keep high-signal JD lines deterministically."""
-    lines = jd_text.replace("\r\n", "\n").split("\n")
+    normalized = jd_text.replace("\r\n", "\n").rstrip()
+    notice_room = len(_CAP_NOTICE)
+    if max_chars >= _DEFAULT_JD_MAX_CHARS and len(normalized) + notice_room <= max_chars:
+        body = normalized
+        if _CAP_NOTICE.strip() not in body:
+            body = body.rstrip() + _CAP_NOTICE
+        return body
+    lines = normalized.split("\n")
     seen: set[str] = set()
     ranked: list[tuple[int, int, str]] = []
     for idx, line in enumerate(lines):
@@ -190,7 +206,14 @@ def _score_briefing_section_title(title: str) -> int:
 
 def compress_targeting_briefing_body(briefing: str, max_chars: int) -> str:
     """Section-priority briefing cap; keeps high-signal sections (markdown ## or === headers)."""
-    preamble, sections = _parse_briefing_sections(briefing)
+    normalized = briefing.replace("\r\n", "\n").rstrip()
+    notice_room = len(_CAP_NOTICE)
+    if max_chars >= _DEFAULT_BRIEFING_MAX_CHARS and len(normalized) + notice_room <= max_chars:
+        body = normalized
+        if _CAP_NOTICE.strip() not in body:
+            body = body.rstrip() + _CAP_NOTICE
+        return body
+    preamble, sections = _parse_briefing_sections(normalized)
     out: list[str] = []
     used = 0
 
@@ -410,6 +433,8 @@ def apply_executive_summary_targeting_cap(
 
     max_jd = _resolve_max_chars("JD", gap_tokens=gap)
     max_brief = _resolve_max_chars("BRIEFING", gap_tokens=gap)
+    meta["targeting_max_jd_chars"] = max_jd
+    meta["targeting_max_briefing_chars"] = max_brief
 
     inner_new, components = cap_jd_requirements_inner(
         span[2],

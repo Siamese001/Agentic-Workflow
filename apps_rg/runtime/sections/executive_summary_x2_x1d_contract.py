@@ -50,6 +50,9 @@ SYNTHESIS_CHECK_TO_X2_GATE: dict[str, str] = {
     "check_north_star_style_example_echo_unsupported": "x2_north_star_style_echo_unsupported_zero",
     "check_inferred_bridge_claims": "x2_no_inferred_bridge_claims",
     "check_claim_ledger_materialized_or_gap_excused": "x2_claim_ledger_materialized_or_gap_excused",
+    "check_claim_ledger_row_count_matches_sentence_count": (
+        "x2_claim_ledger_row_count_matches_sentence_count"
+    ),
 }
 
 SYNTHESIS_IMPLICIT_X2_GATES: frozenset[str] = frozenset(

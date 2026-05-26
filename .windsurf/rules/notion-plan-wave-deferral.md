@@ -1,6 +1,6 @@
 ---
-trigger: always_on
-description: Core invariant only — No Notion MCP calls during multi-wave execution. Full protocol moved to plan-lifecycle-procedures.md (W3.P3 2026-05-12).
+trigger: model_decision
+description: Core invariant only — No Notion MCP calls during multi-wave execution. Full protocol moved to plan-lifecycle-procedures.md (W3.P3 2026-05-12). Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/notion-plan-wave-deferral.mdc (alwaysApply: false).
 ---
 
 > See `plan-lifecycle-procedures.md` for full wave deferral and execution protocol.

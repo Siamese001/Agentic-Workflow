@@ -1,6 +1,6 @@
 # P2-W1 — Competencies graph-skills proof pool
 
-**Generated:** 2026-05-26T12:43:53Z
+**Generated:** 2026-05-26T18:40:07Z
 
 - proof_pool_type: **augmented_skills_graph** (default product authority P2-W1A)
 - graph_source: `apps_rg\fact_inventory\master_skills_arsenal_ledger.json`

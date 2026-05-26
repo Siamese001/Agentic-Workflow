@@ -1,6 +1,6 @@
 ---
-trigger: always_on
-description: SSOT folder routing — every NEW Python file must land in its canonical folder. scripts/, repo-root, tools/_oneoff/, tools/_oneshot/ are forbidden for new files. Hook scripts MUST live in .windsurf/scripts/. Constitutional §31.
+trigger: model_decision
+description: SSOT folder routing — every NEW Python file must land in its canonical folder. scripts/, repo-root, tools/_oneoff/, tools/_oneshot/ are forbidden for new files. Hook scripts MUST live in .cursor/scripts/. Constitutional §31. Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/ssot-folder-enforcement.mdc (alwaysApply: false).
 ---
 
 # SSOT Folder Routing — New Files Land in Canonical Folders

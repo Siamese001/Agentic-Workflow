@@ -26,7 +26,9 @@ if [[ ! -d "$APPS_RG_EMBEDDING_MODEL_PATH" ]]; then
 fi
 
 if ! curl -fsS "${VLLM_BASE_URL%/}/models" >/dev/null; then
-  echo "FAIL: vLLM not healthy at $VLLM_BASE_URL (run: docker start local-qwen-vllm)" >&2
+  echo "FAIL: vLLM not healthy at $VLLM_BASE_URL" >&2
+  echo "Boot: bash $REPO/ops_scripts/apps_rg/boot_local_qwen_vllm.sh" >&2
+  echo "Doc:  $REPO/docs/cursor/local_qwen_docker_boot.md" >&2
   exit 1
 fi
 echo "OK: vLLM /v1/models"

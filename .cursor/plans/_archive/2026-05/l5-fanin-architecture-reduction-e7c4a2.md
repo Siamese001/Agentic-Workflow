@@ -46,10 +46,22 @@ dod_exempt: false
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1  
-PLAN_STATUS: IN_PROGRESS  
-CURRENT_WAVE: W3  
-LAST_COMPLETED_WAVE: W3C (implementation slices 3A–3C documented)  
-LAST_UPDATED: 2026-05-16 (W3A + W3B + W3C executed)  
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W3
+LAST_COMPLETED_WAVE: W3C
+LAST_UPDATED: 2026-05-25
+NOTION_STATUS: Completed
+NOTION_RECONCILED: 2026-05-25
+PLAN_COMPLETED: 2026-05-25
+PLAN_COMPLETE: plan=l5-fanin-architecture-reduction-e7c4a2 note="W3 implementation + ratchet PASS adg_indexed_05242026_2005.sqlite"
+CLOSEOUT_RECEIPT: docs/reports/plans/active_backlog_closeout_receipt_20260525.md
+RATCHET_PROOF: ops_scripts/ci/check_l5_hotspot_fanin_ratchet.py exit=0 snapshot=adg_indexed_05242026_2005.sqlite
+LAST_UPDATED: 2026-05-24
+NOTION_STATUS: In Progress
+NOTION_PAGE_ID: 36227693-f55c-81fc-a35b-dea4f39b11d8
+NOTION_RECONCILED: 2026-05-24
+ACTIVE_BACKLOG_MANIFEST: docs/reports/plans/active_in_progress_plans_manifest_20260524.md
+ACTIVE_BACKLOG_ROLE: core_governance_independent
 
 WAVE_COMPLETE: plan=l5-fanin-architecture-reduction-e7c4a2 wave=1 note="artifacts/test_inventory/l5_fanin_w1_dependency_attribution.md ADG+rg attribution 3 targets 206+84+50 edges L5_EXIT_1 unchanged scope=w1-read-only"  
 WAVE_COMPLETE: plan=l5-fanin-architecture-reduction-e7c4a2 wave=2 note="artifacts/test_inventory/l5_fanin_w2_reduction_design.md facade+barrel-collapse design 3 targets sequencing=ssot→ingress→types Author-Gate=W3 scope=w2-design-only"  
@@ -305,3 +317,26 @@ WAVE_COMPLETE: plan=l5-fanin-architecture-reduction-e7c4a2 wave=2 note="artifact
 
 PLAN_CREATED: slug=l5-fanin-architecture-reduction-e7c4a2 path=.cursor/plans/l5-fanin-architecture-reduction-e7c4a2.md status=Not Started  
 NOTION_PLAN_PAGE_ID: 36227693-f55c-81fc-a35b-dea4f39b11d8
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Preflight scope (Constitutional §22) — MV-driven blast radius before edits:
+
+| MV | Use |
+|----|-----|
+| `mv_fanin_top` | inbound dependency rank for scoped seam |
+| `mv_fanout_top` | outbound consumer rank |
+| `mv_blast_radius` | change-impact envelope |
+| `mv_chokepoint_score` | sequencing / coupling risk |
+
+Semantic edges: `flows_to`, `reads_from`, `writes_to` · P-view: `v_p0_wave_plan`
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | Node | Archetype | Surface | Rationale |
+|------|------|-----------|---------|-----------|
+| 1 | scoped seam | CENTRAL_DEPENDENCY | Execution Surface | primary edit locus |
+| 2 | gate / boundary | SAFETY_GATEKEEPER | Security Surface | fail-closed enforcement |

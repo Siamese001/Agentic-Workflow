@@ -98,7 +98,7 @@ ask_user_question(
 ### Integration
 
 - `ops_scripts/ci/_adg_burndown_gate.py` — Violation detection
-- `post_cursor_agent_author_gate_audit.py` — Approval pipeline
+- `.cursor/hooks/after_agent_governance_dispatch.py` — Post-agent capture + AG audit chain (not `post_cursor_agent_author_gate_audit.py`, obsolete)
 - `.pre-commit-config.yaml` — T3a ratchet enforcement
 
 ---

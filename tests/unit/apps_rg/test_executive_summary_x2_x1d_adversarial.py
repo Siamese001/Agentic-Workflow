@@ -212,7 +212,7 @@ def test_adversarial_x2_repair_accepts_when_monotonicity_passes_mock_llm() -> No
     mock_result.to_dict.return_value = {"runtime_generation_status": "REAL_LLM"}
 
     with patch(
-        "apps_rg.runtime.providers.section_qwen_slice.call_qwen_vllm",
+        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.call_qwen_vllm",
         return_value=mock_result,
     ):
         _raw, parsed, receipt = repair_judge_regen_after_x2_fail(
@@ -244,7 +244,7 @@ def test_adversarial_x2_repair_rejects_when_repair_would_drop_sentences_mock_llm
     mock_result.to_dict.return_value = {}
 
     with patch(
-        "apps_rg.runtime.providers.section_qwen_slice.call_qwen_vllm",
+        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.call_qwen_vllm",
         return_value=mock_result,
     ):
         _raw, _parsed, receipt = repair_judge_regen_after_x2_fail(

@@ -529,6 +529,16 @@ def _resolve_generic_section_graph_skills_proof_pool(
     meta["silent_fallback_possible"] = False
     meta["fail_closed_if_graph_unavailable"] = True
     meta["selection_method"] = plan.get("selection_method")
+    for scope_key in (
+        "career_track_scope_allowed",
+        "employment_window",
+        "career_track_scope_policy",
+        "ledger_pick_order",
+    ):
+        if plan.get(scope_key) is not None:
+            meta[scope_key] = plan.get(scope_key)
+    if section_id == "ibm_bullets" and plan.get("career_track_scope_allowed"):
+        meta["selected_tracks"] = list(plan.get("career_track_scope_allowed") or [])
     meta["c03_graph_bound_status"] = c03_status
     meta["c03_graphrag_bound"] = c03_doc
     meta["c03_graph_hop_paths_count"] = c03_doc.get("graph_hop_paths_count", 0)

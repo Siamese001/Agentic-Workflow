@@ -1,0 +1,121 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "e2e_status": "PASS",
+  "failure_count": 0,
+  "failures": [],
+  "results": [
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_closeout_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_closeout_receipt.md",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_w0_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_w1_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_w2_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_w3_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/governance_dedup_w4_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/plan_sprawl_inventory_20260526.csv",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:.cursor/hooks/after_agent_governance_dispatch.py",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:.cursor/plans/_archive/2026-05",
+      "status": "PASS"
+    },
+    {
+      "check": "exists:.cursor/scripts/_legacy_cursor",
+      "status": "PASS"
+    },
+    {
+      "check": "closeout_manifest",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "check": "structural",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "name": "check_ag_hook_wiring",
+      "argv": "python ops_scripts/ci/check_ag_hook_wiring.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": ""
+    },
+    {
+      "name": "check_agents_md_sync",
+      "argv": "python ops_scripts/ci/check_agents_md_sync.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": ""
+    },
+    {
+      "name": "check_cursor_optimized_config",
+      "argv": "python .cursor/scripts/check_cursor_optimized_config.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": ""
+    },
+    {
+      "name": "generate_rules_index_check",
+      "argv": "python .cursor/scripts/generate_rules_index.py --check",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": "Scanning sources...\nOK: Generated content matches existing RULES_INDEX.md\n"
+    },
+    {
+      "name": "check_always_on_token_budget",
+      "argv": "python ops_scripts/ci/check_always_on_token_budget.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": ""
+    },
+    {
+      "name": "check_cursor_native_config_strict",
+      "argv": "python .cursor/scripts/check_cursor_native_config.py --strict",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": ""
+    },
+    {
+      "name": "governance_w3_hook_audit_matrix",
+      "argv": "python ops_scripts/ci/governance_w3_hook_audit_matrix.py --check",
+      "exit_code": 0,
+      "status": "PASS",
+      "stderr_tail": ""
+    },
+    {
+      "name": "pytest_hooks_and_wiring",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_tail": "ock\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n57 passed, 3 warnings in 0.14s\n"
+    }
+  ]
+}

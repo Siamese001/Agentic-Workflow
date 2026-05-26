@@ -193,6 +193,113 @@ def _graph_ranked_unify_bullets_plan(
     return clean, ordered, allowed
 
 
+def _graph_ranked_ibm_bullets_plan(
+    ledger: dict[str, Any],
+    *,
+    section_id: str,
+    target_role: str,
+    jd_text: str,
+    briefing_text: str,
+    limit: int,
+    repo_root: Path | None = None,
+) -> tuple[dict[str, Any], list[str], set[str]] | None:
+    """Phase 2 track-only graph ranking for IBM bullets (2017–2022 employment window)."""
+    from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+    from apps_rg.fact_inventory.track_weighted_graph_expansion import (
+        build_track_weighted_expansion,
+        infer_projection_role_family_key,
+    )
+    from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
+    from apps_rg.runtime.sections.ibm_bullets_graph_evidence import (
+        IBM_BULLETS_MIN_PHASE2_FACTS,
+        IBM_EMPLOYMENT_WINDOW_LABEL,
+        IBM_PHASE2_CAREER_TRACK,
+        IBM_PHASE2_TRACK_WEIGHT_OVERRIDE,
+        IBM_TRACK_RANKED_SELECTION_METHOD,
+        build_ibm_phase2_graph_plan_fact,
+    )
+
+    root = repo_root or Path(__file__).resolve().parents[2]
+    graph = load_augmented_skills_graph(repo_root=root)
+    role_key = infer_projection_role_family_key(
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    expansion = build_track_weighted_expansion(
+        graph=graph,
+        role_family_key=role_key,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        repo_root=root,
+        weight_override=dict(IBM_PHASE2_TRACK_WEIGHT_OVERRIDE),
+        min_tracks_with_facts=1,
+        enforce_hybrid_contract=False,
+    )
+
+    phase2_entries = [
+        fe
+        for fe in (expansion.get("selected_facts") or [])
+        if isinstance(fe, dict)
+        and str(fe.get("career_track") or "") == IBM_PHASE2_CAREER_TRACK
+        and str(fe.get("fact_id") or "").strip()
+    ]
+    phase2_fact_ids = {str(fe["fact_id"]).strip() for fe in phase2_entries}
+    hop_by_id = {str(fe["fact_id"]): fe for fe in phase2_entries}
+    ledger_by_id: dict[str, dict[str, Any]] = {}
+    for raw in ledger.get("candidate_facts") or []:
+        if not isinstance(raw, dict):
+            continue
+        cid = str(raw.get("candidate_fact_id") or "").strip()
+        if cid:
+            ledger_by_id[cid] = raw
+
+    scores = _fact_scores_from_graph_expansion(expansion, unify_ledger_ids=phase2_fact_ids)
+
+    def _rank_key(fid: str) -> tuple[int, float, str]:
+        row = ledger_by_id.get(fid) or {}
+        blob = " ".join(
+            str(row.get(key) or "")
+            for key in ("company_lane", "company", "claim_text", "domain_family")
+        ).lower()
+        ibm_boost = 1 if "ibm" in blob else 0
+        return (-ibm_boost, -scores.get(fid, 0.0), fid)
+
+    pick_n = max(IBM_BULLETS_MIN_PHASE2_FACTS, min(limit, len(phase2_fact_ids)))
+    picked_ids = sorted(phase2_fact_ids, key=_rank_key)[:pick_n]
+
+    facts: list[dict[str, Any]] = []
+    for fid in picked_ids:
+        hop = hop_by_id.get(fid) or {}
+        fact = build_ibm_phase2_graph_plan_fact(
+            fact_id=fid,
+            ledger_row=ledger_by_id.get(fid),
+            hop_entry=hop,
+            graph=graph,
+            section_id=section_id,
+        )
+        if fact:
+            facts.append(fact)
+
+    if len(facts) < IBM_BULLETS_MIN_PHASE2_FACTS:
+        return None
+
+    plan = {
+        "section_id": section_id,
+        "selection_method": IBM_TRACK_RANKED_SELECTION_METHOD,
+        "ledger_pick_order": picked_ids,
+        "facts": facts,
+        "required_fact_ids": [str(f["fact_id"]) for f in facts],
+        "career_track_scope_allowed": [IBM_PHASE2_CAREER_TRACK],
+        "employment_window": IBM_EMPLOYMENT_WINDOW_LABEL,
+        "career_track_scope_policy": "phase2_data_tech_cloud_ml_only",
+        "_graph_expansion_role_family_key": role_key,
+    }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    clean = {k: v for k, v in plan.items() if not str(k).startswith("_")}
+    return clean, ordered, allowed
+
+
 def assert_graph_skills_section(section_id: str) -> None:
     if section_id not in GRAPH_SKILLS_AUTHORITY_SECTIONS:
         raise ValueError(f"not a graph-skills authority section: {section_id!r}")
@@ -236,6 +343,25 @@ def allocate_section_facts_from_graph_substrate(
         )
         if ranked is not None:
             return _sanitize_plan(ranked[0]), ranked[1], ranked[2]
+
+    if section_id == "ibm_bullets":
+        from apps_rg.runtime.sections.ibm_bullets_graph_evidence import IBM_BULLETS_MIN_PHASE2_FACTS
+
+        ranked = _graph_ranked_ibm_bullets_plan(
+            ledger,
+            section_id=section_id,
+            target_role=target_role,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+            limit=min_required or IBM_BULLETS_MIN_PHASE2_FACTS,
+            repo_root=repo_root,
+        )
+        if ranked is not None:
+            return _sanitize_plan(ranked[0]), ranked[1], ranked[2]
+        raise ValueError(
+            "graph-skills allocation for ibm_bullets requires "
+            f">={IBM_BULLETS_MIN_PHASE2_FACTS} Phase 2 track facts; ranked plan unavailable"
+        )
 
     srfs = select_candidate_facts_for_role(
         target_company=target_company,
@@ -297,5 +423,6 @@ __all__ = [
     "GRAPH_SKILLS_AUTHORITY_SECTIONS",
     "allocate_section_facts_from_graph_substrate",
     "assert_graph_skills_section",
+    "_graph_ranked_ibm_bullets_plan",
     "_graph_ranked_unify_bullets_plan",
 ]

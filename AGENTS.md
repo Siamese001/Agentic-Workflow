@@ -35,6 +35,8 @@ Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS
 
 <!-- MCP-QUICK-REFERENCE:END -->
 
+Per-server `SKILL.md` files under `.cursor/skills/<name>/` are **redirect stubs**; procedural SSOT is [`mcp-integration`](.cursor/skills/mcp-integration/SKILL.md) sections §1–§13.
+
 ## Notion Workspace Map
 
 <!-- NOTION-MAP:START -->
@@ -90,7 +92,11 @@ Procedural MCP / Notion / ledgers: [`mcp-integration`](.cursor/skills/mcp-integr
 |-------|------|-------|
 | Always-on rules (Option A) | `.cursor/rules/000–003*.mdc` | Four `alwaysApply: true` |
 | On-demand rules | `.cursor/rules/*.mdc` | `alwaysApply: false` + globs |
-| Skills | `.cursor/skills/*/SKILL.md` | Progressive disclosure |
+| Skills | `.cursor/skills/*/SKILL.md` | Progressive disclosure; per-server stubs redirect to `mcp-integration` §1–§13 |
+| Hooks | `.cursor/hooks.json` | Post-agent SSOT: `after_agent_governance_dispatch.py` |
+| Index | `.cursor/RULES_INDEX.md` | Generated; `#always-on-discipline` anchor |
 | Windsurf mirror | `.windsurf/rules/*.md` | **Read-only legacy**; edit `.mdc` only |
 
-Governance inventory: `docs/reports/cursor/governance_tier_inventory.json`.
+**Dedup:** Do not restate always-on invariants in skills or hook reminders. MCP procedure → `mcp-integration` sections, not redirect stub bodies. Author-Gate steps → `003-cursor-author-gate-hitl.mdc` only.
+
+Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](.cursor/plans/governance-dedup-closeout-e8a4c2.md).

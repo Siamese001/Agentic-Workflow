@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-25T21:41:49Z",
+  "generated_at": "2026-05-26T18:40:07Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -1956,7 +1956,7 @@
     },
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:fea41c66d2a5f15f",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:46d05acee2450b0c",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -2011,7 +2011,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-05-25T21:41:49.816366+00:00",
+      "generated_at_utc": "2026-05-26T18:40:07.492366+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2100,9 +2100,9 @@
         "ref:graph:fact_lineage:fact_revenue_ops_005",
         "ref:graph:fact_lineage:fact_sales_accounts_001"
       ],
-      "graph_sig": "101becc581bc92cb9ce9b96459b0faed",
+      "graph_sig": "f7845defbe361451187fb10a16eed021",
       "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-      "graph_digest": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+      "graph_digest": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
       "graph_version": "master_skills_arsenal_graph_v1",
       "evidence_items_count": 14,
       "final_evidence_contract_snapshot": {
@@ -2198,9 +2198,9 @@
           "ref:graph:fact_lineage:fact_revenue_ops_005",
           "ref:graph:fact_lineage:fact_sales_accounts_001"
         ],
-        "graph_sig": "101becc581bc92cb9ce9b96459b0faed",
+        "graph_sig": "f7845defbe361451187fb10a16eed021",
         "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-        "graph_digest": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+        "graph_digest": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
         "graph_version": "master_skills_arsenal_graph_v1",
         "evidence_items": [
           {
@@ -2330,7 +2330,7 @@
             "career_track": "track_data_tech_cloud_ml"
           }
         ],
-        "evidence_collection_timestamp": "2026-05-25T21:41:49.816366+00:00",
+        "evidence_collection_timestamp": "2026-05-26T18:40:07.492366+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -2384,13 +2384,13 @@
       ]
     },
     "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-    "graph_digest": "fea41c66d2a5f15faa273ffbe9658ec3ac2c82a7161741851d74a513547c1996",
+    "graph_digest": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
     "graph_version": "master_skills_arsenal_graph_v1"
   },
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:fea41c66d2a5f15f",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:46d05acee2450b0c",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -2408,7 +2408,10 @@
   },
   "agentic_core_isolation": {
     "git_diff_name_only_agentic_core": [],
-    "git_status_short_agentic_core": [],
+    "git_status_short_agentic_core": [
+      "M agentic_core/L0_routing/config/model_registry.py",
+      "M agentic_core/L2_execution/types/vllm_serving_profile_types.py"
+    ],
     "dirty_files": [],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [

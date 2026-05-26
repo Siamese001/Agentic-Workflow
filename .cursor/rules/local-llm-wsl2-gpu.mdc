@@ -46,7 +46,7 @@ alwaysApply: false
 ## Stack location (canonical — Stack B, Docker container, since 2026-05-06)
 
 The canonical runtime for `Agentic-Workflow-FRESH` is the **Docker Desktop
-container `local-qwen-vllm`** (image `vllm/vllm-openai:latest`), not a WSL2
+container `local-qwen-vllm`** (see `docker-compose.qwen.yml`), not a WSL2
 native systemd-user service. WSL2 still hosts the CUDA passthrough layer that
 Docker uses for `--gpus all`; the framing in §"Memory framing rules" above
 remains correct — only the "where does the vLLM process physically run"
@@ -55,11 +55,26 @@ question flipped.
 | Field | Value |
 |---|---|
 | Container | `local-qwen-vllm` |
-| Image | `vllm/vllm-openai:latest` |
+| Compose SSOT | `docker-compose.qwen.yml` |
+| Image | `vllm/vllm-openai:v0.11.0` (pinned in compose; do not use floating `:latest` for proof) |
+| Weights | WSL bind: `~/models/Qwen2.5-32B-Instruct-AWQ` → `/models/qwen` (see boot runbook) |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL`) |
-| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 24576 --gpu-memory-utilization 0.92 --host 0.0.0.0 --port 8000` |
+| Container args | `--model /models/qwen --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --attention-backend TRITON_ATTN --max-model-len 24576 --gpu-memory-utilization 0.88 --max-num-seqs 8` |
 | Lifecycle | `docker start local-qwen-vllm` / `docker stop local-qwen-vllm` |
-| Health | `curl http://localhost:8000/v1/models` |
+| Health | `curl http://localhost:8000/v1/models` (empty reply = still loading, not necessarily down) |
+
+### Cursor boot steps (operator)
+
+Briefing: [`docs/cursor/briefing_local_qwen_docker_boot_20260526.md`](../../docs/cursor/briefing_local_qwen_docker_boot_20260526.md) · Full runbook: [`docs/cursor/local_qwen_docker_boot.md`](../../docs/cursor/local_qwen_docker_boot.md).
+
+1. **Compose from WSL** (bind mount must resolve on WSL ext4, not empty from PowerShell-only compose):
+   `wsl -e bash -lc 'cd /mnt/c/Git/Agentic-Workflow-FRESH && docker compose -f docker-compose.qwen.yml up -d qwen-vllm'`
+2. **Verify mount:** `docker exec local-qwen-vllm test -f /models/qwen/config.json`
+3. **Verify API:** `curl -fsS http://localhost:8000/v1/models` (wait 2–4 min cold load)
+4. **Helper:** `wsl bash /mnt/c/Git/Agentic-Workflow-FRESH/ops_scripts/apps_rg/boot_local_qwen_vllm.sh`
+5. **Apps fix script:** `.\ops_scripts\apps_rg\Fix-AppsRgWslRuntime.ps1`
+
+⛔ Do not boot without the WSL weights mount — container will re-download ~20 GB from Hugging Face Hub.
 
 Strict-mode preflight: `agentic_core/L2_execution/healers/qwen_strict_diagnostic.py`
 emits `docker_desktop_down` / `docker_cli_missing` / `vllm_container_down` /
@@ -87,10 +102,9 @@ What was archived (repo-side):
 - `tools/vllm/check_vllm.sh` → same archive
 - `tools/vllm/vllm.service` → same archive
 
-> **VHDX placement framing still applies**: if a future Docker volume binds
-> the model dir from WSL2, keep the model on ext4 VHDX, not on `/mnt/c/...`
-> (NTFS via 9P is ~10× slower). The `local-qwen-vllm` container has its
-> own copy via the image so this is currently moot.
+> **VHDX placement framing still applies**: bind-mount weights from WSL2 ext4
+> (`~/models/Qwen2.5-32B-Instruct-AWQ` → `/models/qwen`), not from `/mnt/c/...`
+> (NTFS via 9P is ~10× slower). Boot compose **from WSL** so the mount is not empty.
 
 ## Retired stack (deleted 2026-04-24)
 

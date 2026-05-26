@@ -56,9 +56,46 @@ def resolve_max_parallel(*, default: int = 2) -> int:
     return max(1, min(7, default))
 
 
+def assert_section_dag_wave_order(manifest: dict[str, Any]) -> None:
+    """Every lane ``depends_on`` must appear in a strictly earlier wave than the dependent lane."""
+    lanes_raw = manifest.get("lanes") or []
+    lane_meta: dict[str, dict[str, Any]] = {}
+    for entry in lanes_raw:
+        if not isinstance(entry, dict):
+            continue
+        lid = str(entry.get("id") or "").strip()
+        if lid:
+            lane_meta[lid] = entry
+
+    lane_wave: dict[str, int] = {}
+    for wave in manifest.get("waves") or []:
+        if not isinstance(wave, dict):
+            continue
+        wid = int(wave.get("id", 0))
+        for lane_id in wave.get("lanes") or []:
+            lane_wave[str(lane_id)] = wid
+
+    for lane_id, entry in lane_meta.items():
+        for dep in entry.get("depends_on") or []:
+            dep_id = str(dep).strip()
+            if dep_id not in lane_meta:
+                raise ValueError(f"lane '{lane_id}' depends_on unknown lane '{dep_id}'")
+            w_lane = lane_wave.get(lane_id)
+            w_dep = lane_wave.get(dep_id)
+            if w_lane is None:
+                raise ValueError(f"lane '{lane_id}' missing from waves schedule")
+            if w_dep is None:
+                raise ValueError(f"lane '{lane_id}' depends_on '{dep_id}' missing from waves schedule")
+            if w_dep >= w_lane:
+                raise ValueError(
+                    f"lane '{lane_id}' (wave {w_lane}) must run after '{dep_id}' (wave {w_dep})"
+                )
+
+
 def build_phase1_waves() -> tuple[LaneWave, ...]:
     """Ordered waves respecting DAG; wave 0 exec solo when parallel mode on."""
     manifest = load_section_dag_manifest()
+    assert_section_dag_wave_order(manifest)
     waves_raw = manifest.get("waves") or []
     out: list[LaneWave] = []
     for w in waves_raw:
@@ -77,6 +114,7 @@ def build_phase1_waves() -> tuple[LaneWave, ...]:
 
 __all__ = [
     "LaneWave",
+    "assert_section_dag_wave_order",
     "build_phase1_waves",
     "load_section_dag_manifest",
     "phase1_parallel_enabled",

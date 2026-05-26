@@ -1,0 +1,41 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "wave": "W0",
+  "status": "PASS",
+  "completed_at": "2026-05-26T19:16:00+00:00",
+  "artifacts": [
+    {
+      "path": "docs/reports/cursor/governance_w3_hook_audit_matrix.json",
+      "markdown": "[governance_w3_hook_audit_matrix.json](docs/reports/cursor/governance_w3_hook_audit_matrix.json)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_w3_hook_audit_matrix.md",
+      "markdown": "[governance_w3_hook_audit_matrix.md](docs/reports/cursor/governance_w3_hook_audit_matrix.md)"
+    },
+    {
+      "path": "artifacts/cursor/governance_dispatch_shadow.jsonl",
+      "markdown": "[governance_dispatch_shadow.jsonl](artifacts/cursor/governance_dispatch_shadow.jsonl)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_dedup_w0_receipt.md",
+      "markdown": "[governance_dedup_w0_receipt.md](docs/reports/cursor/governance_dedup_w0_receipt.md)"
+    }
+  ],
+  "matrix_counts": {
+    "hook_required": 17,
+    "ci_required": 0,
+    "manual_only": 13,
+    "obsolete_candidate": 12,
+    "duplicate_candidate": 3
+  },
+  "post_agent_scripts_total": 42,
+  "gates": {
+    "check_ag_hook_wiring": "PASS",
+    "check_cursor_optimized_config": "PASS"
+  },
+  "shadow": {
+    "shadow_days_required": 7,
+    "eligible_for_w1_script_archive_at": "see governance_dispatch_shadow.jsonl row"
+  },
+  "notion_page_id": "36c27693-f55c-815e-a2d1-e6e867ffe7bd"
+}

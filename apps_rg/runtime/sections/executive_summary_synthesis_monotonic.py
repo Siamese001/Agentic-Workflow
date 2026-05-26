@@ -34,6 +34,8 @@ JUDGE_REGEN_COVERAGE_GATE_IDS: frozenset[str] = frozenset(
         "x2_claim_coverage_accounting_consistent",
         "x2_material_clause_coverage_100",
         "x2_input_usage_accounting_consistent",
+        "x2_claim_ledger_row_count_matches_sentence_count",
+        "x2_self_check_claim_ledger_consistent",
     }
 )
 

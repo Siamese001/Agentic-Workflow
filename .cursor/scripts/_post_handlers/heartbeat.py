@@ -1,6 +1,6 @@
 """Heartbeat handler — writes one line per response to the heartbeat log.
 
-In-process equivalent of `.cursor/scripts/post_cursor_agent_heartbeat.py`.
+In-process equivalent of archived `.cursor/scripts/_legacy_cursor/post_cursor_agent_heartbeat.py`.
 Mirrors that script's contract exactly so the standalone hook can be
 removed once the dispatcher is fully cut over.
 """

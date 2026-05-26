@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Literal, Mapping
 
 ACCEPTED_FINALIZED_COMPANION_STATUS = "ACCEPTED_FINALIZED"
+UpstreamBulletsGateStatus = Literal["NOT_APPLICABLE", "PASS", "BLOCKED"]
 UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS = "BLOCKED_UPSTREAM_NOT_FINALIZED"
 PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER = "UPSTREAM_BULLETS_NOT_FINALIZED"
 
@@ -279,6 +280,62 @@ def build_companion_bullets_context(
     }
 
 
+def _narrative_upstream_spec(narrative_section_id: str) -> tuple[str, tuple[str, ...]] | None:
+    from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
+    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+
+    specs: dict[str, tuple[str, tuple[str, ...]]] = {
+        "unify_narrative": ("unify_bullets", UNIFY_BULLET_IDS),
+        "ibm_narrative": ("ibm_bullets", IBM_BULLET_IDS),
+    }
+    return specs.get(str(narrative_section_id).strip())
+
+
+def evaluate_narrative_upstream_bullets_gate(
+    narrative_section_id: str,
+    *,
+    repo: Path | None = None,
+) -> tuple[UpstreamBulletsGateStatus, str, str]:
+    """Pre-dispatch gate: narrative lanes require finalized companion bullet evidence."""
+    spec = _narrative_upstream_spec(narrative_section_id)
+    if spec is None:
+        return "NOT_APPLICABLE", "", ""
+    if companion_allow_legacy_stale_fallback():
+        return "PASS", spec[0], "test_harness_waiver"
+
+    upstream_lane, expected_ids = spec
+    from apps_rg.runtime.runtime_proof_layout import (
+        find_repo_root,
+        modular_sections_root_from_env,
+    )
+
+    root = repo if repo is not None else find_repo_root()
+    msr = modular_sections_root_from_env(root)
+    if msr is not None:
+        if companion_accepted_in_modular_sections_root(
+            root,
+            msr,
+            upstream_section_id=upstream_lane,
+            expected_bullet_ids=expected_ids,
+        ):
+            return "PASS", upstream_lane, "modular_accepted"
+        return (
+            "BLOCKED",
+            upstream_lane,
+            f"{upstream_lane} not ACCEPTED_FINALIZED in current modular sections root",
+        )
+
+    path = _l2_from_legacy_stale_fallback(root, upstream_lane, expected_bullet_ids=expected_ids)
+    if path is not None:
+        return "PASS", upstream_lane, "accepted_upstream_run"
+    return (
+        "BLOCKED",
+        upstream_lane,
+        f"run --section {upstream_lane} to ACCEPTED_FINALIZED PASS before "
+        f"--section {narrative_section_id}",
+    )
+
+
 __all__ = [
     "ACCEPTED_FINALIZED_COMPANION_STATUS",
     "COMPANION_FINALIZED_X3_CODES",
@@ -290,5 +347,7 @@ __all__ = [
     "companion_blocks_narrative_llm",
     "companion_run_dir_accepted",
     "evaluate_companion_bullet_lane_finalized",
+    "evaluate_narrative_upstream_bullets_gate",
     "resolve_companion_bullets_l2_path",
+    "UpstreamBulletsGateStatus",
 ]

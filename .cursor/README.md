@@ -2,15 +2,27 @@
 
 This folder is the active Cursor operating surface for the Agentic AI project.
 
-## Active always-on rules
+## Active always-on rules (Option A — four rules)
 
-Only three rules are always-on after the optimization pass:
+These four `.mdc` files have `alwaysApply: true` (measured with `AGENTS.md` in `governance_tier_inventory.json`):
 
 - `.cursor/rules/000-agentic-core-operating-contract.mdc`
 - `.cursor/rules/001-cursor-runtime-seam-execution.mdc`
 - `.cursor/rules/002-pass-blocked-proof-contract.mdc`
+- `.cursor/rules/003-cursor-author-gate-hitl.mdc`
 
 Everything else is task-scoped reference material, a skill, an agent, a hook, a script, a schema, or archived history.
+
+## Hooks (pre / post Cursor)
+
+| Cursor event | Hook entry | Role |
+|--------------|------------|------|
+| `beforeSubmitPrompt` | `hooks/before_submit_prompt.py` | Legacy-surface guard + ADG-first warning |
+| `beforeSubmitPrompt` | `scripts/pre_user_prompt_author_gate_reminder.py` | Author-Gate replay (informational) |
+| `afterAgentResponse` | `hooks/after_agent_governance_dispatch.py` | **SSOT** post-agent chain (ADG, AG audits, Notion, dispatch) |
+| Other events | `hooks/before_*`, `after_file_edit`, `stop` | Shell/MCP/read gates, edit audit, stop audit |
+
+Do not wire duplicate post-agent chains. Legacy chain/hooks live under `_legacy_cursor/` (see W1 archive README). Active SSOT: `after_agent_governance_dispatch.py`.
 
 ## Operating model
 

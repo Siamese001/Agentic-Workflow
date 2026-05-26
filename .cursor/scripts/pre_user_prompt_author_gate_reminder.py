@@ -45,21 +45,9 @@ MAX_VIOLATIONS_SCAN = 50
 BYPASS_ENV = "AG_REMINDER_BYPASS"
 
 PIPELINE_REMINDER = """\
-AUTHOR_GATE_PIPELINE_REMINDER: The canonical Author-Gate pipeline is:
-  1. skill(refactor-decision-memory)     -- consult historical precedent
-  2. skill(author-gate-packet-builder)   -- emit AUTHOR_GATE_PACKET: block
-  3. skill(author-gate-ui-renderer)      -- render recommendation card + OPTIONS_JSON
-  4. ask_user_question(options=OPTIONS_JSON)
-
-FORBIDDEN: hand-crafting ask_user_question options without steps 1-3.
-REQUIRED FORMAT for each surfaced option description:
-  [RECOMMENDED ⭐ confidence=0.NN]  OR  [confidence=0.NN]
-  followed by · trade-off: <≥20-char tradeoff text>
-
-Skills to invoke (in order):
-  skill("refactor-decision-memory")
-  skill("author-gate-packet-builder")
-  skill("author-gate-ui-renderer")
+AUTHOR_GATE_PIPELINE_REMINDER: Follow `.cursor/rules/003-cursor-author-gate-hitl.mdc` (always-on).
+Pipeline: refactor-decision-memory → emit_packet → render_card → ask_user_question(OPTIONS_JSON verbatim).
+Do not hand-build options or Markdown menus. Detail: author-gate-packet-builder + author-gate-ui-renderer skills.
 """
 
 AG_CONTEXT_SIGNALS: list[str] = [

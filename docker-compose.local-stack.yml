@@ -1,0 +1,15 @@
+# Local infra stack: OTel collector + Qwen vLLM.
+#
+# Brings both services under one Compose project (Docker Desktop group:
+# agentic-workflow-fresh when run from this repo root).
+#
+# Usage:
+#   docker compose -f docker-compose.local-stack.yml up -d
+#   docker compose -f docker-compose.local-stack.yml ps
+#   docker compose -f docker-compose.local-stack.yml stop qwen-vllm
+#
+# OTel-only or Qwen-only: use docker-compose.otel.yml or docker-compose.qwen.yml.
+
+include:
+  - path: docker-compose.otel.yml
+  - path: docker-compose.qwen.yml

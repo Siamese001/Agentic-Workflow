@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Converted from Cursor rule scope-containment.md Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/scope-containment.mdc (alwaysApply: false).
 ---
 
 # Scope Containment — No Gold-Plating, One Task At A Time

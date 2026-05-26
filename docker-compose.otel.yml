@@ -8,6 +8,7 @@
 #
 # Usage:
 #   docker compose -f docker-compose.otel.yml up -d
+#   docker compose -f docker-compose.local-stack.yml up -d   # OTel + Qwen (same project)
 #   python tools/cert/run_otel_collector_probe.py
 #   docker compose -f docker-compose.otel.yml down
 #

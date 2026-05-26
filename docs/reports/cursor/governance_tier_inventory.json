@@ -1,8 +1,7 @@
 {
-  "generated_at": "2026-05-19T18:00:00+00:00",
+  "generated_at": "2026-05-26T19:27:03.683699+00:00",
   "plan_id": "cursor-governance-two-tier-b4e8f2",
-  "wave": "W5",
-  "plan_status": "COMPLETED",
+  "wave": "W0",
   "policy_option_selected": "A",
   "policy_option_a_target_always_apply": [
     "000-agentic-core-operating-contract.mdc",
@@ -38,16 +37,16 @@
       },
       {
         "path": "AGENTS.md",
-        "bytes": 9179
+        "bytes": 10393
       }
     ],
-    "total_bytes": 18460,
-    "approx_tokens": 4615,
+    "total_bytes": 19674,
+    "approx_tokens": 4918,
     "threshold_bytes": 51200,
     "status": "PASS",
-    "headroom_bytes": 32740
+    "headroom_bytes": 31526
   },
-  "agents_md_bytes": 9179,
+  "agents_md_bytes": 10393,
   "always_apply_mdc_count": 4,
   "always_apply_mdc_names": [
     "000-agentic-core-operating-contract.mdc",
@@ -64,93 +63,18 @@
   "windsurf_legacy_always_on": {
     "reported_separately": true,
     "summed_into_tier_1": false,
-    "total_bytes": 47493,
-    "approx_tokens": 11873,
-    "file_count": 13,
-    "files": [
-      {
-        "path": ".windsurf/rules/adg-canonical-invariants.md",
-        "bytes": 1980
-      },
-      {
-        "path": ".windsurf/rules/agentic-core-static.md",
-        "bytes": 3703
-      },
-      {
-        "path": ".windsurf/rules/apps-rg-interactive-discipline.md",
-        "bytes": 2509
-      },
-      {
-        "path": ".windsurf/rules/author-gate-enforcement.md",
-        "bytes": 7611
-      },
-      {
-        "path": ".windsurf/rules/author-gate-queue-drain.md",
-        "bytes": 2408
-      },
-      {
-        "path": ".windsurf/rules/constitutional.md",
-        "bytes": 11653
-      },
-      {
-        "path": ".windsurf/rules/global_rules.md",
-        "bytes": 4652
-      },
-      {
-        "path": ".windsurf/rules/mcp-serialization.md",
-        "bytes": 1233
-      },
-      {
-        "path": ".windsurf/rules/notion-plan-wave-deferral.md",
-        "bytes": 1725
-      },
-      {
-        "path": ".windsurf/rules/plan-location.md",
-        "bytes": 3091
-      },
-      {
-        "path": ".windsurf/rules/plan-update-enforcement.md",
-        "bytes": 1436
-      },
-      {
-        "path": ".windsurf/rules/scope-containment.md",
-        "bytes": 3175
-      },
-      {
-        "path": ".windsurf/rules/ssot-folder-enforcement.md",
-        "bytes": 2317
-      }
-    ]
+    "total_bytes": 0,
+    "approx_tokens": 0,
+    "file_count": 0,
+    "files": []
   },
-  "active_plans_top_level_count": 10,
-  "w3r_baseline_orphan_remediation": {
-    "orphan_count_before": 507,
-    "orphan_count_after": 0,
-    "receipt_json": "docs/reports/cursor/governance_w3_remediation_receipt.json"
-  },
-  "w4_skill_hygiene": {
-    "skills_total": 35,
-    "skills_pass": 31,
-    "skills_warn": 4,
-    "skills_fail": 0,
-    "mcp_integration_bytes_before": 18264,
-    "mcp_integration_bytes_after": 3989,
-    "gate_script": "ops_scripts/ci/check_skill_description_quality.py",
-    "report_json": "docs/reports/cursor/governance_w4_skill_hygiene_report.json"
-  },
-  "w5_closeout": {
-    "status": "PASS",
-    "closeout_md": "docs/reports/cursor/governance_two_tier_closeout.md",
-    "closeout_manifest": "docs/reports/cursor/governance_two_tier_closeout_manifest.json",
-    "notion_status": "Completed",
-    "notion_sync_receipt": "docs/reports/cursor/governance_notion_wave_sync_receipt.json"
-  },
+  "active_plans_top_level_count": 11,
   "explicit_non_claims": [
-    "Full repository CI green not claimed (10C pilot gate)",
-    "runtime RAG not touched",
+    "W1-W5 not executed",
+    "no semantic rule consolidation performed",
     ".windsurf not deleted",
+    "runtime RAG not touched",
     "agentic_core untouched",
-    "apps_rg product runtime untouched",
-    "native config strict Windsurf refs not fixed"
+    "two-tier consolidation not complete"
   ]
 }

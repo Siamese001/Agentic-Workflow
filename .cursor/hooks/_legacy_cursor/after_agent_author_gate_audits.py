@@ -1,7 +1,9 @@
-"""afterAgentResponse — Author-Gate capture + advisory audits (Cursor-native chain).
+"""afterAgentResponse — LEGACY Author-Gate chain (superseded).
 
-Delegates to ``.cursor/scripts/post_cursor_agent_*.py`` in fixed order. Each script
-reads the same Cursor agent response JSON from stdin (fail-open; exit 0).
+**SSOT:** ``.cursor/hooks/after_agent_governance_dispatch.py`` runs ADG + this chain +
+Notion audit + ``post_cursor_agent_dispatch``. Do not add this file to ``hooks.json``.
+
+Kept for unit tests and manual replay only. New wiring must target governance_dispatch.
 """
 
 from __future__ import annotations

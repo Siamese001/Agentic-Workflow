@@ -1,0 +1,88 @@
+filename,plan_status,current_wave,disposition,is_slug_plan
+10c-proof-bundle-current-head-a8f4c2.md,COMPLETE,W2,ARCHIVE,yes
+adg-action-dispatch-c9e4a2.md,DONE,—,ARCHIVE,yes
+adg-ci-unified-migration-a7f3b2.md,COMPLETE,—,ARCHIVE,yes
+adg-three-bucket-pipeline-redesign-c8e4f1.md,COMPLETE,—,ARCHIVE,yes
+agent-capability-spine-harvest-e8f4a2.md,Not Started,W0.5,ACTIVE,yes
+agent-inventory-deferred-followup-c2a8f1.md,Not Started,W0,ACTIVE,yes
+agent-inventory-spine-taxonomy-b4e9f2.md,Completed,COMPLETE,ARCHIVE,yes
+apps-lic-runtime-proof-bundle-c9e2f1.md,COMPLETED,W4,ARCHIVE,yes
+apps-lic-spine-product-convergence-b7e4a2.md,,,ARCHIVE,yes
+apps-research-u0-spine-convergence-589d2f.md,,,ARCHIVE,yes
+apps-rg-agentic-core-binding-hardening-b7e3f1.md,COMPLETE,W-A,ARCHIVE,yes
+apps-rg-c0-ownership-split-a8c3e2.md,** Completed,,ARCHIVE,yes
+apps-rg-complexity-test-radar-605dcc.md,COMPLETE,—,ARCHIVE,yes
+apps-rg-contract-harness-modernization-f4e8b2.md,Completed,W5,ARCHIVE,yes
+apps-rg-docx-output-removal-4650ff.md,DONE,W0-complete,ARCHIVE,yes
+apps-rg-dry-run-migrate-delete-b9e4f2.md,COMPLETED,DONE,ARCHIVE,yes
+apps-rg-env-kill-switch-cleanup-f8e2a3.md,Complete,—,ARCHIVE,yes
+apps-rg-exit-disposition-smoke-b7e2d9.md,SUPERSEDED,—,ARCHIVE,yes
+apps-rg-fail-closed-repair-f8c4e2.md,Completed,DONE,ARCHIVE,yes
+apps-rg-hybrid-live-jd-selection-f8e2b3.md,Complete,W4,ARCHIVE,yes
+apps-rg-legacy-dependency-burndown-b7e4a2.md,COMPLETE,C,ARCHIVE,yes
+apps-rg-legacy-srfs-json-purge-a8f3c1.md,** Completed (2026-05-22),,ARCHIVE,yes
+apps-rg-pa-ssot-gap-b8e4f1.md,COMPLETED,W5,ARCHIVE,yes
+apps-rg-pa-w10-5-section-signal-hardening-c4f2a1.md,TODO,W0,ACTIVE,yes
+apps-rg-parallel-section-orchestration-f2a8c4.md,COMPLETE,W2,ARCHIVE,yes
+apps-rg-proof-pool-c0-ssot-a7f3e2.md,COMPLETE,Track-C-containment,ARCHIVE,yes
+apps-rg-quarantine-ssot-fanin-delete-c7e4a1.md,COMPLETED,DONE,ARCHIVE,yes
+apps-rg-reasoning-deletion-d4e8f1.md,COMPLETED,W3,ARCHIVE,yes
+apps-rg-resume-assembly-debt-burndown-56c022.md,COMPLETE,W3,ARCHIVE,yes
+apps-rg-runtime-substitute-burndown-c4e8f1.md,COMPLETE,W8,ARCHIVE,yes
+apps-rg-spine-deferred-harden-c8f1a2.md,COMPLETED,done,ARCHIVE,yes
+apps-rg-spine-only-unification-d8f4a2.md,COMPLETE,W6,ARCHIVE,yes
+apps-rg-v40-spine-gap-c4a8f1.md,SUPERSEDED,W0,ARCHIVE,yes
+apps-rg-x2-dead-gates-burndown-c4e8f2.md,COMPLETE,W4,ARCHIVE,yes
+c03-skills-graph-exec-summary-f9a2c4.md,COMPLETE,—,ARCHIVE,yes
+core-judge-panel-harness-f3c8d1.md,DONE,W3,ARCHIVE,yes
+core-same-authority-incremental-regen-e7a4b1.md,Completed,—,ARCHIVE,yes
+cursor-governance-two-tier-b4e8f2.md,COMPLETED,NONE,ARCHIVE,yes
+CURSOR_RUNTIME_SEAM_TEMPLATE.md,,,KEEP,no
+exec-summary-claim-coverage-hardening-a1f3e8.md,Complete,none,ARCHIVE,yes
+exec-summary-cli-gates-closeout-c7e4f2.md,DONE,DONE,ARCHIVE,yes
+exec-summary-e0-repair-hardening-c4e8f1.md,COMPLETED,W8,ARCHIVE,yes
+exec-summary-failed-run-persistence-notion-e7c4b2.md,TODO,W1,ACTIVE,yes
+exec-summary-graph-only-b5a963.md,COMPLETED,NONE,ARCHIVE,yes
+exec-summary-judge-regen-control-loop-f8a3c2.md,COMPLETE,W5,ARCHIVE,yes
+exec-summary-judge-regen-loop-closure-d8f3a1.md,Completed,DONE,ARCHIVE,yes
+exec-summary-judge-regen-prompt-loop-b9e4c3.md,Completed,—,ARCHIVE,yes
+exec-summary-l2-x1d-input-parity-c4f8e1.md,Completed,—,ARCHIVE,yes
+exec-summary-operator-ship-a3f7c2.md,COMPLETED,—,ARCHIVE,yes
+exec-summary-pa-core-law-dedup-f8e2a1.md,COMPLETE,W4,ARCHIVE,yes
+exec-summary-qwen-regen-token-budget-c4e8a1.md,COMPLETE,—,ARCHIVE,yes
+exec-summary-srfs-bug-closeout-a3f291.md,,,ARCHIVE,yes
+exec-summary-targeting-ingress-u0-b8e4f1.md,COMPLETE,W4,ARCHIVE,yes
+exec-summary-targeting-wiring-closeout-b9e2a4.md,COMPLETE,W4,ARCHIVE,yes
+exec-summary-token-budget-a8f3c2.md,** Completed,,ARCHIVE,yes
+exec-summary-waves-abcd-e8f1a3.md,COMPLETE,—,ARCHIVE,yes
+exec-summary-x1d-dimension-verdicts-e8f4a2.md,COMPLETED,—,ARCHIVE,yes
+exec-summary-x1d-transport-parity-d8f2a1.md,COMPLETED,—,ARCHIVE,yes
+fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md,COMPLETED,W5,ARCHIVE,yes
+fortknox-runtime-dual-track-b7c4e2.md,COMPLETE,W3,ARCHIVE,yes
+governance-dedup-closeout-e8a4c2.md,IN_PROGRESS,W3,ACTIVE,yes
+graph-skills-deferred-followup-d7f2a8.md,In Progress,W2,ACTIVE,yes
+graph-skills-hardening-f3a8c1.md,COMPLETED,P2-W10,ARCHIVE,yes
+graph-skills-quality-enhancement-c4e8a1.md,Completed,—,ARCHIVE,yes
+l0-l3-parent-gap-remediation-a7f3e2.md,COMPLETE,W3,ARCHIVE,yes
+l0-routing-v15-only-cutover-c9e2f1.md,COMPLETE,W4,ARCHIVE,yes
+l2-rationalization-waves-c8e4f1.md,COMPLETED,W11_CLOSED,ARCHIVE,yes
+l5-fanin-architecture-reduction-e7c4a2.md,COMPLETE,W3,ARCHIVE,yes
+l5-l4-00c-parent-gap-b8e4f2.md,COMPLETED,W5,ARCHIVE,yes
+l5-pa-orchestrator-ref-forward-c7e4a1.md,COMPLETE,W1,ARCHIVE,yes
+l6-reorg-deferred-followup-f3a9c2.md,DONE,COMPLETE,ARCHIVE,yes
+l6-repo-reorganization-mental-model-c4e8f2.md,DONE,COMPLETE,ARCHIVE,yes
+notion-stale-status-leak-closeout-b8e4f2.md,COMPLETE,W2,ARCHIVE,yes
+notion-status-ssot-burndown-c4e7a1.md,COMPLETE,W2,ARCHIVE,yes
+one-canonical-spine-e8b4a1.md,SUPERSEDED,W9,ARCHIVE,yes
+pa-exec-flowchart-gap-f2a8c3.md,COMPLETED,done,ARCHIVE,yes
+phase2-gtm-presales-remaining-f7a2c9.md,ACTIVE,post-graph (W1 or W4-runtime),ACTIVE,yes
+prompt-judge-x2-alignment-closeout-c8e4a2.md,COMPLETE,closeout,ARCHIVE,yes
+qwen3-32b-vllm-upgrade-d7a3f1.md,TODO,W0,ACTIVE,yes
+README.md,,,KEEP,no
+replace-r4-entrypoint-delete-old-path-b8e4f2.md,DONE,DONE,ARCHIVE,yes
+section-product-shape-alignment-b4e7a1.md,COMPLETE,—,ARCHIVE,yes
+sections-pa-core-law-rollout-c3a8f1.md,Complete,W6,ARCHIVE,yes
+semantic-cache-fingerprint-proof-c9f1a3.md,COMPLETE,W2,ARCHIVE,yes
+unify-bullets-graph-compose-prompt-a3f7e2.md,Completed,—,ARCHIVE,yes
+windsurf-gha-cutover-d9f2a7.md,COMPLETED,NONE,ARCHIVE,yes
+windsurf-tree-deletion-ci-parity-b8e4f1.md,Not Started,NONE,ACTIVE,yes

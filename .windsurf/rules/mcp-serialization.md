@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Use when batching or ordering MCP tool calls, debugging remote MCP stalls, or when Notion/Tavily/GitKraken calls must serialize. Complements `pre_mcp_gate.py` and constitutional retrieval discipline. Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/mcp-serialization.mdc (alwaysApply: false).
 ---
 
 # MCP Serialization — Remote MCPs Only

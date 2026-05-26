@@ -1,12 +1,12 @@
 {
   "schema": "career_track_p1_w4_closeout_receipt_v1",
-  "generated_at": "2026-05-25T21:41:49Z",
+  "generated_at": "2026-05-26T18:40:07Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4-CLOSEOUT",
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:fea41c66d2a5f15f",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:46d05acee2450b0c",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -24,7 +24,10 @@
   },
   "agentic_core_isolation": {
     "git_diff_name_only_agentic_core": [],
-    "git_status_short_agentic_core": [],
+    "git_status_short_agentic_core": [
+      "M agentic_core/L0_routing/config/model_registry.py",
+      "M agentic_core/L2_execution/types/vllm_serving_profile_types.py"
+    ],
     "dirty_files": [],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [

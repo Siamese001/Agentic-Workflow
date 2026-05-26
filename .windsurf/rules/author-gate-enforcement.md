@@ -1,6 +1,6 @@
 ---
-trigger: always_on
-description: Author-Gate enforcement — pipeline steps, four-requirement contract, canonical-emitter invariant, pipeline-completion invariant. Promoted from model_decision 2026-05-09 per DS-2 of plan always-on-budget-compression-ds2-c7f4a3.
+trigger: model_decision
+description: Author-Gate enforcement — pipeline steps, four-requirement contract, canonical-emitter invariant, pipeline-completion invariant. Promoted from model_decision 2026-05-09 per DS-2 of plan always-on-budget-compression-ds2-c7f4a3. Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/author-gate-enforcement.mdc (alwaysApply: false).
 ---
 
 # Author-Gate Enforcement — Invariant-Only Stub

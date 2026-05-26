@@ -368,7 +368,7 @@ templates:
 
   ibm_position_narrative_v1:
     template_id: ibm_position_narrative_v1
-    description: IBM narrative section PA (W7)
+    description: IBM narrative section PA (W7, runs after finalized IBM bullets)
     path: templates/ibm_position_narrative_v1.yaml
     version: "1.0"
     allowed_stage: L2_EXEC
@@ -376,6 +376,11 @@ templates:
     runtime_dispatch_reachable: true
     required_slots: [S0, D0, I0, C0, U0, R0]
     optional_slots: [E0, Y0, H0, M0]
+    generation_order: 2
+    depends_on:
+      - template_id: ibm_bullet_tailor_v1
+        section_id: ibm_bullets
+        required_status: ACCEPTED_FINALIZED
     output_contract:
       format: json
       schema_ref: rg_output_schema.json
@@ -393,6 +398,8 @@ templates:
     runtime_dispatch_reachable: true
     required_slots: [S0, D0, I0, C0, U0, R0]
     optional_slots: [E0, Y0, H0, M0]
+    generation_order: 1
+    emits_dependency_for: [ibm_position_narrative_v1]
     output_contract:
       format: json
       schema_ref: rg_output_schema.json

@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Reference-only index for legacy global rules. Not always-on in Cursor after optimization. Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). Cursor SSOT: .cursor/rules/global_rules.mdc (alwaysApply: false).
 ---
 
 # Global Rules - Always-On Policy (Tier 2 SSOT)

@@ -1,0 +1,22 @@
+{
+  "plan_id": "governance-dedup-closeout-e8a4c2",
+  "wave": "W2",
+  "status": "PASS",
+  "completed_at": "2026-05-26T19:21:00+00:00",
+  "gates": {
+    "check_cursor_native_config_strict": "PASS",
+    "generate_rules_index_check": "PASS"
+  },
+  "legacy_failures_before": 31,
+  "legacy_failures_after": 0,
+  "artifacts": [
+    {
+      "path": ".cursor/legacy_reference_allowlist.yaml",
+      "markdown": "[legacy_reference_allowlist.yaml](.cursor/legacy_reference_allowlist.yaml)"
+    },
+    {
+      "path": "docs/reports/cursor/governance_dedup_w2_receipt.md",
+      "markdown": "[governance_dedup_w2_receipt.md](docs/reports/cursor/governance_dedup_w2_receipt.md)"
+    }
+  ]
+}

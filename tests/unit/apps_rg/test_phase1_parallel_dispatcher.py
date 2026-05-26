@@ -5,7 +5,9 @@ from apps_rg.runtime.orchestration.managed_section_lane_dispatcher import (
     dispatch_phase1_lanes_managed,
 )
 from apps_rg.runtime.orchestration.section_lane_concurrency import (
+    assert_section_dag_wave_order,
     build_phase1_waves,
+    load_section_dag_manifest,
     phase1_parallel_enabled,
 )
 from apps_rg.runtime.orchestration.section_lane_executor import LaneExecutionContext
@@ -16,6 +18,29 @@ def test_build_phase1_waves_includes_exec_solo_wave() -> None:
     assert waves
     wave0 = waves[0]
     assert "executive_summary" in wave0.lanes
+
+
+def test_section_dag_narrative_never_precedes_companion_bullets() -> None:
+    """Plan f2a8c4: unify_narrative / ibm_narrative must schedule after bullets lanes."""
+    manifest = load_section_dag_manifest()
+    assert_section_dag_wave_order(manifest)
+
+    lane_wave: dict[str, int] = {}
+    for wave in manifest.get("waves") or []:
+        wid = int(wave["id"])
+        for lane in wave.get("lanes") or []:
+            lane_wave[str(lane)] = wid
+
+    assert lane_wave["unify_narrative"] > lane_wave["unify_bullets"]
+    assert lane_wave["ibm_narrative"] > lane_wave["ibm_bullets"]
+    assert "ibm_narrative" not in (manifest["waves"][1].get("lanes") or [])
+
+
+def test_build_phase1_waves_wave2_serial_narratives() -> None:
+    waves = build_phase1_waves()
+    wave2 = next(w for w in waves if w.wave_id == 2)
+    assert wave2.lanes == ("unify_narrative", "ibm_narrative")
+    assert wave2.max_parallel == 1
 
 
 def test_dispatch_serial_mock() -> None:

@@ -6,7 +6,7 @@ There is no quorum branch — a rate-limited external judge remains ``X3_REVIEW_
 """
 from __future__ import annotations
 
-from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
+from apps_rg.runtime.exit.executive_summary_x3 import NO_JUDGE_ROWS_EMITTED, aggregate_x3
 
 
 def _judge_model_backed_pass(
@@ -126,6 +126,24 @@ def test_mock_judge_with_real_llm_not_proof_allow() -> None:
     assert x3.pass_ is False
     assert x3.mocked_judges == ["gemini_pro"]
     assert x3.x3_code != "X3_ALLOW"
+
+
+def test_empty_judge_list_uses_no_judge_rows_emitted_not_provider_blocked() -> None:
+    """Brown RCA: X2-blocked runs skip the panel — empty judges ≠ API outage."""
+    x3 = aggregate_x3(**_base_kwargs([]))
+    assert x3.x1d_evaluator_mode == NO_JUDGE_ROWS_EMITTED
+    assert x3.x1d_evaluator_mode != "BLOCKED_PROVIDER_UNAVAILABLE"
+    assert x3.x3_code == "X3_REVIEW_JUDGE_SOFT_FAIL"
+    assert x3.blocked_judges == []
+
+
+def test_empty_judges_with_x2_fail_still_no_judge_rows_emitted() -> None:
+    kwargs = _base_kwargs([])
+    kwargs["x2_gates"] = [{"gate_id": "x2_sentence_coverage_pass", "pass": False}]
+    x3 = aggregate_x3(**kwargs)
+    assert x3.x1d_evaluator_mode == NO_JUDGE_ROWS_EMITTED
+    assert x3.x3_code == "X3_BLOCK"
+    assert "x2_sentence_coverage_pass" in x3.x2_failed_gates
 
 
 def test_blocked_mode_schema_without_quorum_still_review_blocked() -> None:

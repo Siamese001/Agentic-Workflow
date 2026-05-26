@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-post_cursor_agent_author_gate_audit.py — Unified Author-Gate audit hook (W2.P2).
+post_cursor_agent_author_gate_audit.py — OBSOLETE (not in hooks.json).
 
-Consolidates 8 Author-Gate related audit functions into a single hook with subcommands:
+Superseded by individual scripts in ``after_agent_governance_dispatch.py`` chain.
+See ``docs/reports/cursor/governance_w3_hook_audit_matrix.md``. Manual replay / tests only.
+
+Legacy W2.P2 unified hook — consolidates 8 Author-Gate related audit functions with subcommands:
 - capture: Detect and capture AUTHOR_GATE_PACKET blocks to SQLite ledger
 - ui: Validate UI conformance (four-requirement contract)
 - schema: Validate AG-10 packet shape/schema

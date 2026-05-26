@@ -396,6 +396,36 @@ def run_ibm_bullets_x2_gates(
         str(graph_detail),
     )
 
+    from apps_rg.runtime.sections.ibm_bullets_graph_evidence import (
+        IBM_TRACK_RANKED_SELECTION_METHOD,
+        check_ibm_bullets_phase2_career_track_scope,
+    )
+
+    selected_plan = (
+        (runtime_payload or {}).get("selected_fact_plan")
+        if runtime_payload
+        else (parsed_output or {}).get("selected_fact_plan")
+    )
+    selection_method = str(
+        (proof_pool_metadata or {}).get("selection_method")
+        or (selected_plan or {}).get("selection_method")
+        or ""
+    )
+    if selection_method == IBM_TRACK_RANKED_SELECTION_METHOD:
+        phase2_ok, phase2_obs = check_ibm_bullets_phase2_career_track_scope(
+            proof_pool_metadata=proof_pool_metadata,
+            selected_fact_plan=selected_plan,
+        )
+        add(
+            "x2_ibm_phase2_career_track_scope",
+            phase2_ok,
+            phase2_obs,
+            "track_data_tech_cloud_ml_only; employment 2017-04 to 2022-10",
+            None
+            if phase2_ok
+            else str(phase2_obs.get("reason") or phase2_obs),
+        )
+
     story_ok, story_obs, story_exp, story_detail = x2_gate_base_resume_story_forbidden(
         section_id="ibm_bullets",
         parsed_output=parsed_output,

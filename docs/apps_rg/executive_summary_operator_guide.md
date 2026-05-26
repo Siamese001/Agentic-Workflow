@@ -65,6 +65,8 @@ All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_cal
 
 **First-pass policy (W2.2):** After optional-only trim, scratch dispatch is blocked if estimated input exceeds the configured fraction (default **92%**) of `available_input_tokens` (`TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT`). Hard cap at 100% still applies (`TOKEN_BUDGET_EXCEEDED_AFTER_TRIM`).
 
+**24k budget rationalization (Brown SVP):** With `VLLM_MAX_MODEL_LEN=24576`, available input is **22,016** tokens (92% gate **20,254**). Full JD + briefing under default targeting caps (~**16.9k** dispatch measured) leaves **~3.4k** tokens before the 92% block. Detail: [executive_summary_24k_context_budget_rationalization_20260526.md](../reports/apps_rg/executive_summary_24k_context_budget_rationalization_20260526.md).
+
 **Operator guidance on block:** `token_budget_receipt.json` includes `operator_message` / `operator_guidance` with briefing/JD shortening steps that preserve HIGH facts, `selected_fact_plan`, evidence law, and SRFS shape. Same text prints to **stderr** and appears in `command_output.txt` under `TOKEN_BUDGET_OPERATOR_GUIDANCE`.
 
 **Context provenance (W2.1):** `token_budget_receipt.json` and regen receipts include `provider_context_window_source` (`ENV_VLLM_MAX_MODEL_LEN` \| `SERVER_MODELS_METADATA` \| `UNKNOWN`), `server_context_window_verified`, and `server_context_window_warning` when the window is operator-declared only.
@@ -193,6 +195,8 @@ Use **`call_id`** to join rows across receipts and provider files (not filename 
 | `accepted` | Budget + transport + response + parse all OK (per-call evidence gate) |
 
 **Phase values:** `synthesis_regen` \| `judge_regen` \| `judge_x2_repair`
+
+**`x3_disposition.json` → `x1d_evaluator_mode`:** `NO_JUDGE_ROWS_EMITTED` means the lane wrote zero judge rows (panel skipped or not invoked — commonly because first-pass X2 failed). It does **not** mean a provider API was down; use per-row `BLOCKED_PROVIDER_UNAVAILABLE` only when judge rows exist and a provider was blocked.
 
 Legacy aliases (`provider_response_judge_regen.json`, etc.) may exist; verifiers should prefer **`call_id`** joins.
 
