@@ -8,6 +8,9 @@ from __future__ import annotations
 from typing import Any
 
 # Targeting emphasis themes (JD shapes ranking only — jd_used_as_proof=false).
+QUANT_METRIC_DISPLAY_FACT_ID = "fact_quant_hpc_001"
+FSA_CREDENTIAL_FACT_ID = "fact_quant_hpc_003"
+
 SVP_JD_EMPHASIS_THEMES: tuple[str, ...] = (
     "enterprise architecture governance",
     "innovation programs and incubation",
@@ -57,21 +60,46 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "commercial_strategy",
         "guidance": (
-            "S5: one strategic clause weaving quantitative proof — when fact_quant_hpc_001 is cited, surface the allowed "
-            "stress-testing or cycle-reduction percent in display; never list derivatives pricing, multi-Greek hedging, "
-            "employer names, or FSA/cert label stacks from fact_quant_hpc_003."
+            "S5: one strategic clause pairing FSA/quant foundation (fact_quant_hpc_003) with the allowed "
+            "stress-testing or HPC outcome percent from fact_quant_hpc_001 in display — cite both source_fact_ids "
+            "in the claim_ledger row; never list derivatives pricing, multi-Greek hedging, employer names, or cert-label stacks."
         ),
     },
     {
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "enterprise_capstone",
         "guidance": (
-            "S6: forward capstone — innovation incubation / architecture standards projected from the sentence's "
-            "source_fact_ids (e.g. quant/capital foundation when fact_quant_hpc_003 is cited); must add a NEW forward idea "
-            "(not 'extend that arc toward' recap); no JD/briefing echo, no TARGET_COMPANY, no repetition of S2–S5 noun phrases."
+            "S6: forward capstone grounded in the sentence's source_fact_ids (e.g. fact_quant_hpc_003 quant foundation); "
+            "may echo composition_plan s6_targeting_forward_anchor for decentralized units / innovation mandate "
+            "(targeting-only — jd_used_as_proof=false); must add a NEW forward idea (not 'extend that arc toward' recap); "
+            "no TARGET_COMPANY, no repetition of S2–S5 noun phrases; do not open with 'Looking ahead,'."
         ),
     },
 )
+
+
+def format_s6_briefing_forward_targeting_anchor(
+    *,
+    briefing_text: str = "",
+    jd_text: str = "",
+) -> str:
+    """Targeting-only S6 forward themes from JD/briefing (never proof)."""
+    blob = f"{briefing_text} {jd_text}".lower()
+    themes: list[str] = []
+    if any(tok in blob for tok in ("decentral", "autonomous unit", "federated", "operating unit")):
+        themes.append("decentralized operating units")
+    if "innovation" in blob:
+        themes.append("innovation incubation and architecture standards")
+    if "enterprise architecture" in blob or " ea " in f" {blob} ":
+        themes.append("enterprise architecture governance")
+    if "multi-year" in blob or "roadmap" in blob:
+        themes.append("multi-year IT strategy roadmap")
+    if not themes:
+        themes.append("enterprise IT direction and innovation-program posture")
+    joined = "; ".join(themes)
+    return (
+        f"TARGETING_FORWARD_ANCHOR (targeting only — jd_used_as_proof=false): {joined}."
+    )
 
 
 def format_svp_jd_emphasis_line() -> str:
@@ -124,10 +152,11 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
         "- Six sentences = one causal arc serving the thesis; **do not** assign one accomplishment per sentence by default.\n"
         "- S3–S5: connective prose with material dollar/percent outcomes in display when allowed facts carry them "
         "(judges read resume_display_text, not claim_text alone).\n"
-        "- S5: surface allowed stress-testing or HPC outcome metrics in display when fact_quant_hpc_001 is cited; "
-        "forbidden: derivatives pricing / multi-Greek / employer inventory lists.\n"
-        "- S6: MUST begin with 'Looking ahead,' — forward capstone grounded in source_fact_ids substance; "
-        "forbidden: 'extend that arc toward', 'Governed platform delivery... extend'.\n"
+        "- S5: when fact_quant_hpc_003 (FSA/quant foundation) and fact_quant_hpc_001 are cited together, weave the "
+        "allowed stress-testing/HPC outcome percent into display (not ledger-only); forbidden: derivatives / "
+        "multi-Greek / employer inventory lists.\n"
+        "- S6: forward capstone grounded in source_fact_ids; may use composition_plan s6_targeting_forward_anchor "
+        "(briefing/JD emphasis only); forbidden: 'Looking ahead,' opener, 'extend that arc toward' recap.\n"
         "- S3–S4: honest connectors only; parallel governance and HPC threads need not be falsely causal.\n"
         f"{format_svp_jd_emphasis_line()}"
         f"- Target role framing: {role} (positioning only).\n"
@@ -260,8 +289,11 @@ def format_l6_judge_soft_fail_recommendation(*, soft_judges: list[str]) -> str:
 
 
 __all__ = [
+    "FSA_CREDENTIAL_FACT_ID",
+    "QUANT_METRIC_DISPLAY_FACT_ID",
     "SENTENCE_ARC_SVP_STRATEGY",
     "SVP_JD_EMPHASIS_THEMES",
+    "format_s6_briefing_forward_targeting_anchor",
     "failed_x2_gate_ids",
     "gate_ids_from_x2_reject_reason",
     "format_judge_regen_x2_floor",

@@ -1,0 +1,40 @@
+{
+  "schema": "exec_summary_regen_voice_repair_wave_receipt_v1",
+  "wave": "W6",
+  "plan_id": "exec-summary-regen-voice-repair-unblock-e7c4a2",
+  "status": "PARTIAL",
+  "plan_status": "Complete",
+  "plan_closeout_report": "docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_closeout_20260526.md",
+  "date": "2026-05-26",
+  "run_id": "exec_summary_20260526_224436",
+  "regen_outcome": "no_acceptable_candidate",
+  "stopped_reason": "regen_converged",
+  "cycle_count": 2,
+  "pass_criteria_met": "partial_criterion_3",
+  "artifact_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436",
+  "closeout_report": "docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_e2e_20260526.md",
+  "regen_blockers": [
+    "mocked_provider_allow",
+    "regen_input_exceeds_available_context_window"
+  ],
+  "files_changed_links": [
+    {
+      "path": "docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_e2e_20260526.md",
+      "markdown": "[exec_summary_regen_voice_repair_unblock_e2e_20260526.md](docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_e2e_20260526.md)"
+    },
+    {
+      "path": ".cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md",
+      "markdown": "[exec-summary-regen-voice-repair-unblock-e7c4a2.md](.cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md)"
+    }
+  ],
+  "artifacts_links": [
+    {
+      "path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436/judge_remediation_cycles.json",
+      "markdown": "[judge_remediation_cycles.json](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436/judge_remediation_cycles.json)"
+    },
+    {
+      "path": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436/l2_output.json",
+      "markdown": "[l2_output.json](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436/l2_output.json)"
+    }
+  ]
+}

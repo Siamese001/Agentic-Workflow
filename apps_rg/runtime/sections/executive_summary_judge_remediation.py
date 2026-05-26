@@ -286,6 +286,7 @@ def _is_droppable_guard_delta_line(line: str) -> bool:
 
 # Surgical REGEN_DELTA pack order (Anthropic evaluator→optimizer: class intent, then verbatim critique).
 REGEN_DELTA_SECTION_ORDER: tuple[str, ...] = (
+    "incremental",
     "dimension",
     "judge_feedback",
     "floors",
@@ -544,6 +545,33 @@ def snapshot_model_backed_judge_scores(x1d_judges: list[dict[str, Any]]) -> dict
     }
 
 
+def _resolve_regen_anchor_assistant_content(
+    *,
+    current_parsed: dict[str, Any],
+    current_raw: str,
+    incremental_anchor_parsed: dict[str, Any] | None,
+) -> tuple[str, str]:
+    """Pick anchor assistant JSON for cycle N+1 (incremental prior attempt vs publish baseline)."""
+    from apps_rg.runtime.sections.executive_summary_regen_incremental import (
+        format_regen_anchor_assistant_content,
+    )
+
+    if incremental_anchor_parsed and str(
+        incremental_anchor_parsed.get("resume_display_text") or "",
+    ).strip():
+        return (
+            format_regen_anchor_assistant_content(anchor_parsed=incremental_anchor_parsed),
+            "incremental_prior_attempt",
+        )
+    return (
+        format_regen_anchor_assistant_content(
+            anchor_parsed=current_parsed,
+            anchor_raw_json=current_raw,
+        ),
+        "publish_baseline",
+    )
+
+
 def collect_judge_remediation_delta_lines(
     x1d_judges: list[dict[str, Any]],
     *,
@@ -552,6 +580,9 @@ def collect_judge_remediation_delta_lines(
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
     compact: bool | None = None,
+    baseline_resume_display_text: str = "",
+    prior_attempt_resume_display_text: str = "",
+    prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> list[str]:
     """App-owned delta lines only (floors + output contract); core owns REGEN_DELTA/PROMPT_LOCK."""
     from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
@@ -574,8 +605,27 @@ def collect_judge_remediation_delta_lines(
         )
 
     soft_judges = _soft_failed_model_judges(x1d_judges)
+    from apps_rg.runtime.sections.executive_summary_regen_incremental import (
+        collect_prior_attempt_incremental_delta_lines,
+        filter_verbatim_feedback_for_prior_attempt,
+    )
+
+    prior_resume = str(prior_attempt_resume_display_text or "").strip()
+    incremental_lines = collect_prior_attempt_incremental_delta_lines(
+        baseline_resume_display_text=baseline_resume_display_text,
+        prior_attempt_resume_display_text=prior_resume,
+        prior_cycle_judges=prior_cycle_judges,
+        current_x1d_judges=x1d_judges,
+    )
+    verbatim_feedback = _verbatim_soft_failed_judge_feedback_lines(soft_judges)
+    if prior_resume:
+        verbatim_feedback = filter_verbatim_feedback_for_prior_attempt(
+            verbatim_feedback,
+            prior_attempt_resume_display_text=prior_resume,
+        )
     sections: dict[str, list[str]] = {
-        "judge_feedback": _verbatim_soft_failed_judge_feedback_lines(soft_judges),
+        "incremental": incremental_lines,
+        "judge_feedback": verbatim_feedback,
         "dimension": [],
         "floors": [],
         "guards": [],
@@ -707,17 +757,21 @@ def build_judge_remediation_prescriptive_delta_message(
     prior_resume_display_text: str = "",
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
+    baseline_resume_display_text: str = "",
+    prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> str:
     """Surgical regen user turn via core ``format_regen_delta_user_turn`` (no duplicate PROMPT_LOCK block)."""
     from agentic_core.L2_execution.regen.prompt_lock import format_regen_delta_user_turn
 
-    _ = prior_resume_display_text  # anchor lives on assistant turn when core runner is used
     lines = collect_judge_remediation_delta_lines(
         x1d_judges,
         unused_fact_ids=unused_fact_ids,
         allowed_fact_count=allowed_fact_count,
         prior_word_count=prior_word_count,
         prior_ledger_rows=prior_ledger_rows,
+        baseline_resume_display_text=baseline_resume_display_text,
+        prior_attempt_resume_display_text=prior_resume_display_text,
+        prior_cycle_judges=prior_cycle_judges,
     )
     return format_regen_delta_user_turn(tuple(lines))
 
@@ -834,6 +888,8 @@ def build_judge_remediation_user_message(
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
     prior_resume_display_text: str = "",
+    baseline_resume_display_text: str = "",
+    prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> str:
     if judge_regen_legacy_remediation_block_enabled():
         return build_judge_remediation_legacy_user_message(
@@ -852,6 +908,8 @@ def build_judge_remediation_user_message(
             prior_resume_display_text=prior_resume_display_text,
             prior_word_count=prior_word_count,
             prior_ledger_rows=prior_ledger_rows,
+            baseline_resume_display_text=baseline_resume_display_text,
+            prior_cycle_judges=prior_cycle_judges,
         )
     return build_judge_remediation_legacy_user_message(
         x1d_judges=x1d_judges,
@@ -893,6 +951,9 @@ def retry_qwen_for_judge_remediation(
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
     cycle_index: int = 0,
+    incremental_anchor_parsed: dict[str, Any] | None = None,
+    baseline_resume_display_text: str = "",
+    prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> tuple[str, dict[str, Any], dict[str, Any]]:
     """Bounded post-judge same-authority regen (default one call per outer cycle)."""
     from apps_rg.runtime.sections.executive_summary_lane import (
@@ -948,7 +1009,16 @@ def retry_qwen_for_judge_remediation(
     thread_messages = list(messages)
     allowed_count = len(allowed_fact_ids)
 
-    anchor_text = str(current_parsed.get("resume_display_text") or "").strip()
+    anchor_assistant_content, anchor_source = _resolve_regen_anchor_assistant_content(
+        current_parsed=current_parsed,
+        current_raw=current_raw,
+        incremental_anchor_parsed=incremental_anchor_parsed,
+    )
+    anchor_text = str(
+        (incremental_anchor_parsed or current_parsed).get("resume_display_text") or "",
+    ).strip()
+    receipt["regen_anchor_source"] = anchor_source
+    receipt["regen_anchor_resume_word_count"] = len(re.findall(r"\S+", anchor_text))
     if judge_regen_legacy_remediation_block_enabled() or not judge_regen_prescriptive_delta_enabled():
         receipt["regen_user_message_mode"] = "legacy_remediation_block"
     else:
@@ -983,7 +1053,7 @@ def retry_qwen_for_judge_remediation(
                 trigger_receipt=trigger_receipt,
                 unused_fact_ids=unused_fact_ids,
                 allowed_fact_count=allowed_count,
-                anchor_output_text=anchor_text or current_raw,
+                anchor_output_text=anchor_assistant_content or current_raw,
                 prior_word_count=prior_word_count,
                 prior_ledger_rows=prior_ledger_rows,
                 artifact_dir=artifact_dir,
@@ -991,6 +1061,9 @@ def retry_qwen_for_judge_remediation(
                 semantic_regen_attempt_index=cycle_index + 1,
                 transport_retry_count=0,
                 max_semantic_regen_attempts=judge_regen_max_attempts(),
+                baseline_resume_display_text=baseline_resume_display_text,
+                prior_attempt_resume_display_text=anchor_text,
+                prior_cycle_judges=prior_cycle_judges,
             )
             regen_text, core_receipt, _sar, _chat_msgs = run_core_same_authority_regen(
                 messages=thread_messages,
@@ -1043,6 +1116,8 @@ def retry_qwen_for_judge_remediation(
             prior_word_count=prior_word_count,
             prior_ledger_rows=prior_ledger_rows,
             prior_resume_display_text=anchor_text,
+            baseline_resume_display_text=baseline_resume_display_text,
+            prior_cycle_judges=prior_cycle_judges,
         )
         from apps_rg.runtime.sections.executive_summary_judge_regen_thread import (
             compact_judge_regen_messages,

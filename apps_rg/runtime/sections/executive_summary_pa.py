@@ -441,6 +441,8 @@ def build_executive_summary_assembly_input(
             target_role=t_title,
             target_company=t_company,
             proof_pool_metadata=_pp_for_plan,
+            briefing_text=str(runtime_payload.get("briefing") or ""),
+            jd_text=str(runtime_payload.get("jd_text") or ""),
         )
         runtime_payload["executive_summary_composition_plan"] = _composition_plan
     composition_block = format_composition_plan_for_pa(_composition_plan)

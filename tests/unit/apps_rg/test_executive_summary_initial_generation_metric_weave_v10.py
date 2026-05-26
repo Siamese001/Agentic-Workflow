@@ -17,7 +17,10 @@ from apps_rg.runtime.sections.executive_summary_pa import (
     load_executive_summary_template_slots,
 )
 from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+    FSA_CREDENTIAL_FACT_ID,
+    QUANT_METRIC_DISPLAY_FACT_ID,
     SENTENCE_ARC_SVP_STRATEGY,
+    format_s6_briefing_forward_targeting_anchor,
 )
 
 REPO = Path(__file__).resolve().parents[3]
@@ -39,10 +42,63 @@ def test_svp_sentence_arc_requires_display_metrics():
     s3 = SENTENCE_ARC_SVP_STRATEGY[2]["guidance"]
     s4 = SENTENCE_ARC_SVP_STRATEGY[3]["guidance"]
     s5 = SENTENCE_ARC_SVP_STRATEGY[4]["guidance"]
+    s6 = SENTENCE_ARC_SVP_STRATEGY[5]["guidance"]
     assert "$22M" in s3 or "22M" in s3
     assert "40%" in s4 or "reporting-error" in s4
+    assert QUANT_METRIC_DISPLAY_FACT_ID in s5
+    assert FSA_CREDENTIAL_FACT_ID in s5
     assert "imply quantitative rigor" not in s5
     assert "stress-testing" in s5 or "cycle-reduction" in s5
+    assert "s6_targeting_forward_anchor" in s6
+    assert "do not open with 'Looking ahead" in s6
+
+
+def test_brown_composition_plan_s5_metric_and_s6_forward_binding():
+    facts = [
+        {
+            "fact_id": "fact_quant_hpc_001",
+            "claim_text": "Trimmed stress-testing cycles by 40%.",
+        },
+        {
+            "fact_id": "fact_quant_hpc_003",
+            "claim_text": "FSA credential and capital modeling foundation.",
+        },
+        {
+            "fact_id": "fact_engineering_platform_006",
+            "claim_text": "$22M IP-led revenue.",
+        },
+    ]
+    plan = build_executive_summary_composition_plan(
+        selected_facts=facts,
+        allowed_fact_ids={
+            "fact_quant_hpc_001",
+            "fact_quant_hpc_003",
+            "fact_engineering_platform_006",
+        },
+        target_role="SVP IT Strategy & Innovation",
+        target_company="Brown & Brown",
+        briefing_text="decentralized business units and innovation mandate for brokerage IT",
+        jd_text="enterprise architecture and multi-year IT strategy roadmap",
+    )
+    binding = plan.get("s5_metric_binding") or {}
+    assert binding.get("metric_display_fact_id") == QUANT_METRIC_DISPLAY_FACT_ID
+    assert binding.get("credential_fact_id") == FSA_CREDENTIAL_FACT_ID
+    s5_row = (plan.get("sentence_arc") or [])[4]
+    assert QUANT_METRIC_DISPLAY_FACT_ID in (s5_row.get("required_source_fact_ids") or [])
+    assert "decentralized" in str(plan.get("s6_targeting_forward_anchor") or "").lower()
+    block = format_composition_plan_for_pa(plan)
+    assert "s5_metric_binding" in block
+    assert "TARGETING_FORWARD_ANCHOR" in block
+
+
+def test_s6_briefing_forward_targeting_anchor_brown_themes():
+    anchor = format_s6_briefing_forward_targeting_anchor(
+        briefing_text="decentralized operating units innovation incubation",
+        jd_text="enterprise architecture governance",
+    )
+    assert "jd_used_as_proof=false" in anchor
+    assert "decentralized" in anchor.lower()
+    assert "innovation" in anchor.lower()
 
 
 def test_strategy_compile_includes_display_ledger_parity_and_metric_weave():

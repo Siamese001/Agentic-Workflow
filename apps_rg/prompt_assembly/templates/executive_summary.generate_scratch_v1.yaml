@@ -73,7 +73,8 @@ slot_bodies:
     display sentence must include at least one of those outcomes in plain executive prose (not a metric list).
     S3: include commercialization metrics from fact_engineering_platform_006 when present ($22M IP-led revenue,
     20% margin expansion, team 8→28). S4: include the governance outcome metric from fact_governance_003 when present.
-    S5: include the stress-testing or HPC outcome metric from fact_quant_hpc_001 when present.
+    S5: when fact_quant_hpc_003 (FSA/quant foundation) and fact_quant_hpc_001 are both cited, include the
+    allowed stress-testing or HPC outcome metric from fact_quant_hpc_001 in display (paired with FSA foundation).
     Do not park proof metrics only in claim_text while display stays abstract.
     </display_metric_weave_contract>
 
@@ -84,7 +85,7 @@ slot_bodies:
     **S2-S3:** Platform/operating-model substance; connective causal thread when honest; S3 must surface allowed commercialization metrics in display when fact_engineering_platform_006 is cited.
     **S4:** Governance/lineage as parallel beat with allowed outcome metrics in display when fact_governance_003 is cited; no forced "extended to" bridges across unrelated facts.
     **S5:** One quantitative-rigor clause with allowed percent/outcome from fact_quant_hpc_001 in display; no derivatives/multi-Greek/Towers Perrin/ING/Aetna/FSA inventory; no meta ("rather than listing credentials").
-    **S6:** Forward capstone - start with "Looking ahead,"; new idea grounded in the sentence's source_fact_ids (e.g. quant/capital foundation from fact_quant_hpc_003); forbid "extend that arc toward" and S2-S5 recap. Never "audit/audit-ready" unless verbatim in allowed claim_text.
+    **S6:** Forward capstone grounded in source_fact_ids (e.g. fact_quant_hpc_003); may use composition_plan TARGETING_FORWARD_ANCHOR for decentralized units / innovation mandate (targeting-only; jd_used_as_proof=false); forbid "Looking ahead," opener, "extend that arc toward", and S2-S5 recap. Never "audit/audit-ready" unless verbatim in allowed claim_text.
     **Connectives:** At most two stock openers (Building on / Through that / Complementing / With that governance) in S2-S5; vary the noun phrase after each bridge (avoid repeating "platform footprint" + "platform commercialization" in one sentence).
     **Meta-filler ban:** no "governance discipline", "active-voice delivery", "selected facts" scaffolding.
     **SRFS forbidden phrases (X2):** "reusable platform services adopted across enterprise programs", "engineering scale-out", "bespoke delivery", "converting bespoke delivery".
@@ -101,7 +102,7 @@ slot_bodies:
 
     <self_check_requirements>
     Verify before return: no_first_person; no_inline_source_tags; jd_used_as_proof_false; executive_strategy_thesis_present;
-    s1_not_verbatim_thesis_copy; s6_forward_synthesis_not_recap; s6_starts_with_looking_ahead; s6_grounded_in_source_fact;
+    s1_not_verbatim_thesis_copy; s6_forward_synthesis_not_recap; s6_no_looking_ahead_opener; s6_grounded_in_source_fact;
     s5_no_derivatives_or_employer_inventory; material_metrics_surfaced_in_display_rows_3_4_5;
     no_extend_that_arc_toward_phrase; achievement_verb_opener_count_at_most_2; every_material_claim_in_claim_ledger.
     </self_check_requirements>

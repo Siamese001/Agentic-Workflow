@@ -1928,6 +1928,8 @@ def run_executive_summary_execution(
                     ),
                     target_company=str(args.target_company or ""),
                     proof_pool_metadata=_pp_meta_early,
+                    briefing_text=str(targeting_ingress.briefing_text_bounded or ""),
+                    jd_text=str(targeting_ingress.jd_text or ""),
                 )
 
             if pool.proof_source == "augmented_skills_graph" and graph_only_reformat_allowed():
@@ -2014,6 +2016,8 @@ def run_executive_summary_execution(
             ),
             target_company=str(args.target_company or ""),
             proof_pool_metadata=_pp_meta,
+            briefing_text=str(targeting_ingress.briefing_text_bounded or ""),
+            jd_text=str(targeting_ingress.jd_text or ""),
         )
         parsed = attach_composition_to_parsed(
             parsed,
@@ -2432,6 +2436,12 @@ def run_executive_summary_execution(
             )
             _last_regen_candidate: dict[str, Any] | None = None
             _scratch_anchor_resume = resume_display_text
+            _regen_incremental_anchor_parsed: dict[str, Any] | None = None
+            _regen_prior_cycle_judges: list[dict[str, Any]] | None = None
+            _prior_regen_output_hash: str | None = None
+            from apps_rg.runtime.sections.executive_summary_regen_observability import (
+                finalize_regen_cycle_observability,
+            )
             from apps_rg.runtime.sections.executive_summary_candidate_pool import (
                 SCORES_FRESHNESS_CARRIED_FORWARD,
                 SCORES_FRESHNESS_SOFT_FAILED_ONLY,
@@ -2555,6 +2565,9 @@ def run_executive_summary_execution(
                     prior_word_count=_pre_wc,
                     prior_ledger_rows=_pre_ledger_rows,
                     cycle_index=_cycle_idx,
+                    incremental_anchor_parsed=_regen_incremental_anchor_parsed,
+                    baseline_resume_display_text=_scratch_anchor_resume,
+                    prior_cycle_judges=_regen_prior_cycle_judges,
                 )
                 _feedback_pack = dict(_j_receipt.get("feedback_pack") or {})
                 _draft_parse_ok = bool(
@@ -2577,6 +2590,7 @@ def run_executive_summary_execution(
                 ):
                     if _fb_key in _feedback_pack:
                         _cycle_record[_fb_key] = _feedback_pack[_fb_key]
+                _regen_attempt_parsed_snapshot: dict[str, Any] | None = None
                 if _draft_parse_ok or _j_receipt.get("prefilter_applied"):
                     from apps_rg.runtime.section_repair_ledger import (
                         KIND_REGEN_LLM,
@@ -2604,6 +2618,7 @@ def run_executive_summary_execution(
                         allowed_fact_ids=allowed_fact_ids,
                     )
                     _prepare_receipt["g1_ledger_metric_sync"] = _g1_receipt
+                    _regen_attempt_parsed_snapshot = dict(parsed)
                     if artifact_dir is not None:
                         write_json(
                             artifact_dir / "judge_regen_prepare_receipt.json",
@@ -2638,7 +2653,16 @@ def run_executive_summary_execution(
                         claim_ledger = list(_pre_ledger)
                         x1d = list(_x1d_before_regen)
                         x2 = list(_pre_x2)
-                        _cycles_receipt["cycles"].append(_cycle_record)
+                        _prior_regen_output_hash, _conv = finalize_regen_cycle_observability(
+                            _cycles_receipt,
+                            _cycle_record,
+                            cycle_index=_cycle_idx,
+                            artifact_dir=artifact_dir,
+                            judge_remediation_receipt=_j_receipt,
+                            prior_regen_output_hash=_prior_regen_output_hash,
+                        )
+                        if _conv:
+                            break
                         if _cycle_idx + 1 >= _max_judge_cycles:
                             _cycles_receipt["stopped_reason"] = _reject_gate
                             break
@@ -2700,7 +2724,19 @@ def run_executive_summary_execution(
                                 _regen_messages,
                                 _regen_raw_for_thread,
                             )
-                        _cycles_receipt["cycles"].append(_cycle_record)
+                        if _regen_attempt_parsed_snapshot is not None:
+                            _regen_incremental_anchor_parsed = _regen_attempt_parsed_snapshot
+                            _regen_prior_cycle_judges = list(_x1d_before_regen)
+                        _prior_regen_output_hash, _conv = finalize_regen_cycle_observability(
+                            _cycles_receipt,
+                            _cycle_record,
+                            cycle_index=_cycle_idx,
+                            artifact_dir=artifact_dir,
+                            judge_remediation_receipt=_j_receipt,
+                            prior_regen_output_hash=_prior_regen_output_hash,
+                        )
+                        if _conv:
+                            break
                         if _cycle_idx + 1 >= _max_judge_cycles:
                             _cycles_receipt["stopped_reason"] = _reject_gate
                             break
@@ -2923,6 +2959,9 @@ def run_executive_summary_execution(
                                 ),
                             )
                             write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
+                            if _regen_attempt_parsed_snapshot is not None:
+                                _regen_incremental_anchor_parsed = _regen_attempt_parsed_snapshot
+                                _regen_prior_cycle_judges = list(_x1d_before_regen)
                             raw_output = _pre_raw
                             parsed = dict(_pre_parsed)
                             parsed_for_x2 = dict(_pre_parsed)
@@ -2930,7 +2969,16 @@ def run_executive_summary_execution(
                             claim_ledger = list(_pre_ledger)
                             x1d = list(_x1d_before_regen)
                             x2 = list(_pre_x2)
-                            _cycles_receipt["cycles"].append(_cycle_record)
+                            _prior_regen_output_hash, _conv = finalize_regen_cycle_observability(
+                                _cycles_receipt,
+                                _cycle_record,
+                                cycle_index=_cycle_idx,
+                                artifact_dir=artifact_dir,
+                                judge_remediation_receipt=_j_receipt,
+                                prior_regen_output_hash=_prior_regen_output_hash,
+                            )
+                            if _conv:
+                                break
                             if _cycle_idx + 1 >= _max_judge_cycles:
                                 _cycles_receipt["stopped_reason"] = _reject_gate
                                 break
@@ -3005,7 +3053,17 @@ def run_executive_summary_execution(
                             raw_output or "",
                         )
                         _cycle_record["all_judges_pass"] = all_model_backed_judges_pass(x1d)
-                        _cycles_receipt["cycles"].append(_cycle_record)
+                        _prior_regen_output_hash, _conv = finalize_regen_cycle_observability(
+                            _cycles_receipt,
+                            _cycle_record,
+                            cycle_index=_cycle_idx,
+                            artifact_dir=artifact_dir,
+                            judge_remediation_receipt=_j_receipt,
+                            x2_gates=x2_regen,
+                            prior_regen_output_hash=_prior_regen_output_hash,
+                        )
+                        if _conv:
+                            break
                         if all_model_backed_judges_pass(x1d):
                             _cycles_receipt["stopped_reason"] = "all_model_backed_judges_pass"
                             break
@@ -3024,14 +3082,45 @@ def run_executive_summary_execution(
                             g["gate_id"] for g in x2_regen if not g["pass"]
                         ]
                         write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
-                        _cycles_receipt["cycles"].append(_cycle_record)
+                        if _j_receipt.get("output_changed") and str(raw_output or "").strip():
+                            from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+                                extend_regen_thread_after_success,
+                            )
+
+                            _regen_messages = extend_regen_thread_after_success(
+                                _regen_messages,
+                                str(raw_output or ""),
+                            )
+                        if _regen_attempt_parsed_snapshot is not None:
+                            _regen_incremental_anchor_parsed = _regen_attempt_parsed_snapshot
+                            _regen_prior_cycle_judges = list(_x1d_before_regen)
+                        _prior_regen_output_hash, _conv = finalize_regen_cycle_observability(
+                            _cycles_receipt,
+                            _cycle_record,
+                            cycle_index=_cycle_idx,
+                            artifact_dir=artifact_dir,
+                            judge_remediation_receipt=_j_receipt,
+                            x2_gates=x2_regen,
+                            prior_regen_output_hash=_prior_regen_output_hash,
+                        )
+                        if _conv:
+                            break
                         if _cycle_idx + 1 >= _max_judge_cycles:
                             _cycles_receipt["stopped_reason"] = _revert_tag
                             break
                         continue
                 else:
                     _cycle_record["skipped"] = "regen_not_accepted"
-                    _cycles_receipt["cycles"].append(_cycle_record)
+                    _prior_regen_output_hash, _conv = finalize_regen_cycle_observability(
+                        _cycles_receipt,
+                        _cycle_record,
+                        cycle_index=_cycle_idx,
+                        artifact_dir=artifact_dir,
+                        judge_remediation_receipt=_j_receipt,
+                        prior_regen_output_hash=_prior_regen_output_hash,
+                    )
+                    if _conv:
+                        break
                     if _cycle_idx + 1 >= _max_judge_cycles:
                         _cycles_receipt["stopped_reason"] = "regen_not_accepted"
                         break

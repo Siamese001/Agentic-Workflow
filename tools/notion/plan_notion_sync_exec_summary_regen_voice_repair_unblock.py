@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""W0: Register exec-summary-regen-voice-repair-unblock-e7c4a2 in Notion Plans DB."""
+"""Register or patch exec-summary-regen-voice-repair-unblock-e7c4a2 Completed in Notion Plans DB."""
 from __future__ import annotations
 
 import json
@@ -14,19 +14,21 @@ from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_
 SLUG = "exec-summary-regen-voice-repair-unblock-e7c4a2"
 PLAN_PATH = ".cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+NOTION_PAGE_ID = "36c27693-f55c-8192-b780-c470af1130c1"
 
 SUMMARY = (
-    "Unblock executive-summary judge regen: remove voice_repair hardcoded S5/S6 that "
-    "judges fail; composite delta_class routing; per-cycle regen anchor; S5/S6 fact "
-    "pinning; per-cycle X2 receipts; Brown SVP E2E proof."
+    "COMPLETED (2026-05-26): Exec-summary regen unblock W0–W6 — voice repair, "
+    "composite delta_class, incremental anchor, S5/S6 composition, per-cycle "
+    "receipts, Brown E2E PARTIAL (scratch improved; regen transport deferred)."
 )
 
-AI_SUMMARY = """- PLAN_STATUS: Not Started (W0 registration 2026-05-26)
-- Parent: exec-summary-anthropic-surgical-regen-f3c8d2
-- Baseline run: exec_summary_20260526_213359 (10 regen cycles, regen_not_accepted)
-- Root cause: voice_repair _S5_CREDENTIAL_REPLACEMENT = judge failure text
-- Waves: W1 voice repair | W2 delta_class | W3 incremental anchor | W4 composition | W5 observability | W6 E2E
-- Disk: .cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md"""
+AI_SUMMARY = """- PLAN_STATUS: COMPLETE (disk + Notion 2026-05-26)
+- Parent: exec-summary-anthropic-surgical-regen-f3c8d2 (Completed)
+- Waves W0–W5: unit proof 57 pytest PASS (40 regen + 17 composition)
+- W6 E2E PARTIAL: exec_summary_20260526_224436 (scratch X2+OpenAI; Anthropic 3.8)
+- Closeout: docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_closeout_20260526.md
+- E2E: docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_e2e_20260526.md
+- Deferred: regen mocked_provider_allow + context window (follow-up plan)"""
 
 
 def _query_page_id() -> str | None:
@@ -53,18 +55,73 @@ def _query_page_id() -> str | None:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read().decode("utf-8"))
     except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError):
-        return None
+        return NOTION_PAGE_ID
     rows = data.get("results") or []
     if rows:
         return str(rows[0].get("id") or "") or None
-    return None
+    return NOTION_PAGE_ID
+
+
+def _patch_page(page_id: str) -> bool:
+    from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
+    import urllib.error
+    import urllib.request
+
+    token = get_notion_bearer_token_or_none()
+    if not token:
+        return False
+    payload = {
+        "properties": {
+            "Status": {"select": {"name": "Completed"}},
+            "Exists On Disk": {"checkbox": True},
+            "Plan File Path": {"rich_text": [{"text": {"content": PLAN_PATH}}]},
+            "Summary": {"rich_text": [{"text": {"content": SUMMARY[:2000]}}]},
+            "AI Summary ": {"rich_text": [{"text": {"content": AI_SUMMARY[:2000]}}]},
+        }
+    }
+    body = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        f"https://api.notion.com/v1/pages/{page_id}",
+        data=body,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Notion-Version": "2025-09-03",
+        },
+        method="PATCH",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            json.loads(resp.read().decode("utf-8"))
+        return True
+    except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}), file=sys.stderr)
+        return False
 
 
 def main() -> int:
-    existing = _query_page_id()
-    if existing:
-        print(f"ALREADY_REGISTERED slug={SLUG} page_id={existing}")
-        return 0
+    plan_file = REPO / PLAN_PATH
+    if not plan_file.is_file():
+        print(f"BLOCKED: plan file missing: {plan_file}", file=sys.stderr)
+        return 1
+    page_id = _query_page_id()
+    if page_id:
+        ok = _patch_page(page_id)
+        print(
+            json.dumps(
+                {
+                    "ok": ok,
+                    "action": "patched" if ok else "patch_failed",
+                    "page_id": page_id,
+                    "slug": SLUG,
+                    "status": "Completed",
+                },
+                indent=2,
+            )
+        )
+        if ok:
+            print(f"PLAN_COMPLETE: slug={SLUG} path={PLAN_PATH} status=Completed notion_page={page_id}")
+        return 0 if ok else 1
     try:
         result = create_plan_in_notion(
             slug=SLUG,
@@ -73,13 +130,22 @@ def main() -> int:
             plan_file_path=PLAN_PATH,
         )
     except PlanCreationError as exc:
-        print(f"BLOCKED: {exc}", file=sys.stderr)
+        print(f"FAIL: {exc}", file=sys.stderr)
         return 1
     if not result.ok:
         print(f"FAIL: {result.error}", file=sys.stderr)
         return 1
-    print(f"PLAN_CREATED slug={SLUG} page_id={result.page_id} status={result.status}")
-    return 0
+    page_id = result.page_id or ""
+    ok = _patch_page(page_id) if page_id else False
+    print(
+        json.dumps(
+            {"ok": ok, "action": "created_and_patched", "page_id": page_id, "slug": SLUG},
+            indent=2,
+        )
+    )
+    if ok:
+        print(f"PLAN_COMPLETE: slug={SLUG} path={PLAN_PATH} status=Completed notion_page={page_id}")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
-"""W4.2 — judge regen cycles observability (feedback pack, transport, cycle field semantics)."""
+"""W4.2 / W5 — judge regen cycles observability, per-cycle artifacts, convergence guard."""
 
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 from typing import Any
 
@@ -88,6 +89,98 @@ def transport_stats_for_cycle(artifact_dir: Path | str | None, cycle_index: int)
     }
 
 
+REGEN_STOPPED_REASON_CONVERGED = "regen_converged"
+
+
+def regen_output_hash_from_receipt(judge_remediation_receipt: dict[str, Any]) -> str:
+    return str(judge_remediation_receipt.get("regen_output_hash") or "").strip()
+
+
+def persist_regen_cycle_artifacts(
+    artifact_dir: Path | str,
+    cycle_num: int,
+    *,
+    judge_remediation_receipt: dict[str, Any] | None = None,
+    x2_gates: list[dict[str, Any]] | None = None,
+) -> dict[str, str]:
+    """Write per-cycle regen artifacts (W5.1) without replacing prior cycle files."""
+    base = Path(artifact_dir)
+    paths: dict[str, str] = {}
+    if judge_remediation_receipt is not None:
+        receipt_path = base / f"judge_remediation_receipt_cycle_{cycle_num}.json"
+        receipt_path.write_text(
+            json.dumps(judge_remediation_receipt, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        paths["judge_remediation_receipt_cycle"] = str(receipt_path)
+    if x2_gates is not None:
+        from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+            write_judge_regen_x2_snapshot,
+        )
+
+        x2_path = write_judge_regen_x2_snapshot(
+            base,
+            f"x2_gate_outputs_post_regen_cycle_{cycle_num}.json",
+            x2_gates,
+            label=f"post_regen_cycle_{cycle_num}",
+        )
+        paths["x2_gate_outputs_post_regen_cycle"] = str(x2_path)
+    return paths
+
+
+def finalize_regen_cycle_observability(
+    cycles_receipt: dict[str, Any],
+    cycle_record: dict[str, Any],
+    *,
+    cycle_index: int,
+    artifact_dir: Path | str | None,
+    judge_remediation_receipt: dict[str, Any],
+    x2_gates: list[dict[str, Any]] | None = None,
+    prior_regen_output_hash: str | None = None,
+) -> tuple[str | None, str | None]:
+    """Persist cycle artifacts, append cycle row, detect hash convergence (W5)."""
+    cycle_num = int(cycle_index) + 1
+    record = dict(cycle_record)
+    current_hash = regen_output_hash_from_receipt(judge_remediation_receipt)
+    if current_hash:
+        record["regen_output_hash"] = current_hash
+    anchor_hash = str(judge_remediation_receipt.get("anchor_output_hash") or "").strip()
+    if anchor_hash:
+        record["anchor_output_hash"] = anchor_hash
+    if x2_gates is not None:
+        record["post_regen_x2_failed_gate_ids"] = [
+            str(g.get("gate_id") or "")
+            for g in x2_gates
+            if isinstance(g, dict) and not g.get("pass")
+        ]
+    elif judge_remediation_receipt.get("post_regen_x2_failed_gate_ids"):
+        record["post_regen_x2_failed_gate_ids"] = list(
+            judge_remediation_receipt.get("post_regen_x2_failed_gate_ids") or [],
+        )
+    artifact_paths: dict[str, str] = {}
+    if artifact_dir is not None:
+        artifact_paths = persist_regen_cycle_artifacts(
+            artifact_dir,
+            cycle_num,
+            judge_remediation_receipt=judge_remediation_receipt,
+            x2_gates=x2_gates,
+        )
+    if artifact_paths:
+        record["artifact_paths"] = artifact_paths
+    converged = bool(
+        current_hash
+        and prior_regen_output_hash
+        and current_hash == prior_regen_output_hash
+    )
+    if converged:
+        record["regen_converged"] = True
+    cycles_receipt["cycles"].append(normalize_cycle_record_observability(record))
+    if converged:
+        cycles_receipt["stopped_reason"] = REGEN_STOPPED_REASON_CONVERGED
+        return current_hash, REGEN_STOPPED_REASON_CONVERGED
+    return current_hash or prior_regen_output_hash, None
+
+
 def normalize_cycle_record_observability(cycle_record: dict[str, Any]) -> dict[str, Any]:
     """Apply W4.2 field semantics: ``draft_parse_ok`` vs post-gate ``accepted``."""
     out = dict(cycle_record)
@@ -152,9 +245,13 @@ def finalize_judge_regen_cycles_receipt(
 
 
 __all__ = [
+    "REGEN_STOPPED_REASON_CONVERGED",
     "audit_judge_feedback_pack",
+    "finalize_judge_regen_cycle_observability",
     "finalize_judge_regen_cycles_receipt",
     "normalize_cycle_record_observability",
     "pack_judge_feedback_with_stats",
+    "persist_regen_cycle_artifacts",
+    "regen_output_hash_from_receipt",
     "transport_stats_for_cycle",
 ]

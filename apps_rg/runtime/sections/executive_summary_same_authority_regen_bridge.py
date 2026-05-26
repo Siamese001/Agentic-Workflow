@@ -71,6 +71,9 @@ def build_regen_delta_user_turn(
     allowed_fact_count: int,
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
+    baseline_resume_display_text: str = "",
+    prior_attempt_resume_display_text: str = "",
+    prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> str:
     """App delta lines + floors; core owns REGEN_DELTA header and PROMPT_LOCK."""
     lines = list(
@@ -80,6 +83,9 @@ def build_regen_delta_user_turn(
             allowed_fact_count=allowed_fact_count,
             prior_word_count=prior_word_count,
             prior_ledger_rows=prior_ledger_rows,
+            baseline_resume_display_text=baseline_resume_display_text,
+            prior_attempt_resume_display_text=prior_attempt_resume_display_text,
+            prior_cycle_judges=prior_cycle_judges,
         ),
     )
     return format_regen_delta_user_turn(tuple(lines))
@@ -102,6 +108,9 @@ def build_incremental_repair_contract(
     transport_retry_count: int = 0,
     max_semantic_regen_attempts: int = 1,
     nested_heal_without_new_attempt: bool = False,
+    baseline_resume_display_text: str = "",
+    prior_attempt_resume_display_text: str = "",
+    prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> IncrementalRepairContract:
     compile_ctx = _load_compiled_context(artifact_dir)
     pm = messages_to_prompt_messages(messages)
@@ -141,6 +150,9 @@ def build_incremental_repair_contract(
             allowed_fact_count=allowed_fact_count,
             prior_word_count=prior_word_count,
             prior_ledger_rows=prior_ledger_rows,
+            baseline_resume_display_text=baseline_resume_display_text,
+            prior_attempt_resume_display_text=prior_attempt_resume_display_text,
+            prior_cycle_judges=prior_cycle_judges,
         ),
     )
 

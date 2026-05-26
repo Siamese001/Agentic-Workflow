@@ -5,7 +5,12 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from apps_rg.runtime.sections.executive_summary_synthesis_contract import SENTENCE_ARC_SVP_STRATEGY
+from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+    FSA_CREDENTIAL_FACT_ID,
+    QUANT_METRIC_DISPLAY_FACT_ID,
+    SENTENCE_ARC_SVP_STRATEGY,
+    format_s6_briefing_forward_targeting_anchor,
+)
 from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
 
 COMPOSITION_STYLE = "executive_painting"
@@ -336,6 +341,54 @@ def check_exec_summary_brushstroke_coverage_pre_l2(
     }
 
 
+def enrich_strategy_sentence_arc_bindings(
+    sentence_arc: list[dict[str, Any]],
+    *,
+    allowed_fact_ids: set[str],
+    briefing_text: str = "",
+    jd_text: str = "",
+    strategy_executive: bool,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Attach S5 metric + S6 targeting-forward bindings for judge-aligned composition (W4)."""
+    meta: dict[str, Any] = {}
+    if not strategy_executive:
+        return sentence_arc, meta
+
+    allowed = {_fact_id_base(x) for x in allowed_fact_ids}
+    has_metric = QUANT_METRIC_DISPLAY_FACT_ID in allowed
+    has_fsa = FSA_CREDENTIAL_FACT_ID in allowed
+    out: list[dict[str, Any]] = []
+    for row in sentence_arc:
+        enriched = dict(row)
+        idx = int(enriched.get("sentence_index") or 0)
+        if idx == 4 and has_metric and has_fsa:
+            enriched["required_source_fact_ids"] = [
+                QUANT_METRIC_DISPLAY_FACT_ID,
+                FSA_CREDENTIAL_FACT_ID,
+            ]
+            enriched["s5_metric_display_fact_id"] = QUANT_METRIC_DISPLAY_FACT_ID
+            enriched["s5_credential_fact_id"] = FSA_CREDENTIAL_FACT_ID
+        if idx == 5:
+            anchor = format_s6_briefing_forward_targeting_anchor(
+                briefing_text=briefing_text,
+                jd_text=jd_text,
+            )
+            enriched["s6_targeting_forward_anchor"] = anchor
+        out.append(enriched)
+
+    if has_metric and has_fsa:
+        meta["s5_metric_binding"] = {
+            "metric_display_fact_id": QUANT_METRIC_DISPLAY_FACT_ID,
+            "credential_fact_id": FSA_CREDENTIAL_FACT_ID,
+            "display_metric_required": True,
+        }
+    meta["s6_targeting_forward_anchor"] = format_s6_briefing_forward_targeting_anchor(
+        briefing_text=briefing_text,
+        jd_text=jd_text,
+    )
+    return out, meta
+
+
 def build_sentence_arc(
     *,
     target_role: str,
@@ -381,12 +434,28 @@ def format_composition_plan_for_pa(plan: dict[str, Any]) -> str:
     lines.append(
         "narrative_arc_weights (thematic emphasis for judge-aligned synthesis — NOT one sentence per brushstroke index):"
     )
+    s5_binding = plan.get("s5_metric_binding") or {}
+    if s5_binding:
+        lines.append(
+            "s5_metric_binding: "
+            f"display_metric_fact_id={s5_binding.get('metric_display_fact_id')} "
+            f"credential_fact_id={s5_binding.get('credential_fact_id')} "
+            f"display_metric_required={s5_binding.get('display_metric_required')}"
+        )
+    s6_anchor = str(plan.get("s6_targeting_forward_anchor") or "").strip()
+    if s6_anchor:
+        lines.append(s6_anchor)
     for row in plan.get("sentence_arc") or []:
         if not isinstance(row, dict):
             continue
         idx = row.get("sentence_index")
+        req = row.get("required_source_fact_ids") or []
+        req_note = f" required_source_fact_ids={req}" if req else ""
+        s6_row_anchor = row.get("s6_targeting_forward_anchor")
+        s6_note = f" | {s6_row_anchor}" if s6_row_anchor else ""
         lines.append(
-            f"  S{int(idx) + 1} weight [{row.get('brushstroke_id')}/{row.get('arc_role')}]: {row.get('guidance')}"
+            f"  S{int(idx) + 1} weight [{row.get('brushstroke_id')}/{row.get('arc_role')}]: "
+            f"{row.get('guidance')}{req_note}{s6_note}"
         )
     lines.append(
         "S1 must echo executive_strategy_thesis. You may weave multiple brushstroke facts across S2–S5; "
@@ -407,6 +476,8 @@ def build_executive_summary_composition_plan(
     target_company: str,
     proof_pool_metadata: dict[str, Any] | None = None,
     srfs_integration: dict[str, Any] | None = None,
+    briefing_text: str = "",
+    jd_text: str = "",
 ) -> dict[str, Any]:
     """Deterministic composition plan from SRFS/graph proof pool (runtime authority)."""
     from apps_rg.runtime.sections.executive_summary_pa import is_strategy_executive_target_title
@@ -441,6 +512,15 @@ def build_executive_summary_composition_plan(
             f"(targeting: {role_s or 'target role'}; company name never in prose)."
         )
     sentence_arc = build_sentence_arc(target_role=role_s, strategy_executive=strategy_executive)
+    arc_meta: dict[str, Any] = {}
+    if strategy_executive:
+        sentence_arc, arc_meta = enrich_strategy_sentence_arc_bindings(
+            sentence_arc,
+            allowed_fact_ids=allowed,
+            briefing_text=str(briefing_text or ""),
+            jd_text=str(jd_text or ""),
+            strategy_executive=True,
+        )
     return {
         "schema": COMPOSITION_PLAN_SCHEMA,
         "composition_style": COMPOSITION_STYLE,
@@ -450,6 +530,7 @@ def build_executive_summary_composition_plan(
         "dominant_brushstroke_id": dominant,
         "brushstrokes": brushstrokes,
         "sentence_arc": sentence_arc,
+        **arc_meta,
         "graph_skill_refs": graph_refs,
         "brushstroke_required_ids": brushstroke_bind["brushstroke_required_ids"],
         "brushstroke_covered_ids": brushstroke_bind["brushstroke_covered_ids"],

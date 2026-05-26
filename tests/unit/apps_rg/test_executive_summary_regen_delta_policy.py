@@ -182,8 +182,9 @@ def test_brown_delta_includes_gemini_voice_and_claude_stack_feedback() -> None:
     assert "mechanical phrasing" in joined
     assert "JUDGE_DELTA_SOURCE provider_key=anthropic_claude" in joined
     assert "bullet stack" in joined
-    assert "indexes 2, 3, 4, 5" in joined
-    assert "freeze all other sentences verbatim" in joined
+    assert "executive_signal_and_voice_v1" in joined
+    assert "indexes 1, 2, 3, 4, 5, 6" in joined
+    assert "metric_weave_s3_s5" in joined.lower()
 
 
 def test_resolve_delta_class_composite_when_voice_and_executive_signal_on_one_judge() -> None:

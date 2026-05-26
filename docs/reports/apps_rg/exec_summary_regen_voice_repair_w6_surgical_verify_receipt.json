@@ -1,0 +1,25 @@
+{
+  "schema": "executive_summary_anthropic_surgical_regen_verify_v1",
+  "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436",
+  "checks": {
+    "cycle_count": 2,
+    "judge_feedback_never_truncated": true,
+    "g5_artifact_count": 0,
+    "regen_delta_user_turn_seen": false,
+    "allowlist_edit_budget_in_delta": true,
+    "semantic_regen_attempt_indices": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "semantic_index_monotonic": true,
+    "w5_infrastructure_ok": false
+  },
+  "passed": false,
+  "regen_outcome": "no_acceptable_candidate",
+  "final_publish_baseline": "scratch",
+  "operator_status": "DRAFT_READY",
+  "product_status": "X3_REVIEW_JUDGE_SOFT_FAIL",
+  "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL"
+}

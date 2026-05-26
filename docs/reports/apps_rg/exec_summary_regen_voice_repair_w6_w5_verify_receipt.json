@@ -1,0 +1,12 @@
+{
+  "schema": "executive_summary_judge_regen_w5_verify_v1",
+  "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_224436",
+  "missing_artifacts": [],
+  "passed": true,
+  "cycles_schema_version": 2,
+  "cycles_schema": "executive_summary_judge_remediation_cycles_v2",
+  "regen_outcome": "no_acceptable_candidate",
+  "final_publish_baseline": "scratch",
+  "schema_version_ok": true,
+  "publish_integrity_match": true
+}
