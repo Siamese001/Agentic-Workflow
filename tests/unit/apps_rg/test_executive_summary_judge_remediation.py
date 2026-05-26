@@ -96,6 +96,50 @@ def test_trigger_skipped_when_x2_not_passed() -> None:
     assert receipt.get("reason") == "requires_real_llm_and_x2_pass"
 
 
+def test_trigger_not_skipped_when_two_pass_and_decisive_synthesis_failure() -> None:
+    """Quorum skip must not suppress regen when a third judge flags decisive synthesis failure."""
+    judges = [
+        {
+            "provider_key": "gemini_pro",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "decisive_failure": False,
+            "normalized_score": 0.95,
+            "normalized_threshold": 0.8,
+            "findings": [],
+        },
+        {
+            "provider_key": "openai_chatgpt",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_PASS",
+            "pass": True,
+            "decisive_failure": False,
+            "normalized_score": 0.9,
+            "normalized_threshold": 0.8,
+            "findings": [],
+        },
+        {
+            "provider_key": "anthropic_claude",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_FAIL",
+            "pass": False,
+            "decisive_failure": True,
+            "normalized_score": 0.4,
+            "normalized_threshold": 0.8,
+            "findings": ["synthesis lacks executive connective tissue"],
+            "fail_reasons": [],
+            "remediation_suggestions": [],
+        },
+    ]
+    ok, receipt = evaluate_judge_remediation_trigger(
+        judges, runtime_generation_status="REAL_LLM", x2_passed=True
+    )
+    assert ok is True
+    assert receipt.get("trigger_mode") == "decisive_synthesis_or_executive_signal"
+    assert receipt.get("reason") != "two_or_more_judges_already_pass_skip_regen"
+
+
 def test_judge_regen_max_attempts_default_one(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS", raising=False)
     assert judge_regen_max_attempts() == 1

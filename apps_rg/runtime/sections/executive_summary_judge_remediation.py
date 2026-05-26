@@ -231,23 +231,23 @@ def evaluate_judge_remediation_trigger(
     receipt["solitary_severe_soft_fail"] = solitary_severe
     receipt["solitary_dimension_major_failed"] = solitary_dim_major
 
-    if pass_count >= 2 and not solitary_severe:
+    decisive_dims: list[str] = []
+    for j in x1d_judges:
+        if not j.get("decisive_failure"):
+            continue
+        blob = _judge_text_blob(j)
+        if "synthesis" in blob or "executive_signal" in blob or "executive signal" in blob:
+            decisive_dims.append(str(j.get("provider_key") or "unknown"))
+    decisive_trigger = bool(decisive_dims)
+    receipt["decisive_synthesis_providers"] = decisive_dims
+
+    if pass_count >= 2 and not solitary_severe and not decisive_trigger:
         receipt["reason"] = "two_or_more_judges_already_pass_skip_regen"
         return False, receipt
 
     median = _median_normalized_score(x1d_judges)
     receipt["median_normalized_score"] = median
     median_fail = median is not None and median < median_threshold
-
-    decisive_dims = []
-    for j in x1d_judges:
-        if not j.get("decisive_failure"):
-            continue
-        blob = _judge_text_blob(j)
-        if "synthesis" in blob or "executive_signal" in blob or "executive signal" in blob:
-            decisive_dims.append(j.get("provider_key") or "unknown")
-    decisive_trigger = bool(decisive_dims)
-    receipt["decisive_synthesis_providers"] = decisive_dims
     receipt["quorum_shared_tags"] = sorted(shared_tags)
     receipt["quorum_soft_fail"] = quorum
     receipt["median_fail"] = median_fail
