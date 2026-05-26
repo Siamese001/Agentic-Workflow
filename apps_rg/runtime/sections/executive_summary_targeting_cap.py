@@ -4,10 +4,12 @@ Compacts jd_requirements block prose only. Never touches proof substrate, schema
 """
 from __future__ import annotations
 
-import os
 import re
 from typing import Any
 
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    TARGETING_NO_GAP_MAX_CHARS,
+)
 from apps_rg.runtime.sections.executive_summary_token_budget import estimate_tokens_approximate
 
 SECTION_ID = "executive_summary"
@@ -81,33 +83,17 @@ def targeting_cap_enabled(runtime_payload: dict[str, Any]) -> bool:
         return False
     if runtime_payload.get("targeting_cap_disabled") is True:
         return False
-    env = os.environ.get("APPS_RG_EXEC_SUMMARY_TARGETING_CAP", "1").strip().lower()
-    return env not in ("0", "false", "no")
-
-
-# Defaults sized for VLLM_MAX_MODEL_LEN=24576 (24k): available input ~22k tokens after
-# 2048 completion + 512 reserve. Brown SVP briefing ~15.2k chars; JD ~4.3k — caps carry
-# full targeting docs with margin; section-priority trim only when source exceeds cap.
-_DEFAULT_JD_MAX_CHARS = 6_000
-_DEFAULT_BRIEFING_MAX_CHARS = 16_000
+    return True
 
 
 def _resolve_max_chars(kind: str, *, gap_tokens: int = 0) -> int:
-    env_key = f"APPS_RG_EXEC_SUMMARY_TARGETING_CAP_{kind.upper()}_CHARS"
-    raw = os.environ.get(env_key, "").strip()
-    if raw:
-        base = max(512, int(raw))
-    elif kind.upper() == "BRIEFING":
-        base = _DEFAULT_BRIEFING_MAX_CHARS
-    else:
-        base = _DEFAULT_JD_MAX_CHARS
-    if gap_tokens > 0:
-        # Rough chars to shed from targeting region only (~3 chars/token).
-        shed = max(0, int(gap_tokens * 3.2))
-        if kind.upper() == "BRIEFING":
-            return max(768, base - int(shed * 0.65))
-        return max(512, base - int(shed * 0.35))
-    return base
+    if gap_tokens <= 0:
+        return TARGETING_NO_GAP_MAX_CHARS
+    # Rough chars to shed from targeting region only (~3 chars/token) when over hard input budget.
+    shed = max(0, int(gap_tokens * 3.2))
+    if kind.upper() == "BRIEFING":
+        return max(768, TARGETING_NO_GAP_MAX_CHARS - int(shed * 0.65))
+    return max(512, TARGETING_NO_GAP_MAX_CHARS - int(shed * 0.35))
 
 
 def _normalize_line_key(line: str) -> str:
@@ -135,7 +121,7 @@ def compress_targeting_jd_body(jd_text: str, max_chars: int) -> str:
     """Dedupe and keep high-signal JD lines deterministically."""
     normalized = jd_text.replace("\r\n", "\n").rstrip()
     notice_room = len(_CAP_NOTICE)
-    if max_chars >= _DEFAULT_JD_MAX_CHARS and len(normalized) + notice_room <= max_chars:
+    if max_chars >= TARGETING_NO_GAP_MAX_CHARS and len(normalized) + notice_room <= max_chars:
         body = normalized
         if _CAP_NOTICE.strip() not in body:
             body = body.rstrip() + _CAP_NOTICE
@@ -208,7 +194,7 @@ def compress_targeting_briefing_body(briefing: str, max_chars: int) -> str:
     """Section-priority briefing cap; keeps high-signal sections (markdown ## or === headers)."""
     normalized = briefing.replace("\r\n", "\n").rstrip()
     notice_room = len(_CAP_NOTICE)
-    if max_chars >= _DEFAULT_BRIEFING_MAX_CHARS and len(normalized) + notice_room <= max_chars:
+    if max_chars >= TARGETING_NO_GAP_MAX_CHARS and len(normalized) + notice_room <= max_chars:
         body = normalized
         if _CAP_NOTICE.strip() not in body:
             body = body.rstrip() + _CAP_NOTICE

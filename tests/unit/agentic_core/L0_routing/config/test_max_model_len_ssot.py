@@ -40,6 +40,18 @@ class MaxModelLenSSOTTest(unittest.TestCase):
 
             importlib.reload(model_registry)
 
+    def test_vllm_token_budget_types_max_model_len_reads_from_ssot(self) -> None:
+        from agentic_core.L0_routing.config.model_registry import (
+            QWEN_LOCAL_MAX_MODEL_LEN,
+        )
+        from agentic_core.L2_execution.types import vllm_token_budget_types
+
+        importlib.reload(vllm_token_budget_types)
+        self.assertEqual(
+            vllm_token_budget_types.QWEN_MAX_MODEL_LEN,
+            QWEN_LOCAL_MAX_MODEL_LEN,
+        )
+
     def test_serving_profile_ceiling_reads_from_ssot(self) -> None:
         from agentic_core.L0_routing.config.model_registry import (
             QWEN_LOCAL_MAX_MODEL_LEN,

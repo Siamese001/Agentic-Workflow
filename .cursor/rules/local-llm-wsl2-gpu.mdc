@@ -22,13 +22,15 @@ alwaysApply: false
 | Windows desktop compositor overhead | ~1–2 GB (small, varies with foreground apps) |
 | Practical usable VRAM for vLLM | ~29–30 GB |
 
-## Model VRAM footprint (AWQ 4-bit, 8K context, vLLM v0.11 V1 engine)
+## Model VRAM footprint (AWQ 4-bit — sizing table uses 8K KV for comparison only)
 
-| Model | Weights | KV cache (8K) | Framework | Total | Verdict on this rig |
-|-------|---------|---------------|-----------|-------|---------------------|
+> **Production compose** serves **32B-AWQ @ `max-model-len=24576`** (24k), not 8k. The 8K KV column estimates relative footprint when choosing model size.
+
+| Model | Weights | KV cache (8K sizing) | Framework | Total @ 8K | Verdict on this rig |
+|-------|---------|----------------------|-----------|------------|---------------------|
 | Qwen2.5-7B-AWQ | ~5 GB | ~1.5 GB | ~2 GB | ~8.5 GB | ✅ comfortable |
 | Qwen2.5-14B-AWQ | ~10 GB | ~3 GB | ~2 GB | ~15 GB | ✅ comfortable |
-| **Qwen2.5-32B-AWQ** | ~20 GB | ~5 GB | ~2 GB | **~27 GB** | ✅ **feasible** with `gpu_memory_utilization=0.85`, `max_model_len ≤ 8192` |
+| **Qwen2.5-32B-AWQ** | ~20 GB | ~5 GB (scales ↑ @ 24k) | ~2 GB | **~27 GB** @ 8K table | ✅ **production** @ `max_model_len=24576`, `gpu_memory_utilization=0.88` |
 | Qwen2.5-72B-AWQ | ~42 GB | — | — | ≥42 GB | ❌ won't fit |
 
 ## Forbidden framings
@@ -56,7 +58,7 @@ question flipped.
 |---|---|
 | Container | `local-qwen-vllm` |
 | Compose SSOT | `docker-compose.qwen.yml` |
-| Image | `vllm/vllm-openai:v0.11.0` (pinned in compose; do not use floating `:latest` for proof) |
+| Image | `vllm/vllm-openai:latest` (compose default on this workstation; pin tag+digest for proof runs only) |
 | Weights | WSL bind: `~/models/Qwen2.5-32B-Instruct-AWQ` → `/models/qwen` (see boot runbook) |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL`) |
 | Container args | `--model /models/qwen --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --attention-backend TRITON_ATTN --max-model-len 24576 --gpu-memory-utilization 0.88 --max-num-seqs 8` |

@@ -238,8 +238,9 @@ def test_brown_scale_first_pass_fits_default_utilization_at_16k_window() -> None
 
 
 def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> None:
-    payload = _minimal_payload(briefing="B" * 16000)
-    payload["jd_text"] = "J" * 8000
+    # Optional trim must not drop below 92%% first-pass gate; tight window forces block.
+    payload = _minimal_payload(briefing="B" * 24000)
+    payload["jd_text"] = "J" * 12000
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     with pytest.raises(ExecutiveSummaryTokenBudgetExceeded) as excinfo:
         apply_executive_summary_token_budget_policy(
@@ -248,7 +249,7 @@ def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> N
             provider="qwen_vllm",
             model="Qwen/Qwen2.5-32B-Instruct-AWQ",
             requested_max_output_tokens=1024,
-            provider_context_window=10000,
+            provider_context_window=8000,
         )
     receipt = excinfo.value.receipt
     assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON_FIRST_PASS_85PCT

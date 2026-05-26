@@ -16,7 +16,7 @@ For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
 | Container | `local-qwen-vllm` |
 | Compose SSOT | `docker-compose.qwen.yml` |
 | Cursor boot runbook | `docs/cursor/local_qwen_docker_boot.md` |
-| Image | `vllm/vllm-openai:v0.11.0` in compose (**pinned**); see **W5 — Image tag and digest pinning** for digest discipline |
+| Image | `vllm/vllm-openai:latest` in compose (workstation default); see **W5 — Image tag and digest pinning** to pin tag+digest for proof runs |
 | Model | `Qwen/Qwen2.5-32B-Instruct-AWQ` (32B-AWQ) served from `/models/qwen` (WSL bind mount) |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL` in `agentic_core/L0_routing/config/model_registry.py`) |
 | Port mapping | `0.0.0.0:8000->8000/tcp` |

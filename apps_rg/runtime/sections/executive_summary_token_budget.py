@@ -15,26 +15,33 @@ from dataclasses import dataclass, replace
 from typing import Any
 
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    CHARS_PER_TOKEN_ESTIMATE,
+    DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX,
+    ENV_VERIFY_CONTEXT_WINDOW,
+    ESTIMATE_SAFETY_MULTIPLIER,
+    RESERVED_SYSTEM_SCHEMA_TOKENS,
+    resolve_first_pass_input_utilization_max,
+    resolve_provider_context_window,
+)
 
 SECTION_ID = "executive_summary"
 FAIL_CLOSED_REASON = "TOKEN_BUDGET_EXCEEDED_AFTER_TRIM"
 FAIL_CLOSED_REASON_FIRST_PASS_85PCT = "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT"
 FAIL_SHAPE_ALTERED = "EVIDENCE_CONTRACT_OR_PROMPT_SHAPE_ALTERED"
-# 0.92 from real-run receipt analysis (158 exec_summary_*): p50 PASS dispatch util 91.33%
-# @ 16k; trimmed Brown blockers @ 87.05% (12034 est.). See tools/cursor/_tmp_analyze_token_budget_receipts.py
-FIRST_PASS_INPUT_UTILIZATION_MAX = 0.92
-_ENV_FIRST_PASS_UTILIZATION = "APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX"
+
+# Backward-compatible alias (tests/imports).
+FIRST_PASS_INPUT_UTILIZATION_MAX = DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX
 _CONTEXT_SOURCE_ENV = "ENV_VLLM_MAX_MODEL_LEN"
 _CONTEXT_SOURCE_SERVER = "SERVER_MODELS_METADATA"
 _CONTEXT_SOURCE_UNKNOWN = "UNKNOWN"
-_ENV_VERIFY_CONTEXT_WINDOW = "APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW"
+_ENV_VERIFY_CONTEXT_WINDOW = ENV_VERIFY_CONTEXT_WINDOW
 TRIM_STRATEGY = "executive_summary_optional_trim_only_v2"
 ESTIMATE_METHOD = "approximate_chars_div_3_with_safety_margin"
 
-_CHARS_PER_TOKEN = 3
-_ESTIMATE_SAFETY_MULTIPLIER = 1.12
-_RESERVED_SYSTEM_SCHEMA_TOKENS = 512
-_DEFAULT_CONTEXT_WINDOW = 24576
+_CHARS_PER_TOKEN = CHARS_PER_TOKEN_ESTIMATE
+_ESTIMATE_SAFETY_MULTIPLIER = ESTIMATE_SAFETY_MULTIPLIER
+_RESERVED_SYSTEM_SCHEMA_TOKENS = RESERVED_SYSTEM_SCHEMA_TOKENS
 
 _SLOT_MARKER_RE = re.compile(r"<!--\s*SLOT:\s*([A-Z0-9]+)\s*-->")
 _FACT_LINE_RE = re.compile(r"^\s*-\s+([A-Za-z0-9_]+):\s+(.*)$", re.MULTILINE)
@@ -93,10 +100,6 @@ class ExecutiveSummaryTokenBudgetExceeded(Exception):
         super().__init__(summary or receipt.get("fail_closed_reason") or FAIL_CLOSED_REASON)
 
 
-def resolve_provider_context_window() -> int:
-    return resolve_context_window_provenance().provider_context_window
-
-
 @dataclass(frozen=True)
 class ContextWindowProvenance:
     provider_context_window: int
@@ -145,11 +148,7 @@ def _server_context_window_from_models_payload(
 
 def resolve_context_window_provenance(*, model: str | None = None) -> ContextWindowProvenance:
     """Resolve context window with labeled provenance (W2.1). Auto-detect is opt-in only."""
-    env_raw = os.environ.get("VLLM_MAX_MODEL_LEN", str(_DEFAULT_CONTEXT_WINDOW)).strip()
-    try:
-        env_window = max(4096, int(env_raw))
-    except ValueError:
-        env_window = _DEFAULT_CONTEXT_WINDOW
+    env_window = resolve_provider_context_window()
 
     if not _truthy_env_flag(_ENV_VERIFY_CONTEXT_WINDOW):
         return ContextWindowProvenance(
@@ -235,23 +234,6 @@ def context_window_provenance_receipt_fields(
         "server_context_window_warning": provenance.server_context_window_warning,
         "server_observed_context_window": provenance.server_observed_context_window,
     }
-
-
-def resolve_first_pass_input_utilization_max() -> float:
-    """First-pass input cap as a fraction of ``available_input_tokens`` (W2.2).
-
-    Defaults to :data:`FIRST_PASS_INPUT_UTILIZATION_MAX`. Override via
-    ``APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX`` (e.g. ``0.90``).
-    Context window itself comes from ``VLLM_MAX_MODEL_LEN`` (qwen_vllm / vLLM).
-    """
-    raw = os.environ.get(_ENV_FIRST_PASS_UTILIZATION, "").strip()
-    if not raw:
-        return FIRST_PASS_INPUT_UTILIZATION_MAX
-    try:
-        value = float(raw)
-    except ValueError:
-        return FIRST_PASS_INPUT_UTILIZATION_MAX
-    return min(0.95, max(0.70, value))
 
 
 def first_pass_85pct_limit_tokens(available_input_tokens: int) -> int:

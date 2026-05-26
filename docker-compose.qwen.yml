@@ -19,8 +19,8 @@
 
 services:
   qwen-vllm:
-    # Pin — do not use :latest on Blackwell (pydantic init regressions on floating tags).
-    image: vllm/vllm-openai:v0.11.0
+    # Workstation default: latest (already on disk for this rig). Pin tag+digest only for proof/CI.
+    image: vllm/vllm-openai:latest
     container_name: local-qwen-vllm
     gpus: all
     # Default Docker /dev/shm is 64 MiB; vLLM worker IPC needs much more or workers die silently.
@@ -28,7 +28,6 @@ services:
     ports:
       - "8000:8000"
     environment:
-      VLLM_USE_V1: "1"
       # Optional: set HF_TOKEN in shell or a .env file beside this compose file for faster/resumable pulls.
       HF_HUB_ENABLE_HF_TRANSFER: "1"
     volumes:

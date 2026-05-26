@@ -34,11 +34,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# SRFS + full 8-slot PA prompts are large; model JSON (display + claim_ledger + self_check) often exceeds 700 tokens.
-_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS = int(
-    os.environ.get("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", "2048")
-)
-
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
@@ -163,9 +158,6 @@ JD_TEXT_DEFAULT = (
     "LLMOps, retrieval, production reliability, engineering leadership"
 )
 BRIEFING_DEFAULT = "regulated enterprise environment, platform modernization, AI governance, scalable delivery"
-
-# Full PDF extraction briefings can exceed vLLM max_model_len (prompt + max_tokens). Cap before compile.
-_DEFAULT_EXEC_SUMMARY_BRIEFING_CAP_CHARS = 12000
 
 
 def _args_target_title(args: argparse.Namespace) -> str:
@@ -1642,12 +1634,11 @@ def run_executive_summary_execution(
 
     token_budget_block_reason: str | None = None
     token_budget_receipt: dict[str, Any] | None = None
-    max_out_tokens = int(
-        os.environ.get(
-            "APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS",
-            str(_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS),
-        )
+    from apps_rg.runtime.sections.executive_summary_context_limits import (
+        resolve_scratch_max_output_tokens,
     )
+
+    max_out_tokens = resolve_scratch_max_output_tokens()
     if not evidence_capsule_block_reason:
         try:
             section_compiled, token_budget_receipt = apply_executive_summary_token_budget_policy(
@@ -2416,7 +2407,7 @@ def run_executive_summary_execution(
                 build_judge_remediation_cycles_receipt,
                 compute_regen_outcome,
                 emit_judge_regen_operator_stderr,
-                evaluate_g5_delta_scope,
+                evaluate_g5_delta_scope_v2,
                 format_judge_regen_operator_stderr_line,
                 resolve_delta_class,
             )
@@ -2655,10 +2646,11 @@ def run_executive_summary_execution(
                     _g5_baseline = (
                         resume_display_text_from_regen_messages(_regen_messages) or _pre_resume
                     )
-                    _g5 = evaluate_g5_delta_scope(
+                    _g5 = evaluate_g5_delta_scope_v2(
                         _g5_baseline,
                         resume_display_text,
                         _cycle_delta_class,
+                        x1d_judges=_x1d_before_regen,
                     )
                     _cycle_record["g5_delta_scope"] = _g5
                     if artifact_dir is not None:

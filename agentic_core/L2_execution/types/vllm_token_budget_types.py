@@ -175,13 +175,6 @@ VLLM_MAX_TOKENS_EXTENDED: int = 1200
 VLLM_MAX_TOKENS_ABSOLUTE: int = 1200
 SAFETY_MARGIN_TOKENS: int = 256
 _QWEN_CHARS_PER_TOKEN: int = 3
-QWEN_MAX_MODEL_LEN: int = 32768
-# Backward-compat aliases (2026-04-25 single-tier collapse) — both names
-# refer to the same QWEN_LOCAL_MODEL_ID model now that vLLM serves
-# Qwen2.5-32B-Instruct-AWQ exclusively. Kept to avoid breaking external
-# consumers that import these symbols. New code should use QWEN_MAX_MODEL_LEN.
-QWEN_7B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
-QWEN_14B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 
 
 class TaskClass(str, Enum):
@@ -411,7 +404,15 @@ LocalTier = Literal["local_fast", "local_strong", "gemini_backstop"]
 # as deprecated aliases pointing at the SSOT QWEN_LOCAL_MODEL_ID — both
 # return the same value. New code should import QWEN_LOCAL_MODEL_ID from
 # agentic_core.L0_routing.config.model_registry directly.
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID  # noqa: E402, PLC0415  # guardian: allow-layer-violation -- model_registry SSOT at L0 config; deprecated aliases point at canonical QWEN_LOCAL_MODEL_ID
+from agentic_core.L0_routing.config.model_registry import (  # noqa: E402, PLC0415  # guardian: allow-layer-violation -- model_registry SSOT at L0 config
+    QWEN_LOCAL_MAX_MODEL_LEN,
+    QWEN_LOCAL_MODEL_ID,
+)
+
+# Backward-compat aliases — mirror L0 ``QWEN_LOCAL_MAX_MODEL_LEN`` (default 24576; env ``VLLM_MAX_MODEL_LEN``).
+QWEN_MAX_MODEL_LEN: int = QWEN_LOCAL_MAX_MODEL_LEN
+QWEN_7B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
+QWEN_14B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 
 QWEN_7B_MODEL_ID: str = (
     QWEN_LOCAL_MODEL_ID  # Deprecated alias (was "Qwen/Qwen2.5-7B-Instruct" — model never served)

@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-import os
 import re
 from typing import Any
 
-_DEFAULT_MAX_CHARS = 12000
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    TARGETING_NO_GAP_MAX_CHARS,
+)
+
 _SECTION_HEADING_RE = re.compile(r"^(?:#{1,3}\s+|[A-Z][A-Z0-9 /&-]{3,}:)\s*", re.MULTILINE)
 
 
 def _max_chars() -> int:
-    cap_s = os.environ.get("APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS", "").strip()
-    if cap_s:
-        return max(2048, int(cap_s))
-    return _DEFAULT_MAX_CHARS
+    return TARGETING_NO_GAP_MAX_CHARS
 
 
 def _split_briefing_sections(briefing: str) -> list[tuple[str, str]]:
@@ -95,25 +94,6 @@ def prepare_briefing_for_executive_summary(
             "briefing_max_chars": cap,
         }
 
-    fail_closed = os.environ.get("APPS_RG_EXEC_SUMMARY_BRIEFING_FAIL_CLOSED", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-        "on",
-    )
-    if fail_closed:
-        return raw, {
-            "briefing_original_chars": original_chars,
-            "briefing_included_chars": 0,
-            "briefing_excluded_chars": original_chars,
-            "truncation_or_selection_reason": "fail_closed_briefing_exceeds_max_chars",
-            "included_section_ids": [],
-            "excluded_section_ids": ["full_document"],
-            "selection_policy": "fail_closed",
-            "briefing_max_chars": cap,
-            "fail_closed": True,
-        }
-
     sections = _split_briefing_sections(raw)
     ranked = sorted(
         sections,
@@ -145,7 +125,7 @@ def prepare_briefing_for_executive_summary(
         head = raw[: max(0, cap - 120)].rstrip()
         marker = (
             "\n\n[BRIEFING_SELECTION: no ranked section fit budget; head preserved — "
-            "raise APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS or enable fail_closed]\n"
+            "token budget will fail closed if full prompt still exceeds window]\n"
         )
         keep = max(0, cap - len(marker))
         selected = raw[:keep].rstrip() + marker

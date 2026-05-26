@@ -121,7 +121,7 @@ Set `VLLM_MAX_MODEL_LEN=24576` in the shell or `.env` to match the container (se
 | Setting | Value |
 |---------|--------|
 | Container | `local-qwen-vllm` |
-| Image | `vllm/vllm-openai:v0.11.0` (pinned; see topology for digest discipline) |
+| Image | `vllm/vllm-openai:latest` (workstation default; pin tag+digest for proof only) |
 | Model path | `/models/qwen` ← bind `${QWEN_MODEL_HOST_PATH:-/home/amita/models/Qwen2.5-32B-Instruct-AWQ}` |
 | `max-model-len` | `24576` |
 | Quantization / attention | `awq_marlin`, `TRITON_ATTN` |

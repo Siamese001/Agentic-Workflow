@@ -11,6 +11,10 @@ from typing import Any
 
 from apps_rg.runtime.providers import qwen_vllm_provider
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    resolve_regen_max_output_tokens,
+    resolve_scratch_max_output_tokens,
+)
 from apps_rg.runtime.sections.executive_summary_token_budget import (
     context_window_provenance_receipt_fields,
     regen_dispatch_allowed,
@@ -27,36 +31,6 @@ def _write_json(path: Path, data: Any) -> None:
 _REGEN_PHASES = frozenset(
     {"synthesis_regen", "judge_regen", "judge_x2_repair"},
 )
-
-_DEFAULT_REGEN_MAX_OUTPUT = 2048
-_DEFAULT_SCRATCH_MAX_OUTPUT = 2048
-_HARD_CAP_SCRATCH_MAX_OUTPUT = 4096
-
-
-def resolve_scratch_max_output_tokens() -> int:
-    raw = os.environ.get(
-        "APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS",
-        str(_DEFAULT_SCRATCH_MAX_OUTPUT),
-    ).strip()
-    try:
-        n = int(raw)
-    except ValueError:
-        n = _DEFAULT_SCRATCH_MAX_OUTPUT
-    return max(1, min(n, _HARD_CAP_SCRATCH_MAX_OUTPUT))
-
-
-def resolve_regen_max_output_tokens() -> int:
-    raw = os.environ.get(
-        "APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS",
-        str(_DEFAULT_REGEN_MAX_OUTPUT),
-    ).strip()
-    try:
-        n = int(raw)
-    except ValueError:
-        n = _DEFAULT_REGEN_MAX_OUTPUT
-    scratch_cap = resolve_scratch_max_output_tokens()
-    return max(1, min(n, scratch_cap))
-
 
 def allocate_call_id(
     *,

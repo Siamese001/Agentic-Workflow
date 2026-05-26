@@ -30,31 +30,22 @@ def test_ingress_bounds_briefing_before_pool_consumption() -> None:
     assert ingress.ingress_digest
 
 
-def test_ingress_fail_closed_propagates() -> None:
-    huge = "x" * 50000
-    import os
-
-    prev = os.environ.get("APPS_RG_EXEC_SUMMARY_BRIEFING_FAIL_CLOSED")
-    prev_max = os.environ.get("APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS")
-    try:
-        os.environ["APPS_RG_EXEC_SUMMARY_BRIEFING_FAIL_CLOSED"] = "1"
-        os.environ["APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS"] = "4096"
-        ingress = prepare_executive_summary_targeting_ingress(
-            jd_text="jd",
-            briefing_raw=huge,
-            target_title="SVP",
-        )
-        assert ingress.briefing_selection_receipt is not None
-        assert ingress.briefing_selection_receipt.get("fail_closed") is True
-    finally:
-        if prev is None:
-            os.environ.pop("APPS_RG_EXEC_SUMMARY_BRIEFING_FAIL_CLOSED", None)
-        else:
-            os.environ["APPS_RG_EXEC_SUMMARY_BRIEFING_FAIL_CLOSED"] = prev
-        if prev_max is None:
-            os.environ.pop("APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS", None)
-        else:
-            os.environ["APPS_RG_EXEC_SUMMARY_BRIEFING_MAX_CHARS"] = prev_max
+def test_brown_briefing_passes_through_at_24k_ingress_default() -> None:
+    """Brown SSOT (~15.2k chars) must not be section-trimmed at default ingress (token budget is authority)."""
+    brief = (REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md").read_text(
+        encoding="utf-8"
+    )
+    assert len(brief) > 12_000
+    ingress = prepare_executive_summary_targeting_ingress(
+        jd_text="SVP IT Strategy",
+        briefing_raw=brief,
+        target_title="SVP IT Strategy",
+        repo_root=REPO,
+    )
+    receipt = ingress.briefing_selection_receipt
+    assert receipt is None or int(receipt.get("briefing_excluded_chars") or 0) == 0
+    assert len(ingress.briefing_text_bounded) >= len(brief.strip()) - 32
+    assert "Post-Merger Technology Integration" in ingress.briefing_text_bounded
 
 
 def test_section_proof_loader_uses_briefing_override(monkeypatch: pytest.MonkeyPatch) -> None:

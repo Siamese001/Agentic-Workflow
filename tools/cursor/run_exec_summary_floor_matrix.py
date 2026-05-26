@@ -150,11 +150,10 @@ def main() -> int:
         env = os.environ.copy()
         env.update(
             {
-                "VLLM_MAX_MODEL_LEN": os.environ.get("VLLM_MAX_MODEL_LEN", "32768"),
+                "VLLM_MAX_MODEL_LEN": os.environ.get("VLLM_MAX_MODEL_LEN", "24576"),
                 "APPS_RG_EXEC_SUMMARY_JUDGE_REGEN": "1",
                 "APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS": "3",
                 "APPS_RG_QWEN_TIMEOUT_SECONDS": "120",
-                "APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS": "768",
                 "APPS_RG_EXEC_SUMMARY_JUDGE_PASS_FLOOR": str(floor),
             }
         )

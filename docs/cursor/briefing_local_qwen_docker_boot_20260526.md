@@ -130,7 +130,7 @@ $env:VLLM_MAX_MODEL_LEN = "24576"
 | Item | Value |
 |------|--------|
 | Container | `local-qwen-vllm` |
-| Image | `vllm/vllm-openai:v0.11.0` |
+| Image | `vllm/vllm-openai:latest` (no v0.11 pull required) |
 | Model | `/models/qwen` ← `/home/amita/models/Qwen2.5-32B-Instruct-AWQ` |
 | Context | `max-model-len=24576` |
 | Quant / attention | `awq_marlin`, `TRITON_ATTN` |

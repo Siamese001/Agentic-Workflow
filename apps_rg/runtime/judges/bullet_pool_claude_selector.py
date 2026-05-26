@@ -26,6 +26,10 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
     min_selection_score_for_lane,
     sc_path_count_for_lane,
 )
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    resolve_bullet_selector_briefing_max_chars,
+    resolve_bullet_selector_jd_max_chars,
+)
 
 SlotKind = Literal["bullets", "competencies"]
 
@@ -128,8 +132,8 @@ def _employment_bullet_selection_prompt(
         f"If no variant for a slot meets the floor, set passes=false for that slot.\n"
         f"- Output exactly {n_final} selections when possible; each selected row must include score and passes.\n"
         f"{regen_note}\n\n"
-        f"JD (targeting only):\n{jd[:3500]}\n\n"
-        f"Briefing (targeting only):\n{briefing[:2000]}\n\n"
+        f"JD (targeting only):\n{jd[:resolve_bullet_selector_jd_max_chars()]}\n\n"
+        f"Briefing (targeting only):\n{briefing[:resolve_bullet_selector_briefing_max_chars()]}\n\n"
         f"Skills graph ref: {skills_ref}\n\n"
         "Return JSON only:\n"
         '{"selections":[{"bullet_id":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}],'

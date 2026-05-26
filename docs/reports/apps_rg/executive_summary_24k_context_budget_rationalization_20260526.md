@@ -3,6 +3,7 @@
 > **SSOT:** `VLLM_MAX_MODEL_LEN=24576` ([`docker-compose.qwen.yml`](../../../docker-compose.qwen.yml), [`model_registry.py`](../../../agentic_core/L0_routing/config/model_registry.py)).  
 > **Targeting caps:** [`executive_summary_targeting_cap.py`](../../../apps_rg/runtime/sections/executive_summary_targeting_cap.py).  
 > **Token budget policy:** [`executive_summary_token_budget.py`](../../../apps_rg/runtime/sections/executive_summary_token_budget.py).  
+> **Char/token SSOT:** [`executive_summary_context_limits.py`](../../../apps_rg/runtime/sections/executive_summary_context_limits.py) · closeout [executive_summary_context_limits_ssot_closeout_20260526.md](executive_summary_context_limits_ssot_closeout_20260526.md).  
 > **Operator runbook:** [`executive_summary_operator_guide.md`](../../apps_rg/executive_summary_operator_guide.md).
 
 ## Summary
@@ -27,7 +28,7 @@ Formula (unchanged):
 
 ```text
 available_input_tokens = VLLM_MAX_MODEL_LEN - requested_max_output_tokens - 512
-first_pass_limit       = floor(available_input_tokens × 0.92)   # APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX
+first_pass_limit       = floor(available_input_tokens × 0.92)   # code constant (not env-overridable)
 ```
 
 ---
@@ -46,21 +47,14 @@ The ~13.8k @ 16k figure included **heavy targeting compression** (JD ~2k / brief
 
 ---
 
-## Targeting char policy (current — no window tiering)
+## Targeting char policy (current — token budget is authority)
 
-Fixed defaults sized for **24k**; override via env only.
+No env-overridable briefing/JD char caps. When the compiled prompt fits (`gap_tokens == 0`), targeting prose passes through **verbatim**. If the prompt exceeds `available_input_tokens`, `apply_executive_summary_targeting_cap` sheds JD/briefing by `gap_tokens` only.
 
-| Field | Default max chars | Brown SVP source size | In prompt (typical) |
-|-------|------------------:|----------------------:|--------------------:|
-| **Briefing** | **16,000** | ~15,210 | ~15,825 (full doc + cap notice) |
-| **JD** | **6,000** | ~4,335 | ~4,399 (full JD + cap notice) |
-
-Env overrides:
-
-- `APPS_RG_EXEC_SUMMARY_TARGETING_CAP_BRIEFING_CHARS`
-- `APPS_RG_EXEC_SUMMARY_TARGETING_CAP_JD_CHARS`
-
-When source length ≤ cap and `gap_tokens == 0`, prose passes through **verbatim** (no section-priority shedding). Compression still applies if env forces a lower ceiling or the full prompt exceeds `available_input_tokens` (`gap_tokens > 0`).
+| Field | Brown SVP source size | In prompt (typical) |
+|-------|----------------------:|--------------------:|
+| **Briefing** | ~15,210 | ~15,825 (full doc + cap notice) |
+| **JD** | ~4,335 | ~4,399 (full JD + cap notice) |
 
 ---
 
@@ -115,10 +109,10 @@ Scratch generation still reserves **2,048** completion tokens inside the 24,576 
 ## Operational implications
 
 1. **Set `VLLM_MAX_MODEL_LEN=24576`** to match Docker `--max-model-len` (see [`executive_summary_operator_guide.md`](../../apps_rg/executive_summary_operator_guide.md)).
-2. **Briefing/JD:** Default caps carry the full Brown SSOT files; no need to pre-truncate for budget at 24k unless you add large custom briefs (>16k chars).
+2. **Briefing/JD:** Full Brown SSOT passes through at 24k; pre-truncation is unnecessary unless `token_budget_receipt.json` shows `dispatch_allowed: false`.
 3. **First-pass block** at 24k is unlikely for Brown-scale prompts unless E0/C0/facts grow materially; watch `token_budget_receipt.json` → `first_pass_utilization_pct`.
 4. **Proof discipline unchanged:** More briefing does **not** add proof — only C0 `fact_id` lines authorize `claim_ledger`.
-5. **Gemini / external research:** Use a single targeting research doc ≤16k chars for the briefing slot; paste full JD separately (≤6k).
+5. **Gemini / external research:** Paste full research into the briefing slot; if dispatch blocks, read `token_budget_receipt.json` — do not rely on hidden char env caps.
 
 ---
 
@@ -137,4 +131,5 @@ Scratch generation still reserves **2,048** completion tokens inside the 24,576 
 
 | Date | Change |
 |------|--------|
-| 2026-05-26 | Document 24k lens vs 16k; rationalize Brown dispatch **16,860 / 22,016** with headroom; fixed briefing **16k** / JD **6k** char caps (no context-window tiering). |
+| 2026-05-26 | Document 24k lens vs 16k; rationalize Brown dispatch **16,860 / 22,016** with headroom. |
+| 2026-05-26 | Remove env-overridable briefing/JD char caps; token budget + `gap_tokens` targeting shed only. |
