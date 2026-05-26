@@ -11,6 +11,8 @@ import pytest
 from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
     GRAPH_BULLET_EVIDENCE_PACK_MARKER,
+    _PATH_FRAMING_ANGLES,
+    append_unify_path_framing_to_messages,
     format_unify_graph_bullet_evidence_pack,
 )
 from apps_rg.runtime.sections.unify_bullets_pa import _legacy_i0
@@ -130,6 +132,36 @@ def test_compiled_prompt_uses_graph_compose_not_rewrite() -> None:
     assert "TARGETING ONLY" in content.upper() or "targeting only" in content
     assert "jd_used_as_proof=false" in content
     assert not _FORBIDDEN_C0.search(content)
+
+
+def test_append_unify_path_framing_cycles_angles_and_preserves_messages() -> None:
+    messages = [{"role": "user", "content": "Compose six bullets."}]
+    out0 = append_unify_path_framing_to_messages(messages, path_index=0, temperature=0.38)
+    out5 = append_unify_path_framing_to_messages(messages, path_index=5, temperature=0.42)
+    assert "PATH_FRAMING" in out0[-1]["content"]
+    assert _PATH_FRAMING_ANGLES[0] in out0[-1]["content"]
+    assert _PATH_FRAMING_ANGLES[5] in out5[-1]["content"]
+    assert out0[-1]["content"] != out5[-1]["content"]
+    assert messages[0]["content"] == "Compose six bullets."
+
+
+def test_graph_evidence_pack_includes_c03_neighbor_hints_when_bound() -> None:
+    payload = {
+        "selected_fact_plan": {"facts": _six_slot_facts()},
+        "proof_pool_metadata": {
+            **_minimal_proof_metadata(),
+            "c03_graphrag_bound": {
+                "graph_expansion_refs": ["neighbor:skill_a", "neighbor:skill_b"],
+            },
+        },
+    }
+    body = format_unify_graph_bullet_evidence_pack(
+        payload,
+        allowed_block="",
+        unify_id_hygiene="",
+    )
+    assert "C0.3_GRAPH_NEIGHBOR_HINTS" in body
+    assert "neighbor:skill_a" in body
 
 
 def test_legacy_i0_compose_not_rewrite() -> None:
